@@ -80,10 +80,18 @@ class AccountSelectionViewBinder {
      */
     public static Drawable createBitmapWithMaskableIconSafeZone(
             Resources resources, Bitmap bitmap, int outBitmapSize) {
-        int cropWidth = (int) Math.floor(
-                bitmap.getWidth() * AccountSelectionBridge.MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
-        int cropHeight = (int) Math.floor(
-                bitmap.getHeight() * AccountSelectionBridge.MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropWidth =
+                (int)
+                        Math.floor(
+                                bitmap.getWidth()
+                                        * AccountSelectionBridge
+                                                .MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropHeight =
+                (int)
+                        Math.floor(
+                                bitmap.getHeight()
+                                        * AccountSelectionBridge
+                                                .MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
         int cropX = (int) Math.floor((bitmap.getWidth() - cropWidth) / 2.0f);
         int cropY = (int) Math.floor((bitmap.getHeight() - cropHeight) / 2.0f);
 
@@ -99,8 +107,11 @@ class AccountSelectionViewBinder {
         canvas.drawCircle(radius, radius, radius, paint);
         // Use SRC_IN so white circle acts as a mask while drawing the avatar.
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, new Rect(cropX, cropY, cropWidth + cropX, cropHeight + cropY),
-                new Rect(0, 0, outBitmapSize, outBitmapSize), paint);
+        canvas.drawBitmap(
+                bitmap,
+                new Rect(cropX, cropY, cropWidth + cropX, cropHeight + cropY),
+                new Rect(0, 0, outBitmapSize, outBitmapSize),
+                paint);
         return new BitmapDrawable(resources, output);
     }
 
@@ -121,14 +132,21 @@ class AccountSelectionViewBinder {
 
             // Prepare avatar or its fallback monogram.
             if (avatar == null) {
-                int avatarMonogramTextSize = view.getResources().getDimensionPixelSize(
-                        R.dimen.account_selection_account_avatar_monogram_text_size);
+                int avatarMonogramTextSize =
+                        view.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen
+                                                .account_selection_account_avatar_monogram_text_size);
                 // TODO(crbug.com/1295017): Consult UI team to determine the background color we
                 // need to use here.
                 RoundedIconGenerator roundedIconGenerator =
-                        new RoundedIconGenerator(resources, avatarSize /* iconWidthDp */,
-                                avatarSize /* iconHeightDp */, avatarSize / 2 /* cornerRadiusDp */,
-                                Color.GRAY /* backgroundColor */, avatarMonogramTextSize);
+                        new RoundedIconGenerator(
+                                resources,
+                                /* iconWidthDp= */ avatarSize,
+                                /* iconHeightDp= */ avatarSize,
+                                /* cornerRadiusDp= */ avatarSize / 2,
+                                /* backgroundColor= */ Color.GRAY,
+                                avatarMonogramTextSize);
                 avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
             }
             Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
@@ -140,7 +158,10 @@ class AccountSelectionViewBinder {
             if (clickCallback == null) {
                 view.setOnClickListener(null);
             } else {
-                view.setOnClickListener(clickedView -> { clickCallback.onResult(account); });
+                view.setOnClickListener(
+                        clickedView -> {
+                            clickCallback.onResult(account);
+                        });
             }
         } else if (key == AccountProperties.ACCOUNT) {
             TextView subject = view.findViewById(R.id.title);
@@ -158,10 +179,11 @@ class AccountSelectionViewBinder {
 
         String startTag = "<" + tag + ">";
         String endTag = "</" + tag + ">";
-        Callback<View> onClickCallback = v -> {
-            CustomTabActivity.showInfoPage(context, url.getSpec());
-            clickRunnable.run();
-        };
+        Callback<View> onClickCallback =
+                v -> {
+                    CustomTabActivity.showInfoPage(context, url.getSpec());
+                    clickRunnable.run();
+                };
         return new SpanApplier.SpanInfo(
                 startTag, endTag, new NoUnderlineClickableSpan(context, onClickCallback));
     }
@@ -178,10 +200,18 @@ class AccountSelectionViewBinder {
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
             Context context = view.getContext();
-            SpanApplier.SpanInfo privacyPolicySpan = createLink(context, "link_privacy_policy",
-                    properties.mPrivacyPolicyUrl, properties.mPrivacyPolicyClickRunnable);
-            SpanApplier.SpanInfo termsOfServiceSpan = createLink(context, "link_terms_of_service",
-                    properties.mTermsOfServiceUrl, properties.mTermsOfServiceClickRunnable);
+            SpanApplier.SpanInfo privacyPolicySpan =
+                    createLink(
+                            context,
+                            "link_privacy_policy",
+                            properties.mPrivacyPolicyUrl,
+                            properties.mPrivacyPolicyClickRunnable);
+            SpanApplier.SpanInfo termsOfServiceSpan =
+                    createLink(
+                            context,
+                            "link_terms_of_service",
+                            properties.mTermsOfServiceUrl,
+                            properties.mTermsOfServiceClickRunnable);
 
             int consentTextId;
             if (privacyPolicySpan == null && termsOfServiceSpan == null) {
@@ -228,8 +258,10 @@ class AccountSelectionViewBinder {
         String idpForDisplay = model.get(IdpSignInProperties.IDP_FOR_DISPLAY);
         Context context = view.getContext();
         TextView textView = view.findViewById(R.id.idp_signin);
-        textView.setText(String.format(
-                context.getString(R.string.idp_signin_status_mismatch_dialog_body, idpForDisplay)));
+        textView.setText(
+                String.format(
+                        context.getString(
+                                R.string.idp_signin_status_mismatch_dialog_body, idpForDisplay)));
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -272,38 +304,62 @@ class AccountSelectionViewBinder {
 
         if (SERVER_ERROR.equals(code)) {
             summary = String.format(context.getString(R.string.signin_server_error_dialog_summary));
-            description = String.format(context.getString(
-                    R.string.signin_server_error_dialog_description, topFrameForDisplay));
+            description =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_server_error_dialog_description,
+                                    topFrameForDisplay));
             // Server errors do not need extra description to be displayed.
             return new ErrorText(summary, description);
         } else if (INVALID_REQUEST.equals(code)) {
-            summary = String.format(
-                    context.getString(R.string.signin_invalid_request_error_dialog_summary,
-                            topFrameForDisplay, idpForDisplay));
-            description = String.format(
-                    context.getString(R.string.signin_invalid_request_error_dialog_description));
+            summary =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_invalid_request_error_dialog_summary,
+                                    topFrameForDisplay,
+                                    idpForDisplay));
+            description =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_invalid_request_error_dialog_description));
         } else if (UNAUTHORIZED_CLIENT.equals(code)) {
-            summary = String.format(
-                    context.getString(R.string.signin_unauthorized_client_error_dialog_summary,
-                            topFrameForDisplay, idpForDisplay));
-            description = String.format(context.getString(
-                    R.string.signin_unauthorized_client_error_dialog_description));
+            summary =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_unauthorized_client_error_dialog_summary,
+                                    topFrameForDisplay,
+                                    idpForDisplay));
+            description =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_unauthorized_client_error_dialog_description));
         } else if (ACCESS_DENIED.equals(code)) {
-            summary = String.format(
-                    context.getString(R.string.signin_access_denied_error_dialog_summary));
-            description = String.format(
-                    context.getString(R.string.signin_access_denied_error_dialog_description));
+            summary =
+                    String.format(
+                            context.getString(R.string.signin_access_denied_error_dialog_summary));
+            description =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_access_denied_error_dialog_description));
         } else if (TEMPORARILY_UNAVAILABLE.equals(code)) {
-            summary = String.format(context.getString(
-                    R.string.signin_temporarily_unavailable_error_dialog_summary));
-            description = String.format(context.getString(
-                    R.string.signin_temporarily_unavailable_error_dialog_description,
-                    idpForDisplay));
+            summary =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_temporarily_unavailable_error_dialog_summary));
+            description =
+                    String.format(
+                            context.getString(
+                                    R.string
+                                            .signin_temporarily_unavailable_error_dialog_description,
+                                    idpForDisplay));
         } else {
-            summary = String.format(
-                    context.getString(R.string.signin_generic_error_dialog_summary, idpForDisplay));
-            description = String.format(
-                    context.getString(R.string.signin_generic_error_dialog_description));
+            summary =
+                    String.format(
+                            context.getString(
+                                    R.string.signin_generic_error_dialog_summary, idpForDisplay));
+            description =
+                    String.format(
+                            context.getString(R.string.signin_generic_error_dialog_description));
 
             if (url.isEmpty()) {
                 return new ErrorText(summary, description);
@@ -387,11 +443,14 @@ class AccountSelectionViewBinder {
 
                     Integer textColor = idpMetadata.getBrandTextColor();
                     if (textColor == null) {
-                        textColor = MaterialColors.getColor(context,
-                                ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor)
-                                        ? R.attr.colorOnPrimary
-                                        : R.attr.colorOnSurface,
-                                TAG);
+                        textColor =
+                                MaterialColors.getColor(
+                                        context,
+                                        ColorUtils.shouldUseLightForegroundOnBackground(
+                                                        backgroundColor)
+                                                ? R.attr.colorOnPrimary
+                                                : R.attr.colorOnSurface,
+                                        TAG);
                     }
                     button.setTextColor(textColor);
                 }
@@ -414,14 +473,18 @@ class AccountSelectionViewBinder {
                 btnText =
                         String.format(
                                 context.getString(R.string.signin_error_dialog_got_it_button));
+            } else if (headerType == HeaderProperties.HeaderType.SIGN_IN && account == null) {
+                btnText = String.format(context.getString(R.string.account_selection_add_account));
             } else {
                 // Prefers to use given name if it is provided otherwise falls back to using the
                 // name.
                 String givenName = account.getGivenName();
                 String displayedName =
                         givenName != null && !givenName.isEmpty() ? givenName : account.getName();
-                btnText = String.format(
-                        context.getString(R.string.account_selection_continue), displayedName);
+                btnText =
+                        String.format(
+                                context.getString(R.string.account_selection_continue),
+                                displayedName);
             }
 
             assert btnText != null;
@@ -452,13 +515,16 @@ class AccountSelectionViewBinder {
 
                 // TODO(crbug.com/1484245): Decide on how to set colours for error buttons.
                 Integer textColor = idpMetadata.getBrandBackgroundColor();
-                button.setTextColor(textColor != null
+                button.setTextColor(
+                        textColor != null
                                 ? textColor
                                 : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
             }
         } else if (key == ErrorButtonProperties.ON_CLICK_LISTENER) {
             button.setOnClickListener(
-                    clickedView -> { model.get(ErrorButtonProperties.ON_CLICK_LISTENER).run(); });
+                    clickedView -> {
+                        model.get(ErrorButtonProperties.ON_CLICK_LISTENER).run();
+                    });
         } else {
             assert false : "Unhandled update to property:" + key;
         }
@@ -514,7 +580,8 @@ class AccountSelectionViewBinder {
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
         if (key == HeaderProperties.TOP_FRAME_FOR_DISPLAY
                 || key == HeaderProperties.IFRAME_FOR_DISPLAY
-                || key == HeaderProperties.IDP_FOR_DISPLAY || key == HeaderProperties.TYPE
+                || key == HeaderProperties.IDP_FOR_DISPLAY
+                || key == HeaderProperties.TYPE
                 || key == HeaderProperties.RP_CONTEXT) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
@@ -522,11 +589,15 @@ class AccountSelectionViewBinder {
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
 
             String rpUrlForDisplayInTitle;
-            String subtitle = computeHeaderSubtitle(resources, headerType,
-                    model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY),
-                    model.get(HeaderProperties.IFRAME_FOR_DISPLAY));
+            String subtitle =
+                    computeHeaderSubtitle(
+                            resources,
+                            headerType,
+                            model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY),
+                            model.get(HeaderProperties.IFRAME_FOR_DISPLAY));
             if (!subtitle.isEmpty()) {
-                headerTitleText.setPadding(/*left=*/0, /*top=*/12, /*right=*/0, /*bottom=*/0);
+                headerTitleText.setPadding(
+                        /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
                 headerSubtitleText.setText(subtitle);
                 rpUrlForDisplayInTitle = model.get(HeaderProperties.IFRAME_FOR_DISPLAY);
             } else {
@@ -534,9 +605,13 @@ class AccountSelectionViewBinder {
                 rpUrlForDisplayInTitle = model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY);
             }
 
-            String title = computeHeaderTitle(resources, headerType, rpUrlForDisplayInTitle,
-                    model.get(HeaderProperties.IDP_FOR_DISPLAY),
-                    model.get(HeaderProperties.RP_CONTEXT));
+            String title =
+                    computeHeaderTitle(
+                            resources,
+                            headerType,
+                            rpUrlForDisplayInTitle,
+                            model.get(HeaderProperties.IDP_FOR_DISPLAY),
+                            model.get(HeaderProperties.RP_CONTEXT));
             headerTitleText.setText(title);
             headerTitleText.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -548,16 +623,20 @@ class AccountSelectionViewBinder {
             // closes itself automatically at the "Verifying..." stage.
             if (headerType != HeaderProperties.HeaderType.VERIFY
                     && headerType != HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
-                headerTitleText.setContentDescription(title + ". "
-                        + resources.getString(R.string.bottom_sheet_accessibility_description));
+                headerTitleText.setContentDescription(
+                        title
+                                + ". "
+                                + resources.getString(
+                                        R.string.bottom_sheet_accessibility_description));
             } else {
                 // Update the content description in case the view is recycled.
                 headerTitleText.setContentDescription(title);
             }
 
             if (key == HeaderProperties.TYPE) {
-                boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY
-                        || headerType == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN);
+                boolean progressBarVisible =
+                        (headerType == HeaderProperties.HeaderType.VERIFY
+                                || headerType == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN);
                 view.findViewById(R.id.header_progress_bar)
                         .setVisibility(progressBarVisible ? View.VISIBLE : View.GONE);
                 view.findViewById(R.id.header_divider)
@@ -578,38 +657,39 @@ class AccountSelectionViewBinder {
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
             final Runnable closeOnClickRunnable =
                     (Runnable) model.get(HeaderProperties.CLOSE_ON_CLICK_LISTENER);
-            view.findViewById(R.id.close_button).setOnClickListener(clickedView -> {
-                closeOnClickRunnable.run();
-            });
+            view.findViewById(R.id.close_button)
+                    .setOnClickListener(
+                            clickedView -> {
+                                closeOnClickRunnable.run();
+                            });
         } else {
             assert false : "Unhandled update to property:" + key;
         }
     }
 
-    /**
-     * Returns text for the {@link HeaderType.VERIFY} header.
-     */
+    /** Returns text for the {@link HeaderType.VERIFY} header. */
     static @StringRes int getVerifyHeaderStringId() {
         return R.string.verify_sheet_title;
     }
 
-    /**
-     * Returns text for the {@link HeaderType.VERIFY_AUTO_REAUTHN} header.
-     */
+    /** Returns text for the {@link HeaderType.VERIFY_AUTO_REAUTHN} header. */
     static @StringRes int getVerifyHeaderAutoReauthnStringId() {
         return R.string.verify_sheet_title_auto_reauthn;
     }
 
-    private static String computeHeaderTitle(Resources resources, HeaderProperties.HeaderType type,
-            String rpUrl, String idpUrl, String rpContext) {
+    private static String computeHeaderTitle(
+            Resources resources,
+            HeaderProperties.HeaderType type,
+            String rpUrl,
+            String idpUrl,
+            String rpContext) {
         if (type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
         }
         if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
-        @StringRes
-        int titleStringId;
+        @StringRes int titleStringId;
         switch (rpContext) {
             case "signup":
                 titleStringId = R.string.account_selection_sheet_title_explicit_signup;
@@ -626,14 +706,17 @@ class AccountSelectionViewBinder {
         return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 
-    private static String computeHeaderSubtitle(Resources resources,
-            HeaderProperties.HeaderType type, String topFrameUrl, String iframeUrl) {
+    private static String computeHeaderSubtitle(
+            Resources resources,
+            HeaderProperties.HeaderType type,
+            String topFrameUrl,
+            String iframeUrl) {
         if (type == HeaderProperties.HeaderType.VERIFY
-                || type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN || iframeUrl.isEmpty()) {
+                || type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN
+                || iframeUrl.isEmpty()) {
             return "";
         }
-        @StringRes
-        int subtitleStringId = R.string.account_selection_sheet_subtitle_explicit;
+        @StringRes int subtitleStringId = R.string.account_selection_sheet_subtitle_explicit;
         return String.format(resources.getString(subtitleStringId), topFrameUrl);
     }
 

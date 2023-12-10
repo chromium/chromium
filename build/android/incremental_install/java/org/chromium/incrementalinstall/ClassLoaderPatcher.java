@@ -42,12 +42,10 @@ final class ClassLoaderPatcher {
         Log.i(TAG, "uid=" + mProcessUid + " (isPrimary=" + mIsPrimaryProcess + ")");
     }
 
-    /**
-     * Loads all dex files within |dexDir| into the app's ClassLoader.
-     */
+    /** Loads all dex files within |dexDir| into the app's ClassLoader. */
     @SuppressLint({
-            "SetWorldReadable",
-            "SetWorldWritable",
+        "SetWorldReadable",
+        "SetWorldWritable",
     })
     DexFile[] loadDexFiles(File dexDir, String packageName)
             throws ReflectiveOperationException, IOException {
@@ -133,9 +131,7 @@ final class ClassLoaderPatcher {
         return ret;
     }
 
-    /**
-     * Sets up all libraries within |libDir| to be loadable by System.loadLibrary().
-     */
+    /** Sets up all libraries within |libDir| to be loadable by System.loadLibrary(). */
     @SuppressLint("SetWorldReadable")
     void importNativeLibs(File libDir) throws ReflectiveOperationException, IOException {
         Log.i(TAG, "Importing native libraries from: " + libDir);
@@ -155,9 +151,10 @@ final class ClassLoaderPatcher {
     private void safeCopyAllFiles(File srcDir, File dstDir) throws IOException {
         if (!mIsPrimaryProcess) {
             // TODO: Work around this issue by using APK splits to install each dex / lib.
-            throw new RuntimeException("Incremental install does not work on Android M+ "
-                    + "with isolated processes. Build system should have removed this. "
-                    + "Please file a bug.");
+            throw new RuntimeException(
+                    "Incremental install does not work on Android M+ "
+                            + "with isolated processes. Build system should have removed this. "
+                            + "Please file a bug.");
         }
 
         // The library copying is not necessary on older devices, but we do it anyways to
@@ -184,14 +181,16 @@ final class ClassLoaderPatcher {
     private void addNativeLibrarySearchPath(File nativeLibDir) throws ReflectiveOperationException {
         Object dexPathList = Reflect.getField(mClassLoader, "pathList");
         Object currentDirs = Reflect.getField(dexPathList, "nativeLibraryDirectories");
-        File[] newDirs = new File[] { nativeLibDir };
+        File[] newDirs = new File[] {nativeLibDir};
         // Switched from an array to an ArrayList in Lollipop.
         if (currentDirs instanceof List) {
             List<File> dirsAsList = (List<File>) currentDirs;
             dirsAsList.add(0, nativeLibDir);
         } else {
             File[] dirsAsArray = (File[]) currentDirs;
-            Reflect.setField(dexPathList, "nativeLibraryDirectories",
+            Reflect.setField(
+                    dexPathList,
+                    "nativeLibraryDirectories",
                     Reflect.concatArrays(newDirs, newDirs, dirsAsArray));
         }
 
@@ -204,9 +203,11 @@ final class ClassLoaderPatcher {
             return;
         }
         Object[] additionalElements = makeNativePathElements(newDirs);
-        Reflect.setField(dexPathList, "nativeLibraryPathElements",
-                Reflect.concatArrays(nativeLibraryPathElements, additionalElements,
-                        nativeLibraryPathElements));
+        Reflect.setField(
+                dexPathList,
+                "nativeLibraryPathElements",
+                Reflect.concatArrays(
+                        nativeLibraryPathElements, additionalElements, nativeLibraryPathElements));
     }
 
     private static void copyChangedFiles(File srcDir, File dstDir) throws IOException {
@@ -228,9 +229,13 @@ final class ClassLoaderPatcher {
                 f.delete();
             }
         }
-        String msg = String.format(Locale.US,
-                "copyChangedFiles: %d of %d updated. %d stale files removed.", numUpdated,
-                srcFiles.length, numDeleted);
+        String msg =
+                String.format(
+                        Locale.US,
+                        "copyChangedFiles: %d of %d updated. %d stale files removed.",
+                        numUpdated,
+                        srcFiles.length,
+                        numDeleted);
         Log.i(TAG, msg);
     }
 
@@ -293,8 +298,9 @@ final class ClassLoaderPatcher {
         for (int i = 0; i < files.length; ++i) {
             File file = files[i];
             // loadDexFile requires that ret contain all previously added elements.
-            Object dexFile = Reflect.invokeMethod(
-                    clazz, "loadDexFile", file, optimizedDirectory, mClassLoader, ret);
+            Object dexFile =
+                    Reflect.invokeMethod(
+                            clazz, "loadDexFile", file, optimizedDirectory, mClassLoader, ret);
             Object dexElement;
             if (Build.VERSION.SDK_INT >= 26) {
                 dexElement = Reflect.newInstance(entryClazz, dexFile, file);

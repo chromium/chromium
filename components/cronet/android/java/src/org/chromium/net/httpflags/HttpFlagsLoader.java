@@ -50,10 +50,9 @@ public final class HttpFlagsLoader {
 
     @VisibleForTesting
     static final String FLAGS_FILE_PROVIDER_INTENT_ACTION = "android.net.http.FLAGS_FILE_PROVIDER";
-    @VisibleForTesting
-    static final String FLAGS_FILE_DIR_NAME = "app_httpflags";
-    @VisibleForTesting
-    static final String FLAGS_FILE_NAME = "flags.binarypb";
+
+    @VisibleForTesting static final String FLAGS_FILE_DIR_NAME = "app_httpflags";
+    @VisibleForTesting static final String FLAGS_FILE_NAME = "flags.binarypb";
 
     private static final String TAG = "HttpFlagsLoader";
 
@@ -77,7 +76,9 @@ public final class HttpFlagsLoader {
         try {
             ApplicationInfo providerApplicationInfo = getProviderApplicationInfo(context);
             if (providerApplicationInfo == null) return null;
-            Log.d(TAG, "Found application exporting HTTP flags: %s",
+            Log.d(
+                    TAG,
+                    "Found application exporting HTTP flags: %s",
                     providerApplicationInfo.packageName);
 
             File flagsFile = getFlagsFileFromProvider(context, providerApplicationInfo);
@@ -96,14 +97,18 @@ public final class HttpFlagsLoader {
 
     @Nullable
     private static ApplicationInfo getProviderApplicationInfo(Context context) {
-        ResolveInfo resolveInfo = context.getPackageManager().resolveService(
-                new Intent(FLAGS_FILE_PROVIDER_INTENT_ACTION),
-                // Make sure we only read flags files that are written by a package from the system
-                // image. This prevents random third-party apps from being able to inject flags into
-                // other apps, which would be a security risk.
-                PackageManager.MATCH_SYSTEM_ONLY);
+        ResolveInfo resolveInfo =
+                context.getPackageManager()
+                        .resolveService(
+                                new Intent(FLAGS_FILE_PROVIDER_INTENT_ACTION),
+                                // Make sure we only read flags files that are written by a package
+                                // from the system image. This prevents random third-party apps
+                                // from being able to inject flags into other apps, which would be
+                                // a security risk.
+                                PackageManager.MATCH_SYSTEM_ONLY);
         if (resolveInfo == null) {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "Unable to resolve the HTTP flags file provider package. This is expected if "
                             + "the host system is not set up to provide HTTP flags.");
             return null;
@@ -114,10 +119,13 @@ public final class HttpFlagsLoader {
 
     private static File getFlagsFileFromProvider(
             Context context, ApplicationInfo providerApplicationInfo) {
-        return new File(new File(new File(Build.VERSION.SDK_INT >= 24
-                                                 ? providerApplicationInfo.deviceProtectedDataDir
-                                                 : providerApplicationInfo.dataDir),
-                                FLAGS_FILE_DIR_NAME),
+        return new File(
+                new File(
+                        new File(
+                                Build.VERSION.SDK_INT >= 24
+                                        ? providerApplicationInfo.deviceProtectedDataDir
+                                        : providerApplicationInfo.dataDir),
+                        FLAGS_FILE_DIR_NAME),
                 FLAGS_FILE_NAME);
     }
 
@@ -126,7 +134,8 @@ public final class HttpFlagsLoader {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             return Flags.parseDelimitedFrom(fileInputStream);
         } catch (FileNotFoundException exception) {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "HTTP flags file `%s` is missing. This is expected if HTTP flags functionality "
                             + "is currently disabled in the host system.",
                     file.getPath());

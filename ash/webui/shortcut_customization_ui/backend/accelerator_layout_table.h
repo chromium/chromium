@@ -8,13 +8,13 @@
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -196,7 +196,7 @@ class TextAcceleratorPart : public mojom::TextAcceleratorPart {
 
   // If the part is a keycode, we store it so that we will always have a way
   // to get the accurate localized key string to display.
-  absl::optional<ui::KeyboardCode> keycode;
+  std::optional<ui::KeyboardCode> keycode;
 };
 
 // Contains info related to a non-configurable accelerator. A non-configurable
@@ -223,11 +223,11 @@ struct NonConfigurableAcceleratorDetails {
 
   // These members are used for the Ambient action ids contained in
   // the NonConfigurableActions enum.
-  absl::optional<int> message_id;
-  absl::optional<std::vector<TextAcceleratorPart>> replacements;
+  std::optional<int> message_id;
+  std::optional<std::vector<TextAcceleratorPart>> replacements;
   // This member is used for the Browser action ids contained in
   // the NonConfigurableActions enum.
-  absl::optional<std::vector<ui::Accelerator>> accelerators;
+  std::optional<std::vector<ui::Accelerator>> accelerators;
 };
 
 using NonConfigurableActionsMap =

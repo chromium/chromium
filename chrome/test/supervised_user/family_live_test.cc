@@ -43,7 +43,9 @@ Profile& CreateNewProfile() {
 
 }  // namespace
 
-FamilyLiveTest::FamilyLiveTest(std::vector<std::string> extra_enabled_hosts)
+FamilyLiveTest::FamilyLiveTest() = default;
+FamilyLiveTest::FamilyLiveTest(
+    const std::vector<std::string>& extra_enabled_hosts)
     : extra_enabled_hosts_(extra_enabled_hosts) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
 

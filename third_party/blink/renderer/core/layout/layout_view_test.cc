@@ -252,7 +252,7 @@ TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
   // |LayoutObject::CreatePositionWithAffinity()| for anonymous block
   // containing list marker.
   // LayoutNGBlockFlow (anonymous)
-  //    LayoutNGInsideListMarker {::marker}
+  //    LayoutInsideListMarker {::marker}
   //      LayoutText (anonymous)
   //      LayoutInline {SPAN}
   EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 5));
@@ -1339,7 +1339,7 @@ TEST_P(LayoutViewHitTestTest, TextCombineOneTextNode) {
   //        LayoutText {#text} at (5,0) size 100x100
   //          text run at (5,0) width 100: "a"
   //        LayoutInline {C} at (5,100) size 100x100
-  //          LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //          LayoutTextCombine (anonymous) at (5,100) size 100x100
   //            LayoutText {#text} at (-5,0) size 110x100
   //              text run at (0,0) width 500: "01234"
   //        LayoutText {#text} at (5,200) size 100x100
@@ -1385,7 +1385,7 @@ TEST_P(LayoutViewHitTestTest, TextCombineTwoTextNodes) {
   //         LayoutText {#text} at (5,0) size 100x100
   //           text run at (5,0) width 100: "a"
   //         LayoutInline {C} at (5,100) size 100x100
-  //           LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //           LayoutTextCombine (anonymous) at (5,100) size 100x100
   //             LayoutText {#text} at (-5,0) size 66x100
   //               text run at (0,0) width 300: "012"
   //             LayoutWordBreak {WBR} at (61,0) size 0x100

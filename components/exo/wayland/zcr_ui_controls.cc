@@ -295,7 +295,8 @@ void bind_ui_controls(wl_client* client,
                       uint32_t version,
                       uint32_t id) {
   wl_resource* resource =
-      wl_resource_create(client, &zcr_ui_controls_v1_interface, version, id);
+      wl_resource_create(client, &zcr_ui_controls_v1_interface,
+                         std::min(version, kUiControlsVersion), id);
 
   wl_resource_set_implementation(resource, &ui_controls_implementation, data,
                                  destroy_ui_controls_resource);

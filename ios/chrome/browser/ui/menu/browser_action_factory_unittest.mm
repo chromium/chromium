@@ -11,8 +11,6 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -41,23 +39,20 @@
 #import "url/gurl.h"
 
 namespace {
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+const MenuScenarioHistogram kTestMenuScenario =
+    kMenuScenarioHistogramHistoryEntry;
 }  // namespace
 
 // Test fixture for the BrowserActionFactory.
 class BrowserActionFactoryTest : public PlatformTest {
  protected:
-  BrowserActionFactoryTest()
-      : test_title_(@"SomeTitle"),
-        scene_state_([[SceneState alloc] initWithAppState:nil]) {}
+  BrowserActionFactoryTest() : test_title_(@"SomeTitle") {}
 
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
 
     test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-
-    SceneStateBrowserAgent::CreateForBrowser(test_browser_.get(), scene_state_);
 
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
@@ -108,7 +103,6 @@ class BrowserActionFactoryTest : public PlatformTest {
   id mock_qr_scanner_commands_handler_;
   id mock_load_query_commands_handler_;
   id mock_save_to_photos_commands_handler_;
-  SceneState* scene_state_;
 };
 
 // Tests that the Open in New Tab actions have the right titles and images.

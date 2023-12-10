@@ -55,6 +55,8 @@ void LogNonReflectionUpdateFreshnessToUma(ModelType type,
 
 void LogClearMetadataWhileStoppedHistogram(ModelType model_type,
                                            bool is_delayed_call) {
+  base::UmaHistogramEnumeration("Sync.ClearMetadataWhileStopped",
+                                ModelTypeHistogramValue(model_type));
   const char* histogram_name =
       is_delayed_call ? "Sync.ClearMetadataWhileStopped.DelayedClear"
                       : "Sync.ClearMetadataWhileStopped.ImmediateClear";

@@ -4,6 +4,11 @@
 
 /** @fileoverview Definitions for chrome.readingMode API */
 
+// Add non-standard function to element for TS to compile correctly.
+interface Element {
+  scrollIntoViewIfNeeded: () => void;
+}
+
 declare namespace chrome {
   export namespace readingMode {
     /////////////////////////////////////////////////////////////////////
@@ -77,6 +82,10 @@ declare namespace chrome {
     // contained within the selection.
     function getChildren(nodeId: number): number[];
 
+    // Returns content of "data-font-css" html attribute. This is needed for
+    // rendering content from annotated canvas in Google Docs.
+    function getDataFontCss(nodeId: number): string;
+
     // Returns the HTML tag of the AXNode for the provided AXNodeID.
     function getHtmlTag(nodeId: number): string;
 
@@ -99,6 +108,12 @@ declare namespace chrome {
 
     // Returns true if the element has overline text styling.
     function isOverline(nodeId: number): boolean;
+
+    // Returns true if the element is a leaf node.
+    function isLeafNode(nodeId: number): boolean;
+
+    // Returns true if the webpage corresponds to a Google Doc.
+    function isGoogleDocs(): boolean;
 
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.
@@ -221,12 +236,20 @@ declare namespace chrome {
     // preferences and can be used to set up the page.
     function restoreSettingsFromPrefs(): void;
 
-    // Returns the index of the next sentence of the given text, such that the
-    // next sentence is equivalent to text.substr(0, <returned_index>).
-    // If the sentence exceeds the maximum text length, the sentence will be
-    // cropped to the nearest word boundary that doesn't exceed the maximum
-    // text length.
-    function getNextSentence(value: string, maxTextLength: number): number;
+    // Inits the AXPosition instance in ReadAnythingAppController with the
+    // starting node. Currently needed to orient the AXPosition to the correct
+    // position, but we should be able to remove this in the future.
+    function initAXPositionWithNode(startingNodeId: number): void;
+
+    // Gets the next text that should be spoken and highlighted. Returns a list
+    // of triples, represented as a double array, where each triple contains an
+    // AXNodeId, the starting text index, and the ending text index.
+    function getNextText(maxTextLength: number): number[][];
+
+    // Gets the previous text that should be spoken and highlighted. Returns a
+    // list of triples, represented as a double array, where each triple
+    // contains an XNodeId, the starting text index, and the ending text index.
+    function getPreviousText(maxTextLength: number): number[][];
 
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.

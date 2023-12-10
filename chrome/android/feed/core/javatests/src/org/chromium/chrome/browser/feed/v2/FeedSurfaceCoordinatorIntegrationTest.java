@@ -69,7 +69,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
     /** Test for turning the feed on and off via the gear menu. */
     @Test
     @MediumTest
-    public void launchNTP_disableAndEnableViaGearMenu() throws IOException, InterruptedException {
+    public void launchNtp_disableAndEnableViaGearMenu() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.

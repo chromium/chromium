@@ -125,39 +125,55 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   const std::string* ig_name =
       result_dict->FindStringByDottedPath("interestGroup.name");
-  const std::string* ig_bidding_url_str =
-      result_dict->FindStringByDottedPath("interestGroup.biddingLogicURL");
-  const std::string* ig_owner_string =
-      result_dict->FindStringByDottedPath("interestGroup.owner");
-
-  GURL ig_bidding_url;
-  if (ig_bidding_url_str) {
-    ig_bidding_url = GURL(*ig_bidding_url_str);
-  }
-
-  absl::optional<url::Origin> ig_owner;
-  if (ig_owner_string) {
-    GURL ig_owner_url(*ig_owner_string);
-    if (ig_owner_url.is_valid() && ig_owner_url.SchemeIs("https")) {
-      ig_owner = url::Origin::Create(ig_owner_url);
-    }
-  }
-
-  if (!ig_name || !ig_bidding_url.is_valid() || !ig_owner.has_value()) {
+  if (!ig_name) {
     return base::unexpected(base::StrCat(
         {"Additional bid on auction with seller '", seller.Serialize(),
-         "' rejected due to missing or invalid interest group info."}));
+         "' rejected due to missing interest group name."}));
   }
 
-  if (interest_group_buyers.find(ig_owner.value()) ==
-      interest_group_buyers.end()) {
+  const std::string* ig_bidding_url_str =
+      result_dict->FindStringByDottedPath("interestGroup.biddingLogicURL");
+  if (!ig_bidding_url_str) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected due to missing interest group bidding URL."}));
+  }
+
+  GURL ig_bidding_url = GURL(*ig_bidding_url_str);
+  if (!ig_bidding_url.is_valid()) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected due to invalid interest group bidding URL."}));
+  }
+
+  const std::string* ig_owner_string =
+      result_dict->FindStringByDottedPath("interestGroup.owner");
+  if (!ig_owner_string) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected due to missing interest group owner."}));
+  }
+  GURL ig_owner_url(*ig_owner_string);
+  if (!ig_owner_url.is_valid()) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected due to invalid interest group owner URL."}));
+  }
+  if (!ig_owner_url.SchemeIs("https")) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected due to non-https interest group owner URL."}));
+  }
+  url::Origin ig_owner = url::Origin::Create(ig_owner_url);
+
+  if (interest_group_buyers.find(ig_owner) == interest_group_buyers.end()) {
     return base::unexpected(base::StrCat(
         {"Additional bid on auction with seller '", seller.Serialize(),
          "' rejected because the additional bid's owner, '",
-         ig_owner->Serialize(), "', is not in interestGroupBuyers."}));
+         ig_owner.Serialize(), "', is not in interestGroupBuyers."}));
   }
 
-  if (!ig_owner->IsSameOriginWith(ig_bidding_url)) {
+  if (!ig_owner.IsSameOriginWith(ig_bidding_url)) {
     return base::unexpected(base::StrCat(
         {"Additional bid on auction with seller '", seller.Serialize(),
          "' rejected due to invalid origin of biddingLogicURL."}));
@@ -165,7 +181,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   auto synth_interest_group = StorageInterestGroup();
   synth_interest_group.interest_group.name = *ig_name;
-  synth_interest_group.interest_group.owner = std::move(ig_owner).value();
+  synth_interest_group.interest_group.owner = std::move(ig_owner);
   synth_interest_group.interest_group.bidding_url = std::move(ig_bidding_url);
   // Add ads.
   const base::Value::Dict* bid_dict = result_dict->FindDict("bid");

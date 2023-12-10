@@ -180,7 +180,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
   }
 
   void ParseDecryptedResponseCallback(
-      const absl::optional<DecryptedResponse>& response) {
+      const std::optional<DecryptedResponse>& response) {
     response_ = response;
   }
 
@@ -207,14 +207,14 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
   }
 
   void ParseDecryptedPasskeyCallback(
-      const absl::optional<DecryptedPasskey>& passkey) {
+      const std::optional<DecryptedPasskey>& passkey) {
     passkey_ = passkey;
   }
 
  protected:
   std::unique_ptr<FastPairDataEncryptor> data_encryptor_;
-  absl::optional<DecryptedResponse> response_ = absl::nullopt;
-  absl::optional<DecryptedPasskey> passkey_ = absl::nullopt;
+  std::optional<DecryptedResponse> response_ = std::nullopt;
+  std::optional<DecryptedPasskey> passkey_ = std::nullopt;
   std::unique_ptr<MockQuickPairProcessManager> process_manager_;
   mojo::SharedRemote<ash::quick_pair::mojom::FastPairDataParser>
       data_parser_remote_;
@@ -351,7 +351,7 @@ TEST_P(FastPairDataEncryptorImplTest, GetPublicKey) {
   EXPECT_CALL(*process_manager_, GetProcessReference);
   ParseDecryptedPasskey();
   base::RunLoop().RunUntilIdle();
-  EXPECT_NE(data_encryptor_->GetPublicKey(), absl::nullopt);
+  EXPECT_NE(data_encryptor_->GetPublicKey(), std::nullopt);
 }
 
 TEST_P(FastPairDataEncryptorImplTest, CreateAdditionalDataPacket_Success) {

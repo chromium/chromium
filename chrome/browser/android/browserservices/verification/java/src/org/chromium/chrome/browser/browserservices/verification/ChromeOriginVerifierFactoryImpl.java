@@ -7,25 +7,30 @@ package org.chromium.chrome.browser.browserservices.verification;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
+import dagger.Reusable;
+
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 
 import javax.inject.Inject;
 
-import dagger.Reusable;
-
-/**
- * The main implementation of {@link ChromeOriginVerifierFactory} used in production.
- */
+/** The main implementation of {@link ChromeOriginVerifierFactory} used in production. */
 @Reusable
 public class ChromeOriginVerifierFactoryImpl implements ChromeOriginVerifierFactory {
     @Inject
     public ChromeOriginVerifierFactoryImpl() {}
 
     @Override
-    public ChromeOriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
-            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
-        return new ChromeOriginVerifier(packageName, relation, webContents, externalAuthUtils,
+    public ChromeOriginVerifier create(
+            String packageName,
+            @CustomTabsService.Relation int relation,
+            @Nullable WebContents webContents,
+            @Nullable ExternalAuthUtils externalAuthUtils) {
+        return new ChromeOriginVerifier(
+                packageName,
+                relation,
+                webContents,
+                externalAuthUtils,
                 ChromeVerificationResultStore.getInstance());
     }
 }

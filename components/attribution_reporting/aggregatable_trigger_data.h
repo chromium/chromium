@@ -48,6 +48,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
 
   base::Value::Dict ToJson() const;
 
+  friend bool operator==(const AggregatableTriggerData&,
+                         const AggregatableTriggerData&) = default;
+
  private:
   AggregatableTriggerData(absl::uint128 key_piece,
                           Keys source_keys,

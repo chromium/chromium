@@ -159,7 +159,7 @@ bool EnablesUnmanagedWifiAutoconnect(const base::Value::Dict& onc_dict) {
     return false;
   }
 
-  absl::optional<bool> autoconnect =
+  std::optional<bool> autoconnect =
       wifi_config->FindBool(::onc::wifi::kAutoConnect);
   return autoconnect.has_value() && autoconnect.value();
 }
@@ -213,7 +213,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetManagedProperties(
   if (!GetPoliciesForUser(userhash) || !GetPoliciesForUser(std::string())) {
     NET_LOG(ERROR) << "GetManagedProperties failed: "
                    << kPoliciesNotInitialized;
-    std::move(callback).Run(service_path, absl::nullopt,
+    std::move(callback).Run(service_path, std::nullopt,
                             kPoliciesNotInitialized);
     return;
   }
@@ -298,7 +298,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
       /*log_warnings=*/true);
 
   chromeos::onc::Validator::Result validation_result;
-  absl::optional<base::Value::Dict> validated_user_settings =
+  std::optional<base::Value::Dict> validated_user_settings =
       validator.ValidateAndRepairObject(
           &chromeos::onc::kNetworkConfigurationSignature, user_settings_copy,
           &validation_result);
@@ -393,9 +393,9 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     if (type == ::onc::network_type::kWiFi) {
       const base::Value::Dict* type_dict =
           properties.FindDict(::onc::network_config::kWiFi);
-      const absl::optional<bool> is_hidden =
+      const std::optional<bool> is_hidden =
           type_dict ? type_dict->FindBool(::onc::wifi::kHiddenSSID)
-                    : absl::nullopt;
+                    : std::nullopt;
       if (is_hidden.has_value()) {
         WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(*is_hidden);
       }
@@ -412,7 +412,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       false);  // Don't log warnings.
 
   chromeos::onc::Validator::Result validation_result;
-  absl::optional<base::Value::Dict> validated_properties =
+  std::optional<base::Value::Dict> validated_properties =
       validator.ValidateAndRepairObject(
           &chromeos::onc::kNetworkConfigurationSignature, properties,
           &validation_result);
@@ -1236,10 +1236,10 @@ void ManagedNetworkConfigurationHandlerImpl::GetPropertiesCallback(
     const std::string& userhash,
     network_handler::PropertiesCallback callback,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     SendProperties(properties_type, userhash, service_path, std::move(callback),
-                   absl::nullopt);
+                   std::nullopt);
     return;
   }
 
@@ -1289,9 +1289,9 @@ void ManagedNetworkConfigurationHandlerImpl::OnGetDeviceProperties(
     const std::string& userhash,
     const std::string& service_path,
     network_handler::PropertiesCallback callback,
-    absl::optional<base::Value::Dict> network_properties,
+    std::optional<base::Value::Dict> network_properties,
     const std::string& device_path,
-    absl::optional<base::Value::Dict> device_properties) {
+    std::optional<base::Value::Dict> device_properties) {
   DCHECK(network_properties);
   if (!device_properties) {
     NET_LOG(ERROR) << "Error getting device properties: "
@@ -1310,7 +1310,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     const std::string& userhash,
     const std::string& service_path,
     network_handler::PropertiesCallback callback,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   auto get_name = [](PropertiesType properties_type) {
     switch (properties_type) {
       case PropertiesType::kUnmanaged:
@@ -1323,14 +1323,14 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
 
   if (!shill_properties) {
     NET_LOG(ERROR) << get_name(properties_type) << " Failed.";
-    std::move(callback).Run(service_path, absl::nullopt,
+    std::move(callback).Run(service_path, std::nullopt,
                             network_handler::kDBusFailedError);
     return;
   }
   const std::string* guid = shill_properties->FindString(shill::kGuidProperty);
   if (!guid) {
     NET_LOG(ERROR) << get_name(properties_type) << " Missing GUID.";
-    std::move(callback).Run(service_path, absl::nullopt, kUnknownNetwork);
+    std::move(callback).Run(service_path, std::nullopt, kUnknownNetwork);
     return;
   }
 
@@ -1343,9 +1343,8 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       &chromeos::onc::kNetworkWithStateSignature, network_state);
 
   if (properties_type == PropertiesType::kUnmanaged) {
-    std::move(callback).Run(service_path,
-                            absl::make_optional(std::move(onc_network)),
-                            absl::nullopt);
+    std::move(callback).Run(
+        service_path, std::make_optional(std::move(onc_network)), std::nullopt);
     return;
   }
 
@@ -1383,7 +1382,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     if (!policies) {
       NET_LOG(ERROR) << "GetManagedProperties failed: "
                      << kPoliciesNotInitialized;
-      std::move(callback).Run(service_path, absl::nullopt,
+      std::move(callback).Run(service_path, std::nullopt,
                               kPoliciesNotInitialized);
       return;
     }
@@ -1397,8 +1396,8 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       global_policy, network_policy, user_settings, &onc_network, profile);
   SetManagedActiveProxyValues(*guid, &augmented_properties);
   std::move(callback).Run(service_path,
-                          absl::make_optional(std::move(augmented_properties)),
-                          absl::nullopt);
+                          std::make_optional(std::move(augmented_properties)),
+                          std::nullopt);
 }
 
 void ManagedNetworkConfigurationHandlerImpl::NotifyPolicyAppliedToNetwork(
@@ -1409,7 +1408,7 @@ void ManagedNetworkConfigurationHandlerImpl::NotifyPolicyAppliedToNetwork(
     observer.PolicyAppliedToNetwork(service_path);
 }
 
-absl::optional<bool>
+std::optional<bool>
 ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyBool(
     std::string_view key) const {
   const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(

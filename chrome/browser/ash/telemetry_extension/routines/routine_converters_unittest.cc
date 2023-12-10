@@ -73,6 +73,14 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_EQ(result->timeout, kTimeout);
 }
 
+TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertFanRoutineArgumentPtr) {
+  auto input = crosapi::TelemetryDiagnosticFanRoutineArgument::New();
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+}
+
 TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateInitializedPtr) {
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateInitialized::New()),
@@ -215,6 +223,22 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticFanRoutineDetailPtr) {
+  auto input = healthd::FanRoutineDetail::New();
+  input->passed_fan_ids = {0};
+  input->failed_fan_ids = {1};
+  input->fan_count_status = healthd::HardwarePresenceStatus::kMatched;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_THAT(result->passed_fan_ids, testing::ElementsAre(0));
+  EXPECT_THAT(result->failed_fan_ids, testing::ElementsAre(1));
+  EXPECT_EQ(result->fan_count_status,
+            crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineDetailPtr) {
   EXPECT_EQ(
       ConvertRoutinePtr(healthd::RoutineDetail::NewUnrecognizedArgument(true)),
@@ -229,6 +253,11 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
                 healthd::VolumeButtonRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
                 crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewFan(
+                healthd::FanRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
+                crosapi::TelemetryDiagnosticFanRoutineDetail::New()));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,

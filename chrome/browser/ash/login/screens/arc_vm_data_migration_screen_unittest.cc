@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -34,7 +36,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -386,7 +387,7 @@ TEST_F(ArcVmDataMigrationScreenTest, ScreenLockIsDisabledWhileScreenIsShown) {
 
 TEST_F(ArcVmDataMigrationScreenTest, StopArcVmFailureIsFatal) {
   auto* fake_concierge_client = FakeConciergeClient::Get();
-  fake_concierge_client->set_stop_vm_response(absl::nullopt);
+  fake_concierge_client->set_stop_vm_response(std::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
@@ -462,7 +463,7 @@ TEST_F(ArcVmDataMigrationScreenTest,
 
 TEST_F(ArcVmDataMigrationScreenTest, GetAndroidDataSizeFailureIsFatal) {
   FakeArcVmDataMigratorClient::Get()->set_get_android_data_info_response(
-      absl::nullopt);
+      std::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
@@ -540,7 +541,7 @@ TEST_F(ArcVmDataMigrationScreenTest,
   arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                    arc::ArcVmDataMigrationStatus::kStarted);
   // Assume that ARCVM is running but cannot be stopped.
-  FakeConciergeClient::Get()->set_stop_vm_response(absl::nullopt);
+  FakeConciergeClient::Get()->set_stop_vm_response(std::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();

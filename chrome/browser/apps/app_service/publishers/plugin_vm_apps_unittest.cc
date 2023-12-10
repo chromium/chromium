@@ -227,7 +227,7 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent_FailedDirectoryNotShared) {
       GetMyFilesFileSystemURL("Downloads/file").ToGURL()));
   intent->files = {std::move(files)};
 
-  absl::optional<State> result_state;
+  std::optional<State> result_state;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, /*event_flags=*/0, std::move(intent), LaunchSource::kUnknown,
       std::unique_ptr<WindowInfo>(),

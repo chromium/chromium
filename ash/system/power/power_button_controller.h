@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system/power/power_button_controller_base.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shutdown_reason.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/wm/lock_state_observer.h"
@@ -19,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/views/widget/widget.h"
 
@@ -26,6 +26,10 @@ namespace base {
 class TickClock;
 class TimeTicks;
 }  // namespace base
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -41,11 +45,11 @@ class PowerButtonScreenshotController;
 // screenshot.
 class ASH_EXPORT PowerButtonController
     : public PowerButtonControllerBase,
+      public display::DisplayObserver,
       public display::DisplayConfigurator::Observer,
       public chromeos::PowerManagerClient::Observer,
       public AccelerometerReader::Observer,
       public ScreenBacklightObserver,
-      public TabletModeObserver,
       public LockStateObserver,
       public SessionObserver {
  public:
@@ -128,6 +132,9 @@ class ASH_EXPORT PowerButtonController
   void OnArcPowerButtonMenuEvent() override;
   void CancelPowerButtonEvent() override;
 
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+
   // display::DisplayConfigurator::Observer:
   void OnDisplayModeChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
@@ -145,7 +152,7 @@ class ASH_EXPORT PowerButtonController
   // Initializes |screenshot_controller_| according to the tablet mode switch in
   // |result|.
   void OnGetSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   // TODO(minch): Remove this if/when all applicable devices expose a tablet
   // mode switch: https://crbug.com/798646.
@@ -157,10 +164,6 @@ class ASH_EXPORT PowerButtonController
   void OnBacklightsForcedOffChanged(bool forced_off) override;
   void OnScreenBacklightStateChanged(
       ScreenBacklightState screen_backlight_state) override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
 
   // Used by the `ash::curtain::Session` to notify when power button is
   // enabled/disabled.
@@ -305,6 +308,8 @@ class ASH_EXPORT PowerButtonController
   // showing menu.
   std::unique_ptr<views::Widget::PaintAsActiveLock>
       active_window_paint_as_active_lock_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<PowerButtonController> weak_factory_{this};
 };

@@ -20,6 +20,8 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 
+import {getTemplate} from './adb_sideloading.html.js';
+
 /**
  * UI mode for the dialog.
  * @enum {string}
@@ -57,7 +59,7 @@ class AdbSideloading extends AdbSideloadingBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   constructor() {

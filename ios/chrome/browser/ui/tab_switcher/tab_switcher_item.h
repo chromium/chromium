@@ -10,6 +10,7 @@
 @class TabSwitcherItem;
 
 #ifdef __cplusplus
+class GURL;
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -37,6 +38,7 @@ typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
 
 #ifdef __cplusplus
 @property(nonatomic, readonly) web::WebStateID identifier;
+@property(nonatomic, assign) GURL URL;
 #endif
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) BOOL hidesTitle;

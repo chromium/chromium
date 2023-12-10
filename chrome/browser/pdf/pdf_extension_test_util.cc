@@ -6,11 +6,14 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pdf_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -19,7 +22,9 @@
 #include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace pdf_extension_test_util {
 
@@ -34,6 +39,32 @@ bool IsPluginFrame(content::RenderFrameHost& frame) {
 }
 
 }  // namespace
+
+content::RenderFrameHost* GetOnlyPdfExtensionHost(
+    content::WebContents* contents) {
+  std::vector<content::RenderFrameHost*> extension_hosts =
+      GetPdfExtensionHosts(contents);
+  return extension_hosts.size() == 1 ? extension_hosts[0] : nullptr;
+}
+
+std::vector<content::RenderFrameHost*> GetPdfExtensionHosts(
+    content::WebContents* contents) {
+  std::vector<content::RenderFrameHost*> extension_hosts;
+  contents->ForEachRenderFrameHost(
+      [&extension_hosts](content::RenderFrameHost* host) {
+        if (IsPdfExtensionOrigin(host->GetLastCommittedOrigin())) {
+          extension_hosts.push_back(host);
+        }
+      });
+  return extension_hosts;
+}
+
+content::RenderFrameHost* GetOnlyPdfPluginFrame(
+    content::WebContents* contents) {
+  std::vector<content::RenderFrameHost*> plugin_frames =
+      GetPdfPluginFrames(contents);
+  return plugin_frames.size() == 1 ? plugin_frames[0] : nullptr;
+}
 
 std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
     content::WebContents* contents) {
@@ -140,16 +171,22 @@ gfx::Point ConvertPageCoordToScreenCoord(
 }
 
 void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest) {
-  auto* guest_main_frame = guest->GetGuestMainFrame();
-  content::WaitForHitTestData(guest_main_frame);
+  SetInputFocusOnPlugin(guest->GetGuestMainFrame(),
+                        guest->embedder_web_contents());
+}
+
+void SetInputFocusOnPlugin(content::RenderFrameHost* extension_host,
+                           content::WebContents* embedder_web_contents) {
+  content::WaitForHitTestData(extension_host);
 
   const gfx::Point point_in_root_coords =
-      guest_main_frame->GetView()->TransformPointToRootCoordSpace(
-          ConvertPageCoordToScreenCoord(guest_main_frame, {1, 1}));
+      extension_host->GetView()->TransformPointToRootCoordSpace(
+          ConvertPageCoordToScreenCoord(extension_host, {1, 1}));
 
-  content::FocusChangedObserver focus_observer(guest->web_contents());
+  content::FocusChangedObserver focus_observer(
+      content::WebContents::FromRenderFrameHost(extension_host));
   content::SimulateMouseClickAt(
-      guest->embedder_web_contents(), blink::WebInputEvent::kNoModifiers,
+      embedder_web_contents, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kLeft, point_in_root_coords);
   focus_observer.Wait();
 }

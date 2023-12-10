@@ -7,8 +7,8 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
-#import "ios/chrome/browser/signin/constants.h"
-#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -106,8 +106,8 @@ using l10n_util::GetNSStringF;
       DCHECK(!name);
       DCHECK(!self.userImage);
       NSString* signInString =
-          self.primaryButtonTitleNoAccountsModeOverride
-              ? self.primaryButtonTitleNoAccountsModeOverride
+          self.primaryButtonTitleOverride
+              ? self.primaryButtonTitleOverride
               : GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
       [signinPromoView configurePrimaryButtonWithTitle:signInString];
       break;
@@ -123,10 +123,11 @@ using l10n_util::GetNSStringF;
       [self assignProfileImageToSigninPromoView:signinPromoView];
       break;
     }
-    case SigninPromoViewModeSyncWithPrimaryAccount: {
-      [signinPromoView
-          configurePrimaryButtonWithTitle:GetNSString(
-                                              IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)];
+    case SigninPromoViewModeSignedInWithPrimaryAccount: {
+      [signinPromoView configurePrimaryButtonWithTitle:
+                           self.primaryButtonTitleOverride
+                               ? self.primaryButtonTitleOverride
+                               : GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)];
       [self assignProfileImageToSigninPromoView:signinPromoView];
       break;
     }
@@ -152,7 +153,7 @@ using l10n_util::GetNSStringF;
           [self assignNonProfileImageToSigninPromoView:signinPromoView];
           break;
         case SigninPromoViewModeSigninWithAccount:
-        case SigninPromoViewModeSyncWithPrimaryAccount:
+        case SigninPromoViewModeSignedInWithPrimaryAccount:
           [self assignProfileImageToSigninPromoView:signinPromoView];
           break;
       }

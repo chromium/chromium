@@ -25,7 +25,7 @@ FindBarIcon::FindBarIcon(
                          "Find"),
       browser_(browser) {
   DCHECK(browser_);
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
 }
 

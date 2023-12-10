@@ -35,12 +35,11 @@ class OpenTabsUIDelegate {
   // Delete a foreign session and all its sync data.
   virtual void DeleteForeignSession(const std::string& tag) = 0;
 
-  // Loads all windows for foreign session with session tag |tag|. Caller does
-  // NOT own SessionWindow objects.
-  // Returns true if the foreign session was found, false otherwise.
-  virtual bool GetForeignSession(
-      const std::string& tag,
-      std::vector<const sessions::SessionWindow*>* windows) = 0;
+  // Returns the foreign session windows associated with session tag `tag`.
+  // Returns an empty vector if no windows for `tag`. Caller does NOT own
+  // SessionWindow objects.
+  virtual std::vector<const sessions::SessionWindow*> GetForeignSession(
+      const std::string& tag) = 0;
 
   // Loads all tabs for a foreign session, ignoring window grouping, and
   // ordering by recency (most recent to least recent). Will automatically

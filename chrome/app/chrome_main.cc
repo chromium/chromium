@@ -24,6 +24,10 @@
 #include "headless/public/headless_shell.h"
 #include "headless/public/switches.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/base_switches.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/app/notification_metrics.h"
@@ -79,6 +83,10 @@ int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #else
 #error Unknown platform.
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  PossiblyDetermineFallbackChromeChannel(argv[0]);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -170,7 +178,7 @@ int ChromeMain(int argc, const char** argv) {
     BUILDFLAG(IS_WIN)
     if (headless::IsOldHeadlessMode()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
+      command_line->AppendSwitch(::switches::kEnableCrashReporter);
 #endif
       return headless::HeadlessShellMain(std::move(params));
     }

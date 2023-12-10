@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,19 +29,16 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
 }  // namespace base
 
 #if BUILDFLAG(IS_CHROMEOS)
-namespace crosapi {
-namespace mojom {
-class DriveIntegrationService;
+namespace crosapi::mojom {
 class LocalPrinter;
 }
-}  // namespace crosapi
+
 #endif
 
 namespace content {
@@ -229,13 +227,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
                            base::Value::Dict policies,
                            const std::string& default_printer);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sets |kIsDriveMounted| for Lacros chrome then returns the initial settings.
-  void OnDrivePathReady(base::Value::Dict initial_settings,
-                        const std::string& callback_id,
-                        const base::FilePath& drive_path);
-#endif
-
   // Sends the printer capabilities to the Web UI. |settings_info| contains
   // printer capabilities information. If |settings_info| is empty, sends
   // error notification to the Web UI instead.
@@ -297,7 +288,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   bool has_logged_printers_count_ = false;
 
   // The settings used for the most recent preview request.
-  absl::optional<base::Value::Dict> last_preview_settings_;
+  std::optional<base::Value::Dict> last_preview_settings_;
 
   // Handles requests for extension printers. Created lazily by calling
   // GetPrinterHandler().
@@ -336,13 +327,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Version number of the LocalPrinter mojo service.
   int local_printer_version_ = 0;
-
-  // Used to transmit mojo interface method calls to ash chrome.
-  // Null if the interface is unavailable.
-  // The pointer is constant - if ash crashes and the mojo connection is lost,
-  // lacros will automatically be restarted.
-  raw_ptr<crosapi::mojom::DriveIntegrationService, DanglingUntriaged>
-      drive_integration_service_ = nullptr;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};

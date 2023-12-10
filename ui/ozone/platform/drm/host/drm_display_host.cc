@@ -101,15 +101,28 @@ void DrmDisplayHost::OnHDCPStateUpdated(bool status) {
   set_hdcp_callback_.Reset();
 }
 
+void DrmDisplayHost::SetColorTemperatureAdjustment(
+    const display::ColorTemperatureAdjustment& cta) {
+  sender_->GpuSetColorTemperatureAdjustment(snapshot_->display_id(), cta);
+}
+
+void DrmDisplayHost::SetColorCalibration(
+    const display::ColorCalibration& calibration) {
+  sender_->GpuSetColorCalibration(snapshot_->display_id(), calibration);
+}
+
+void DrmDisplayHost::SetGammaAdjustment(
+    const display::GammaAdjustment& adjustment) {
+  sender_->GpuSetGammaAdjustment(snapshot_->display_id(), adjustment);
+}
+
 void DrmDisplayHost::SetColorMatrix(const std::vector<float>& color_matrix) {
   sender_->GpuSetColorMatrix(snapshot_->display_id(), color_matrix);
 }
 
-void DrmDisplayHost::SetGammaCorrection(
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  sender_->GpuSetGammaCorrection(snapshot_->display_id(), degamma_lut,
-                                 gamma_lut);
+void DrmDisplayHost::SetGammaCorrection(const display::GammaCurve& degamma,
+                                        const display::GammaCurve& gamma) {
+  sender_->GpuSetGammaCorrection(snapshot_->display_id(), degamma, gamma);
 }
 
 void DrmDisplayHost::SetPrivacyScreen(

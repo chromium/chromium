@@ -110,6 +110,7 @@ void AppListModel::SetItemMetadata(const std::string& id,
   if (data->progress > item->progress() ||
       data->app_status != item->app_status()) {
     item->SetProgress(data->progress);
+    item->SetAppStatus(data->app_status);
     DVLOG(2) << "AppListModel::SetProgress: " << item->ToDebugString();
     for (auto& observer : observers_) {
       observer.OnAppListItemUpdated(item);
@@ -274,7 +275,7 @@ void AppListModel::DeleteItem(const std::string& id) {
 
   // Destroy `item`.
   ReparentOrDeleteItemInFolder(item,
-                               /*destination_folder_id=*/absl::nullopt);
+                               /*destination_folder_id=*/std::nullopt);
 }
 
 // Private methods
@@ -343,7 +344,7 @@ std::unique_ptr<AppListItem> AppListModel::RemoveFromTopList(
 
 void AppListModel::ReparentOrDeleteItemInFolder(
     AppListItem* item,
-    absl::optional<std::string> destination_folder_id) {
+    std::optional<std::string> destination_folder_id) {
   AppListFolderItem* folder = FindFolderItem(item->folder_id());
   DCHECK(folder) << "Folder not found for item: " << item->ToDebugString();
 

@@ -7,22 +7,30 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
+
+namespace actions {
+class ActionItem;
+}
 
 namespace views {
 
 // A button class that implements the Material Design text button spec.
 class VIEWS_EXPORT MdTextButton : public LabelButton {
- public:
-  METADATA_HEADER(MdTextButton);
+  METADATA_HEADER(MdTextButton, LabelButton)
 
+ public:
   explicit MdTextButton(PressedCallback callback = PressedCallback(),
                         const std::u16string& text = std::u16string(),
-                        int button_context = style::CONTEXT_BUTTON_MD);
+                        int button_context = style::CONTEXT_BUTTON_MD,
+                        bool use_text_color_for_icon = true);
 
   MdTextButton(const MdTextButton&) = delete;
   MdTextButton& operator=(const MdTextButton&) = delete;
@@ -36,9 +44,6 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   void SetStyle(ui::ButtonStyle button_style);
   ui::ButtonStyle GetStyle() const;
-
-  // Returns the hover color depending on the button style.
-  SkColor GetHoverColor(ui::ButtonStyle button_style);
 
   // See |bg_color_override_|.
   void SetBgColorOverride(const absl::optional<SkColor>& color);
@@ -62,6 +67,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void StateChanged(ButtonState old_state) override;
   void SetImageModel(ButtonState for_state,
                      const ui::ImageModel& image_model) override;
+  std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
 
  protected:
   // View:
@@ -78,6 +84,9 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void UpdateColors();
   void UpdateIconColor();
 
+  // Returns the hover color depending on the button style.
+  SkColor GetHoverColor(ui::ButtonStyle button_style);
+
   ui::ButtonStyle style_ = ui::ButtonStyle::kDefault;
 
   // When set, this provides the background color.
@@ -88,6 +97,22 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // Used to override default padding.
   absl::optional<gfx::Insets> custom_padding_;
+
+  // When set, the icon color will match the text color.
+  bool use_text_color_for_icon_ = true;
+};
+
+class VIEWS_EXPORT MdTextButtonActionViewInterface
+    : public LabelButtonActionViewInterface {
+ public:
+  explicit MdTextButtonActionViewInterface(MdTextButton* action_view);
+  ~MdTextButtonActionViewInterface() override = default;
+
+  // LabelButtonActionViewInterface:
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+
+ private:
+  raw_ptr<MdTextButton> action_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)

@@ -11,9 +11,7 @@ import androidx.annotation.Nullable;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-/**
- * Wrapper that allows passing a OTRProfileID reference around in the Java layer.
- */
+/** Wrapper that allows passing a OTRProfileID reference around in the Java layer. */
 public class OTRProfileID {
     private final String mProfileID;
     // OTRProfileID value should be same with Profile::OTRProfileID::PrimaryID in native.
@@ -168,6 +166,7 @@ public class OTRProfileID {
     @NativeMethods
     public interface Natives {
         OTRProfileID createUniqueOTRProfileID(String profileIDPrefix);
+
         OTRProfileID getPrimaryID();
     }
 }

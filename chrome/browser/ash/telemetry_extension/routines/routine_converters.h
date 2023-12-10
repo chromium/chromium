@@ -30,6 +30,9 @@ crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineDetailPtr
 UncheckedConvertPtr(cros_healthd::mojom::VolumeButtonRoutineDetailPtr input);
 
+crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr UncheckedConvertPtr(
+    cros_healthd::mojom::FanRoutineDetailPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr
 UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
 
@@ -60,10 +63,16 @@ cros_healthd::mojom::MemoryRoutineArgumentPtr UncheckedConvertPtr(
 cros_healthd::mojom::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgumentPtr input);
 
+cros_healthd::mojom::FanRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticFanRoutineArgumentPtr input);
+
 }  // namespace unchecked
 
 crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum Convert(
     cros_healthd::mojom::MemtesterTestItemEnum input);
+
+crosapi::mojom::TelemetryDiagnosticHardwarePresenceStatus Convert(
+    cros_healthd::mojom::HardwarePresenceStatus input);
 
 crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
     cros_healthd::mojom::RoutineStateWaiting::Reason input);

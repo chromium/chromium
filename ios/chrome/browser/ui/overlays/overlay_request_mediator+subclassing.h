@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_response.h"
 
 // Exposes shared functionality for OverlayRequestMediator subclasses.
 @interface OverlayRequestMediator (Subclassing)

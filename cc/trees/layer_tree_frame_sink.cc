@@ -137,6 +137,7 @@ void LayerTreeFrameSink::DetachFromClient() {
         worker_context_lost_forwarder_.get());
     worker_context_lost_forwarder_ = nullptr;
   }
+  shared_image_interface_ = nullptr;
 }
 
 void LayerTreeFrameSink::OnContextLost() {

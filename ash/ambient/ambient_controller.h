@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
-#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
@@ -190,8 +189,6 @@ class ASH_EXPORT AmbientController
 
   AmbientViewDelegate* ambient_view_delegate() { return &delegate_; }
 
-  AmbientPhotoCache* ambient_photo_cache() { return photo_cache_.get(); }
-
   AmbientAccessTokenController* access_token_controller() {
     return &access_token_controller_;
   }
@@ -226,10 +223,6 @@ class ASH_EXPORT AmbientController
 
   AmbientPhotoController* ambient_photo_controller() {
     return ambient_ui_launcher_->GetAmbientPhotoController();
-  }
-
-  AmbientPhotoCache* get_backup_photo_cache_for_testing() {
-    return backup_photo_cache_.get();
   }
 
   // Hide or close Ambient mode UI.
@@ -306,8 +299,6 @@ class ASH_EXPORT AmbientController
 
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
-  std::unique_ptr<AmbientPhotoCache> photo_cache_;
-  std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
@@ -333,7 +324,6 @@ class ASH_EXPORT AmbientController
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
-  std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

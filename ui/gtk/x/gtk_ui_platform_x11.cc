@@ -11,7 +11,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gtk/gtk_compat.h"

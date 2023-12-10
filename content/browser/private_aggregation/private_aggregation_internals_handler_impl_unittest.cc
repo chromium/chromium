@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,10 +23,10 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -57,8 +57,8 @@ void VerifyWebUIAggregatableReport(
     const private_aggregation_internals::mojom::WebUIAggregatableReport&
         web_report,
     const AggregatableReportRequest& request,
-    absl::optional<AggregationServiceStorage::RequestId> id,
-    const absl::optional<AggregatableReport>& report,
+    std::optional<AggregationServiceStorage::RequestId> id,
+    const std::optional<AggregatableReport>& report,
     base::Time report_time,
     private_aggregation_internals::mojom::ReportStatus status) {
   EXPECT_EQ(web_report.id, id);
@@ -147,8 +147,8 @@ class PrivateAggregationInternalsHandlerImplTest
   }
 
   void OnReportHandled(const AggregatableReportRequest& request,
-                       absl::optional<AggregationServiceStorage::RequestId> id,
-                       const absl::optional<AggregatableReport>& report,
+                       std::optional<AggregationServiceStorage::RequestId> id,
+                       const std::optional<AggregatableReport>& report,
                        base::Time actual_report_time,
                        AggregationServiceObserver::ReportStatus status) {
     internals_handler_->OnReportHandled(request, id, report, actual_report_time,
@@ -187,7 +187,7 @@ TEST_F(PrivateAggregationInternalsHandlerImplTest, GetReports) {
               reports) {
         ASSERT_EQ(reports.size(), 1u);
         VerifyWebUIAggregatableReport(
-            *reports.front(), request, id, /*report=*/absl::nullopt,
+            *reports.front(), request, id, /*report=*/std::nullopt,
             request.shared_info().scheduled_report_time,
             private_aggregation_internals::mojom::ReportStatus::kPending);
         run_loop.Quit();
@@ -240,7 +240,7 @@ TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportHandled) {
   AggregationServiceStorage::RequestId id{5};
 
   aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request, {hpke_key.GetPublicKey()});
 
@@ -267,20 +267,20 @@ TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportHandled_NoId) {
       aggregation_service::CreateExampleRequest();
 
   aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request, {hpke_key.GetPublicKey()});
 
   base::Time now = base::Time::Now();
 
-  OnReportHandled(request, /*id=*/absl::nullopt, report,
+  OnReportHandled(request, /*id=*/std::nullopt, report,
                   /*actual_report_time=*/now,
                   AggregationServiceObserver::ReportStatus::kSent);
   run_loop.Run();
 
   ASSERT_TRUE(web_report);
   VerifyWebUIAggregatableReport(
-      *web_report, request, /*id=*/absl::nullopt, report, now,
+      *web_report, request, /*id=*/std::nullopt, report, now,
       private_aggregation_internals::mojom::ReportStatus::kSent);
 }
 

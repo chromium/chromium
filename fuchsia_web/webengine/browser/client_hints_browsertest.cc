@@ -97,7 +97,7 @@ class ClientHintsTest : public FrameImplTestBaseWithServer {
                              url.spec());
     frame_for_test_.navigation_listener().RunUntilUrlEquals(url);
 
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         ExecuteJavaScript(frame_for_test_.get(), "document.body.innerText;");
     return value->GetString();
   }
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsTest, HintsAreSentFromSandboxedPage) {
                            url.spec());
   frame_for_test_.navigation_listener().RunUntilUrlEquals(url);
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       ExecuteJavaScript(frame_for_test_.get(), "document.body.innerText;");
   EXPECT_EQ(value->GetString(), k64Bitness);
 }

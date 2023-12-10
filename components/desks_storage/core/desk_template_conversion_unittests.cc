@@ -39,6 +39,7 @@ constexpr char kBrowserUrl1[] = "https://example.com/";
 constexpr char kBrowserUrl2[] = "https://example.com/2";
 constexpr char kBrowserTemplateName[] = "BrowserTest";
 constexpr char kOverrideUrl[] = "https://example.com/";
+constexpr uint64_t kTestLacrosProfileId = 12345;
 
 tab_groups::TabGroupInfo MakeSampleTabGroup() {
   return tab_groups::TabGroupInfo(
@@ -545,10 +546,12 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
           .SetName(kBrowserTemplateName)
           .SetType(ash::DeskTemplateType::kSaveAndRecall)
           .SetCreatedTime(created_time)
+          .SetLacrosProfileId(kTestLacrosProfileId)
           .AddAppWindow(
               SavedDeskBrowserBuilder()
                   .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
                       kBrowserWindowId))
+                  .SetLacrosProfileId(kTestLacrosProfileId)
                   .SetUrls({GURL(kBrowserUrl1), GURL(kBrowserUrl2)})
                   .Build())
           .Build();
@@ -570,6 +573,9 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
   expected_browser_app_value.Set("event_flag", base::Value(0));
   expected_browser_app_value.Set("window_id", base::Value(kBrowserWindowId));
   expected_browser_app_value.Set("tabs", std::move(expected_tab_list));
+  expected_browser_app_value.Set("lacros_profile_id",
+                                 base::NumberToString(kTestLacrosProfileId));
+  expected_browser_app_value.Set("app_id", app_constants::kChromeAppId);
 
   base::Value::List expected_app_list;
   expected_app_list.Append(std::move(expected_browser_app_value));
@@ -587,6 +593,8 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
                      base::TimeToValue(desk_template->GetLastUpdatedTime()));
   expected_value.Set("desk_type", base::Value("SAVE_AND_RECALL"));
   expected_value.Set("desk", std::move(expected_desk_value));
+  expected_value.Set("lacros_profile_id",
+                     base::NumberToString(kTestLacrosProfileId));
 
   EXPECT_EQ(expected_value, desk_template_value);
 }

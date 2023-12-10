@@ -91,7 +91,7 @@ class Hierarchy::PerSectionHierarchyGenerator
       CHECK(alternate.section != section_ || alternate.subpage)
           << "Setting has multiple identical alternate locations: " << setting;
     }
-    metadata.alternates.emplace_back(section_, /*subpage=*/absl::nullopt);
+    metadata.alternates.emplace_back(section_, /*subpage=*/std::nullopt);
   }
 
   void RegisterNestedAltSetting(mojom::Setting setting,
@@ -198,7 +198,7 @@ mojom::SearchResultPtr Hierarchy::SubpageMetadata::ToSearchResult(
 }
 
 Hierarchy::SettingMetadata::SettingMetadata(mojom::Section primary_section)
-    : primary(primary_section, /*subpage=*/absl::nullopt) {}
+    : primary(primary_section, /*subpage=*/std::nullopt) {}
 
 Hierarchy::SettingMetadata::~SettingMetadata() = default;
 

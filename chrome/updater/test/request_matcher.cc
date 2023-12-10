@@ -4,6 +4,7 @@
 
 #include "chrome/updater/test/request_matcher.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,7 +21,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace updater::test::request {
@@ -98,8 +98,8 @@ Matcher GetContentMatcher(
 
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
-    const bool is_match = [&scope, &request]() {
-      const absl::optional<base::Value> doc =
+    const bool is_match = [&scope, &request] {
+      const std::optional<base::Value> doc =
           base::JSONReader::Read(request.decoded_content);
       if (!doc || !doc->is_dict()) {
         return false;
@@ -109,7 +109,7 @@ Matcher GetScopeMatcher(UpdaterScope scope) {
       if (!object_request) {
         return false;
       }
-      absl::optional<bool> ismachine = object_request->FindBool("ismachine");
+      std::optional<bool> ismachine = object_request->FindBool("ismachine");
       if (!ismachine.has_value()) {
         return false;
       }
@@ -132,8 +132,8 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
                               UpdateService::Priority priority) {
   return base::BindLambdaForTesting(
       [app_id, priority](const HttpRequest& request) {
-        const bool is_match = [&app_id, priority, &request]() {
-          const absl::optional<base::Value> doc =
+        const bool is_match = [&app_id, priority, &request] {
+          const std::optional<base::Value> doc =
               base::JSONReader::Read(request.decoded_content);
           if (!doc || !doc->is_dict()) {
             return false;

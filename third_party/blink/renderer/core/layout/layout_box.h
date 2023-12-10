@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -44,16 +45,17 @@
 
 namespace blink {
 
+class BlockBreakToken;
+class ColumnSpannerPath;
+class ConstraintSpace;
 class CustomLayoutChild;
+class EarlyBreak;
 class LayoutMultiColumnSpannerPlaceholder;
-class NGBlockBreakToken;
-class NGColumnSpannerPath;
-class NGConstraintSpace;
-class NGEarlyBreak;
-class NGLayoutResult;
+class LayoutResult;
+class MeasureCache;
 class ShapeOutsideInfo;
 class WritingModeConverter;
-enum class NGLayoutCacheStatus;
+enum class LayoutCacheStatus;
 struct FragmentGeometry;
 struct NonOverflowingScrollRange;
 struct PaintInfo;
@@ -128,8 +130,8 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 // we remove the scrollbars from the box.
 //
 // The presence of scrollbars is determined by the 'overflow' property and can
-// be conditioned on having layout overflow (see OverflowModel for more details
-// on how we track overflow).
+// be conditioned on having scrollable overflow (see OverflowModel for more
+// details on how we track overflow).
 //
 // There are 2 types of scrollbars:
 // - non-overlay scrollbars take space from the content box.
@@ -216,7 +218,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Use this with caution! No type checking is done!
   LayoutBox* FirstChildBox() const;
-  LayoutBox* FirstInFlowChildBox() const;
   LayoutBox* LastChildBox() const;
 
   LayoutUnit LogicalLeft() const;
@@ -281,8 +282,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
   // PhysicalLocation() is not the correct paint offset.
-  gfx::Rect PixelSnappedBorderBoxRect() const {
+  gfx::Rect DeprecatedPixelSnappedBorderBoxRect() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled());
     return gfx::Rect(PixelSnappedBorderBoxSize(PhysicalLocation()));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
@@ -290,10 +292,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   gfx::Size PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
     NOT_DESTROYED();
     return ToPixelSnappedSize(Size().ToLayoutSize(), offset.ToLayoutPoint());
-  }
-  gfx::Rect BorderBoundingBox() const final {
-    NOT_DESTROYED();
-    return PixelSnappedBorderBoxRect();
   }
 
   // The content area of the box (excludes padding - and intrinsic padding for
@@ -340,13 +338,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const override;
+                       OutlineType) const override;
 
   // Use this with caution! No type checking is done!
   LayoutBox* PreviousSiblingBox() const;
-  LayoutBox* PreviousInFlowSiblingBox() const;
   LayoutBox* NextSiblingBox() const;
-  LayoutBox* NextInFlowSiblingBox() const;
   LayoutBox* ParentBox() const;
 
   // Return the previous sibling column set or spanner placeholder. Only to be
@@ -362,11 +358,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return PhysicalPaddingBoxRect();
   }
-  PhysicalRect PhysicalLayoutOverflowRect() const {
+  PhysicalRect ScrollableOverflowRect() const {
     NOT_DESTROYED();
     DCHECK(!IsLayoutMultiColumnSet());
-    return LayoutOverflowIsSet()
-               ? overflow_->layout_overflow->LayoutOverflowRect()
+    return ScrollableOverflowIsSet()
+               ? overflow_->scrollable_overflow->ScrollableOverflowRect()
                : NoOverflowRect();
   }
 
@@ -404,8 +400,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool HasTopOverflow() const;
   virtual bool HasLeftOverflow() const;
 
-  // Sets the layout-overflow from the current set of layout-results.
-  void SetLayoutOverflowFromLayoutResults();
+  // Sets the scrollable-overflow from the current set of layout-results.
+  void SetScrollableOverflowFromLayoutResults();
 
   void AddSelfVisualOverflow(const PhysicalRect& r);
   void AddContentsVisualOverflow(const PhysicalRect& r);
@@ -413,7 +409,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
 
-  void ClearLayoutOverflow();
+  void ClearScrollableOverflow();
   void ClearVisualOverflow();
 
   bool CanUseFragmentsForVisualOverflow() const;
@@ -519,16 +515,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool UsesOverlayScrollbars() const;
 
-  DISABLE_CFI_PERF LayoutUnit LogicalTopScrollbarHeight() const {
-    NOT_DESTROYED();
-    if (CanSkipComputeScrollbars())
-      return LayoutUnit();
-    else if (HasFlippedBlocksWritingMode())
-      return ComputeScrollbarsInternal(kClampToContentBox).right;
-    else
-      return ComputeScrollbarsInternal(kClampToContentBox).top;
-  }
-
   // Physical client rect (a.k.a. PhysicalPaddingBoxRect(), defined by
   // ClientLeft, ClientTop, ClientWidth and ClientHeight) represents the
   // interior of an object excluding borders and scrollbars.
@@ -564,10 +550,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return IsHorizontalWritingMode() ? ClientHeight() : ClientWidth();
   }
 
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedClientWidth() const;
-  int PixelSnappedClientHeight() const;
-
   LayoutUnit ClientWidthWithTableSpecialBehavior() const;
   LayoutUnit ClientHeightWithTableSpecialBehavior() const;
 
@@ -582,9 +564,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(cathiechen): We should do the same with ScrollWidth|Height .
   virtual LayoutUnit ScrollWidth() const;
   virtual LayoutUnit ScrollHeight() const;
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedScrollWidth() const;
-  int PixelSnappedScrollHeight() const;
 
   PhysicalBoxStrut MarginBoxOutsets() const;
   LayoutUnit MarginTop() const override {
@@ -642,9 +621,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
-  void InvalidateItems(const NGLayoutResult&);
+  static void InvalidateItems(const LayoutResult&);
 
-  void SetCachedLayoutResult(const NGLayoutResult*, wtf_size_t index);
+  void AddMeasureLayoutResult(const LayoutResult*);
+  void SetCachedLayoutResult(const LayoutResult*, wtf_size_t index);
 
   // Store one layout result (with its physical fragment) at the specified
   // index.
@@ -664,17 +644,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // until we're done, as deleting entries will trigger unnecessary paint
   // invalidation. With any luck, we'll end up with the same number of results
   // as the last time, so that paint invalidation might not be necessary.
-  void SetLayoutResult(const NGLayoutResult*, wtf_size_t index);
+  void SetLayoutResult(const LayoutResult*, wtf_size_t index);
 
   // Append one layout result at the end.
-  void AppendLayoutResult(const NGLayoutResult*);
+  void AppendLayoutResult(const LayoutResult*);
 
   // Replace a specific layout result. Also perform finalization if it's the
   // last result (see FinalizeLayoutResults()), but this function does not
   // delete any (old) results following this one. Callers should generally use
   // SetLayoutResult() instead of this one, unless they have good reasons not
   // to.
-  void ReplaceLayoutResult(const NGLayoutResult*, wtf_size_t index);
+  void ReplaceLayoutResult(const LayoutResult*, wtf_size_t index);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
 
@@ -684,21 +664,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void RebuildFragmentTreeSpine();
 
-  // Call when NG fragment count or size changed. Only call if the fragment
-  // count is or was larger than 1.
-  void FragmentCountOrSizeDidChange() {
-    NOT_DESTROYED();
-    // The fragment count may change, even if the total block-size remains the
-    // same (if the fragmentainer block-size has changed, for instance).
-    SetShouldDoFullPaintInvalidation();
-  }
-
-  const NGLayoutResult* GetCachedLayoutResult(const NGBlockBreakToken*) const;
-  const NGLayoutResult* GetCachedMeasureResult() const;
+  const LayoutResult* GetCachedLayoutResult(const BlockBreakToken*) const;
+  const LayoutResult* GetCachedMeasureResult(
+      const ConstraintSpace&,
+      absl::optional<FragmentGeometry>* fragment_geometry) const;
 
   // Call in situations where we know that there's at most one fragment. A
   // DCHECK will fail if there are multiple fragments.
-  const NGLayoutResult* GetSingleCachedLayoutResult() const;
+  const LayoutResult* GetSingleCachedLayoutResult() const;
+
+  // Retrieves the last (retrieved or set) measure LayoutResult, for
+  // unit-testing purposes only.
+  const LayoutResult* GetSingleCachedMeasureResultForTesting() const;
 
   // Returns the last layout result for this block flow with the given
   // constraint space and break token, or null if it is not up-to-date or
@@ -709,21 +686,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   //
   // |out_cache_status| indicates what type of layout pass is required.
   //
-  // TODO(ikilpatrick): Move this function into NGBlockNode.
-  const NGLayoutResult* CachedLayoutResult(
-      const NGConstraintSpace&,
-      const NGBlockBreakToken*,
-      const NGEarlyBreak*,
-      const NGColumnSpannerPath*,
+  // TODO(ikilpatrick): Move this function into BlockNode.
+  const LayoutResult* CachedLayoutResult(
+      const ConstraintSpace&,
+      const BlockBreakToken*,
+      const EarlyBreak*,
+      const ColumnSpannerPath*,
       absl::optional<FragmentGeometry>* initial_fragment_geometry,
-      NGLayoutCacheStatus* out_cache_status);
+      LayoutCacheStatus* out_cache_status);
 
-  using NGLayoutResultList = HeapVector<Member<const NGLayoutResult>, 1>;
-  class NGPhysicalFragmentList {
+  using LayoutResultList = HeapVector<Member<const LayoutResult>, 1>;
+  class PhysicalFragmentList {
     STACK_ALLOCATED();
 
    public:
-    explicit NGPhysicalFragmentList(const NGLayoutResultList& layout_results)
+    explicit PhysicalFragmentList(const LayoutResultList& layout_results)
         : layout_results_(layout_results) {}
 
     wtf_size_t Size() const { return layout_results_.size(); }
@@ -735,21 +712,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     }
     bool SlowHasFragmentItems() const;
 
-    wtf_size_t IndexOf(const NGPhysicalBoxFragment& fragment) const;
-    bool Contains(const NGPhysicalBoxFragment& fragment) const;
+    wtf_size_t IndexOf(const PhysicalBoxFragment& fragment) const;
+    bool Contains(const PhysicalBoxFragment& fragment) const;
 
     class CORE_EXPORT Iterator {
      public:
       using iterator_category = std::forward_iterator_tag;
-      using value_type = NGPhysicalBoxFragment;
+      using value_type = PhysicalBoxFragment;
       using difference_type = std::ptrdiff_t;
-      using pointer = NGPhysicalBoxFragment*;
-      using reference = NGPhysicalBoxFragment&;
+      using pointer = PhysicalBoxFragment*;
+      using reference = PhysicalBoxFragment&;
 
-      explicit Iterator(const NGLayoutResultList::const_iterator& iterator)
+      explicit Iterator(const LayoutResultList::const_iterator& iterator)
           : iterator_(iterator) {}
 
-      const NGPhysicalBoxFragment& operator*() const;
+      const PhysicalBoxFragment& operator*() const;
 
       Iterator& operator++() {
         ++iterator_;
@@ -769,31 +746,31 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       }
 
      private:
-      NGLayoutResultList::const_iterator iterator_;
+      LayoutResultList::const_iterator iterator_;
     };
 
     Iterator begin() const { return Iterator(layout_results_.begin()); }
     Iterator end() const { return Iterator(layout_results_.end()); }
 
-    const NGPhysicalBoxFragment& front() const;
-    const NGPhysicalBoxFragment& back() const;
+    const PhysicalBoxFragment& front() const;
+    const PhysicalBoxFragment& back() const;
 
    private:
-    const NGLayoutResultList& layout_results_;
+    const LayoutResultList& layout_results_;
   };
 
-  NGPhysicalFragmentList PhysicalFragments() const {
+  PhysicalFragmentList PhysicalFragments() const {
     NOT_DESTROYED();
-    return NGPhysicalFragmentList(layout_results_);
+    return PhysicalFragmentList(layout_results_);
   }
-  const NGLayoutResult* GetLayoutResult(wtf_size_t i) const;
-  const NGLayoutResultList& GetLayoutResults() const {
+  const LayoutResult* GetLayoutResult(wtf_size_t i) const;
+  const LayoutResultList& GetLayoutResults() const {
     NOT_DESTROYED();
     return layout_results_;
   }
-  const NGPhysicalBoxFragment* GetPhysicalFragment(wtf_size_t i) const;
+  const PhysicalBoxFragment* GetPhysicalFragment(wtf_size_t i) const;
   const FragmentData* FragmentDataFromPhysicalFragment(
-      const NGPhysicalBoxFragment&) const;
+      const PhysicalBoxFragment&) const;
   wtf_size_t PhysicalFragmentCount() const {
     NOT_DESTROYED();
     return layout_results_.size();
@@ -883,19 +860,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool HasScrollableOverflowX() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled()) {
-      return ScrollsOverflowX() && ScrollWidth() != ClientWidth();
-    }
-    return ScrollsOverflowX() &&
-           PixelSnappedScrollWidth() != PixelSnappedClientWidth();
+    return ScrollsOverflowX() && ScrollWidth() != ClientWidth();
   }
   bool HasScrollableOverflowY() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled()) {
-      return ScrollsOverflowY() && ScrollHeight() != ClientHeight();
-    }
-    return ScrollsOverflowY() &&
-           PixelSnappedScrollHeight() != PixelSnappedClientHeight();
+    return ScrollsOverflowY() && ScrollHeight() != ClientHeight();
   }
   bool ScrollsOverflowX() const {
     NOT_DESTROYED();
@@ -1002,13 +971,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;
 
-  void DeprecatedFlipForWritingMode(DeprecatedLayoutRect& rect) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return;
-    rect = FlipForWritingMode(rect).ToLayoutRect();
-  }
-
   // Passing |flipped_blocks_container| causes flipped-block flipping w.r.t.
   // that container, or LocationContainer() otherwise.
   PhysicalOffset PhysicalLocation(
@@ -1030,9 +992,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return VisualOverflowIsSet();
   }
-  bool HasLayoutOverflow() const {
+  bool HasScrollableOverflow() const {
     NOT_DESTROYED();
-    return LayoutOverflowIsSet();
+    return ScrollableOverflowIsSet();
   }
 
   // See README.md for an explanation of scroll origin.
@@ -1127,7 +1089,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void SavePreviousOverflowData();
     void ClearPreviousOverflowData() {
       DCHECK(!GetLayoutBox().HasVisualOverflow());
-      DCHECK(!GetLayoutBox().HasLayoutOverflow());
+      DCHECK(!GetLayoutBox().HasScrollableOverflow());
       GetLayoutBox().overflow_ = nullptr;
     }
     void SavePreviousContentBoxRect() {
@@ -1182,11 +1144,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                      ->previous_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
-  PhysicalRect PreviousPhysicalLayoutOverflowRect() const {
+  PhysicalRect PreviousScrollableOverflowRect() const {
     NOT_DESTROYED();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
-                     ->previous_physical_layout_overflow_rect
+                     ->previous_scrollable_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
   PhysicalRect PreviousSelfVisualOverflowRect() const {
@@ -1197,43 +1159,78 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
 
-  // Returns cached intrinsic logical widths for this layout box.
-  MinMaxSizes CachedIntrinsicLogicalWidths() const {
+  // Returns the cached intrinsic logical widths when no children depend on the
+  // block constraints.
+  MinMaxSizesResult CachedIndefiniteIntrinsicLogicalWidths() const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
-    return intrinsic_logical_widths_;
+    DCHECK(!IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
+    return {intrinsic_logical_widths_,
+            IntrinsicLogicalWidthsDependsOnBlockConstraints()};
   }
 
-  // LayoutNG can use this function to update our cache of intrinsic logical
-  // widths when the layout object is managed by NG. Should not be called by
-  // regular code.
-  //
-  // Also clears the "dirty" flag for the intrinsic logical widths.
-  void SetIntrinsicLogicalWidthsFromNG(
-      LayoutUnit intrinsic_logical_widths_initial_block_size,
-      bool depends_on_block_constraints,
-      bool child_depends_on_block_constraints,
-      const MinMaxSizes& sizes) {
+  // Returns the cached intrinsic logical widths if the initial block-size
+  // matches.
+  absl::optional<MinMaxSizesResult> CachedIntrinsicLogicalWidths(
+      LayoutUnit initial_block_size) const {
     NOT_DESTROYED();
-    intrinsic_logical_widths_initial_block_size_ =
-        intrinsic_logical_widths_initial_block_size;
-    SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
-        depends_on_block_constraints);
-    SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
-        child_depends_on_block_constraints);
-    intrinsic_logical_widths_ = sizes;
+    DCHECK(!IntrinsicLogicalWidthsDirty());
+    if (RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()) {
+      if (initial_block_size == kIndefiniteSize) {
+        if (IndefiniteIntrinsicLogicalWidthsDirty()) {
+          return absl::nullopt;
+        }
+        return MinMaxSizesResult(
+            intrinsic_logical_widths_,
+            IntrinsicLogicalWidthsDependsOnBlockConstraints());
+      }
+      if (min_max_sizes_cache_) {
+        if (DefiniteIntrinsicLogicalWidthsDirty()) {
+          return absl::nullopt;
+        }
+        return min_max_sizes_cache_->Find(initial_block_size);
+      }
+    } else {
+      if (initial_block_size == intrinsic_logical_widths_initial_block_size_) {
+        return MinMaxSizesResult(
+            intrinsic_logical_widths_,
+            IntrinsicLogicalWidthsDependsOnBlockConstraints());
+      }
+    }
+    return absl::nullopt;
+  }
+
+  // Sets the min/max sizes for this box.
+  void SetIntrinsicLogicalWidths(LayoutUnit initial_block_size,
+                                 bool depends_on_block_constraints,
+                                 bool child_depends_on_block_constraints,
+                                 const MinMaxSizes& sizes) {
+    NOT_DESTROYED();
+    // Write to the "indefinite" cache slot if:
+    //  - If the initial block-size is indefinite.
+    //  - If we don't have any children which depend on the initial block-size
+    //    (it can change and we wouldn't give a different answer).
+    if (!RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled() ||
+        initial_block_size == kIndefiniteSize ||
+        !child_depends_on_block_constraints) {
+      intrinsic_logical_widths_ = sizes;
+      intrinsic_logical_widths_initial_block_size_ = initial_block_size;
+      SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
+          depends_on_block_constraints);
+      SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
+          child_depends_on_block_constraints);
+      SetIndefiniteIntrinsicLogicalWidthsDirty(false);
+    } else {
+      if (!min_max_sizes_cache_) {
+        min_max_sizes_cache_ = MakeGarbageCollected<MinMaxSizesCache>();
+      } else if (DefiniteIntrinsicLogicalWidthsDirty()) {
+        min_max_sizes_cache_->Clear();
+      }
+      min_max_sizes_cache_->Add(sizes, initial_block_size,
+                                depends_on_block_constraints);
+      SetDefiniteIntrinsicLogicalWidthsDirty(false);
+    }
     ClearIntrinsicLogicalWidthsDirty();
-  }
-
-  // Returns what initial block-size was used in the intrinsic logical widths
-  // phase. This is used for caching purposes when %-block-size children with
-  // aspect-ratios are present.
-  //
-  // For non-LayoutNG code this is always LayoutUnit::Min(), and should not be
-  // used for caching purposes.
-  LayoutUnit IntrinsicLogicalWidthsInitialBlockSize() const {
-    NOT_DESTROYED();
-    return intrinsic_logical_widths_initial_block_size_;
   }
 
   // Make it public.
@@ -1371,14 +1368,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns the CSS 'direction' property value when it is not atomic inline.
   TextDirection ResolvedDirection() const;
 
-  // RecalcLayoutOverflow implementations for LayoutNG.
-  RecalcLayoutOverflowResult RecalcLayoutOverflowNG();
-  RecalcLayoutOverflowResult RecalcChildLayoutOverflowNG();
+  // RecalcScrollableOverflow implementations for LayoutNG.
+  RecalcScrollableOverflowResult RecalcScrollableOverflowNG();
+  RecalcScrollableOverflowResult RecalcChildScrollableOverflowNG();
 
  private:
-  inline bool LayoutOverflowIsSet() const {
+  inline bool ScrollableOverflowIsSet() const {
     NOT_DESTROYED();
-    return overflow_ && overflow_->layout_overflow;
+    return overflow_ && overflow_->scrollable_overflow;
   }
 #if DCHECK_IS_ON()
   void CheckIsVisualOverflowComputed() const;
@@ -1494,9 +1491,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  protected:
   MinMaxSizes intrinsic_logical_widths_;
   LayoutUnit intrinsic_logical_widths_initial_block_size_;
+  Member<MinMaxSizesCache> min_max_sizes_cache_;
 
-  Member<const NGLayoutResult> measure_result_;
-  NGLayoutResultList layout_results_;
+  Member<const LayoutResult> measure_result_;
+  Member<MeasureCache> measure_cache_;
+  LayoutResultList layout_results_;
 
   // LayoutBoxUtils is used for the LayoutNG code querying protected methods on
   // this class, e.g. determining the static-position of OOF elements.
@@ -1524,33 +1523,12 @@ inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
   return To<LayoutBox>(PreviousSibling());
 }
 
-inline LayoutBox* LayoutBox::PreviousInFlowSiblingBox() const {
-  LayoutBox* previous = PreviousSiblingBox();
-  while (previous && previous->IsOutOfFlowPositioned())
-    previous = previous->PreviousSiblingBox();
-  return previous;
-}
-
 inline LayoutBox* LayoutBox::NextSiblingBox() const {
   return To<LayoutBox>(NextSibling());
 }
 
-inline LayoutBox* LayoutBox::NextInFlowSiblingBox() const {
-  LayoutBox* next = NextSiblingBox();
-  while (next && next->IsOutOfFlowPositioned())
-    next = next->NextSiblingBox();
-  return next;
-}
-
 inline LayoutBox* LayoutBox::ParentBox() const {
   return To<LayoutBox>(Parent());
-}
-
-inline LayoutBox* LayoutBox::FirstInFlowChildBox() const {
-  LayoutBox* first = FirstChildBox();
-  return (first && first->IsOutOfFlowPositioned())
-             ? first->NextInFlowSiblingBox()
-             : first;
 }
 
 inline LayoutBox* LayoutBox::FirstChildBox() const {

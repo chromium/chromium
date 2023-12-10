@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   port->ReceiveMessage(CallbackToFitFunction(response.GetCallback()));
   ASSERT_TRUE(response.Wait());
 
-  absl::optional<std::string> response_string =
+  std::optional<std::string> response_string =
       base::StringFromMemBuffer(response.Get().data());
   ASSERT_TRUE(response_string.has_value());
   EXPECT_EQ("ack ping", *response_string);

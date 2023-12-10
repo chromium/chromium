@@ -120,7 +120,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
             [](PinStorageCryptohomeUnitTest* self, bool* res,
                base::OnceClosure closure,
                std::unique_ptr<UserContext> user_context,
-               absl::optional<AuthenticationError> error) {
+               std::optional<AuthenticationError> error) {
               *res = !error.has_value();
               std::move(closure).Run();
             },
@@ -136,12 +136,12 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
 
     bool res;
     base::RunLoop loop;
-    storage_->SetPin(std::move(user_context_), pin, absl::nullopt,
+    storage_->SetPin(std::move(user_context_), pin, std::nullopt,
                      base::BindOnce(
                          [](PinStorageCryptohomeUnitTest* self, bool* res,
                             base::OnceClosure closure,
                             std::unique_ptr<UserContext> user_context,
-                            absl::optional<AuthenticationError> error) {
+                            std::optional<AuthenticationError> error) {
                            self->user_context_ = std::move(user_context);
                            *res = !error.has_value();
                            std::move(closure).Run();
@@ -166,7 +166,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         request,
         base::BindOnce(
             [](base::OnceClosure closure,
-               absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+               std::optional<::user_data_auth::AddAuthFactorReply> reply) {
               std::move(closure).Run();
             },
             run_loop.QuitClosure()));
@@ -188,7 +188,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         request,
         base::BindOnce(
             [](base::OnceClosure closure,
-               absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+               std::optional<::user_data_auth::AddAuthFactorReply> reply) {
               std::move(closure).Run();
             },
             run_loop.QuitClosure()));
@@ -211,7 +211,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
                             [](PinStorageCryptohomeUnitTest* self, bool* res,
                                base::OnceClosure closure,
                                std::unique_ptr<UserContext> user_context,
-                               absl::optional<AuthenticationError> error) {
+                               std::optional<AuthenticationError> error) {
                               self->user_context_ = std::move(user_context);
                               *res = !error.has_value();
                               std::move(closure).Run();
@@ -280,30 +280,6 @@ TEST_F(PinStorageCryptohomeUnitTest, AuthLockedTest) {
 
   ASSERT_FALSE(CanAuthenticate());
   ASSERT_TRUE(IsPinSet());
-}
-
-// Verifies the `unlock_webauthn_secret` parameter is set correctly when
-// TryAuthenticate with different purposes.
-TEST_F(PinStorageCryptohomeUnitTest, UnlockWebAuthnSecret) {
-  ASSERT_TRUE(SetPin(kDummyPin));
-  ASSERT_TRUE(IsPinSet());
-  ASSERT_TRUE(CanAuthenticate());
-
-  // Only calling TryAuthenticate with purpose Purpose::kWebAuthn should set the
-  // `unlock_webauthn_secret` parameter to true.
-
-  ASSERT_TRUE(TryAuthenticate(kDummyPin, Purpose::kAny));
-  EXPECT_FALSE(
-      FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
-
-  test_api_->EnablePinByPolicy(Purpose::kWebAuthn);
-  ASSERT_TRUE(TryAuthenticate(kDummyPin, Purpose::kWebAuthn));
-  EXPECT_TRUE(FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
-
-  test_api_->EnablePinByPolicy(Purpose::kUnlock);
-  ASSERT_TRUE(TryAuthenticate(kDummyPin, Purpose::kUnlock));
-  EXPECT_FALSE(
-      FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
 }
 
 }  // namespace ash::quick_unlock

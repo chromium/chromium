@@ -58,7 +58,7 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   explicit MetricsProviderDesktop(PrefService* local_state);
 
   // BatterySaverModeManager::Observer:
-  void OnBatterySaverModeChanged(bool is_active) override;
+  void OnBatterySaverActiveChanged(bool is_active) override;
 
   void OnHighEfficiencyPrefChanged();
   void OnTuningModesChanged();

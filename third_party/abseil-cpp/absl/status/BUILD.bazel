@@ -53,6 +53,7 @@ cc_library(
         "//absl/base:atomic_hook",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:no_destructor",
         "//absl/base:raw_logging_internal",
         "//absl/base:strerror",
         "//absl/container:inlined_vector",

@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_BRIDGE_IMPL_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_BRIDGE_IMPL_H_
 
+#include <memory>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
-#include "components/android_autofill/browser/form_field_data_android.h"
 
 namespace autofill {
+
+class FormFieldDataAndroid;
 
 class FormDataAndroidBridgeImpl : public FormDataAndroidBridge {
  public:
@@ -23,6 +27,7 @@ class FormDataAndroidBridgeImpl : public FormDataAndroidBridge {
   // `FormData`.
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaPeer(
       const FormData& form,
+      SessionId session_id,
       base::span<const std::unique_ptr<FormFieldDataAndroid>> fields_android)
       override;
 

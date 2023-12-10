@@ -31,6 +31,7 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,7 @@ class RequestTestExtraData : public WebURLRequestExtraData {
 }  // anonymous namespace
 
 TEST(WebURLRequestExtraDataTest, ExtraData) {
+  test::TaskEnvironment task_environment;
   bool alive = false;
   {
     WebURLRequest url_request;

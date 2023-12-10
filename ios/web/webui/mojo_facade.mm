@@ -94,7 +94,7 @@ void MojoFacade::HandleMojoBindInterface(base::Value::Dict args) {
   const std::string* interface_name = args.FindString("interfaceName");
   CHECK(interface_name);
 
-  absl::optional<int> pipe_id = args.FindInt("requestHandle");
+  std::optional<int> pipe_id = args.FindInt("requestHandle");
   CHECK(pipe_id.has_value());
 
   mojo::ScopedMessagePipeHandle pipe = TakePipeFromId(*pipe_id);
@@ -104,7 +104,7 @@ void MojoFacade::HandleMojoBindInterface(base::Value::Dict args) {
 }
 
 void MojoFacade::HandleMojoHandleClose(base::Value::Dict args) {
-  absl::optional<int> pipe_id = args.FindInt("handle");
+  std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
 
   // Will close once out of scope.
@@ -121,7 +121,7 @@ base::Value MojoFacade::HandleMojoCreateMessagePipe(base::Value::Dict args) {
 }
 
 base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value::Dict args) {
-  absl::optional<int> pipe_id = args.FindInt("handle");
+  std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
   mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
   CHECK(pipe.is_valid());
@@ -139,7 +139,7 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value::Dict args) {
     int one_handle = (*handles_list)[i].GetInt();
     handles[i] = TakePipeFromId(one_handle);
   }
-  absl::optional<std::vector<uint8_t>> bytes = base::Base64Decode(*buffer);
+  std::optional<std::vector<uint8_t>> bytes = base::Base64Decode(*buffer);
   if (!bytes) {
     return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
   }
@@ -190,11 +190,11 @@ base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value::Dict args) {
 }
 
 base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
-  absl::optional<int> pipe_id = args.FindInt("handle");
+  std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
-  absl::optional<int> signals = args.FindInt("signals");
+  std::optional<int> signals = args.FindInt("signals");
   CHECK(signals.has_value());
-  absl::optional<int> callback_id = args.FindInt("callbackId");
+  std::optional<int> callback_id = args.FindInt("callbackId");
   CHECK(callback_id.has_value());
 
   mojo::SimpleWatcher::ReadyCallback callback = base::BindRepeating(
@@ -220,7 +220,7 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
 }
 
 void MojoFacade::HandleMojoWatcherCancel(base::Value::Dict args) {
-  absl::optional<int> watch_id = args.FindInt("watchId");
+  std::optional<int> watch_id = args.FindInt("watchId");
   CHECK(watch_id.has_value());
   watchers_.erase(*watch_id);
 }

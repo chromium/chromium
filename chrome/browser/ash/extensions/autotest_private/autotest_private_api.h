@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_AUTOTEST_PRIVATE_AUTOTEST_PRIVATE_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
@@ -31,7 +33,6 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/display/display.h"
@@ -744,7 +745,7 @@ class AutotestPrivateSetAssistantEnabledFunction
   // will respond with an error.
   void Timeout();
 
-  absl::optional<bool> enabled_;
+  std::optional<bool> enabled_;
   base::OneShotTimer timeout_timer_;
 };
 
@@ -775,7 +776,7 @@ class AutotestPrivateSendAssistantTextQueryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   // Called when the interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const absl::optional<std::string>& error);
+  void OnInteractionFinishedCallback(const std::optional<std::string>& error);
 
   // Called when Assistant service fails to respond in a certain amount of
   // time. We will respond with an error.
@@ -802,7 +803,7 @@ class AutotestPrivateWaitForAssistantQueryStatusFunction
   ResponseAction Run() override;
 
   // Called when the current interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const absl::optional<std::string>& error);
+  void OnInteractionFinishedCallback(const std::optional<std::string>& error);
 
   // Called when Assistant service fails to respond in a certain amount of
   // time. We will respond with an error.
@@ -832,6 +833,17 @@ class AutotestPrivateSetAllowedPrefFunction : public ExtensionFunction {
 
  private:
   ~AutotestPrivateSetAllowedPrefFunction() override;
+  ResponseAction Run() override;
+};
+
+// Clear user pref value in the pref tree.
+class AutotestPrivateClearAllowedPrefFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.clearAllowedPref",
+                             AUTOTESTPRIVATE_CLEARALLOWEDPREF)
+
+ private:
+  ~AutotestPrivateClearAllowedPrefFunction() override;
   ResponseAction Run() override;
 };
 
@@ -1112,11 +1124,6 @@ class AutotestPrivateArcAppTracingStopAndAnalyzeFunction
  private:
   ~AutotestPrivateArcAppTracingStopAndAnalyzeFunction() override;
   ResponseAction Run() override;
-
-  void OnTracingResult(bool success,
-                       double fps,
-                       double commit_deviation,
-                       double render_quality);
 };
 
 class AutotestPrivateSwapWindowsInSplitViewFunction : public ExtensionFunction {
@@ -1151,10 +1158,10 @@ class AutotestPrivateWaitForDisplayRotationFunction
   ~AutotestPrivateWaitForDisplayRotationFunction() override;
   ResponseAction Run() override;
 
-  absl::optional<ResponseValue> CheckScreenRotationAnimation();
+  std::optional<ResponseValue> CheckScreenRotationAnimation();
 
   int64_t display_id_ = display::kInvalidDisplayId;
-  absl::optional<display::Display::Rotation> target_rotation_;
+  std::optional<display::Display::Rotation> target_rotation_;
   // A reference to keep the instance alive while waiting for rotation.
   scoped_refptr<ExtensionFunction> self_;
 };
@@ -1695,6 +1702,18 @@ class AutotestPrivateIsInputMethodReadyForTestingFunction
 
  private:
   ~AutotestPrivateIsInputMethodReadyForTestingFunction() override;
+  ResponseAction Run() override;
+};
+
+class AutotestPrivateOverrideOrcaResponseForTestingFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateOverrideOrcaResponseForTestingFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.overrideOrcaResponseForTesting",
+                             AUTOTESTPRIVATE_OVERRIDEORCARESPONSE)
+
+ private:
+  ~AutotestPrivateOverrideOrcaResponseForTestingFunction() override;
   ResponseAction Run() override;
 };
 

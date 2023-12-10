@@ -83,4 +83,4 @@ class ProfileKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
   ProfileSelections profile_selections_;
 };
 
-#endif  // !CHROME_BROWSER_PROFILES_PROFILE_KEYED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_PROFILES_PROFILE_KEYED_SERVICE_FACTORY_H_

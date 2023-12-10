@@ -1,0 +1,15 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "ffmpeg_branding": "Chrome",
+    "is_component_build": false,
+    "is_debug": false,
+    "ozone_auto_platforms": false,
+    "ozone_platform": "wayland",
+    "ozone_platform_headless": true,
+    "ozone_platform_wayland": true,
+    "proprietary_codecs": true,
+    "use_bundled_weston": true,
+    "use_remoteexec": true
+  }
+}

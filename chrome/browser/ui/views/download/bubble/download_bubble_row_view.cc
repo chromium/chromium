@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -103,9 +105,10 @@ class DownloadBubbleTransparentButton : public views::Button {
 
   explicit DownloadBubbleTransparentButton(PressedCallback callback,
                                            DownloadBubbleRowView* row_view)
-      : Button(callback), row_view_(row_view) {
+      : Button(std::move(callback)), row_view_(row_view) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetInstallFocusRingOnFocus(false);
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   }
   ~DownloadBubbleTransparentButton() override = default;
 
@@ -275,8 +278,8 @@ void DownloadBubbleRowView::SetIcon() {
   }
 
   // For downloads in incognito mode.
-  if (bubble_controller_ &&
-      bubble_controller_->ShouldShowIncognitoIcon(info_->model())) {
+  if (info_->model()->profile() &&
+      info_->model()->profile()->IsIncognitoProfile()) {
     if (last_overridden_icon_ == &kIncognitoIcon) {
       return;
     }
@@ -288,8 +291,8 @@ void DownloadBubbleRowView::SetIcon() {
   }
 
   // For downloads in guest sessions.
-  if (bubble_controller_ &&
-      bubble_controller_->ShouldShowGuestIcon(info_->model())) {
+  if (info_->model()->profile() &&
+      info_->model()->profile()->IsGuestSession()) {
     if (last_overridden_icon_ == &kUserAccountAvatarIcon) {
       return;
     }
@@ -510,9 +513,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                                     gfx::Size(kNumColumns, 1));
   progress_bar_holder_->SetProperty(views::kTableHorizAlignKey,
                                     views::LayoutAlignment::kStretch);
-  progress_bar_ =
-      progress_bar_holder_->AddChildView(std::make_unique<views::ProgressBar>(
-          /*preferred_height=*/kProgressBarHeight));
+  progress_bar_ = progress_bar_holder_->AddChildView(
+      std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_CONTROL_VERTICAL),

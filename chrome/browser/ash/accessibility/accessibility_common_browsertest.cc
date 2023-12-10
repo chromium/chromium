@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/features/feature_channel.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace ash {
 
@@ -24,13 +26,10 @@ class AccessibilityCommonTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<version_info::Channel> {
  public:
-  bool DoesComponentExtensionExist(const std::string& id) {
-    return extensions::ExtensionSystem::Get(
-               AccessibilityManager::Get()->profile())
-        ->extension_service()
-        ->component_loader()
-        ->Exists(id);
-  }
+  AccessibilityCommonTest() = default;
+  ~AccessibilityCommonTest() override = default;
+  AccessibilityCommonTest(const AccessibilityCommonTest&) = delete;
+  AccessibilityCommonTest& operator=(const AccessibilityCommonTest&) = delete;
 
   void SetUpOnMainThread() override {
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
@@ -43,8 +42,13 @@ class AccessibilityCommonTest
         << console_observer_->GetErrorOrWarningAt(0);
   }
 
- protected:
-  AccessibilityCommonTest() = default;
+  bool DoesComponentExtensionExist(const std::string& id) {
+    return extensions::ExtensionSystem::Get(
+               AccessibilityManager::Get()->profile())
+        ->extension_service()
+        ->component_loader()
+        ->Exists(id);
+  }
 
  private:
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
@@ -117,5 +121,64 @@ INSTANTIATE_TEST_SUITE_P(AllChannels,
                                          version_info::Channel::DEV,
                                          version_info::Channel::CANARY,
                                          version_info::Channel::DEFAULT));
+
+class AccessibilityCommonFazeGazeTest : public AccessibilityCommonTest {
+ public:
+  AccessibilityCommonFazeGazeTest() = default;
+  ~AccessibilityCommonFazeGazeTest() override = default;
+  AccessibilityCommonFazeGazeTest(const AccessibilityCommonFazeGazeTest&) =
+      delete;
+  AccessibilityCommonFazeGazeTest& operator=(
+      const AccessibilityCommonFazeGazeTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(features::kAccessibilityFaceGaze);
+    AccessibilityCommonTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AllChannels,
+                         AccessibilityCommonFazeGazeTest,
+                         testing::Values(version_info::Channel::STABLE,
+                                         version_info::Channel::BETA,
+                                         version_info::Channel::DEV,
+                                         version_info::Channel::CANARY,
+                                         version_info::Channel::DEFAULT));
+
+IN_PROC_BROWSER_TEST_P(AccessibilityCommonFazeGazeTest, ToggleFazeGaze) {
+  extensions::ScopedCurrentChannel channel(GetParam());
+
+  AccessibilityManager* manager = AccessibilityManager::Get();
+  const auto& enabled_features =
+      manager->GetAccessibilityCommonEnabledFeaturesForTest();
+
+  EXPECT_TRUE(enabled_features.empty());
+  EXPECT_FALSE(DoesComponentExtensionExist(
+      extension_misc::kAccessibilityCommonExtensionId));
+
+  PrefService* pref_service = manager->profile()->GetPrefs();
+
+  // Enable the FaceGaze pref and wait for the accessibility common extension
+  // to load.
+  extensions::ExtensionHostTestHelper host_helper(
+      manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
+  pref_service->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, true);
+  host_helper.WaitForHostCompletedFirstLoad();
+
+  EXPECT_EQ(1U, enabled_features.size());
+  EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(DoesComponentExtensionExist(
+      extension_misc::kAccessibilityCommonExtensionId));
+
+  // Disabling the FaceGaze pref should unload the accessibility common
+  // extension.
+  pref_service->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, false);
+  EXPECT_TRUE(enabled_features.empty());
+  EXPECT_FALSE(DoesComponentExtensionExist(
+      extension_misc::kAccessibilityCommonExtensionId));
+}
 
 }  // namespace ash

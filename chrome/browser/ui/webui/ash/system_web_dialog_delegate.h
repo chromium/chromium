@@ -47,7 +47,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
       const gfx::Size& preferred_size);
 
   // |gurl| is the HTML file path for the dialog content and must be set.
-  // |title| may be empty in which case ShouldShowDialogTitle() returns false.
+  // |title| may be empty in which case the dialog title is not shown.
   SystemWebDialogDelegate(const GURL& gurl, const std::u16string& title);
 
   SystemWebDialogDelegate(const SystemWebDialogDelegate&) = delete;
@@ -58,7 +58,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // Returns an identifier used for matching an instance in FindInstance.
   // By default returns gurl_.spec() which should be sufficient for dialogs
   // that only support a single instance.
-  virtual const std::string& Id();
+  virtual std::string Id();
 
   // Adjust the init params for the widget. By default makes no change.
   virtual void AdjustWidgetInitParams(views::Widget::InitParams* params) {}
@@ -71,20 +71,9 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   void Close();
 
   // ui::WebDialogDelegate
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetDialogSize(gfx::Size* size) const override;
-  FrameKind GetWebDialogFrameKind() const override;
-  std::string GetDialogArgs() const override;
   // Derived classes that override this method should still call
   // SystemWebDialogDelegate::OnDialogShown.
   void OnDialogShown(content::WebUI* webui) override;
-  // Note: deletes |this|.
-  void OnDialogClosed(const std::string& json_retval) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
 
   // Shows a system dialog using the specified BrowserContext (or Profile).
   // If |parent| is not null, the dialog will be parented to |parent|.
@@ -113,16 +102,10 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // |nullptr| if the dialog has not been created yet.
   gfx::NativeWindow dialog_window() const { return dialog_window_; }
 
-  // A setter for modal type.
-  void set_modal_type(ui::ModalType modal_type) { modal_type_ = modal_type; }
-
   content::WebUI* webui() { return webui_; }
 
  private:
-  GURL gurl_;
-  std::u16string title_;
   raw_ptr<content::WebUI, DanglingUntriaged | ExperimentalAsh> webui_ = nullptr;
-  ui::ModalType modal_type_;
   gfx::NativeWindow dialog_window_ = gfx::NativeWindow();
 };
 

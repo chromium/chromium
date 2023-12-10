@@ -131,7 +131,7 @@ void DevicePolicyDecoderTest::DecodeUnsetDevicePolicyTestHelper(
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeJSONParseError) {
   std::string error;
-  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidJson, key::kDeviceWallpaperImage, &error);
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
@@ -151,7 +151,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidSchema) {
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
   std::string error;
-  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonInvalidValue, key::kDeviceWallpaperImage, &error);
   EXPECT_FALSE(decoded_json.has_value());
   std::string localized_error = l10n_util::GetStringFUTF8(
@@ -165,7 +165,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
   std::string error;
-  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage, &error);
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
@@ -178,7 +178,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeSuccess) {
   std::string error;
-  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJson, key::kDeviceWallpaperImage, &error);
   EXPECT_EQ(GetWallpaperDict(), decoded_json.value());
   EXPECT_TRUE(error.empty());
@@ -444,7 +444,7 @@ TEST_F(DevicePolicyDecoderTest, DeviceReportNetworkEvents) {
 
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
   std::string error;
-  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kValidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
       &error);
   EXPECT_EQ(GetBluetoothServiceAllowedList(), decoded_json.value());
@@ -453,7 +453,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
 
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListError) {
   std::string error;
-  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
       &error);
   EXPECT_FALSE(decoded_json.has_value());

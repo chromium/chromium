@@ -158,23 +158,27 @@ std::string GetStorageTypePrefix(StorageType storage_type) {
 
 // Formats key prefix for data records of |model_type| using |storage_type|.
 std::string FormatDataPrefix(ModelType model_type, StorageType storage_type) {
-  return base::StrCat({GetStorageTypePrefix(storage_type),
-                       GetModelTypeLowerCaseRootTag(model_type), kDataPrefix});
+  return base::StrCat(
+      {BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+           model_type, storage_type),
+       kDataPrefix});
 }
 
 // Formats key prefix for metadata records of |model_type| using |storage_type|.
 std::string FormatMetaPrefix(ModelType model_type, StorageType storage_type) {
-  return base::StrCat({GetStorageTypePrefix(storage_type),
-                       GetModelTypeLowerCaseRootTag(model_type),
-                       kMetadataPrefix});
+  return base::StrCat(
+      {BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+           model_type, storage_type),
+       kMetadataPrefix});
 }
 
 // Formats key for global metadata record of |model_type| using |storage_type|.
 std::string FormatGlobalMetadataKey(ModelType model_type,
                                     StorageType storage_type) {
-  return base::StrCat({GetStorageTypePrefix(storage_type),
-                       GetModelTypeLowerCaseRootTag(model_type),
-                       kGlobalMetadataKey});
+  return base::StrCat(
+      {BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+           model_type, storage_type),
+       kGlobalMetadataKey});
 }
 
 BlockingModelTypeStoreImpl::BlockingModelTypeStoreImpl(
@@ -290,6 +294,14 @@ std::unique_ptr<BlockingModelTypeStoreImpl::WriteBatch>
 BlockingModelTypeStoreImpl::CreateWriteBatch(ModelType model_type,
                                              StorageType storage_type) {
   return std::make_unique<LevelDbWriteBatch>(model_type, storage_type);
+}
+
+// static
+std::string BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+    ModelType model_type,
+    StorageType storage_type) {
+  return base::StrCat({GetStorageTypePrefix(storage_type),
+                       GetModelTypeLowerCaseRootTag(model_type)});
 }
 
 }  // namespace syncer

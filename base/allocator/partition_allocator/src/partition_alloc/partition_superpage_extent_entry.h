@@ -7,12 +7,12 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_types.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_dcheck_helper.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_dcheck_helper.h"
+#include "partition_alloc/reservation_offset_table.h"
 
 // Should not include partition_root.h, partition_bucket.h, partition_page.h.
 // For IsQuarantineAllowed(), use partition_dcheck_helper.h instead of

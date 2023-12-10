@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
@@ -23,12 +24,13 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class PrefService;
 
 namespace password_manager {
+
+class AffiliationsPrefetcher;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Update enums.xml whenever updating
@@ -64,7 +66,10 @@ enum class PasswordStoreOperation {
   // Operations that are not safe to retry because they are modifying.
   kAddLoginAsync = 4,
   kUpdateLoginAsync = 5,
-  kRemoveLoginForAccount = 6,
+
+  // Obsolete
+  // kRemoveLoginForAccount = 6,
+
   kRemoveLoginAsync = 7,
   kRemoveLoginsByURLAndTimeAsync = 8,
   kRemoveLoginsCreatedBetweenAsync = 9,
@@ -92,14 +97,17 @@ class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendReceiverBridge::Consumer {
  public:
-  explicit PasswordStoreAndroidBackend(PrefService* prefs);
+  PasswordStoreAndroidBackend(
+      PrefService* prefs,
+      AffiliationsPrefetcher* affiliations_prefetcher);
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
           sync_controller_delegate,
-      PrefService* prefs);
+      PrefService* prefs,
+      AffiliationsPrefetcher* affiliations_prefetcher);
   ~PasswordStoreAndroidBackend() override;
 
  private:
@@ -141,7 +149,7 @@ class PasswordStoreAndroidBackend
       return std::move(absl::get<T>(success_callback_));
     }
 
-    void RecordMetrics(absl::optional<AndroidBackendError> error) const;
+    void RecordMetrics(std::optional<AndroidBackendError> error) const;
     base::TimeDelta GetElapsedTimeSinceStart() const;
 
     base::TimeDelta GetDelay();
@@ -171,7 +179,7 @@ class PasswordStoreAndroidBackend
   void GetAllLoginsWithAffiliationAndBrandingAsync(
       LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
+  void GetAllLoginsForAccountAsync(std::string account,
                                    LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsOrErrorReply callback,
@@ -261,7 +269,7 @@ class PasswordStoreAndroidBackend
                    MetricInfix metric_infix,
                    PasswordStoreOperation operation,
                    base::TimeDelta delay);
-  absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
+  std::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
 
   // Gets logins matching |form|.
   void GetLoginsAsync(const PasswordFormDigest& form,
@@ -309,12 +317,6 @@ class PasswordStoreAndroidBackend
   void GetAllLoginsForAccount(
       PasswordStoreAndroidBackendDispatcherBridge::Account account,
       LoginsOrErrorReply callback);
-
-  // Removes |form| from |account|.
-  void RemoveLoginForAccount(
-      const PasswordForm& form,
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      PasswordChangesOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the
@@ -367,6 +369,8 @@ class PasswordStoreAndroidBackend
       sync_controller_delegate_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
+
+  raw_ptr<AffiliationsPrefetcher> affiliations_prefetcher_ = nullptr;
 
   base::Time initialized_at_ = base::Time::Now();
 

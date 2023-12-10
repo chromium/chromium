@@ -227,7 +227,11 @@ class TestView : public View {
 
  public:
   TestView() = default;
-  ~TestView() override = default;
+  ~TestView() override {
+    if (destruction_callback_) {
+      std::move(destruction_callback_).Run();
+    }
+  }
 
   // Reset all test state
   void Reset() {
@@ -239,6 +243,7 @@ class TestView : public View {
     received_mouse_exit_ = false;
     did_paint_ = false;
     accelerator_count_map_.clear();
+    destruction_callback_.Reset();
   }
 
   // Exposed as public for testing.
@@ -249,6 +254,10 @@ class TestView : public View {
   void Layout() override {
     did_layout_ = true;
     View::Layout();
+  }
+
+  void SetDestructionCallback(base::OnceClosure destruction_callback) {
+    destruction_callback_ = std::move(destruction_callback);
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -292,6 +301,8 @@ class TestView : public View {
 
   // Accessibility events
   ax::mojom::Event last_a11y_event_ = ax::mojom::Event::kNone;
+
+  base::OnceClosure destruction_callback_;
 };
 
 BEGIN_METADATA(TestView)
@@ -6339,6 +6350,9 @@ class TestViewObserver : public ViewObserver {
       observations_.AddObservation(view);
     }
   }
+
+  void AddObservation(View* view) { observations_.AddObservation(view); }
+
   ~TestViewObserver() override = default;
 
   // ViewObserver:
@@ -6364,12 +6378,34 @@ class TestViewObserver : public ViewObserver {
     view_reordered_ = view;
   }
 
+  void OnViewHierarchyWillBeDeleted(View* observed_view) override {
+    on_view_hierarchy_will_be_deleted_called_ = true;
+    if (verify_on_view_hierarchy_will_be_deleted_callback_) {
+      std::move(verify_on_view_hierarchy_will_be_deleted_callback_).Run();
+    }
+  }
+
+  void OnViewIsDeleting(View* observed_view) override {
+    observations_.RemoveObservation(observed_view);
+  }
+
+  void SetVerifyOnViewHierarchyWillBeDeletedCallback(
+      base::OnceClosure verify_on_view_hierarchy_will_be_deleted_callback) {
+    verify_on_view_hierarchy_will_be_deleted_callback_ =
+        std::move(verify_on_view_hierarchy_will_be_deleted_callback);
+  }
+
   int child_view_added_times() { return child_view_added_times_; }
   int child_view_removed_times() { return child_view_removed_times_; }
   const View* child_view_added() const { return child_view_added_; }
   const View* child_view_added_parent() const {
     return child_view_added_parent_;
   }
+
+  bool has_on_view_hierarchy_will_be_deleted_called() {
+    return on_view_hierarchy_will_be_deleted_called_;
+  }
+
   const View* child_view_removed() const { return child_view_removed_; }
   const View* child_view_removed_parent() const {
     return child_view_removed_parent_;
@@ -6388,6 +6424,8 @@ class TestViewObserver : public ViewObserver {
 
   int child_view_added_times_ = 0;
   int child_view_removed_times_ = 0;
+  bool on_view_hierarchy_will_be_deleted_called_ = false;
+  base::OnceClosure verify_on_view_hierarchy_will_be_deleted_callback_;
 
   raw_ptr<View> child_view_added_parent_ = nullptr;
   raw_ptr<View> child_view_added_ = nullptr;
@@ -6400,6 +6438,28 @@ class TestViewObserver : public ViewObserver {
 };
 
 using ViewObserverTest = ViewTest;
+
+TEST_F(ViewObserverTest, ViewHierarchyWillBeDeleted) {
+  TestViewObserver observer({});
+  {
+    auto parent = std::make_unique<View>();
+    View* main_view = parent->AddChildView(std::make_unique<View>());
+    TestView* child_view =
+        main_view->AddChildView(std::make_unique<TestView>());
+    observer.AddObservation(main_view);
+    child_view->SetDestructionCallback(base::BindOnce(
+        [](TestViewObserver& observer) {
+          EXPECT_TRUE(observer.has_on_view_hierarchy_will_be_deleted_called());
+        },
+        std::ref(observer)));
+    observer.SetVerifyOnViewHierarchyWillBeDeletedCallback(base::BindOnce(
+        [](View* main_view, View* parent_view) {
+          EXPECT_EQ(parent_view->children().size(), 1u);
+          EXPECT_EQ(main_view->children().size(), 1u);
+        },
+        base::Unretained(main_view), base::Unretained(parent.get())));
+  }
+}
 
 TEST_F(ViewObserverTest, ViewParentChanged) {
   auto parent1 = std::make_unique<View>();
@@ -6695,6 +6755,19 @@ TEST(ViewTestUnfixtured, ViewLayerSizeStayInSync) {
   EXPECT_EQ(0, region_layer->GetTargetBounds().width());
 
   view = nullptr;
+}
+
+using BaseActionViewInterfaceTest = ViewsTestBase;
+
+TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {
+  auto action_view = std::make_unique<View>();
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder().SetActionId(0).SetEnabled(false).Build();
+  action_view->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_FALSE(action_view->GetEnabled());
 }
 
 }  // namespace views

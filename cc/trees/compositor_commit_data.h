@@ -8,12 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/scroll_snap_data.h"
+#include "cc/input/snap_selection_strategy.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -32,7 +33,7 @@ struct CC_EXPORT CompositorCommitData {
     ScrollUpdateInfo();
     ScrollUpdateInfo(ElementId id,
                      gfx::Vector2dF delta,
-                     absl::optional<TargetSnapAreaElementIds> snap_target_ids);
+                     std::optional<TargetSnapAreaElementIds> snap_target_ids);
     ScrollUpdateInfo(const ScrollUpdateInfo& other);
     ScrollUpdateInfo& operator=(const ScrollUpdateInfo&);
     ElementId element_id;
@@ -41,7 +42,7 @@ struct CC_EXPORT CompositorCommitData {
     // The target snap area element ids of the scrolling element.
     // This will have a value if the scrolled element's scroll node has snap
     // container data and the scroll delta is non-zero.
-    absl::optional<TargetSnapAreaElementIds> snap_target_element_ids;
+    std::optional<TargetSnapAreaElementIds> snap_target_element_ids;
 
     bool operator==(const ScrollUpdateInfo& other) const {
       return element_id == other.element_id &&
@@ -117,6 +118,11 @@ struct CC_EXPORT CompositorCommitData {
   // Tracks different methods of scrolling (e.g. wheel, touch, precision
   // touchpad, etc.).
   ManipulationInfo manipulation_info = kManipulationInfoNone;
+
+  // This tracks the strategy cc will use to snap at the end of the current
+  // scroll based on the scroll updates so far. The main thread will use this to
+  // determine whether to fire snapchanging or not.
+  std::unique_ptr<SnapSelectionStrategy> snap_strategy;
 };
 
 }  // namespace cc

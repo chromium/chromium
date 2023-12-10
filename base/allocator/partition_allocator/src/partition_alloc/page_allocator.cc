@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator.h"
 
 #include <atomic>
+#include <bit>
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_space_randomization.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internal.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_space_randomization.h"
+#include "partition_alloc/page_allocator_internal.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_lock.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_win.h"
+#include "partition_alloc/page_allocator_internals_win.h"
 #elif BUILDFLAG(IS_POSIX)
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.h"
+#include "partition_alloc/page_allocator_internals_posix.h"
 #elif BUILDFLAG(IS_FUCHSIA)
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_fuchsia.h"
+#include "partition_alloc/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.
 #endif
@@ -79,7 +79,7 @@ uintptr_t TrimMapping(uintptr_t base_address,
                       uintptr_t alignment_offset,
                       PageAccessibilityConfiguration accessibility) {
   PA_DCHECK(base_length >= trim_length);
-  PA_DCHECK(internal::base::bits::IsPowerOfTwo(alignment));
+  PA_DCHECK(std::has_single_bit(alignment));
   PA_DCHECK(alignment_offset < alignment);
   uintptr_t new_base =
       NextAlignedWithOffset(base_address, alignment, alignment_offset);
@@ -108,7 +108,7 @@ uintptr_t TrimMapping(uintptr_t base_address,
 uintptr_t NextAlignedWithOffset(uintptr_t address,
                                 uintptr_t alignment,
                                 uintptr_t requested_offset) {
-  PA_DCHECK(internal::base::bits::IsPowerOfTwo(alignment));
+  PA_DCHECK(std::has_single_bit(alignment));
   PA_DCHECK(requested_offset < alignment);
 
   uintptr_t actual_offset = address & (alignment - 1);
@@ -183,7 +183,7 @@ uintptr_t AllocPagesWithAlignOffset(
   PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(align >= internal::PageAllocationGranularity());
   // Alignment must be power of 2 for masking math to work.
-  PA_DCHECK(internal::base::bits::IsPowerOfTwo(align));
+  PA_DCHECK(std::has_single_bit(align));
   PA_DCHECK(align_offset < align);
   PA_DCHECK(!(align_offset & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(address & internal::PageAllocationGranularityOffsetMask()));
@@ -285,6 +285,13 @@ void SetSystemPagesAccess(uintptr_t address,
                           PageAccessibilityConfiguration accessibility) {
   PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
   internal::SetSystemPagesAccessInternal(address, length, accessibility);
+}
+
+void SetSystemPagesAccess(void* address,
+                          size_t length,
+                          PageAccessibilityConfiguration accessibility) {
+  SetSystemPagesAccess(reinterpret_cast<uintptr_t>(address), length,
+                       accessibility);
 }
 
 void DecommitSystemPages(

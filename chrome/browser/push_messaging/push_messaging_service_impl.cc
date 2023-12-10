@@ -47,6 +47,7 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1436,7 +1437,13 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
       barrier_closure.Run();
       continue;
     }
-
+    if (!permissions::PermissionUmaUtil::ScopedRevocationReporter::
+            IsInstanceInScope()) {
+      permissions::PermissionUmaUtil::PermissionRevoked(
+          ContentSettingsType::NOTIFICATIONS,
+          permissions::PermissionSourceUI::UNIDENTIFIED,
+          app_identifier.origin(), profile_);
+    }
     UnexpectedChange(app_identifier,
                      blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED,
                      barrier_closure);

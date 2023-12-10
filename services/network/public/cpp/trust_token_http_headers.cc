@@ -5,12 +5,11 @@
 #include "services/network/public/cpp/trust_token_http_headers.h"
 
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 
 namespace network {
 
-const std::vector<base::StringPiece>& TrustTokensRequestHeaders() {
-  static base::NoDestructor<std::vector<base::StringPiece>> headers{
+const std::vector<std::string_view>& TrustTokensRequestHeaders() {
+  static base::NoDestructor<std::vector<std::string_view>> headers{
       {kTrustTokensRequestHeaderSecSignature,
        kTrustTokensRequestHeaderSecRedemptionRecord,
        kTrustTokensRequestHeaderSecTime, kTrustTokensSecTrustTokenHeader,

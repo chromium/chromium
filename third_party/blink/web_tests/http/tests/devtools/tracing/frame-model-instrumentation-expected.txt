@@ -1,4 +1,0 @@
-layerTree: object
-mainFrameId: number
-paints: present
-

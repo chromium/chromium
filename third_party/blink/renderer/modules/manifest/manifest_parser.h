@@ -62,6 +62,8 @@ class MODULES_EXPORT ManifestParser {
   // Takes ownership of the Manifest produced by Parse(). Once called, the
   // parser is invalid and should no longer be used.
   mojom::blink::ManifestPtr TakeManifest();
+
+  // Take any errors generated.
   void TakeErrors(Vector<mojom::blink::ManifestErrorPtr>* errors);
 
  private:
@@ -75,6 +77,16 @@ class MODULES_EXPORT ManifestParser {
     kSameOriginOnly,  // Parsed URLs must be same origin as the document URL.
     kWithinScope,     // Parsed URLs must be within scope of the manifest scope
                       // (implies same origin as document URL).
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ParseIdResultType {
+    kSucceed = 0,
+    kDefaultToStartUrl = 1,
+    kInvalidStartUrl = 2,
+    kFeatureDisabled = 3,  // No longer emitted, feature flag is removed.
+    kMaxValue = kFeatureDisabled,
   };
 
   // Helper function to parse booleans present on a given |dictionary| in a
@@ -155,7 +167,8 @@ class MODULES_EXPORT ManifestParser {
   String ParseDescription(const JSONObject* object);
 
   // Parses the 'id' field of the manifest.
-  KURL ParseId(const JSONObject* object, const KURL& start_url);
+  std::pair<KURL, ParseIdResultType> ParseId(const JSONObject* object,
+                                             const KURL& start_url);
 
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if

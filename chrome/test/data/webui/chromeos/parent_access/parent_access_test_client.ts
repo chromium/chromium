@@ -1,7 +1,7 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {PostMessageApiClient} from 'chrome://resources/ash/common/post_message_api/post_message_api_client.js';
 

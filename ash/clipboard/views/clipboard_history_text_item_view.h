@@ -18,15 +18,16 @@ class ClipboardHistory;
 
 // The menu item showing the plain text.
 class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
+  METADATA_HEADER(ClipboardHistoryTextItemView, ClipboardHistoryItemView)
+
  public:
-  METADATA_HEADER(ClipboardHistoryTextItemView);
   ClipboardHistoryTextItemView(const base::UnguessableToken& item_id,
                                const ClipboardHistory* clipboard_history,
                                views::MenuItemView* container);
   ClipboardHistoryTextItemView(const ClipboardHistoryTextItemView& rhs) =
       delete;
-  ClipboardHistoryItemView& operator=(const ClipboardHistoryTextItemView& rhs) =
-      delete;
+  ClipboardHistoryTextItemView& operator=(
+      const ClipboardHistoryTextItemView& rhs) = delete;
   ~ClipboardHistoryTextItemView() override;
 
  protected:

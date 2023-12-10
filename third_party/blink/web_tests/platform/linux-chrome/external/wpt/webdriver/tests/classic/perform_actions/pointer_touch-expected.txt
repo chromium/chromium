@@ -1,16 +1,10 @@
 This is a wdspec test.
-[PASS] test_null_response_value
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_touch_pointer_in_shadow_tree[outer-open]
 [FAIL] test_touch_pointer_in_shadow_tree[outer-closed]
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
-[PASS] test_touch_pointer_in_shadow_tree[inner-open]
 [FAIL] test_touch_pointer_in_shadow_tree[inner-closed]
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
-[PASS] test_touch_pointer_properties
-[PASS] test_touch_pointer_properties_tilt_twist
+[FAIL] test_touch_pointer_properties_angle_twist
+  assert 0 == 20
 Harness: the test ran to completion.

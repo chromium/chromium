@@ -124,9 +124,10 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
     return static_cast<FakeSpellCheck*>(spellcheck_);
   }
 
+  base::WeakPtr<SpellCheckProvider> GetWeakPtr();
+
  private:
   // spellcheck::mojom::SpellCheckHost:
-  void RequestDictionary() override;
   void NotifyChecked(const std::u16string& word, bool misspelled) override;
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
@@ -137,11 +138,9 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   void RequestTextCheck(const std::u16string&,
-                        int,
                         RequestTextCheckCallback) override;
   using SpellCheckProvider::CheckSpelling;
   void CheckSpelling(const std::u16string&,
-                     int,
                      CheckSpellingCallback) override;
   void FillSuggestionList(const std::u16string&,
                           FillSuggestionListCallback) override;

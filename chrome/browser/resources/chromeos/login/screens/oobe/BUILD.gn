@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("../../login.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -235,20 +236,19 @@ js_library("welcome_dialog") {
   externs_list = [ "$externs_path/tts.js" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "auto_enrollment_check.js",
-    "consumer_update.js",
-    "demo_setup.js",
-    "demo_preferences.js",
-    "enable_debugging.js",
-    "enterprise_enrollment.js",
-    "hid_detection.js",
-    "oobe_network.js",
-    "packaged_license.js",
-    "quick_start.js",
-    "update.js",
-    "welcome.js",
-    "welcome_dialog.js",
+group("web_components") {
+  public_deps = [
+    ":copy_js",
+    ":generate_web_component_html_wrapper_files",
   ]
+}
+
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(oobe_screens_html_files, "./screens/oobe", ".")
+  use_js = true
+}
+
+copy("copy_js") {
+  sources = rebase_path(oobe_screens_js_files, "./screens/oobe", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

@@ -17,7 +17,7 @@
 
 @implementation SCCredential
 @synthesize favicon = _favicon;
-@synthesize keychainIdentifier = _keychainIdentifier;
+@synthesize password = _password;
 @synthesize rank = _rank;
 @synthesize recordIdentifier = _recordIdentifier;
 @synthesize serviceIdentifier = _serviceIdentifier;

@@ -133,7 +133,7 @@ class MEDIA_EXPORT AUAudioInputStream
   base::TimeTicks GetCaptureTime(const AudioTimeStamp* input_time_stamp);
 
   // Issues the OnError() callback to the |sink_|.
-  void HandleError(OSStatus err);
+  void HandleError(OSStatus err, const base::Location& location = FROM_HERE);
 
   // Helper methods to set and get atomic |input_callback_is_active_|.
   void SetInputCallbackIsActive(bool active);

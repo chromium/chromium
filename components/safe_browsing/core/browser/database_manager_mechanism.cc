@@ -39,8 +39,7 @@ DatabaseManagerMechanism::StartCheckInternal() {
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }
-  return StartCheckResult(is_safe_synchronously,
-                          /*did_check_url_real_time_allowlist=*/false);
+  return StartCheckResult(is_safe_synchronously);
 }
 
 void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
@@ -57,6 +56,8 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
       /*matched_high_confidence_allowlist=*/absl::nullopt,
       /*locally_cached_results_threat_type=*/absl::nullopt,
       /*real_time_request_failed=*/false));
+  // NOTE: Calling CompleteCheck results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing

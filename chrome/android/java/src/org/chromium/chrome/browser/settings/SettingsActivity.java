@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
@@ -115,6 +116,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 DisplayStyleObserver {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
+
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
 
     /** The current instance of SettingsActivity in the resumed state, if any. */
@@ -137,8 +139,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
             new OneshotSupplierImpl<>();
 
-    @Nullable
-    private UiConfig mUiConfig;
+    @Nullable private UiConfig mUiConfig;
 
     private Profile mProfile;
 
@@ -287,21 +288,31 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void initBottomSheet() {
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
         mScrim =
-                new ScrimCoordinator(this, new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {
-                        // TODO: Implement if status bar needs to change color with the scrim.
-                    }
+                new ScrimCoordinator(
+                        this,
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {
+                                // TODO: Implement if status bar needs to change color with the
+                                // scrim.
+                            }
 
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {
-                        // TODO: Implement if navigation bar needs to change color with the scrim.
-                    }
-                }, (ViewGroup) sheetContainer.getParent(), getColor(R.color.default_scrim_color));
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {
+                                // TODO: Implement if navigation bar needs to change color with the
+                                // scrim.
+                            }
+                        },
+                        (ViewGroup) sheetContainer.getParent(),
+                        getColor(R.color.default_scrim_color));
 
-        mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
-                () -> mScrim, (sheet) -> {}, getWindow(),
-                KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer);
+        mBottomSheetController =
+                BottomSheetControllerFactory.createBottomSheetController(
+                        () -> mScrim,
+                        (sheet) -> {},
+                        getWindow(),
+                        KeyboardVisibilityDelegate.getInstance(),
+                        () -> sheetContainer);
 
         mBottomSheetControllerSupplier.set(mBottomSheetController);
     }
@@ -339,8 +350,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         if (fragment instanceof BaseSiteSettingsFragment) {
             ChromeSiteSettingsDelegate delegate =
-                    (ChromeSiteSettingsDelegate) (((BaseSiteSettingsFragment) fragment)
-                                                          .getSiteSettingsDelegate());
+                    (ChromeSiteSettingsDelegate)
+                            (((BaseSiteSettingsFragment) fragment).getSiteSettingsDelegate());
             delegate.setSnackbarManager(mSnackbarManager);
         }
         if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
@@ -356,7 +367,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         // Prevent the user from interacting with multiple instances of SettingsActivity at the same
         // time (e.g. in multi-instance mode on a Samsung device), which would cause many fun bugs.
-        if (sResumedInstance != null && sResumedInstance.getTaskId() != getTaskId()
+        if (sResumedInstance != null
+                && sResumedInstance.getTaskId() != getTaskId()
                 && !mIsNewlyCreated) {
             // This activity was unpaused or recreated while another instance of SettingsActivity
             // was already showing. The existing instance takes precedence.
@@ -377,8 +389,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void checkForMissingDeviceLockOnAutomotive() {
         if (BuildInfo.getInstance().isAutomotive) {
             if (mMissingDeviceLockLauncher == null) {
-                mMissingDeviceLockLauncher = new MissingDeviceLockLauncher(
-                        this, mProfile, getModalDialogManagerSupplier().get());
+                mMissingDeviceLockLauncher =
+                        new MissingDeviceLockLauncher(
+                                this, mProfile, getModalDialogManagerSupplier().get());
             }
             mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
         }
@@ -409,10 +422,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // By default, every screen in Settings shows a "Help & feedback" menu item.
-        MenuItem help = menu.add(
-                Menu.NONE, R.id.menu_id_general_help, Menu.CATEGORY_SECONDARY, R.string.menu_help);
-        help.setIcon(TraceEventVectorDrawableCompat.create(
-                getResources(), R.drawable.ic_help_and_feedback, getTheme()));
+        MenuItem help =
+                menu.add(
+                        Menu.NONE,
+                        R.id.menu_id_general_help,
+                        Menu.CATEGORY_SECONDARY,
+                        R.string.menu_help);
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getTheme()));
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -436,8 +454,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             finish();
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
-            HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
-                    this, getString(R.string.help_context_settings), null);
+            HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
+                    .show(this, getString(R.string.help_context_settings), null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -455,12 +473,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         Fragment activeFragment = getMainFragment();
         if (BackPressManager.isSecondaryActivityEnabled()) {
             if (activeFragment instanceof BackPressHandler) {
-                BackPressHelper.create(activeFragment.getViewLifecycleOwner(),
-                        getOnBackPressedDispatcher(), (BackPressHandler) activeFragment,
+                BackPressHelper.create(
+                        activeFragment.getViewLifecycleOwner(),
+                        getOnBackPressedDispatcher(),
+                        (BackPressHandler) activeFragment,
                         SecondaryActivity.SETTINGS);
             }
         } else if (activeFragment instanceof BackPressHelper.ObsoleteBackPressedHandler) {
-            BackPressHelper.create(activeFragment.getViewLifecycleOwner(),
+            BackPressHelper.create(
+                    activeFragment.getViewLifecycleOwner(),
                     getOnBackPressedDispatcher(),
                     (BackPressHelper.ObsoleteBackPressedHandler) activeFragment,
                     SecondaryActivity.SETTINGS);
@@ -474,11 +495,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 mBottomSheetController.getBottomSheetBackPressHandler();
         if (bottomSheetBackPressHandler != null) {
             if (BackPressManager.isSecondaryActivityEnabled()) {
-                BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                        bottomSheetBackPressHandler, SecondaryActivity.SETTINGS);
+                BackPressHelper.create(
+                        this,
+                        getOnBackPressedDispatcher(),
+                        bottomSheetBackPressHandler,
+                        SecondaryActivity.SETTINGS);
             } else {
-                BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                        mBottomSheetController::handleBackPress, SecondaryActivity.SETTINGS);
+                BackPressHelper.create(
+                        this,
+                        getOnBackPressedDispatcher(),
+                        mBottomSheetController::handleBackPress,
+                        SecondaryActivity.SETTINGS);
             }
         }
     }
@@ -506,23 +533,33 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
         if (fragment instanceof BaseSiteSettingsFragment) {
-            ((BaseSiteSettingsFragment) fragment)
-                    .setSiteSettingsDelegate(new ChromeSiteSettingsDelegate(this, mProfile));
+            BaseSiteSettingsFragment baseSiteSettingsFragment =
+                    ((BaseSiteSettingsFragment) fragment);
+            baseSiteSettingsFragment.setSiteSettingsDelegate(
+                    new ChromeSiteSettingsDelegate(this, mProfile));
+            baseSiteSettingsFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
-            SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
-                    new SafetyCheckUpdatesDelegateImpl(), mSettingsLauncher,
-                    SyncConsentActivityLauncherImpl.get(), getModalDialogManagerSupplier(),
+            SafetyCheckCoordinator.create(
+                    (SafetyCheckSettingsFragment) fragment,
+                    new SafetyCheckUpdatesDelegateImpl(),
+                    mSettingsLauncher,
+                    SyncConsentActivityLauncherImpl.get(),
+                    getModalDialogManagerSupplier(),
                     SyncServiceFactory.getForProfile(mProfile));
         }
         if (fragment instanceof PasswordCheckFragmentView) {
-            PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), mSettingsLauncher,
+            PasswordCheckComponentUiFactory.create(
+                    (PasswordCheckFragmentView) fragment,
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile),
+                    mSettingsLauncher,
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
                     IntentUtils::addTrustedIntentExtras);
         }
         if (fragment instanceof CredentialEntryFragmentViewBase) {
-            CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment,
+            CredentialEditUiFactory.create(
+                    (CredentialEntryFragmentViewBase) fragment,
                     HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
         }
         if (fragment instanceof SearchEngineSettings) {
@@ -535,10 +572,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;
             Bundle extras = imageFragment.getArguments();
             if (extras != null) {
-                extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS,
-                        ImageDescriptionsController.getInstance().imageDescriptionsEnabled(
-                                mProfile));
-                extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY,
+                extras.putBoolean(
+                        ImageDescriptionsSettings.IMAGE_DESCRIPTIONS,
+                        ImageDescriptionsController.getInstance()
+                                .imageDescriptionsEnabled(mProfile));
+                extras.putBoolean(
+                        ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY,
                         ImageDescriptionsController.getInstance().onlyOnWifiEnabled(mProfile));
             }
             imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
@@ -548,10 +587,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     (PrivacySandboxSettingsBaseFragment) fragment;
             sandboxFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
-            sandboxFragment.setCookieSettingsIntentHelper((Context context) -> {
-                SiteSettingsHelper.showCategorySettings(
-                        context, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-            });
+            sandboxFragment.setCookieSettingsIntentHelper(
+                    (Context context) -> {
+                        SiteSettingsHelper.showCategorySettings(
+                                context, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+                    });
         }
         if (fragment instanceof SafeBrowsingSettingsFragmentBase) {
             SafeBrowsingSettingsFragmentBase safeBrowsingFragment =
@@ -560,9 +600,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof LanguageSettings) {
-            ((LanguageSettings) fragment).setRestartAction(() -> {
-                ApplicationLifetime.terminate(true);
-            });
+            ((LanguageSettings) fragment)
+                    .setRestartAction(
+                            () -> {
+                                ApplicationLifetime.terminate(true);
+                            });
         }
         if (fragment instanceof ClearBrowsingDataFragmentBasic) {
             ((ClearBrowsingDataFragmentBasic) fragment)
@@ -592,6 +634,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             tpFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
+        if (fragment instanceof AutofillCreditCardEditor) {
+            ((AutofillCreditCardEditor) fragment)
+                    .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
+        }
     }
 
     @Override
@@ -616,15 +662,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
     }
 
-    /**
-     * Set device status bar to match the activity background color, if supported.
-     */
+    /** Set device status bar to match the activity background color, if supported. */
     private void setStatusBarColor() {
         // On P+, the status bar color is set via the XML theme.
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.P && !BuildInfo.getInstance().isAutomotive
-                && (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
-                        || (DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
-                                && !ChromeFeatureList.sTabStripRedesign.isEnabled()))) {
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.P
+                && !BuildInfo.getInstance().isAutomotive
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
             return;
         }
 
@@ -634,7 +677,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         UiUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT);
 
         // Set status bar icon color according to background color.
-        UiUtils.setStatusBarIconColor(getWindow().getDecorView().getRootView(),
+        UiUtils.setStatusBarIconColor(
+                getWindow().getDecorView().getRootView(),
                 getResources().getBoolean(R.bool.window_light_status_bar));
     }
 
@@ -645,8 +689,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     // Get the divider drawable from AndroidX Pref attribute to keep things consistent.
     private Drawable getDividerDrawable() {
-        TypedArray ta = obtainStyledAttributes(null, R.styleable.PreferenceFragmentCompat,
-                R.attr.preferenceFragmentCompatStyle, 0);
+        TypedArray ta =
+                obtainStyledAttributes(
+                        null,
+                        R.styleable.PreferenceFragmentCompat,
+                        R.attr.preferenceFragmentCompatStyle,
+                        0);
         final Drawable divider =
                 ta.getDrawable(R.styleable.PreferenceFragmentCompat_android_divider);
         ta.recycle();

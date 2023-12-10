@@ -941,10 +941,17 @@ void Window::AfterPropertyChange(const void* key, int64_t old_value) {
 // Window, private:
 
 void Window::SetEmbedFrameSinkIdImpl(const viz::FrameSinkId& frame_sink_id) {
+  if (frame_sink_id_ == frame_sink_id) {
+    return;
+  }
+
   UnregisterFrameSinkId();
 
-  DCHECK(frame_sink_id.is_valid());
   frame_sink_id_ = frame_sink_id;
+  if (!frame_sink_id_.is_valid()) {
+    return;
+  }
+
   RegisterFrameSinkId();
 }
 

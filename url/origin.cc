@@ -78,19 +78,19 @@ Origin& Origin::operator=(Origin&&) noexcept = default;
 Origin::~Origin() = default;
 
 // static
-absl::optional<Origin> Origin::UnsafelyCreateTupleOriginWithoutNormalization(
+std::optional<Origin> Origin::UnsafelyCreateTupleOriginWithoutNormalization(
     std::string_view scheme,
     std::string_view host,
     uint16_t port) {
   SchemeHostPort tuple(std::string(scheme), std::string(host), port,
                        SchemeHostPort::CHECK_CANONICALIZATION);
   if (!tuple.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   return Origin(std::move(tuple));
 }
 
 // static
-absl::optional<Origin> Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
+std::optional<Origin> Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
     std::string_view precursor_scheme,
     std::string_view precursor_host,
     uint16_t precursor_port,
@@ -104,7 +104,7 @@ absl::optional<Origin> Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
   if (!precursor.IsValid() &&
       !(precursor_scheme.empty() && precursor_host.empty() &&
         precursor_port == 0)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return Origin(std::move(nonce), std::move(precursor));
 }
@@ -261,6 +261,10 @@ Origin Origin::DeriveNewOpaqueOrigin() const {
   return Origin(Nonce(), tuple_);
 }
 
+const base::UnguessableToken* Origin::GetNonceForTesting() const {
+  return GetNonceForSerialization();
+}
+
 std::string Origin::GetDebugString(bool include_nonce) const {
   // Handle non-opaque origins first, as they are simpler.
   if (!opaque()) {
@@ -304,11 +308,11 @@ Origin::Origin(const Nonce& nonce, SchemeHostPort precursor)
   DCHECK_EQ(0U, port());
 }
 
-absl::optional<std::string> Origin::SerializeWithNonce() const {
+std::optional<std::string> Origin::SerializeWithNonce() const {
   return SerializeWithNonceImpl();
 }
 
-absl::optional<std::string> Origin::SerializeWithNonceAndInitIfNeeded() {
+std::optional<std::string> Origin::SerializeWithNonceAndInitIfNeeded() {
   GetNonceForSerialization();
   return SerializeWithNonceImpl();
 }
@@ -317,9 +321,9 @@ absl::optional<std::string> Origin::SerializeWithNonceAndInitIfNeeded() {
 // string - tuple_.GetURL().spec().
 // uint64_t (if opaque) - high bits of nonce if opaque. 0 if not initialized.
 // uint64_t (if opaque) - low bits of nonce if opaque. 0 if not initialized.
-absl::optional<std::string> Origin::SerializeWithNonceImpl() const {
+std::optional<std::string> Origin::SerializeWithNonceImpl() const {
   if (!opaque() && !tuple_.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Pickle pickle;
   pickle.WriteString(tuple_.Serialize());
@@ -339,16 +343,16 @@ absl::optional<std::string> Origin::SerializeWithNonceImpl() const {
 }
 
 // static
-absl::optional<Origin> Origin::Deserialize(const std::string& value) {
+std::optional<Origin> Origin::Deserialize(const std::string& value) {
   std::string data;
   if (!base::Base64Decode(value, &data))
-    return absl::nullopt;
+    return std::nullopt;
   base::Pickle pickle(reinterpret_cast<char*>(&data[0]), data.size());
   base::PickleIterator reader(pickle);
 
   std::string pickled_url;
   if (!reader.ReadString(&pickled_url))
-    return absl::nullopt;
+    return std::nullopt;
   GURL url(pickled_url);
 
   // If only a tuple was serialized, then this origin is not opaque. For opaque
@@ -357,26 +361,26 @@ absl::optional<Origin> Origin::Deserialize(const std::string& value) {
 
   // Opaque origins without a tuple are ok.
   if (!is_opaque && !url.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
   SchemeHostPort tuple(url);
 
   // Possible successful early return if the pickled Origin was not opaque.
   if (!is_opaque) {
     Origin origin(tuple);
     if (origin.opaque())
-      return absl::nullopt;  // Something went horribly wrong.
+      return std::nullopt;  // Something went horribly wrong.
     return origin;
   }
 
   uint64_t nonce_high = 0;
   if (!reader.ReadUInt64(&nonce_high))
-    return absl::nullopt;
+    return std::nullopt;
 
   uint64_t nonce_low = 0;
   if (!reader.ReadUInt64(&nonce_low))
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<base::UnguessableToken> nonce_token =
+  std::optional<base::UnguessableToken> nonce_token =
       base::UnguessableToken::Deserialize(nonce_high, nonce_low);
 
   Origin::Nonce nonce;

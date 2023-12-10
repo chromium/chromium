@@ -18,10 +18,12 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
+#include "base/version.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/proto_validator.h"
 #include "components/paint_preview/common/version.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -310,10 +312,11 @@ void PaintPreviewClient::CapturePaintPreview(
   metadata->set_url(url.spec());
   metadata->set_version(kPaintPreviewVersion);
   auto* chromeVersion = metadata->mutable_chrome_version();
-  chromeVersion->set_major(CHROME_VERSION_MAJOR);
-  chromeVersion->set_minor(CHROME_VERSION_MINOR);
-  chromeVersion->set_build(CHROME_VERSION_BUILD);
-  chromeVersion->set_patch(CHROME_VERSION_PATCH);
+  const auto& current_chrome_version = version_info::GetVersion();
+  chromeVersion->set_major(current_chrome_version.components()[0]);
+  chromeVersion->set_minor(current_chrome_version.components()[1]);
+  chromeVersion->set_build(current_chrome_version.components()[2]);
+  chromeVersion->set_patch(current_chrome_version.components()[3]);
   document_data.callback = std::move(callback);
 
   // Ensure the frame is not under prerendering state as the UKM cannot be

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -80,10 +82,6 @@ LabelButton::~LabelButton() {
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);
   return GetImageModel(for_state).Rasterize(GetColorProvider());
-}
-
-void LabelButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {
-  SetImageModel(for_state, ui::ImageModel::FromImageSkia(image));
 }
 
 const ui::ImageModel& LabelButton::GetImageModel(ButtonState for_state) const {
@@ -491,7 +489,7 @@ ui::NativeTheme::State LabelButton::GetForegroundThemeState(
 
 void LabelButton::UpdateImage() {
   if (GetWidget())
-    image_->SetImage(GetImage(GetVisualState()));
+    image_->SetImage(ui::ImageModel::FromImageSkia(GetImage(GetVisualState())));
 }
 
 void LabelButton::AddLayerToRegion(ui::Layer* new_layer,
@@ -506,6 +504,10 @@ void LabelButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
   ink_drop_container()->RemoveLayerFromRegions(old_layer);
   ink_drop_container()->SetVisible(false);
   image()->DestroyLayer();
+}
+
+std::unique_ptr<ActionViewInterface> LabelButton::GetActionViewInterface() {
+  return std::make_unique<LabelButtonActionViewInterface>(this);
 }
 
 void LabelButton::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
@@ -690,7 +692,19 @@ void LabelButton::FlipCanvasOnPaintForRTLUIChanged() {
   image_->SetFlipCanvasOnPaintForRTLUI(GetFlipCanvasOnPaintForRTLUI());
 }
 
-BEGIN_METADATA(LabelButton, Button)
+LabelButtonActionViewInterface::LabelButtonActionViewInterface(
+    LabelButton* action_view)
+    : ButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+void LabelButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  ButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetText(action_item->GetText());
+  action_view_->SetImageModel(action_view_->GetState(),
+                              action_item->GetImage());
+}
+
+BEGIN_METADATA(LabelButton)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinSize)

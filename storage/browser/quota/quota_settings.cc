@@ -53,7 +53,7 @@ QuotaSettings CalculateIncognitoDynamicSettings(
   return settings;
 }
 
-absl::optional<QuotaSettings> CalculateNominalDynamicSettings(
+std::optional<QuotaSettings> CalculateNominalDynamicSettings(
     const base::FilePath& partition_path,
     bool is_incognito,
     QuotaDeviceInfoHelper* device_info_helper) {
@@ -124,7 +124,7 @@ absl::optional<QuotaSettings> CalculateNominalDynamicSettings(
   int64_t total = device_info_helper->AmountOfTotalDiskSpace(partition_path);
   if (total == -1) {
     LOG(ERROR) << "Unable to compute QuotaSettings.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Pool size calculated by ratio.

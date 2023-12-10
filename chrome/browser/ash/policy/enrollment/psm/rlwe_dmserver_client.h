@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_DMSERVER_CLIENT_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_DMSERVER_CLIENT_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy::psm {
 
@@ -36,9 +37,8 @@ class RlweDmserverClient {
   struct ResultHolder final {
     explicit ResultHolder(
         RlweResult psm_result,
-        absl::optional<bool> membership_result = absl::nullopt,
-        absl::optional<base::Time> membership_determination_time =
-            absl::nullopt)
+        std::optional<bool> membership_result = std::nullopt,
+        std::optional<base::Time> membership_determination_time = std::nullopt)
         : psm_result(psm_result),
           membership_result(membership_result),
           membership_determination_time(membership_determination_time) {}
@@ -53,8 +53,8 @@ class RlweDmserverClient {
     // These fields have values only if `psm_result` value is
     // `kSuccessfulDetermination`.
 
-    absl::optional<bool> membership_result;
-    absl::optional<base::Time> membership_determination_time;
+    std::optional<bool> membership_result;
+    std::optional<base::Time> membership_determination_time;
   };
 
   // Callback will be triggered after completing the protocol, in case of a

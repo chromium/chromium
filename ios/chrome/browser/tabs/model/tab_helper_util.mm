@@ -21,9 +21,9 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/autofill/autofill_tab_helper.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -40,27 +40,26 @@
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
-#import "ios/chrome/browser/follow/follow_tab_helper.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/history/history_tab_helper.h"
-#import "ios/chrome/browser/history/top_sites_factory.h"
+#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_tab_helper.h"
+#import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_only_mode_upgrade_tab_helper.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/typed_navigation_upgrade_tab_helper.h"
-#import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
-#import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
-#import "ios/chrome/browser/lens/lens_tab_helper.h"
+#import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
-#import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_validation_tab_helper.h"
+#import "ios/chrome/browser/metrics/model/pageload_foreground_duration_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -87,19 +86,17 @@
 #import "ios/chrome/browser/sync/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
-#import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
-#import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
-#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
-#import "ios/chrome/browser/web/invalid_url_tab_helper.h"
-#import "ios/chrome/browser/web/load_timing_tab_helper.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/print/print_tab_helper.h"
-#import "ios/chrome/browser/web/repost_form_tab_helper.h"
-#import "ios/chrome/browser/web/sad_tab_tab_helper.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
+#import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
+#import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/browser/web/model/invalid_url_tab_helper.h"
+#import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/model/print/print_tab_helper.h"
+#import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
+#import "ios/chrome/browser/web/model/sad_tab_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -114,7 +111,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
-#import "ios/web/common/features.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/web_state.h"
 
 void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
@@ -133,6 +130,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   if (IsNativeFindInPageAvailable()) {
     FindTabHelper::CreateForWebState(web_state);
   } else {
+    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
   ITunesUrlsHandlerTabHelper::CreateForWebState(web_state);
@@ -270,10 +268,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   if (IsPartialTranslateEnabled() || IsSearchWithEnabled()) {
     WebSelectionTabHelper::CreateForWebState(web_state);
-  }
-
-  if (web::UseNativeSessionRestorationCache()) {
-    WebSessionStateTabHelper::CreateForWebState(web_state);
   }
 
   WebPerformanceMetricsTabHelper::CreateForWebState(web_state);

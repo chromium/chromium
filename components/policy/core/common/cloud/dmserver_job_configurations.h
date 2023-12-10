@@ -53,23 +53,68 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
  public:
   typedef base::OnceCallback<void(DMServerJobResult)> Callback;
 
+  struct POLICY_EXPORT CreateParams {
+   public:
+    static CreateParams WithClient(JobType type, CloudPolicyClient* client);
+    static CreateParams WithoutClient(
+        JobType type,
+        DeviceManagementService* service,
+        const std::string& client_id,
+        scoped_refptr<network::SharedURLLoaderFactory> factory);
+
+    // Used by old `DMServerJobConfiguration` constructor. Please avoid adding
+    // new parameter to it or using it outside DMServerJobConfiguration
+    // constructor.
+    static CreateParams WithParams(
+        DeviceManagementService* service,
+        JobType type,
+        const std::string& client_id,
+        bool critical,
+        DMAuth auth_data,
+        absl::optional<std::string> oauth_token,
+        scoped_refptr<network::SharedURLLoaderFactory> factory,
+        Callback callback);
+
+    CreateParams();
+
+    CreateParams(const CreateParams&) = delete;
+    CreateParams& operator=(const CreateParams&) = delete;
+
+    CreateParams(CreateParams&&);
+    CreateParams& operator=(CreateParams&&);
+
+    ~CreateParams();
+
+    raw_ptr<DeviceManagementService> service = nullptr;
+    JobType type = JobType::TYPE_INVALID;
+    std::string client_id;
+    bool critical = false;
+    DMAuth auth_data = DMAuth::NoAuth();
+    absl::optional<std::string> profile_id = absl::nullopt;
+    absl::optional<std::string> oauth_token = absl::nullopt;
+    scoped_refptr<network::SharedURLLoaderFactory> factory;
+    DMServerJobConfiguration::Callback callback;
+  };
+
+  explicit DMServerJobConfiguration(CreateParams params);
+
+  // Deprecated. Please use the `CreateParams` instead.
   DMServerJobConfiguration(
       DeviceManagementService* service,
       JobType type,
       const std::string& client_id,
       bool critical,
       DMAuth auth_data,
-      absl::optional<std::string> oauth_token,
+      absl::optional<std::string>&& oauth_token,
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       Callback callback);
 
-  // This constructor is a convenience if the caller already hsa a pointer to
-  // a CloudPolicyClient.
+  // Deprecated. Please use the `CreateParams` instead.
   DMServerJobConfiguration(JobType type,
                            CloudPolicyClient* client,
                            bool critical,
                            DMAuth auth_data,
-                           absl::optional<std::string> oauth_token,
+                           absl::optional<std::string>&& oauth_token,
                            Callback callback);
 
   DMServerJobConfiguration(const DMServerJobConfiguration&) = delete;
@@ -114,11 +159,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
 class POLICY_EXPORT RegistrationJobConfiguration
     : public DMServerJobConfiguration {
  public:
-  RegistrationJobConfiguration(JobType type,
-                               CloudPolicyClient* client,
-                               DMAuth auth_data,
-                               absl::optional<std::string> oauth_token,
-                               Callback callback);
+  explicit RegistrationJobConfiguration(CreateParams params);
   RegistrationJobConfiguration(const RegistrationJobConfiguration&) = delete;
   RegistrationJobConfiguration& operator=(const RegistrationJobConfiguration&) =
       delete;

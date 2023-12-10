@@ -143,7 +143,6 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     absl::optional<SkFontParameters::Variation::Axis> wght_parameters =
         RetrieveVariationDesignParametersByTag(base_typeface_, kWghtTag);
     if (selection_capabilities.weight.IsRangeSetFromAuto() && wght_parameters) {
-      DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
       FontSelectionRange wght_range = {
           FontSelectionValue(wght_parameters->min),
           FontSelectionValue(wght_parameters->max)};
@@ -160,7 +159,6 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     absl::optional<SkFontParameters::Variation::Axis> wdth_parameters =
         RetrieveVariationDesignParametersByTag(base_typeface_, kWdthTag);
     if (selection_capabilities.width.IsRangeSetFromAuto() && wdth_parameters) {
-      DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
       FontSelectionRange wdth_range = {
           FontSelectionValue(wdth_parameters->min),
           FontSelectionValue(wdth_parameters->max)};
@@ -179,7 +177,6 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     absl::optional<SkFontParameters::Variation::Axis> slnt_parameters =
         RetrieveVariationDesignParametersByTag(base_typeface_, kSlntTag);
     if (selection_capabilities.slope.IsRangeSetFromAuto() && slnt_parameters) {
-      DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
       FontSelectionRange slnt_range = {
           FontSelectionValue(slnt_parameters->min),
           FontSelectionValue(slnt_parameters->max)};

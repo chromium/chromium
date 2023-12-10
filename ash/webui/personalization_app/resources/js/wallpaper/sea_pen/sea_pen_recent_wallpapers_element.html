@@ -1,4 +1,4 @@
-<style include="wallpaper common">
+<style include="wallpaper common sea-pen">
   :host {
     overflow: hidden;
   }
@@ -7,7 +7,7 @@
     width: 100%;
   }
 
-  .recent-wallpaper-container {
+  .recent-image-container {
     height: calc(var(--personalization-app-grid-item-height) + var(--personalization-app-grid-item-spacing));
     /* Media queries in trusted and untrusted code will resize to 25% at
      * correct widths.  Subtract 0.34px to fix subpixel rounding issues with
@@ -17,17 +17,12 @@
   }
 
   @media(min-width: 720px) {
-    .recent-wallpaper-container {
+    .recent-image-container {
       /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
        * ensures all grid items in a row add up to at least 1px smaller than the
        * parent width. */
       width: calc(100% / 4 - 0.25px);
     }
-  }
-
-  wallpaper-grid-item.recent-wallpaper {
-    --wallpaper-grid-item-width: 100%;
-    height: 100%;
   }
 
   .menu-icon-container {
@@ -68,26 +63,26 @@
     margin-inline: 0;
   }
 </style>
-<template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentWallpapers_)]]">
+<template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
   <!-- TODO(b/308200616): Add finalized strings -->
   <h2 class="wallpaper-collections-heading">Recently used Sea Pen wallpaper</h2>
   <iron-list id="grid"
-      items="[[recentWallpapers_]]"
+      items="[[recentImagesToDisplay_]]"
       as="image"
       grid
-      aria-setsize$="[[recentWallpapers_.length]]"
+      aria-setsize$="[[recentImagesToDisplay_.length]]"
       role="listbox">
     <template>
-      <div class="recent-wallpaper-container">
+      <div class="recent-image-container">
         <wallpaper-grid-item
-            class="recent-wallpaper"
+            class="sea-pen-image"
             index="[[index]]"
-            data-recent-wallpaper
+            data-sea-pen-image
             aria-posinset$="[[getAriaIndex_(index)]]"
-            on-wallpaper-grid-item-selected="onRecentWallpaperSelected_"
+            on-wallpaper-grid-item-selected="onRecentImageSelected_"
             role="option"
-            selected="[[isRecentWallpaperSelected_(image, selectedWallpaper_)]]"
-            src="[[image.url]]"
+            selected="[[isRecentImageSelected_(image, currentSelected_, pendingSelected_)]]"
+            src="[[getRecentImageUrl_(image, recentImageData_, recentImageDataLoading_)]]"
             tabindex$="[[tabIndex]]">
         </wallpaper-grid-item>
         <div class="menu-icon-container">
@@ -113,7 +108,7 @@
           <cr-dialog id="wallpaperInfoDialog" data-id$="[[index]]" on-close="onCloseDialog_" show-on-attach>
             <div slot="body">
               <h2>Wallpaper Info</h2>
-              <p>[[getWallpaperInfoMessage_(image)]]</p>
+              <p>[[getWallpaperInfoMessage_(image, recentImageData_, recentImageDataLoading_)]]</p>
             </div>
             <div slot="button-container">
               <cr-button id="wallpaperInfoCloseButton" class="action-button primary" on-click="onCloseDialog_">

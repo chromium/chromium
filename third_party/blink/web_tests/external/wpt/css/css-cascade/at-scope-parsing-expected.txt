@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] @scope (.c <> .d) is valid
+  assert_equals: expected "@scope (.c <> .d) {\\n}" but got "@scope () {\\n}"
+[FAIL] @scope (.a, .c <> .d) is valid
+  assert_equals: expected "@scope (.a, .c <> .d) {\\n}" but got "@scope (.a) {\\n}"
+[FAIL] @scope (.a <> .b, .c) is valid
+  assert_equals: expected "@scope (.a <> .b, .c) {\\n}" but got "@scope (.c) {\\n}"
+[FAIL] @scope (div::before) is valid
+  assert_equals: expected "@scope (div::before) {\\n}" but got "@scope () {\\n}"
+[FAIL] @scope (div::after) is valid
+  assert_equals: expected "@scope (div::after) {\\n}" but got "@scope () {\\n}"
+[FAIL] @scope (slotted(div)) is valid
+  assert_equals: expected "@scope (slotted(div)) {\\n}" but got "@scope () {\\n}"
+[FAIL] @scope (.a) to (div::before) is valid
+  assert_equals: expected "@scope (.a) to (div::before) {\\n}" but got "@scope (.a) {\\n}"
+[FAIL] @scope (> &) to (>>) is valid
+  assert_equals: expected "@scope (> &) to (>>) {\\n}" but got "@scope (> &) {\\n}"
+Harness: the test ran to completion.
+

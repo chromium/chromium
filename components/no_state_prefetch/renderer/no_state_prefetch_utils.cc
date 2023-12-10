@@ -73,17 +73,19 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
 bool DeferMediaLoad(content::RenderFrame* render_frame,
                     bool has_played_media_before,
                     base::OnceClosure closure) {
+  blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
   // Don't allow autoplay/autoload of media resources in a page that is hidden
-  // and has never played any media before.  We want to allow future loads even
-  // when hidden to allow playlist-like functionality.
+  // and has never played any media before and has no Document
+  // Picture-in-Picture window. We want to allow future loads even when hidden
+  // to allow playlist-like functionality.
   //
   // NOTE: This is also used to defer media loading for NoStatePrefetch.
-  if ((render_frame->GetWebFrame()->View()->GetVisibilityState() !=
+  if ((web_frame->View()->GetVisibilityState() !=
            content::PageVisibilityState::kVisible &&
-       !has_played_media_before) ||
+       !has_played_media_before &&
+       !web_frame->GetDocument().HasDocumentPictureInPictureWindow()) ||
       NoStatePrefetchHelper::IsPrefetching(render_frame)) {
-    new MediaLoadDeferrer(render_frame, render_frame->GetWebFrame()->View(),
-                          std::move(closure));
+    new MediaLoadDeferrer(render_frame, web_frame->View(), std::move(closure));
     return true;
   }
 

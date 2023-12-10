@@ -109,7 +109,7 @@ class AX_BASE_EXPORT AXMode {
 
   constexpr uint32_t experimental_flags() const { return experimental_flags_; }
 
-  constexpr bool is_mode_off() const { return flags_ == 0; }
+  constexpr bool is_mode_off() const { return !flags_ && !experimental_flags_; }
 
   constexpr AXMode& operator|=(const AXMode& rhs) {
     flags_ |= rhs.flags_;

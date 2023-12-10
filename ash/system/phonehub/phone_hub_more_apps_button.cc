@@ -105,7 +105,7 @@ void PhoneHubMoreAppsButton::InitLayout() {
 
   if (app_stream_launcher_data_model_->GetAppsListSortedByName()->empty()) {
     load_app_list_latency_ = base::TimeTicks::Now();
-    StartLoadingAnimation(/*initial_delay=*/absl::nullopt);
+    StartLoadingAnimation(/*initial_delay=*/std::nullopt);
     SetEnabled(false);
     phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
         phone_hub_metrics::MoreAppsButtonLoadingState::kAnimationShown);
@@ -123,7 +123,7 @@ void PhoneHubMoreAppsButton::InitLayout() {
 }
 
 void PhoneHubMoreAppsButton::StartLoadingAnimation(
-    absl::optional<base::TimeDelta> initial_delay) {
+    std::optional<base::TimeDelta> initial_delay) {
   app_loading_icons_.clear();
   RemoveAllChildViews();
   for (size_t i = 0; i < 4; i++) {

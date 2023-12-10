@@ -19,14 +19,14 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -84,11 +84,11 @@ NET_EXPORT bool ParseMimeType(const std::string& type_str,
 //
 // This function strips leading and trailing whitespace from the MIME type.
 // TODO: investigate if we should strip strictly HTTP whitespace.
-NET_EXPORT bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
+NET_EXPORT bool ParseMimeTypeWithoutParameter(std::string_view type_string,
                                               std::string* top_level_type,
                                               std::string* subtype);
 
-// Returns `absl::optional` with value containing the extracted `type/sub_type`
+// Returns `std::optional` with value containing the extracted `type/sub_type`
 // if `type_string` is a correctly-formed mime type specifier. Returns optional
 // with empty otherwise.
 // Set `accept_comma_separated` to accept a type_string like "text/html,
@@ -102,7 +102,7 @@ NET_EXPORT bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
 // While RFC 2616 does not allow it, other browsers allow multiple values in
 // the HTTP media type header field, Content-Type. In such cases, the media
 // type passed here may contain the multiple values separated by commas.
-NET_EXPORT absl::optional<std::string> ExtractMimeTypeFromMediaType(
+NET_EXPORT std::optional<std::string> ExtractMimeTypeFromMediaType(
     const std::string& type_string,
     bool accept_comma_separated);
 

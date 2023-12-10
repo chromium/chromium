@@ -14,7 +14,8 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './../personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personalization_app.mojom-webui.js';
+
 import {isAmbientModeAllowed} from './load_time_booleans.js';
 import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
@@ -28,6 +29,7 @@ export enum Paths {
   LOCAL_COLLECTION = '/wallpaper/local',
   ROOT = '/',
   SEA_PEN_COLLECTION = '/wallpaper/sea-pen',
+  SEA_PEN_RESULTS = '/wallpaper/sea-pen/results',
   USER = '/user',
 }
 

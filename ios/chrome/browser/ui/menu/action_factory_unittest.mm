@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/menu/action_factory+protected.h"
@@ -24,7 +25,8 @@
 #import "url/gurl.h"
 
 namespace {
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+const MenuScenarioHistogram kTestMenuScenario =
+    kMenuScenarioHistogramHistoryEntry;
 }  // namespace
 
 // Test fixture for the ActionFactory.
@@ -122,8 +124,7 @@ TEST_F(ActionFactoryTest, CopyAction) {
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE);
 
-  GURL testURL = GURL("https://example.com");
-
+  CrURL* testURL = [[CrURL alloc] initWithGURL:GURL("https://example.com")];
   UIAction* action = [factory actionToCopyURL:testURL];
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);

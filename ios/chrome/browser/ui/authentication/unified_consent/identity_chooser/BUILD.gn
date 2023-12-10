@@ -19,8 +19,8 @@ source_set("identity_chooser") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:system_identity",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
   ]
 }
@@ -76,8 +76,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

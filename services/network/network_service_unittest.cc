@@ -5,6 +5,7 @@
 #include "services/network/network_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -22,14 +23,20 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/url_util.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_util.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_config_service.h"
@@ -57,6 +64,8 @@
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
@@ -699,7 +708,7 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
 
 TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
   auto FindProviderFeature =
-      [](base::StringPiece provider) -> base::test::FeatureRef {
+      [](std::string_view provider) -> base::test::FeatureRef {
     const auto it =
         base::ranges::find(net::DohProviderEntry::GetList(), provider,
                            &net::DohProviderEntry::provider);
@@ -1067,6 +1076,136 @@ TEST_F(NetworkServiceTest, SetMaskedDomainList) {
 
   EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsPopulated());
 }
+
+class TestCookieEncryptionProvider : public mojom::CookieEncryptionProvider {
+ public:
+  TestCookieEncryptionProvider() = default;
+
+  mojo::PendingRemote<network::mojom::CookieEncryptionProvider> BindRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  MOCK_METHOD(void, GetEncryptor, (GetEncryptorCallback callback), (override));
+
+ private:
+  mojo::Receiver<mojom::CookieEncryptionProvider> receiver_{this};
+};
+
+class NetworkServiceCookieTest
+    : public NetworkServiceTest,
+      public testing::WithParamInterface<
+          std::tuple</*enable_encryption*/ bool, /*set_provider*/ bool>> {
+ protected:
+  bool IsEncryptionEnabled() const { return std::get<0>(GetParam()); }
+  bool ShouldSetEncryptionProvider() const { return std::get<1>(GetParam()); }
+};
+
+// This test verifies that SetCookieEncryptionProvider API on the
+// network_service functions correctly. In the case where
+// SetCookieEncryptionProvider is called with a provider, and
+// enable_encrypted_cookies is on, then the GetEncryptor method is called and
+// the returned Encryptor is used for encryption.
+TEST_P(NetworkServiceCookieTest, SetCookieEncryptionProvider) {
+  const auto cookie_path = base::FilePath(FILE_PATH_LITERAL("Cookies"));
+  testing::StrictMock<TestCookieEncryptionProvider> provider;
+  std::optional<base::ScopedClosureRunner> maybe_teardown_os_crypt;
+
+  if (ShouldSetEncryptionProvider()) {
+    service()->SetCookieEncryptionProvider(provider.BindRemote());
+    if (IsEncryptionEnabled()) {
+      EXPECT_CALL(provider, GetEncryptor)
+          .WillOnce(
+              [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
+                     callback) {
+                std::move(callback).Run(
+                    os_crypt_async::GetTestEncryptorForTesting());
+              });
+    }
+  } else {
+    if (IsEncryptionEnabled()) {
+      // If encryption is enabled but a CookieEncryptionProvider is not
+      // provided, then network service uses OSCrypt. This requires a valid key,
+      // so obtain one from the mocker.
+      OSCryptMocker::SetUp();
+      maybe_teardown_os_crypt.emplace(base::ScopedClosureRunner(
+          base::BindOnce([]() { OSCryptMocker::TearDown(); })));
+    }
+  }
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+  params->enable_encrypted_cookies = IsEncryptionEnabled();
+  params->file_paths->data_directory = temp_dir.GetPath();
+  params->file_paths->cookie_database_name = cookie_path;
+
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  network_context->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+
+  const char kSecretValue[] = "SUPERSECRET1234";
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie", kSecretValue, "www.test.com", "/", base::Time::Now(),
+      base::Time::Now() + base::Days(1), base::Time(), base::Time(),
+      /*secure=*/true, /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_DEFAULT);
+  base::test::TestFuture<net::CookieAccessResult> future;
+  cookie_manager->SetCanonicalCookie(
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+      net::CookieOptions(), future.GetCallback());
+  ASSERT_TRUE(future.Take().status.IsInclude());
+
+  base::RunLoop flush_loop;
+  cookie_manager->FlushCookieStore(flush_loop.QuitClosure());
+  flush_loop.Run();
+
+  base::RunLoop run_loop;
+  network_context.set_disconnect_handler(run_loop.QuitClosure());
+  // This closes the cookie file, allowing the Cookie file to be safely read,
+  // and the temp directory to be deleted.
+  DestroyService();
+  run_loop.Run();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(temp_dir.GetPath().Append(cookie_path),
+                                     &contents));
+  bool expect_encrypted_data = IsEncryptionEnabled();
+
+  if (IsEncryptionEnabled()) {
+    if (ShouldSetEncryptionProvider()) {
+      // The test os_crypt_async::Encryptor uses a key ring with '_' as the
+      // provider name, so the encrypted text will always contain this marker.
+      EXPECT_NE(contents.find("_"), std::string::npos);
+    } else {
+      // cookie_config::GetCookieCryptoDelegate only returns a valid OSCrypt
+      // crypto delegate on some platforms. On other platforms, there is no
+      // cookie crypto as it's handled by the OS.
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+      BUILDFLAG(IS_CHROMEOS))
+      expect_encrypted_data = false;
+#endif
+    }
+  }
+
+  if (expect_encrypted_data) {
+    EXPECT_EQ(contents.find(kSecretValue), std::string::npos);
+  } else {
+    EXPECT_NE(contents.find(kSecretValue), std::string::npos);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         NetworkServiceCookieTest,
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         [](const auto& info) {
+                           return base::StringPrintf(
+                               "%s_%s",
+                               std::get<0>(info.param) ? "crypt" : "no_crypt",
+                               std::get<1>(info.param) ? "provider"
+                                                       : "no_provider");
+                         });
 
 class NetworkServiceTestWithService : public testing::Test {
  public:

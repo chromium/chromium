@@ -50,14 +50,14 @@ public class MaterialSpinnerView extends AppCompatImageView {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        updateAnimationState(/*isAttached=*/true);
+        updateAnimationState(/* isAttached= */ true);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         // isAttachedToWindow() doesn't turn false during onDetachedFromWindow(), so we pass the new
         // attachment state into updateAnimationState() here explicitly.
-        updateAnimationState(/*isAttached=*/false);
+        updateAnimationState(/* isAttached= */ false);
         super.onDetachedFromWindow();
     }
 

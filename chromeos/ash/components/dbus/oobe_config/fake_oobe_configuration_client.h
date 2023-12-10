@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(ASH_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
   void SetConfiguration(const std::string& configuration);
 
  private:
-  absl::optional<std::string> configuration_;
+  std::optional<std::string> configuration_;
 };
 
 }  // namespace ash

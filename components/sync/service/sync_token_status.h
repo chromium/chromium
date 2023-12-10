@@ -13,9 +13,6 @@ namespace syncer {
 
 // Status of sync server connection, OAuth2 access token and token request.
 struct SyncTokenStatus {
-  SyncTokenStatus() = default;
-  ~SyncTokenStatus() = default;
-
   // Sync server connection status reported by the sync engine.
   base::Time connection_status_update_time;
   ConnectionStatus connection_status = CONNECTION_NOT_ATTEMPTED;

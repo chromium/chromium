@@ -49,6 +49,15 @@ const modelColors = new Map();
  */
 const targetFrameTime = 16667;
 
+// Graphics event types which are used in the model JSON data. These must match
+// the graphics event types in
+// chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h. To aid in
+// maintaining consistency, do not modify values once added - deprecation and
+// removal are allowed.
+const kExoSurfaceCommit = 206;
+const kChromeOSPresentationDone = 503;
+const kChromeOSSwapDone = 504;
+
 function initializeOverviewUi() {
   initializeUi(8 /* zoomLevel */, function() {
     // Update function.
@@ -80,7 +89,7 @@ function calculateFPS(events, duration) {
  * @param {Object} model model to process.
  */
 function calculateAppRenderQualityAndCommitDeviation(model) {
-  const deltas = createDeltaEvents(getAppCommitEvents(model));
+  const deltas = createDeltaEvents(getGraphicsEvents(model, kExoSurfaceCommit));
 
   let vsyncErrorDeviationAccumulator = 0.0;
   // Frame delta in microseconds.
@@ -164,12 +173,14 @@ function addModelHeader(model) {
   header.getElementsByClassName('arc-tracing-app-platform')[0].textContent =
       platform;
 
-  header.getElementsByClassName('arc-tracing-app-fps')[0].textContent =
-      calculateFPS(getAppCommitEvents(model), model.information.duration)
-          .toFixed(2);
-  header.getElementsByClassName('arc-tracing-perceived-fps')[0].textContent =
-      calculateFPS(getPerceivedFrameEvents(model), model.information.duration)
-          .toFixed(2);
+  function setFPS(cssClass, type) {
+    const fps = calculateFPS(
+        getGraphicsEvents(model, type), model.information.duration);
+    header.getElementsByClassName(cssClass)[0].textContext = fps.toFixed(2);
+  }
+  setFPS('arc-tracing-app-fps', kExoSurfaceCommit);
+  setFPS('arc-tracing-perceived-fps', kChromeOSPresentationDone);
+
   const renderQualityAndCommitDeviation =
       calculateAppRenderQualityAndCommitDeviation(model);
   header.getElementsByClassName('arc-tracing-app-render-quality')[0]
@@ -202,33 +213,21 @@ function addModelHeader(model) {
 }
 
 /**
- * Helper that extracts surface commit events and creates composited events.
- * These differ from perceived swaps in that app commit events may be discarded
- * before they are swapped onto the display by ChromeOS.
+ * Helper that extracts graphics events of a given type.
  *
- * @param {object} model source model to analyze.
+ * @param {object} model source model whose graphics events to filter
+ * @param {number} eventType type of event to extract
  */
-function getAppCommitEvents(model) {
+function getGraphicsEvents(model, eventType) {
   const events = [];
-  for (let i = 0; i < model.views.length; i++) {
-    const view = model.views[i];
-    for (let j = 0; j < view.buffers.length; j++) {
-      const commitEvents =
-          new Events(view.buffers[j], 206 /* kExoSurfaceCommit */);
-      let index = commitEvents.getFirstEvent();
-      while (index >= 0) {
-        events.push(commitEvents.events[index]);
-        index = commitEvents.getNextEvent(index, 1 /* direction */);
-      }
-    }
+  const extractor = new Events(model.graphics_events, eventType);
+  let index = extractor.getFirstEvent();
+  while (index >= 0) {
+    events.push(extractor.events[index]);
+    index = extractor.getNextEvent(index, 1 /* direction */);
   }
 
-  // Sort by timestamp.
-  events.sort(function(a, b) {
-    return a[1] - b[1];
-  });
-
-  return new Events(events, 206 /* kExoSurfaceCommit */);
+  return new Events(events, eventType);
 }
 
 /**
@@ -257,53 +256,6 @@ function getAveragePower(model, eventType) {
   }
 
   return totalEnergy / lastTimestamp;
-}
-
-/**
- * Extracts perceived frame presented.
- *
- * @param {object} model source model to analyze.
- */
-function getPerceivedFrameEvents(model) {
-  const events = [];
-  const presentEvents = new Events(
-      model.chrome.global_events, 503 /* kChromeOSPresentationDone */);
-  let index = presentEvents.getFirstEvent();
-  while (index >= 0) {
-    events.push(presentEvents.events[index]);
-    index = presentEvents.getNextEvent(index, 1 /* direction */);
-  }
-  // Sort by timestamp.
-  events.sort(function(a, b) {
-    return a[1] - b[1];
-  });
-
-  return new Events(events, 503 /* kChromeOSPresentationDone */);
-}
-
-/**
- * Helper that extracts ChromeOS swap events. These are different from perceived
- * swap events in that a ChromeOS swap may not contain new app content.
- *
- * @param {object} model source model to analyze.
- */
-function getChromeSwapEvents(model) {
-  const events = [];
-  for (let i = 0; i < model.chrome.buffers.length; i++) {
-    const swapEvents =
-        new Events(model.chrome.buffers[i], 504 /* kChromeOSSwapDone */);
-    let index = swapEvents.getFirstEvent();
-    while (index >= 0) {
-      events.push(swapEvents.events[index]);
-      index = swapEvents.getNextEvent(index, 1 /* direction */);
-    }
-  }
-  // Sort by timestamp.
-  events.sort(function(a, b) {
-    return a[1] - b[1];
-  });
-
-  return new Events(events, 504 /* kChromeOSSwapDone */);
 }
 
 /**
@@ -455,10 +407,9 @@ function addGPUFrequencyView(parent, resolution, duration) {
  * @param {number} resolution scale of the chart in microseconds per pixel.
  * @param {number} duration length of the chart in microseconds.
  * @param {string} title the title of the view
- * @param {function} modelToEventsFn function which takes a model and returns
- *                                   the events whose rate to track
+ * @param {number} eventType type of the event whose rate to track
  */
-function addFPSView(parent, resolution, duration, title, modelToEventsFn) {
+function addFPSView(parent, resolution, duration, title, eventType) {
   // FPS range from 10 to 70.
   // 1 fps 1 pixel resolution.
   const bands = createChart(
@@ -478,7 +429,7 @@ function addFPSView(parent, resolution, duration, title, modelToEventsFn) {
       }
       content += models[i].information.title;
 
-      const events = modelToEventsFn(models[i]);
+      const events = getGraphicsEvents(models[i], eventType);
       modelEvents.push(createDeltaEvents(events));
     }
     fileName = content.replace(',', '_') + '_frame_times.csv';
@@ -520,7 +471,7 @@ function addFPSView(parent, resolution, duration, title, modelToEventsFn) {
       {maxValue: 70, minValue: 10, name: 'fps', scale: 1.0, width: 1.0};
   for (i = 0; i < models.length; i++) {
     const attributes = Object.assign({}, attributesTemplate);
-    const events = modelToEventsFn(models[i]);
+    const events = getGraphicsEvents(models[i], eventType);
     const fpsEvents = createFPSEvents(
         events, duration, 200000 /* windowSize, 0.2s */, targetFrameTime);
     attributes.color = modelColors.get(models[i]);
@@ -536,8 +487,10 @@ function addFPSView(parent, resolution, duration, title, modelToEventsFn) {
  * @param {boolean} timeBasedView set to true if histograms are frame times
  *                                based. Otherwise historams contain frame
  *                                count.
+ * @param {array[number]} eventTypes array of numeric event types corresponding
+ *                                   with frame shown events in each histogram
  */
-function addFPSHistograms(parent, anchor, timeBasedView) {
+function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
   // Define the width of each bar based on number of models in view.
   let barWidth;
   if (models.length == 1) {
@@ -579,7 +532,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
     // Section consists of 2 elements: header and SVG view.
     parent.removeChild(anchor.nextSibling);
     parent.removeChild(anchor.nextSibling);
-    addFPSHistograms(parent, anchor, timeBasedView);
+    addFPSHistograms(parent, anchor, timeBasedView, eventTypes);
   };
 
   const viewHandlerTimeBasedView = function(event) {
@@ -601,7 +554,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
 
   const fpsBandYOffset = 80;
 
-  for (let t = 0; t < 2; ++t) {
+  for (let t = 0; t < eventTypes.length; ++t) {
     // Create band with FPSs.
     for (let i = 0; i < basketFPSs.length; ++i) {
       const x = fullSectionWidth * t         // Section offset
@@ -613,8 +566,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
     }
 
     for (let m = 0; m < models.length; ++m) {
-      const events = t == 0 ? getAppCommitEvents(models[m]) :
-                              getPerceivedFrameEvents(models[m]);
+      const events = getGraphicsEvents(models[m], eventTypes[t]);
       // Presort deltas between frames. Fastest one goes first.
       const deltas = createDeltaEvents(events);
       if (deltas.events.length == 0) {
@@ -743,10 +695,9 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
  * @param {number} resolution scale of the chart in microseconds per pixel.
  * @param {number} duration length of the chart in microseconds.
  * @param {string} title the title of the view
- * @param {function} modelToEventsFn function which takes a model and returns
- *                                   the events whose rate to track
+ * @param {number} eventType type of event whose rate to track
  */
-function addDeltaView(parent, resolution, duration, title, modelToEventsFn) {
+function addDeltaView(parent, resolution, duration, title, eventType) {
   // time range from 0 to 67ms. 66.67ms is for 15 FPS.
   // 1 ms 1 pixel resolution.  Each grid lines correspond 1/120 FPS time update.
   const bands = createChart(
@@ -761,7 +712,7 @@ function addDeltaView(parent, resolution, duration, title, modelToEventsFn) {
   };
   for (i = 0; i < models.length; i++) {
     const attributes = Object.assign({}, attributesTemplate);
-    const events = modelToEventsFn(models[i]);
+    const events = getGraphicsEvents(models[i], eventType);
     const timeEvents = createDeltaEvents(events);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources([timeEvents], false /* smooth */, attributes);
@@ -836,18 +787,21 @@ function refreshModels() {
   addCPUFrequencyView(parent, resolution, duration);
   addCPUTempView(parent, resolution, duration);
   addGPUFrequencyView(parent, resolution, duration);
-  addFPSView(parent, resolution, duration, 'App FPS', getAppCommitEvents);
+
+  addFPSView(parent, resolution, duration, 'App FPS', kExoSurfaceCommit);
   addDeltaView(
-      parent, resolution, duration, 'App commit time', getAppCommitEvents);
+      parent, resolution, duration, 'App commit time', kExoSurfaceCommit);
   addDeltaView(
-      parent, resolution, duration, 'ChromeOS swap time', getChromeSwapEvents);
+      parent, resolution, duration, 'ChromeOS swap time', kChromeOSSwapDone);
   addFPSView(
-      parent, resolution, duration, 'Perceived FPS', getPerceivedFrameEvents);
+      parent, resolution, duration, 'Perceived FPS', kChromeOSPresentationDone);
   addDeltaView(
       parent, resolution, duration, 'Perceived swap time',
-      getPerceivedFrameEvents);
+      kChromeOSPresentationDone);
 
-  addFPSHistograms(parent, parent.lastChild, false /* timeBasedView */);
+  addFPSHistograms(
+      parent, parent.lastChild, false /* timeBasedView */,
+      [kExoSurfaceCommit, kChromeOSPresentationDone]);
   addPowerView(
       parent, 'Package power constraint', resolution, duration,
       13 /* eventType */);
@@ -899,6 +853,26 @@ function addModel(model) {
   models.push(model);
 
   setModelColor(model);
+  const graphicsEvents = [];
+  function mergeEvents(es) {
+    graphicsEvents.push(...es);
+  }
+
+  mergeEvents(model.chrome.global_events);
+  model.chrome.buffers.forEach(mergeEvents);
+  delete model.chrome;
+
+  model.views.forEach(function(v) {
+    mergeEvents(v.global_events);
+    v.buffers.forEach(mergeEvents);
+  });
+  delete model.views;
+
+  // Sort by timestamp.
+  graphicsEvents.sort(function(a, b) {
+    return a[1] - b[1];
+  });
+  model.graphics_events = graphicsEvents;
 
   refreshModels();
 }

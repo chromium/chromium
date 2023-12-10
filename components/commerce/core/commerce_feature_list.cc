@@ -47,6 +47,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShowDiscountOnNavigationRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kEnableDiscountInfoApiRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
 
@@ -153,10 +154,6 @@ BASE_FEATURE(kCommercePriceTracking,
              "CommercePriceTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommercePriceTrackingChipExperiment,
-             "CommercePriceTrackingChipExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
              "CommercePriceTrackingRegionLaunched",
@@ -170,9 +167,16 @@ BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
 BASE_FEATURE(kPriceInsights,
              "PriceInsights",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kPriceInsightsRegionLaunched,
+             "PriceInsightsRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kPriceInsightsRegionLaunched,
              "PriceInsightsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 const char kPriceInsightsDelayChipParam[] = "price-inishgts-delay-chip";
 const base::FeatureParam<bool> kPriceInsightsDelayChip{
     &commerce::kPriceInsights, kPriceInsightsDelayChipParam, false};
@@ -183,7 +187,7 @@ const base::FeatureParam<bool> kPriceInsightsChipLabelExpandOnHighPrice{
     false};
 const char kPriceInsightsShowFeedbackParam[] = "price-insights-show-feedback";
 const base::FeatureParam<bool> kPriceInsightsShowFeedback{
-    &commerce::kPriceInsights, kPriceInsightsShowFeedbackParam, false};
+    &commerce::kPriceInsights, kPriceInsightsShowFeedbackParam, true};
 const char kPriceInsightsUseCacheParam[] = "price-insights-use-cache";
 const base::FeatureParam<bool> kPriceInsightsUseCache{
     &commerce::kPriceInsights, kPriceInsightsUseCacheParam, true};
@@ -194,12 +198,32 @@ BASE_FEATURE(kPriceTrackingIconColors,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Discount on navigation
+BASE_FEATURE(kEnableDiscountInfoApi,
+             "EnableDiscountInfoApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kShowDiscountOnNavigation,
+             "ShowDiscountOnNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
+             "ShowDiscountOnNavigationRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
+             "EnableDiscountInfoApiRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kShowDiscountOnNavigation,
              "ShowDiscountOnNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
              "ShowDiscountOnNavigationRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
+             "EnableDiscountInfoApiRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
              "DiscountDialogAutoPopupBehaviorSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -225,7 +249,7 @@ BASE_FEATURE(kShoppingCollection,
 
 BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kShoppingListRegionLaunched,
              "ShoppingListRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -237,10 +261,6 @@ BASE_FEATURE(kShoppingListRegionLaunched,
 
 BASE_FEATURE(kShoppingListTrackByDefault,
              "ShoppingListTrackByDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kShoppingListWAARestrictionRemoval,
-             "ShoppingListWAARestrictionRemoval",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingPDPMetrics,
@@ -424,13 +444,6 @@ const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";
 const base::FeatureParam<bool> kRevertIconOnFailure{
     &kShoppingList, kRevertIconOnFailureParam, false};
-
-// CommercePriceTrackingChipExperiment params.
-const char kCommercePriceTrackingChipExperimentVariationParam[] =
-    "price-tracking-chip-experiment-variation";
-const base::FeatureParam<int> kCommercePriceTrackingChipExperimentVariation{
-    &commerce::kCommercePriceTrackingChipExperiment,
-    kCommercePriceTrackingChipExperimentVariationParam, 0};
 
 bool IsPartnerMerchant(const GURL& url) {
   return commerce::IsCouponDiscountPartnerMerchant(url) ||

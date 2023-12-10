@@ -53,9 +53,9 @@ class VIEWS_EXPORT EditableCombobox
       public TextfieldController,
       public ViewObserver,
       public views::AnimatingLayoutManager::Observer {
- public:
-  METADATA_HEADER(EditableCombobox);
+  METADATA_HEADER(EditableCombobox, View)
 
+ public:
   // A strategy that can be used to customize the display of the drop-down menu.
   // It is only intended to be used by classes that extend `EditableCombobox`.
   class MenuDecorationStrategy {

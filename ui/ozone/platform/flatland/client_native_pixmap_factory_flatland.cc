@@ -6,9 +6,10 @@
 
 #include <lib/zx/vmar.h>
 #include <lib/zx/vmo.h>
+
+#include <bit>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
@@ -25,7 +26,7 @@ namespace {
 
 bool AlignUpToPageSizeChecked(size_t size, size_t* aligned_size) {
   static_assert(base::IsValueInRangeForNumericType<size_t>(ZX_PAGE_SIZE) &&
-                    base::bits::IsPowerOfTwo(ZX_PAGE_SIZE),
+                    std::has_single_bit(ZX_PAGE_SIZE),
                 "The page size must fit in a size_t and be a power of 2.");
   constexpr size_t kPageSizeMinusOne = ZX_PAGE_SIZE - 1;
   base::CheckedNumeric<size_t> aligned_size_checked =

@@ -278,9 +278,6 @@ void UnregistrationRequest::OnURLLoadComplete(
 
   DVLOG(1) << "UnregistrationRequestStatus: " << status;
 
-  DCHECK(custom_request_handler_.get());
-  custom_request_handler_->ReportUMAs(status);
-
   recorder_->RecordUnregistrationResponse(request_info_.app_id(),
                                           source_to_record_, status);
 
@@ -293,9 +290,6 @@ void UnregistrationRequest::OnURLLoadComplete(
     status = REACHED_MAX_RETRIES;
     recorder_->RecordUnregistrationResponse(request_info_.app_id(),
                                             source_to_record_, status);
-
-    DCHECK(custom_request_handler_.get());
-    custom_request_handler_->ReportUMAs(status);
   }
 
   std::move(callback_).Run(status);

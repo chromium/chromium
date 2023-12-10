@@ -31,17 +31,14 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Opens the appropriate date/time picker dialog for the given dialog type.
- */
+/** Opens the appropriate date/time picker dialog for the given dialog type. */
 public class InputDialogContainer {
     private static final String TAG = "InputDialogContainer";
 
-    /**
-     * Delegate that implements the picker's actions.
-     */
+    /** Delegate that implements the picker's actions. */
     public interface InputActionDelegate {
         void cancelDateTimeDialog();
+
         void replaceDateTime(double value);
     }
 
@@ -54,9 +51,12 @@ public class InputDialogContainer {
     private final InputActionDelegate mInputActionDelegate;
 
     public static boolean isDialogInputType(int type) {
-        return type == TextInputType.DATE || type == TextInputType.TIME
-                || type == TextInputType.DATE_TIME || type == TextInputType.DATE_TIME_LOCAL
-                || type == TextInputType.MONTH || type == TextInputType.WEEK;
+        return type == TextInputType.DATE
+                || type == TextInputType.TIME
+                || type == TextInputType.DATE_TIME
+                || type == TextInputType.DATE_TIME_LOCAL
+                || type == TextInputType.MONTH
+                || type == TextInputType.WEEK;
     }
 
     public InputDialogContainer(Context context, InputActionDelegate inputActionDelegate) {
@@ -64,8 +64,8 @@ public class InputDialogContainer {
         mInputActionDelegate = inputActionDelegate;
     }
 
-    protected void showPickerDialog(final int dialogType, double dialogValue,
-            double min, double max, double step) {
+    protected void showPickerDialog(
+            final int dialogType, double dialogValue, double min, double max, double step) {
         Calendar cal;
         // |dialogValue|, |min|, |max| mean different things depending on the |dialogType|.
         // For input type=month is the number of months since 1970.
@@ -87,23 +87,41 @@ public class InputDialogContainer {
                 // so we ignore the Julian/Gregorian transition.
                 gregorianCalendar.setGregorianChange(new Date(Long.MIN_VALUE));
                 gregorianCalendar.setTimeInMillis((long) dialogValue);
-                cal =  gregorianCalendar;
+                cal = gregorianCalendar;
             }
         }
         if (dialogType == TextInputType.DATE) {
-            showPickerDialog(dialogType,
+            showPickerDialog(
+                    dialogType,
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
                     cal.get(Calendar.DAY_OF_MONTH),
-                    0, 0, 0, 0, 0, min, max, step);
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    min,
+                    max,
+                    step);
         } else if (dialogType == TextInputType.TIME) {
-            showPickerDialog(dialogType, 0, 0, 0,
+            showPickerDialog(
+                    dialogType,
+                    0,
+                    0,
+                    0,
                     cal.get(Calendar.HOUR_OF_DAY),
                     cal.get(Calendar.MINUTE),
-                    0, 0, 0, min, max, step);
+                    0,
+                    0,
+                    0,
+                    min,
+                    max,
+                    step);
         } else if (dialogType == TextInputType.DATE_TIME
                 || dialogType == TextInputType.DATE_TIME_LOCAL) {
-            showPickerDialog(dialogType,
+            showPickerDialog(
+                    dialogType,
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
                     cal.get(Calendar.DAY_OF_MONTH),
@@ -111,10 +129,24 @@ public class InputDialogContainer {
                     cal.get(Calendar.MINUTE),
                     cal.get(Calendar.SECOND),
                     cal.get(Calendar.MILLISECOND),
-                    0, min, max, step);
+                    0,
+                    min,
+                    max,
+                    step);
         } else if (dialogType == TextInputType.MONTH) {
-            showPickerDialog(dialogType, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 0,
-                    0, 0, 0, 0, 0, min, max, step);
+            showPickerDialog(
+                    dialogType,
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    min,
+                    max,
+                    step);
         } else if (dialogType == TextInputType.WEEK) {
             int year = WeekPicker.getISOWeekYearForDate(cal);
             int week = WeekPicker.getWeekForDate(cal);
@@ -122,28 +154,33 @@ public class InputDialogContainer {
         }
     }
 
-    private void showSuggestionDialog(final int dialogType,
+    private void showSuggestionDialog(
+            final int dialogType,
             final double dialogValue,
-            final double min, final double max, final double step,
+            final double min,
+            final double max,
+            final double step,
             DateTimeSuggestion[] suggestions) {
         ListView suggestionListView = new ListView(mContext);
         final DateTimeSuggestionListAdapter adapter =
                 new DateTimeSuggestionListAdapter(mContext, Arrays.asList(suggestions));
         suggestionListView.setAdapter(adapter);
-        suggestionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == adapter.getCount() - 1) {
-                    dismissDialog();
-                    showPickerDialog(dialogType, dialogValue, min, max, step);
-                } else {
-                    double suggestionValue = adapter.getItem(position).value();
-                    mInputActionDelegate.replaceDateTime(suggestionValue);
-                    dismissDialog();
-                    mDialogAlreadyDismissed = true;
-                }
-            }
-        });
+        suggestionListView.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == adapter.getCount() - 1) {
+                            dismissDialog();
+                            showPickerDialog(dialogType, dialogValue, min, max, step);
+                        } else {
+                            double suggestionValue = adapter.getItem(position).value();
+                            mInputActionDelegate.replaceDateTime(suggestionValue);
+                            dismissDialog();
+                            mDialogAlreadyDismissed = true;
+                        }
+                    }
+                });
 
         int dialogTitleId = R.string.date_picker_dialog_title;
         if (dialogType == TextInputType.TIME) {
@@ -157,34 +194,41 @@ public class InputDialogContainer {
             dialogTitleId = R.string.week_picker_dialog_title;
         }
 
-        mDialog = new AlertDialog.Builder(mContext)
-            .setTitle(dialogTitleId)
-            .setView(suggestionListView)
-            .setNegativeButton(mContext.getText(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dismissDialog();
-                    }
-                })
-            .create();
+        mDialog =
+                new AlertDialog.Builder(mContext)
+                        .setTitle(dialogTitleId)
+                        .setView(suggestionListView)
+                        .setNegativeButton(
+                                mContext.getText(android.R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dismissDialog();
+                                    }
+                                })
+                        .create();
 
-        mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (mDialog == dialog && !mDialogAlreadyDismissed) {
-                    mDialogAlreadyDismissed = true;
-                    mInputActionDelegate.cancelDateTimeDialog();
-                }
-            }
-        });
+        mDialog.setOnDismissListener(
+                new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (mDialog == dialog && !mDialogAlreadyDismissed) {
+                            mDialogAlreadyDismissed = true;
+                            mInputActionDelegate.cancelDateTimeDialog();
+                        }
+                    }
+                });
         mDialogAlreadyDismissed = false;
         mDialog.show();
     }
 
-    public void showDialog(final int type, final double value,
-                    double min, double max, double step,
-                    DateTimeSuggestion[] suggestions) {
+    public void showDialog(
+            final int type,
+            final double value,
+            double min,
+            double max,
+            double step,
+            DateTimeSuggestion[] suggestions) {
         // When the web page asks to show a dialog while there is one already open,
         // dismiss the old one.
         dismissDialog();
@@ -195,21 +239,29 @@ public class InputDialogContainer {
         }
     }
 
-    protected void showPickerDialog(final int dialogType,
-            int year, int month, int monthDay,
-            int hourOfDay, int minute, int second, int millis, int week,
-            double min, double max, double step) {
+    protected void showPickerDialog(
+            final int dialogType,
+            int year,
+            int month,
+            int monthDay,
+            int hourOfDay,
+            int minute,
+            int second,
+            int millis,
+            int week,
+            double min,
+            double max,
+            double step) {
         dismissDialog();
 
         int stepTime = (int) step;
 
         if (dialogType == TextInputType.DATE) {
-            DatePickerDialogCompat dialog = new DatePickerDialogCompat(mContext,
-                    new DateListener(dialogType),
-                    year, month, monthDay);
-            DateDialogNormalizer.normalize(dialog.getDatePicker(), dialog,
-                    year, month, monthDay,
-                    (long) min, (long) max);
+            DatePickerDialogCompat dialog =
+                    new DatePickerDialogCompat(
+                            mContext, new DateListener(dialogType), year, month, monthDay);
+            DateDialogNormalizer.normalize(
+                    dialog.getDatePicker(), dialog, year, month, monthDay, (long) min, (long) max);
 
             dialog.setTitle(mContext.getText(R.string.date_picker_dialog_title));
             mDialog = dialog;
@@ -217,37 +269,64 @@ public class InputDialogContainer {
             // If user doesn't need to set seconds and milliseconds, show the default clock style
             // time picker dialog. Otherwise, show a full spinner style time picker.
             if (stepTime < 0 || stepTime >= 60000 /* milliseconds in a minute */) {
-                mDialog = new TimePickerDialog(mContext, new TimeListener(dialogType), hourOfDay,
-                        minute, DateFormat.is24HourFormat(mContext));
+                mDialog =
+                        new TimePickerDialog(
+                                mContext,
+                                new TimeListener(dialogType),
+                                hourOfDay,
+                                minute,
+                                DateFormat.is24HourFormat(mContext));
             } else {
-                mDialog = new MultiFieldTimePickerDialog(mContext, 0 /* theme */, hourOfDay, minute,
-                        second, millis, (int) min, (int) max, stepTime,
-                        DateFormat.is24HourFormat(mContext), new FullTimeListener(dialogType));
+                mDialog =
+                        new MultiFieldTimePickerDialog(
+                                mContext,
+                                /* theme= */ 0,
+                                hourOfDay,
+                                minute,
+                                second,
+                                millis,
+                                (int) min,
+                                (int) max,
+                                stepTime,
+                                DateFormat.is24HourFormat(mContext),
+                                new FullTimeListener(dialogType));
             }
         } else if (dialogType == TextInputType.DATE_TIME
                 || dialogType == TextInputType.DATE_TIME_LOCAL) {
-            mDialog = new DateTimePickerDialog(mContext,
-                    new DateTimeListener(dialogType),
-                    year, month, monthDay,
-                    hourOfDay, minute,
-                    DateFormat.is24HourFormat(mContext), min, max);
+            mDialog =
+                    new DateTimePickerDialog(
+                            mContext,
+                            new DateTimeListener(dialogType),
+                            year,
+                            month,
+                            monthDay,
+                            hourOfDay,
+                            minute,
+                            DateFormat.is24HourFormat(mContext),
+                            min,
+                            max);
         } else if (dialogType == TextInputType.MONTH) {
-            mDialog = new MonthPickerDialog(mContext, new MonthOrWeekListener(dialogType),
-                    year, month, min, max);
+            mDialog =
+                    new MonthPickerDialog(
+                            mContext, new MonthOrWeekListener(dialogType), year, month, min, max);
         } else if (dialogType == TextInputType.WEEK) {
-            mDialog = new WeekPickerDialog(mContext, new MonthOrWeekListener(dialogType),
-                    year, week, min, max);
+            mDialog =
+                    new WeekPickerDialog(
+                            mContext, new MonthOrWeekListener(dialogType), year, week, min, max);
         }
 
-        mDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+        mDialog.setButton(
+                DialogInterface.BUTTON_POSITIVE,
                 mContext.getText(R.string.date_picker_dialog_set),
                 (DialogInterface.OnClickListener) mDialog);
 
-        mDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+        mDialog.setButton(
+                DialogInterface.BUTTON_NEGATIVE,
                 mContext.getText(android.R.string.cancel),
                 (DialogInterface.OnClickListener) null);
 
-        mDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+        mDialog.setButton(
+                DialogInterface.BUTTON_NEUTRAL,
                 mContext.getText(R.string.date_picker_dialog_clear),
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -300,6 +379,7 @@ public class InputDialogContainer {
 
     private class TimeListener implements OnTimeSetListener {
         private final int mDialogType;
+
         TimeListener(int dialogType) {
             mDialogType = dialogType;
         }
@@ -312,6 +392,7 @@ public class InputDialogContainer {
 
     private class FullTimeListener implements OnMultiFieldTimeSetListener {
         private final int mDialogType;
+
         FullTimeListener(int dialogType) {
             mDialogType = dialogType;
         }
@@ -332,9 +413,14 @@ public class InputDialogContainer {
         }
 
         @Override
-        public void onDateTimeSet(DatePicker dateView, TimePicker timeView,
-                int year, int month, int monthDay,
-                int hourOfDay, int minute) {
+        public void onDateTimeSet(
+                DatePicker dateView,
+                TimePicker timeView,
+                int year,
+                int month,
+                int monthDay,
+                int hourOfDay,
+                int minute) {
             setFieldDateTimeValue(mDialogType, year, month, monthDay, hourOfDay, minute, 0, 0, 0);
         }
     }
@@ -356,8 +442,16 @@ public class InputDialogContainer {
         }
     }
 
-    protected void setFieldDateTimeValue(int dialogType, int year, int month, int monthDay,
-            int hourOfDay, int minute, int second, int millis, int week) {
+    protected void setFieldDateTimeValue(
+            int dialogType,
+            int year,
+            int month,
+            int monthDay,
+            int hourOfDay,
+            int minute,
+            int second,
+            int millis,
+            int week) {
         // Prevents more than one callback being sent to the native
         // side when the dialog triggers multiple events.
         if (mDialogAlreadyDismissed) return;
@@ -369,10 +463,11 @@ public class InputDialogContainer {
             mInputActionDelegate.replaceDateTime(
                     WeekPicker.createDateFromWeek(year, week).getTimeInMillis());
         } else if (dialogType == TextInputType.TIME) {
-            mInputActionDelegate.replaceDateTime(TimeUnit.HOURS.toMillis(hourOfDay)
-                    + TimeUnit.MINUTES.toMillis(minute)
-                    + TimeUnit.SECONDS.toMillis(second)
-                    + millis);
+            mInputActionDelegate.replaceDateTime(
+                    TimeUnit.HOURS.toMillis(hourOfDay)
+                            + TimeUnit.MINUTES.toMillis(minute)
+                            + TimeUnit.SECONDS.toMillis(second)
+                            + millis);
         } else {
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             cal.clear();

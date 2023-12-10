@@ -46,15 +46,15 @@ class Region;
 namespace blink {
 
 class Element;
-class LocalFrame;
 class HTMLAreaElement;
 class HTMLMediaElement;
 class Image;
 class KURL;
+class LocalFrame;
 class MediaSourceHandle;
 class MediaStreamDescriptor;
-class NGPhysicalBoxFragment;
 class Node;
+class PhysicalBoxFragment;
 class Scrollbar;
 struct PhysicalOffset;
 
@@ -127,7 +127,7 @@ class CORE_EXPORT HitTestResult {
     SetInnerNode(node);
   }
   void SetNodeAndPosition(Node*,
-                          const NGPhysicalBoxFragment*,
+                          const PhysicalBoxFragment*,
                           const PhysicalOffset&);
 
   // Override an inner node previously set. The new node needs to be monolithic

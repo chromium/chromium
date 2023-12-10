@@ -17,10 +17,10 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
@@ -56,29 +56,29 @@ password_manager::PasswordForm CreateTestForm(int index = 1) {
 class ManagePasswordsBubbleControllerTest : public ::testing::Test {
  public:
   ManagePasswordsBubbleControllerTest() {
-    profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
+                                    GetIdentityTestEnvironmentFactories());
+    builder.AddTestingFactory(
+        ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreInterface<
+                content::BrowserContext,
+                testing::StrictMock<
+                    password_manager::MockPasswordStoreInterface>>));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
+    profile_ = builder.Build();
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-
-    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(
-                       &password_manager::BuildPasswordStoreInterface<
-                           content::BrowserContext,
-                           testing::StrictMock<
-                               password_manager::MockPasswordStoreInterface>>));
-
-    test_sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating(
-                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<syncer::TestSyncService>();
-                })));
   }
 
   ~ManagePasswordsBubbleControllerTest() override = default;
@@ -86,7 +86,10 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   ManagePasswordsBubbleController* controller() { return controller_.get(); }
   TestingProfile* profile() { return profile_.get(); }
-  syncer::TestSyncService* sync_service() { return test_sync_service_; }
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
 
   password_manager::MockPasswordStoreInterface* GetStore() {
     return static_cast<password_manager::MockPasswordStoreInterface*>(
@@ -107,7 +110,6 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;

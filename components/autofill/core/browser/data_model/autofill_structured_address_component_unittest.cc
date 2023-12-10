@@ -323,6 +323,30 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
                                 NAME_LAST, NAME_FULL}));
 }
 
+// Tests adding all storable types to the set.
+TEST(AutofillStructuredAddressAddressComponent, TestGetStorableTypes) {
+  ServerFieldTypeSet field_type_set;
+
+  TestAtomicFirstNameAddressComponent first_name_component;
+  TestAtomicMiddleNameAddressComponent middle_name_component;
+  TestCompoundNameAddressComponent compound_name;
+
+  // The first name only supports NAME_FIRST.
+  first_name_component.GetStorableTypes(&field_type_set);
+  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_FIRST}));
+
+  // The middle name supports an initial.
+  field_type_set.clear();
+  middle_name_component.GetStorableTypes(&field_type_set);
+  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_MIDDLE}));
+
+  // Verify that all types are added correctly in a compound structure.
+  field_type_set.clear();
+  compound_name.GetStorableTypes(&field_type_set);
+  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_MIDDLE, NAME_FIRST,
+                                                NAME_LAST, NAME_FULL}));
+}
+
 // Tests the comparison of the atoms of the same type.
 TEST(AutofillStructuredAddressAddressComponent, TestComparison_Atom) {
   AddressComponent left(NAME_FIRST, {}, MergeMode::kReplaceEmpty);

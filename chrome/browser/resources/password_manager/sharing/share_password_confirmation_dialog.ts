@@ -136,16 +136,25 @@ export class SharePasswordConfirmationDialogElement extends
         });
   }
 
+  private hasSecureChangePasswordUrl_(): boolean {
+    const url = this.password.changePasswordUrl;
+    return !!url && (url.startsWith('https://'));
+  }
+
   private getFooterDescription_(): TrustedHTML {
     // Only for Android Apps that don't have affiliated website, change password
     // url can't be generated.
     if (!this.password.changePasswordUrl) {
       return this.i18nAdvanced('sharePasswordConfirmationFooterAndroidApp');
     }
+
+    // Don't insert change password url as '<a href>' for 'non-https' urls.
     return this.i18nAdvanced('sharePasswordConfirmationFooterWebsite', {
       substitutions: [
-        this.password.changePasswordUrl,
-        this.passwordName,
+        this.hasSecureChangePasswordUrl_() ?
+            `<a href='${this.password.changePasswordUrl}' target='_blank'>${
+                this.passwordName}</a>` :
+            this.passwordName,
       ],
     });
   }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,9 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
-/**
- * Defines the data that is exposed to properly render the Toolbar.
- */
+/** Defines the data that is exposed to properly render the Toolbar. */
 public interface ToolbarDataProvider {
     /**
      * @return The tab that contains the information currently displayed in the toolbar.
@@ -24,9 +23,7 @@ public interface ToolbarDataProvider {
     @Nullable
     Tab getTab();
 
-    /**
-     * Returns The url of the current tab. Returns empty string when there is no tab.
-     */
+    /** Returns The url of the current tab. Returns empty string when there is no tab. */
     @NonNull
     String getCurrentUrl();
 
@@ -70,6 +67,7 @@ public interface ToolbarDataProvider {
     /**
      * @return The primary color to use for the background drawable.
      */
+    @ColorInt
     int getPrimaryColor();
 
     /**

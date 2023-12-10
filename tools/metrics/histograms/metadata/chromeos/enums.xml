@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="ToggleWifi"/>
   <int value="115" label="TouchHudClear"/>
   <int value="116" label="TouchHudModeChange"/>
-  <int value="117" label="TouchFingerprintSensor111"/>
+  <int value="117" label="TouchFingerprintSensor1"/>
   <int value="118" label="TouchFingerprintSensor2"/>
   <int value="119" label="TouchFingerprintSensor3"/>
   <int value="120" label="Unpin"/>
@@ -278,6 +278,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Auto Framing pipeline initialization error"/>
   <int value="6" label="Auto Framing pipeline input error"/>
   <int value="7" label="Auto Framing pipeline output error"/>
+</enum>
+
+<enum name="BooleanNewAccount">
+  <int value="0" label="Existing account"/>
+  <int value="1" label="New account"/>
 </enum>
 
 <enum name="CableSpeedMetric">
@@ -584,6 +589,31 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="ChromeOSSamlApiError">
+  <summary>
+    Different errors that can occur while using Credentials Passing API in
+    ChromeOS.
+  </summary>
+  <int value="0" label="Not supported key type">
+    IdP sent unsupported key type
+  </int>
+  <int value="1" label="Not supported create account">
+    Gaia wanted to create an account while feature is not supported
+  </int>
+  <int value="2" label="Not valid create account">
+    Gaia wanted to create an account for a user that wasn't added.
+  </int>
+  <int value="3" label="Not valid confirm token">
+    IdP confirmed token that wasn't added
+  </int>
+  <int value="4" label="Not supported message">
+    IdP sent a message that isn't supported in SAML API.
+  </int>
+  <int value="5" label="Missing password confirmation">
+    IdP didn't send user's password confirmation
+  </int>
+</enum>
+
 <enum name="ChromeOSSamlApiUsed">
   <summary>
     ChromeOS login flow by Identity Provider. Can be either GAIA-based, SAML
@@ -621,12 +651,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Launch Web app"/>
   <int value="5" label="Launch Drive share action"/>
   <int value="6" label="Launch Copy share action"/>
-</enum>
-
-<enum name="ChromeOSSharesheetFormFactor">
-  <summary>Different form factors.</summary>
-  <int value="0" label="Tablet form factor"/>
-  <int value="1" label="Clamshell form factor"/>
 </enum>
 
 <enum name="ChromeOSSharesheetLaunchSource">
@@ -1194,6 +1218,43 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
     indication that it's the first user, but also no public key, no policies and
     no local state entry.
   </int>
+  <int value="32" label="PrivateSlotKeyGenerationSuccess">
+    ChromeOS successfully generated the owner key in the private slot.
+  </int>
+  <int value="33" label="PrivateSlotKeyGenerationFail">
+    ChromeOS failed to generate the owner key in the private slot.
+  </int>
+  <int value="34" label="PublicSlotKeyGenerationSuccess">
+    ChromeOS successfully generated the owner key in the public slot.
+  </int>
+  <int value="35" label="PublicSlotKeyGenerationFail">
+    ChromeOS failed to generate the owner key in the public slot.
+  </int>
+  <int value="36" label="MigrationToPrivateSlotStarted">
+    ChromeOS started migrating the owner key from the public to the private slot
+    (the outcome is collected as kOwnerKeyGenerated and other counters).
+  </int>
+  <int value="37" label="MigrationToPublicSlotStarted">
+    ChromeOS started migrating the owner key from the private to the public slot
+    (the outcome is collected as kOwnerKeyGenerated and other counters).
+  </int>
+  <int value="38" label="OwnerKeySetSuccess">
+    session_manager notified Chrome that it finished saving the owner key
+    successfully.
+  </int>
+  <int value="39" label="OwnerKeySetFail">
+    session_manager notified Chrome that it failed to save the owner key on
+    disk.
+  </int>
+  <int value="40" label="OldOwnerKeyCleanUpStarted">
+    ChromeOS started deleting the old owner key.
+  </int>
+  <int value="41" label="OwnerKeyInPublicSlotTrue">
+    The owner key was found in the public.
+  </int>
+  <int value="42" label="OwnerKeyInPublicSlotFalse">
+    The owner key was found in the private slot.
+  </int>
 </enum>
 
 <enum name="PartnerLocationMetric">
@@ -1290,6 +1351,14 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Notification"/>
 </enum>
 
+<enum name="PrivacyHubSensorSubpageUserAction">
+  <int value="0" label="Subpage opened"/>
+  <int value="1" label="System access changed"/>
+  <int value="2" label="App permission changed"/>
+  <int value="3" label="Android settings link clicked"/>
+  <int value="4" label="Website permission link clicked"/>
+</enum>
+
 <enum name="RgbKeyboardBacklightChangeType">
   <int value="0" label="StaticBackgroundColorChanged"/>
   <int value="1" label="RainbowModeSelected"/>
@@ -1339,6 +1408,21 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="6" label="API error: incorrect serlialized response data."/>
   <int value="7" label="API error: no sync token in Create response."/>
   <int value="8" label="API error: no sync token in Get response."/>
+</enum>
+
+<enum name="SecagentdAuthFactor">
+<!--
+Enum values follow AuthFactor in secagentd proto.
+https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/security_xdr_events.proto#282
+-->
+
+  <int value="0" label="Unknown auth factor"/>
+  <int value="1" label="Password"/>
+  <int value="2" label="Pin"/>
+  <int value="3" label="Online Recovery"/>
+  <int value="4" label="Kiosk"/>
+  <int value="5" label="Smart Card"/>
+  <int value="6" label="Fingerprint"/>
 </enum>
 
 <enum name="SecagentdBootmodeCros">

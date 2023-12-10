@@ -4,11 +4,8 @@
 
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 
-#include <iterator>
-#include <set>
 #include <sstream>
 #include <utility>
-#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
@@ -17,8 +14,8 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
-#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -42,7 +39,7 @@ FirstPartySetsLoader::~FirstPartySetsLoader() {
 }
 
 void FirstPartySetsLoader::SetManuallySpecifiedSet(
-    const LocalSetDeclaration& local_set) {
+    const net::LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (manually_specified_set_.has_value()) {
     return;
@@ -99,12 +96,9 @@ void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
   DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
 
   std::istringstream stream(raw_sets);
-  FirstPartySetParser::SetsAndAliases public_sets =
-      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/false,
-                                               /*emit_metrics=*/true);
-  sets_ = net::GlobalFirstPartySets(std::move(version),
-                                    std::move(public_sets.first),
-                                    std::move(public_sets.second));
+  sets_ = FirstPartySetParser::ParseSetsFromStream(stream, std::move(version),
+                                                   /*emit_errors=*/false,
+                                                   /*emit_metrics=*/true);
 
   component_sets_parse_progress_ = Progress::kFinished;
   UmaHistogramTimes(
@@ -119,9 +113,7 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
       !manually_specified_set_.has_value()) {
     return;
   }
-  if (!manually_specified_set_->empty()) {
-    sets_->ApplyManuallySpecifiedSet(manually_specified_set_->GetSet());
-  }
+  sets_->ApplyManuallySpecifiedSet(manually_specified_set_.value());
   std::move(on_load_complete_).Run(std::move(sets_).value());
 }
 

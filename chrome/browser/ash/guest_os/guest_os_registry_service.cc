@@ -178,8 +178,6 @@ void PopulatePrefRegistrationFromApp(base::Value::Dict& pref_registration,
   pref_registration.Set(guest_os::prefs::kContainerNameKey,
                         base::Value(container_name));
   pref_registration.Set(guest_os::prefs::kAppNameKey, std::move(name));
-  pref_registration.Set(guest_os::prefs::kAppCommentKey,
-                        ProtoToDictionary(app.comment()));
   pref_registration.Set(guest_os::prefs::kAppExecKey, base::Value(app.exec()));
   pref_registration.Set(guest_os::prefs::kAppExecutableFileNameKey,
                         base::Value(app.executable_file_name()));
@@ -366,10 +364,6 @@ std::string GuestOsRegistryService::Registration::Name() const {
         base::UTF8ToUTF16(GetLocalizedString(guest_os::prefs::kAppNameKey)));
   }
   return GetLocalizedString(guest_os::prefs::kAppNameKey);
-}
-
-std::string GuestOsRegistryService::Registration::Comment() const {
-  return GetLocalizedString(guest_os::prefs::kAppCommentKey);
 }
 
 std::string GuestOsRegistryService::Registration::Exec() const {
@@ -1096,6 +1090,18 @@ void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
   ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
   base::Value::Dict& app = update->Find(app_id)->GetDict();
   SetCurrentTime(app, guest_os::prefs::kAppLastLaunchTimeKey);
+
+  auto vm_type = app.FindInt(guest_os::prefs::kVmTypeKey);
+  if (!vm_type.has_value()) {
+    LOG(ERROR) << "Failed to find " << guest_os::prefs::kVmTypeKey
+               << " for app " << app_id;
+    return;
+  }
+
+  for (Observer& obs : observers_) {
+    obs.OnAppLastLaunchTimeUpdated(static_cast<VmType>(vm_type.value()), app_id,
+                                   clock_->Now());
+  }
 }
 
 void GuestOsRegistryService::SetCurrentTime(base::Value::Dict& dictionary,

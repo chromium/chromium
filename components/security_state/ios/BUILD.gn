@@ -31,9 +31,4 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
   ]
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [ "security_state_utils_unittest.mm" ]
-  }
 }

@@ -173,8 +173,8 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
     DCHECK(!IsBitstreamFormat()) << sample_format_;
     // Planar data, so need to allocate buffer for each channel.
     // Determine per channel data size, taking into account alignment.
-    int block_size_per_channel =
-        base::bits::AlignUp(data_size_per_channel, channel_alignment);
+    int block_size_per_channel = base::bits::AlignUpDeprecatedDoNotUse(
+        data_size_per_channel, channel_alignment);
     DCHECK_GE(block_size_per_channel, data_size_per_channel);
 
     // Allocate a contiguous buffer for all the channel data.

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
@@ -141,8 +141,6 @@ static_library("test_support") {
     "../browser/web_package/mock_signed_exchange_handler.cc",
     "../browser/web_package/mock_signed_exchange_handler.h",
     "../browser/web_package/signed_exchange_test_utils.h",
-    "../browser/webui/test_webui_js_bridge_ui.cc",
-    "../browser/webui/test_webui_js_bridge_ui.h",
     "../browser/worker_host/test_shared_worker_service_impl.cc",
     "../browser/worker_host/test_shared_worker_service_impl.h",
     "../public/test/accessibility_notification_waiter.cc",
@@ -235,8 +233,6 @@ static_library("test_support") {
     "../public/test/mock_media_session.h",
     "../public/test/mock_navigation_handle.cc",
     "../public/test/mock_navigation_handle.h",
-    "../public/test/mock_notification_observer.cc",
-    "../public/test/mock_notification_observer.h",
     "../public/test/mock_permission_controller.cc",
     "../public/test/mock_permission_controller.h",
     "../public/test/mock_permission_manager.cc",
@@ -249,6 +245,8 @@ static_library("test_support") {
     "../public/test/mock_render_thread.h",
     "../public/test/mock_web_contents_observer.cc",
     "../public/test/mock_web_contents_observer.h",
+    "../public/test/mojo_capability_control_test_util.cc",
+    "../public/test/mojo_capability_control_test_util.h",
     "../public/test/navigation_handle_observer.cc",
     "../public/test/navigation_handle_observer.h",
     "../public/test/navigation_simulator.h",
@@ -409,12 +407,6 @@ static_library("test_support") {
     "mock_widget_input_handler.h",
     "navigation_simulator_impl.cc",
     "navigation_simulator_impl.h",
-    "portal/portal_activated_observer.cc",
-    "portal/portal_activated_observer.h",
-    "portal/portal_created_observer.cc",
-    "portal/portal_created_observer.h",
-    "portal/portal_interceptor_for_testing.cc",
-    "portal/portal_interceptor_for_testing.h",
     "render_document_feature.cc",
     "render_document_feature.h",
     "render_widget_host_visibility_observer.cc",
@@ -827,10 +819,12 @@ if (is_fuchsia) {
       ":fuchsia_telemetry_test_data",
       ":telemetry_gpu_integration_test_data",
       "//base:base_perftests",
-      "//chrome/test:sync_performance_tests",
       "//testing:run_perf_test",
       "//tools/perf/:perf",
     ]
+    if (!optimize_for_size) {
+      data_deps += [ "//chrome/test:sync_performance_tests" ]
+    }
   }
   group("fuchsia_telemetry_test_data") {
     testonly = true
@@ -1059,10 +1053,10 @@ static_library("browsertest_support") {
 
 mojom("content_test_mojo_bindings") {
   sources = [
+    "../public/test/mojo_capability_control_test_interfaces.mojom",
     "../public/test/test_service.mojom",
     "frame_host_test_interface.mojom",
     "test_browser_associated_interfaces.mojom",
-    "test_mojo_binder_policy_applier_unittest.mojom",
   ]
   public_deps = [
     "//mojo/public/mojom/base",
@@ -1089,13 +1083,9 @@ if (is_chromeos_ash) {
   }
 }
 
-mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
+mojom("web_ui_managed_interface_tests_bindings") {
   testonly = true
-  source = "data/web_ui_managed_interface_test.test-mojom"
-
-  webui_controller = "content::TestWebUIJsBridgeUI"
-  webui_controller_header = "//content/browser/webui/test_webui_js_bridge_ui.h"
-  webui_controller_deps = [ "//content/test:test_support" ]
+  sources = [ "data/web_ui_managed_interface_test.test-mojom" ]
 
   webui_module_path = "/content/test/data"
 }
@@ -1124,7 +1114,6 @@ mojom("web_ui_ts_test_mojo_bindings") {
   ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/content/test/data"
-  use_typescript_sources = true
 }
 
 preprocess_if_expr("preprocess_mojo_webui_test") {
@@ -1149,7 +1138,7 @@ ts_library("web_ui_mojo_test_build_ts") {
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
   extra_deps = [
     ":preprocess_mojo_webui_test",
-    ":web_ui_js_bridge_test_bindings_ts__generator",
+    ":web_ui_managed_interface_tests_bindings_ts__generator",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
   ]
 }
@@ -1356,7 +1345,6 @@ test("content_browsertests") {
     "../browser/cross_site_transfer_browsertest.cc",
     "../browser/data_decoder_browsertest.cc",
     "../browser/database_browsertest.cc",
-    "../browser/device_posture/device_posture_browsertest.cc",
     "../browser/device_sensors/device_sensor_browsertest.cc",
     "../browser/devtools/devtools_issue_storage_browsertest.cc",
     "../browser/devtools/devtools_trust_token_browsertest.cc",
@@ -1437,6 +1425,7 @@ test("content_browsertests") {
     "../browser/media/session/media_session_impl_visibility_browsertest.cc",
     "../browser/media/session/media_session_service_impl_browsertest.cc",
     "../browser/media/webaudio/audio_context_manager_browsertest.cc",
+    "../browser/message_port_close_event_browsertest.cc",
     "../browser/message_port_provider_browsertest.cc",
     "../browser/mojo_sandbox_browsertest.cc",
     "../browser/navigation_browsertest.cc",
@@ -1466,8 +1455,6 @@ test("content_browsertests") {
     "../browser/picture_in_picture/video_picture_in_picture_content_browsertest.cc",
     "../browser/pointer_lock_browsertest.cc",
     "../browser/pointer_lock_browsertest.h",
-    "../browser/portal/portal_browsertest.cc",
-    "../browser/portal/portal_navigation_throttle_browsertest.cc",
     "../browser/power_monitor_browsertest.cc",
     "../browser/preloading/anchor_element_interaction_browsertest.cc",
     "../browser/preloading/preloading_decider_browsertest.cc",
@@ -1620,7 +1607,6 @@ test("content_browsertests") {
     "../browser/webrtc/webrtc_video_capture_shared_device_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.h",
-    "../browser/webui/web_ui_browser_interface_broker_registry_browsertest.cc",
     "../browser/webui/web_ui_browsertest.cc",
     "../browser/webui/web_ui_managed_interface_browsertest.cc",
     "../browser/webui/web_ui_mojo_browsertest.cc",
@@ -1631,6 +1617,7 @@ test("content_browsertests") {
     "../child/webthemeengine_impl_default_browsertest.cc",
     "../renderer/accessibility/render_accessibility_impl_browsertest.cc",
     "../renderer/blink_platform_audio_hardware_browsertest.cc",
+    "../renderer/fluent_scrollbar_browsertest.cc",
     "../renderer/gin_browsertest.cc",
     "../renderer/media/renderer_webmediaplayer_delegate_browsertest.cc",
     "../renderer/media/too_many_web_media_players_intervention_browsertest.cc",
@@ -1691,8 +1678,7 @@ test("content_browsertests") {
     ":browsertest_support",
     ":content_test_mojo_bindings",
     ":test_support",
-    ":web_ui_js_bridge_test_bindings__generator",
-    ":web_ui_js_bridge_test_bindings_webui_js_bridge_impl",
+    ":web_ui_managed_interface_tests_bindings",
     ":web_ui_ts_test_mojo_bindings",
     "//base/test:proto_test_support",
     "//base/test:test_support",
@@ -1705,6 +1691,7 @@ test("content_browsertests") {
     "//components/discardable_memory/service",
     "//components/favicon/content",
     "//components/network_session_configurator/common",
+    "//components/os_crypt/async/browser:test_support",
     "//components/payments/mojom",
     "//components/performance_manager",
     "//components/permissions:permissions_common",
@@ -1799,6 +1786,7 @@ test("content_browsertests") {
     "//ui/base/ime",
     "//ui/base/ime/init",
     "//ui/base/ime/mojom",
+    "//ui/color:mixers",
     "//ui/compositor",
     "//ui/display",
     "//ui/display:test_support",
@@ -1943,6 +1931,7 @@ test("content_browsertests") {
       "../browser/accessibility/ax_platform_node_textrangeprovider_win_browsertest.cc",
       "../browser/accessibility/ax_platform_node_win_browsertest.cc",
       "../browser/accessibility/hit_testing_win_browsertest.cc",
+      "../browser/media/web_app_system_media_controls_browsertest.cc",
       "../browser/network/network_service_process_tracker_win_browsertest.cc",
       "../browser/renderer_host/accessibility_object_lifetime_win_browsertest.cc",
       "../browser/renderer_host/accessibility_tree_linkage_win_browsertest.cc",
@@ -1951,7 +1940,6 @@ test("content_browsertests") {
       "../browser/renderer_host/direct_manipulation_win_browsertest.cc",
       "../browser/renderer_host/render_process_host_sandbox_policy_win_browsertest.cc",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest_win.cc",
-      "../renderer/fluent_scrollbar_browsertest.cc",
     ]
 
     deps += [
@@ -2315,7 +2303,6 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_storage_sql_migrations_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_sql_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_unittest.cc",
-    "../browser/attribution_reporting/attribution_utils_unittest.cc",
     "../browser/attribution_reporting/privacy_math_unittest.cc",
     "../browser/attribution_reporting/rate_limit_table_unittest.cc",
     "../browser/background_fetch/background_fetch_cross_origin_filter_unittest.cc",
@@ -2409,7 +2396,6 @@ test("content_unittests") {
     "../browser/first_party_sets/first_party_sets_handler_database_helper_unittest.cc",
     "../browser/first_party_sets/first_party_sets_handler_impl_instance_unittest.cc",
     "../browser/first_party_sets/first_party_sets_loader_unittest.cc",
-    "../browser/first_party_sets/local_set_declaration_unittest.cc",
     "../browser/font_access/font_access_manager_unittest.cc",
     "../browser/font_access/font_enumeration_data_source_unittest.cc",
     "../browser/generic_sensor/web_contents_sensor_provider_proxy_unittest.cc",
@@ -2445,6 +2431,7 @@ test("content_unittests") {
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h",
     "../browser/indexed_db/mock_mojo_indexed_db_factory_client.cc",
     "../browser/indexed_db/mock_mojo_indexed_db_factory_client.h",
+    "../browser/interest_group/ad_auction_headers_util_unittest.cc",
     "../browser/interest_group/ad_auction_service_impl_unittest.cc",
     "../browser/interest_group/ad_auction_url_loader_interceptor_unittest.cc",
     "../browser/interest_group/additional_bids_util_unittest.cc",
@@ -2581,9 +2568,7 @@ test("content_unittests") {
     "../browser/renderer_host/frame_token_message_queue_unittest.cc",
     "../browser/renderer_host/frame_tree_unittest.cc",
     "../browser/renderer_host/indexed_db_client_state_checker_factory_unittest.cc",
-    "../browser/renderer_host/input/fling_controller_unittest.cc",
     "../browser/renderer_host/input/fling_scheduler_unittest.cc",
-    "../browser/renderer_host/input/gesture_event_queue_unittest.cc",
     "../browser/renderer_host/input/input_router_impl_unittest.cc",
     "../browser/renderer_host/input/mock_input_disposition_handler.cc",
     "../browser/renderer_host/input/mock_input_disposition_handler.h",
@@ -2594,11 +2579,8 @@ test("content_unittests") {
     "../browser/renderer_host/input/passthrough_touch_event_queue_unittest.cc",
     "../browser/renderer_host/input/render_widget_host_latency_tracker_unittest.cc",
     "../browser/renderer_host/input/stylus_text_selector_unittest.cc",
-    "../browser/renderer_host/input/synthetic_gesture_controller_unittest.cc",
-    "../browser/renderer_host/input/synthetic_pointer_action_unittest.cc",
     "../browser/renderer_host/input/touch_action_filter_unittest.cc",
     "../browser/renderer_host/input/touch_emulator_unittest.cc",
-    "../browser/renderer_host/input/touchpad_pinch_event_queue_unittest.cc",
     "../browser/renderer_host/input/web_input_event_util_unittest.cc",
     "../browser/renderer_host/isolated_web_app_throttle_unittest.cc",
     "../browser/renderer_host/media/audio_input_device_manager_unittest.cc",
@@ -2650,7 +2632,6 @@ test("content_unittests") {
     "../browser/renderer_host/render_widget_host_view_aura_unittest.cc",
     "../browser/renderer_host/render_widget_host_view_base_unittest.cc",
     "../browser/renderer_host/render_widget_host_view_child_frame_unittest.cc",
-    "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
     "../browser/renderer_host/transient_allow_popup_unittest.cc",
     "../browser/renderer_host/view_transition_commit_deferring_condition_unittest.cc",
     "../browser/renderer_host/visible_time_request_trigger_unittest.cc",
@@ -2728,11 +2709,10 @@ test("content_unittests") {
     "../browser/web_package/signed_exchange_signature_header_field_unittest.cc",
     "../browser/web_package/signed_exchange_signature_verifier_unittest.cc",
     "../browser/web_package/signed_exchange_utils_unittest.cc",
-    "../browser/webid/federated_auth_request_impl_logout_unittest.cc",
+    "../browser/webid/federated_auth_disconnect_request_unittest.cc",
     "../browser/webid/federated_auth_request_impl_multiple_frames_unittest.cc",
     "../browser/webid/federated_auth_request_impl_registry_unittest.cc",
     "../browser/webid/federated_auth_request_impl_unittest.cc",
-    "../browser/webid/federated_auth_revoke_request_unittest.cc",
     "../browser/webid/federated_auth_user_info_request_unittest.cc",
     "../browser/webid/federated_provider_fetcher_unittest.cc",
     "../browser/webid/identity_registry_unittest.cc",
@@ -2763,7 +2743,6 @@ test("content_unittests") {
     "../browser/webui/web_ui_message_handler_unittest.cc",
     "../browser/webui/web_ui_unittest.cc",
     "../browser/webui/web_ui_url_loader_factory_unittest.cc",
-    "../browser/webui/web_ui_webui_js_bridge_unittest.cc",
     "../browser/webui/webui_config_map_unittest.cc",
     "../browser/worker_host/dedicated_worker_service_impl_unittest.cc",
     "../browser/worker_host/mock_shared_worker.cc",
@@ -2775,6 +2754,7 @@ test("content_unittests") {
     "../browser/worker_host/worker_script_loader_factory_unittest.cc",
     "../browser/xr/metrics/session_tracker_unittest.cc",
     "../child/blink_platform_impl_unittest.cc",
+    "../child/child_process_synthetic_trial_syncer_unittest.cc",
     "../common/background_fetch/background_fetch_mojom_traits_unittest.cc",
     "../common/color_parser_unittest.cc",
     "../common/common_param_traits_unittest.cc",
@@ -2788,9 +2768,14 @@ test("content_unittests") {
     "../common/input/actions_parser_test_driver_unittest.cc",
     "../common/input/actions_parser_unittest.cc",
     "../common/input/event_with_latency_info_unittest.cc",
+    "../common/input/fling_controller_unittest.cc",
+    "../common/input/gesture_event_queue_unittest.cc",
     "../common/input/gesture_event_stream_validator_unittest.cc",
+    "../common/input/synthetic_gesture_controller_unittest.cc",
+    "../common/input/synthetic_pointer_action_unittest.cc",
     "../common/input/tap_suppression_controller_unittest.cc",
     "../common/input/touch_event_stream_validator_unittest.cc",
+    "../common/input/touchpad_pinch_event_queue_unittest.cc",
     "../common/pseudonymization_salt_unittest.cc",
     "../common/service_worker/race_network_request_url_loader_client_unittest.cc",
     "../common/service_worker/service_worker_router_evaluator_unittest.cc",
@@ -2830,6 +2815,7 @@ test("content_unittests") {
       "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
       "../browser/renderer_host/input/mouse_wheel_rails_filter_unittest_mac.cc",
       "../browser/renderer_host/input/web_input_event_builders_mac_unittest.mm",
+      "../browser/renderer_host/media/video_capture_devices_changed_observer_unittest.cc",
       "../browser/renderer_host/native_web_keyboard_event_mac_unittest.mm",
       "../browser/renderer_host/render_widget_host_view_mac_editcommand_helper_unittest.mm",
       "../browser/renderer_host/render_widget_host_view_mac_unittest.mm",
@@ -2883,6 +2869,9 @@ test("content_unittests") {
       "../browser/android/nfc_host_unittest.cc",
       "../browser/attribution_reporting/attribution_input_event_tracker_android_unittest.cc",
       "../browser/attribution_reporting/attribution_os_level_manager_android_unittest.cc",
+      "../browser/display_cutout/display_cutout_host_impl_unittest.cc",
+      "../browser/display_cutout/safe_area_insets_host_impl_unittest.cc",
+      "../browser/navigation_transitions/physics_model_unittest.cc",
       "../browser/renderer_host/input/web_input_event_builders_android_unittest.cc",
       "../browser/web_contents/color_chooser_unittest.cc",
       "../common/android/cpu_time_metrics_unittest.cc",
@@ -2893,6 +2882,7 @@ test("content_unittests") {
   if (is_win) {
     sources += [
       "../browser/media/web_app_system_media_controls_manager_unittest.cc",
+      "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
       "../renderer/media/win/overlay_state_observer_impl_unittest.cc",
     ]
   }
@@ -2912,6 +2902,7 @@ test("content_unittests") {
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
       "//media/test:media_bundle_data",
+      "//testing/buildbot/filters:content_unittests_filters_bundle_data",
     ]
   }
 
@@ -2950,6 +2941,7 @@ test("content_unittests") {
     "//components/system_media_controls:test_support",
     "//components/ukm:test_support",
     "//components/user_prefs/test:test_support",
+    "//components/variations:variations",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",
@@ -2979,9 +2971,6 @@ test("content_unittests") {
     "//content/renderer:for_content_tests",
     "//content/services/auction_worklet:tests",
     "//content/services/auction_worklet/public/mojom:for_content_tests",
-    "//content/test/web_ui:test_secondary_interface",
-    "//content/test/web_ui:test_webui_js_bridge2_webui_js_bridge_impl",
-    "//content/test/web_ui:test_webui_js_bridge_webui_js_bridge_impl",
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
@@ -3018,6 +3007,7 @@ test("content_unittests") {
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/cpp:test_support",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp/test:test_support",
     "//services/video_capture/public/cpp:mocks",
@@ -3048,6 +3038,7 @@ test("content_unittests") {
     "//third_party/zlib/google:compression_utils",
     "//ui/accessibility",
     "//ui/accessibility:test_support",
+    "//ui/base:ozone_buildflags",
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/cursor",
@@ -3118,7 +3109,7 @@ test("content_unittests") {
     deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_cpp" ]
   }
 
-  if (enable_printing || enable_printing_unittests) {
+  if (enable_printing || enable_printing_tests) {
     deps += [
       "//printing",
       "//printing/backend",
@@ -3127,7 +3118,6 @@ test("content_unittests") {
 
   if (enable_ppapi) {
     sources += [
-      "../browser/ppapi_plugin_sandboxed_process_launcher_delegate_unittest.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.h",
       "../browser/renderer_host/pepper/pepper_file_system_browser_host_unittest.cc",
@@ -3140,6 +3130,9 @@ test("content_unittests") {
       "../renderer/pepper/mock_resource.h",
       "../renderer/pepper/v8_var_converter_unittest.cc",
     ]
+    if (is_win) {
+      sources += [ "../browser/ppapi_plugin_sandboxed_process_launcher_delegate_unittest.cc" ]
+    }
     deps += [
       "//ppapi/c",
       "//ppapi/host",

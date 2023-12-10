@@ -103,7 +103,7 @@ class TotalDiskSpaceCalculator : public SizeCalculator {
 
   void GetRootDeviceSize();
 
-  void OnGetRootDeviceSize(absl::optional<int64_t> reply);
+  void OnGetRootDeviceSize(std::optional<int64_t> reply);
 
   void GetTotalDiskSpace();
 
@@ -131,7 +131,7 @@ class FreeDiskSpaceCalculator : public SizeCalculator {
 
   void GetUserFreeDiskSpace();
 
-  void OnGetUserFreeDiskSpace(absl::optional<int64_t> reply);
+  void OnGetUserFreeDiskSpace(std::optional<int64_t> reply);
 
   void GetFreeDiskSpace();
 
@@ -276,7 +276,7 @@ class AppsSizeCalculator
 
   // Callback to update Borealis apps and cache.
   void OnGetBorealisAppsSize(
-      absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
+      std::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
   // Updates apps and extensions size.
   void UpdateAppsAndExtensionsSize();
@@ -325,7 +325,7 @@ class CrostiniSizeCalculator : public SizeCalculator {
 
   // Callback to update the size of Crostini VMs.
   void OnGetCrostiniSize(
-      absl::optional<vm_tools::concierge::ListVmDisksResponse>);
+      std::optional<vm_tools::concierge::ListVmDisksResponse>);
 
   // Helper function to simplify updating the reported size of Crostini.
   void UpdateSize(int64_t total_bytes);
@@ -352,7 +352,7 @@ class OtherUsersSizeCalculator : public SizeCalculator {
 
   // Callback to update the sizes of the other users.
   void OnGetOtherUserSize(
-      absl::optional<::user_data_auth::GetAccountDiskUsageReply> reply);
+      std::optional<::user_data_auth::GetAccountDiskUsageReply> reply);
 
   // The list of other users whose directory sizes will be accumulated as the
   // size of "Other users".

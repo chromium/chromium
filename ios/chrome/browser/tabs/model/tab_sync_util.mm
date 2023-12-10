@@ -19,6 +19,25 @@ const unsigned int kMaxTabLength = 50;
 
 }  // namespace
 
+void CheckDistantTabsOrder(synced_sessions::SyncedSessions* synced_sessions) {
+  base::Time previous_session_modified_time = base::Time::Now();
+  for (size_t session_index = 0;
+       session_index < synced_sessions->GetSessionCount(); ++session_index) {
+    const synced_sessions::DistantSession* session =
+        synced_sessions->GetSession(session_index);
+    CHECK(previous_session_modified_time >= session->modified_time);
+    previous_session_modified_time = session->modified_time;
+
+    base::Time previous_modified_time = base::Time::Now();
+
+    for (const auto& distant_tab : session->tabs) {
+      CHECK(previous_modified_time >= distant_tab->modified_time);
+      CHECK(distant_tab->modified_time >= distant_tab->last_active_time);
+      previous_modified_time = distant_tab->modified_time;
+    }
+  }
+}
+
 LastActiveDistantTab GetLastActiveDistantTab(
     synced_sessions::SyncedSessions* synced_sessions,
     base::TimeDelta delta_threshold) {

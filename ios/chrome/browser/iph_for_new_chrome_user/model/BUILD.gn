@@ -13,7 +13,7 @@ source_set("model") {
     "//base",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }

@@ -5,10 +5,10 @@
 #ifndef CHROME_UPDATER_POLICY_WIN_GROUP_POLICY_MANAGER_H_
 #define CHROME_UPDATER_POLICY_WIN_GROUP_POLICY_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/updater/policy/policy_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -17,7 +17,7 @@ class GroupPolicyManager : public PolicyManager {
  public:
   GroupPolicyManager(
       bool should_take_policy_critical_section,
-      const absl::optional<bool>& override_is_managed_device = absl::nullopt);
+      const std::optional<bool>& override_is_managed_device = std::nullopt);
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
 

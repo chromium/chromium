@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLIsIndexElement03
-Status	failure
-Message	promptLink: assertEquals failed, actual null, expected New Employee: .

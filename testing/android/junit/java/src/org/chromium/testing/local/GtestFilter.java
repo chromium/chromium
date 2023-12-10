@@ -12,9 +12,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *  Filters tests based on a googletest-style filter string.
- */
+/** Filters tests based on a googletest-style filter string. */
 class GtestFilter extends Filter {
 
     private final String mFilterString;
@@ -32,6 +30,7 @@ class GtestFilter extends Filter {
 
     // Matches a test that can have an SDK version in the name: org.class.testInvalidMinidump[28]
     private static final Pattern GTEST_NAME_REGEX = Pattern.compile("(.*)?\\[\\d+\\]$");
+
     /**
      *  Creates the filter and converts the provided googletest-style filter
      *  string into positive and negative regexes.
@@ -101,13 +100,9 @@ class GtestFilter extends Filter {
         return false;
     }
 
-    /**
-     *  Returns a description of this filter.
-     */
+    /** Returns a description of this filter. */
     @Override
     public String describe() {
         return "gtest-filter: " + mFilterString;
     }
-
 }
-

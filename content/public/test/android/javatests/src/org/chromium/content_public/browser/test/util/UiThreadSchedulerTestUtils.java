@@ -7,9 +7,7 @@ package org.chromium.content_public.browser.test.util;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Helper methods for testing the UiThreadScheduler
- */
+/** Helper methods for testing the UiThreadScheduler */
 @JNINamespace("content")
 public class UiThreadSchedulerTestUtils {
     /**

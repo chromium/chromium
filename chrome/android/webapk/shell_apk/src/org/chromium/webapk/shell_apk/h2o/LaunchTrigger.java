@@ -7,7 +7,7 @@ package org.chromium.webapk.shell_apk.h2o;
 /**
  * Controls when to launch the WebAPK for {@link SplashActivity}.
  *
- * Executes the provided Runnable when all of {@link #onSplashScreenReady}, {@link #onWillLaunch}
+ * <p>Executes the provided Runnable when all of {@link #onSplashScreenReady}, {@link #onWillLaunch}
  * and {@link #onHostBrowserSelected} have been called. The provided Runnable is only called once,
  * but this can be reset by calling {@link #reset}.
  */

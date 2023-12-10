@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -79,7 +80,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {

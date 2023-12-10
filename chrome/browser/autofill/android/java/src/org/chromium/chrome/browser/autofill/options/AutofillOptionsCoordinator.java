@@ -29,17 +29,18 @@ public class AutofillOptionsCoordinator {
     final AutofillOptionsFragment mFragment;
     final AutofillOptionsMediator mMediator;
     final Observer<LifecycleOwner> mFragmentLifeCycleOwnerObserver = this::onLifeCycleOwnerChanged;
-    final LifecycleObserver mFragmentLifeCycleObserver = new DefaultLifecycleObserver() {
-        @Override
-        public void onResume(LifecycleOwner lifecycleOwner) {
-            mMediator.updateToggleStateFromPref();
-        }
+    final LifecycleObserver mFragmentLifeCycleObserver =
+            new DefaultLifecycleObserver() {
+                @Override
+                public void onResume(LifecycleOwner lifecycleOwner) {
+                    mMediator.updateToggleStateFromPref();
+                }
 
-        @Override
-        public void onDestroy(LifecycleOwner lifecycleOwner) {
-            lifecycleOwner.getLifecycle().removeObserver(this);
-        }
-    };
+                @Override
+                public void onDestroy(LifecycleOwner lifecycleOwner) {
+                    lifecycleOwner.getLifecycle().removeObserver(this);
+                }
+            };
 
     /**
      * Creates a new coordinator and attaches it to the fragment. Waits until the fragment is ready
@@ -49,7 +50,7 @@ public class AutofillOptionsCoordinator {
      */
     public static void createFor(AutofillOptionsFragment fragment) {
         new AutofillOptionsCoordinator(fragment).initializeOnViewCreated();
-    };
+    }
 
     @VisibleForTesting
     AutofillOptionsCoordinator(AutofillOptionsFragment fragment) {
@@ -67,8 +68,9 @@ public class AutofillOptionsCoordinator {
      * and start observing the view lifecycle.
      */
     private void initializeOnViewCreated() {
-        mFragment.getViewLifecycleOwnerLiveData().observe(
-                mFragment, mFragmentLifeCycleOwnerObserver);
+        mFragment
+                .getViewLifecycleOwnerLiveData()
+                .observe(mFragment, mFragmentLifeCycleOwnerObserver);
     }
 
     /**
@@ -79,7 +81,8 @@ public class AutofillOptionsCoordinator {
     PropertyModel initializeNow() {
         PropertyModel model =
                 new PropertyModel.Builder(AutofillOptionsProperties.ALL_KEYS)
-                        .with(THIRD_PARTY_AUTOFILL_ENABLED,
+                        .with(
+                                THIRD_PARTY_AUTOFILL_ENABLED,
                                 UserPrefs.get(mFragment.getProfile())
                                         .getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE))
                         .with(ON_THIRD_PARTY_TOGGLE_CHANGED, mMediator::onThirdPartyToggleChanged)
@@ -96,8 +99,9 @@ public class AutofillOptionsCoordinator {
         }
         // If it hasn't happened yet, initialize all subcomponents with the available view now.
         if (!mMediator.isInitialized()) {
-            mFragment.getViewLifecycleOwnerLiveData().removeObserver(
-                    mFragmentLifeCycleOwnerObserver);
+            mFragment
+                    .getViewLifecycleOwnerLiveData()
+                    .removeObserver(mFragmentLifeCycleOwnerObserver);
             initializeNow();
             observeLifecycle(lifecycleOwner.getLifecycle());
         }

@@ -22,8 +22,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
  * dismissed. Ignores page navigations.
  */
 /*package*/ class AutofillVcnEnrollBottomSheetLifecycle
-        implements Callback<TabModelSelector>, TabModelSelectorObserver, TabModelObserver,
-                   LayoutStateObserver {
+        implements Callback<TabModelSelector>,
+                TabModelSelectorObserver,
+                TabModelObserver,
+                LayoutStateObserver {
     private final LayoutStateProvider mLayoutStateProvider;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private Runnable mOnEndOfLifecycle;
@@ -37,7 +39,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
      * @param layoutStateProvider Exposes a way to listen to layout state changes.
      * @param tabModelSelectorSupplier Supplies the tab model selector.
      */
-    AutofillVcnEnrollBottomSheetLifecycle(LayoutStateProvider layoutStateProvider,
+    AutofillVcnEnrollBottomSheetLifecycle(
+            LayoutStateProvider layoutStateProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mLayoutStateProvider = layoutStateProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;

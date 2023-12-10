@@ -247,7 +247,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
         use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
                                                      ->ContextProvider()
                                                      ->GetCapabilities()
-                                                     .supports_oop_raster) {
+                                                     .gpu_rasterization) {
     resource_ = NewOrRecycledResource();
     GetFlushForImageListener()->AddObserver(this);
 
@@ -780,7 +780,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         use_oop_rasterization_(ContextProviderWrapper()
                                    ->ContextProvider()
                                    ->GetCapabilities()
-                                   .supports_oop_raster) {
+                                   .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
         GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
         FilterQuality());

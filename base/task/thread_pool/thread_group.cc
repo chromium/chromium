@@ -25,6 +25,33 @@ namespace internal {
 
 namespace {
 
+constexpr size_t kMaxNumberOfWorkers = 256;
+
+// In a background thread group:
+// - Blocking calls take more time than in a foreground thread group.
+// - We want to minimize impact on foreground work, not maximize execution
+//   throughput.
+// For these reasons, the timeout to increase the maximum number of concurrent
+// tasks when there is a MAY_BLOCK ScopedBlockingCall is *long*. It is not
+// infinite because execution throughput should not be reduced forever if a task
+// blocks forever.
+//
+// TODO(fdoray): On platforms without background thread groups, blocking in a
+// BEST_EFFORT task should:
+// 1. Increment the maximum number of concurrent tasks after a *short* timeout,
+//    to allow scheduling of USER_VISIBLE/USER_BLOCKING tasks.
+// 2. Increment the maximum number of concurrent BEST_EFFORT tasks after a
+//    *long* timeout, because we only want to allow more BEST_EFFORT tasks to be
+//    be scheduled concurrently when we believe that a BEST_EFFORT task is
+//    blocked forever.
+// Currently, only 1. is true as the configuration is per thread group.
+// TODO(https://crbug.com/927755): Fix racy condition when MayBlockThreshold ==
+// BlockedWorkersPoll.
+constexpr TimeDelta kForegroundMayBlockThreshold = Milliseconds(1000);
+constexpr TimeDelta kForegroundBlockedWorkersPoll = Milliseconds(1200);
+constexpr TimeDelta kBackgroundMayBlockThreshold = Seconds(10);
+constexpr TimeDelta kBackgroundBlockedWorkersPoll = Seconds(12);
+
 // ThreadGroup that owns the current thread, if any.
 ABSL_CONST_INIT thread_local const ThreadGroup* current_thread_group = nullptr;
 
@@ -64,10 +91,58 @@ void ThreadGroup::ScopedReenqueueExecutor::
   destination_thread_group_ = destination_thread_group;
 }
 
-ThreadGroup::ThreadGroup(TrackedRef<TaskTracker> task_tracker,
+ThreadGroup::ThreadGroup(StringPiece histogram_label,
+                         StringPiece thread_group_label,
+                         ThreadType thread_type_hint,
+                         TrackedRef<TaskTracker> task_tracker,
                          TrackedRef<Delegate> delegate)
-    : task_tracker_(std::move(task_tracker)), delegate_(std::move(delegate)) {
-  DCHECK(task_tracker_);
+    : task_tracker_(std::move(task_tracker)),
+      delegate_(std::move(delegate)),
+      histogram_label_(histogram_label),
+      thread_group_label_(thread_group_label),
+      thread_type_hint_(thread_type_hint),
+      idle_workers_set_cv_for_testing_(lock_.CreateConditionVariable()) {
+  DCHECK(!thread_group_label_.empty());
+}
+
+void ThreadGroup::Start(
+    size_t max_tasks,
+    size_t max_best_effort_tasks,
+    TimeDelta suggested_reclaim_time,
+    scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
+    WorkerThreadObserver* worker_thread_observer,
+    WorkerEnvironment worker_environment,
+    absl::optional<TimeDelta> may_block_threshold) {
+  DCHECK(!replacement_thread_group_);
+
+  in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
+  in_start().may_block_threshold =
+      may_block_threshold ? may_block_threshold.value()
+                          : (thread_type_hint_ != ThreadType::kBackground
+                                 ? kForegroundMayBlockThreshold
+                                 : kBackgroundMayBlockThreshold);
+  in_start().blocked_workers_poll_period =
+      thread_type_hint_ != ThreadType::kBackground
+          ? kForegroundBlockedWorkersPoll
+          : kBackgroundBlockedWorkersPoll;
+  in_start().ensure_enough_workers_at_end_of_get_work =
+      base::FeatureList::IsEnabled(kUseNewJobImplementation);
+
+  CheckedAutoLock auto_lock(lock_);
+
+  max_tasks_ = max_tasks;
+  DCHECK_GE(max_tasks_, 1U);
+  in_start().initial_max_tasks = max_tasks_;
+  DCHECK_LE(in_start().initial_max_tasks, kMaxNumberOfWorkers);
+  max_best_effort_tasks_ = max_best_effort_tasks;
+  in_start().suggested_reclaim_time = suggested_reclaim_time;
+  in_start().worker_environment = worker_environment;
+  in_start().service_thread_task_runner = std::move(service_thread_task_runner);
+  in_start().worker_thread_observer = worker_thread_observer;
+
+#if DCHECK_IS_ON()
+  in_start().initialized = true;
+#endif
 }
 
 ThreadGroup::~ThreadGroup() = default;
@@ -84,10 +159,6 @@ void ThreadGroup::UnbindFromCurrentThread() {
 
 bool ThreadGroup::IsBoundToCurrentThread() const {
   return current_thread_group == this;
-}
-
-void ThreadGroup::Start() {
-  CheckedAutoLock auto_lock(lock_);
 }
 
 size_t
@@ -338,6 +409,151 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
 bool ThreadGroup::CurrentThreadHasGroup() {
   return current_thread_group != nullptr;
 }
+
+size_t ThreadGroup::GetMaxTasksForTesting() const {
+  CheckedAutoLock auto_lock(lock_);
+  return max_tasks_;
+}
+
+size_t ThreadGroup::GetMaxBestEffortTasksForTesting() const {
+  CheckedAutoLock auto_lock(lock_);
+  return max_best_effort_tasks_;
+}
+
+size_t ThreadGroup::GetMaxConcurrentNonBlockedTasksDeprecated() const {
+#if DCHECK_IS_ON()
+  CheckedAutoLock auto_lock(lock_);
+  DCHECK_NE(after_start().initial_max_tasks, 0U)
+      << "GetMaxConcurrentTasksDeprecated() should only be called after the "
+      << "thread group has started.";
+#endif
+  return after_start().initial_max_tasks;
+}
+
+size_t ThreadGroup::GetDesiredNumAwakeWorkersLockRequired() const {
+  // Number of BEST_EFFORT task sources that are running or queued and allowed
+  // to run by the CanRunPolicy.
+  const size_t num_running_or_queued_can_run_best_effort_task_sources =
+      num_running_best_effort_tasks_ +
+      GetNumAdditionalWorkersForBestEffortTaskSourcesLockRequired();
+
+  const size_t workers_for_best_effort_task_sources =
+      std::max(std::min(num_running_or_queued_can_run_best_effort_task_sources,
+                        max_best_effort_tasks_),
+               num_running_best_effort_tasks_);
+
+  // Number of USER_{VISIBLE|BLOCKING} task sources that are running or queued.
+  const size_t num_running_or_queued_foreground_task_sources =
+      (num_running_tasks_ - num_running_best_effort_tasks_) +
+      GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired();
+
+  const size_t workers_for_foreground_task_sources =
+      num_running_or_queued_foreground_task_sources;
+
+  return std::min({workers_for_best_effort_task_sources +
+                       workers_for_foreground_task_sources,
+                   max_tasks_, kMaxNumberOfWorkers});
+}
+
+void ThreadGroup::ScheduleAdjustMaxTasks() {
+  // |adjust_max_tasks_posted_| can't change before the task posted below runs.
+  // Skip check on NaCl to avoid unsafe reference acquisition warning.
+#if !BUILDFLAG(IS_NACL)
+  DCHECK(TS_UNCHECKED_READ(adjust_max_tasks_posted_));
+#endif
+
+  after_start().service_thread_task_runner->PostDelayedTask(
+      FROM_HERE, BindOnce(&ThreadGroup::AdjustMaxTasks, Unretained(this)),
+      after_start().blocked_workers_poll_period);
+}
+
+bool ThreadGroup::ShouldPeriodicallyAdjustMaxTasksLockRequired() {
+  // AdjustMaxTasks() should be scheduled to periodically adjust |max_tasks_|
+  // and |max_best_effort_tasks_| when (1) the concurrency limits are not large
+  // enough to accommodate all queued and running task sources and an idle
+  // worker and (2) there are unresolved MAY_BLOCK ScopedBlockingCalls.
+  // - When (1) is false: No worker would be created or woken up if the
+  //   concurrency limits were increased, so there is no hurry to increase them.
+  // - When (2) is false: The concurrency limits could not be increased by
+  //   AdjustMaxTasks().
+
+  const size_t num_running_or_queued_best_effort_task_sources =
+      num_running_best_effort_tasks_ +
+      GetNumAdditionalWorkersForBestEffortTaskSourcesLockRequired();
+  if (num_running_or_queued_best_effort_task_sources > max_best_effort_tasks_ &&
+      num_unresolved_best_effort_may_block_ > 0) {
+    return true;
+  }
+
+  const size_t num_running_or_queued_task_sources =
+      num_running_tasks_ +
+      GetNumAdditionalWorkersForBestEffortTaskSourcesLockRequired() +
+      GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired();
+  constexpr size_t kIdleWorker = 1;
+  return num_running_or_queued_task_sources + kIdleWorker > max_tasks_ &&
+         num_unresolved_may_block_ > 0;
+}
+
+void ThreadGroup::UpdateMinAllowedPriorityLockRequired() {
+  if (priority_queue_.IsEmpty() || num_running_tasks_ < max_tasks_) {
+    max_allowed_sort_key_.store(kMaxYieldSortKey, std::memory_order_relaxed);
+  } else {
+    max_allowed_sort_key_.store({priority_queue_.PeekSortKey().priority(),
+                                 priority_queue_.PeekSortKey().worker_count()},
+                                std::memory_order_relaxed);
+  }
+}
+
+void ThreadGroup::DecrementTasksRunningLockRequired(TaskPriority priority) {
+  DCHECK_GT(num_running_tasks_, 0U);
+  --num_running_tasks_;
+  if (priority == TaskPriority::BEST_EFFORT) {
+    DCHECK_GT(num_running_best_effort_tasks_, 0U);
+    --num_running_best_effort_tasks_;
+  }
+  UpdateMinAllowedPriorityLockRequired();
+}
+
+void ThreadGroup::IncrementTasksRunningLockRequired(TaskPriority priority) {
+  ++num_running_tasks_;
+  DCHECK_LE(num_running_tasks_, max_tasks_);
+  DCHECK_LE(num_running_tasks_, kMaxNumberOfWorkers);
+  if (priority == TaskPriority::BEST_EFFORT) {
+    ++num_running_best_effort_tasks_;
+    DCHECK_LE(num_running_best_effort_tasks_, num_running_tasks_);
+    DCHECK_LE(num_running_best_effort_tasks_, max_best_effort_tasks_);
+  }
+  UpdateMinAllowedPriorityLockRequired();
+}
+
+void ThreadGroup::DecrementMaxTasksLockRequired() {
+  DCHECK_GT(num_running_tasks_, 0U);
+  DCHECK_GT(max_tasks_, 0U);
+  --max_tasks_;
+  UpdateMinAllowedPriorityLockRequired();
+}
+
+void ThreadGroup::IncrementMaxTasksLockRequired() {
+  DCHECK_GT(num_running_tasks_, 0U);
+  ++max_tasks_;
+  UpdateMinAllowedPriorityLockRequired();
+}
+
+void ThreadGroup::DecrementMaxBestEffortTasksLockRequired() {
+  DCHECK_GT(num_running_tasks_, 0U);
+  DCHECK_GT(max_best_effort_tasks_, 0U);
+  --max_best_effort_tasks_;
+  UpdateMinAllowedPriorityLockRequired();
+}
+
+void ThreadGroup::IncrementMaxBestEffortTasksLockRequired() {
+  DCHECK_GT(num_running_tasks_, 0U);
+  ++max_best_effort_tasks_;
+  UpdateMinAllowedPriorityLockRequired();
+}
+
+ThreadGroup::InitializedInStart::InitializedInStart() = default;
+ThreadGroup::InitializedInStart::~InitializedInStart() = default;
 
 }  // namespace internal
 }  // namespace base

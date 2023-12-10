@@ -30,6 +30,7 @@ extern const char
 extern const char
     kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char kHistogramWorstUserInteractionLatencyMaxEventDuration[];
+extern const char kHistogramInpOffset[];
 extern const char kHistogramFirstInputDelay[];
 extern const char kHistogramFirstInputTimestamp[];
 extern const char kHistogramFirstInputDelay4[];

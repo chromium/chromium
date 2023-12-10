@@ -51,19 +51,19 @@ public class ContentTextSelectionTest {
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width\""
-                        + " /></head><body><form action=\"about:blank\"><input"
-                        + " id=\"empty_input_text\" type=\"text\" /><input"
-                        + " id=\"whitespace_input_text\" type=\"text\" value=\" \" /><input"
-                        + " id=\"input_text\" type=\"text\" value=\"SampleInputText\" /><textarea"
-                        + " id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea><input"
-                        + " id=\"password\" type=\"password\" value=\"SamplePassword\""
-                        + " size=\"10\"/><p><span id=\"smart_selection\">1600 Amphitheatre"
-                        + " Parkway</span></p><p><span"
-                        + " id=\"plain_text_1\">SamplePlainTextOne</span></p><p><span"
-                        + " id=\"plain_text_2\">SamplePlainTextTwo</span></p><input"
-                        + " id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\""
-                        + " /><div id=\"rich_div\" contentEditable=\"true\" >Rich Editor</div>"
-                        + "</form></body></html>");
+                            + " /></head><body><form action=\"about:blank\"><input"
+                            + " id=\"empty_input_text\" type=\"text\" /><input"
+                            + " id=\"whitespace_input_text\" type=\"text\" value=\" \" /><input"
+                            + " id=\"input_text\" type=\"text\" value=\"SampleInputText\" /><textarea"
+                            + " id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea><input"
+                            + " id=\"password\" type=\"password\" value=\"SamplePassword\""
+                            + " size=\"10\"/><p><span id=\"smart_selection\">1600 Amphitheatre"
+                            + " Parkway</span></p><p><span"
+                            + " id=\"plain_text_1\">SamplePlainTextOne</span></p><p><span"
+                            + " id=\"plain_text_2\">SamplePlainTextTwo</span></p><input"
+                            + " id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\""
+                            + " /><div id=\"rich_div\" contentEditable=\"true\" >Rich Editor</div>"
+                            + "</form></body></html>");
     private WebContents mWebContents;
     private SelectionPopupControllerImpl mSelectionPopupController;
 

@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -434,18 +435,11 @@ bool IsSingleUsernameType(autofill::ServerFieldType type) {
   return type == autofill::SINGLE_USERNAME ||
          (type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD &&
           base::FeatureList::IsEnabled(
-              password_manager::features::kForgotPasswordFormSupport));
+              password_manager::features::kForgotPasswordFormSupport)) ||
+         (type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES &&
+          base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kUsernameFirstFlowWithIntermediateValuesPredictions));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool UsesUPMForLocalM2(PrefService* prefs) {
-  bool is_upm_local_enabled = base::FeatureList::IsEnabled(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  // TODO(crbug.com/1495626): Check the readiness pref.
-  // TODO(crbug.com/1491089): Check the GMSCore version.
-  return is_upm_local_enabled;
-}
-#endif
 
 }  // namespace password_manager_util

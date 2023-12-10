@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
       web_contents());
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppConfirmationView");
+                                       "CreateShortcutConfirmationView");
   chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(widget != nullptr);
@@ -728,7 +728,7 @@ class MLPromotionInstallDialogBrowserTest
       case InstallDialogState::kDetailedInstallDialog:
         return "WebAppDetailedInstallDialog";
       case InstallDialogState::kCreateShortcutDialog:
-        return "WebAppConfirmationView";
+        return "CreateShortcutConfirmationView";
     }
   }
 

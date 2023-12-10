@@ -105,7 +105,7 @@ void Socket::Listen(const std::string& address,
 
 void Socket::Accept(AcceptCompletionCallback callback) {
   std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote() /* socket */,
-                          absl::nullopt, mojo::ScopedDataPipeConsumerHandle(),
+                          std::nullopt, mojo::ScopedDataPipeConsumerHandle(),
                           mojo::ScopedDataPipeProducerHandle());
 }
 

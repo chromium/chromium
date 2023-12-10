@@ -87,6 +87,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4195557071150719219">Žr. „Chromium“ naujausius skirtukus</translation>
 <translation id="4408912345039114853">„Chromium“ saugos patikros vykdymas</translation>
 <translation id="4432744876818348753">Prisijunkite, kad išnaudotumėte visas „Chromium“ galimybes.</translation>
+<translation id="4498832288620833153">Pridedami įvesti URL prie skaitymo sąrašo naršyklėje „Chromium“.</translation>
 <translation id="452436063477828504">Užtikrinkite, kad visada galėtumėte naudoti „Chromium“ duomenis „Google“ paskyroje</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Atidaromas „Chromium“ mokėjimo metodų nustatymo puslapis.</translation>
@@ -107,6 +108,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="5048795749726991615">Lengvai gaukite išsaugotus slaptažodžius kitose programose naudodami automatinio pildymo funkciją naršyklėje „Chromium“</translation>
 <translation id="5076601183701536878">Išvalyti naršymo duomenis naršyklėje „Chromium“</translation>
 <translation id="5131565040785979529">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chromium“.</translation>
+<translation id="5146749061471423558">Žymių pridėjimas prie „Chromium“</translation>
 <translation id="5171868502429358653">Prisijunkite prie „Chromium“</translation>
 <translation id="5213683223491576284">Atidaroma Slaptažodžių tvarkyklė naršyklėje „Chromium“.</translation>
 <translation id="5224391634244552924">Nėra išsaugotų slaptažodžių. „Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
@@ -114,6 +116,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 
         Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="5308226104666789935">„Chromium“ nepavyko patikrinti, ar yra naujinių.</translation>
+<translation id="5311557153294205270">Pridedami įvesti URL prie žymių naršyklėje „Chromium“.</translation>
 <translation id="5396916991083608703">Nustatyti „Chromium“ kaip numatytąją?</translation>
 <translation id="5453478652154926037">„Chromium“ negali patikrinti jūsų slaptažodžių.</translation>
 <translation id="5521125884468363740">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, prisijunkite ir įjunkite sinchronizavimą</translation>
@@ -165,7 +168,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="6911341667534646387">Toliau naudokite „Chromium“ duomenis „Google“ paskyroje</translation>
 <translation id="7006920032187763988">Galite naudoti Slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPad“ programose.</translation>
 <translation id="7018284295775193585">Nepavyko atnaujinti „Chromium“</translation>
-<translation id="7025471822960602362">Stebėkite aptiktus paketus sistemoje „Chromium“</translation>
 <translation id="7045244423563602563">Suasmeninkite „Chromium“</translation>
 <translation id="7055269218854630176">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios jungiatės, ir tai, kaip galima naudoti „Chromium“. Administratorius gali nustatyti arba apriboti tam tikras funkcijas.</translation>
 <translation id="7099326575020694068">„Chromium“ negali naudoti fotoaparato padalyto rodinio režimu</translation>
@@ -195,6 +197,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7928628054454574139">Bet kada palietus nuorodas kitose programose, bus atidaroma „Chromium“</translation>
 <translation id="7931842119211730154">Užrakinti inkognito skirtukus uždarius „Chromium“</translation>
 <translation id="7934404985878918282">Žr. „Chromium“ skaitymo sąrašą</translation>
+<translation id="7971753607796745700">Pridėti skaitymo sąrašo elementą prie „Chromium“</translation>
 <translation id="7980860476903281594">„Chromium“ bendrina jūsų vietovę su svetainėmis, kurioms leidžiate gauti tokius duomenis.</translation>
 <translation id="7995166854192397899">Pasiūlymai pagrįsti jūsų naršymo veikla kituose įrenginiuose. Jei norite gauti pasiūlymų, prisijunkite prie „Chromium“ visuose savo įrenginiuose.</translation>
 <translation id="800195749539500647">Išnaudokite visas „Chromium“ galimybes</translation>

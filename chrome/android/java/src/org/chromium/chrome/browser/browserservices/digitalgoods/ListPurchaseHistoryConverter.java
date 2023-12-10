@@ -21,9 +21,7 @@ import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchaseHistory_Response;
 import org.chromium.payments.mojom.PurchaseReference;
 
-/**
- * A converter that deals with the results of ListPurchaseHistory calls.
- */
+/** A converter that deals with the results of ListPurchaseHistory calls. */
 class ListPurchaseHistoryConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -62,9 +60,10 @@ class ListPurchaseHistoryConverter {
                 int code = args.getInt(KEY_RESPONSE_CODE);
                 Parcelable[] array = args.getParcelableArray(KEY_PURCHASES_LIST);
 
-                PurchaseReference[] reference = convertParcelableArray(
-                        array, ListPurchasesConverter::convertPurchaseReference)
-                                                        .toArray(new PurchaseReference[0]);
+                PurchaseReference[] reference =
+                        convertParcelableArray(
+                                        array, ListPurchasesConverter::convertPurchaseReference)
+                                .toArray(new PurchaseReference[0]);
                 callback.call(convertResponseCode(code, args), reference);
             }
         };

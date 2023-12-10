@@ -1,47 +1,88 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
 #define CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
 
-#include "chrome/browser/metrics/structured/structured_metrics_key_events_observer.h"
-#include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
-#include "components/metrics/structured/event.h"
-#include "components/metrics/structured/structured_metrics_client.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include <memory>
+
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "components/metrics/metrics_provider.h"
+#include "components/metrics/structured/external_metrics.h"
+#include "components/metrics/structured/structured_metrics_recorder.h"
 
 namespace metrics::structured {
 
-// Recording delegate for Ash Chrome.
+// A Recorder implementation for Ash Chrome.
 //
-// Although the main service also lives in Ash, this recorder sends events using
-// a mojo pipe. Instantiating a mojo pipe adds little overhead and provides lots
-// of benefits out of the box (ie message buffer).
-class AshStructuredMetricsRecorder
-    : public StructuredMetricsClient::RecordingDelegate {
+// This implementation uses KeyDataProviderAsh and AshEventStorage for key and
+// event handling. This class also provides the interface for external metrics
+// from platform2.
+//
+// Initialization of the StructuredMetricsRecorder is in two phases:
+//
+// 1. The device events and keys are loaded. Once the keys are loaded, device
+// events can be processed.
+//
+// 2. Once a profile is added, it will load the profiles events and keys. Once
+// keys are loaded, profile events can be processed.
+//
+// 3. Once both keys and events are loaded then AshStructuredMetricsRecorder is
+// considered fully initialized.
+class AshStructuredMetricsRecorder : public StructuredMetricsRecorder {
  public:
-  AshStructuredMetricsRecorder();
-  AshStructuredMetricsRecorder(const AshStructuredMetricsRecorder& recorder) =
-      delete;
-  AshStructuredMetricsRecorder& operator=(
-      const AshStructuredMetricsRecorder& recorder) = delete;
+  explicit AshStructuredMetricsRecorder(
+      metrics::MetricsProvider* system_profile_provider);
+
   ~AshStructuredMetricsRecorder() override;
 
-  // Sets up the recorder. This should be called after CrosApi is initialized,
-  // which is done in PreProfileInit() of the browser process setup.
-  void Initialize();
+  void OnExternalMetricsCollected(const EventsProto& events);
 
-  // RecordingDelegate:
-  void RecordEvent(Event&& event) override;
-  bool IsReadyToRecord() const override;
+  // StructuredMetricsRecorder:
+  void EnableRecording() override;
+  void DisableRecording() override;
+  void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto) override;
+  void AddSequenceMetadata(StructuredEventProto* proto,
+                           const Event& event,
+                           const ProjectValidator& project_validator,
+                           const KeyData& key_data) override;
+
+  // Recorder::RecorderImpl:
+  void OnSystemProfileInitialized() override;
+
+  void SetExternalMetricsDirForTest(const base::FilePath& dir);
 
  private:
-  mojo::Remote<crosapi::mojom::StructuredMetricsService> remote_;
-  std::unique_ptr<StructuredMetricsKeyEventsObserver> key_events_observer_;
-  bool is_initialized_ = false;
-};
+  friend class AshStructuredMetricsRecorderTest;
 
+  AshStructuredMetricsRecorder(
+      std::unique_ptr<KeyDataProvider> key_provider,
+      std::unique_ptr<EventStorage> event_storage,
+      metrics::MetricsProvider* system_profile_provider);
+
+  void OnProfileAdded(const base::FilePath& profile_path) override;
+
+  void ProvideSystemProfile(SystemProfileProto* system_profile);
+
+  // Whether the system profile has been initialized.
+  bool system_profile_initialized_ = false;
+
+  // Note this could be the real ChromeOSSystemProfileProvider now.
+  // Interface for providing the SystemProfile to metrics.
+  // See chrome/browser/metrics/chrome_metrics_service_client.h
+  MayBeDangling<metrics::MetricsProvider> system_profile_provider_;
+
+  // Periodically reports metrics from cros.
+  std::unique_ptr<ExternalMetrics> external_metrics_;
+
+  // The number of scans of external metrics that occurred since the last
+  // upload. This is only incremented if events were added by the scan.
+  int external_metrics_scans_ = 0;
+
+  base::WeakPtrFactory<AshStructuredMetricsRecorder> weak_factory_{this};
+};
 }  // namespace metrics::structured
 
 #endif  // CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_

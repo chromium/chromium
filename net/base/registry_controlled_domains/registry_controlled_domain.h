@@ -115,11 +115,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -190,7 +190,7 @@ NET_EXPORT std::string GetDomainAndRegistry(const url::Origin& origin,
 // Like the GURL / Origin versions, but takes a host (which is canonicalized
 // internally). Prefer either the GURL or Origin variants instead of this one
 // to avoid needing to re-canonicalize the host.
-NET_EXPORT std::string GetDomainAndRegistry(base::StringPiece host,
+NET_EXPORT std::string GetDomainAndRegistry(std::string_view host,
                                             PrivateRegistryFilter filter);
 
 // These convenience functions return true if the two GURLs or Origins both have
@@ -207,7 +207,7 @@ NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
                                  PrivateRegistryFilter filter);
 // Note: this returns false if |origin2| is not set.
 NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
-                                 const absl::optional<url::Origin>& origin2,
+                                 const std::optional<url::Origin>& origin2,
                                  PrivateRegistryFilter filter);
 NET_EXPORT bool SameDomainOrHost(const GURL& gurl,
                                  const url::Origin& origin,
@@ -245,7 +245,7 @@ NET_EXPORT size_t GetRegistryLength(const GURL& gurl,
 // host names like "*.google.com" as long as it has a valid registry-controlled
 // portion (see PermissiveGetHostRegistryLength for particulars).
 NET_EXPORT bool HostHasRegistryControlledDomain(
-    base::StringPiece host,
+    std::string_view host,
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter);
 
@@ -255,7 +255,7 @@ NET_EXPORT bool HostHasRegistryControlledDomain(
 //
 // If you have a non-canonical host name, use the "Permissive" version instead.
 NET_EXPORT size_t
-GetCanonicalHostRegistryLength(base::StringPiece canon_host,
+GetCanonicalHostRegistryLength(std::string_view canon_host,
                                UnknownRegistryFilter unknown_filter,
                                PrivateRegistryFilter private_filter);
 
@@ -285,11 +285,11 @@ GetCanonicalHostRegistryLength(base::StringPiece canon_host,
 // return std::string::npos like GetRegistryLength() for empty input, but
 // because invalid portions are skipped, it won't return npos in any other case.
 NET_EXPORT size_t
-PermissiveGetHostRegistryLength(base::StringPiece host,
+PermissiveGetHostRegistryLength(std::string_view host,
                                 UnknownRegistryFilter unknown_filter,
                                 PrivateRegistryFilter private_filter);
 NET_EXPORT size_t
-PermissiveGetHostRegistryLength(base::StringPiece16 host,
+PermissiveGetHostRegistryLength(std::u16string_view host,
                                 UnknownRegistryFilter unknown_filter,
                                 PrivateRegistryFilter private_filter);
 

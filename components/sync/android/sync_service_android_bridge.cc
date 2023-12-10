@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/android/jni_headers/SyncServiceImpl_jni.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -26,6 +27,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
@@ -85,9 +87,7 @@ SyncServiceAndroidBridge::SyncServiceAndroidBridge(
   native_sync_service_->AddObserver(this);
 }
 
-SyncServiceAndroidBridge::~SyncServiceAndroidBridge() {
-  native_sync_service_->RemoveObserver(this);
-}
+SyncServiceAndroidBridge::~SyncServiceAndroidBridge() = default;
 
 ScopedJavaLocalRef<jobject> SyncServiceAndroidBridge::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_ref_);
@@ -97,6 +97,13 @@ void SyncServiceAndroidBridge::OnStateChanged(syncer::SyncService* sync) {
   // Notify the java world that our sync state has changed.
   JNIEnv* env = AttachCurrentThread();
   Java_SyncServiceImpl_syncStateChanged(env, java_ref_);
+}
+
+void SyncServiceAndroidBridge::OnSyncShutdown(syncer::SyncService* sync) {
+  native_sync_service_->RemoveObserver(this);
+  Java_SyncServiceImpl_destroy(AttachCurrentThread(), java_ref_);
+  // Not worth resetting `native_sync_service_`, it owns this object and will
+  // destroy it shortly.
 }
 
 void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
@@ -330,4 +337,17 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
       native_sync_service_->GetLastSyncedTimeForDebugging();
   return static_cast<jlong>(
       (last_sync_time - base::Time::UnixEpoch()).InMicroseconds());
+}
+
+void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& gaia_ids) {
+  std::vector<std::string> gaia_id_strings;
+  AppendJavaStringArrayToStringVector(env, gaia_ids, &gaia_id_strings);
+  std::vector<signin::GaiaIdHash> gaia_id_hashes;
+  for (const std::string& gaia_id_string : gaia_id_strings) {
+    gaia_id_hashes.push_back(signin::GaiaIdHash::FromGaiaId(gaia_id_string));
+  }
+  native_sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
+      gaia_id_hashes);
 }

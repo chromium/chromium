@@ -29,7 +29,6 @@ from run_webpage_test import WebpageTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
 from test_runner import TestRunner
-from ermine_ctl import ErmineCtl
 
 
 def _get_test_runner(runner_args: argparse.Namespace,
@@ -73,7 +72,7 @@ def main():
     register_device_args(parser)
     register_emulator_args(parser)
     register_executable_test_args(parser)
-    register_update_args(parser, default_os_check='ignore', default_pave=False)
+    register_update_args(parser, default_os_check='ignore')
     register_log_args(parser)
     register_package_args(parser, allow_temp_repo=True)
     register_serve_args(parser)
@@ -115,8 +114,7 @@ def main():
 
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
-                   runner_args.target_id, runner_args.serial_num,
-                   runner_args.pave)
+                   runner_args.target_id, runner_args.serial_num)
         else:
             runner_args.target_id = stack.enter_context(
                 create_emulator_from_args(runner_args))
@@ -140,10 +138,6 @@ def main():
         # so that logging will not be interrupted.
         start_system_log(log_manager, False, package_deps.values(),
                          ('--since', 'now'), runner_args.target_id)
-
-        ermine = ErmineCtl(runner_args.target_id)
-        if ermine.exists:
-            ermine.take_to_shell()
 
         resolve_packages(package_deps.keys(), runner_args.target_id)
         return test_runner.run_test().returncode

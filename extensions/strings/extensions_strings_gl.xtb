@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Non se puido xerar a clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está reducindo a velocidade de <ph name="PRODUCT_NAME" />. Debes desactivala para restablecer o rendemento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL non é compatible.</translation>
+<translation id="1610570795592207282">Non se puido cargar o CSS <ph name="RELATIVE_PATH" /> para o script.</translation>
 <translation id="1803557475693955505">Erro ao cargar a páxina en segundo plano "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Non se puido descodificar a imaxe: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localización utilizada, pero default_locale non se especificou no manifesto.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Non se puido substituír o ficheiro crx. Comproba se se está utilizando o ficheiro.</translation>
 <translation id="3163201441334626963">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Non se puido cargar css "<ph name="RELATIVE_PATH" />" para o script de contido.</translation>
 <translation id="3369521687965833290">Non se pode descomprimir a extensión. Para descomprimir unha extensión de xeito seguro, debe haber unha ruta ao directorio do teu perfil que empece pola letra dunha unidade e non conteña unha unión, un punto de montaxe ou unha ligazón simbólica. Non existe ningunha ruta deste tipo para o teu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada da clave privada debe ser unha ruta válida.</translation>
 <translation id="388442998277590542">Non se puido cargar a páxina de opcións "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro ao asinar a extensión.</translation>
-<translation id="39964277676607559">Non se puido cargar "<ph name="RELATIVE_PATH" />" de javascript para o script do contido.</translation>
 <translation id="4115165561519362854">O administrador deste dispositivo require que <ph name="EXTENSION_NAME" /> teña como mínimo a versión <ph name="EXTENSION_VERSION" />. Non se pode activar ata que se actualice a esa versión ou a unha superior.</translation>
 <translation id="4233778200880751280">Non se puido cargar a páxina de información <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Erro ao emitir a clave privada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Erro ao exportar a clave pública.</translation>
 <translation id="5026754133087629784">Vista web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Non se pode atopar a ruta absoluta ao directorio que se debe incluír en paquetes.</translation>
+<translation id="5160071981665899014">Non se puido cargar o JavaScript <ph name="RELATIVE_PATH" /> para o script.</translation>
 <translation id="5356315618422219272">Vista da aplicación: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Non se admiten as ventás con formas.</translation>
 <translation id="5456409301717116725">Esta extensión inclúe o ficheiro de clave "<ph name="KEY_PATH" />". É probable que non queiras realizar esta acción.</translation>

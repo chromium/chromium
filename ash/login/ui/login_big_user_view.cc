@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -120,7 +121,9 @@ void LoginBigUserView::RequestFocus() {
 }
 
 void LoginBigUserView::OnWallpaperBlurChanged() {
-  if (Shell::Get()->wallpaper_controller()->IsWallpaperBlurredForLockState()) {
+  if (Shell::Get()->wallpaper_controller()->IsWallpaperBlurredForLockState() ||
+      Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::LOCKED) {
     SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
     SetBackground(nullptr);
   } else {
@@ -155,5 +158,8 @@ void LoginBigUserView::CreatePublicAccount(const LoginUserInfo& user) {
   auth_user_ = nullptr;
   AddChildView(public_account_.get());
 }
+
+BEGIN_METADATA(LoginBigUserView)
+END_METADATA
 
 }  // namespace ash

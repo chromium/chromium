@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">Google menadžer lozinki nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
 <translation id="1407843355326180937">Prijavite se na ovaj sajt i u Chrome da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima.</translation>
 <translation id="1436059927646026729">Otvori moju najnoviju karticu u Chrome-u</translation>
+<translation id="1449241544691504574">Dodaj obeleživače u Chrome</translation>
 <translation id="1462727070346936664">Prijavite se da biste iskoristili Chrome na najbolji način.</translation>
-<translation id="1479202195792305274">Chrome može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="1491435845014430217">Uključite Zaključaj kartice bez arhiviranja posle zatvaranja Chrome-a.</translation>
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
@@ -33,10 +33,10 @@
         Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="1682483655351012182">Sinhronizujte Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Dodaje unete URL-ove u obeleživače u Chrome-u.</translation>
 <translation id="1843217788865538014">Automatski koristite Chrome kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="1917964099031477364">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chrome-a i drugih Google aplikacija na ovom uređaju.</translation>
 <translation id="1987779152850321833">Obavite ove predložene radnje u nastavku da biste iskoristili Chrome na najbolji način.</translation>
-<translation id="2009224836393115614">Chrome nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
 <translation id="2056123005618757196">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Google Chrome-a.</translation>
 <translation id="2120238739383482109">Otvara Chrome obeleživače.</translation>
 <translation id="2147651015520127414">Chrome je potvrdio da je <ph name="ISSUER" /> izdao sertifikat ovog veb-sajta.</translation>
@@ -55,10 +55,11 @@
 <translation id="2574249610672786438">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="257708665678654955">Želite li da Google Chrome sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2650286135394207535">Dozvolite Chrome-u da vam pomogne da pratite pakete</translation>
 <translation id="2671426118752779020">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="2689064829982324496">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK" />odjavite se iz Chrome-a<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
-<translation id="2732745070297234559">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
+<translation id="2702250627063295552">Dodaj stavku liste za čitanje u Chrome</translation>
 <translation id="2736805085127235148">Chrome obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
 <translation id="2767464022270041271">Nema sačuvanih lozinki. Google menadžer lozinki može da vam proverava lozinke kada ih sačuvate.</translation>
 <translation id="2868822340714096138">Obrišite podatke pregledanja u Chrome-u</translation>
@@ -76,7 +77,6 @@
 <translation id="3472587960215700950">Chrome koristi Google mape da bi vam pružao putanju i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3503014945441706099">Nabavite poboljšano bezbedno pregledanje i za ovaj Chrome profil</translation>
 <translation id="3522659714780527202">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, uključite sinhronizaciju</translation>
-<translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može da proverava lozinke kada ih sačuvate.</translation>
 <translation id="3577555362230509265">Koristite Chrome u drugim aplikacijama.</translation>
 <translation id="3594076341410558780">Sakrijte „Iskoristite Chrome na najbolji način“</translation>
 <translation id="3655656110921623717">To znači da će Chrome svaki put zahtevati mobilni sajt.</translation>
@@ -85,6 +85,7 @@
 <translation id="3744018071945602754">Upravljajte lozinkama u Chrome-u</translation>
 <translation id="3827545470516145620">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može da koristi kameru</translation>
+<translation id="3863841106411295595">Dodaje unete URL-ove na listu za čitanje u Chrome-u.</translation>
 <translation id="3901001113120561395">Iskoristite Chrome na najbolji način.</translation>
 <translation id="3967382818307165056">Upravljajte načinima plaćanja u Chrome-u</translation>
 <translation id="3980220367029651214">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chrome podacima upravlja <ph name="DOMAIN" />. Promena će izbrisati podatke sa ovog uređaja, ali će podaci ostati na <ph name="USER_EMAIL1" />.</translation>
@@ -98,12 +99,10 @@
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4251174643044751591">Otvara stranicu Podešavanje načina plaćanja u Chrome-u.</translation>
 <translation id="4453284704333523777">Upravljajte podešavanjima Chrome-a</translation>
-<translation id="4471662743048412085">Prati otkrivene pakete u Chrome-u</translation>
 <translation id="4508370294876102450">Otvorite Chrome iz bilo koje aplikacije</translation>
 <translation id="4523886039239821078">Neki programski dodaci izazivaju otkazivanje Chrome-a. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može da traži ažuriranja</translation>
 <translation id="4636900170638246267">Prijavite se na ovaj sajt i u Chrome.</translation>
-<translation id="4698415050768537821">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="4761869838909035636">Pokrenite Chrome bezbednosnu proveru</translation>
 <translation id="4819268619367838612">Chrome šalje Google-u podatke o korišćenju i otkazivanju radi poboljšanja aplikacije. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Neki Chrome podaci još nisu sačuvani na Google nalogu.
@@ -161,7 +160,6 @@
 <translation id="6815466750807582739">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
 
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="6851982868877411675">Otvorite podešavanja Chrome-a u iOS-u, pa dodirnite Default Browser App (Podrazumevana aplikacija za pregledač) i izaberite Chrome.</translation>
 <translation id="6916015246697034114">Pretražujte glasom u u Chrome-u</translation>
 <translation id="6964931465519938134">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>

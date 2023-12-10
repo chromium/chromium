@@ -17,10 +17,19 @@ namespace data_controls {
 
 struct ActionSource {
   GURL url;
+
+  // null represents a source that isn't a browser tab, for example a different
+  // application or the browser's omnibox.
+  absl::optional<bool> incognito;
 };
 
 struct ActionDestination {
   GURL url;
+
+  // null represents a destination that isn't a browser tab, for example a
+  // different application or the browser's omnibox.
+  absl::optional<bool> incognito;
+
 #if BUILDFLAG(IS_CHROMEOS)
   Component component = Component::kUnknownComponent;
 #endif  // BUILDFLAG(IS_CHROMEOS)

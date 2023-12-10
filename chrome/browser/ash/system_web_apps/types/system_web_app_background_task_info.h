@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_BACKGROUND_TASK_INFO_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_BACKGROUND_TASK_INFO_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -15,7 +16,7 @@ namespace ash {
 struct SystemWebAppBackgroundTaskInfo {
   SystemWebAppBackgroundTaskInfo();
   SystemWebAppBackgroundTaskInfo(const SystemWebAppBackgroundTaskInfo& other);
-  SystemWebAppBackgroundTaskInfo(const absl::optional<base::TimeDelta>& period,
+  SystemWebAppBackgroundTaskInfo(const std::optional<base::TimeDelta>& period,
                                  const GURL& url,
                                  bool open_immediately = false);
   ~SystemWebAppBackgroundTaskInfo();
@@ -23,7 +24,7 @@ struct SystemWebAppBackgroundTaskInfo {
   // opened using the same WebContents, so if the previous task is still
   // running, it will be closed. You should have at least one of period or
   // open_immediately set for the task to do anything.
-  absl::optional<base::TimeDelta> period;
+  std::optional<base::TimeDelta> period;
 
   // The url of the background page to open. This should do one specific thing.
   // (Probably opening a shared worker, waiting for a response, and closing)

@@ -4,13 +4,14 @@
 
 #include "net/base/network_isolation_key.h"
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -72,7 +73,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(NetworkIsolationKeyTest, EmptyKey) {
   NetworkIsolationKey key;
   EXPECT_FALSE(key.IsFullyPopulated());
-  EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
@@ -134,7 +135,7 @@ TEST_P(NetworkIsolationKeyTest, KeyWithNonce) {
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   NetworkIsolationKey key(site1, site2, nonce);
   EXPECT_TRUE(key.IsFullyPopulated());
-  EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
@@ -167,7 +168,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginKey) {
   SchemefulSite site_data = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key(site_data, site_data);
   EXPECT_TRUE(key.IsFullyPopulated());
-  EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
@@ -212,7 +213,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginTopLevelSiteKey) {
   SchemefulSite site_data = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key(site_data, site1);
   EXPECT_TRUE(key.IsFullyPopulated());
-  EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
@@ -252,7 +253,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueOriginIframeKey) {
   EXPECT_TRUE(key.IsFullyPopulated());
   switch (NetworkIsolationKey::GetMode()) {
     case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
+      EXPECT_EQ(std::nullopt, key.ToCacheKeyString());
       EXPECT_TRUE(key.IsTransient());
       EXPECT_EQ(site1.GetDebugString() + " " + site_data.GetDebugString(),
                 key.ToDebugString());
@@ -400,9 +401,9 @@ TEST_P(NetworkIsolationKeyTest, OpaqueSiteKeyBoth) {
 
   // Test the ToString and ToDebugString
   EXPECT_EQ(key1.ToDebugString(), key2.ToDebugString());
-  EXPECT_EQ(absl::nullopt, key1.ToCacheKeyString());
-  EXPECT_EQ(absl::nullopt, key2.ToCacheKeyString());
-  EXPECT_EQ(absl::nullopt, key3.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key1.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key2.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, key3.ToCacheKeyString());
 }
 
 // Make sure that the logic to extract the registerable domain from an origin

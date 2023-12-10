@@ -45,8 +45,7 @@ HashRealTimeMechanism::StartCheckInternal() {
           weak_factory_.GetWeakPtr()));
 
   return StartCheckResult(
-      /*is_safe_synchronously=*/false,
-      /*did_check_url_real_time_allowlist=*/false);
+      /*is_safe_synchronously=*/false);
 }
 
 void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
@@ -61,6 +60,9 @@ void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
     // If the URL matches the high-confidence allowlist, still do the hash based
     // checks.
     PerformHashBasedCheck(url_, /*real_time_request_failed=*/false);
+    // NOTE: Calling PerformHashBasedCheck may result in the synchronous
+    // destruction of this object, so there is nothing safe to do here but
+    // return.
   } else {
     ui_task_runner_->PostTask(
         FROM_HERE,
@@ -105,6 +107,9 @@ void HashRealTimeMechanism::OnLookupResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_lookup_successful) {
     PerformHashBasedCheck(url_, /*real_time_request_failed=*/true);
+    // NOTE: Calling PerformHashBasedCheck may result in the synchronous
+    // destruction of this object, so there is nothing safe to do here but
+    // return.
     return;
   }
   DCHECK(threat_type.has_value());
@@ -115,6 +120,8 @@ void HashRealTimeMechanism::OnLookupResponse(
       /*matched_high_confidence_allowlist=*/false,
       /*locally_cached_results_threat_type=*/locally_cached_results_threat_type,
       /*real_time_request_failed=*/!is_lookup_successful));
+  // NOTE: Calling CompleteCheck results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 void HashRealTimeMechanism::PerformHashBasedCheck(
@@ -133,6 +140,9 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
     OnHashDatabaseCompleteCheckResultInternal(
         SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt,
         real_time_request_failed);
+    // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
+    // synchronous destruction of this object, so there is nothing safe to do
+    // here but return.
   }
 }
 
@@ -143,6 +153,9 @@ void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
   OnHashDatabaseCompleteCheckResultInternal(
       result->threat_type, result->metadata, result->threat_source,
       real_time_request_failed);
+  // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
+  // synchronous destruction of this object, so there is nothing safe to do here
+  // but return.
 }
 
 void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
@@ -156,6 +169,8 @@ void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
       /*matched_high_confidence_allowlist=*/!real_time_request_failed,
       /*locally_cached_results_threat_type=*/absl::nullopt,
       /*real_time_request_failed=*/real_time_request_failed));
+  // NOTE: Calling CompleteCheck results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing

@@ -7,12 +7,10 @@ This is a testharness.js-based test.
   assert_equals: expected "rgb(0, 0, 255)" but got "none solid rgb(0, 0, 255)"
 [FAIL] Property text-decoration value 'currentcolor'
   assert_equals: expected "rgb(0, 0, 255)" but got "none solid rgb(0, 0, 255)"
-[PASS] Property text-decoration value 'double overline underline'
 [FAIL] Property text-decoration value 'underline overline line-through red'
   assert_equals: expected "underline overline line-through rgb(255, 0, 0)" but got "underline overline line-through solid rgb(255, 0, 0)"
 [FAIL] Property text-decoration value 'rgba(10, 20, 30, 0.4) dotted'
   assert_equals: expected "dotted rgba(10, 20, 30, 0.4)" but got "none dotted rgba(10, 20, 30, 0.4)"
-[PASS] Property text-decoration value 'underline dashed rgb(0, 255, 0)'
 [FAIL] Property text-decoration value 'auto'
   assert_equals: expected "rgb(0, 0, 255)" but got "none solid rgb(0, 0, 255)"
 [FAIL] Property text-decoration value 'from-font'

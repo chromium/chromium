@@ -154,9 +154,30 @@ void BM_StrAppendImpl(benchmark::State& state, size_t total_bytes,
 }
 
 void BM_StrAppend(benchmark::State& state) {
-  const int total_bytes = state.range(0);
+  const size_t total_bytes = state.range(0);
   const int chunks_at_a_time = state.range(1);
   const absl::string_view kChunk = "0123456789";
+
+  switch (chunks_at_a_time) {
+    case 1:
+      return BM_StrAppendImpl(state, total_bytes, kChunk);
+    case 2:
+      return BM_StrAppendImpl(state, total_bytes, kChunk, kChunk);
+    case 4:
+      return BM_StrAppendImpl(state, total_bytes, kChunk, kChunk, kChunk,
+                              kChunk);
+    case 8:
+      return BM_StrAppendImpl(state, total_bytes, kChunk, kChunk, kChunk,
+                              kChunk, kChunk, kChunk, kChunk, kChunk);
+    default:
+      std::abort();
+  }
+}
+
+void BM_StrAppendInt(benchmark::State& state) {
+  const size_t total_bytes = state.range(0);
+  const int chunks_at_a_time = state.range(1);
+  const size_t kChunk = 1234;
 
   switch (chunks_at_a_time) {
     case 1:
@@ -187,6 +208,7 @@ void StrAppendConfig(B* benchmark) {
 }
 
 BENCHMARK(BM_StrAppend)->Apply(StrAppendConfig);
+BENCHMARK(BM_StrAppendInt)->Apply(StrAppendConfig);
 
 template <typename... Chunks>
 void BM_StrCatImpl(benchmark::State& state,

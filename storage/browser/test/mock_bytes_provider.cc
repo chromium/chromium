@@ -15,7 +15,7 @@ MockBytesProvider::MockBytesProvider(
     size_t* reply_request_count,
     size_t* stream_request_count,
     size_t* file_request_count,
-    absl::optional<base::Time> file_modification_time)
+    std::optional<base::Time> file_modification_time)
     : data_(std::move(data)),
       reply_request_count_(reply_request_count),
       stream_request_count_(stream_request_count),

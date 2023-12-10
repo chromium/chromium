@@ -84,12 +84,12 @@ TEST_F(SequenceMatcherTest, TestSequenceMatcherRatioWithPenalty) {
 TEST_F(SequenceMatcherTest, TestSequenceMatcherRatioWithTextLengthAgnosticism) {
   // Two matching blocks, total matching blocks length is 4.
   EXPECT_NEAR(SequenceMatcher(u"word", u"hello world", 0.0)
-                  .Ratio(/*use_text_length_agnosticism=*/true),
+                  .Ratio(/*text_length_agnostic=*/true),
               0.615, 0.001);
 
   // One matching block, length is 4.
   EXPECT_NEAR(SequenceMatcher(u"worl", u"hello world", 0.0)
-                  .Ratio(/*use_text_length_agnosticism=*/true),
+                  .Ratio(/*text_length_agnostic=*/true),
               0.615, 0.001);
 
   // No matching block at all.

@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -29,6 +30,8 @@ class Shelf;
 // kShowLogoutButtonInTray pref.
 class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
                                     public SessionObserver {
+  METADATA_HEADER(LogoutButtonTray, TrayBackgroundView)
+
  public:
   explicit LogoutButtonTray(Shelf* shelf);
 
@@ -51,7 +54,6 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
   void HideBubble(const TrayBubbleView* bubble_view) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // SessionObserver:

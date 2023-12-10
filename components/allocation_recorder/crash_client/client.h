@@ -10,13 +10,26 @@ class AllocationTraceRecorder;
 }
 
 namespace allocation_recorder::crash_client {
-// Initialize the client part of the allocation stack recorder's crashpad
-// integration. This creates the required structures etc. to properly
-// communicate the data of the passed recorder to the handler part.
+
+// Register the given recorder with the client part of the allocation stack
+// recorder's Crashpad integration. This creates the required structures etc. to
+// properly communicate the data of the passed recorder to the handler part.
+// Only one recorder can be registered at a time.
 //
-// Returns a reference to the allocation trace recorder which will be included
-// in the crash report.
-base::debug::tracer::AllocationTraceRecorder& Initialize();
+// |RegisterRecorderWithCrashpad| terminates the processes if any recorder is
+// already registered (see |UnregisterRecorderWithCrashpad| to unregister the
+// current recorder).
+void RegisterRecorderWithCrashpad(
+    base::debug::tracer::AllocationTraceRecorder& recorder);
+
+// Unregister the currently registered recorder. This sets the size of
+// annotation to 0, which effectively disables it. Note that the annotation is
+// still present as it can't be deleted (Crashpad limitation).
+//
+// |UnregisterRecorderWithCrashpad| terminates the processes if called without
+// registering a recorder first.
+void UnregisterRecorderWithCrashpad();
+
 }  // namespace allocation_recorder::crash_client
 
 #endif  // COMPONENTS_ALLOCATION_RECORDER_CRASH_CLIENT_CLIENT_H_

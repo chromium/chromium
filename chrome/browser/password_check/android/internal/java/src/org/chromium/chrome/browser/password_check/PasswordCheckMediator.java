@@ -65,17 +65,22 @@ class PasswordCheckMediator
     private long mLastStatusUpdate;
     private boolean mCctIsOpened;
 
-    PasswordCheckMediator(PasswordCheckChangePasswordHelper changePasswordDelegate,
+    PasswordCheckMediator(
+            PasswordCheckChangePasswordHelper changePasswordDelegate,
             PasswordAccessReauthenticationHelper reauthenticationHelper,
-            SettingsLauncher settingsLauncher, PasswordCheckIconHelper passwordCheckIconHelper) {
+            SettingsLauncher settingsLauncher,
+            PasswordCheckIconHelper passwordCheckIconHelper) {
         mChangePasswordDelegate = changePasswordDelegate;
         mReauthenticationHelper = reauthenticationHelper;
         mSettingsLauncher = settingsLauncher;
         mIconHelper = passwordCheckIconHelper;
     }
 
-    void initialize(PropertyModel model, PasswordCheckComponentUi.Delegate delegate,
-            @PasswordCheckReferrer int passwordCheckReferrer, Runnable launchCheckupInAccount) {
+    void initialize(
+            PropertyModel model,
+            PasswordCheckComponentUi.Delegate delegate,
+            @PasswordCheckReferrer int passwordCheckReferrer,
+            Runnable launchCheckupInAccount) {
         mModel = model;
         mDelegate = delegate;
         mLaunchCheckupInAccount = launchCheckupInAccount;
@@ -86,8 +91,10 @@ class PasswordCheckMediator
         // If a run is scheduled to happen soon, initialize the UI as running to prevent flickering.
         // Otherwise, initialize the UI with last known state (defaults to IDLE before first run).
         boolean shouldRunCheck = passwordCheckReferrer != PasswordCheckReferrer.SAFETY_CHECK;
-        onPasswordCheckStatusChanged(shouldRunCheck ? PasswordCheckUIStatus.RUNNING
-                                                    : getPasswordCheck().getCheckStatus());
+        onPasswordCheckStatusChanged(
+                shouldRunCheck
+                        ? PasswordCheckUIStatus.RUNNING
+                        : getPasswordCheck().getCheckStatus());
         getPasswordCheck().addObserver(this, true);
         if (shouldRunCheck) {
             PasswordCheckMetricsRecorder.recordUiUserAction(
@@ -130,12 +137,15 @@ class PasswordCheckMediator
 
         ListModel<ListItem> items = mModel.get(ITEMS);
         if (items.size() == 0) {
-            items.add(new ListItem(PasswordCheckProperties.ItemType.HEADER,
-                    new PropertyModel.Builder(PasswordCheckProperties.HeaderProperties.ALL_KEYS)
-                            .with(CHECK_STATUS, PasswordCheckUIStatus.RUNNING)
-                            .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
-                            .with(RESTART_BUTTON_ACTION, this::startCheckManually)
-                            .build()));
+            items.add(
+                    new ListItem(
+                            PasswordCheckProperties.ItemType.HEADER,
+                            new PropertyModel.Builder(
+                                            PasswordCheckProperties.HeaderProperties.ALL_KEYS)
+                                    .with(CHECK_STATUS, PasswordCheckUIStatus.RUNNING)
+                                    .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
+                                    .with(RESTART_BUTTON_ACTION, this::startCheckManually)
+                                    .build()));
             mLastStatusUpdate = System.currentTimeMillis();
         }
         if (items.size() > 1) items.removeRange(1, items.size() - 1);
@@ -155,8 +165,10 @@ class PasswordCheckMediator
 
         if (shouldDelayStatusChange(status, currentTime)) {
             mLastStatusUpdate += sStatusUpdateDelayMillis;
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
-                    () -> changePasswordCheckStatus(status), mLastStatusUpdate - currentTime);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> changePasswordCheckStatus(status),
+                    mLastStatusUpdate - currentTime);
         } else {
             mLastStatusUpdate = currentTime;
             changePasswordCheckStatus(status);
@@ -170,20 +182,20 @@ class PasswordCheckMediator
         ListModel<ListItem> items = mModel.get(ITEMS);
         PropertyModel header;
         if (items.size() == 0) {
-            header = new PropertyModel.Builder(PasswordCheckProperties.HeaderProperties.ALL_KEYS)
-                             .with(CHECK_PROGRESS, UNKNOWN_PROGRESS)
-                             .with(CHECK_STATUS, PasswordCheckUIStatus.RUNNING)
-                             .with(CHECK_TIMESTAMP, null)
-                             .with(COMPROMISED_CREDENTIALS_COUNT, null)
-                             .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
-                             .with(RESTART_BUTTON_ACTION, this::startCheckManually)
-                             .with(SHOW_CHECK_SUBTITLE, false)
-                             .build();
+            header =
+                    new PropertyModel.Builder(PasswordCheckProperties.HeaderProperties.ALL_KEYS)
+                            .with(CHECK_PROGRESS, UNKNOWN_PROGRESS)
+                            .with(CHECK_STATUS, PasswordCheckUIStatus.RUNNING)
+                            .with(CHECK_TIMESTAMP, null)
+                            .with(COMPROMISED_CREDENTIALS_COUNT, null)
+                            .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
+                            .with(RESTART_BUTTON_ACTION, this::startCheckManually)
+                            .with(SHOW_CHECK_SUBTITLE, false)
+                            .build();
         } else {
             header = items.get(0).model;
         }
-        @PasswordCheckUIStatus
-        int oldStatus = header.get(CHECK_STATUS);
+        @PasswordCheckUIStatus int oldStatus = header.get(CHECK_STATUS);
         header.set(CHECK_STATUS, status);
         Pair<Integer, Integer> progress = header.get(CHECK_PROGRESS);
         if (progress == null) progress = UNKNOWN_PROGRESS;
@@ -240,7 +252,8 @@ class PasswordCheckMediator
                 PasswordCheckUserAction.DELETE_PASSWORD_CLICK);
         mModel.set(DELETION_ORIGIN, credential.getDisplayOrigin());
         mModel.set(
-                DELETION_CONFIRMATION_HANDLER, new PasswordCheckDeletionDialogFragment.Handler() {
+                DELETION_CONFIRMATION_HANDLER,
+                new PasswordCheckDeletionDialogFragment.Handler() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         PasswordCheckMetricsRecorder.recordUiUserAction(
@@ -269,25 +282,29 @@ class PasswordCheckMediator
             return;
         }
 
-        mReauthenticationHelper.reauthenticate(ReauthReason.VIEW_PASSWORD, reauthSucceeded -> {
-            if (reauthSucceeded) {
-                PasswordCheckMetricsRecorder.recordUiUserAction(
-                        PasswordCheckUserAction.VIEWED_PASSWORD);
-                mModel.set(VIEW_CREDENTIAL, credential);
-                mModel.set(VIEW_DIALOG_HANDLER, new PasswordCheckViewDialogFragment.Handler() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mModel.set(VIEW_CREDENTIAL, null);
-                        mModel.set(VIEW_DIALOG_HANDLER, null);
-                    }
+        mReauthenticationHelper.reauthenticate(
+                ReauthReason.VIEW_PASSWORD,
+                reauthSucceeded -> {
+                    if (reauthSucceeded) {
+                        PasswordCheckMetricsRecorder.recordUiUserAction(
+                                PasswordCheckUserAction.VIEWED_PASSWORD);
+                        mModel.set(VIEW_CREDENTIAL, credential);
+                        mModel.set(
+                                VIEW_DIALOG_HANDLER,
+                                new PasswordCheckViewDialogFragment.Handler() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mModel.set(VIEW_CREDENTIAL, null);
+                                        mModel.set(VIEW_DIALOG_HANDLER, null);
+                                    }
 
-                    @Override
-                    public void onDismiss() {
-                        mModel.set(VIEW_DIALOG_HANDLER, null);
+                                    @Override
+                                    public void onDismiss() {
+                                        mModel.set(VIEW_DIALOG_HANDLER, null);
+                                    }
+                                });
                     }
                 });
-            }
-        });
     }
 
     @Override
@@ -296,7 +313,6 @@ class PasswordCheckMediator
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.OPENED_SITE, credential);
         mCctIsOpened = true;
-        mDelegate.onManualPasswordChangeStarted(credential);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
     }
 
@@ -309,7 +325,8 @@ class PasswordCheckMediator
         if (header.get(CHECK_STATUS) == PasswordCheckUIStatus.IDLE) {
             header.set(COMPROMISED_CREDENTIALS_COUNT, compromisedCredentialsCount);
         }
-        header.set(SHOW_CHECK_SUBTITLE,
+        header.set(
+                SHOW_CHECK_SUBTITLE,
                 compromisedCredentialsCount > 0
                         || header.get(CHECK_STATUS) == PasswordCheckUIStatus.IDLE);
     }
@@ -338,7 +355,7 @@ class PasswordCheckMediator
     private boolean isCheckRunning() {
         return mModel.get(ITEMS).get(0) != null
                 && mModel.get(ITEMS).get(0).model.get(CHECK_STATUS)
-                == PasswordCheckUIStatus.RUNNING;
+                        == PasswordCheckUIStatus.RUNNING;
     }
 
     private boolean shouldDelayStatusChange(
@@ -352,16 +369,19 @@ class PasswordCheckMediator
 
     private ListItem createEntryForCredential(CompromisedCredential credential) {
         PropertyModel credentialModel =
-                new PropertyModel
-                        .Builder(PasswordCheckProperties.CompromisedCredentialProperties.ALL_KEYS)
+                new PropertyModel.Builder(
+                                PasswordCheckProperties.CompromisedCredentialProperties.ALL_KEYS)
                         .with(COMPROMISED_CREDENTIAL, credential)
-                        .with(HAS_MANUAL_CHANGE_BUTTON,
+                        .with(
+                                HAS_MANUAL_CHANGE_BUTTON,
                                 mChangePasswordDelegate.canManuallyChangeCredential(credential))
                         .with(CREDENTIAL_HANDLER, this)
                         .build();
-        mIconHelper.getLargeIcon(credential, (faviconOrFallback) -> {
-            credentialModel.set(FAVICON_OR_FALLBACK, faviconOrFallback);
-        });
+        mIconHelper.getLargeIcon(
+                credential,
+                (faviconOrFallback) -> {
+                    credentialModel.set(FAVICON_OR_FALLBACK, faviconOrFallback);
+                });
         return new ListItem(
                 PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL, credentialModel);
     }
@@ -371,38 +391,48 @@ class PasswordCheckMediator
             mPreCheckSet = new HashSet<>(credentials);
         }
 
-        Collections.sort(credentials, (CompromisedCredential lhs, CompromisedCredential rhs) -> {
-            // Phished credentials should always appear first.
-            if (lhs.isOnlyPhished() != rhs.isOnlyPhished()) {
-                return lhs.isOnlyPhished() ? -1 : 1;
-            }
+        Collections.sort(
+                credentials,
+                (CompromisedCredential lhs, CompromisedCredential rhs) -> {
+                    // Phished credentials should always appear first.
+                    if (lhs.isOnlyPhished() != rhs.isOnlyPhished()) {
+                        return lhs.isOnlyPhished() ? -1 : 1;
+                    }
 
-            boolean lhsInitial = mPreCheckSet.contains(lhs);
-            boolean rhsInitial = mPreCheckSet.contains(rhs);
-            // If one is the in initial set and the other one isn't, then the credential in
-            // the initial set goes first.
-            if (lhsInitial != rhsInitial) {
-                return lhsInitial ? -1 : 1;
-            }
+                    boolean lhsInitial = mPreCheckSet.contains(lhs);
+                    boolean rhsInitial = mPreCheckSet.contains(rhs);
+                    // If one is the in initial set and the other one isn't, then the credential in
+                    // the initial set goes first.
+                    if (lhsInitial != rhsInitial) {
+                        return lhsInitial ? -1 : 1;
+                    }
 
-            // If they are both in the initial set, the most recent credential should appear first.
-            if (lhsInitial && rhsInitial && lhs.getCreationTime() != rhs.getCreationTime()) {
-                return -Long.compare(lhs.getCreationTime(), rhs.getCreationTime());
-            }
+                    // If they are both in the initial set, the most recent credential should appear
+                    // first.
+                    if (lhsInitial
+                            && rhsInitial
+                            && lhs.getCreationTime() != rhs.getCreationTime()) {
+                        return -Long.compare(lhs.getCreationTime(), rhs.getCreationTime());
+                    }
 
-            // If they both are not in the initial set, the older credential should appear
-            // first.
-            if (!lhsInitial && !rhsInitial && lhs.getCreationTime() != rhs.getCreationTime()) {
-                return Long.compare(lhs.getCreationTime(), rhs.getCreationTime());
-            }
+                    // If they both are not in the initial set, the older credential should appear
+                    // first.
+                    if (!lhsInitial
+                            && !rhsInitial
+                            && lhs.getCreationTime() != rhs.getCreationTime()) {
+                        return Long.compare(lhs.getCreationTime(), rhs.getCreationTime());
+                    }
 
-            // In case of creation time equality, order alphabetically (first by origin,
-            // then by username), so that the list remains stable.
-            int originComparisonResult = lhs.getDisplayOrigin().compareTo(rhs.getDisplayOrigin());
-            int usernameComparisonResult =
-                    lhs.getDisplayUsername().compareTo(rhs.getDisplayUsername());
-            return originComparisonResult == 0 ? usernameComparisonResult : originComparisonResult;
-        });
+                    // In case of creation time equality, order alphabetically (first by origin,
+                    // then by username), so that the list remains stable.
+                    int originComparisonResult =
+                            lhs.getDisplayOrigin().compareTo(rhs.getDisplayOrigin());
+                    int usernameComparisonResult =
+                            lhs.getDisplayUsername().compareTo(rhs.getDisplayUsername());
+                    return originComparisonResult == 0
+                            ? usernameComparisonResult
+                            : originComparisonResult;
+                });
     }
 
     @VisibleForTesting

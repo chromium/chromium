@@ -4,9 +4,7 @@
 
 package org.chromium.components.messages;
 
-/**
- * Interface to provide a duration time for message.
- */
+/** Interface to provide a duration time for message. */
 public interface MessageAutodismissDurationProvider {
     /**
      * Provide a duration time based on given custom duration and whether a11y mode is on.

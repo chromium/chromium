@@ -200,7 +200,7 @@ void CastAudioRenderer::SetVolume(float volume) {
 }
 
 void CastAudioRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   NOTIMPLEMENTED();
 }
 
@@ -470,7 +470,7 @@ void CastAudioRenderer::OnNewBuffer(
   size_t io_buffer_size =
       audio_output_service::OutputSocket::kAudioMessageHeaderSize +
       filled_bytes;
-  auto io_buffer = base::MakeRefCounted<net::IOBuffer>(io_buffer_size);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(io_buffer_size);
   if (buffer->end_of_stream()) {
     OnEndOfStream();
     return;

@@ -104,14 +104,18 @@ class BLINK_EXPORT WebNode {
 
   WebVector<WebElement> QuerySelectorAll(const WebString& selector) const;
 
+  // Returns the contents of the first descendant element, if any, that contains
+  // only text, a part of which is the given substring. The search is
+  // case-sensitive.
+  WebString FindTextInElementWith(const WebString& substring) const;
+
   bool Focused() const;
 
   WebPluginContainer* PluginContainer() const;
 
   bool IsInsideFocusableElementOrARIAWidget() const;
 
-  v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
-                                 v8::Isolate*);
+  v8::Local<v8::Value> ToV8Value(v8::Isolate*);
 
   int GetDomNodeId() const;
 

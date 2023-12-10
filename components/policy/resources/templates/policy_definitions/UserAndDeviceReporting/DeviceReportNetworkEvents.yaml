@@ -20,8 +20,6 @@ owners:
 - cros-reporting-team@google.com
 schema:
   type: boolean
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:114-
 tags:

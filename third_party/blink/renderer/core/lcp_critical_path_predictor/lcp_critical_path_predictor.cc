@@ -41,8 +41,32 @@ bool LCPCriticalPathPredictor::HasAnyHintData() const {
 }
 
 void LCPCriticalPathPredictor::set_lcp_element_locators(
-    Vector<ElementLocator> locators) {
-  lcp_element_locators_ = std::move(locators);
+    const std::vector<std::string>& lcp_element_locator_strings) {
+  const wtf_size_t reserved_size =
+      base::checked_cast<wtf_size_t>(lcp_element_locator_strings.size());
+  if (features::
+          kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements
+              .Get()) {
+    // Clear current set of locators before receiving replacements.
+    lcp_element_locators_.clear();
+    lcp_element_locator_strings_.clear();
+  }
+  lcp_element_locators_.reserve(reserved_size);
+  lcp_element_locator_strings_.reserve(reserved_size);
+  for (const std::string& serialized_locator : lcp_element_locator_strings) {
+    lcp_element_locators_.push_back(ElementLocator());
+    bool result =
+        lcp_element_locators_.back().ParseFromString(serialized_locator);
+    if (!result) {
+      // This can happen when the host LCPP database is corrupted or we
+      // updated the ElementLocator schema in an incompatible way.
+      LOG(INFO) << "Ignoring an invalid lcp_element_locator hint.";
+      lcp_element_locators_.pop_back();
+    } else {
+      lcp_element_locator_strings_.push_back(std::move(serialized_locator));
+    }
+  }
+  CHECK_EQ(lcp_element_locators_.size(), lcp_element_locator_strings_.size());
 }
 
 void LCPCriticalPathPredictor::set_lcp_influencer_scripts(
@@ -56,8 +80,16 @@ void LCPCriticalPathPredictor::set_fetched_fonts(Vector<KURL> fonts) {
 
 void LCPCriticalPathPredictor::Reset() {
   lcp_element_locators_.clear();
+  lcp_element_locator_strings_.clear();
   lcp_influencer_scripts_.clear();
   fetched_fonts_.clear();
+}
+
+bool LCPCriticalPathPredictor::IsElementMatchingLocator(
+    const Element& element) {
+  std::string lcp_element_locator_string =
+      element_locator::OfElement(element).SerializeAsString();
+  return lcp_element_locator_strings_.Contains(lcp_element_locator_string);
 }
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
@@ -65,6 +97,19 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element).SerializeAsString();
+
+    wtf_size_t predicted_lcp_index;
+    // Regard `lcp_element` is the candidate if its locator is found in
+    // set_lcp_element_locators(lcp_element_locator_strings).
+    // See PredictLcpElementLocators() for the contents detail.
+    // TODO(crbug.com/1493255): We might need another predictor e.g. checking
+    // other element_locators as well.
+    if ((predicted_lcp_index = lcp_element_locator_strings_.Find(
+             lcp_element_locator_string)) != kNotFound) {
+      // TODO(crbug.com/1493255): Trigger callbacks for the entire frame tree.
+      frame_->GetDocument()->RunLCPPredictedCallbacks(lcp_element);
+    }
+
     features::LcppRecordedLcpElementTypes recordable_lcp_element_type =
         features::kLCPCriticalPathPredictorRecordedLcpElementTypes.Get();
     bool should_record_element_locator =
@@ -83,7 +128,11 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
           base::checked_cast<size_t>(
               features::kLCPCriticalPathPredictorMaxElementLocatorLength
                   .Get())) {
-        GetHost().SetLcpElementLocator(lcp_element_locator_string);
+        GetHost().SetLcpElementLocator(
+            lcp_element_locator_string,
+            predicted_lcp_index == kNotFound
+                ? absl::nullopt
+                : absl::optional<wtf_size_t>(predicted_lcp_index));
       }
     }
   }

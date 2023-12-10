@@ -29,6 +29,7 @@
 #include "components/update_client/action_runner.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/features.h"
 #include "components/update_client/network.h"
@@ -42,6 +43,7 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/update_engine.h"
 #include "components/update_client/utils.h"
 
@@ -846,11 +848,13 @@ void Component::StateChecking::DoHandle() {
   CHECK(component.crx_component());
 
   if (component.error_code_) {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kError);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
 
   if (component.update_context_->is_cancelled) {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kCanceled);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -858,11 +862,13 @@ void Component::StateChecking::DoHandle() {
   }
 
   if (component.status_ == "ok") {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kHasUpdate);
     TransitionState(std::make_unique<StateCanUpdate>(&component));
     return;
   }
 
   if (component.status_ == "noupdate") {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kNoUpdate);
     if (component.action_run_.empty() ||
         component.update_context_->is_update_check_only) {
       TransitionState(std::make_unique<StateUpToDate>(&component));
@@ -872,6 +878,7 @@ void Component::StateChecking::DoHandle() {
     return;
   }
 
+  metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kError);
   TransitionState(std::make_unique<StateUpdateError>(&component));
 }
 
@@ -919,6 +926,7 @@ void Component::StateCanUpdate::DoHandle() {
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;
+    metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kUpdatesDisabled);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
@@ -927,6 +935,7 @@ void Component::StateCanUpdate::DoHandle() {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kCanceled);
     return;
   }
 
@@ -937,8 +946,12 @@ void Component::StateCanUpdate::DoHandle() {
     component.extra_code1_ = 0;
     component.AppendEvent(component.MakeEventUpdateComplete());
     EndState();
+    metrics::RecordCanUpdateResult(
+        metrics::CanUpdateResult::kCheckForUpdateOnly);
     return;
   }
+
+  metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kCanUpdate);
 
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();
@@ -1280,7 +1293,9 @@ void Component::StateUpdating::DoHandle() {
               component.next_fp_, component.install_params(),
               component.crx_component()->installer,
               update_context.config->GetUnzipperFactory()->Create(),
-              update_context.crx_cache_,
+              component.crx_component()->allow_cached_copies
+                  ? update_context.crx_cache_
+                  : absl::nullopt,
               component.crx_component()->crx_format_requirement,
               base::BindRepeating(&Component::StateUpdating::InstallProgress,
                                   base::Unretained(this)),
@@ -1311,6 +1326,16 @@ void Component::StateUpdating::InstallComplete(
   component.error_code_ = error_code;
   component.extra_code1_ = extra_code1;
   component.installer_result_ = installer_result;
+
+  CHECK(component.crx_component_);
+  if (!component.crx_component_->allow_cached_copies &&
+      component.update_context_->crx_cache_) {
+    base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&CrxCache::RemoveAll,
+                                  component.update_context_->crx_cache_->get(),
+                                  component.crx_component()->app_id));
+  }
 
   if (component.error_code_ != 0) {
     TransitionState(std::make_unique<StateUpdateError>(&component));
@@ -1353,6 +1378,7 @@ void Component::StateUpdated::DoHandle() {
   component.AppendEvent(component.MakeEventUpdateComplete());
 
   component.NotifyObservers(Events::COMPONENT_UPDATED);
+  metrics::RecordComponentUpdated();
   EndState();
 }
 

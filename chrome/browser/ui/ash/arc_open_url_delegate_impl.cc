@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -59,7 +60,6 @@
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -240,12 +240,11 @@ apps::IntentPtr ConvertLaunchIntent(
 }
 
 // Finds the best matching web app that can handle the |url|.
-absl::optional<std::string> FindWebAppForURL(Profile* profile,
-                                             const GURL& url) {
+std::optional<std::string> FindWebAppForURL(Profile* profile, const GURL& url) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (!proxy) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(
@@ -274,7 +273,7 @@ absl::optional<std::string> FindWebAppForURL(Profile* profile,
     }
   }
   if (best_match.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return best_match;
 }
@@ -341,7 +340,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!profile)
     return;
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::IsWebAppsCrosapiEnabled()
           ? FindWebAppForURL(profile, url)
           : web_app::FindInstalledAppWithUrlInScope(profile, url,
@@ -380,7 +379,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!prefs)
     return;
 
-  absl::optional<std::string> package_name =
+  std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id.value());
   if (!package_name.has_value())
     return;
@@ -477,7 +476,7 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
     return;
 
   webapps::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
   bool app_installed = false;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);

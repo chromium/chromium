@@ -12,7 +12,7 @@
 namespace blink {
 
 void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
-    bool mark_container_chain_layout_overflow_recalc) {
+    bool mark_container_chain_scrollable_overflow_recalc) {
   NOT_DESTROYED();
   LayoutObject* object = this;
   do {
@@ -23,12 +23,13 @@ void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
                  ? object->Parent()
                  : object->Container();
     if (object) {
-      bool already_needs_layout_overflow_recalc = false;
-      if (mark_container_chain_layout_overflow_recalc) {
-        already_needs_layout_overflow_recalc =
-            object->ChildNeedsLayoutOverflowRecalc();
-        if (!already_needs_layout_overflow_recalc)
-          object->SetChildNeedsLayoutOverflowRecalc();
+      bool already_needs_scrollable_overflow_recalc = false;
+      if (mark_container_chain_scrollable_overflow_recalc) {
+        already_needs_scrollable_overflow_recalc =
+            object->ChildNeedsScrollableOverflowRecalc();
+        if (!already_needs_scrollable_overflow_recalc) {
+          object->SetChildNeedsScrollableOverflowRecalc();
+        }
       }
 
       if (object->HasLayer()) {
@@ -36,8 +37,9 @@ void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
         if (box_model_object->HasSelfPaintingLayer()) {
           auto* layer = box_model_object->Layer();
           if (layer->NeedsVisualOverflowRecalc()) {
-            if (already_needs_layout_overflow_recalc)
+            if (already_needs_scrollable_overflow_recalc) {
               return;
+            }
           } else {
             layer->SetNeedsVisualOverflowRecalc();
           }

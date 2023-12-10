@@ -11,11 +11,11 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/common/input/actions_parser.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -33,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
+#include "content/common/input/synthetic_touchpad_pinch_gesture.h"
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
 #endif
 
@@ -1780,8 +1780,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_CSSVisibilityChanged) {
 // This test verifies that hiding an OOPIF in CSS will stop generating
 // compositor frames for the OOPIF and any nested OOPIFs inside it. This holds
 // even when the whole page is shown.
+#if BUILDFLAG(IS_MAC)
+// Flaky on Mac. https://crbug.com/1505297
+#define MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames \
+  DISABLED_HiddenOOPIFWillNotGenerateCompositorFrames
+#else
+#define MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames \
+  HiddenOOPIFWillNotGenerateCompositorFrames
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       HiddenOOPIFWillNotGenerateCompositorFrames) {
+                       MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_two_frames.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));

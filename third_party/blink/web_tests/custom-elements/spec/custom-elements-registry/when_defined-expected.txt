@@ -1,43 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "whenDefined() called with invalid name bad-; should throw "SyntaxError"DOMException"
-[PASS] Custom Elements: CustomElementRegistry.whenDefined
-[PASS] whenDefined() called with invalid name annotation-xml should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name color-profile should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name font-face should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name font-face-src should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name font-face-uri should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name font-face-format should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name font-face-name should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name missing-glyph should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name div should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name p should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name nothtmlbutnohyphen should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name -not-initial-a-z should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name 0not-initial-a-z should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name Not-initial-a-z should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name intermediate-UPPERCASE-letters should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-¶ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-¸ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-¿ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-× should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-÷ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-; should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-; should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-  should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-‎ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-‾ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-⁁ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-⁯ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-← should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-⯿ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-⿰ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-　 should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-U+d800 should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad- should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-﷐ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-﷯ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-￾ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-￿ should throw "SyntaxError"DOMException
-[PASS] whenDefined() called with invalid name bad-󰀀 should throw "SyntaxError"DOMException
 Harness: the test ran to completion.
 

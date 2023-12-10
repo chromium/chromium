@@ -1,5 +1,5 @@
-# cc/document\_transition
+# cc/view\_transition
 
-The view transition direction supports the Document Transition and Shared
-Element Transition projects in Blink. Please see
-//third\_party/blink/renderer/core/document\_transition/README.md for more details.
+The view\_transition directory supports the view transition project in Blink.
+Please see //third\_party/blink/renderer/core/view\_transition/README.md for
+more details.

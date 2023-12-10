@@ -32,9 +32,7 @@ import org.chromium.webapk.lib.common.splash.SplashLayout;
 
 import javax.inject.Inject;
 
-/**
- * Displays the splash screen for homescreen shortcuts and WebAPKs.
- */
+/** Displays the splash screen for homescreen shortcuts and WebAPKs. */
 public class WebappSplashController implements SplashDelegate {
     public static final int HIDE_ANIMATION_DURATION_MS = 300;
 
@@ -45,7 +43,9 @@ public class WebappSplashController implements SplashDelegate {
     private WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
 
     @Inject
-    public WebappSplashController(SplashController splashController, Activity activity,
+    public WebappSplashController(
+            SplashController splashController,
+            Activity activity,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;
@@ -93,8 +93,11 @@ public class WebappSplashController implements SplashDelegate {
         splashScreen.setBackgroundColor(backgroundColor);
 
         if (mWebappInfo.isForWebApk()) {
-            initializeWebApkInfoSplashLayout(splashScreen, backgroundColor,
-                    mWebappInfo.splashIcon().bitmap(), mWebappInfo.isSplashIconMaskable());
+            initializeWebApkInfoSplashLayout(
+                    splashScreen,
+                    backgroundColor,
+                    mWebappInfo.splashIcon().bitmap(),
+                    mWebappInfo.isSplashIconMaskable());
             return splashScreen;
         }
 
@@ -105,17 +108,22 @@ public class WebappSplashController implements SplashDelegate {
             return splashScreen;
         }
 
-        storage.getSplashScreenImage(new WebappDataStorage.FetchCallback<Bitmap>() {
-            @Override
-            public void onDataRetrieved(Bitmap splashImage) {
-                initializeWebApkInfoSplashLayout(splashScreen, backgroundColor, splashImage, false);
-            }
-        });
+        storage.getSplashScreenImage(
+                new WebappDataStorage.FetchCallback<Bitmap>() {
+                    @Override
+                    public void onDataRetrieved(Bitmap splashImage) {
+                        initializeWebApkInfoSplashLayout(
+                                splashScreen, backgroundColor, splashImage, false);
+                    }
+                });
         return splashScreen;
     }
 
-    private void initializeWebApkInfoSplashLayout(ViewGroup splashScreen, int backgroundColor,
-            Bitmap splashImage, boolean isSplashIconMaskable) {
+    private void initializeWebApkInfoSplashLayout(
+            ViewGroup splashScreen,
+            int backgroundColor,
+            Bitmap splashImage,
+            boolean isSplashIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
 
@@ -127,8 +135,13 @@ public class WebappSplashController implements SplashDelegate {
             selectedIconGenerated = mWebappInfo.isIconGenerated();
             selectedIconAdaptive = mWebappInfo.isIconAdaptive();
         }
-        SplashLayout.createLayout(context, splashScreen, selectedIcon, selectedIconAdaptive,
-                selectedIconGenerated, mWebappInfo.name(),
+        SplashLayout.createLayout(
+                context,
+                splashScreen,
+                selectedIcon,
+                selectedIconAdaptive,
+                selectedIconGenerated,
+                mWebappInfo.name(),
                 ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor));
     }
 
@@ -139,9 +152,12 @@ public class WebappSplashController implements SplashDelegate {
 
         Bitmap splashBitmap = null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            splashBitmap = FileUtils.queryBitmapFromContentProvider(appContext,
-                    Uri.parse(WebApkCommonUtils.generateSplashContentProviderUri(
-                            mWebappInfo.webApkPackageName())));
+            splashBitmap =
+                    FileUtils.queryBitmapFromContentProvider(
+                            appContext,
+                            Uri.parse(
+                                    WebApkCommonUtils.generateSplashContentProviderUri(
+                                            mWebappInfo.webApkPackageName())));
         }
         if (splashBitmap != null) {
             splashView.setScaleType(ImageView.ScaleType.FIT_CENTER);

@@ -470,8 +470,8 @@ bool EventTarget::AddEventListenerInternal(
     Vector<String> argv;
     argv.push_back(ToNode() ? ToNode()->nodeName() : InterfaceName());
     argv.push_back(event_type);
-    activity_logger->LogEvent("blinkAddEventListener", argv.size(),
-                              argv.data());
+    activity_logger->LogEvent(execution_context, "blinkAddEventListener",
+                              argv.size(), argv.data());
   }
 
   RegisteredEventListener* registered_listener = nullptr;

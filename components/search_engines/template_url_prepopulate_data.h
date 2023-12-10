@@ -46,9 +46,18 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     bool include_current_default = false,
     TemplateURLService* template_url_service = nullptr);
 
-// Returns the prepopulated search engine with the given |prepopulated_id|.
+// Returns the prepopulated search engine with the given |prepopulated_id|
+// from the profile country's known prepopulated search engines, or `nullptr`
+// if it's not known there.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService* prefs,
                                                        int prepopulated_id);
+
+// Returns the prepopulated search engine with the given |prepopulated_id|
+// from the full list of known prepopulated search engines, or `nullptr` if
+// it's not known there.
+std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
+    PrefService* prefs,
+    int prepopulated_id);
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns the prepopulated URLs associated with |locale|.  |locale| should be a

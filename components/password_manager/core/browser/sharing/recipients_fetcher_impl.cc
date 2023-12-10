@@ -78,7 +78,7 @@ void RecipientsFetcherImpl::ServerRequestCallback() {
     return;
   }
 
-  absl::optional<sync_pb::PasswordSharingRecipientsResponse> server_response =
+  std::optional<sync_pb::PasswordSharingRecipientsResponse> server_response =
       pending_request_->TakeResponse();
   // Destroy the request object after the response was fetched otherwise no
   // further call can be made.

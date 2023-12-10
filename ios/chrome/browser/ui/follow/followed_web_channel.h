@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/follow/followed_web_site_state.h"
+#import "ios/chrome/browser/follow/model/followed_web_site_state.h"
 
 @class CrURL;
 

@@ -1224,26 +1224,7 @@ int DownloadManagerImpl::BlockingShutdownCount() {
       if (download->IsTransient())
         continue;
       if (download->GetState() == download::DownloadItem::IN_PROGRESS &&
-          download->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL &&
-          download->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT &&
-          download->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST &&
-          download->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED &&
-          download->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS &&
-          it.second->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
-          it.second->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
-          it.second->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
-          it.second->GetDangerType() !=
-              download::
-                  DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING &&
-          !download->IsInsecure()) {
+          !download->IsDangerous() && !download->IsInsecure()) {
         ++count;
       }
     }

@@ -18,8 +18,11 @@ import java.util.function.BooleanSupplier;
  * to partial custom tabs for which resizing by dragging is supported.
  */
 public class PartialCustomTabHandleStrategyFactory {
-    public CustomTabToolbar.HandleStrategy create(@PartialCustomTabType int type, Context context,
-            BooleanSupplier isFullHeight, Supplier<Integer> status,
+    public CustomTabToolbar.HandleStrategy create(
+            @PartialCustomTabType int type,
+            Context context,
+            BooleanSupplier isFullHeight,
+            Supplier<Integer> status,
             PartialCustomTabHandleStrategy.DragEventCallback dragEventCallback,
             Callback<Runnable> closeAnimation) {
         return switch (type) {

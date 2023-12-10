@@ -365,9 +365,9 @@ NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
     kUTTypeChromiumInitiatedDrag, kUTTypeChromiumPrivilegedInitiatedDrag,
     kUTTypeChromiumRendererInitiatedDrag, kUTTypeChromiumWebCustomData,
-    kUTTypeWebKitWebURLsWithTitles, NSPasteboardTypeFileURL,
-    NSPasteboardTypeHTML, NSPasteboardTypeRTF, NSPasteboardTypeString,
-    NSPasteboardTypeURL
+    kUTTypeWebKitWebURLsWithTitles, kUTTypeChromiumSourceURL,
+    NSPasteboardTypeFileURL, NSPasteboardTypeHTML, NSPasteboardTypeRTF,
+    NSPasteboardTypeString, NSPasteboardTypeURL
   ];
 }
 

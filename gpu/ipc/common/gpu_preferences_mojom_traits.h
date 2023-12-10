@@ -304,8 +304,6 @@ struct GPU_EXPORT
     if (!prefs.ReadDisabledDawnFeaturesList(&out->disabled_dawn_features_list))
       return false;
 
-    out->enable_gpu_blocked_time_metric =
-        prefs.enable_gpu_blocked_time_metric();
     out->enable_perf_data_collection = prefs.enable_perf_data_collection();
 
 #if BUILDFLAG(IS_OZONE)
@@ -500,9 +498,6 @@ struct GPU_EXPORT
   static const std::vector<std::string>& disabled_dawn_features_list(
       const gpu::GpuPreferences& prefs) {
     return prefs.disabled_dawn_features_list;
-  }
-  static bool enable_gpu_blocked_time_metric(const gpu::GpuPreferences& prefs) {
-    return prefs.enable_gpu_blocked_time_metric;
   }
   static bool enable_perf_data_collection(const gpu::GpuPreferences& prefs) {
     return prefs.enable_perf_data_collection;

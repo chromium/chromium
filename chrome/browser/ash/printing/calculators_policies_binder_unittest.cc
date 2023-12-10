@@ -35,58 +35,43 @@ constexpr size_t kBlocklistPrinters = 2;
 constexpr char kBulkPolicyContentsJson[] = R"json(
 [
   {
-    "id": "First",
+    "guid": "First",
     "display_name": "LexaPrint",
     "description": "Laser on the test shelf",
-    "manufacturer": "LexaPrint, Inc.",
-    "model": "MS610de",
     "uri": "ipp://192.168.1.5",
     "ppd_resource": {
       "effective_model": "MS610de"
     }
   }, {
-    "id": "Second",
+    "guid": "Second",
     "display_name": "Color Laser",
     "description": "The printer next to the water cooler.",
-    "manufacturer": "Printer Manufacturer",
-    "model":"Color Laser 2004",
     "uri":"ipps://print-server.intranet.example.com:443/ipp/cl2k4",
-    "uuid":"1c395fdb-5d93-4904-b246-b2c046e79d12",
     "ppd_resource":{
-      "effective_manufacturer": "MakesPrinters",
       "effective_model": "ColorLaser2k4"
     }
   }, {
-    "id": "Third",
+    "guid": "Third",
     "display_name": "YaLP",
     "description": "Fancy Fancy Fancy",
-    "manufacturer": "LexaPrint, Inc.",
-    "model": "MS610de",
     "uri": "ipp://192.168.1.8",
     "ppd_resource": {
-      "effective_manufacturer": "LexaPrint",
       "effective_model": "MS610de"
     }
   }, {
-    "id": "Fourth",
+    "guid": "Fourth",
     "display_name": "Yon",
     "description": "Another printer",
-    "manufacturer": "CrosPrints",
-    "model": "1000d7",
     "uri": "ipp://192.168.1.9",
     "ppd_resource": {
-      "effective_manufacturer": "Printer",
       "effective_model": "Model"
     }
   }, {
-    "id": "Fifth",
+    "guid": "Fifth",
     "display_name": "ABCDE",
     "description": "Yep yep yep",
-    "manufacturer": "Ink and toner",
-    "model": "34343434l",
     "uri": "ipp://192.168.1.10",
     "ppd_resource": {
-      "effective_manufacturer": "Blah",
       "effective_model": "Blah blah Blah"
     }
   }

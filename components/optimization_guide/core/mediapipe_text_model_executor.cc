@@ -47,10 +47,9 @@ absl::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
   return status_or_result->classifications.at(0).categories;
 }
 
-std::unique_ptr<TextClassifier>
+base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>
 MediapipeTextModelExecutor::BuildModelExecutionTask(
-    base::MemoryMappedFile* model_file,
-    ExecutionStatus* out_status) {
+    base::MemoryMappedFile* model_file) {
   // Use the inline struct ctor to bypass the default op resolver ctor which is
   // not linked.
   TextClassifierOptions options{
@@ -68,11 +67,9 @@ MediapipeTextModelExecutor::BuildModelExecutionTask(
   if (!maybe_classifier.ok()) {
     LOG(ERROR) << "Failed to load model with MediaPipe: "
                << maybe_classifier.status();
-    *out_status = ExecutionStatus::kErrorModelFileNotValid;
-    return nullptr;
+    return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
   }
 
-  *out_status = ExecutionStatus::kSuccess;
   return std::move(*maybe_classifier);
 }
 

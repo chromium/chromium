@@ -60,7 +60,7 @@ public final class FeedNewTabPageCardInstrumentationTest {
     @WPRArchiveDirectory(
             "chrome/android/feed/core/javatests/src/org/chromium/chrome/"
                     + "browser/feed/wpr_tests")
-    public void launchNTP_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
+    public void launchNtp_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
 

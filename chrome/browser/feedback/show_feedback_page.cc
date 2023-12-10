@@ -202,6 +202,8 @@ feedback_private::FeedbackFlow GetFeedbackFlowFromSource(
       return feedback_private::FeedbackFlow::kSadTabCrash;
     case kFeedbackSourceAutofillContextMenu:
       return feedback_private::FeedbackFlow::kGoogleInternal;
+    case kFeedbackSourceAI:
+      return feedback_private::FeedbackFlow::kAi;
     default:
       return feedback_private::FeedbackFlow::kRegular;
   }
@@ -215,28 +217,34 @@ void RequestFeedbackFlow(const GURL& page_url,
                          const std::string& description_placeholder_text,
                          const std::string& category_tag,
                          const std::string& extra_diagnostics,
-                         base::Value::Dict autofill_metadata) {
+                         base::Value::Dict autofill_metadata,
+                         base::Value::Dict ai_metadata) {
   feedback_private::FeedbackFlow flow = GetFeedbackFlowFromSource(source);
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsGoogleInternalAccount(profile)) {
-    flow = feedback_private::FeedbackFlow::kGoogleInternal;
-    include_bluetooth_logs = IsFromUserInteraction(source);
-    show_questionnaire = IsFromUserInteraction(source);
-  }
-  // Disable the new feedback tool for kiosk, when SWAs are disabled there.
-  if (!chromeos::IsKioskSession() ||
-      base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
-    // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
-    // tool.
-    ash::SystemAppLaunchParams params;
-    params.url = BuildFeedbackUrl(
-        extra_diagnostics, description_template, description_placeholder_text,
-        category_tag, page_url, source, std::move(autofill_metadata));
-    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
-                                 std::move(params));
-    return;
+  // TODO(crbug.com/1501057) Support ChromeOS feedback dialog for
+  // `kFeedbackSourceAI`.
+  if (source != kFeedbackSourceAI) {
+    if (IsGoogleInternalAccount(profile)) {
+      flow = feedback_private::FeedbackFlow::kGoogleInternal;
+      include_bluetooth_logs = IsFromUserInteraction(source);
+      show_questionnaire = IsFromUserInteraction(source);
+    }
+    // Disable the new feedback tool for kiosk, when SWAs are disabled there.
+    if (!chromeos::IsKioskSession() ||
+        base::FeatureList::IsEnabled(
+            ash::features::kKioskEnableSystemWebApps)) {
+      // TODO(crbug.com/1407646): Include autofill metadata into CrOS new
+      // feedback tool.
+      ash::SystemAppLaunchParams params;
+      params.url = BuildFeedbackUrl(
+          extra_diagnostics, description_template, description_placeholder_text,
+          category_tag, page_url, source, std::move(autofill_metadata));
+      ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
+                                   std::move(params));
+      return;
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -248,7 +256,8 @@ void RequestFeedbackFlow(const GURL& page_url,
       include_bluetooth_logs, show_questionnaire,
       source == kFeedbackSourceChromeLabs ||
           source == kFeedbackSourceKaleidoscope,
-      source == kFeedbackSourceAutofillContextMenu, autofill_metadata);
+      source == kFeedbackSourceAutofillContextMenu, autofill_metadata,
+      ai_metadata);
 
   FeedbackDialog::CreateOrShow(profile, *info);
 }
@@ -275,7 +284,8 @@ void ShowFeedbackPage(const Browser* browser,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
                       const std::string& extra_diagnostics,
-                      base::Value::Dict autofill_metadata) {
+                      base::Value::Dict autofill_metadata,
+                      base::Value::Dict ai_metadata) {
   GURL page_url;
   if (browser) {
     page_url = GetTargetTabUrl(browser->session_id(),
@@ -302,7 +312,8 @@ void ShowFeedbackPage(const Browser* browser,
 #else
   ShowFeedbackPage(page_url, profile, source, description_template,
                    description_placeholder_text, category_tag,
-                   extra_diagnostics, std::move(autofill_metadata));
+                   extra_diagnostics, std::move(autofill_metadata),
+                   std::move(ai_metadata));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -313,7 +324,8 @@ void ShowFeedbackPage(const GURL& page_url,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
                       const std::string& extra_diagnostics,
-                      base::Value::Dict autofill_metadata) {
+                      base::Value::Dict autofill_metadata,
+                      base::Value::Dict ai_metadata) {
   if (!profile) {
     LOG(ERROR) << "Cannot invoke feedback: No profile found!";
     return;
@@ -326,8 +338,10 @@ void ShowFeedbackPage(const GURL& page_url,
                             kFeedbackSourceCount);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // After M87 beta, Feedback API should be supported in crosapi with all ash
-  // versions on chromeOS platform where lacros is deployed.
+  // TODO(crbug.com/1501057): Update enhanced feedback dialog crosapi API for
+  // Lacros.
+  // After M87 beta, Feedback API should be supported in crosapi with
+  // all ash versions on chromeOS platform where lacros is deployed.
   DCHECK(
       chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Feedback>());
   // Send request to ash via crosapi mojo to show Feedback ui from ash.
@@ -338,7 +352,8 @@ void ShowFeedbackPage(const GURL& page_url,
   // Show feedback dialog using feedback extension API.
   RequestFeedbackFlow(page_url, profile, source, description_template,
                       description_placeholder_text, category_tag,
-                      extra_diagnostics, std::move(autofill_metadata));
+                      extra_diagnostics, std::move(autofill_metadata),
+                      std::move(ai_metadata));
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

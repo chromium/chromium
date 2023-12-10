@@ -1,4 +1,4 @@
-file://storage/OWNERS
+file://storage/browser/blob/OWNERS
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS

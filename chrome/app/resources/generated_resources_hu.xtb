@@ -78,13 +78,13 @@
 <translation id="1060292118287751956">Meghatározza a képernyő frissítési gyakoriságát</translation>
 <translation id="1060570945511946595">Jegyek kezelése</translation>
 <translation id="1061130374843955397">Üdvözli a(z) <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">Mindig legyen letiltva a(z) <ph name="HOST" /> számára a MIDI-eszközök vezérlése és átprogramozása.</translation>
 <translation id="1061373870045429865">QR-kód létrehozása ehhez a linkhez</translation>
 <translation id="1061904396131502319">Lassan ideje szünetet tartani</translation>
 <translation id="10619348099955377">Megjelenített név másolása</translation>
 <translation id="1062407476771304334">Csere</translation>
 <translation id="1062628064301375934">Hozzájárulás a privátabb jellegű internet biztosításához</translation>
 <translation id="1066964438793906105">Rosszindulatú programok keresése</translation>
-<translation id="1067048845568873861">Létrehozva</translation>
 <translation id="1067661089446014701">A nagyobb biztonság érdekében titkosíthatja jelszavait az eszközén, mielőtt a rendszer elmenti őket a Google-fiókjába.</translation>
 <translation id="1067922213147265141">Egyéb Google-szolgáltatások</translation>
 <translation id="106814709658156573">Az ujjlenyomat beállításához a gyermeknek meg kell érintenie a billentyűzet bal alsó sarkában található ujjlenyomat-érzékelőt. Gyermeke ujjlenyomatadatait a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
@@ -206,7 +206,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1158080958325422608">Átalakítás nagybetűssé</translation>
 <translation id="1158238185437008462">Emlékek megtekintése</translation>
 <translation id="1159879754517035595">Bővítménybeállítások kezelése</translation>
-<translation id="1160842321113409343">Adatai védelme érdekében a négy hétnél régebbi webhelyeket automatikusan töröljük a listáról. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Arra is lehetősége van, hogy eltávolítsa valamelyik webhelyet, ha nem szeretné, hogy az adott webhely a jövőben bármikor is meghatározza az Ön érdeklődési köreit.</translation>
 <translation id="1161575384898972166">Kérjük, jelentkezzen be a(z) <ph name="TOKEN_NAME" /> szolgáltatásba az ügyféltanúsítvány exportálásához.</translation>
 <translation id="116173250649946226">A rendszergazda alapértelmezett témát állított be, amely nem módosítható.</translation>
 <translation id="1162213688509394031">Ablak fejlécének elrejtése</translation>
@@ -278,6 +277,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1203559206734265703">A Protected Audience hibakeresése engedélyezve van.</translation>
 <translation id="120368089816228251">Hangjegy</translation>
 <translation id="1203942045716040624">Shared worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">A biztonsági kód a kártya hátoldalán található.</translation>
 <translation id="1210678701920254279">Nyomtatók megtekintése és hozzáadása, valamint aktív nyomtatási feladatok megtekintése</translation>
 <translation id="1211769675100312947">A megjelenő parancsikonokat Ön választhatja ki</translation>
 <translation id="1213254615020057352">Használati és diagnosztikai adatok küldése. Segítsen gyermeke Android-élményének továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a beállítást kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába.</translation>
@@ -301,6 +301,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1223484782328004593">A(z) <ph name="APP_NAME" /> használatához licenc szükséges</translation>
 <translation id="1223853788495130632">Rendszergazdája egy meghatározott értéket javasol ehhez a beállításhoz.</translation>
 <translation id="1225177025209879837">A kérelem feldolgozása folyamatban van...</translation>
+<translation id="1227107020813934021">Dokumentumszkennelők keresése</translation>
 <translation id="1227660082540388410">Azonosítókulcs szerkesztése</translation>
 <translation id="1227993798763400520">Az átküldés nem sikerült. Próbálja újra.</translation>
 <translation id="1230417814058465809">A Normál védelem be van kapcsolva. A még nagyobb biztonság érdekében használjon speciális védelmet.</translation>
@@ -315,6 +316,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1235924639474699896">{COUNT,plural, =1{üzenet}other{# üzenet}}</translation>
 <translation id="1236009322878349843">Telefonszám módosítása</translation>
 <translation id="1239594683407221485">Fedezze fel az eszköz tartalmát a Fájlok alkalmazással.</translation>
+<translation id="1239841552505950173">Alkalmazás futtatása</translation>
 <translation id="1240903469550363138">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse át a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />általános szerződési feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Kísérlet állapotának kiválasztása a következőhöz: <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">További nyelvek…</translation>
@@ -446,8 +448,11 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1347256498747320987">Alkalmazások és frissítések telepítése. Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, az Ön szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak. <ph name="BEGIN_LINK1" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="1347512539447549782">Linux-tárhely</translation>
+<translation id="1347625331607114917">Ellenőrizze a kódot androidos telefonon</translation>
 <translation id="1347975661240122359">A frissítés akkor kezdődik, amikor az akkumulátor töltöttsége legalább <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Az egér kisegítő lehetőségeinek beállításai</translation>
+<translation id="1350962700620017446">A(z) „<ph name="EXTENSION_NAME" />” bővítmény szeretne dokumentumszkennelőket keresni, illetve hozzájuk férni.</translation>
+<translation id="1352834119074414157">Előfordulhat, hogy ez a csomag sérült, vagy fel lett törve. Zárja be ezt az ablakot, és töltse le újra a csomagot.</translation>
 <translation id="1353275871123211385">A szülői felügyelet (mint például az alkamazásjóváhagyás és a képernyő előtt tölthető idő) beállításához a gyermeknek a szülő által felügyelt Google-fiókkal kell rendelkeznie. Iskolai fiók később is hozzáadható olyan eszközök használatára, mint a Google Tanterem.</translation>
 <translation id="135389172849514421">Offline állapotban is működik</translation>
 <translation id="1353980523955420967">Nem található a PPD. Győződjön meg arról, hogy a Chromebook csatlakozik az internetre, majd próbálja újra.</translation>
@@ -461,10 +466,12 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1362865166188278099">Mechanikai probléma. Ellenőrizze a nyomtatót.</translation>
 <translation id="1363585519747660921">Be kell állítani az USB-nyomtatót</translation>
 <translation id="136378536198524553">Az energiatakarékos mód be van kapcsolva</translation>
+<translation id="136522805455656552">Az eszköz biztonságának megőrzése érdekében kizárólag megbízható forrásokból és fejlesztőktől származó szoftvereket futtasson és telepítsen. <ph name="LEARN_MORE" />.</translation>
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> eszköze nem támogatja a Linux rendszert. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="1370384480654163477">Megtekintheti és szerkesztheti a webhely legutóbbi felkeresésének idejéből származó fájlokat:</translation>
 <translation id="1372841398847029212">Szinkronizálás saját fiókkal</translation>
 <translation id="1373176046406139583">Eszközének láthatósága befolyásolja azt, hogy ki oszthat meg Önnel fájlokat, amíg a képernyője fel van oldva. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="1373600239834196313">Az oldalsó panel legtöbb funkcióját elérheti a Chrome-menün keresztül.</translation>
 <translation id="1374844444528092021">A(z) "<ph name="NETWORK_NAME" />" hálózat által megkövetelt tanúsítvány nincs telepítve, illetve már nem érvényes. Kérjen egy új tanúsítványt, majd próbáljon újrakapcsolódni.</translation>
 <translation id="1375557162880614858">Szeretné aktiválni a ChromeVoxot, a ChromeOS Flex beépített képernyőolvasóját?</translation>
 <translation id="1375938286942050085">A beállítás megtörtént. Most készítse fel eszközét a játékra</translation>
@@ -527,7 +534,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1418559532423038045">Eltávolítja a(z) <ph name="VM_NAME" /> VM-et a(z) <ph name="DEVICE_TYPE" /> eszközről. Ezzel minden alkalmazást és adatot töröl a virtuális gépről.</translation>
 <translation id="1418882096915998312">Enterprise-regisztráció folyamatban</translation>
 <translation id="1418954524306642206">Tallózással adja meg a nyomtatóhoz tartozó PPD-fájlt</translation>
-<translation id="1420834118113404499">Médiaengedélyek</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> a párosítás engedélyezéséhez</translation>
 <translation id="1421334842435688311">Mobilhálózati helyadatok</translation>
 <translation id="1421514190500081936">Adja meg az adat letöltésének okát:</translation>
@@ -578,6 +584,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1461041542809785877">Teljesítmény</translation>
 <translation id="1461177659295855031">Áthelyezés a Könyvjelzősáv mappába</translation>
 <translation id="1461288887896722288">Ön felügyelt fiókkal jelentkezett be. Ha új felügyelt profilt hoz létre, hozzáférhet a fiókhoz kapcsolt egyes erőforrásokhoz.</translation>
+<translation id="1461868306585780092">Figyelmeztetés nem biztonságos kapcsolatok használata előtt</translation>
 <translation id="146219525117638703">ONC állapot</translation>
 <translation id="146220085323579959">Nem érhető el az internet. Kérjük, ellenőrizze az internetkapcsolatot, és próbálja újra.</translation>
 <translation id="1462480037563370607">Webhelyek hozzáadása manuálisan</translation>
@@ -608,7 +615,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1477654881618305065">A szervezete nem engedélyezi ennek a tartalomnak a megosztását. Ha segítségre van szüksége, forduljon a rendszergazdához.</translation>
 <translation id="1478340334823509079">Részletek: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">A telepítés nincs engedélyezve</translation>
-<translation id="1480571698637441426">Személyre szabott válaszokat kaphat kérdéseire, ha engedélyezi Segédjének a képernyőn látható tartalmak képernyőképéhez való hozzáférést. Ez vonatkozhat az épp lejátszott dalokkal és videókkal kapcsolatos információkra is.</translation>
 <translation id="1480663089572535854">Visszaléphet, és módosíthatja a „Kiválasztás” művelethez hozzárendelt kapcsolót. Bármikor kikapcsolhatja az automatikus keresést a Beállításokban.</translation>
 <translation id="1481537595330271162">Hiba a lemez átméretezése során</translation>
 <translation id="1482626744466814421">Lap hozzáadása a könyvjelzőkhöz…</translation>
@@ -620,6 +626,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1485015260175968628">Most már megteheti a következőket:</translation>
 <translation id="1485141095922496924">Verzió: <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">A Microsoft 365 használatához szükség van a fájlok OneDrive-ban való tárolására. A helyi fájlokat áthelyezi a rendszer, a más helyekről származó fájlokat pedig átmásolja. Fájljait a Fájlok alkalmazás Microsoft OneDrive mappájában találhatja meg.</translation>
+<translation id="1486012259353794050">Amikor Ön kérdéseket tesz fel, a Google Segéd a képernyő tartalma alapján személyre szabott válaszokat ad.</translation>
 <translation id="1486096554574027028">Jelszavak keresése</translation>
 <translation id="1486486872607808064">Olvassa be ezt a QR-kódot azon eszköz kamerájával, amelyen azonosítókulcsot szeretne létrehozni a következőhöz: <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Be – egyéni beállítások</translation>
@@ -680,11 +687,13 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1536754031901697553">Kapcsolat bontása...</translation>
 <translation id="1537254971476575106">Teljes képernyős nagyító</translation>
 <translation id="15373452373711364">Nagy egérmutató</translation>
+<translation id="1539727654733007771">Nincs beállítva mobilhálózat. Töltsön le új <ph name="BEGIN_LINK" />profilt.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">ChromeOS-alkalmazásszolgáltatás</translation>
 <translation id="1540605929960647700">Demó mód engedélyezése</translation>
 <translation id="1541346352678737112">Nem található hálózat</translation>
 <translation id="154198613844929213">{0,plural, =0{Törlés most.}=1{Törlés 1 másodperc múlva}other{Törlés # másodperc múlva}}</translation>
 <translation id="1542137295869176367">Nem sikerült a bejelentkezési adatok frissítése</translation>
+<translation id="1542524755306892917">Ez lehetővé teszi a Google Segéd számára, hogy személyre szabott válaszokat adjon, amikor <ph name="SUPERVISED_USER_NAME" /> kérdéseket tesz fel.</translation>
 <translation id="1543284117603151572">Az Edge böngészőből importálva</translation>
 <translation id="1543538514740974167">Gyorsabban idejuthat</translation>
 <translation id="1544588554445317666">Próbáljon rövidebb fájlnevet használni, vagy próbálja másik mappába menteni</translation>
@@ -733,6 +742,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1572266655485775982">Wi-Fi engedélyezése</translation>
 <translation id="1572876035008611720">Adja meg e-mail-címét</translation>
 <translation id="1573127087832371028">A probléma leírása</translation>
+<translation id="1575036763505533001">A Chrome oldalsó paneljének személyre szabása</translation>
 <translation id="1575741822946219011">Nyelvek és beviteli módszerek</translation>
 <translation id="1576594961618857597">Alapértelmezett fehér avatar</translation>
 <translation id="1576729678809834061">Keresési találat bejelentése</translation>
@@ -842,6 +852,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="1641496881756082050">További műveletek a következőhöz: <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 további jelszót nem sikerült importálni, mert nem volt megfelelő a formátuma}other{{NUM_PASSWORDS} további jelszót nem sikerült importálni, mert nem volt megfelelő a formátumuk}}</translation>
+<translation id="1642299742557467312">Ez a fájl károsíthatja az eszközét</translation>
 <translation id="1642492862748815878">Csatlakoztatva van a(z) <ph name="DEVICE" /> eszközhöz és <ph name="NUMBER_OF_DEVICES" /> másik Bluetooth-eszközhöz</translation>
 <translation id="1642494467033190216">A rootfs védelem eltávolítása és újraindítás szükséges a további hibakeresési funkciók engedélyezése előtt.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA aláírás a következővel: SHA-1</translation>
@@ -909,7 +920,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1697150536837697295">Művészet</translation>
 <translation id="1697686431566694143">Fájl szerkesztése</translation>
 <translation id="1698796500103229697">&amp;Fizetési módok</translation>
-<translation id="1700079447639026019">Webhelyek, amelyek sosem használhatnak cookie-kat</translation>
+<translation id="1699807488537653303">Jelszóhiba kijavítása</translation>
 <translation id="1700201317341192482">Virtuális kártya eltávolítása</translation>
 <translation id="1700517974991662022">Felkeresett</translation>
 <translation id="1703331064825191675">Sosem kell aggódnia jelszavai miatt</translation>
@@ -960,7 +971,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1734212868489994726">Világoskék</translation>
 <translation id="1734230530703461088">Nem sikerült betölteni a bővítményeket az időkorláton belül. Forduljon a rendszergazdához.</translation>
 <translation id="1734824808160898225">A <ph name="PRODUCT_NAME" /> nem tudja rendszeresen frissíteni önmagát</translation>
-<translation id="173522743738009831">A Privacy Sandbox bemutatása</translation>
 <translation id="173628468822554835">Rendben. A felkeresett új webhelyek alapértelmezés szerint nem fognak értesítéseket küldeni Önnek.</translation>
 <translation id="1737968601308870607">Programhiba bejegyzése</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />. Válassza ki a webhelyengedélyek módosításához.</translation>
@@ -1017,6 +1027,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="177989070088644880">Alkalmazás (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Csoport bezárása</translation>
 <translation id="1780273119488802839">Könyvjelzők importálása...</translation>
+<translation id="1780572199786401845">Sértő/nem biztonságos tartalom bejelentése.</translation>
 <translation id="178092663238929451">Állítsa be a Közeli megosztás funkciót, hogy fájlokat fogadhasson a környezetében lévő személyektől, illetve fájlokat küldhessen nekik</translation>
 <translation id="1781291988450150470">Jelenlegi PIN-kód</translation>
 <translation id="1781502536226964113">Új lap oldal megnyitása</translation>
@@ -1117,7 +1128,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1848219224579402567">Kijelentkezés, ha le van zárva a fedél</translation>
 <translation id="184862733444771842">Funkciókérés</translation>
 <translation id="1849016657376805933">Bármely HID-eszköz</translation>
-<translation id="1849186935225320012">Ez az oldal teljes hozzáféréssel rendelkezik a MIDI-eszközökhöz.</translation>
 <translation id="1850145825777333687">Az eszköz hitelesítési adatai</translation>
 <translation id="1850508293116537636">Forgatás &amp;jobbra</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />A regisztráció előtt ki kell ürítenie a TPM-et, hogy a <ph name="DEVICE_OS" /> tulajdonba vehesse az eszközt.<ph name="END_PARAGRAPH1" />
@@ -1135,7 +1145,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1862311223300693744">Rendelkezik telepített speciális VPN-, proxy-, tűzfal- vagy NAS-szoftverrel?</translation>
 <translation id="1863047423483329595">A Követés elleni védelem átmenetileg nem áll rendelkezésre. Amíg a Chrome frissíti ezt a funkciót, a webhelyek ideiglenesen használhatnak harmadik féltől származó cookie-kat, hacsak Ön le nem tiltja őket. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1863182668524159459">Nem található soros port</translation>
-<translation id="1863207472175483351">telepítés…</translation>
 <translation id="1864111464094315414">Bejelentkezés</translation>
 <translation id="1864400682872660285">Hideg színek</translation>
 <translation id="1864454756846565995">C típusú USB-vel kompatibilis eszköz (hátsó port)</translation>
@@ -1256,6 +1265,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1954597385941141174">A webhelyek engedélyt kérhetnek az USB-eszközökhöz való csatlakozásra</translation>
 <translation id="1954813140452229842">Hiba történt a megosztott tároló csatlakoztatása során. Ellenőrizze hitelesítő adatait, majd próbálkozzon újra.</translation>
+<translation id="1955313993396968525">Videókeret keresése a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">A fájl több tanúsítványt tartalmazott, amelyek közül egy sincs importálva:</translation>
 <translation id="1956167375087861299">Nem használhatnak azonosítókat védett tartalmak lejátszása érdekében</translation>
 <translation id="1956390763342388273">Ezzel feltölti az összes fájlt a(z) „<ph name="FOLDER_PATH" />” mappából. Csak akkor tegye ezt, ha megbízik a webhelyben.</translation>
@@ -1380,6 +1390,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2046702855113914483">Rámen</translation>
 <translation id="204706822916043810">Virtuális gép ellenőrzése</translation>
 <translation id="2048182445208425546">A hálózati forgalom elérése</translation>
+<translation id="2048254245884707305">Rosszindulatú programok keresése…</translation>
 <translation id="2048554637254265991">Hiba történt a tárolókezelő indításakor. Próbálja újra.</translation>
 <translation id="2048653237708779538">A művelet nem végezhető el</translation>
 <translation id="204914487372604757">Parancsikon létrehozása</translation>
@@ -1492,6 +1503,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2131077480075264">A(z) „<ph name="APP_NAME" />” telepítése sikertelen, mivel azt a(z) „<ph name="IMPORT_NAME" />” nem engedélyezi.</translation>
 <translation id="2133775869826239001">További funkciók kiválasztása beállításhoz</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> újrapróbálása</translation>
+<translation id="2133939190018801302">Ez az alkalmazás a jelenleg használt Chrome-profilba lesz telepítve. <ph name="MANAGE_PROFILES" />.</translation>
 <translation id="2134905185275441536">A rendszeren lévő tanúsítványkibocsátók</translation>
 <translation id="21354425047973905">PIN-kódok elrejtése</translation>
 <translation id="2135456203358955318">Dokkolt nagyító</translation>
@@ -1539,7 +1551,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="216169395504480358">Wi-Fi hozzáadása...</translation>
 <translation id="2162155940152307086">A szinkronizálás akkor kezdődik el, amikor Ön kilép a szinkronizálási beállításokból.</translation>
 <translation id="2162705204091149050">A böngészővel, az operációs rendszerrel, az eszközzel, a telepített szoftverekkel és a fájlokkal kapcsolatos információk olvasása</translation>
-<translation id="2162926944953615670">Nincsenek rendelkezésre álló eSIM-profilok</translation>
 <translation id="2163470535490402084">Csatlakozzon az internethez, hogy be tudjon jelentkezni <ph name="DEVICE_TYPE" /> eszközére.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> és 1 további kapcsoló</translation>
 <translation id="2165102982098084499">Összekapcsolta ezeket az eszközöket QR-kód beolvasásával.</translation>
@@ -1562,6 +1573,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2180620921879609685">Tartalmak letiltása bármely oldalon</translation>
 <translation id="2181821976797666341">Házirendek</translation>
 <translation id="2182058453334755893">Vágólapra másolva</translation>
+<translation id="2182419606502127232">Tartalmazza a szervernaplóimat.</translation>
 <translation id="2183570493397356669">Folytatás gomb letiltva</translation>
 <translation id="2184515124301515068">A Chrome dönthet arról, hogy a webhelyek lejátszhatnak-e hangot (ajánlott)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -1594,7 +1606,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2207116775853792104">A bővítmény megtartása</translation>
 <translation id="2210462644007531147">Nem sikerült befejezni a telepítést</translation>
 <translation id="2211245494465528624">Szinkronizálási beállítások kezelése</translation>
-<translation id="2212565012507486665">Cookie-k engedélyezése</translation>
 <translation id="2214018885812055163">Megosztott mappák</translation>
 <translation id="2214884991347062907">Téves jelszó; próbálja újra</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 sor nincs megjelenítve&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> sor nincs megjelenítve&gt;}}</translation>
@@ -1612,7 +1623,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2224444042887712269">Ez a beállítás a következő fiókhoz tartozik: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Mappa nevének szerkesztése</translation>
 <translation id="2225927550500503913">Virtuális kártya bekapcsolva</translation>
-<translation id="2226449515541314767">Ennél a webhelynél le van tiltva a MIDI-eszközökhöz való teljes hozzáférés.</translation>
 <translation id="2226826835915474236">Inaktív gyorsparancsok</translation>
 <translation id="2226907662744526012">Automatikus feloldás a PIN-kód megadása után</translation>
 <translation id="2227179592712503583">Javaslat eltávolítása</translation>
@@ -1758,6 +1768,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2323018538045954000">Mentett Wi-Fi-hálózatok</translation>
 <translation id="2325444234681128157">Jelszó megjegyzése</translation>
 <translation id="2326188115274135041">A PIN-kód megerősítése az automatikus feloldás bekapcsolásához</translation>
+<translation id="2326906096734221931">Alkalmazásbeállítások megnyitása</translation>
 <translation id="2326931316514688470">Alkalmazás új&amp;ratöltése</translation>
 <translation id="2327492829706409234">Alkalmazás engedélyezése</translation>
 <translation id="2327920026543055248"><ph name="CHARACTER" />. karakter megadása az összesen <ph name="TOTAL" /> karakterből</translation>
@@ -1773,7 +1784,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="233471714539944337">Kényes tartalom</translation>
 <translation id="2335111415680198280">{0,plural, =1{# ablak bezárása}other{# ablak bezárása}}</translation>
 <translation id="2336228925368920074">Összes lap hozzáadása a könyvjelzőkhöz...</translation>
-<translation id="2336376423977300504">A cookie-k mindig törlődjenek az ablakok bezárásakor</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2337236196941929873">Azoknak az oldalaknak az előtöltése, amelyeket a Chrome szerint Ön felkereshet. Ehhez a Chrome cookie-kat használhat, ha Ön engedélyezte őket, valamint titkosíthatja és a Google-on keresztül elküldheti az oldalakat, hogy elrejtse az Ön személyazonosságát a webhelyek elől.</translation>
 <translation id="2340239562261172947">A következő fájlt nem lehet biztonságosan letölteni: <ph name="FILE_NAME" /></translation>
@@ -1783,7 +1793,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2344032937402519675">Nem sikerült csatlakozni a szerverhez. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Ha továbbra is jelentkeznek a problémák, próbálkozzon a Chromebook újraindításával.</translation>
 <translation id="234559068082989648">A Chrome-alkalmazások régi verziói 2022 decembere után nem nyílnak majd meg. Kérje meg a rendszergazdát, hogy frissítsen az új verzióra, vagy távolítsa el ezt az alkalmazást.</translation>
 <translation id="2345723121311404059">1 oldal nyomtatása a következőn: <ph name="PRINTER_NAME" /></translation>
-<translation id="23463457491630512">Ha például felkeres egy webhelyet, ahol maratonfutáshoz való cipőt vásárol, akkor a webhely meghatározhatja a maratonfutást az Ön egyik érdeklődési köreként. Ha később felkeres egy másik webhelyet, hogy jelentkezzen egy versenyre, ezen a webhelyen megjelenhet egy futócipőket reklámozó hirdetés az Ön érdeklődési köre alapján.</translation>
+<translation id="2347930112185157300">Mobilszolgáltatói hálózatkorlátozás van érvényben.</translation>
 <translation id="2348176352564285430">Alkalmazás: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Engedély kérelmezve, a válaszhoz nyomja le a Ctrl + Előre billentyűkombinációt</translation>
 <translation id="234889437187286781">Hiba történt az adatok betöltése során</translation>
@@ -1828,6 +1838,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="237828693408258535">Szeretné kérni az oldal lefordítását?</translation>
 <translation id="2378982052244864789">A bővítmény könyvtárának kiválasztása.</translation>
 <translation id="2379281330731083556">Nyomtatás a rendszer párbeszédablakán keresztül... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
 <translation id="2381499968174336913">Megosztott lap előnézete</translation>
 <translation id="2382875860893882175">Az átküldés jelenleg szünetel. Bármikor folytathatja vagy leállíthatja az átküldést.</translation>
 <translation id="2383825469508278924">Billentyűzetkiosztások, funkcióbillentyűk és egyebek módosítása.</translation>
@@ -1851,6 +1862,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2402226831639195063">Hanglejtés</translation>
 <translation id="2405887402346713222">Eszköz- és összetevő-sorozatszámok</translation>
 <translation id="2406153734066939945">Törli ezt a profilt és a hozzá tartozó adatokat?</translation>
+<translation id="2407671304279211586">DNS-szolgáltató kiválasztása</translation>
 <translation id="2408018932941436077">Kártya mentése folyamatban</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2409268599591722235">Rajta</translation>
@@ -1904,6 +1916,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2439152382014731627">A(z) <ph name="DEVICE_TYPE" /> jelszavának visszaállítása</translation>
 <translation id="2439626940657133600">Betöltés: <ph name="WINDOW_TITLE" />…</translation>
 <translation id="2440604414813129000">F&amp;orrás megtekintése</translation>
+<translation id="2440632898584211188">Ez a webhely továbbra is vezérelheti és átprogramozhatja a MIDI-eszközöket.</translation>
 <translation id="2440823041667407902">Helyhozzáférés</translation>
 <translation id="2441719842399509963">Visszaállítás az alapértékekre</translation>
 <translation id="244231003699905658">Érvénytelen cím. Ellenőrizze a címet, majd próbálja újra.</translation>
@@ -1923,7 +1936,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2450849356604136918">Nincs aktív nézet</translation>
 <translation id="2451298179137331965">2×</translation>
 <translation id="245322989586167203">A webhelyek általában bizonyos adatátviteli funkciók (például hálózat beállításának) biztosítása érdekében csatlakoznak soros portokhoz</translation>
-<translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" /> személyre szabott válaszokat kaphat kérdéseire, ha engedélyezi a Segédnek, hogy hozzáférjen <ph name="SUPERVISED_USER_NAME" /> eszközének a képernyőjén látható tartalmak képernyőképéhez. Ez vonatkozhat az épp lejátszott dalokkal és videókkal kapcsolatos információkra is.</translation>
 <translation id="2453860139492968684">Befejezés</translation>
 <translation id="2454206500483040640">Particionált</translation>
 <translation id="2454247629720664989">Kulcsszó</translation>
@@ -2071,7 +2083,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2554553592469060349">A kiválasztott fájl túl nagy (a maximális méret 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" />/<ph name="NUM_ALLOWED_APPS" /> alkalmazás küldhet értesítéseket</translation>
 <translation id="25568951186001797">„Fenced Frame“: <ph name="FENCEDFRAME_SITE" /></translation>
-<translation id="2558569818338050235">Böngészési előzményei határozzák meg, hogy milyen hirdetések jelennek meg Önnek</translation>
 <translation id="2559889124253841528">Mentés az eszközre</translation>
 <translation id="2561211427862644160">Összes könyvjelző megtekintése itt</translation>
 <translation id="2564520396658920462">A JavaScript AppleScripten keresztüli futtatásának lehetősége ki van kapcsolva. A bekapcsolásához kattintson a menüsávon lévő Nézet &gt; Fejlesztő &gt; A JavaScript engedélyezése Apple-eseményekből lehetőségre. További információ: https://support.google.com/chrome/?p=applescript</translation>
@@ -2146,6 +2157,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="262154978979441594">Google Segéd-hangminta megtanítása</translation>
 <translation id="26224892172169984">A webhelyek nem kezelhetnek protokollokat</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">A MIDI-eszközök vezérlése és átprogramozása engedélyezett</translation>
 <translation id="2624142942574147739">Ez az oldal hozzáfér az Ön kamerájához és mikrofonjához.</translation>
 <translation id="2626799779920242286">Próbálkozzon újra később.</translation>
 <translation id="2627424346328942291">Sikertelen megosztás</translation>
@@ -2224,7 +2236,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2683638487103917598">A mappa rendezése kész</translation>
 <translation id="2684004000387153598">A folytatáshoz kattintson az OK gombra, majd a Személy hozzáadása lehetőségre. Ekkor létrehozhatja az e-mail-címéhez tartozó új profilt.</translation>
 <translation id="2685193395980129388">Engedélyezve – <ph name="PERMISSION_DETAILS" /></translation>
-<translation id="2687403674020088961">Az összes cookie letiltása (nem ajánlott)</translation>
 <translation id="2687407218262674387">Google Szerződési Feltételek</translation>
 <translation id="2687621393791886981">Kérdezzen rá később</translation>
 <translation id="2688196195245426394">Hiba az eszköz szerveren való regisztrálásakor: <ph name="CLIENT_ERROR" />.</translation>
@@ -2253,7 +2264,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2710101514844343743">Használati és diagnosztikai adatok</translation>
 <translation id="271033894570825754">Új</translation>
 <translation id="2710507903599773521">A(z) <ph name="DEVICE_TYPE" /> fel van oldva</translation>
-<translation id="2711073837061989559">Próbaidőszakok</translation>
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2713444072780614174">Fehér</translation>
 <translation id="2714180132046334502">Sötét háttér</translation>
@@ -2361,6 +2371,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2777251078198759550">Tároló törlése</translation>
 <translation id="2777525873368474674">Kép linkjének beillesztése</translation>
 <translation id="2778471504622896352">Távoli alkalmazások hozzáadása a ChromeOS indítójához</translation>
+<translation id="2779728796406650689">Ez lehetővé teszi a Google Segéd számára, hogy személyre szabott válaszokat adjon, amikor Ön kérdéseket tesz fel.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">A bővítmények engedélyezve vannak ezen a webhelyen</translation>
 <translation id="2782104745158847185">Hiba történt a Linux-alkalmazás telepítése során</translation>
@@ -2406,7 +2417,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2808714658215073920">Csatlakozás Wi-Fi-hez…</translation>
 <translation id="2809586584051668049">és <ph name="NUMBER_ADDITIONAL_DISABLED" /> további</translation>
 <translation id="2811205483104563968">Fiókok</translation>
-<translation id="2811564570599779918">A spamek és a csalás visszaszorítása</translation>
 <translation id="2812049959647166806">A Thunderbolt nem támogatott</translation>
 <translation id="2812171980080389735">Mentett hálózatokkal és jelszavakkal azonnal csatlakozhat</translation>
 <translation id="2813094189969465044">Szülői felügyelet</translation>
@@ -2417,6 +2427,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2816319641769218778">Ha szeretné jelszavait Google-fiókjába menteni, kapcsolja be a szinkronizálást.</translation>
 <translation id="2816628817680324566">Engedélyezi a webhelynek, hogy azonosíthassa a biztonsági kulcsát?</translation>
 <translation id="2817435998497102771">Háttérkép és stílus beállítása</translation>
+<translation id="2817861546829549432">A „Nincs nyomon követés” engedélyezése azt jelenti, hogy a rendszer egy kérelmet is csatol a böngészési forgalomhoz. Ennek hatása attól függ, hogy a webhely válaszol-e a kérelemre, és hogyan értelmezi azt. Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is begyűjti és felhasználja a böngészési adatokat például a biztonság növelése, továbbá tartalom, szolgáltatások, hirdetések és ajánlások biztosítása, valamint jelentésekhez használt statisztika előállítása céljából.</translation>
 <translation id="2818476747334107629">Nyomtató részletei</translation>
 <translation id="2819167288942847344">Az alkalmazás hibás működésének elkerülése érdekében használjon előre beállított értékeket a telefonon, a táblagépen vagy az átméretezhető ablakokon</translation>
 <translation id="2819519502129272135">Fájlszinkronizálás kikapcsolva</translation>
@@ -2438,6 +2449,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2836269494620652131">Összeomlás</translation>
 <translation id="283669119850230892">A hálózat (<ph name="NETWORK_ID" />) használatához először fejezze be csatlakozást az internethez alább.</translation>
 <translation id="2838379631617906747">Telepítés</translation>
+<translation id="2838474726369447181">Ez a webhely vezérelheti és átprogramozhatja a MIDI-eszközöket (SysEx).</translation>
 <translation id="2839032553903800133">Értesítések letiltva</translation>
 <translation id="2841013758207633010">Idő</translation>
 <translation id="2841837950101800123">Szolgáltató</translation>
@@ -2456,12 +2468,12 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="285033512555869047">Zárva</translation>
 <translation id="2850541429955027218">Téma hozzáadása</translation>
 <translation id="2850672011315104382">Központozási stílus</translation>
-<translation id="2852385257476173980">A felkeresett webhelyeket tartalmazó lista itt jelenhet meg az interneten való böngészés folyományaként</translation>
 <translation id="285241945869362924">Automatikus feliratkészítés az audio- és videótartalmakhoz. A hanganyagok és a feliratok sosem kerülnek ki az eszközről.</translation>
 <translation id="2853121255651601031">A jelszó mentése megtörtént</translation>
 <translation id="2856776373509145513">Új tároló létrehozása</translation>
 <translation id="2856907950922663165">Kikapcsolja az URL-ek titkosítását?</translation>
 <translation id="2859741939921354763">Jelszavak importálása ide: <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">Ez a webhely továbbra sem vezérelheti vagy programozhatja át a MIDI-eszközöket.</translation>
 <translation id="2861301611394761800">A rendszerfrissítés befejeződött. Kérjük, indítsa újra a rendszert.</translation>
 <translation id="2861402191395139055">Passpoint-előfizetések</translation>
 <translation id="2861941300086904918">Natív kliens biztonságkezelő</translation>
@@ -2482,7 +2494,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> hozzáadása...</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="2873744479411987024">Magasabb frissítési gyakoriság mellett gördülékenyebb és részletesebb a megjelenítés. A megnövelt frissítési gyakoriság hatással lehet az akkumulátor-élettartamra.</translation>
-<translation id="2873995907777332853">Részletek megjelenítése az összes cookie letiltásáról</translation>
 <translation id="2874939134665556319">Előző szám</translation>
 <translation id="2875698561019555027">(Chrome-hibaoldalak)</translation>
 <translation id="2876336351874743617">2. ujj</translation>
@@ -2555,11 +2566,11 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2927017729816812676">Gyorsítótár</translation>
 <translation id="2928795416630981206">Nyomon követhetik a kamera pozícióját</translation>
 <translation id="2931157624143513983">Igazítás a nyomtatási területhez</translation>
+<translation id="2931342457001070961">Nincs csatlakoztatva mikrofon</translation>
 <translation id="2932085390869194046">Jelszó ajánlása…</translation>
 <translation id="2932483646085333864">A szinkronizálás megkezdéséhez jelentkezzen ki, majd jelentkezzen be újra</translation>
 <translation id="2932883381142163287">Visszaélés bejelentése</translation>
 <translation id="2933632078076743449">Utolsó frissítés</translation>
-<translation id="2934999512438267372">A MIDI-eszközökhöz való teljes hozzáférés engedélyezve</translation>
 <translation id="2935225303485967257">Profilok kezelése</translation>
 <translation id="2935314715123552088">Aktív eSIM-profil letiltása</translation>
 <translation id="2935654492420446828">Iskolai fiók későbbi hozzáadása</translation>
@@ -2571,6 +2582,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2942581856830209953">Az oldal személyre szabása</translation>
 <translation id="2942707801577151363">Word-, Excel- és PowerPoint-fájlokat nyithat meg, szerkeszthet és menthet el. Egyes funkciókhoz előfizetésre lehet szükség.</translation>
 <translation id="2943268899142471972">Válassza ki a kívánt Ansible Playbook-fájlt vagy Crostini biztonsági másolatot</translation>
+<translation id="2943478529590267286">A rendszer billentyűzetkiosztásának módosítása</translation>
 <translation id="2944060181911631861">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti. <ph name="BEGIN_LINK1" />További információ.<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Ugrás a fájlokhoz</translation>
 <translation id="2946119680249604491">Kapcsolat hozzáadása</translation>
@@ -2680,6 +2692,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3021065318976393105">Amíg akkumulátorról működik</translation>
 <translation id="3021066826692793094">Pillangó</translation>
 <translation id="3021678814754966447">&amp;Keret forrásának megtekintése</translation>
+<translation id="3021902017511220299">Sikertelen ellenőrzés. Ezt a műveletet letiltotta a rendszergazda.</translation>
 <translation id="3022361196600037287">A(z) <ph name="DEVICE" /> eszköz el lesz távolítva erről a Chromebookról, és nem menti a rendszer a következő fiókba: <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nem értettem.</translation>
 <translation id="3023464535986383522">Felolvasás</translation>
@@ -2717,7 +2730,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3053013834507634016">Tanúsítványkulcs felhasználása</translation>
 <translation id="3053273573829329829">Felhasználói PIN-kód engedélyezése</translation>
 <translation id="3054766768827382232">A letiltással néhány periféria jobban működhet, de nem engedélyezett használat esetén illetéktelenek kezébe kerülhetnek a személyes adatai.</translation>
-<translation id="3055113921564083271">Az eltávolított érdeklődési körök</translation>
 <translation id="3056438898277655057">Engedély megadása a következőnek az USB-eszközökhöz való hozzáférésre: <ph name="SPECIFIC_NAME" />. A(z) <ph name="SPECIFIC_NAME" /> nem jegyzi meg az USB-eszközt az eszköz eltávolítása után.</translation>
 <translation id="3058498974290601450">A szinkronizálás bármikor bekapcsolható a beállításokban</translation>
 <translation id="3058517085907878899">Eszköz elnevezése</translation>
@@ -2787,6 +2799,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3117362587799608430">A dokk nem teljesen kompatibilis</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Nem sikerült <ph name="ATTACHMENTS" /> elküldése a következő eszközre: <ph name="DEVICE_NAME" />}other{Nem sikerült <ph name="ATTACHMENTS" /> elküldése a következő eszközre: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Súgó</translation>
+<translation id="3118748462829336648">Oldalsó panel megnyitása</translation>
 <translation id="3119948370277171654">Milyen tartalmat/URL-t küldött át?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Nem sikerült létrehozni az adatkönyvtárat</translation>
@@ -2857,9 +2870,10 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3189187154924005138">Nagy kurzor</translation>
 <translation id="3190558889382726167">A jelszó mentése megtörtént</translation>
 <translation id="3191625924275846436">{NUM_SITES,plural, =1{Az Ön adatainak védelme érdekében a rendszer eltávolította egy olyan webhely engedélyeit, amelyet Ön nem keresett fel az utóbbi időben}other{Az Ön adatainak védelme érdekében a rendszer eltávolította azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel az utóbbi időben}}</translation>
+<translation id="3192586965067888278">Ismertesse részletesen a problémát. A visszajelzést a rendszer elküldi a Google-nak ember általi felülvizsgálatra, és felhasználhatjuk a Google termékeinek és szolgáltatásainak tökéletesítésére vagy fejlesztésére.</translation>
 <translation id="3192947282887913208">Audiofájlok</translation>
 <translation id="3193695589337931419">Rendszerjelek segédfolyamata</translation>
-<translation id="3194786596445804250">Részletek megjelenítése a harmadik felek cookie-jainak letiltásáról</translation>
+<translation id="3196912927885212665">Az androidos telefonnal történő beállításhoz a Chromebook Bluetooth-jának bekapcsolva kell lennie</translation>
 <translation id="3197453258332670132">Jobb kattintással vagy nyomva tartással megjelenítheti a szövegkijelöléshez tartozó adatokat</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. A jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, és hogy Ön milyen funkciókat, továbbá jellemzően mennyi memóriát használ. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az alkalmazások szinkronizálása is engedélyezve van, a rendszer egyéb alkalmazásdiagnosztikai és -használati adatokat is gyűjt, az Android- és az internetes alkalmazások esetén is.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ezeket a jelentéseket bármikor engedélyezheti és letilthatja gyermeke ChromeOS-t futtató eszközének beállításai között. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti konzolban.<ph name="END_PARAGRAPH2" />
@@ -2869,7 +2883,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3200061262156232574">A bevásárlókosarában</translation>
 <translation id="3201237270673604992">Z–A</translation>
 <translation id="3201422919974259695">A rendelkezésre álló USB-eszközök itt jelennek meg.</translation>
-<translation id="3202131003361292969">Útvonal</translation>
 <translation id="3202499879214571401">Képernyő következőre való átküldésének szüneteltetése: <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Legújabb</translation>
 <translation id="3204648577100496185">Az alkalmazáshoz kapcsolódó adatok törlődhetnek erről az eszközről.</translation>
@@ -2911,6 +2924,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3237871032310650497">Törli a(z) <ph name="SITE_NAME" /> webhelyadatait? (particionálva itt: <ph name="PARTITION_SITE_NAME" />)</translation>
 <translation id="3238192140106069382">Csatlakozás és ellenőrzés</translation>
 <translation id="3239373508713281971">Időkorlát eltávolítva a következő alkalmazásnál: <ph name="APP_NAME" /></translation>
+<translation id="3240299564104448052">Úgy tűnik, offline állapotban van.</translation>
 <translation id="3240426699337459095">Link másolva</translation>
 <translation id="3241638166094654466">Az egyes sorokban található cellák száma:</translation>
 <translation id="3241680850019875542">Válassza ki a bővítmény gyökérkönyvtárát. A bővítmény frissítéséhez meg kell adni az ismét használandó privátkulcs-fájlt is.</translation>
@@ -2942,7 +2956,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3262986719682892278">Túl nagy</translation>
 <translation id="3264544094376351444">Talp nélküli betűtípus</translation>
 <translation id="3264582393905923483">Kontextus</translation>
-<translation id="3265032511221679826">Bekapcsolja a pontos helyhez való hozzáférést?</translation>
 <translation id="3265459715026181080">Ablak bezárása</translation>
 <translation id="3266022278425892773">Linux fejlesztői környezet</translation>
 <translation id="3266274118485960573">A biztonsági ellenőrzés éppen fut.</translation>
@@ -3129,7 +3142,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3424969259347320884">Írja le, hogy mit csinált a lap összeomlásakor</translation>
 <translation id="3427092606871434483">Engedélyezés (alapértelmezett)</translation>
 <translation id="3429086384982427336">Az alább felsorolt alkalmazások soha nem kezelnek protokoll-linkeket.</translation>
-<translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> felszabadítva</translation>
@@ -3161,6 +3173,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3445925074670675829">C típusú USB-vel kompatibilis eszköz</translation>
 <translation id="3446274660183028131">A Windows telepítéséhez indítsa el a Parallels Desktop alkalmazást.</translation>
 <translation id="344630545793878684">Adatok beolvasása számos webhelyen</translation>
+<translation id="3446548199318150462">Engedélyezi az új asztali megjelenést. A Chrome oldalsó paneljének személyre szabása beállítást is engedélyezni kell hozzá.</translation>
 <translation id="3447644283769633681">Az összes harmadik féltől származó cookie tiltása</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> átküldése folyamatban van ide: <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Fiók frissítése</translation>
@@ -3185,13 +3198,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="346298925039590474">Ez a mobilhálózat az ezt az eszközt használó összes felhasználó számára hozzáférhető lesz</translation>
 <translation id="3464145797867108663">Munkaprofil hozzáadása</translation>
 <translation id="346546413339447252">Kedvezményeket kaphat a következőknél: <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> stb.</translation>
-<translation id="3466476162566821406">A kód megerősítéséhez kövesse a telefonon megjelenő utasításokat. Gondoskodjon arról, hogy telefonjának Bluetooth- és Wi-Fi-kapcsolata be legyen kapcsolva.
-    <ph name="BR" />
-    <ph name="BR" />
-    Telefonjával hozzáadhatja Wi-Fi- és Google-fiókja adatait <ph name="DEVICE_TYPE" /> eszközéhez.
-    <ph name="BR" />
-    <ph name="BR" />
-    A következőként látható a közeli eszközök számára: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">Címke</translation>
 <translation id="3468999815377931311">Androidos telefon</translation>
 <translation id="3469583217479686109">Kijelölés eszköz</translation>
@@ -3288,6 +3294,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3544879808695557954">Felhasználónév (nem kötelező)</translation>
 <translation id="3547954654003013442">Proxybeállítások</translation>
 <translation id="3548162552723420559">A képernyő színét a környezethez igazítja</translation>
+<translation id="354949590254473526">Egyéni DNS-lekérdezési URL megadása</translation>
 <translation id="3550593477037018652">Lecsatlakozás a mobilhálózatról</translation>
 <translation id="3550915441744863158">A Chrome automatikusan frissít, így Ön mindig a legújabb verzióval rendelkezik.</translation>
 <translation id="3551320343578183772">Lap bezárása</translation>
@@ -3322,7 +3329,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3577487026101678864">Fájlszinkronizálás bekapcsolva</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardveradatainak gyűjtése</translation>
-<translation id="3578874072190212775">Segíthet a webhelyeknek a csalás elleni küzdelemben, valamint abban, hogy megkülönböztethessék a robotokat az emberektől</translation>
 <translation id="3581605050355435601">IP-cím automatikus konfigurálása</translation>
 <translation id="3582057310199111521">Csaló webhelyen lett megadva, és nyilvánosságra került egy adatvédelmi incidens során</translation>
 <translation id="3582299299336701326">A világos képernyő sötét, a sötét pedig világos lesz. Nyomja le a Keresés + Ctrl + H billentyűparancsot a színinvertálás be- vagy kikapcsolásához.</translation>
@@ -3493,7 +3499,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3708295717182051206">Feliratok</translation>
 <translation id="3708684582558000260">A bezárt webhelyek nem fejezhetik be az adatküldést és -fogadást</translation>
 <translation id="3709244229496787112">A böngészőt leállították, mielőtt a letöltés befejeződött volna.</translation>
-<translation id="371174301504454251">Adatai védelme érdekében a négy hétnél régebbi webhelyeket automatikusan töröljük a listáról. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Arra is lehetősége van, hogy eltávolítsa valamelyik webhelyet, ha nem szeretné, hogy az adott webhely a jövőben bármikor is meghatározza az Ön érdeklődési köreit.</translation>
 <translation id="3711931198657368127"><ph name="URL" /> be&amp;illesztése és felkeresése</translation>
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> nyomtató található a nyomtatószerveren</translation>
 <translation id="3712050472459130149">A fiók frissítése szükséges</translation>
@@ -3600,9 +3605,9 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Napló megjelenítése</translation>
 <translation id="3783889407390048282">Szabadítson fel tárhelyet, hogy ne veszítse el az Androidhoz való hozzáférését.</translation>
-<translation id="3784472333786002075">A cookie-k webhelyek által létrehozott fájlok. Kétféle cookie-t különböztetünk meg: A belső cookie-kat a meglátogatott webhelyek hozzák létre. Az adott webhely a címsávban látható. A harmadik féltől származó cookie-kat más webhelyek hozzák létre. Ezek a webhelyek birtokolják a meglátogatott webhelyeken látható tartalom bizonyos részét (például hirdetéseket vagy képeket).</translation>
 <translation id="3785308913036335955">Alkalmazások gyorsparancs megjelenítése</translation>
 <translation id="3785727820640310185">A webhelyhez mentett jelszavak</translation>
+<translation id="3786224729726357296">Törli a(z) <ph name="SITE" /> webhelyre vonatkozó adatokat és engedélyeket?</translation>
 <translation id="3786834302860277193">Aláhúzás megjelenítése kompozíciós szövegnél</translation>
 <translation id="3787434344076711519">Várakozás a fordításra…</translation>
 <translation id="3788301286821743879">A kioszkalkalmazást nem lehetett elindítani.</translation>
@@ -3764,7 +3769,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3902789559055749153">Válassza ki, hogy miként szeretné létrehozni az azonosítókulcsot a következőhöz: <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Beépített billentyűzet</translation>
 <translation id="3904326018476041253">Helyszolgáltatások</translation>
-<translation id="3905218345729976782">Csatlakozás Wi-Fi-hez androidos telefonnal</translation>
 <translation id="3905761538810670789">Alkalmazás javítása</translation>
 <translation id="3908288065506437185">Harmadik felektől származó cookie-k letiltása inkognitó módban</translation>
 <translation id="3908501907586732282">Bővítmény engedélyezése</translation>
@@ -3789,6 +3793,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3922823422695198027">Más alkalmazásoknál is be van állítva, hogy megnyissák ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következők számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> és <ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Adathasználat</translation>
 <translation id="3923221004758245114">Eltávolítja a következőt a(z) <ph name="DEVICE_TYPE" /> eszközről: <ph name="VM_NAME" />? Ezzel minden alkalmazást és adatot töröl a virtuális gépről.</translation>
+<translation id="3923494859158167397">Nincs beállítva mobilhálózat</translation>
 <translation id="3923676227229836009">Ez az oldal megtekinthet fájlokat</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Megjelenítési és szövegméret: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -3845,6 +3850,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3963753386716096475">Másik telefon, táblagép vagy biztonsági kulcs használata</translation>
 <translation id="3964480518399667971">Mobilhálózat kikapcsolása</translation>
 <translation id="3965965397408324205">Kilépés a(z) <ph name="PROFILE_NAME" /> profilból</translation>
+<translation id="3965984916551757611">Értesítések, Google Play</translation>
 <translation id="3966072572894326936">Válasszon másik mappát...</translation>
 <translation id="3966094581547899417">A hotspot részletei</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
@@ -3868,7 +3874,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> engedélyezése</translation>
 <translation id="3981058120448670012">Ennyi ideig látható a közeli eszközök számára <ph name="DEVICE_NAME" /> néven: <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">A megadott mentéstípus érvénytelen.</translation>
-<translation id="3981902534690264083">A hirdetők megismerhetik a hirdetések működését</translation>
 <translation id="3982375475032951137">Néhány egyszerű lépésben beállíthatja böngészőjét</translation>
 <translation id="3983400541576569538">Egyes alkalmazások adatai elveszhetnek</translation>
 <translation id="3983586614702900908">ismeretlen szolgáltatótól származó eszközök</translation>
@@ -3901,10 +3906,12 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="399788104667917863">Rögzítés az eszköztárra</translation>
 <translation id="3998976413398910035">Nyomtatók kezelése</translation>
 <translation id="4001540981461989979">Egérkurzor kiemelése mozgatáskor</translation>
+<translation id="4002347779798688515">Előfordulhat, hogy a letöltött profil nem használható, ha zárolva van a mobilhálózat-szolgáltató. Segítségért forduljon a szolgáltatóhoz.</translation>
 <translation id="4002440992267487163">PIN-kód beállítása</translation>
 <translation id="4005817994523282006">Időzóna-észlelési módszer</translation>
 <translation id="4007856537951125667">Parancsikonok elrejtése</translation>
 <translation id="4008291085758151621">A webhely-információk nem állnak rendelkezésre VR-módban</translation>
+<translation id="4010746393007464819">Frissíthet a következőre: Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Könyvjelzők eléréséhez mobileszközön: <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Javítja a következőt: „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Használ bővítményeket? Egyetlen helyen, egyszerűen <ph name="BEGIN_LINK" />kezelheti őket<ph name="END_LINK" />.</translation>
@@ -3997,7 +4004,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4087089424473531098">Bővítmény létrehozva:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">A MIDI-eszközökhöz való teljes hozzáférés elutasítva</translation>
 <translation id="4087328411748538168">Megjelenítés a jobb oldalon</translation>
 <translation id="4089235344645910861">Beállítások mentve, a szinkronizálás megkezdődött.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4022,6 +4028,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4100853287411968461">Képernyő előtt tölthető idő frissítve</translation>
 <translation id="4101352914005291489">Rejtett SSID</translation>
 <translation id="4102906002417106771">Újraindítás a powerwash megkezdéséhez</translation>
+<translation id="4103644672850109428">Képernyőolvasó, nagyítás</translation>
 <translation id="4104163789986725820">E&amp;xportálás...</translation>
 <translation id="4104944259562794668">Később a Beállítások &gt; Biztonság és adatvédelem &gt; Lezárási képernyő és bejelentkezés pontban kapcsolhatja be.</translation>
 <translation id="4107048419833779140">Tárolóeszközök azonosítása és kiadása</translation>
@@ -4048,7 +4055,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="412730574613779332">Hős</translation>
 <translation id="4130199216115862831">Eszköznapló</translation>
-<translation id="4130207949184424187">Ez a bővítmény módosította, hogy melyik oldal jelenjen meg a cím- és keresősávban indított kereséskor.</translation>
 <translation id="4130750466177569591">Elfogadom</translation>
 <translation id="413121957363593859">Összetevők</translation>
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" /> engedélyezése ezen a webhelyen</translation>
@@ -4077,7 +4083,9 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4147911968024186208">Próbálja újra. Ha ismét ezt a hibaüzenetet látja, forduljon helyi ügyfélszolgálati képviselőjéhez.</translation>
 <translation id="414800391140809654">felhasználhatja az Ön adatait böngészés közben</translation>
 <translation id="4148195018520464922">A bejelentkezést korlátozhatja bizonyos felhasználókra. A művelettel eltávolítja a „Személy hozzáadása” beállítást a bejelentkezési képernyőről. A jelenlegi felhasználókat is eltávolíthatja.</translation>
+<translation id="4148957013307229264">Telepítés...</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>
+<translation id="4150417452770391330">Csatlakoztasson kamerát</translation>
 <translation id="4150569944729499860">Képernyőkontextus</translation>
 <translation id="4151449637210235443">Meséljen legutóbbi játékélményéről</translation>
 <translation id="4151503145138736576">Nincs felszabadítható offline tárhely</translation>
@@ -4161,7 +4169,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4231095370974836764">Alkalmazásokat és játékokat telepíthet a Google Playről <ph name="DEVICE_TYPE" /> eszközére. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Játékvezérlők bezárása</translation>
 <translation id="4231231258999726714">A Steam Chromebook-verziójának beállítása</translation>
-<translation id="4231542173270219144">Az aktív próbaidőszakokban a spam és a csalás elleni védelem privát állapottokenekre támaszkodva segít a webhelyeknek a csalás elleni küzdelemben és a robotok és az emberek megkülönböztetésében.</translation>
 <translation id="4232375817808480934">A Kerberos konfigurálása</translation>
 <translation id="4233739489690259993">Chromebookja a továbbiakban nem kap biztonsági és szoftverfrissítéseket. Frissítse eszközét, hogy megkapja a legújabb biztonsági és egyéb új funkciókat. Az ajánlatra feltételek vonatkoznak.</translation>
 <translation id="4235965441080806197">Bejelentkezés megszakítása</translation>
@@ -4178,6 +4185,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4244238649050961491">További érintőceruza-alkalmazások keresése</translation>
 <translation id="4246980464509998944">További megjegyzések:</translation>
 <translation id="424726838611654458">Megnyitás mindig az Adobe Readerben</translation>
+<translation id="4248401726442101648">Nincs csatlakoztatva kamera</translation>
 <translation id="4249248555939881673">Várakozás a hálózati kapcsolatra...</translation>
 <translation id="4249373718504745892">Az oldal nem férhet hozzá az Ön kamerájához és mikrofonjához.</translation>
 <translation id="424963718355121712">Az alkalmazásokat az általuk érintett gazdagépről kell kiszolgálni</translation>
@@ -4200,6 +4208,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4261429981378979799">Bővítményhez tartozó engedélyek</translation>
 <translation id="4262004481148703251">Figyelmeztetés elvetése</translation>
 <translation id="4263223596040212967">Ellenőrizze a billentyűzetkiosztást, és próbálja újra.</translation>
+<translation id="4265301768135164545">eSIM-profilt <ph name="BEGIN_LINK" />manuálisan<ph name="END_LINK" /> is beállíthat.</translation>
 <translation id="426564820080660648">Kérjük, frissítések kereséséhez Ethernetet, Wi-Fit vagy mobiladat-forgalmat használjon.</translation>
 <translation id="426652736638196239">A rendszer csak erre az eszközre menti az IBAN-t</translation>
 <translation id="4266679478228765574">A mappák eltávolításával megszűnik a megosztás, de a fájlok nem törlődnek.</translation>
@@ -4215,6 +4224,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4274673989874969668">Elhagyásuk után a webhelyek tovább folytathatják a szinkronizálást a feladatok (például fotók feltöltése vagy csevegőüzenetek küldése) befejezése érdekében.</translation>
 <translation id="4275291496240508082">Hangjelzés indításkor</translation>
 <translation id="4275397969489577657">Esemény streamnaplózásának engedélyezése</translation>
+<translation id="4275788652681621337">Oldalsó panel bezárása</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4277434192562187284">XML-konfigurációs forrás</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
@@ -4248,6 +4258,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4298660926525614540">Cserélhető tárhely nevei</translation>
 <translation id="4299022904780065004">Új &amp;inkognitó ablak</translation>
 <translation id="4301671483919369635">Ez az oldal szerkeszthet fájlokat</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# ismerős nem áll rendelkezésre. Ha vele szeretné használni a(z) <ph name="FEATURE_NAME" /> funkciót, adja hozzá a Google-fiókjához tartozó e-mail-címét a Névjegyekhez.}other{# ismerős nem áll rendelkezésre. Ha velük szeretné használni a(z) <ph name="FEATURE_NAME" /> funkciót, adja hozzá a Google-fiókjukhoz tartozó e-mail-címüket a Névjegyekhez.}}</translation>
 <translation id="4303079906735388947">Új PIN-kód beállítása a biztonsági hardverkulcshoz</translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4305402730127028764">Másolás ide: <ph name="DEVICE_NAME" /></translation>
@@ -4265,6 +4276,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-fiók}other{<ph name="EXTRA_ACCOUNTS" /> Google-fiók}}</translation>
 <translation id="4312866146174492540">Letiltás (alapértelmezett)</translation>
 <translation id="4314497418046265427">Még jobban kihasználhatja a telefon és a(z) <ph name="DEVICE_TYPE" /> eszköz csatlakoztatásából fakadó előnyöket</translation>
+<translation id="4314561087119792062">Új hozzáférési pont nevének hozzáadása</translation>
 <translation id="4314815835985389558">Szinkronizálás kezelése</translation>
 <translation id="4316850752623536204">Fejlesztő webhelye</translation>
 <translation id="4317733381297736564">Alkalmazáson belüli vásárlások</translation>
@@ -4298,6 +4310,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4345457680916430965">&amp;Megnyitás itt: <ph name="APP" /></translation>
 <translation id="4345587454538109430">Konfigurálás...</translation>
 <translation id="4345732373643853732">A szerver nem ismeri a felhasználónevet</translation>
+<translation id="4346159263667201092">Opcionális részletek hozzáadása</translation>
 <translation id="4348426576195894795">A fiók eltávolításával minden ezzel a fiókkal bejelentkezett Chrome-profil is törlődik</translation>
 <translation id="4348766275249686434">Hibák gyűjtése</translation>
 <translation id="4349828822184870497">Hasznos</translation>
@@ -4382,6 +4395,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4407039574263172582">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse meg a szóban forgó webhely <ph name="BEGIN_LINK" />általános szerződési feltételeit<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Súgó</translation>
+<translation id="4408965460206576430">Ez a fájl rosszindulatú programot tartalmaz, vagy gyanús webhelyről származik</translation>
 <translation id="4409271659088619928">Az Ön keresőmotorja a következő: <ph name="DSE" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4409697491990005945">Margók</translation>
 <translation id="4409779593816003679">Jelszavak és automatikus kitöltés</translation>
@@ -4416,7 +4430,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4427365070557649936">Megerősítő kód ellenőrzése…</translation>
 <translation id="4429163740524851942">Fizikai billentyűzetkiosztás</translation>
 <translation id="4430019312045809116">Hangerő</translation>
-<translation id="4430204941092622397">Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
 <translation id="443031431654216610">Csak számjegyeket használjon</translation>
 <translation id="4430369329743628066">Könyvjelző hozzáadva</translation>
 <translation id="4430422687972614133">Virtuális kártya bekapcsolása</translation>
@@ -4424,6 +4437,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="443454694385851356">Régi (nem biztonságos)</translation>
 <translation id="4434611816075088065">Jelenleg semmi más nem igényel beavatkozást</translation>
 <translation id="443475966875174318">Nem kompatibilis alkalmazások frissítése és eltávolítása</translation>
+<translation id="4437947179446780764">Egyéni DNS-szolgáltató hozzáadása</translation>
 <translation id="4438043733494739848">Átlátszó</translation>
 <translation id="4441124369922430666">Szeretné automatikusan elindítani ezt az alkalmazást, amikor bekapcsolja a számítógépet?</translation>
 <translation id="4441147046941420429">A folytatáshoz távolítsa el a biztonsági kulcsot az eszközből, majd helyezze vissza, és érintse meg.</translation>
@@ -4500,7 +4514,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4507128560633489176">Adatok törölve.</translation>
 <translation id="4507373251891673233">Ön letiltotta az összes bővítményt innen: <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kattintson a „Parancsikon hozzáadása” lehetőségre</translation>
-<translation id="4508032221004253235">Ez lehetővé teszi a helymeghatározási jogosultsággal rendelkező alkalmazások és webhelyek számára, hogy használják a Wi-Fi- vagy mobilhálózatok által meghatározott helyadatokat. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="4508150454272293946">Az alkalmazások és weboldalak használhatják az eszközhöz csatlakoztatott kamerát vagy kamerákat. Ha továbbra is problémákat tapasztal a kamerával, próbálja újraindítani az alkalmazást, vagy frissítse a weboldalt.</translation>
 <translation id="450867954911715010">Kisegítő beállítások</translation>
 <translation id="4508765956121923607">F&amp;orrás megtekintése</translation>
@@ -4538,7 +4551,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4533985347672295764">Processzoridő</translation>
 <translation id="4534661889221639075">Próbálja újra.</translation>
 <translation id="4535127706710932914">Alapértelmezett profil</translation>
-<translation id="4536140153723794651">Webhelyek, amelyek mindig használhatnak cookie-kat</translation>
 <translation id="4536769240747010177">Internetmegosztás lehetőségei:</translation>
 <translation id="4538417792467843292">Szó törlése</translation>
 <translation id="4538792345715658285">Vállalati házirend által telepítve.</translation>
@@ -4553,6 +4565,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4546345569117159016">Jobb egérgomb</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ezt a bővítményt szeretné használni:</translation>
 <translation id="4546692474302123343">Google Segéd-hangbevitel</translation>
+<translation id="4547538408998421970">Elérte a mai napra vonatkozó korlátot.</translation>
 <translation id="4547659257713117923">Nincs más eszközről származó lap</translation>
 <translation id="4547672827276975204">Automatikus beállítás</translation>
 <translation id="4548858987594081919">Adja meg felhasználónevét ehhez a webhelyhez, hogy a Google Jelszókezelő menteni tudja a bejelentkezési adatait.</translation>
@@ -4636,7 +4649,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4612841084470706111">Hozzáférés megadása az összes kért webhelyhez.</translation>
 <translation id="4613144866899789710">Linux-telepítés megszakítása…</translation>
 <translation id="4613271546271159013">Egy bővítmény módosította az új lap megnyitásakor megjelenített oldalt.</translation>
-<translation id="4615586811063744755">nincs kiválasztva cookie</translation>
 <translation id="461661862154729886">Energiaforrás</translation>
 <translation id="4617001782309103936">Túl rövid</translation>
 <translation id="4617270414136722281">Bővítménybeállítások</translation>
@@ -4682,6 +4694,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4647836961514597010">Színválasztó</translation>
 <translation id="4648491805942548247">Elégtelen engedélyek</translation>
 <translation id="4650037136970677721">Megtakarított memória</translation>
+<translation id="4650364565596261010">Alapértelmezett</translation>
 <translation id="4650591383426000695">A telefon leválasztása a következőről: <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Nem sikerült betölteni az online komponenst a demó mód forrásaival.</translation>
 <translation id="4651921906638302153">Nem lehet bejelentkezni ezzel a fiókkal</translation>
@@ -4710,9 +4723,9 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4665446389743427678">A(z) <ph name="SITE" /> által tárolt összes adat törlődik.</translation>
 <translation id="4666472247053585787">Telefonja értesítéseinek megtekintése <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="4666911709726371538">További alkalmazások</translation>
-<translation id="4667027203988048332">A következő adatokat használjuk fel:</translation>
 <translation id="4668279686271488041">A hirdetésmérési adatok rendszeresen törlődnek az eszközéről.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">Gratulálunk! Sikerült a(z) <ph name="APP_NAME" /> telepítése az eszközre</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> jelenleg meg van nyitva</translation>
 <translation id="4673442866648850031">Érintőceruza-eszközök megnyitása az érintőceruza eltávolításakor</translation>
 <translation id="4673785607287397025">Csatlakozási probléma. Győződjön meg arról, hogy Chromecastja és számítógépe ugyanahhoz a hálózathoz csatlakozik, majd próbálja újra.</translation>
@@ -4828,7 +4841,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4769632191812288342">A rendszer normál védelmet nyújt Önnek</translation>
 <translation id="4770119228883592393">Engedély kérelmezve, a válaszhoz nyomja le a ⌘ + Option + lefelé mutató nyíl billentyűkombinációt</translation>
 <translation id="4773112038801431077">A Linux frissítése</translation>
-<translation id="4774456473286455263">Beállítás androidos telefonnal</translation>
 <translation id="4775228465764358468">Előfordulhat, hogy a webhely menti az előnyben részesített nyelvet vagy a megvásárolni kívánt tételeket. Ez az információ hozzáférhető a webhelyen és annak aldomainjein.</translation>
 <translation id="477548766361111120">A bővítmény olvashatja és módosíthatja a webhelyet</translation>
 <translation id="4776311127346151860">Sikeresen csatlakoztatva lett a következő: <ph name="DEVICE_NAME" /></translation>
@@ -4842,6 +4854,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Az eSIM-hez kapcsolódó mobilhálózat átnevezése</translation>
 <translation id="4780321648949301421">Oldal mentése &amp;másként...</translation>
+<translation id="4780558987886269159">Munkához</translation>
 <translation id="4781443161433589743">A Chrome legbiztonságosabb rendszerét használja</translation>
 <translation id="4785719467058219317">Olyan biztonsági hardverkulcsot használ, amely nincs regisztrálva ezen a webhelyen</translation>
 <translation id="4785914069240823137">Kivágás visszavonása</translation>
@@ -4878,6 +4891,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4811212958317149293">Kapcsolóalapú hozzáféréshez használt billentyűzet automatikus keresése</translation>
 <translation id="4811503964269049987">A kijelölt lap csoportba helyezése</translation>
 <translation id="4813512666221746211">Hálózati hiba</translation>
+<translation id="4813872509679988157">Ez a webhely továbbra is használhatja a MIDI-eszközöket.</translation>
 <translation id="4814114628197290459">IBAN törlése</translation>
 <translation id="4814327014588285482">Kihagyás és emlékeztető küldése később</translation>
 <translation id="4814378367953456825">Nevezze el ezt az ujjlenyomatot</translation>
@@ -4918,6 +4932,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4839303808932127586">Vi&amp;deo mentése másként...</translation>
 <translation id="4839910546484524995">Az eszköz ellenőrzése</translation>
 <translation id="4840096453115567876">Mindenképp kilép az inkognitó módból?</translation>
+<translation id="4841475798258477260">Ez az eszköz csak egy adott mobilhálózathoz tud csatlakozni. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4841741146571978176">A kötelező virtuális gép nem létezik. Próbáljon meg beállítani <ph name="VM_TYPE" /> típusú VM-et a folytatáshoz.</translation>
 <translation id="4842976633412754305">Az oldal nem hiteles forrásokból próbál szkripteket betölteni.</translation>
 <translation id="4844333629810439236">Egyéb billentyűzetek</translation>
@@ -5014,6 +5029,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4908811072292128752">Új lap megnyitása két webhely egyidejű böngészéséhez</translation>
 <translation id="4909038193460299775">Mivel ezt a fiókot a(z) <ph name="DOMAIN" /> domain kezeli, könyvjelzői, előzményei, jelszavai és más beállításai törlődnek erről az eszközről. Meglévő adatait azonban továbbra is tárolni fogja Google-fiókja, és azokat a <ph name="BEGIN_LINK" />Google Irányítópulton<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="4912643508233590958">Tétlen aktiválások</translation>
+<translation id="4913209098186576320">Ez a fájl veszélyes lehet<ph name="LINE_BREAK" />Az ellenőrzés a szokásosnál tovább tart…</translation>
 <translation id="4915961947098019832">Megjeleníthetnek képeket</translation>
 <translation id="4916542008280060967">Engedélyezi a webhelynek a következő szerkesztését: <ph name="FILE_NAME" />?</translation>
 <translation id="4917385247580444890">Erős</translation>
@@ -5050,6 +5066,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4941963255146903244">Megtekintheti a telefonon található fotókat, médiatartalmakat és alkalmazásokat</translation>
 <translation id="494286511941020793">Proxykonfigurációs súgó</translation>
 <translation id="4943368462779413526">Focilabda</translation>
+<translation id="4943927218331934807">Jelszó szükséges</translation>
 <translation id="4944310289250773232">Ezt a hitelesítési szolgáltatást a(z) <ph name="SAML_DOMAIN" /> biztosítja</translation>
 <translation id="4945439665401275950">Az ujjlenyomat beállításához a gyermekének hozzá kell érintenie az ujját a bekapcsológombhoz. Gyermeke ujjlenyomatadatait a rendszer biztonságosan tárolja, és ezek az adatok soha nem kerülnek ki az eszközről (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4946459324029651239">Normál védelmet nyújt Önnek a rendszer</translation>
@@ -5062,6 +5079,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4953808748584563296">Alapértelmezett narancssárga avatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-láthatóság</translation>
 <translation id="4955710816792587366">PIN-kód kiválasztása</translation>
+<translation id="4958090327979461112">Chrome-profilok kezelése</translation>
 <translation id="4959262764292427323">A jelszavakat Google-fiókjába mentjük, hogy bármelyik eszközén használhassa őket</translation>
 <translation id="4960020053211143927">Egyes alkalmazások nem támogatják</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5102,7 +5120,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4988526792673242964">Oldal</translation>
 <translation id="49896407730300355">Forgatás &amp;balra</translation>
 <translation id="4989966318180235467">&amp;Háttéroldal vizsgálata</translation>
-<translation id="4990949771467040994">várakozás…</translation>
 <translation id="4991420928586866460">A legfelső sor billentyűi legyenek funkcióbillentyűk</translation>
 <translation id="4992458225095111526">Powerwash megerősítése</translation>
 <translation id="4992473555164495036">A rendszergazda korlátozta a rendelkezésre álló beviteli módokat.</translation>
@@ -5151,6 +5168,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5032430150487044192">Nem lehet létrehozni a QR-kódot.</translation>
 <translation id="5033137252639132982">Nem használhatnak mozgásérzékelőket</translation>
 <translation id="5033266061063942743">Geometriai alakzatok</translation>
+<translation id="5033646801355533305">Próbálja újra holnap.</translation>
 <translation id="5035846135112863536">Az alábbi „További részletek” lehetőséget választva további információt kaphat a következőről: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Összes kiválasztása</translation>
 <translation id="5038818366306248416">Ön korábban egyetlen bővítményt sem engedélyezett itt: <ph name="ORIGIN" /></translation>
@@ -5186,6 +5204,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5063480226653192405">Használat</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Biztonságos DNS kezelése a ChromeOS beállításai között</translation>
+<translation id="5066891009360243320">Ennél a webhelynél le van tiltva a MIDI-eszközök használata.</translation>
 <translation id="5067399438976153555">Mindig bekapcsolva</translation>
 <translation id="5067867186035333991">Kérdezzen rá, ha a(z) <ph name="HOST" /> hozzá szeretne férni a mikrofonhoz</translation>
 <translation id="5068553687099139861">jelszavak mutatása</translation>
@@ -5275,6 +5294,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5130675701626084557">Nem sikerült a profil letöltése. Próbálja újra később, vagy forduljon segítségért a szolgáltatóhoz.</translation>
 <translation id="5131591206283983824">Koppintással húzás az érintőpadon</translation>
 <translation id="5135533361271311778">Nem sikerült létrehozni a könyvjelzőelemet.</translation>
+<translation id="513555878193063507">Új APN hozzáadása</translation>
 <translation id="5136343472380336530">Győződjön meg arról, hogy mindkét eszköz fel van oldva, közel vannak egymáshoz, és be van rajtuk kapcsolva a Bluetooth. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5138227688689900538">Kevesebb megjelenítése</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-keresés</translation>
@@ -5291,6 +5311,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5145876360421795017">Nem regisztrálom az eszközt</translation>
 <translation id="5146235736676876345">Saját jelszó kiválasztása</translation>
 <translation id="5146896637028965135">Rendszerhang</translation>
+<translation id="5147516217412920887">A kód megerősítéséhez kövesse a telefonon megjelenő utasításokat.</translation>
 <translation id="5147992672778369947">A javasolt jelszó használata</translation>
 <translation id="5148277445782867161">A Google helyszolgáltatásai olyan forrásokat használnak eszköze helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.</translation>
 <translation id="5148285448107770349">A jelszónak legalább 8 karakterből kell állnia.</translation>
@@ -5424,6 +5445,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5261683757250193089">Megnyitás az Internetes áruházban</translation>
 <translation id="5261799091118902550">Lehet, hogy ez a fájl vírus vagy rosszindulatú program. Elküldheti a Google-nak biztonsági ellenőrzésre.</translation>
 <translation id="5262784498883614021">Automatikus csatlakozás a hálózathoz</translation>
+<translation id="5263656105659419083">Az oldalsó panelre való egyszerű visszatéréshez kattintson a jobb felső sarokban lévő Kitűzés gombra</translation>
 <translation id="5264148714798105376">Ez eltarthat egy-két percig.</translation>
 <translation id="5264252276333215551">Csatlakozzon az internethez az alkalmazás kioszk módban való indításához.</translation>
 <translation id="5265797726250773323">Hiba a telepítés során</translation>
@@ -5447,13 +5469,10 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5278823018825269962">Állapotazonosító</translation>
 <translation id="5279600392753459966">Összes letiltása</translation>
 <translation id="5280064835262749532">A(z) <ph name="SHARE_PATH" /> hitelesítési adatainak frissítése</translation>
-<translation id="5280243692621919988">A cookie-k és webhelyadatok törlése az összes ablak bezárásakor</translation>
 <translation id="5280335021886535443">Nyomja meg a következő gombot, ha erre a buborékra szeretne fókuszálni: |<ph name="ACCELERATOR" />|.</translation>
 <translation id="5280426389926346830">Létrehozza a parancsikont?</translation>
 <translation id="5281013262333731149">Itt nyílik meg: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Androidos alkalmazások letöltéséhez és használatához először telepítenie kell ezt a kötelező frissítést. Miközben <ph name="DEVICE_TYPE" /> eszköze frissít, nem használhatja. A telepítés befejeződését követően <ph name="DEVICE_TYPE" /> eszköze újraindul.</translation>
-<translation id="5282733140964383898">A „Nincs nyomon követés” funkció engedélyezése azzal jár, hogy a rendszer kérelmet is csatol a böngészési forgalomhoz. Ennek hatása attól függ, hogy a webhely válaszol-e a kérelemre, és hogyan értelmezi a kérelmet.
-Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is begyűjti és felhasználja a böngészési adatokat például a biztonság növelése, továbbá tartalom, szolgáltatások, hirdetések és ajánlások biztosítása, valamint jelentésekhez használt statisztika előállítása céljából. <ph name="BEGIN_LINK" />További információ.<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">Hoppá! A rendszer nem tudta megállapítani az eszköz modelljét vagy sorozatszámát.</translation>
 <translation id="5284445933715251131">Letöltés folytatása</translation>
 <translation id="5285635972691565180">Kijelző (<ph name="DISPLAY_ID" />)</translation>
@@ -5477,9 +5496,9 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5297082477358294722">Jelszó elmentve. A mentett jelszavakat itt láthatja és kezelheti: <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="5297946558563358707">Az „Adatvédelmi szem” ikon megjelenítése a képernyő jobb alsó sarkában, amikor valaki más az Ön képernyőjére néz</translation>
 <translation id="5298219193514155779">Téma készítője:</translation>
+<translation id="5298315677001348398">Biztosan folytatja, és engedélyezi, hogy ez a szoftver módosításokat végezhessen az eszközön?</translation>
 <translation id="5299109548848736476">Nincs nyomon követés</translation>
 <translation id="5299558715747014286">Lapcsoportok megtekintése és kezelése</translation>
-<translation id="5300426565656326054">Hirdetések böngészőalapú személyre szabása</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5300719150368506519">A felkeresett oldalak URL-címének elküldése a Google-nak</translation>
 <translation id="5301751748813680278">Belépés vendégként.</translation>
@@ -5490,6 +5509,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5307030433605830021">A forrás nem támogatott</translation>
 <translation id="5307386115243749078">Bluetooth-kapcsoló párosítása</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
+<translation id="5308989548591363504">Keressen rosszindulatú programokat</translation>
 <translation id="5309418307557605830">A Google Segéd itt is működik</translation>
 <translation id="5309641450810523897">Ügyfélszolgálati eset azonosítója</translation>
 <translation id="5311304534597152726">Bejelentkezés mint</translation>
@@ -5521,7 +5541,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5337926771328966926">Eszköz jelenlegi neve: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Privát módban böngészhet, ha inkognitó ablakot használ</translation>
 <translation id="5338503421962489998">Helyi tárhely</translation>
-<translation id="5339031667684712858">Eltávolított webhelyek</translation>
 <translation id="5340787663756381836">&amp;Keresés és szerkesztés</translation>
 <translation id="5341793073192892252">A következő cookie-kat letiltottuk (a harmadik féltől származó cookie-kat kivétel nélkül letiltjuk)</translation>
 <translation id="5342091991439452114">A PIN-kódnak legalább <ph name="MINIMUM" /> számjegyűnek kell lennie</translation>
@@ -5538,7 +5557,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5355191726083956201">A Speciális védelem be van kapcsolva</translation>
 <translation id="5355498626146154079">Be kell kapcsolnia a „Borealis Enabled” jelzőt.</translation>
 <translation id="5355501370336370394">Vállalati eszköz regisztrációja</translation>
-<translation id="5355926466126177564">A(z) <ph name="EXTENSION_NAME" /> bővítmény módosította, hogy melyik oldal jelenjen meg a cím- és keresősávban indított kereséskor.</translation>
 <translation id="5356155057455921522">A rendszergazda által megkövetelt frissítésnek köszönhetően a szervezet alkalmazásai gyorsabban indulnak majd el. Ez eltarthat néhány percig.</translation>
 <translation id="5359910752122114278">1 találat</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> lap</translation>
@@ -5575,9 +5593,9 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 webhelyet találtunk sok értesítéssel}other{{NUM_SITES} webhelyet találtunk sok értesítéssel}}</translation>
 <translation id="5388885445722491159">Párosítva</translation>
 <translation id="5389626883706033615">A webhelyek nem kérhetik Öntől az Önről elmentett adatok használatát</translation>
+<translation id="5389794555912875905">Figyelmeztetések megjelenítése a nem biztonságos webhelyek felkeresése előtt (ajánlott)</translation>
 <translation id="5390112241331447203">A system_logs.txt fájl is kerüljön be a visszajelzési jelentésekbe.</translation>
 <translation id="5390677308841849479">Sötétvörös-narancssárga</translation>
-<translation id="5390743329570580756">Küldés –</translation>
 <translation id="5392192690789334093">Küldhetnek értesítéseket</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# link}}</translation>
 <translation id="5395498824851198390">Alapértelmezett betűtípus</translation>
@@ -5640,7 +5658,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5436492226391861498">Várakozás a proxy alagútra...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> keresés:</translation>
 <translation id="5436575196282187764">Google Fotók-emlékek</translation>
-<translation id="5439680044267106777">Kihagyás és új profil beállítása</translation>
+<translation id="5440425659852470030">Oldalsó panel bezárása</translation>
 <translation id="544083962418256601">Parancsikonok létrehozása...</translation>
 <translation id="5441133529460183413">A Chrome böngészőből letöltött internetes alkalmazás</translation>
 <translation id="5441292787273562014">Oldal újratöltése</translation>
@@ -5688,6 +5706,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5473099001878321374">Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, gyermeke szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{A PIN-kódnak legalább egy karakterből kell állnia}other{A PIN-kódnak legalább # karakterből kell állnia}}</translation>
 <translation id="5474859849784484111">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ez esetben a szolgáltató díjat számíthat fel).</translation>
+<translation id="5477089831058413614">A(z) <ph name="DEVICE_TYPE" /> hotspotjának konfigurálása</translation>
 <translation id="5481273127572794904">Nem tölthetnek le automatikusan egyszerre több fájlt</translation>
 <translation id="5481941284378890518">Közeli nyomtatók hozzáadása</translation>
 <translation id="5484181871714116891">Ha be van kapcsolva, az azonosítókulcsokat az iCloud-kulcskarikában hozza létre a rendszer, és hozzáférhetők az Apple-eszközökön. Ha ki van kapcsolva, a rendszer az Ön Chrome-profiljában hozza létre az azonosítókulcsokat ezen az eszközön.</translation>
@@ -5719,6 +5738,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5496587651328244253">Rendezés</translation>
 <translation id="5496730470963166430">Nem jeleníthetnek meg előugró ablakokat, és nem használhatnak átirányításokat</translation>
 <translation id="5497251278400702716">Ez a fájl</translation>
+<translation id="5497739595514726398">A Chrome nem tudta ellenőrizni ezt a telepítőcsomagot</translation>
 <translation id="5498967291577176373">Nevére, címére vagy telefonszámára vonatkozó szövegközi javaslatokkal gyorsabban gépelhet</translation>
 <translation id="5499211612787418966">Ez a párbeszédpanel jelenleg nincs fókuszban. Nyomja le az Alt + Shift + A billentyűparancsot, ha erre a párbeszédpanelre szeretne fókuszálni.</translation>
 <translation id="5499313591153584299">Ez a fájl káros lehet a számítógépre.</translation>
@@ -5775,7 +5795,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5544482392629385159"><ph name="DEVICE_INDEX" />. eszköz. Összes eszköz: <ph name="DEVICE_COUNT" />. Eszköz neve: <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Megjelenítő</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
-<translation id="5545693483061321551">A webhelyek nem használhatnak cookie-kat az Ön böngészési tevékenységeinek megismeréséhez a különböző webhelyeken például arra, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="5546865291508181392">Keresés</translation>
 <translation id="5548075230008247516">Az összes elem kijelölése megszüntetve; kilépett a kijelölési módból.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” és 1 másik lap}other{„<ph name="TAB_TITLE" />” és # másik lap}}</translation>
@@ -5797,6 +5816,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="555604722231274592">A(z) <ph name="FEATURE_NAME" /> engedélyezése</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5558129378926964177">&amp;Nagyítás</translation>
+<translation id="5558594314398017686">Operációs rendszer alapértelmezett beállítása (ha rendelkezésre áll)</translation>
 <translation id="5559311991468302423">Cím törlése</translation>
 <translation id="5559768063688681413">Nincsenek mentett nyomtatók</translation>
 <translation id="55601339223879446">Beállíthatja az asztal határait a kijelzőn</translation>
@@ -5855,7 +5875,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="560834977503641186">Wi-Fi szinkronizálása, további információ</translation>
 <translation id="5608580678041221894">Az alábbi kulcsokra koppintva módosítható vagy mozgatható a körbevágás területe</translation>
 <translation id="5609231933459083978">Úgy tűnik, hogy az alkalmazás érvénytelen.</translation>
-<translation id="561030196642865721">Ezen a webhelyen engedélyezett a harmadik felektől származó cookie-k használata</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">Sajnos a jelszó ellenőrzése még mindig nem sikerült. Megjegyzés: ha a közelmúltban módosította jelszavát, az új jelszó kijelentkezés után kerül beállításra, ezért kérjük, itt a régi jelszót használja.</translation>
 <translation id="5614190747811328134">Felhasználói értesítés</translation>
 <translation id="5614553682702429503">Szeretné elmenteni a jelszót?</translation>
@@ -5878,7 +5898,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5624120631404540903">Jelszavak kezelése</translation>
 <translation id="5625225435499354052">Módosítás a Google Pay szolgáltatásban</translation>
 <translation id="5626134646977739690">Név:</translation>
-<translation id="5627086634964711283">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Kezdőlap gombra történő kattintáskor.</translation>
 <translation id="5627832140542566187">Kijelző tájolása</translation>
 <translation id="5628434207686266338">Eszköz jelszavának beállítása</translation>
 <translation id="562935524653278697">A rendszergazda letiltotta a könyvjelzőinek, előzményeinek, jelszavainak és más beállításainak szinkronizálását.</translation>
@@ -5894,6 +5913,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5636012309446422">Eltávolítja a következőt a(z) <ph name="PRIMARY_EMAIL" /> fiókból: <ph name="DEVICE" />?</translation>
 <translation id="5636996382092289526">A(z) <ph name="NETWORK_ID" /> használatához először <ph name="LINK_START" />fel kell keresnie a hálózat bejelentkezési oldalát<ph name="LINK_END" />, amely automatikusan megnyílik néhány másodpercen belül. Ha ez nem történik meg, akkor a hálózat nem használható.</translation>
 <translation id="5637476008227280525">Mobiladatok bekapcsolása</translation>
+<translation id="563811590465749036">Ha a Google Jelszókezelőt a macOS Keychain szolgáltatásával szeretné használni, indítsa újra a Chrome-ot, és engedélyezze a Keychain-hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
 <translation id="563821631542362636">Adatmentés engedélyezése a webhely számára</translation>
 <translation id="5638309510554459422">Bővítményeket és témákat a <ph name="BEGIN_LINK" />Chrome Internetes áruházban<ph name="END_LINK" /> kereshet</translation>
 <translation id="5639549361331209298">Az oldal újratöltése – további lehetőségek megtekintéséhez tartsa lenyomva.</translation>
@@ -5901,6 +5921,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5641608986289282154">A(z) <ph name="DEVICE_OS" /> használatának megkezdése</translation>
 <translation id="5641648607875312660">Képernyőkép-szerkesztő</translation>
 <translation id="5642508497713047">Tanúsítvány-visszavonási lista aláírója</translation>
+<translation id="5643191124441701136">A biztonsági kód a kártya elején található.</translation>
 <translation id="5643321261065707929">Forgalomkorlátos hálózat</translation>
 <translation id="5646376287012673985">Tartózkodási hely</translation>
 <translation id="5646558797914161501">Üzletember</translation>
@@ -5913,7 +5934,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5655296450510165335">Eszközregisztráció</translation>
 <translation id="5655823808357523308">Beállíthatja, hogy a színek miként jelenjenek meg a képernyőn</translation>
 <translation id="5656845498778518563">Visszajelzés küldése a Google-nak</translation>
-<translation id="5657156137487675418">Összes cookie engedélyezése</translation>
 <translation id="5657667036353380798">A külső bővítményhez a Chrome <ph name="MINIMUM_CHROME_VERSION" /> vagy újabb verziójának telepítése szükséges.</translation>
 <translation id="565899488479822148">A legújabb frissítés telepítése…</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -6014,7 +6034,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5743501966138291117">Az automatikus feloldás használatához a PIN-kód legfeljebb 12 számból állhat</translation>
 <translation id="5745316408658560138">Kereshet a Chrome személyre szabott kedvezményeket az Ön bevásárlókosaraira vonatkozóan?</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
-<translation id="5747552184818312860">Lejár</translation>
 <translation id="5747785204778348146">Fejlesztői – nem stabil</translation>
 <translation id="5747809636523347288"><ph name="URL" /> be&amp;illesztése és felkeresése</translation>
 <translation id="5748137879145720682">Bekapcsolás, amikor a számítógép nincs áramforráshoz csatlakoztatva</translation>
@@ -6055,6 +6074,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5782040878821624922">Bármilyen eszközön rendelkezésre áll.</translation>
 <translation id="5782227691023083829">A fordítás folyamatban...</translation>
 <translation id="57838592816432529">Némítás</translation>
+<translation id="5784291589716625675">Alkalmazás nyelvének módosítása</translation>
 <translation id="5785583009707899920">Chrome-fájlokkal kapcsolatos segédprogramok</translation>
 <translation id="5787146423283493983">Kulcsmegegyezés</translation>
 <translation id="5787420647064736989">Eszköznév</translation>
@@ -6171,20 +6191,13 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> hamarosan szünetelni fog</translation>
 <translation id="586567932979200359">A <ph name="PRODUCT_NAME" /> alkalmazást jelenleg a lemezképéről futtatja. Ha telepíti a számítógépére, akkor futtathatja a lemezkép nélkül is, emellett biztosan naprakészen tartja.</translation>
 <translation id="5865733239029070421">Automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google-nak</translation>
-<translation id="5867855474018538405">A QR-kód beolvasásához kövesse a telefonján megjelenő utasításokat. Gondoskodjon arról, hogy telefonjának Bluetooth- és Wi-Fi-kapcsolata be legyen kapcsolva.
-    <ph name="BR" />
-    <ph name="BR" />
-    Telefonjával hozzáadhatja Wi-Fi- és Google-fiókja adatait <ph name="DEVICE_TYPE" /> eszközéhez.
-    <ph name="BR" />
-    <ph name="BR" />
-    A következőként látható a közeli eszközök számára: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">Eszközén ki van kapcsolva a mikrofon</translation>
 <translation id="5868822853313956582">Eszközszínek követése</translation>
 <translation id="5869029295770560994">Rendben, értem</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5870086504539785141">A kisegítő lehetőségek menüjének bezárása</translation>
 <translation id="5870155679953074650">Súlyos hibák</translation>
-<translation id="5872318519182427835">Ez a beállítás az itt felsorolt webhelyekre és azok aldomainjeire van hatással. A „google.com” megadása például azt jelenti, hogy a harmadik féltől származó cookie-k a mail.google.com webhelyen is aktívak lehetnek, mert ez a google.com része.</translation>
+<translation id="5870901441418842049">Ennél a webhelynél le van tiltva a MIDI-eszközök (SysEx) vezérlése és átprogramozása.</translation>
 <translation id="5875534259258494936">A képernyőmegosztás befejeződött</translation>
 <translation id="5876576639916258720">Folyamatban…</translation>
 <translation id="5876851302954717356">Új lap jobbra</translation>
@@ -6219,6 +6232,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5901089233978050985">Váltás rögzítő lapra</translation>
 <translation id="5901494423252125310">A nyomtató fedele nyitva van</translation>
 <translation id="5901630391730855834">Sárga</translation>
+<translation id="5902892210366342391">Figyelmeztetések megjelenítése inkognitó módban a nem biztonságos webhelyek felkeresése előtt</translation>
 <translation id="5904614460720589786">A(z) <ph name="APP_NAME" /> beállítása konfigurációs probléma miatt nem sikerült. Forduljon a rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Már majdnem naprakész! Indítsa újra az eszközt a frissítés befejezéséhez.</translation>
 <translation id="5906732635754427568">Az alkalmazáshoz kapcsolódó adatok törlődnek erről az eszközről.</translation>
@@ -6289,15 +6303,12 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5955304353782037793">alk</translation>
 <translation id="5955721306465922729">Egy webhely meg akarja nyitni ezt az alkalmazást.</translation>
 <translation id="5955809630138889698">Lehet, hogy az eszköz csak az online demó mód használatára jogosult. További részletekért forduljon az ügyfélszolgálati képviselőjéhez.</translation>
-<translation id="5956585768868398362">Erre a keresési oldalra számított?</translation>
-<translation id="5957918771633727933">Nincsenek rendelkezésre álló eSIM-profilok. Töltsön le új <ph name="BEGIN_LINK" />profilt.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Koppintson a profilképe melletti Felolvasás ikonra, majd válassza ki, hogy mit szeretne hallani.</translation>
 <translation id="5959471481388474538">A hálózat nem érhető el</translation>
 <translation id="5963413905009737549">Szakasz</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (csúcs: <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Összes megnyitása &amp;új ablakban}=1{Megnyitás &amp;új ablakban}other{Összes ({COUNT}) megnyitása &amp;új ablakban}}</translation>
 <translation id="5964247741333118902">Beágyazott tartalom</translation>
-<translation id="5965661248935608907">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Kezdőlap gombra történő kattintáskor vagy a cím- és keresősávban indított kereséskor.</translation>
 <translation id="5966511985653515929">A webhelyadatok törlődnek az eszközről az összes ablak bezárásakor</translation>
 <translation id="5968022600320704045">Nincsenek keresési találatok</translation>
 <translation id="5969364029958154283">További információ a beállítások visszaállításáról</translation>
@@ -6334,7 +6345,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5992225669837656567">Az összes egér le lett választva</translation>
 <translation id="5992652489368666106">Nincs szegély</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 webhely ellenőrzése befejeződött}other{{NUM_SITES} webhely ellenőrzése befejeződött}}</translation>
-<translation id="5996200702878169822">eSIM-profilt <ph name="BEGIN_LINK" />manuálisan<ph name="END_LINK" /> is beállíthat.</translation>
 <translation id="5997337190805127100">További információ a webhelyekhez való hozzáférésről</translation>
 <translation id="5998458948782718639">Segítsen az Automatikus kitöltés fejlesztésében</translation>
 <translation id="5999024481231496910">Engedélyezte a harmadik felektől származó cookie-k fokozatos megszüntetésének tesztelését. Ezt a Beállítások oldal nem bírálhatja felül. Ha újra engedélyezni szeretné a harmadik felektől származó cookie-kat, indítsa újra a Chrome-ot úgy, hogy le van tiltva ez a funkció.</translation>
@@ -6378,7 +6388,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6030719887161080597">A webhelyek által a hirdetésteljesítmény méréséhez használt adatok kezelése</translation>
 <translation id="6031600495088157824">Beviteli lehetőségek az eszköztáron</translation>
 <translation id="6032715498678347852">Ha hozzáférést szeretne adni a kívánt bővítménynek ehhez a webhelyhez, kattintson rá.</translation>
-<translation id="6032912588568283682">Fájlrendszer</translation>
 <translation id="603539183851330738">Automatikus javítás visszavonásának gombja. Visszaállítás erre: <ph name="TYPED_WORD" />.  Az aktiváláshoz nyomja le az Enter, az elvetéshez az Escape gombot.</translation>
 <translation id="6038929619733116134">Letiltás, ha a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg</translation>
 <translation id="6039651071822577588">A hálózatitulajdonság-szótár formátuma hibás</translation>
@@ -6474,6 +6483,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6104068876731806426">Google-fiók</translation>
 <translation id="6104311680260824317">Nem sikerült csatlakoztatni az eszközt a domainre. A szerver nem támogatja a megadott Kerberos-titkosítástípusokat. A titkosítási beállításokat a „További lehetőségek” részben találja.</translation>
 <translation id="6104796831253957966">A nyomtató várólistája megtelt</translation>
+<translation id="610487644502954950">Oldalsó panel rögzítése megszüntetve</translation>
 <translation id="6104929924898022309">A funkcióbillentyűk viselkedésének módosítása a keresőgombbal</translation>
 <translation id="6106167152849320869">Ha az előző lépésben elküldte a diagnosztikai és használati adatokat, akkor a rendszer gyűjti majd ezeket az adatokat a telepített alkalmazások esetében.</translation>
 <translation id="6111718295497931251">A Google Drive-hozzáférés megvonása</translation>
@@ -6523,6 +6533,10 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6143186082490678276">Súgó</translation>
 <translation id="6143366292569327983">Válassza ki az oldal nyelvét, amelyről fordítani szeretne</translation>
 <translation id="6144938890088808325">Segítsen nekünk a Chromebookok továbbfejlesztésében</translation>
+<translation id="6145480071052696715">Telefonjával könnyedén beállíthatja a(z) <ph name="DEVICE_TYPE" /> eszközt. Jelszavai manuális megadása nélkül is hozzáadhat Wi-Fi-hálózatot és Google-fiókot.
+    <ph name="BR" />
+    <ph name="BR" />
+    A következőként látható: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">A szinkronizálás nem működik. Próbáljon újra bejelentkezni.</translation>
 <translation id="6147020289383635445">A nyomtatási előnézet létrehozása nem sikerült.</translation>
 <translation id="6148576794665275391">Megnyitás most</translation>
@@ -6535,6 +6549,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6151323131516309312">Nyomja meg a(z) <ph name="SEARCH_KEY" /> gombot a(z) <ph name="SITE_NAME" /> kereséshez</translation>
 <translation id="6151771661215463137">A fájl már megtalálható a letöltések mappájában.</translation>
 <translation id="6152918902620844577">Várakozás a következő műveletre…</translation>
+<translation id="6153439704237222699">További információ a Do Not Track funkcióról</translation>
 <translation id="6154240335466762404">Összes port eltávolítása</translation>
 <translation id="615436196126345398">Protokoll</translation>
 <translation id="6155141482566063812">Az egyik háttérben futó lap megosztja az Ön képernyőjét</translation>
@@ -6560,6 +6575,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6171779718418683144">Kérdezzen rá a webhely minden felkeresésekor</translation>
 <translation id="617213288191670920">Nincsenek hozzáadva nyelvek</translation>
 <translation id="6173623053897475761">Írja be újra a PIN-kódját</translation>
+<translation id="6174116123142608180">Ez a webhely továbbra se használhasson MIDI-eszközöket.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Link kérése</translation>
 <translation id="6176701216248282552">A kontextusfüggő súgó be van kapcsolva. Ezek a funkciók elküldhetik a megnyitott oldalakat a Google-nak.</translation>
@@ -6756,6 +6772,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6333170995003625229">Nem sikerült ellenőrizni az e-mail-címét vagy jelszavát. Próbáljon újra bejelentkezni.</translation>
 <translation id="6334267141726449402">Másolja vágólapra és küldje el ezt a linket a felhasználónak a naplók összegyűjtéséhez.</translation>
 <translation id="6336038146639916978">A(z) <ph name="MANAGER" /> letiltotta az ADB-hibakeresést. Ezzel visszaállítja <ph name="DEVICE_TYPE" /> eszközét 24 órán belül. Készítsen biztonsági másolatot a megőrizni kívánt fájlokról.</translation>
+<translation id="6336194758029258346">Az alkalmazás nyelve</translation>
 <translation id="6337543438445391085">Egyes személyes adatok továbbra is szerepelhetnek az adatokban. Mindenképpen tekintse át az exportált fájlokat.</translation>
 <translation id="6338968693068997776">USB-eszköz hozzáadása</translation>
 <translation id="6339668969738228384">Új profil létrehozása a következőhöz: <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6768,6 +6785,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6344576354370880196">Mentett nyomtatók</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Böngésződet a szülőd kezeli<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">Nyomon követés elleni védelem</translation>
+<translation id="6345203628032613660">Videókeret keresése a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">Szükség van a(z) <ph name="PROXY" /> proxyhoz tartozó felhasználónevének és jelszavának megadására, hogy a rendszergazda be tudja állítani a hálózatot.</translation>
 <translation id="6345566021391290381">Jelszavak vannak megosztva Önnel a következőhöz: <ph name="WEBSITE_NAME" />. A bejelentkezési űrlapon használhatja őket.</translation>
 <translation id="6345878117466430440">Megjelölés olvasottként</translation>
@@ -6804,6 +6822,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="637642201764944055">A Chrome-alkalmazások régi verziói 2022 decembere után nem nyílnak majd meg Linux rendszerű eszközökön. Kérje meg a rendszergazdát, hogy frissítsen az új verzióra, vagy távolítsa el ezt az alkalmazást.</translation>
 <translation id="6377268785556383139">1 találat a következőre: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6378392501584240055">Wi-Fi-hálózatok megnyitása</translation>
+<translation id="6379533146645857098">Időtartomány kiválasztása</translation>
 <translation id="6380143666419481200">Elfogadás és folytatás</translation>
 <translation id="6383382161803538830">Az Olvasó mód nem áll rendelkezésre ezen az oldalon</translation>
 <translation id="638418309848716977">Támogatott linkek</translation>
@@ -6870,7 +6889,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6434325376267409267">A(z) <ph name="APP_NAME" /> használatához frissítenie kell eszközét.</translation>
 <translation id="6435339218366409950">Válassza ki a nyelvet, amelyre le szeretné fordítani a feliratot</translation>
 <translation id="6436164536244065364">Megtekintés az Internetes áruházban</translation>
-<translation id="6436610005579237680">Még inkább személyre szabott válaszokat kaphat, ha engedélyezi, hogy a Google Segéd hozzáférhessen a képernyőn látható tartalmak képernyőképéhez, amikor Ön kérdést tesz fel. Segédje felhasználhatja az épp lejátszott dalokkal és videókkal kapcsolatos információkat is.</translation>
 <translation id="6436778875248895551">A következő bővítményt letiltotta a rendszergazda: „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6438234780621650381">A beállítások visszaállítása</translation>
 <translation id="6438475350605608554">Már importál jelszavakat egy másik lapon</translation>
@@ -6900,7 +6918,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6455521402703088376">Ki • A fejlesztője megszüntette a bővítmény közzétételét</translation>
 <translation id="6455894534188563617">Új &amp;mappa</translation>
 <translation id="645705751491738698">A JavaScript letiltásának fenntartása</translation>
-<translation id="6458347417133445570">Részletek megjelenítése az összes cookie engedélyezéséről</translation>
 <translation id="6458701200018867744">A feltöltés sikertelen (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Keresés a kijelölésben</translation>
 <translation id="6459799433792303855">Aktív ablak áthelyezve másik kijelzőre.</translation>
@@ -6951,9 +6968,9 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6504601948739128893">Nem használhatják az eszközre telepített betűtípusokat</translation>
 <translation id="6504611359718185067">Ha nyomtatót szeretne hozzáadni, csatlakozzon az internethez</translation>
 <translation id="6506374932220792071">X9.62 ECDSA aláírás a következővel: SHA-256</translation>
+<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{A(z) „<ph name="APP_NAME" />” telepíteni szeretné a következő alkalmazást erre az eszközre:}other{A(z) „<ph name="APP_NAME" />” telepíteni szeretné a következő alkalmazásokat erre az eszközre:}}</translation>
 <translation id="6508248480704296122">Kapcsolódik a következőhöz: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Alkalmazás: <ph name="APP_NAME" /></translation>
-<translation id="6509207748479174212">Médiaengedély</translation>
 <translation id="6511607461419653612">Indítsa újra a Chromebookot, majd próbálja újra.</translation>
 <translation id="6511827214781912955">Fontolja meg a(z) <ph name="FILENAME" /> törlését, hogy az eszközt használó többi személy ne láthassa az Ön jelszavait</translation>
 <translation id="6513247462497316522">A Google Chrome mobil-adatforgalmat fog használni, ha nem kapcsolódik másik hálózathoz.</translation>
@@ -6972,9 +6989,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6520087076882753524">Megtekintheti és kezelheti mentett jelszavait a Google Jelszókezelőben</translation>
 <translation id="6520876759015997832"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />. találat: <ph name="SEARCH_RESULT_TEXT" />. A szakasz megnyitásához nyomja meg az Enter billentyűt.</translation>
 <translation id="6521214596282732365">A webhelyek általában az Ön betűtípusait használják, így az eredetivel egyező minőségű tartalmakat hozhat létre online tervező- és grafikus eszközökkel</translation>
-<translation id="6523303810310758032">Az összes böngészési előzmény vagy csak adott webhely böngészési előzményeinek törlésekor a kapcsolódó mérési adatokat is törli a böngésző. Tekintse meg a <ph name="BEGIN_LINK" />böngészési előzményeit<ph name="END_LINK" />.</translation>
 <translation id="6523574494641144162">A Google Jelszókezelő nem tudta menteni ezeket a jelszavakat az Ön Google-fiókjába. Mentheti őket erre az eszközre.</translation>
-<translation id="6524735478670290456">A következőképpen használjuk fel ezeket az adatokat:</translation>
 <translation id="652492607360843641">A következő típusú hálózatra csatlakozik: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6525767484449074555">Kattintson a „Telepítés” lehetőségre.</translation>
 <translation id="6527303717912515753">Megosztás</translation>
@@ -7056,15 +7071,12 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6586099239452884121">Böngészés vendégként</translation>
 <translation id="6586213706115310390">Az „Ok Google” parancsszó kimondásával hozzáférhet Segédjéhez.</translation>
 <translation id="6586451623538375658">Az elsődleges egérgomb cseréje</translation>
-<translation id="6588043302623806746">Biztonságos DNS használata</translation>
-<translation id="6588047202935130957">Az érdeklődési köröket tartalmazó lista itt jelenhet meg az interneten való böngészés folyományaként</translation>
 <translation id="659005207229852190">A biztonsági ellenőrzés befejeződött.</translation>
 <translation id="6590458744723262880">Mappa átnevezése</translation>
 <translation id="6592267180249644460">WebRTC napló rögzítésének ideje: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Sikerült az ujjlenyomat rögzítése</translation>
 <translation id="6593881952206664229">A szerzői joggal védett médiatartalmak nem játszhatók le</translation>
 <translation id="6594011207075825276">Soros eszközök keresése…</translation>
-<translation id="6595187330192059106">A(z) <ph name="HOST" /> soha nem férhet hozzá teljes körűen a MIDI-eszközökhöz</translation>
 <translation id="6595322909015878027">Nem indíthatják el automatikusan a kép a képben módot</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Sikerült módosítani a jelszót, amelyhez illetéktelenül hozzáfértek.
 
@@ -7078,8 +7090,8 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6597324406048772521">A bővítmények nincsenek engedélyezve ezen a webhelyen</translation>
 <translation id="6597331566371766302">A következő bővítményeket letiltotta a rendszergazda:</translation>
 <translation id="659894938503552850">legújabb</translation>
+<translation id="6599934330666882772">Ez a webhely használja a MIDI-eszközöket.</translation>
 <translation id="6601262427770154296">Felhasználói szótárak kezelése</translation>
-<translation id="6601612474695404578">Egyes webhelyek harmadik féltől származó cookie-kat használnak oldalaik betöltésekor. Ha valamelyik webhely nem működik, megpróbálhatja engedélyezni a cookie-kat.</translation>
 <translation id="6602173570135186741">Automatikus kitöltés és jelszavak</translation>
 <translation id="6602937173026466876">Hozzáférés a nyomtatókhoz</translation>
 <translation id="6602956230557165253">Használja a bal és jobb nyílgombokat a navigáláshoz.</translation>
@@ -7169,7 +7181,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6675665718701918026">Mutatóeszköz csatlakoztatva</translation>
 <translation id="6675985668044425385">Ha az adott webhely nem a vártnak megfelelően működik, akkor a címsávban található Nyomon követés elleni védelem beállítással engedélyezheti a harmadik féltől származó cookie-kat.</translation>
 <translation id="6676212663108450937">A hangminta létrehozásakor érdemes fejhallgatót használni</translation>
-<translation id="6677942524382973058">A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az interneten, és nem alkalmasak arra, hogy felfedjék az Ön személyazonosságát.</translation>
 <translation id="6678717876183468697">Lekérdezés URL-je</translation>
 <translation id="6680442031740878064">Rendelkezésre álló tárhely: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Értékelés</translation>
@@ -7263,6 +7274,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Az eszközalapú webhelyadatok nem engedélyezettek</translation>
 <translation id="6762833852331690540">Be</translation>
+<translation id="6762861159308991328">A linkek megnyitásának módját az Alkalmazásbeállításokban módosíthatja</translation>
 <translation id="676560328519657314">Az Ön fizetési módjai a Google Pay szolgáltatásban</translation>
 <translation id="6766488013065406604">Ugrás a Google Jelszókezelőhöz</translation>
 <translation id="6767566652486411142">Másik nyelv választása…</translation>
@@ -7282,6 +7294,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6777817260680419853">Átirányítás letiltva</translation>
 <translation id="6777845730143344223">További információ a Passpoint-előfizetésekről</translation>
 <translation id="6779092717724412415">Ehhez hasonló kiemelés létrehozásához válassza ki a kívánt szöveget, majd kattintson a jobb egérgombbal.</translation>
+<translation id="6779348349813025131">A Google Jelszókezelő hozzáférést igényel a macOS Keychain szolgáltatásához</translation>
 <translation id="6779447100905857289">az Ön bevásárlókosarai</translation>
 <translation id="677965093459947883">Nagyon kicsi</translation>
 <translation id="6781005693196527806">&amp;Keresők beállítása…</translation>
@@ -7299,7 +7312,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6787097042755590313">Másik lap</translation>
 <translation id="6787839852456839824">Billentyűkódok</translation>
 <translation id="6788210894632713004">Kicsomagolt bővítmény</translation>
-<translation id="678939393857169499">Engedélyezi az új asztali megjelenést.</translation>
 <translation id="6789592661892473991">Felosztás vízszintesen</translation>
 <translation id="6789834167207639931">A visszaállítás befejezéséhez adja meg Google-fiókja jelszavát a következő képernyőn</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
@@ -7319,7 +7331,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6798780071646309401">caps lock bekapcsolva</translation>
 <translation id="6798954102094737107">Beépülő modul: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Az eszköztár rejtett gombjai</translation>
-<translation id="6801129617625983991">Általános beállítások</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Válassza ki, hogy ez a bővítmény olvashatja vagy módosíthatja-e ezt a webhelyet}other{Válassza ki, hogy ezek a bővítmények olvashatják vagy módosíthatják-e ezt a webhelyet}}</translation>
 <translation id="6801435275744557998">Érintőképernyő kalibrálása</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -7479,6 +7490,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6912007319859991306">Mobilos SIM PIN-kódja</translation>
 <translation id="6912380255120084882">Próbálkozzon másik eszközzel</translation>
 <translation id="691289340230098384">Feliratbeállítások</translation>
+<translation id="6914812290245989348">Ne jelenjenek meg figyelmeztetések a nem biztonságos webhelyek megnyitása előtt</translation>
 <translation id="6916590542764765824">Bővítmények kezelése</translation>
 <translation id="6918677045355889289">A ChromeOS frissítése szükséges</translation>
 <translation id="6919354101107095996">Próbáljon bejelentkezni a webhelyre. Ezt követően próbálja meg ismét letölteni.</translation>
@@ -7544,7 +7556,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6966370001499648704">Vezérelheti, hogy mely telefonokat szeretné használni biztonsági kulcsként.</translation>
 <translation id="6967112302799758487">A Steam Chromebook-verziója (béta) használatával telepített alkalmazások és játékok el lesznek távolítva erről az eszközről. Az ezekhez az alkalmazásokhoz és játékokhoz tartozó adatok is törlődnek. Az eltávolítás előtt készítsen biztonsági mentést a mentett alkalmazásokról és játékokról.</translation>
 <translation id="6967430741871315905">Nem sikerült ellenőrizni, hogy engedélyezett-e az eszköz</translation>
-<translation id="696780070563539690">A webhelyek nem használhatnak cookie-kat az Ön böngészési tevékenységeinek megismeréséhez a különböző webhelyeken, például a hirdetések személyre szabása érdekében.</translation>
 <translation id="6968288415730398122">Adja meg jelszavát a képernyőzár beállításához</translation>
 <translation id="6969047215179982698">Közeli megosztás kikapcsolása</translation>
 <translation id="6969216690072714773">Adjon meg új információkat, vagy frissítse az ezzel az eszközzel társítani kívánt régieket.</translation>
@@ -7577,13 +7588,13 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6985607387932385770">Nyomtatók</translation>
 <translation id="6988094684494323731">A Linux-tároló indítása</translation>
 <translation id="6988403677482707277">Lap áthelyezve a lapsor elejére</translation>
-<translation id="6989123022222588975">Nem távolított el érdeklődési köröket.</translation>
 <translation id="6991665348624301627">Válasszon egy célhelyet</translation>
 <translation id="6992554835374084304">A továbbfejlesztett helyesírás-ellenőrzés bekapcsolása</translation>
 <translation id="6993000214273684335">Lap eltávolítva a névtelen csoportból – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">A Chrome böngésző frissítése</translation>
 <translation id="6995899638241819463">Figyelmeztetés, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek</translation>
 <translation id="6995984090981858039">A ChromeOS-eszközadatok és egyéb adatok olvasása</translation>
+<translation id="6996245928508281884">Kapcsolja be a telefon Bluetooth- és Wi-Fi-kapcsolatát.</translation>
 <translation id="6996438701394974959">Megjelenítés és szövegméret növelése</translation>
 <translation id="6997553674029032185">Ugrás a webhelyre</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Tevékenységnapló</translation>
@@ -7643,6 +7654,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7036706669646341689">Ajánlott legalább <ph name="DISK_SIZE" /> méretű területet szánni a Linuxra. Tárhely felszabadításához töröljön fájlokat az eszközről.</translation>
 <translation id="7037509989619051237">Szövegfelolvasó előnézete</translation>
 <translation id="7038632520572155338">Kapcsolóalapú hozzáférés</translation>
+<translation id="7038636380708661517">Mindig legyen letiltva a(z) <ph name="HOST" /> számára a MIDI-eszközök használata.</translation>
 <translation id="7038710352229712897">Másik Google-fiók létrehozása <ph name="USER_NAME" /> számára</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> szolgáltatótól származó USB-eszközök elérése</translation>
 <translation id="7039912931802252762">Microsoft - bejelentkezés intelligens kártya használatával</translation>
@@ -7658,7 +7670,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7047059339731138197">Háttér kiválasztása</translation>
 <translation id="7049293980323620022">Megtartja a fájlt?</translation>
 <translation id="7050037487872780845">Érvénytelen hotspot-konfiguráció</translation>
-<translation id="7051551856857948729">IBAN-érték elrejtése</translation>
 <translation id="7052237160939977163">Teljesítménykövetési adatok elküldése</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7055152154916055070">Átirányítás letiltva:</translation>
@@ -7666,7 +7677,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7056418393177503237">{0,plural, =1{Inkognitó}other{# megnyitott inkognitó ablak}}</translation>
 <translation id="7056526158851679338">&amp;Eszközök vizsgálata</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{A biztonsági ellenőrzés 1 perccel ezelőtt futott}other{A biztonsági ellenőrzés {NUM_MINS} perccel ezelőtt futott}}</translation>
-<translation id="7057767408836081338">Az alkalmazásadatok beszerzése sikertelen, de megpróbáljuk futtatni az alkalmazást…</translation>
 <translation id="7058024590501568315">Rejtett hálózat</translation>
 <translation id="7059858479264779982">Beállítás automatikus indításra</translation>
 <translation id="7063129466199351735">Parancsikonok feldolgozása...</translation>
@@ -7739,14 +7749,13 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7121438501124788993">Fejlesztői mód</translation>
 <translation id="7121728544325372695">Intelligens kötőjelek</translation>
 <translation id="7123030151043029868">Letölthetnek automatikusan egyszerre több fájlt</translation>
-<translation id="7123302939607518173">Hozzáadhat érdeklődési kört vagy webhelyet, ha úgy véli, hogy az adott elemhez kapcsolódó hirdetések hasznosak lehetnek az Ön számára.</translation>
 <translation id="7124013154139278147">Kapcsoló hozzárendelése az „Előző” művelethez</translation>
 <translation id="7124712201233930202">Nem teljesültek a szervezet irányelvei</translation>
-<translation id="7125029162161377569">A Privacy Sandbox próbaidőszakai alatt a webhelyek ugyanazt a böngészési élményt biztosítják, de ehhez kevesebb személyes adatot használnak fel. Ez kevesebb webhelyeken átnyúló nyomon követés mellett fokozott adatvédelmet jelent az Ön számára. Amint készen állnak tesztelésre, új próbaidőszakokat biztosítunk.</translation>
 <translation id="7125148293026877011">A Crostini törlése</translation>
 <translation id="7125932261198019860">Győződjön meg arról, hogy a nyomtató ugyanahhoz a Wi-Fi-hálózathoz csatlakozik, mint a Chromebook, vagy használjon USB-kábelt. <ph name="LINK_BEGIN" />További információ a kompatibilitásról<ph name="LINK_END" />.</translation>
 <translation id="7127980134843952133">Letöltési előzmények</translation>
 <translation id="7128151990937044829">Jelzés megjelenítése a címsávon, ha a böngésző letiltott értesítéseket</translation>
+<translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
 <translation id="7131040479572660648">Adatok beolvasása a következő webhelyeken: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> és <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Ol&amp;dal hozzáadása...</translation>
 <translation id="7131431455372521159">Az összes TrackPoint le lett választva</translation>
@@ -7800,6 +7809,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7180865173735832675">Testreszabás</translation>
 <translation id="7181117767881540376">&amp;Könyvjelzősáv elrejtése</translation>
 <translation id="7182063559013288142">Azonnali hotspot</translation>
+<translation id="718240920439497409">A MIDI-eszközök le vannak tiltva</translation>
 <translation id="7182791023900310535">Jelszó áthelyezése</translation>
 <translation id="718427252411067142">Ha nem szeretné, hogy mások használhassák az Ön jelszavát, nyissa meg az alkalmazást a jelszó módosításához</translation>
 <translation id="7186088072322679094">Gomb megtartása az eszköztáron</translation>
@@ -7826,6 +7836,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7201118060536064622">„<ph name="DELETED_ITEM_NAME" />” törölve</translation>
 <translation id="7201420661433230412">Fájlok megtekintése</translation>
 <translation id="7201535955609308429">Kérjük, várjon, amíg az ellenőrzés folyamatban van</translation>
+<translation id="7202337678781136582">Olvassa be a QR-kódot androidos telefonjával</translation>
 <translation id="7203150201908454328">Kibontott</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Oldal elhagyása}other{Oldalak elhagyása}}</translation>
 <translation id="7207457272187520234">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a beállítást kötelezővé tette az eszköz tulajdonosa. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti.</translation>
@@ -7888,6 +7899,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7255002516883565667">Jelenleg egy olyan kártyája van, amelyet csak ezen az eszközön használhat</translation>
 <translation id="7255935316994522020">Alkalmaz</translation>
 <translation id="7256069762010468647">A webhely használja a kameráját</translation>
+<translation id="7256265230922801769">A(z) <ph name="HOST" /> mindig vezérelheti és átprogramozhatja a MIDI-eszközöket.</translation>
 <translation id="7256634071279256947">Hátulsó mikrofon</translation>
 <translation id="7256710573727326513">Megnyitás lapon</translation>
 <translation id="7257173066616499747">Wi-Fi-hálózatok</translation>
@@ -7941,7 +7953,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7299337219131431707">Vendégként való böngészés engedélyezése</translation>
 <translation id="7299515639584427954">Módosítja a támogatott linkekhez tartozó alapértelmezett alkalmazást?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
-<translation id="7301470816294041580">Megkérdezheti például azt, hogy „Ok, Google what song is this” (Ok Google, mi ez a szám?), vagy azt, hogy „Ok Google, what's on my screen?” (Ok Google, mi látható a képernyőn?)</translation>
 <translation id="7301812050652048720">Azonosítókulcs törölve</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ez az alkalmazás megakadályozhatja a Chrome megfelelő működését.}other{Ezek az alkalmazások megakadályozhatják a Chrome megfelelő működését.}}</translation>
 <translation id="7303281435234579599">Hoppá! Valami nem sikerült a demó mód beállítása során.</translation>
@@ -7972,9 +7983,11 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Érvénytelen kombináció</translation>
 <translation id="7329154610228416156">A bejelentkezés nem sikerült, mert azt egy nem biztonságos URL használatára állították be (<ph name="BLOCKED_URL" />). Kérjük, forduljon rendszergazdájához.</translation>
+<translation id="7330533963640151632">A(z) <ph name="FEATURE_NAME" /> beállításai <ph name="USER_NAME" /> eszközén. A megosztás folyamatban van a(z) <ph name="USER_EMAIL" /> fiókkal.</translation>
 <translation id="7331646370422660166">alt + lefelé mutató nyíl</translation>
 <translation id="7332053360324989309">Dedicated worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Alkalmazások és beállítások biztonsági mentése és visszaállítása</translation>
+<translation id="7335436113423103413">Lehetővé teszi a Chrome személyre szabása funkció használatát az Új lap oldal egységesített oldalsó paneljén.</translation>
 <translation id="7335974957018254119">Helyesírás-ellenőrzés használata a következő nyelveknél:</translation>
 <translation id="7336799713063880535">Értesítések letiltva.</translation>
 <translation id="7338630283264858612">Az eszköz sorozatszáma érvénytelen.</translation>
@@ -8049,6 +8062,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7384804382450832142">Csatlakozás a Microsoft OneDrive szolgáltatáshoz</translation>
 <translation id="7385490373498027129">Az összes felhasználó összes fájlja és helyi adata véglegesen törlődik majd erről az eszközről (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7385854874724088939">Valami nem sikerült a nyomtatás során. Ellenőrizze a nyomtatót, és próbálkozzon újra.</translation>
+<translation id="7387107590792462040">Kérjük, várjon, amíg tart a telepítés</translation>
 <translation id="7387273928653486359">Elfogadható</translation>
 <translation id="7387951778417998929">Ha az alapértelmezettől eltérő keresőmotort szeretne használni, gépelje be a hozzá tartozó gyorsparancsot a címsávba, majd nyomja le a preferált billentyűparancsot. Itt módosíthatja az alapértelmezett keresőmotort is.</translation>
 <translation id="7388209873137778229">Csak a támogatott eszközök jelennek meg.</translation>
@@ -8245,7 +8259,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7532009420053991888">A(z) <ph name="LINUX_APP_NAME" /> nem válaszol. A bezárásához válassza a „Bezárás most” gombot.</translation>
 <translation id="7535730537657706072">Az inkognitó mód böngészési előzményeinek az eszközről való törléséhez zárja be az összes inkognitó lapot</translation>
 <translation id="7536815228183532290">Bejelentkezve mint <ph name="EMAIL" /></translation>
-<translation id="7537451260744431038">A webhelyek nem használhatnak cookie-kat a böngészési élmény javítására például úgy, hogy bejelentkezve tartják Önt, illetve megjegyzik a kosarában lévő termékeket.</translation>
 <translation id="7538013435257102593">Ezt a fájltípust nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="7540972813190816353">Hiba történt a frissítések keresése közben: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">A(z) <ph name="MANAGER" /> visszaállította az eszközön a korábbi verziót. Mentse a fontos fájlokat, majd indítsa újra az eszközt. Az eszközön tárolt minden adat törlődni fog.</translation>
@@ -8360,7 +8373,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7631887513477658702">&amp;Az ilyen típusú fájlokat mindig nyissa meg</translation>
 <translation id="7632948528260659758">A következő kioszkalkalmazások frissítése nem sikerült:</translation>
 <translation id="7633724038415831385">Ez az egyetlen alkalom, amikor várnia kell a frissítésre. A Chromebookok esetén a szoftverfrissítések a háttérben történnek.</translation>
-<translation id="7634280112532283638">A spamek és a csalás visszaszorítása</translation>
 <translation id="7634337648687970851">A helyi adatok helyreállítása jelenleg nem támogatott.</translation>
 <translation id="7634566076839829401">Hiba történt. Próbálkozzon újra.</translation>
 <translation id="7635048370253485243">A rendszergazda tűzte ki</translation>
@@ -8467,7 +8479,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7701869757853594372">FELHASZNÁLÓI azonosítók</translation>
 <translation id="7702463352133825032">A következőre való átküldés leállítása: <ph name="DEVICE_NAME" /></translation>
 <translation id="7702574632857388784">A(z) <ph name="FILE_NAME" /> eltávolítása a listából</translation>
-<translation id="7702907602086592255">Domain</translation>
 <translation id="7704305437604973648">Feladat</translation>
 <translation id="7704521324619958564">A Play Áruház megnyitása</translation>
 <translation id="7705276765467986571">Nem sikerült betölteni a könyvjelzőmodellt.</translation>
@@ -8530,7 +8541,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
         Az erre a kártyára vonatkozó beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="7750228210027921155">Kép a képben</translation>
 <translation id="7751260505918304024">Összes megjelenítése</translation>
-<translation id="7751619076382363711">Nem távolított el webhelyeket.</translation>
 <translation id="7752832973194460442">Android-alkalmazás adatai</translation>
 <translation id="7753735457098489144">A telepítés tárhelyhiány miatt nem sikerült. Tárhely felszabadításához töröljön fájlokat az eszközről.</translation>
 <translation id="7754704193130578113">A letöltés előtt kérdezze meg, hová mentse az adott fájlokat</translation>
@@ -8539,7 +8549,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7757787379047923882">Szöveg megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Állítsa be a kijelző határait</translation>
-<translation id="7760004034676677601">Erre a kezdőoldalra számított?</translation>
+<translation id="7759809451544302770">Nem kötelező</translation>
 <translation id="7762024824096060040">Ez a fiók nem használható</translation>
 <translation id="7762243782113123335">Sajnos hiba történt. Küldjön be visszajelzést, és a leírásban használja a #bruschetta jelölést. A hibakód: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Cím hozzáadása</translation>
@@ -8756,7 +8766,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7921347341284348270">Nem tekintheti meg telefonja értesítéseit ebben a felügyelt fiókban. Próbálja újra másik fiókkal. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="7921901223958867679">Ez a bővítmény olvashatja és módosíthatja a következőt: <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 bővítmény</translation>
-<translation id="7922935920104868876">Részletek megjelenítése a harmadik felektől származó cookie-k inkognitó módban való letiltásáról</translation>
 <translation id="7923564237306226146">A Linux frissítése befejeződött</translation>
 <translation id="7924075559900107275">hosszú távú terméktámogatásra kijelölve</translation>
 <translation id="7924358170328001543">Hibás portátirányítás</translation>
@@ -8791,6 +8800,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7943349879009553083">Vendég módban nem áll rendelkezésre</translation>
 <translation id="7943368935008348579">PDF-ek letöltése</translation>
 <translation id="7943837619101191061">Hely hozzáadása...</translation>
+<translation id="79446453817422139">Ez a fájl veszélyes lehet.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="7945703887991230167">Előnyben részesített hang</translation>
 <translation id="7946586320617670168">Az eredetnek biztonságosnak kell lennie</translation>
@@ -8830,7 +8840,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernet-hálózat részletei</translation>
-<translation id="7970882136539140748">A kártya jelenleg nem menthető</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA titkosítással</translation>
 <translation id="7973776233567882054">Az alábbiak közül melyik jellemzi legjobban hálózatát?</translation>
 <translation id="797394244396603170">Válassza ki azt az eszközt, amellyel fájlokat szeretne megosztani</translation>
@@ -8857,6 +8866,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7988805580376093356">Az operációs rendszer megtartása és a(z) <ph name="DEVICE_OS" /> futtatása USB-ről.</translation>
 <translation id="7988876720343145286">További Android-beállítások és -engedélyek</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> – <ph name="COUNT" />. hang</translation>
+<translation id="7990958035181555539">Wi-Fi automatikus átvitele androidos telefonról</translation>
 <translation id="7991296728590311172">A kapcsolóalapú hozzáférés beállításai</translation>
 <translation id="7992203134935383159">Beszédszintézis</translation>
 <translation id="7994515119120860317">A képen lévő szöveg fordítása a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8877,6 +8887,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8005600846065423578">Annak engedélyezése, hogy a(z) <ph name="HOST" /> mindig láthassa a vágólapot</translation>
 <translation id="8006630792898017994">Szóköz vagy Tab</translation>
 <translation id="8008356846765065031">Az internetkapcsolat megszűnt. Kérjük, ellenőrizze az internetkapcsolatot.</translation>
+<translation id="8008704580256716350">Gyanús fájl letiltva</translation>
 <translation id="8009225694047762179">Jelszó kezelése</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />” áthelyezve.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
@@ -8918,6 +8929,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8041267120753677077">Streamelheti telefonja alkalmazásait</translation>
 <translation id="8042142357103597104">Szöveg átlátszatlansága</translation>
 <translation id="8042331986490021244">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe</translation>
+<translation id="8044090981104134791">MIDI-eszközök engedélyezve</translation>
 <translation id="8044262338717486897">A(z) <ph name="LINUX_APP_NAME" /> nem válaszol.</translation>
 <translation id="8044899503464538266">Lassú</translation>
 <translation id="8045253504249021590">A szinkronizálást a Google Irányítópulton keresztül leállították.</translation>
@@ -8932,7 +8944,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8050038245906040378">Microsoft kereskedelmi kódaláírás</translation>
 <translation id="8050191834453426339">Igazolás újra</translation>
 <translation id="8051193500142930381">A kamerát igénylő funkciók nem működnek majd</translation>
-<translation id="8051390370038326517">A(z) <ph name="HOST" /> mindig teljes körűen hozzáférhet a MIDI-eszközökhöz</translation>
 <translation id="8052218774860457016">Böngészőszinkronizálás kezelése</translation>
 <translation id="8053278772142718589">PKCS #12 fájlok</translation>
 <translation id="8053390638574070785">Az oldal újratöltése</translation>
@@ -8964,6 +8975,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8076835018653442223">A rendszergazda letiltotta a helyi fájlok elérését az eszközön</translation>
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
+<translation id="80790299200510644">Képkereső</translation>
 <translation id="80798452873915119">A webhelyek engedélyt kérhetnek arra, hogy az összes képernyőn kezeljék az ablakokat</translation>
 <translation id="8080028325999236607">Összes lap bezárása</translation>
 <translation id="808089508890593134">Google</translation>
@@ -8972,6 +8984,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8082106343289440791">Végrehajtja a párosítást a következővel: <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082390128630131497">Az ADB-hibakeresés letiltásával visszaállítja a gyári beállításokat ezen a(z) <ph name="DEVICE_TYPE" /> eszközön. Az összes felhasználói fiók és helyi adat törlődik.</translation>
 <translation id="8084114998886531721">Mentett jelszó</translation>
+<translation id="8084429490152575036">Mobilhálózati APN-beállítások</translation>
 <translation id="8084510406207562688">Az össz&amp;es lap helyreállítása</translation>
 <translation id="8084628902026812045">Ez a webhely nem biztonságos kapcsolatot használ, és előfordulhat, hogy a fájlt manipulálták</translation>
 <translation id="8086015605808120405">A(z) <ph name="PRINTER_NAME" /> konfigurálása...</translation>
@@ -9006,11 +9019,9 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8104088837833760645">eSIM-profil letöltése</translation>
 <translation id="8107015733319732394">Folyamatban van a Google Play Áruház telepítése a(z) <ph name="DEVICE_TYPE" /> eszközre. Ez eltarthat néhány percig.</translation>
 <translation id="810728361871746125">Képernyőfelbontás</translation>
-<translation id="8108526232944491552">{COUNT,plural, =0{Nem találhatók harmadik féltől származó cookie-k}=1{1 harmadik féltől származó cookie letiltva}other{# harmadik féltől származó cookie letiltva}}</translation>
 <translation id="8109109153262930486">Alapértelmezett avatar</translation>
 <translation id="8110393529211831722">Az előfizetés csak erre az eszközre van telepítve, és nincs szinkronizálva a fiókhoz tartozó más eszközökkel. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8110489095782891123">Névjegylista letöltése…</translation>
-<translation id="8113476325385351118">Ez a webhely továbbra sem rendelkezhet teljes hozzáféréssel a MIDI-eszközökhöz</translation>
 <translation id="8115139559594092084">A Google Drive-fiókjából</translation>
 <translation id="8116972784401310538">&amp;Könyvjelzőkezelő</translation>
 <translation id="8118276691321086429">A <ph name="PASSWORD_MANAGER_BRAND" /> megjegyzi, hogy Ön hogyan jelentkezett be, és amikor csak lehetséges, automatikusan bejelentkezteti Önt. Ha a funkció ki van kapcsolva, akkor a rendszer minden alkalommal megerősítést kér Öntől.</translation>
@@ -9022,6 +9033,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="811994229154425014">Dupla szóköz pont írásához</translation>
 <translation id="8120505434908124087">eSIM-profil telepítése</translation>
 <translation id="8121750884985440809">Jelenleg folyamatban van a képernyő átküldése.</translation>
+<translation id="8122898034710982882">Telefonközpont, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Sárga és fehér virág</translation>
 <translation id="8123975449645947908">Görgetés visszafelé</translation>
 <translation id="8124313775439841391">Felügyelt ONC</translation>
@@ -9045,7 +9057,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8141725884565838206">Jelszavak kezelése</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{egy videót}other{# videót}}</translation>
 <translation id="8143442547342702591">Érvénytelen alkalmazás</translation>
-<translation id="8143609395536282994">A következőképpen kezelheti az adatait:</translation>
 <translation id="8144429778087524791">Megjelölés készként és elrejtés</translation>
 <translation id="8145170459658034418">Memóriatakarékos</translation>
 <translation id="8146177459103116374">Ha már regisztrálva van ezen az eszközön, akkor <ph name="LINK2_START" />bejelentkezhet meglévő felhasználóként<ph name="LINK2_END" />.</translation>
@@ -9057,10 +9068,10 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8148760431881541277">Bejelentkezés korlátozása</translation>
 <translation id="8149564499626272569">Ellenőrzés telefonon, USB-kábellel</translation>
 <translation id="8149870652370242480">Ha szeretné mentett jelszavait használni telefonján, töltse le a Chrome iOS rendszerhez tervezett verzióját, és jelentkezzen be Google-fiókjába.</translation>
+<translation id="8151057139207656239">Build részletei vágólapra másolva</translation>
 <translation id="815114315010033526">Inkább QR-kód használata</translation>
 <translation id="8151638057146502721">Konfigurálás</translation>
 <translation id="8154790740888707867">Nincs fájl</translation>
-<translation id="8154912474061769055">Előfordulhat, hogy számos webhely funkciói nem működnek majd megfelelően</translation>
 <translation id="815491593104042026">Hoppá! A hitelesítés nem sikerült, mert azt egy nem biztonságos URL használatára állították be (<ph name="BLOCKED_URL" />). Kérjük, forduljon rendszergazdájához.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nincs nyilvánosságra került jelszó}=1{{COUNT} nyilvánosságra került jelszó}other{{COUNT} nyilvánosságra került jelszó}}</translation>
 <translation id="8157248655669507702">Engedélyezze a mobiladat-kapcsolatot az eSIM-profil telepítéséhez</translation>
@@ -9111,6 +9122,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Saját eszközök<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Intenzitás</translation>
 <translation id="8195854162863398249">A(z) <ph name="FEATURE_NAME" /> letiltása</translation>
+<translation id="8197151971904389091">A(z) <ph name="HOST" /> mindig használhatja a MIDI-eszközöket.</translation>
 <translation id="8197673340773315084">Lássa el névvel vagy címkével (például Munkahely vagy Személyes)</translation>
 <translation id="8198456017687137612">Lap átküldése…</translation>
 <translation id="8198457270656084773">A rendszer eszköznaplójának oldalát keresi? Keresse fel a következőt: <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9163,6 +9175,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8241040075392580210">Felhős</translation>
 <translation id="8241806945692107836">Eszközkonfiguráció meghatározása…</translation>
 <translation id="8241868517363889229">Könyvjelzők olvasása és módosítása</translation>
+<translation id="8242273718576931540">Eszköze nem tud csatlakozni ehhez a hálózathoz. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="8242370300221559051">A Play Áruház engedélyezése</translation>
 <translation id="8242426110754782860">Folytatás</translation>
 <translation id="8243948765190375130">A médiatartalmak minősége rosszabb lehet</translation>
@@ -9189,6 +9202,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8260864402787962391">Egér</translation>
 <translation id="8261378640211443080">A bővítmény nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="8261506727792406068">Törlés</translation>
+<translation id="8262971894813353037">Engedélyezi a WebUI új asztali megjelenését. A 2023-as Chrome-frissítést is engedélyezni kell.</translation>
 <translation id="8263336784344783289">Nevezze el a csoportot</translation>
 <translation id="8263744495942430914">A(z) <ph name="FULLSCREEN_ORIGIN" /> letiltotta az egérmutatót.</translation>
 <translation id="8264024885325823677">Ezt a beállítást a rendszergazdája kezeli.</translation>
@@ -9242,6 +9256,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8298429963694909221">Mostantól megkaphatja a telefonja értesítéseit a(z) <ph name="DEVICE_TYPE" /> eszközén. Az értesítések <ph name="DEVICE_TYPE" /> eszközön való elvetésével a telefonon is elveti őket. Gondoskodjon arról, hogy telefonja a közelben legyen, bekapcsolt Bluetooth és Wi-Fi funkcióval.</translation>
 <translation id="829923460755755423">Parancsikon hozzáadása Google Jelszókezelőhöz</translation>
 <translation id="8299319456683969623">Ön jelenleg offline állapotban van.</translation>
+<translation id="8299951061833867575">Wi-Fi, mobiladat</translation>
 <translation id="8300011035382349091">A jelenlegi laphoz tartozó könyvjelző szerkesztése</translation>
 <translation id="8300374739238450534">Éjkék</translation>
 <translation id="8301242268274839723">Érintse meg a billentyűzet bal alsó sarkában található ujjlenyomat-érzékelőt. Az ujjlenyomatadatokat a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
@@ -9298,11 +9313,10 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Tekintse át azt az <ph name="BEGIN_BOLD" />1 webhelyet<ph name="END_BOLD" />, amely a közelmúltban sok értesítést küldött}other{Tekintse át azt a(z) <ph name="BEGIN_BOLD" />{NUM_SITES} webhelyet<ph name="END_BOLD" />, amelyek a közelmúltban sok értesítést küldtek}}</translation>
 <translation id="8342221978608739536">Nem próbáltam</translation>
 <translation id="8342861492835240085">Válasszon gyűjteményt</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{A(z) „<ph name="APP_NAME" />” (<ph name="DOMAIN" />) telepíteni szeretné a következő alkalmazást erre az eszközre:}other{A(z) „<ph name="APP_NAME" />” (<ph name="DOMAIN" />) telepíteni szeretné a következő alkalmazásokat erre az eszközre:}}</translation>
 <translation id="8345848587667658367">Mostantól megtekintheti a telefonon legutóbb megnyitott fotókat, médiatartalmakat, értesítéseket és alkalmazásokat</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
-<translation id="834785183489258869">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy lássák a különböző webhelyeken végzett böngészési tevékenységeit például annak érdekében, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="8348430946834215779">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt.</translation>
+<translation id="8348896480272971199">Ellenőrizze az internetkapcsolatot, és próbálja újra.</translation>
 <translation id="8349325309815489209">A webhelyen engedélyezett bővítmények</translation>
 <translation id="8349826889576450703">indító</translation>
 <translation id="8350789879725387295">Érintőceruza eszközei a dokkon</translation>
@@ -9392,6 +9406,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8414396119627470038">Jelentkezzen be a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyre a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Megjegyzések</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (tok)</translation>
+<translation id="8417065541337558100">Kamera előnézete</translation>
 <translation id="8417548266957501132">Szülői jelszó</translation>
 <translation id="8418445294933751433">&amp;Megjelenítés lapként</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> hozzáadása</translation>
@@ -9405,7 +9420,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8425492902634685834">A program rögzítése a tálcán</translation>
 <translation id="8425768983279799676">A PIN-kód használatával feloldhatja az eszköz zárolását.</translation>
 <translation id="8426111352542548860">Csoport mentése</translation>
-<translation id="8426713856918551002">Engedélyezés</translation>
 <translation id="8427213022735114808">A diktálás elküldi a hangját a Google számára, hogy bármely szövegmezőbe írhasson hangvezérléssel.</translation>
 <translation id="8427292751741042100">beágyazva bármilyen más gazdagépen</translation>
 <translation id="8428213095426709021">Beállítások</translation>
@@ -9480,7 +9494,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8480082892550707549">Még ha töltött is le korábban fájlokat erről a webhelyről, előfordulhat, hogy a webhely ideiglenesen nem biztonságos, mert feltörték. Próbálja meg később letölteni a fájlt.</translation>
 <translation id="8480869669560681089">Ismeretlen eszköz a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-engedély megerősítése</translation>
-<translation id="8481980314595922412">A próbafunkciók be vannak kapcsolva</translation>
 <translation id="8483248364096924578">IP-cím</translation>
 <translation id="8486666913807228950">Ok: A(z) <ph name="REVERT_RULE" /> invertált szabályt találta a rendszer a „Kényszerített megnyitás itt:” listában.</translation>
 <translation id="8487678622945914333">Nagyítás</translation>
@@ -9611,12 +9624,10 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8602851771975208551">A számítógépen lévő egyik program olyan alkalmazást adott hozzá, amely módosíthatja a Chrome működését.</translation>
 <translation id="8605428685123651449">SQLite-memória</translation>
 <translation id="8607171490667464784">Amikor inaktív, és akkumulátorról működik</translation>
-<translation id="8607326572516521315">A spamek és a csalás visszaszorítása privát állapottokeneken alapul, így segítve a webhelyeket a csalás elleni küzdelemben, valamint abban, hogy meg tudják különböztetni a robotokat az emberektől.</translation>
 <translation id="8607828412110648570">Győződjön meg arról, hogy a Bluetooth-eszköz párosítási módban és a közelben van. Csak olyan eszközökkel párosítson, amelyeket megbízhatónak tart. A párosított eszközök a Chromebookon lévő összes fiók számára láthatók. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="8608618451198398104">Kerberos-jegy felvétele</translation>
 <translation id="8609465669617005112">Mozgatás felfelé</translation>
 <translation id="8610103157987623234">Helytelen formátum, próbálkozzon újra</translation>
-<translation id="8611682088849615761">Ez a webhely továbbra is teljes hozzáféréssel rendelkezik a MIDI-eszközökhöz</translation>
 <translation id="8613164732773110792">Csak kisbetűs karaktereket, számokat, aláhúzásjeleket és kötőjeleket használhat</translation>
 <translation id="8613504115484579584">Bejelentkezési módok</translation>
 <translation id="8613645710357126807">Nem használhatnak bővítményeket</translation>
@@ -9652,6 +9663,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8636284842992792762">Bővítmények inicializálása…</translation>
 <translation id="8636323803535540285">Ha gyorsabban szeretne idejutni, adjon hozzá parancsikont a következőhöz: <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">A webhelyek nem jeleníthetnek meg előugró ablakokat és nem használhatnak átirányításokat</translation>
+<translation id="8636514272606969031">Oldalsó panel rögzítve</translation>
 <translation id="8637688295594795546">Megjelent egy rendszerfrissítés. Felkészülés a letöltésre...</translation>
 <translation id="8638719155236856752">A ChromeOS-hálózat állapota</translation>
 <translation id="8639635302972078117">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába.</translation>
@@ -9661,7 +9673,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8642947597466641025">Szöveg nagyítása</translation>
 <translation id="8643403533759285912">Csoport törlése</translation>
 <translation id="8643443571868262066">A(z) <ph name="FILE_NAME" /> veszélyes lehet. Elküldi a Google Speciális védelem szolgáltatásának vizsgálatra?</translation>
-<translation id="8644047503904673749">{COUNT,plural, =0{Nincs cookie}=1{1 cookie van letiltva}other{# cookie van letiltva}}</translation>
 <translation id="864423554496711319">Fiókjába mentett eszközök</translation>
 <translation id="8644655801811752511">Nem lehetséges a biztonsági hardverkulcs visszaállítása. Próbálkozzon meg a hardverkulcs visszaállításával közvetlenül az eszköz csatlakoztatása után.</translation>
 <translation id="8645354835496065562">Érzékelőhöz való hozzáférés engedélyezésének fenntartása</translation>
@@ -9698,7 +9709,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="866611985033792019">Bízzon meg ebben a tanúsítványban e-mail-felhasználók azonosításakor</translation>
 <translation id="8666268818656583275">Az F-billentyűk most a rendszer felső sorának billentyűiként viselkednek</translation>
 <translation id="8666321716757704924">Újból megadta az engedélyeket a következő számára: <ph name="WEBSITE" /></translation>
-<translation id="8666759526542103597">A hirdetések böngészőalapú személyre szabásáról</translation>
 <translation id="8667261224612332309">Vannak olyan jelszavai, amelyeken lehet javítani</translation>
 <translation id="8667328578593601900">A(z) <ph name="FULLSCREEN_ORIGIN" /> most teljes képernyős nézetben van, és letiltotta az egérmutatót.</translation>
 <translation id="8667760277771450375">Olyan módszerek kidolgozásán fáradozunk, melyekkel korlátozható a webhelyeken átnyúló nyomon követés úgy, hogy közben a webhelyek is gátat vethetnek a hirdetési spameknek és a csalásnak.</translation>
@@ -9716,6 +9726,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8676313779986170923">Köszönjük visszajelzését.</translation>
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8676770494376880701">Kis teljesítményű töltő csatlakoztatva</translation>
+<translation id="8676985325915861058">Kihagyás és új profil beállítása</translation>
 <translation id="8677212948402625567">Összes listanézete...</translation>
 <translation id="8678192320753081984">A Google legerősebb fiókbiztonságát nyújtja a célzott támadások által veszélyeztetett személyek számára</translation>
 <translation id="8678378565142776698">Újraindítás és automatikus frissítések fogadása</translation>
@@ -9791,6 +9802,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8729133765463465108">Kamera használata a QR-kód beolvasásához</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8731029916209785242">Engedélyek (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731268612289859741">Biztonsági kód</translation>
 <translation id="8731629443331803108">A(z) <ph name="SITE_NAME" /> a következőre kér engedélyt: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Port száma</translation>
 <translation id="8732030010853991079">A bővítményt az ikonra kattintva használhatja.</translation>
@@ -9802,6 +9814,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8736288397686080465">Ez a webhely frissült a háttérben.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Válassza ki a nyelvet, amelyre le szeretné fordítani az oldalt</translation>
+<translation id="8738418093147087440">Keresés ország, nyelv vagy beviteli nevek alapján</translation>
 <translation id="8740086188450289493">A Google-fiók jelszavának használata</translation>
 <translation id="8740247629089392745">Átadhatja a Chromebookot <ph name="SUPERVISED_USER_NAME" /> számára. A beállítás majdnem kész, eljött a felfedezés ideje.</translation>
 <translation id="8740672167979365981">Szükség van a ChromeOS Flex frissítésére</translation>
@@ -9841,7 +9854,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="876956356450740926">Fejlesztői eszközök, IDE-k és szerkesztők futtatása. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">A bővítmény gyökérkönyvtára</translation>
 <translation id="8771300903067484968">A kezdőoldal háttere vissza lett állítva az alapértelmezett háttérre.</translation>
-<translation id="8773280816776735812">IBAN-érték megjelenítése</translation>
 <translation id="8774379074441005279">Visszaállítás megerősítése</translation>
 <translation id="8774934320277480003">Felső margó</translation>
 <translation id="8775144690796719618">Érvénytelen URL</translation>
@@ -9888,6 +9900,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8811862054141704416">A Crostini mikrofon-hozzáférése</translation>
 <translation id="8811923271770626905">Ez a bővítmény futhat a háttérben</translation>
 <translation id="8812593354822910461">A böngészési adatok (<ph name="URL" />) törlésével együtt, ami kiléptetheti a(z) <ph name="DOMAIN" /> webhelyéről. <ph name="LEARN_MORE" />.</translation>
+<translation id="8813199641941291474">A MIDI-eszközök vezérlése és átprogramozása le van tiltva</translation>
 <translation id="8813698869395535039">Nem lehet bejelentkezni a következő fiókba: <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Szülői jóváhagyás kérése a következőhöz: <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813937837706331325">Közepes megtakarítás</translation>
@@ -9904,7 +9917,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8821268776955756404">A(z) <ph name="APP_NAME" /> használatra kész.</translation>
 <translation id="882204272221080310">Firmware frissítése a nagyobb biztonság érdekében.</translation>
 <translation id="8823514049557262177">Link szövegének má&amp;solása</translation>
-<translation id="8823559166155093873">Cookie-k tiltása</translation>
 <translation id="8823704566850948458">Jelszó ajánlása…</translation>
 <translation id="8823963789776061136">Másik lehetőségként válassza ki a nyomtatóhoz tartozó PPD-fájlt. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8824701697284169214">Ol&amp;dal hozzáadása...</translation>
@@ -9991,12 +10003,12 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: Adatai védelme érdekében a négy hétnél régebbi webhelyeket automatikusan töröljük a listáról. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Arra is lehetősége van, hogy eltávolítsa valamelyik webhelyet, ha nem szeretné, hogy az adott webhely a jövőben bármikor is meghatározza az Ön érdeklődési köreit.</translation>
 <translation id="8884570509232205463">Az eszköz zárolásának új időpontja: <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">A frissítés befejezése után megnyílik az alkalmazás. A frissítési folyamat eltarthat néhány percig.</translation>
+<translation id="8888459276890791557">Az egyszerű hozzáférés érdekében kitűzheti ezt az oldalsó panelt.</translation>
 <translation id="8889294078294184559">Böngészési tevékenységei során a webhelyek egyeztethetnek a Chrome-mal, és az előzőleg felkeresett webhely segítségével meggyőződhetnek arról, hogy Ön valószínűleg valódi felhasználó.</translation>
 <translation id="8889651696183044030">A(z) <ph name="ORIGIN" /> szerkesztheti a következő fájlokat és mappákat:</translation>
 <translation id="8890170499370378450">Mobiladat-forgalmi díjjal járhat</translation>
 <translation id="8890516388109605451">Források</translation>
 <translation id="8890529496706615641">Nem sikerült átnevezni a profilt. Próbálja újra, vagy technikai segítségért forduljon a szolgáltatójához.</translation>
-<translation id="8891996167592415151">A webhelyeken végzett tevékenységei (például a fiókokba való rendszeres bejelentkezések) alapján az érintett webhely privát állapottokent biztosíthat a böngésző számára. Ha pedig később a többi Ön által felkeresett webhely érvényes privát állapottokent keres, majd talál, akkor sokkal nagyobb valószínűséggel kezelik Önt személyként, mint robotként.</translation>
 <translation id="8892168913673237979">Kész is van!</translation>
 <translation id="8892246501904593980">Az összes könyvjelző megtekintése a könyvjelzők és a listák között</translation>
 <translation id="8893801527741465188">Az eltávolítás befejeződött</translation>
@@ -10020,6 +10032,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8910987510378294980">Eszközlista elrejtése</translation>
 <translation id="8912362522468806198">Google Fiókjába</translation>
 <translation id="8912810933860534797">Automatikus keresés engedélyezése</translation>
+<translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8915307125957890427">Kattintson jobb gombbal valamelyik lapfülre, és válassza a „Lap hozzáadása csoporthoz”, majd az „Új csoport” lehetőséget.</translation>
 <translation id="8915370057835397490">Javaslatok betöltése</translation>
 <translation id="8916476537757519021">Inkognitó subframe: <ph name="SUBFRAME_SITE" /></translation>
@@ -10139,7 +10152,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8999027165951679951">Inaktív lap: <ph name="MEMORY_SAVINGS" /> felszabadítva</translation>
 <translation id="8999560016882908256">Szakasszal kapcsolatos szintaktikai hiba: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Érintse meg a(z) <ph name="DEVICE_TYPE" /> jobb oldalán található ujjlenyomat-érzékelőt. Az ujjlenyomatadatokat a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
-<translation id="9000532564152265066">Összes lap</translation>
 <translation id="9003185744423389627">Nem sikerült kapcsolódni az eszközkezelő szerverhez (állapot: „<ph name="STATUS_TEXT" />”, időpont: <ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Szeretne automatikusan keresni rendelkezésre álló eSIM-profilokat?</translation>
 <translation id="9003647077635673607">Engedélyezés valamennyi webhelyen</translation>
@@ -10255,6 +10267,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9080175821499742274">A Memóriatakarékos funkció memóriát szabadít fel az inaktív lapokról, amelyet így az aktív lapok és más alkalmazások használhatnak.</translation>
 <translation id="9080971985541434310">becslést készít az érdeklődési köreiről – a Chrome becslést tud készíteni az érdeklődési köreiről</translation>
 <translation id="9081543426177426948">A rendszer inkognitó módban nem menti a meglátogatott webhelyeket</translation>
+<translation id="9082750838489080452">Alkalmazás: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Megnyitás ablakként</translation>
 <translation id="9085256200913095638">Másodpéldány készítése a kiválasztott lapról</translation>
 <translation id="9085446486797400519">Hozzáférés a kamerához</translation>
@@ -10310,6 +10323,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9115932142612197835">Ez a beállítás nincs hatással a Google Fordító és a Lens hozzáférhetőségére</translation>
 <translation id="9116799625073598554">Jegyzetkészítő alkalmazás</translation>
 <translation id="9117030152748022724">Az alkalmazások kezelése</translation>
+<translation id="9120362425083889527">A telepítést nem sikerült befejezni. Próbálja újra, vagy zárja be ezt az ablakot.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />A legjobb élmény érdekében telepítse a következő rendszert: <ph name="DEVICE_OS" />. Később is telepítheti a bejelentkezési képernyőről.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ha még nem áll készen a telepítésre, USB-ről futtatva is kipróbálhatja. Így megmaradnak a jelenlegi adatai és operációs rendszere, de korlátozott lehet a rendelkezésre álló tárhely és teljesítmény.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Megnyitás rögzített lapként</translation>
@@ -10405,7 +10419,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="920410963177453528">Másik panel kiválasztásához kattintson a legördülő menüre.</translation>
 <translation id="9206889157914079472">Érintőceruzás jegyzetelés a lezárási képernyőről</translation>
 <translation id="9209563766569767417">Linux-tároló beállításainak ellenőrzése</translation>
-<translation id="9209689095351280025">A webhelyek nem tudnak olyan cookie-kat használni, amelyek nyomon követik tevékenységeit az interneten.</translation>
 <translation id="9214520840402538427">Hoppá! A telepítés alatti attribútumok inicializálásakor időtúllépés történt. Kérjük, lépjen kapcsolatba az ügyfélszolgálattal.</translation>
 <translation id="9214695392875603905">Muffin</translation>
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />” hozzáadva</translation>
@@ -10423,6 +10436,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="924818813611903184">Nyelvek kezelése a ChromeOS beállításai között</translation>
 <translation id="925270020047573546">Az asztal hangjának átküldése nem támogatott ezen az eszközön.</translation>
 <translation id="925575170771547168">Ezzel törli a webhelyek által tárolt összesen <ph name="TOTAL_USAGE" />-nyi adatot</translation>
+<translation id="930193457234051160">A Chrome WebUI 2023-as frissítése</translation>
 <translation id="930268624053534560">Részletes időbélyegek</translation>
 <translation id="930551443325541578">Ismétlődő billentyűk és ékezetek</translation>
 <translation id="930893132043726269">Jelenleg aktív a roaming</translation>
@@ -10439,7 +10453,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="936646668635477464">Kamera és mikrofon</translation>
 <translation id="936801553271523408">Rendszerdiagnosztikai adatok</translation>
 <translation id="93766956588638423">Bővítmény javítása</translation>
-<translation id="938568644810664664">Próbálja például, hogy „Ok, Google what song is this” (Ok Google, mi ez a szám?), vagy azt, hogy „Ok Google, what's on my screen?” (Ok Google, mi látható a képernyőn?)</translation>
 <translation id="938623846785894166">Szokatlan fájl</translation>
 <translation id="939401694733344652">Ezeket a fiókokat jelenleg nem használják Android-alkalmazásokkal. Ha kiválasztja valamelyik fiókot az ezzel az Android-alkalmazással való használatra, a fiók más Android-alkalmazásokkal is használható lehet. Az Android-alkalmazások hozzáférését a <ph name="LINK_BEGIN" />Beállítások &gt; Fiókok<ph name="LINK_END" /> pontnál módosíthatja.</translation>
 <translation id="939553663881639126">Válassza ki, hogy szeretne-e további keresési javaslatokat kapni</translation>

@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Verkort hierdie teks na <ph name="MAX_CHARACTERS" /> karakters of minder (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Snit <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2393030564806080191">Heksadesimale kleurwaarde</translation>
 <translation id="2398813069815436052">dialoog oopgemaak.</translation>
 <translation id="245932805758469625">hoeveel sekondes van video oor is</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
 <translation id="383465348367842624">'n Deel gevolg deur "<ph name="ATSIGN" />" moenie die simbool "<ph name="INVALIDCHARACTER" />" bevat nie.</translation>
 <translation id="3846214748874656680">Verlaat volskerm</translation>
+<translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4103419683916926126">Millisekondes</translation>
 <translation id="4201051445878709314">Wys vorige maand</translation>
 <translation id="4360991593054037559">Voer asseblief 'n geldige waarde in. Die twee naaste geldige waardes is <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Besonderhede</translation>
+<translation id="4663373278480897665">Kamera word toegelaat</translation>
 <translation id="4664250907885839816">'n Deel wat '<ph name="ATSIGN" />' volg, behoort nie die simbool '<ph name="INVALIDCHARACTER" />' te bevat nie.</translation>
 <translation id="4718048029184481307">Speel tans prent-in-prent</translation>
 <translation id="4748357248530471599">wissel skermuitsnede-volskerm</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">laai media af</translation>
 <translation id="698788488269350478">uitgevou.</translation>
 <translation id="6989848892321993519">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans 1 karakter).</translation>
+<translation id="7080893216867146095">Deel van ligging word toegelaat</translation>
 <translation id="709897737746224366">Kry passing vir versoekte formaat.</translation>
 <translation id="7102274145889307184">huidige ligging</translation>
 <translation id="7263440858009898357">Kies asseblief 'n item uit die lys.</translation>

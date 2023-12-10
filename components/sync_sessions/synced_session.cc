@@ -86,17 +86,6 @@ SerializedNavigationEntry SessionNavigationFromSyncData(
 
   navigation.set_http_status_code(sync_data.http_status_code());
 
-  if (sync_data.has_replaced_navigation()) {
-    SerializedNavigationEntry::ReplacedNavigationEntryData replaced_entry_data;
-    replaced_entry_data.first_committed_url =
-        GURL(sync_data.replaced_navigation().first_committed_url());
-    replaced_entry_data.first_timestamp = syncer::ProtoTimeToTime(
-        sync_data.replaced_navigation().first_timestamp_msec());
-    replaced_entry_data.first_transition_type = syncer::FromSyncPageTransition(
-        sync_data.replaced_navigation().first_page_transition());
-    navigation.set_replaced_entry_data(replaced_entry_data);
-  }
-
   sessions::SerializedNavigationDriver::Get()->Sanitize(&navigation);
 
   navigation.set_is_restored(true);
@@ -145,46 +134,8 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
     sync_data.set_favicon_url(navigation.favicon_url().spec());
   }
 
-  if (navigation.blocked_state() != SerializedNavigationEntry::STATE_INVALID) {
-    sync_data.set_blocked_state(
-        static_cast<sync_pb::TabNavigation_BlockedState>(
-            navigation.blocked_state()));
-  }
-
   sync_data.set_password_state(static_cast<sync_pb::SyncEnums_PasswordState>(
       navigation.password_state()));
-
-  // Copy all redirect chain entries except the last URL (which should match
-  // the virtual_url).
-  const std::vector<GURL>& redirect_chain = navigation.redirect_chain();
-  if (redirect_chain.size() > 1) {  // Single entry chains have no redirection.
-    size_t last_entry = redirect_chain.size() - 1;
-    for (size_t i = 0; i < last_entry; i++) {
-      sync_pb::NavigationRedirect* navigation_redirect =
-          sync_data.add_navigation_redirect();
-      navigation_redirect->set_url(redirect_chain[i].spec());
-    }
-    // If the last URL didn't match the virtual_url, record it separately.
-    if (sync_data.virtual_url() != redirect_chain[last_entry].spec()) {
-      sync_data.set_last_navigation_redirect_url(
-          redirect_chain[last_entry].spec());
-    }
-  }
-
-  const absl::optional<SerializedNavigationEntry::ReplacedNavigationEntryData>&
-      replaced_entry_data = navigation.replaced_entry_data();
-  if (replaced_entry_data.has_value()) {
-    sync_pb::ReplacedNavigation* replaced_navigation =
-        sync_data.mutable_replaced_navigation();
-    replaced_navigation->set_first_committed_url(
-        replaced_entry_data->first_committed_url.spec());
-    replaced_navigation->set_first_timestamp_msec(
-        syncer::TimeToProtoTime(replaced_entry_data->first_timestamp));
-    replaced_navigation->set_first_page_transition(syncer::ToSyncPageTransition(
-        replaced_entry_data->first_transition_type));
-  }
-
-  sync_data.set_is_restored(navigation.is_restored());
 
   return sync_data;
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
+
 #include <memory>
 
 #include "base/check.h"
@@ -15,8 +16,11 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -133,7 +137,7 @@ base::Value::Dict CardDataToValue(int header_id,
 // Returns true if the card dict indicates there is something actionable for the
 // user.
 bool CardHasRecommendations(base::Value::Dict card_data) {
-  absl::optional<int> state = card_data.FindInt(safety_hub::kCardStateKey);
+  std::optional<int> state = card_data.FindInt(safety_hub::kCardStateKey);
   CHECK(state.has_value());
   SafetyHubCardState card_state =
       static_cast<SafetyHubCardState>(state.value());
@@ -362,6 +366,18 @@ void SafetyHubHandler::HandleResetNotificationPermissionForOrigins(
   }
 
   SendNotificationPermissionReviewList();
+}
+
+void SafetyHubHandler::HandleDismissActiveMenuNotification(
+    const base::Value::List& args) {
+  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
+      ->DismissActiveNotification();
+}
+
+void SafetyHubHandler::HandleDismissPasswordMenuNotification(
+    const base::Value::List& args) {
+  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
+      ->DismissPasswordNotification();
 }
 
 void SafetyHubHandler::HandleBlockNotificationPermissionForOrigins(
@@ -608,6 +624,7 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   if (CardHasRecommendations(GetSafeBrowsingCardData())) {
     modules.insert(SafetyHubModule::kSafeBrowsing);
   }
+  // Extensions module
   if (GetNumberOfExtensionsThatNeedReview() > 0) {
     modules.insert(SafetyHubModule::kExtensions);
   }
@@ -669,6 +686,16 @@ void SafetyHubHandler::RegisterMessages() {
       "resetNotificationPermissionForOrigins",
       base::BindRepeating(
           &SafetyHubHandler::HandleResetNotificationPermissionForOrigins,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "dismissActiveMenuNotification",
+      base::BindRepeating(
+          &SafetyHubHandler::HandleDismissActiveMenuNotification,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "dismissSafetyHubPasswordMenuNotification",
+      base::BindRepeating(
+          &SafetyHubHandler::HandleDismissPasswordMenuNotification,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "blockNotificationPermissionForOrigins",
@@ -733,10 +760,18 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
       service->PopulateNotificationPermissionReviewData());
 }
 
-// TODO(1443466): Replace with the actual method implementation once blocking
-// https://crrev.com/c/4911755 is merged.
 int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
-  return 0;
+  extensions::CWSInfoService* cws_info_service =
+      extensions::CWSInfoServiceFactory::GetForProfile(profile_);
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+      SafetyHubExtensionsResult::GetResult(cws_info_service, profile_, false);
+  if (!sh_result.has_value()) {
+    return 0;
+  }
+
+  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+
+  return result->GetNumTriggeringExtensions();
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {

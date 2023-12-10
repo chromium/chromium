@@ -4,9 +4,6 @@
 
 module screen_ai.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
-import "sandbox/policy/mojom/sandbox.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
@@ -121,41 +118,4 @@ interface MainContentExtractionService {
   // Binds a new main content extractor to the service.
   BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
     main_content_extractor);
-};
-
-// The service runs in a sandboxed process to run Screen AI service library. The
-// library provides two AI modules:
-//   1) An image processing module to analyze snapshots of the browser or an
-//      image in a PDF and add more details to the accessibility tree.
-//   2) A text processing module that receives the accessibility tree and
-//      returns the main content of the tree.
-// The services require initialization before running. This factory interface
-// binds interfaces to the actual services after library load and initialization
-// for each of them.
-[ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
-interface ScreenAIServiceFactory {
-  // Triggers the service to load and initialize the Screen AI library at
-  // |library_path| for OCR. Model files are read from |library_path| folder.
-  // This should be called from the browser process.
-  // TODO(crbug.com/1443341): Read all model files from file handles.
-  InitializeOCR(
-    mojo_base.mojom.FilePath library_path,
-    pending_receiver<OCRService> ocr_service_receiver) =>
-      (bool initialized);
-
-  // Triggers the service to load and initialize the Screen AI library at
-  // |library_path| for main content extraction.
-  // This should be called from the browser process.
-  // |model_files| includes a map from file paths relative the the library base
-  // path, to opened file handles. The list of files is downloaded with the
-  // component. The file handles will be closed once the file is read.
-  // TODO(b/297824387): Replace `string` with `RelativePath`.
-  InitializeMainContentExtraction(
-    mojo_base.mojom.FilePath library_path,
-    map<string, mojo_base.mojom.ReadOnlyFile> model_files,
-    pending_receiver<MainContentExtractionService>
-      main_content_extractor_service) =>
-      (bool initialized);
-
-  // TODO(crbug.com/1443349): Add Initialization for Layout Extractor.
 };

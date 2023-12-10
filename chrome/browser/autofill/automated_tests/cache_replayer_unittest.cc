@@ -92,14 +92,12 @@ bool MakeQueryRequestURL(const absl::optional<AutofillPageQueryRequest>& query,
     *request_url = CreateQueryUrl("");
     return true;
   }
-  std::string encoded_query;
   std::string serialized_query;
   if (!(*query).SerializeToString(&serialized_query)) {
     VLOG(1) << "could not serialize Query proto";
     return false;
   }
-  base::Base64Encode(serialized_query, &encoded_query);
-  *request_url = CreateQueryUrl(encoded_query);
+  *request_url = CreateQueryUrl(base::Base64Encode(serialized_query));
   return true;
 }
 
@@ -121,12 +119,10 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
     query_for_url = std::move(query);
   } else {
     std::string serialized_query;
-    std::string encoded_query;
     query.SerializeToString(&serialized_query);
-    base::Base64Encode(serialized_query, &encoded_query);
     // Wrap query payload in a request proto to interface with API Query method.
     AutofillPageResourceQueryRequest request;
-    request.set_serialized_request(encoded_query);
+    request.set_serialized_request(base::Base64Encode(serialized_query));
     request.SerializeToString(&body);
     query_for_url = absl::nullopt;
   }
@@ -141,7 +137,7 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
   // Fill HTTP text.
   std::string http_text =
       base::JoinString(std::vector<std::string>{header, body}, kHTTPBodySep);
-  base::Base64Encode(http_text, serialized_request);
+  *serialized_request = base::Base64Encode(http_text);
   return true;
 }
 
@@ -151,9 +147,7 @@ std::string MakeSerializedResponse(
   query_response.SerializeToString(&serialized_response);
 
   // The Api Environment expects the response body to be base64 encoded.
-  std::string tmp;
-  base::Base64Encode(serialized_response, &tmp);
-  serialized_response = tmp;
+  serialized_response = base::Base64Encode(serialized_response);
 
   std::string compressed_query;
   compression::GzipCompress(serialized_response, &compressed_query);
@@ -161,9 +155,7 @@ std::string MakeSerializedResponse(
   std::string http_text = base::JoinString(
       std::vector<std::string>{kTestHTTPResponseHeader, compressed_query},
       kHTTPBodySep);
-  std::string encoded_http_text;
-  base::Base64Encode(http_text, &encoded_http_text);
-  return encoded_http_text;
+  return base::Base64Encode(http_text);
 }
 
 // Write json node to file in text format.
@@ -228,7 +220,7 @@ bool WriteJSON(const base::FilePath& file_path,
 TEST(AutofillCacheReplayerDeathTest,
      DISABLED_ServerCacheReplayerConstructor_CrashesWhenNoDomainNode) {
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;
@@ -253,7 +245,7 @@ TEST(AutofillCacheReplayerDeathTest,
 TEST(AutofillCacheReplayerDeathTest,
      ServerCacheReplayerConstructor_CrashesWhenNoQueryNodesAndFailOnEmpty) {
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;
@@ -286,7 +278,7 @@ TEST_P(
   // from the URL's query parameter are invalid.
 
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;
@@ -345,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(AutofillCacheReplayerTest,
      CanUseReplayerWhenNoCacheContentWithNotFailOnEmpty) {
   // Make death test threadsafe.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   // Make writable file path.
   base::ScopedTempDir temp_dir;

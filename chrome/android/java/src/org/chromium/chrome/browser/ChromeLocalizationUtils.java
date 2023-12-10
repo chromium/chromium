@@ -22,15 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
-/**
- * This class provides the locale related methods for Chrome.
- */
+/** This class provides the locale related methods for Chrome. */
 public class ChromeLocalizationUtils {
     // Constants used to log UI language availability. Must stay in sync with values in the
     // LanguageUsage.UI.Available enum. These values are persisted to logs. Entries should
     // not be renumbered and numeric values should never be reused.
-    @IntDef({UiAvailableTypes.TOP_AVAILABLE, UiAvailableTypes.ONLY_DEFAULT_AVAILABLE,
-            UiAvailableTypes.NONE_AVAILABLE, UiAvailableTypes.OVERRIDDEN})
+    @IntDef({
+        UiAvailableTypes.TOP_AVAILABLE,
+        UiAvailableTypes.ONLY_DEFAULT_AVAILABLE,
+        UiAvailableTypes.NONE_AVAILABLE,
+        UiAvailableTypes.OVERRIDDEN
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface UiAvailableTypes {
         int TOP_AVAILABLE = 0;
@@ -43,8 +45,12 @@ public class ChromeLocalizationUtils {
     // Constants used to log the UI language correctness. Must stay in sync with values in the
     // LanguageUsage.UI.Android.Correctness enum. These values are persisted to logs. Entries
     // should not be renumbered and numeric values should never be reused.
-    @IntDef({UiCorrectTypes.CORRECT, UiCorrectTypes.INCORRECT, UiCorrectTypes.NOT_AVAILABLE,
-            UiCorrectTypes.ONLY_JAVA_CORRECT})
+    @IntDef({
+        UiCorrectTypes.CORRECT,
+        UiCorrectTypes.INCORRECT,
+        UiCorrectTypes.NOT_AVAILABLE,
+        UiCorrectTypes.ONLY_JAVA_CORRECT
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface UiCorrectTypes {
         int CORRECT = 0;
@@ -57,10 +63,14 @@ public class ChromeLocalizationUtils {
     // Constants used to log the locale update status. Must stay in sync with values in the
     // LanguageUsage.UI.Android.LocaleUpdateStatus enum. These values are persisted to logs. Entries
     // should not be renumbered and numeric values should never be reused.
-    @IntDef({LocaleUpdateStatus.NO_CHANGE, LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED,
-            LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED,
-            LocaleUpdateStatus.NO_OVERRIDE_TOP_CHANGED,
-            LocaleUpdateStatus.NO_OVERRIDE_OTHERS_CHANGED, LocaleUpdateStatus.FIRST_RUN})
+    @IntDef({
+        LocaleUpdateStatus.NO_CHANGE,
+        LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED,
+        LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED,
+        LocaleUpdateStatus.NO_OVERRIDE_TOP_CHANGED,
+        LocaleUpdateStatus.NO_OVERRIDE_OTHERS_CHANGED,
+        LocaleUpdateStatus.FIRST_RUN
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LocaleUpdateStatus {
         int NO_CHANGE = 0;
@@ -85,8 +95,9 @@ public class ChromeLocalizationUtils {
      * from C++ match the resources displayed by the Java-based UI views.
      */
     public static String getJavaUiLocale() {
-        return ContextUtils.getApplicationContext().getResources().getString(
-                R.string.current_detected_ui_locale_name);
+        return ContextUtils.getApplicationContext()
+                .getResources()
+                .getString(R.string.current_detected_ui_locale_name);
     }
 
     /**
@@ -124,10 +135,13 @@ public class ChromeLocalizationUtils {
         boolean isOverridden = GlobalAppLocaleController.getInstance().isOverridden();
 
         @UiAvailableTypes
-        int availableStatus = getUiAvailabilityStatus(
-                isOverridden, isTopAndroidLanguageAvailable, isDefaultLanguageAvailable);
-        RecordHistogram.recordEnumeratedHistogram("LanguageUsage.UI.Android.Availability",
-                availableStatus, UiAvailableTypes.NUM_ENTRIES);
+        int availableStatus =
+                getUiAvailabilityStatus(
+                        isOverridden, isTopAndroidLanguageAvailable, isDefaultLanguageAvailable);
+        RecordHistogram.recordEnumeratedHistogram(
+                "LanguageUsage.UI.Android.Availability",
+                availableStatus,
+                UiAvailableTypes.NUM_ENTRIES);
 
         boolean noLanguageAvailable = !isTopAndroidLanguageAvailable && !isDefaultLanguageAvailable;
         @UiCorrectTypes
@@ -140,14 +154,16 @@ public class ChromeLocalizationUtils {
             @UiCorrectTypes
             int overrideStatus = getOverrideUiCorrectStatus(isJavaUiCorrect, isNativeUiCorrect);
             RecordHistogram.recordEnumeratedHistogram(
-                    "LanguageUsage.UI.Android.Correctness.Override", overrideStatus,
+                    "LanguageUsage.UI.Android.Correctness.Override",
+                    overrideStatus,
                     UiCorrectTypes.NUM_ENTRIES);
         } else {
             @UiCorrectTypes
             int noOverrideStatus =
                     getNoOverrideUiCorrectStatus(noLanguageAvailable, isJavaUiCorrect);
             RecordHistogram.recordEnumeratedHistogram(
-                    "LanguageUsage.UI.Android.Correctness.NoOverride", noOverrideStatus,
+                    "LanguageUsage.UI.Android.Correctness.NoOverride",
+                    noOverrideStatus,
                     UiCorrectTypes.NUM_ENTRIES);
         }
     }
@@ -166,8 +182,10 @@ public class ChromeLocalizationUtils {
      * @return The @UiAvailableTypes status of Android language settings.
      */
     @VisibleForTesting
-    static @UiAvailableTypes int getUiAvailabilityStatus(boolean isOverridden,
-            boolean isTopAndroidLanguageAvailable, boolean isDefaultLanguageAvailable) {
+    static @UiAvailableTypes int getUiAvailabilityStatus(
+            boolean isOverridden,
+            boolean isTopAndroidLanguageAvailable,
+            boolean isDefaultLanguageAvailable) {
         if (isOverridden) {
             return UiAvailableTypes.OVERRIDDEN;
         }

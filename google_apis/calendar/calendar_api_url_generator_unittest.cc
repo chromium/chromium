@@ -52,8 +52,8 @@ TEST(CalendarApiUrlGeneratorTest,
       "&singleEvents=true",
       url_generator_
           .GetCalendarEventListUrl(start, end, /*single_events=*/true,
-                                   /*max_attendees=*/absl::nullopt,
-                                   /*max_results=*/absl::nullopt)
+                                   /*max_attendees=*/std::nullopt,
+                                   /*max_results=*/std::nullopt)
           .spec());
 }
 

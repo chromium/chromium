@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -80,9 +80,9 @@ void AggregationServiceKeyFetcher::FetchPublicKeysFromNetwork(const GURL& url) {
 
 void AggregationServiceKeyFetcher::OnPublicKeysReceivedFromNetwork(
     const GURL& url,
-    absl::optional<PublicKeyset> keyset) {
+    std::optional<PublicKeyset> keyset) {
   if (!keyset.has_value() || keyset->expiry_time.is_null()) {
-    // `keyset` will be absl::nullopt if an error occurred and `expiry_time`
+    // `keyset` will be std::nullopt if an error occurred and `expiry_time`
     // will be null if the freshness lifetime was zero. In these cases, we will
     // still update the keys for `url`, i,e. clear them.
     storage_context_->GetStorage()
@@ -115,7 +115,7 @@ void AggregationServiceKeyFetcher::RunCallbacksForUrl(
   if (keys.empty()) {
     // Return error, don't refetch to avoid infinite loop.
     for (auto& callback : pending_callbacks) {
-      std::move(callback).Run(absl::nullopt,
+      std::move(callback).Run(std::nullopt,
                               PublicKeyFetchStatus::kPublicKeyFetchFailed);
     }
   } else {

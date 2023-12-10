@@ -8,6 +8,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -42,7 +44,7 @@ bool AdvanceEnumeratorWithStat(base::FileEnumerator* traversal,
 }  // namespace
 
 // Recursively delete a folder and its contents, returning `true` on success.
-bool DeleteFolder(const absl::optional<base::FilePath>& installed_path) {
+bool DeleteFolder(const std::optional<base::FilePath>& installed_path) {
   if (!installed_path)
     return false;
   if (!base::DeletePathRecursively(*installed_path)) {

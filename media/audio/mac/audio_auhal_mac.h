@@ -31,6 +31,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/audio/apple/audio_io_stream_client.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/scoped_audio_unit.h"
@@ -45,24 +46,6 @@
 namespace media {
 
 class AudioPullFifo;
-
-// A callback implementation for allowing this code to be used by both
-// AudioManagerIOS and AudioManagerMac.
-class AudioIOStreamClient {
- public:
-  virtual void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
-                                                  AudioDeviceID device_id) = 0;
-  virtual void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) = 0;
-  virtual bool MaybeChangeBufferSize(AudioDeviceID device_id,
-                                     AudioUnit audio_unit,
-                                     AudioUnitElement element,
-                                     size_t desired_buffer_size) = 0;
-#if BUILDFLAG(IS_MAC)
-  virtual base::TimeDelta GetDeferStreamStartTimeout() const = 0;
-  virtual base::SingleThreadTaskRunner* GetTaskRunner() const = 0;
-  virtual void StopAmplitudePeakTrace() = 0;
-#endif
-};
 
 // Implementation of AudioOutputStream for Apple using the
 // AUHAL Audio Unit present in OS 10.4 and later.

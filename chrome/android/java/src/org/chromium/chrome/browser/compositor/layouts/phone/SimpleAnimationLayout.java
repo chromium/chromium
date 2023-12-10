@@ -24,7 +24,9 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -33,9 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- * This class handles animating the opening of new tabs.
- */
+/** This class handles animating the opening of new tabs. */
 public class SimpleAnimationLayout extends Layout {
     /** The animation for a tab being created in the foreground. */
     private AnimatorSet mTabCreatedForegroundAnimation;
@@ -48,17 +48,24 @@ public class SimpleAnimationLayout extends Layout {
 
     /** Duration of the first step of the background animation: zooming out, rotating in */
     private static final long BACKGROUND_STEP1_DURATION = 300;
+
     /** Duration of the second step of the background animation: pause */
     private static final long BACKGROUND_STEP2_DURATION = 150;
+
     /** Duration of the third step of the background animation: zooming in, sliding out */
     private static final long BACKGROUND_STEP3_DURATION = 300;
+
     /** Percentage of the screen covered by the new tab */
     private static final float BACKGROUND_COVER_PCTG = 0.5f;
 
     /** The time duration of the animation */
     protected static final int FOREGROUND_ANIMATION_DURATION = 300;
+
     private final TabListSceneLayer mSceneLayer;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
+
+    // The tab to select on finishing the animation.
+    private int mNextTabId;
 
     /**
      * Creates an instance of the {@link SimpleAnimationLayout}.
@@ -79,8 +86,17 @@ public class SimpleAnimationLayout extends Layout {
     }
 
     @Override
+    public void doneHiding() {
+        TabModelUtils.selectTabById(
+                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
+        super.doneHiding();
+    }
+
+    @Override
     public void show(long time, boolean animate) {
         super.show(time, animate);
+
+        mNextTabId = Tab.INVALID_TAB_ID;
 
         if (mTabModelSelector != null && mTabContentManager != null) {
             Tab tab = mTabModelSelector.getCurrentTab();
@@ -123,7 +139,8 @@ public class SimpleAnimationLayout extends Layout {
     }
 
     private void ensureSourceTabCreated(int sourceTabId) {
-        if (mLayoutTabs != null && mLayoutTabs.length == 1
+        if (mLayoutTabs != null
+                && mLayoutTabs.length == 1
                 && mLayoutTabs[0].getId() == sourceTabId) {
             return;
         }
@@ -138,8 +155,15 @@ public class SimpleAnimationLayout extends Layout {
     }
 
     @Override
-    public void onTabCreated(long time, int id, int index, int sourceId, boolean newIsIncognito,
-            boolean background, float originX, float originY) {
+    public void onTabCreated(
+            long time,
+            int id,
+            int index,
+            int sourceId,
+            boolean newIsIncognito,
+            boolean background,
+            float originX,
+            float originY) {
         super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
         ensureSourceTabCreated(sourceId);
         if (background && mLayoutTabs != null && mLayoutTabs.length > 0) {
@@ -174,16 +198,40 @@ public class SimpleAnimationLayout extends Layout {
         forceAnimationToFinish();
 
         CompositorAnimationHandler handler = getAnimationHandler();
-        CompositorAnimator scaleAnimation = CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.SCALE, 0f, 1f, FOREGROUND_ANIMATION_DURATION);
+        CompositorAnimator scaleAnimation =
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.SCALE,
+                        0f,
+                        1f,
+                        FOREGROUND_ANIMATION_DURATION);
 
-        CompositorAnimator alphaAnimation = CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.ALPHA, 0f, 1f, FOREGROUND_ANIMATION_DURATION);
+        CompositorAnimator alphaAnimation =
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.ALPHA,
+                        0f,
+                        1f,
+                        FOREGROUND_ANIMATION_DURATION);
 
-        CompositorAnimator xAnimation = CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.X, originX, 0f, FOREGROUND_ANIMATION_DURATION);
-        CompositorAnimator yAnimation = CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.Y, originY, 0f, FOREGROUND_ANIMATION_DURATION);
+        CompositorAnimator xAnimation =
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.X,
+                        originX,
+                        0f,
+                        FOREGROUND_ANIMATION_DURATION);
+        CompositorAnimator yAnimation =
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.Y,
+                        originY,
+                        0f,
+                        FOREGROUND_ANIMATION_DURATION);
 
         mTabCreatedForegroundAnimation = new AnimatorSet();
         mTabCreatedForegroundAnimation.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
@@ -192,7 +240,8 @@ public class SimpleAnimationLayout extends Layout {
         mTabCreatedForegroundAnimation.start();
 
         mTabModelSelector.selectModel(newIsIncognito);
-        startHiding(id);
+        mNextTabId = id;
+        startHiding();
     }
 
     /**
@@ -225,16 +274,46 @@ public class SimpleAnimationLayout extends Layout {
         Collection<Animator> animationList = new ArrayList<>(5);
 
         // Step 1: zoom out the source tab and bring in the new tab
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, sourceLayoutTab, LayoutTab.SCALE, 1f, scale, BACKGROUND_STEP1_DURATION));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, sourceLayoutTab, LayoutTab.X, 0f, margin, BACKGROUND_STEP1_DURATION));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, sourceLayoutTab, LayoutTab.Y, 0f, margin, BACKGROUND_STEP1_DURATION));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.BORDER_SCALE, 1f / scale, 1f, BACKGROUND_STEP1_DURATION));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.BORDER_ALPHA, 0f, 1f, BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.SCALE,
+                        1f,
+                        scale,
+                        BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.X,
+                        0f,
+                        margin,
+                        BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.Y,
+                        0f,
+                        margin,
+                        BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.BORDER_SCALE,
+                        1f / scale,
+                        1f,
+                        BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.BORDER_ALPHA,
+                        0f,
+                        1f,
+                        BACKGROUND_STEP1_DURATION));
 
         AnimatorSet step1Source = new AnimatorSet();
         step1Source.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
@@ -250,15 +329,39 @@ public class SimpleAnimationLayout extends Layout {
 
         animationList = new ArrayList<>(4);
 
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.ALPHA, 0f, 1f, BACKGROUND_STEP1_DURATION / 2));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.ALPHA,
+                        0f,
+                        1f,
+                        BACKGROUND_STEP1_DURATION / 2));
 
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.SCALE, 0f, scale, BACKGROUND_STEP1_DURATION));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.X, originX, pauseX, BACKGROUND_STEP1_DURATION));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.Y, originY, pauseY, BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.SCALE,
+                        0f,
+                        scale,
+                        BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.X,
+                        originX,
+                        pauseX,
+                        BACKGROUND_STEP1_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        newLayoutTab,
+                        LayoutTab.Y,
+                        originY,
+                        pauseY,
+                        BACKGROUND_STEP1_DURATION));
 
         AnimatorSet step1New = new AnimatorSet();
         step1New.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
@@ -271,33 +374,76 @@ public class SimpleAnimationLayout extends Layout {
 
         // step 3: zoom in the source tab and slide down the new tab
         animationList = new ArrayList<>(7);
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.SCALE, scale, 1f, BACKGROUND_STEP3_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.X, margin, 0f, BACKGROUND_STEP3_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.Y, margin, 0f, BACKGROUND_STEP3_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.BORDER_SCALE, 1f, 1f / scale, BACKGROUND_STEP3_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
-                LayoutTab.BORDER_ALPHA, 1f, 0f, BACKGROUND_STEP3_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.SCALE,
+                        scale,
+                        1f,
+                        BACKGROUND_STEP3_DURATION,
+                        Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.X,
+                        margin,
+                        0f,
+                        BACKGROUND_STEP3_DURATION,
+                        Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.Y,
+                        margin,
+                        0f,
+                        BACKGROUND_STEP3_DURATION,
+                        Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.BORDER_SCALE,
+                        1f,
+                        1f / scale,
+                        BACKGROUND_STEP3_DURATION,
+                        Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler,
+                        sourceLayoutTab,
+                        LayoutTab.BORDER_ALPHA,
+                        1f,
+                        0f,
+                        BACKGROUND_STEP3_DURATION,
+                        Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(
-                handler, newLayoutTab, LayoutTab.ALPHA, 1f, 0f, BACKGROUND_STEP3_DURATION));
+        animationList.add(
+                CompositorAnimator.ofWritableFloatPropertyKey(
+                        handler, newLayoutTab, LayoutTab.ALPHA, 1f, 0f, BACKGROUND_STEP3_DURATION));
 
         if (getOrientation() == Orientation.PORTRAIT) {
-            animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, newLayoutTab,
-                    LayoutTab.Y, pauseY, getHeight(), BACKGROUND_STEP3_DURATION,
-                    Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR));
+            animationList.add(
+                    CompositorAnimator.ofWritableFloatPropertyKey(
+                            handler,
+                            newLayoutTab,
+                            LayoutTab.Y,
+                            pauseY,
+                            getHeight(),
+                            BACKGROUND_STEP3_DURATION,
+                            Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR));
         } else {
-            animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, newLayoutTab,
-                    LayoutTab.X, pauseX, getWidth(), BACKGROUND_STEP3_DURATION,
-                    Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR));
+            animationList.add(
+                    CompositorAnimator.ofWritableFloatPropertyKey(
+                            handler,
+                            newLayoutTab,
+                            LayoutTab.X,
+                            pauseX,
+                            getWidth(),
+                            BACKGROUND_STEP3_DURATION,
+                            Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR));
         }
 
         AnimatorSet step3 = new AnimatorSet();
@@ -307,7 +453,8 @@ public class SimpleAnimationLayout extends Layout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Once the animation has finished, we can switch layouts.
-                        startHiding(sourceId);
+                        mNextTabId = sourceId;
+                        startHiding();
                     }
                 });
         step3.playTogether(animationList);
@@ -326,9 +473,7 @@ public class SimpleAnimationLayout extends Layout {
         if (mTabCreatedBackgroundAnimation != null) mTabCreatedBackgroundAnimation.end();
     }
 
-    /**
-     * Resets the internal state.
-     */
+    /** Resets the internal state. */
     private void reset() {
         mLayoutTabs = null;
     }
@@ -344,16 +489,27 @@ public class SimpleAnimationLayout extends Layout {
     }
 
     @Override
-    protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
+    protected void updateSceneLayer(
+            RectF viewport,
+            RectF contentViewport,
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {
         super.updateSceneLayer(
                 viewport, contentViewport, tabContentManager, resourceManager, browserControls);
         assert mSceneLayer != null;
         // The content viewport is intentionally sent as both params below.
-        mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
-                tabContentManager, resourceManager, browserControls, SceneLayer.INVALID_RESOURCE_ID,
-                0, 0);
+        mSceneLayer.pushLayers(
+                getContext(),
+                contentViewport,
+                contentViewport,
+                this,
+                tabContentManager,
+                resourceManager,
+                browserControls,
+                SceneLayer.INVALID_RESOURCE_ID,
+                0,
+                0);
     }
 
     @Override

@@ -14,12 +14,14 @@ enum class SpeculationRulesLoadOutcome {
   kUnparseableSpeculationRulesHeader = 1,
   kEmptySpeculationRulesHeader = 2,
   kInvalidSpeculationRulesHeaderItem = 3,
-  kInvalidStatusCode = 4,
+  kLoadFailedOrCanceled = 4,
   kInvalidMimeType = 5,
   kEmptyResponseBody = 6,
   kParseErrorFetched = 7,
   kParseErrorInline = 8,
-  kMaxValue = kParseErrorInline,
+  kParseErrorBrowserInjected = 9,
+  kAutoSpeculationRulesOptedOut = 10,
+  kMaxValue = kAutoSpeculationRulesOptedOut,
 };
 
 void CountSpeculationRulesLoadOutcome(SpeculationRulesLoadOutcome);

@@ -33,18 +33,18 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -108,6 +108,10 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 
   if (HasLayer())
     DestroyLayer();
+
+  if (GetFrameView()) {
+    SetIsBackgroundAttachmentFixedObject(false);
+  }
 
   // Our layer should have been destroyed and cleared by now
   DCHECK(!HasLayer());
@@ -221,7 +225,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (old_style && Parent()) {
-    LayoutBlock* block = FindNonAnonymousContainingBlock(this);
+    LayoutBlock* block =
+        RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled()
+            ? InclusiveContainingBlock()
+            : FindNonAnonymousContainingBlock(this);
 
     if ((could_contain_fixed && !can_contain_fixed) ||
         (could_contain_absolute && !can_contain_absolute)) {
@@ -342,7 +349,7 @@ PaintLayerScrollableArea* LayoutBoxModelObject::GetScrollableArea() const {
 void LayoutBoxModelObject::AddOutlineRectsForNormalChildren(
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -360,7 +367,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     const LayoutObject& descendant,
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
   if (descendant.IsText()) {
     return;
@@ -408,9 +415,9 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
     InlineCursor cursor;
-    NGInlinePaintContext inline_context;
+    InlinePaintContext inline_context;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+      InlinePaintContext::ScopedInlineBoxAncestors scoped_items(
           cursor, &inline_context);
       cursor.Current().RecalcInkOverflow(cursor, &inline_context);
     }
@@ -430,20 +437,15 @@ void LayoutBoxModelObject::UpdateFromStyle() {
   SetCanContainAbsolutePositionObjects(
       ComputeIsAbsoluteContainer(&style_to_use));
   SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
-
-  bool is_background_attachment_fixed_object =
+  SetIsBackgroundAttachmentFixedObject(
       !BackgroundTransfersToView() &&
-      StyleRef().HasFixedAttachmentBackgroundImage();
-  SetIsBackgroundAttachmentFixedObject(is_background_attachment_fixed_object);
-  constexpr wtf_size_t kMaxCompositedBackgroundAttachmentFixed = 20;
+      StyleRef().HasFixedAttachmentBackgroundImage());
+}
+
+void LayoutBoxModelObject::UpdateCanCompositeBackgroundAttachmentFixed(
+    bool enable_composited_background_attachment_fixed) {
   SetCanCompositeBackgroundAttachmentFixed(
-      is_background_attachment_fixed_object &&
-      // Too many composited background-attachment:fixed hurt performance, so
-      // we want to avoid that with this heuristic (which doesn't need to be
-      // accurate so we simply check the number of all
-      // background-attachment:fixed objects).
-      GetFrameView()->BackgroundAttachmentFixedObjects().size() <=
-          kMaxCompositedBackgroundAttachmentFixed &&
+      enable_composited_background_attachment_fixed &&
       ComputeCanCompositeBackgroundAttachmentFixed());
 }
 
@@ -508,7 +510,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     PhysicalRect scroll_container_relative_containing_block_rect;
     if (sticky_container == scroll_container) {
       scroll_container_relative_containing_block_rect =
-          sticky_container->PhysicalLayoutOverflowRect();
+          sticky_container->ScrollableOverflowRect();
     } else {
       PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
       scroll_container_relative_containing_block_rect =

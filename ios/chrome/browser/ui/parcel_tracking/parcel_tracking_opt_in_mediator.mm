@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 @implementation ParcelTrackingOptInMediator {
@@ -27,7 +28,8 @@
       commerce::ShoppingServiceFactory::GetForBrowserState(
           _webState->GetBrowserState());
   TrackParcels(shoppingService, parcelList, std::string(),
-               _parcelTrackingCommandsHandler, true);
+               _parcelTrackingCommandsHandler, true,
+               TrackingSource::kAutoTrack);
 }
 
 - (void)didTapAskToTrack:(NSArray<CustomTextCheckingResult*>*)parcelList {

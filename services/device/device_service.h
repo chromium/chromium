@@ -75,10 +75,7 @@ class HidManagerImpl;
 class SerialPortManagerImpl;
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 class DevicePostureProviderImpl;
-#endif
-
 class DeviceService;
 class GeolocationManager;
 class PowerMonitorMessageBroadcaster;
@@ -204,10 +201,8 @@ class DeviceService : public mojom::DeviceService {
   void BindSensorProvider(
       mojo::PendingReceiver<mojom::SensorProvider> receiver) override;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   void BindDevicePostureProvider(
       mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) override;
-#endif
 
   void BindSerialPortManager(
       mojo::PendingReceiver<mojom::SerialPortManager> receiver) override;
@@ -263,9 +258,7 @@ class DeviceService : public mojom::DeviceService {
   base::SequenceBound<SerialPortManagerImpl> serial_port_manager_;
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   std::unique_ptr<DevicePostureProviderImpl> device_posture_provider_;
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;

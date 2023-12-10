@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">សូមធ្វើឲ្យអត្ថបទនេះខ្លីទៅ <ph name="MAX_CHARACTERS" /> តួអក្សរ ឫតិចជាងនេះ (ឥឡូវនេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួអក្សរ)។</translation>
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="2393030564806080191">តម្លៃពណ៌​គោលដប់ប្រាំមួយ</translation>
 <translation id="2398813069815436052">បានបើក​ប្រអប់។</translation>
 <translation id="245932805758469625">ចំនួន​វិនាទី​នៅ​សល់​សម្រាប់​ការចាក់​វីដេអូ</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">សូមបន្លាយអត្ថបទនេះឲ្យបាន <ph name="MIN_CHARACTERS" /> តួ ឬច្រើនជាងនេះ (បច្ចុប្បន្ននេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួ)។</translation>
 <translation id="383465348367842624">ផ្នែកដែលនៅពីក្រោយ '<ph name="ATSIGN" />' មិនគួរផ្ទុកសញ្ញា '<ph name="INVALIDCHARACTER" />' នេះទេ។</translation>
 <translation id="3846214748874656680">ចាកចេញពីអេក្រង់ពេញ</translation>
+<translation id="4031179711345676612">បាន​អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន</translation>
 <translation id="4103419683916926126">មីលីវិនាទី</translation>
 <translation id="4201051445878709314">បង្ហាញខែមុន</translation>
 <translation id="4360991593054037559">សូមបញ្ចូលតម្លៃដែលមានសុពលភាព។ តម្លៃដែលមានសុពលភាពដែលក្បែរបំផុតគឺ <ph name="VALID_VALUE_LOW" /> និង <ph name="VALID_VALUE_HIGHER" />។</translation>
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
+<translation id="4663373278480897665">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា</translation>
 <translation id="4664250907885839816">ផ្នែកដែលនៅពីមុខ '<ph name="ATSIGN" />' មិនគួរផ្ទុកសញ្ញា '<ph name="INVALIDCHARACTER" />' នេះទេ។</translation>
 <translation id="4718048029184481307">កំពុងចាក់​នៅក្នុងមុខងារ​រូបក្នុងរូប</translation>
 <translation id="4748357248530471599">បិទ/បើក​អេក្រង់ពេញ​ដែលមាន​ក្បាល​ឆក</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">ទាញយកមេឌៀ</translation>
 <translation id="698788488269350478">បានពង្រីក។</translation>
 <translation id="6989848892321993519">សូម​សរសេរ​អក្សរ​នេះឲ្យ​បាន​យ៉ាងហោច <ph name="MIN_CHARACTERS" /> តួ ឬ​ច្រើន​ជាងនេះ (បច្ចុប្បន្ននេះ​អ្នកសរសេរតែ 1 តួ)។</translation>
+<translation id="7080893216867146095">បានអនុញ្ញាតឱ្យចែករំលែកទីតាំង</translation>
 <translation id="709897737746224366">សូមផ្គូផ្គងទម្រង់ដែលបានស្នើ។</translation>
 <translation id="7102274145889307184">ទីតាំង​បច្ចុប្បន្ន</translation>
 <translation id="7263440858009898357">សូមជ្រើសរើសធាតុនៅក្នុងបញ្ជី។</translation>

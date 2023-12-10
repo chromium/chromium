@@ -118,27 +118,28 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    widget_ = new Widget;
+    widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
 
-    button_ = new TestButton();
+    button_ =
+        widget_->GetRootView()->AddChildView(std::make_unique<TestButton>());
     button_->SetID(NON_DEFAULT_VIEW_ID);
     button_->SetSize(gfx::Size(20, 20));
 
-    label_ = new Label();
+    label_ = button_->AddChildView(std::make_unique<Label>());
     label_->SetID(DEFAULT_VIEW_ID);
-    button_->AddChildView(label_.get());
 
-    widget_->GetRootView()->AddChildView(button_.get());
     widget_->Show();
   }
 
   void TearDown() override {
-    if (!widget_->IsClosed())
-      widget_->Close();
+    button_ = nullptr;
+    label_ = nullptr;
+    widget_.reset();
     ViewsTestBase::TearDown();
   }
 
@@ -207,9 +208,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   const int DEFAULT_VIEW_ID = 0;
   const int NON_DEFAULT_VIEW_ID = 1;
 
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
-  raw_ptr<Button, AcrossTasksDanglingUntriaged> button_ = nullptr;
-  raw_ptr<Label, AcrossTasksDanglingUntriaged> label_ = nullptr;
+  std::unique_ptr<Widget> widget_;
+  raw_ptr<Button> button_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
   ScopedAXModeSetter ax_mode_setter_;
 };
 
@@ -263,8 +264,9 @@ class ViewAXPlatformNodeDelegateMenuTest
     owner_->Show();
 
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
-    menu_ = new views::TestMenuItemView(menu_delegate_.get());
-    runner_ = std::make_unique<MenuRunner>(menu_, 0);
+    auto menu_owning = std::make_unique<TestMenuItemView>(menu_delegate_.get());
+    menu_ = menu_owning.get();
+    runner_ = std::make_unique<MenuRunner>(std::move(menu_owning), 0);
 
     menu_->AppendMenuItemImpl(0, u"normal", ui::ImageModel(),
                               MenuItemView::Type::kNormal);
@@ -304,13 +306,11 @@ class ViewAXPlatformNodeDelegateMenuTest
   }
 
  private:
-  // Owned by runner_.
-  raw_ptr<views::TestMenuItemView, AcrossTasksDanglingUntriaged> menu_ =
-      nullptr;
-
   raw_ptr<SubmenuView, AcrossTasksDanglingUntriaged> submenu_ = nullptr;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> runner_;
+  // Owned by runner_.
+  raw_ptr<views::TestMenuItemView> menu_ = nullptr;
   UniqueWidgetPtr owner_;
 };
 
@@ -1170,10 +1170,8 @@ TEST_F(AXViewTest, LayoutCalledInvalidateRootView) {
   widget->Show();
 
   View* root = widget->GetRootView();
-  DerivedTestView* parent = new DerivedTestView();
-  DerivedTestView* child = new DerivedTestView();
-  root->AddChildView(parent);
-  parent->AddChildView(child);
+  auto* parent = root->AddChildView(std::make_unique<DerivedTestView>());
+  auto* child = parent->AddChildView(std::make_unique<DerivedTestView>());
   child->SetFocusBehavior(DerivedTestView::FocusBehavior::ALWAYS);
   parent->SetFocusBehavior(DerivedTestView::FocusBehavior::ALWAYS);
   root->SetFocusBehavior(DerivedTestView::FocusBehavior::ALWAYS);

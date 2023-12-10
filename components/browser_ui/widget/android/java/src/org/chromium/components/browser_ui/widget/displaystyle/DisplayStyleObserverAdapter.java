@@ -38,17 +38,13 @@ public class DisplayStyleObserverAdapter
         view.addOnAttachStateChangeListener(this);
     }
 
-    /**
-     * Attaches to the {@link #mUiConfig}.
-     */
+    /** Attaches to the {@link #mUiConfig}. */
     public void attach() {
         // This call will also assign the initial value to |mCurrentDisplayStyle|.
         mUiConfig.addObserver(this);
     }
 
-    /**
-     * Detaches from the {@link #mUiConfig}.
-     */
+    /** Detaches from the {@link #mUiConfig}. */
     public void detach() {
         mUiConfig.removeObserver(this);
     }

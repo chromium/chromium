@@ -6,14 +6,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/permissions/features.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
@@ -50,8 +53,7 @@ void ClickElementWithId(content::WebContents* web_contents,
 class PermissionElementBrowserTest : public InProcessBrowserTest {
  public:
   PermissionElementBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionElement);
+    feature_list_.InitAndEnableFeature(features::kPermissionElement);
   }
 
   PermissionElementBrowserTest(const PermissionElementBrowserTest&) = delete;
@@ -162,6 +164,37 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
     observer.Wait();
+    WaitForDismissEvent(id);
+  }
+}
+
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_ClickingScrimViewDispatchDismissEvent \
+  DISABLED_ClickingScrimViewDispatchDismissEvent
+#else
+#define MAYBE_ClickingScrimViewDispatchDismissEvent \
+  ClickingScrimViewDispatchDismissEvent
+#endif
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       MAYBE_ClickingScrimViewDispatchDismissEvent) {
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::NONE);
+  std::string permission_ids[] = {"microphone", "camera"};
+  for (const auto& id : permission_ids) {
+    ClickElementWithId(web_contents(), id);
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "EmbeddedPermissionPromptContentScrimWidget");
+    auto* scrim_view = static_cast<EmbeddedPermissionPromptContentScrimView*>(
+        waiter.WaitIfNeededAndGet()->GetContentsView());
+    scrim_view->OnMousePressed(
+        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    scrim_view->OnMouseReleased(
+        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     WaitForDismissEvent(id);
   }
 }

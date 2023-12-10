@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FAKE_TARGET_DEVICE_CONNECTION_BROKER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeNearbyConnection;
 
@@ -108,7 +108,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     return std::move(on_stop_advertising_callback_);
   }
 
-  absl::optional<bool> start_advertising_use_pin_authentication() {
+  std::optional<bool> start_advertising_use_pin_authentication() {
     return start_advertising_use_pin_authentication_;
   }
 
@@ -126,7 +126,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   std::unique_ptr<FakeConnection> connection_;
 
   AdvertisingId advertising_id_;
-  absl::optional<bool> start_advertising_use_pin_authentication_;
+  std::optional<bool> start_advertising_use_pin_authentication_;
 
   base::WeakPtrFactory<FakeTargetDeviceConnectionBroker> weak_ptr_factory_{
       this};

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
@@ -22,8 +21,6 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/i18n/rtl.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -49,20 +46,15 @@ const std::string GetNameForShelfAlignment(ShelfAlignment alignment) {
 class StatusAreaPixelTest : public AshTestBase {
  public:
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-
     AshTestBase::SetUp();
 
-    // The `NotificationCenterTray` does not exist until the `QsRevamp` feature
-    // is enabled.
     notification_test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
@@ -80,7 +72,6 @@ class StatusAreaPixelTest : public AshTestBase {
 
  private:
   std::unique_ptr<NotificationCenterTestApi> notification_test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class StatusAreaParameterizedPixelTest
@@ -134,7 +125,7 @@ TEST_P(StatusAreaParameterizedPixelTest, SystemTrayTest) {
   system_tray->SetIsActive(IsActive());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "system_tray" + GetScreenshotNameSuffix(), /*revision_number=*/1,
+      "system_tray" + GetScreenshotNameSuffix(), /*revision_number=*/4,
       system_tray));
 }
 
@@ -147,7 +138,7 @@ TEST_P(StatusAreaParameterizedPixelTest, DateTrayTest) {
   date_tray->SetIsActive(IsActive());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "date_tray" + GetScreenshotNameSuffix(), /*revision_number=*/1,
+      "date_tray" + GetScreenshotNameSuffix(), /*revision_number=*/4,
       date_tray));
 }
 

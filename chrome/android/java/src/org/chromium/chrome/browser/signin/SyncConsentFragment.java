@@ -28,8 +28,12 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     private static final String ARGUMENT_PERSONALIZED_PROMO_ACTION =
             "SyncConsentFragment.PersonalizedPromoAction";
 
-    @IntDef({PromoAction.NONE, PromoAction.WITH_DEFAULT, PromoAction.NOT_DEFAULT,
-            PromoAction.NEW_ACCOUNT})
+    @IntDef({
+        PromoAction.NONE,
+        PromoAction.WITH_DEFAULT,
+        PromoAction.NOT_DEFAULT,
+        PromoAction.NEW_ACCOUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PromoAction {
         int NONE = 0;
@@ -60,8 +64,9 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
      */
     public static Bundle createArgumentsForPromoChooseAccountFlow(
             @SigninAccessPoint int accessPoint, String accountName) {
-        Bundle result = SyncConsentFragmentBase.createArgumentsForChooseAccountFlow(
-                accessPoint, accountName);
+        Bundle result =
+                SyncConsentFragmentBase.createArgumentsForChooseAccountFlow(
+                        accessPoint, accountName);
         result.putInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NOT_DEFAULT);
         return result;
     }
@@ -98,7 +103,9 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     protected void closeAndMaybeOpenSyncSettings(boolean settingsClicked) {
         if (settingsClicked) {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(getActivity(), ManageSyncSettings.class,
+            settingsLauncher.launchSettingsActivity(
+                    getActivity(),
+                    ManageSyncSettings.class,
                     ManageSyncSettings.createArguments(true));
         }
 

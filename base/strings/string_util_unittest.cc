@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/bits.h"
@@ -351,7 +352,7 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
   EXPECT_EQ(output.compare(""), 0);
 }
 
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
 TEST(StringUtilTest, as_wcstr) {
   char16_t rw_buffer[10] = {};
   static_assert(
@@ -399,12 +400,12 @@ TEST(StringUtilTest, as_u16cstr) {
                 "");
   EXPECT_EQ(static_cast<const void*>(ro_str.data()), as_u16cstr(ro_str));
 
-  WStringPiece piece = ro_buffer;
+  std::wstring_view piece = ro_buffer;
   static_assert(std::is_same_v<const char16_t*, decltype(as_u16cstr(piece))>,
                 "");
   EXPECT_EQ(static_cast<const void*>(piece.data()), as_u16cstr(piece));
 }
-#endif  // defined(WCHAR_T_IS_UTF16)
+#endif  // defined(WCHAR_T_IS_16_BIT)
 
 TEST(StringUtilTest, TrimWhitespace) {
   std::u16string output;  // Allow contents to carry over to next testcase
@@ -565,7 +566,7 @@ TEST(StringUtilTest, IsStringASCII) {
     }
   }
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
   {
     const size_t string_length = wchar_ascii.length();
     for (size_t len = 0; len < string_length; ++len) {
@@ -583,7 +584,7 @@ TEST(StringUtilTest, IsStringASCII) {
       }
     }
   }
-#endif  // WCHAR_T_IS_UTF32
+#endif  // WCHAR_T_IS_32_BIT
 }
 
 TEST(StringUtilTest, ConvertASCII) {
@@ -1332,17 +1333,17 @@ TEST(StringUtilTest, MakeBasicStringPieceTest) {
   EXPECT_TRUE(MakeStringPiece16(bar.end(), bar.end()).empty());
 
   constexpr wchar_t kBaz[] = L"Baz";
-  static_assert(MakeWStringPiece(kBaz, kBaz + 3) == kBaz, "");
-  static_assert(MakeWStringPiece(kBaz, kBaz + 3).data() == kBaz, "");
-  static_assert(MakeWStringPiece(kBaz, kBaz + 3).size() == 3, "");
-  static_assert(MakeWStringPiece(kBaz + 3, kBaz + 3).empty(), "");
-  static_assert(MakeWStringPiece(kBaz + 4, kBaz + 4).empty(), "");
+  static_assert(MakeWStringView(kBaz, kBaz + 3) == kBaz, "");
+  static_assert(MakeWStringView(kBaz, kBaz + 3).data() == kBaz, "");
+  static_assert(MakeWStringView(kBaz, kBaz + 3).size() == 3, "");
+  static_assert(MakeWStringView(kBaz + 3, kBaz + 3).empty(), "");
+  static_assert(MakeWStringView(kBaz + 4, kBaz + 4).empty(), "");
 
   std::wstring baz = kBaz;
-  EXPECT_EQ(MakeWStringPiece(baz.begin(), baz.end()), baz);
-  EXPECT_EQ(MakeWStringPiece(baz.begin(), baz.end()).data(), baz.data());
-  EXPECT_EQ(MakeWStringPiece(baz.begin(), baz.end()).size(), baz.size());
-  EXPECT_TRUE(MakeWStringPiece(baz.end(), baz.end()).empty());
+  EXPECT_EQ(MakeWStringView(baz.begin(), baz.end()), baz);
+  EXPECT_EQ(MakeWStringView(baz.begin(), baz.end()).data(), baz.data());
+  EXPECT_EQ(MakeWStringView(baz.begin(), baz.end()).size(), baz.size());
+  EXPECT_TRUE(MakeWStringView(baz.end(), baz.end()).empty());
 }
 
 TEST(StringUtilTest, RemoveChars) {
@@ -1522,7 +1523,7 @@ TEST(StringUtilTest, EqualsCaseInsensitiveASCII) {
   EXPECT_TRUE(EqualsCaseInsensitiveASCII("aaa \xc3\xa4", "AAA \xc3\xa4"));
   EXPECT_FALSE(EqualsCaseInsensitiveASCII("aaa \xc3\x84", "AAA \xc3\xa4"));
 
-  // The `WStringPiece` overloads are only defined on Windows.
+  // The `std::wstring_view` overloads are only defined on Windows.
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(EqualsCaseInsensitiveASCII(L"", L""));
   EXPECT_TRUE(EqualsCaseInsensitiveASCII(L"Asdf", L"aSDF"));

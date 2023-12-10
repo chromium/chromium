@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -172,6 +173,7 @@ void AssociateOutputForAec(const base::UnguessableToken& stream_id,
 }  // namespace
 
 TEST(MojoAudioInputIPC, OnStreamCreated_Propagates) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -192,6 +194,7 @@ TEST(MojoAudioInputIPC, OnStreamCreated_Propagates) {
 }
 
 TEST(MojoAudioInputIPC, OnStreamCreated_Propagates_WithProcessingConfig) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -213,6 +216,7 @@ TEST(MojoAudioInputIPC, OnStreamCreated_Propagates_WithProcessingConfig) {
 }
 
 TEST(MojoAudioInputIPC, FactoryDisconnected_SendsError) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockDelegate> delegate;
 
   const std::unique_ptr<media::AudioInputIPC> ipc = std::make_unique<
@@ -240,6 +244,7 @@ TEST(MojoAudioInputIPC, FactoryDisconnected_SendsError) {
 }
 
 TEST(MojoAudioInputIPC, OnStreamCreated_PropagatesInitiallyMuted) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -260,6 +265,7 @@ TEST(MojoAudioInputIPC, OnStreamCreated_PropagatesInitiallyMuted) {
 }
 
 TEST(MojoAudioInputIPC, IsReusable) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -285,6 +291,7 @@ TEST(MojoAudioInputIPC, IsReusable) {
 }
 
 TEST(MojoAudioInputIPC, IsReusableAfterError) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -316,6 +323,7 @@ TEST(MojoAudioInputIPC, IsReusableAfterError) {
 }
 
 TEST(MojoAudioInputIPC, Record_Records) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -339,6 +347,7 @@ TEST(MojoAudioInputIPC, Record_Records) {
 }
 
 TEST(MojoAudioInputIPC, SetVolume_SetsVolume) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -362,6 +371,7 @@ TEST(MojoAudioInputIPC, SetVolume_SetsVolume) {
 }
 
 TEST(MojoAudioInputIPC, SetOutputDeviceForAec_AssociatesInputAndOutputForAec) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -385,6 +395,7 @@ TEST(MojoAudioInputIPC, SetOutputDeviceForAec_AssociatesInputAndOutputForAec) {
 
 TEST(MojoAudioInputIPC,
      Controls_NotCalled_BeforeStreamCreated_WithoutProcessing) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -407,6 +418,7 @@ TEST(MojoAudioInputIPC,
 
 TEST(MojoAudioInputIPC,
      Controls_NotCalled_AfterStreamCreated_WithoutProcessing) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -434,6 +446,7 @@ TEST(MojoAudioInputIPC,
 }
 
 TEST(MojoAudioInputIPC, Controls_NotCalled_BeforeStreamCreated_WithProcessing) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -456,6 +469,7 @@ TEST(MojoAudioInputIPC, Controls_NotCalled_BeforeStreamCreated_WithProcessing) {
 }
 
 TEST(MojoAudioInputIPC, Controls_Called_AfterStreamCreated_WithProcessing) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
@@ -486,6 +500,7 @@ TEST(MojoAudioInputIPC, Controls_Called_AfterStreamCreated_WithProcessing) {
 }
 
 TEST(MojoAudioInputIPC, Controls_NotCalled_AfterStreamClosed_WithProcessing) {
+  test::TaskEnvironment task_environment;
   StrictMock<MockStream> stream;
   StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;

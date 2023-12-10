@@ -12,6 +12,7 @@ import org.chromium.base.Flag;
  */
 public class PostNativeFlag extends Flag {
     private Boolean mInMemoryCachedValue;
+
     public PostNativeFlag(String featureName) {
         super(featureName);
     }

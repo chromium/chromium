@@ -60,7 +60,8 @@ int MTPFileStreamReader::Read(net::IOBuffer* buf,
       header_buf_len = buf_len;
     } else {
       // Otherwise, make a special request for the header.
-      header_buf = base::MakeRefCounted<net::IOBuffer>(net::kMaxBytesToSniff);
+      header_buf =
+          base::MakeRefCounted<net::IOBufferWithSize>(net::kMaxBytesToSniff);
       header_buf_len = net::kMaxBytesToSniff;
     }
 

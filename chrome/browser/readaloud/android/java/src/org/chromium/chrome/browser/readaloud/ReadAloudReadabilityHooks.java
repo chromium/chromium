@@ -21,6 +21,7 @@ public interface ReadAloudReadabilityHooks {
          *                            used forword-by-word highlighting.
          */
         void onSuccess(String url, boolean isReadable, boolean timepointsSupported);
+
         /** Called if isPageReadable() fails. */
         void onFailure(String url, Throwable t);
     }

@@ -39,9 +39,9 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
             new ReadableObjectPropertyKey<>();
 
     /** The opt out information of the UI, including whether or not to display it. */
-    /* package */ static final
-            ReadableObjectPropertyKey<SecurePaymentConfirmationAuthnView.OptOutInfo> OPT_OUT_INFO =
-                    new ReadableObjectPropertyKey<>();
+    /* package */ static final ReadableObjectPropertyKey<
+                    SecurePaymentConfirmationAuthnView.OptOutInfo>
+            OPT_OUT_INFO = new ReadableObjectPropertyKey<>();
 
     /** The callback when the continue button is pressed. */
     /* package */ static final ReadableObjectPropertyKey<Runnable> CONTINUE_BUTTON_CALLBACK =
@@ -52,8 +52,16 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
             new ReadableObjectPropertyKey<>();
 
     /* package */ static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {STORE_LABEL, PAYMENT_ICON, PAYMENT_INSTRUMENT_LABEL, TOTAL, CURRENCY,
-                    OPT_OUT_INFO, CONTINUE_BUTTON_CALLBACK, CANCEL_BUTTON_CALLBACK};
+            new PropertyKey[] {
+                STORE_LABEL,
+                PAYMENT_ICON,
+                PAYMENT_INSTRUMENT_LABEL,
+                TOTAL,
+                CURRENCY,
+                OPT_OUT_INFO,
+                CONTINUE_BUTTON_CALLBACK,
+                CANCEL_BUTTON_CALLBACK
+            };
 
     // Prevent instantiation.
     private SecurePaymentConfirmationAuthnProperties() {}

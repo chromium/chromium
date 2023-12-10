@@ -19,7 +19,6 @@
 #include "ash/system/tray/tray_bubble_base.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
@@ -119,16 +118,6 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
       active_status_area_widget->open_shelf_pod_bubble();
 
   if (!open_shelf_pod_bubble) {
-    return;
-  }
-
-  auto* unified_system_tray_bubble =
-      active_status_area_widget->unified_system_tray()->bubble();
-
-  // If `QsRevamp` is disabled, the event handling will happen in
-  // `UnifiedSystemTrayBubble`.
-  if (!features::IsQsRevampEnabled() && unified_system_tray_bubble &&
-      open_shelf_pod_bubble == unified_system_tray_bubble->GetBubbleView()) {
     return;
   }
 

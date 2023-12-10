@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">ತಿಳಿದಿರುವ ಸಮಸ್ಯೆಯಿಂದಾಗಿ ನಿಮ್ಮ Chromebook ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಈ ಸಮಯದ ನಂತರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1226877728704622336">ನಿಷ್ಕ್ರಿಯ ಡೆಸ್ಕ್</translation>
 <translation id="1229194443904279055">ಆಯ್ಕೆಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
-<translation id="1233979878541157665">ಫೈಲ್ ಹೆಸರಿನ ಬದಲಿಗೆ "ಸನ್‌ಸೆಟ್" ಅಥವಾ "ಟ್ರೀ" ಹುಡುಕಲು ಪ್ರಯತ್ನಿಸಿ. ಹುಡುಕಾಟ ಪಟ್ಟಿಯಲ್ಲಿ ನೀವು ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟವನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1235458158152011030">ತಿಳಿದಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1240638468526743569">ಆ್ಯಪ್</translation>
@@ -93,7 +92,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="1294929383540927798">ಲಾಕ್-ಸ್ಕ್ರೀನ್ ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ಶಿಫಾರಸು ಮಾಡಲಾದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="1311294419381837540">ನೀವು ಟ್ಯಾಬ್ ಒಂದನ್ನು ಬಿತ್ತರಿಸುತ್ತಿರುವಿರಿ. ನೀವು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಬಹುದು ಅಥವಾ ನಿಲ್ಲಿಸಬಹುದು.</translation>
@@ -131,8 +129,8 @@
 <translation id="146902737843070955">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಬದಲಾವಣೆಯನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ</translation>
 <translation id="1469148162491666137">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, ಮತ್ತು ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
 <translation id="147310119694673958">ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, 1 ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="1479909375538722835">ಫ್ಲೋಟಿಂಗ್ ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಮೆನು</translation>
-<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, ಕ್ಯಾಲೆಂಡರ್ ವೀಕ್ಷಣೆಯನ್ನು ತೆರೆಯಲು Enter ಕೀ ಒತ್ತಿರಿ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">ಡಿಕ್ಟೇಶನ್ ನೀಡುವ ಮೂಲಕ, ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ಟೈಪ್ ಮಾಡಬಹುದು. ನೀವು ಪಠ್ಯ ಫೀಲ್ಡ್‌ನಲ್ಲಿರುವಾಗ ಡಿಕ್ಟೇಶನ್ ಕೀಯನ್ನು ಒತ್ತಿರಿ ಅಥವಾ ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿರುವ ಮೈಕ್ರೊಫೋನ್ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ. ನಿಮ್ಮ ಡಿಕ್ಟೇಶನ್ ಭಾಷೆಯನ್ನು <ph name="LANGUAGE" /> ಭಾಷೆಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಧ್ವನಿಯನ್ನು ಪ್ರಕ್ರಿಯೆಗಾಗಿ Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ ನೀವು ಡಿಕ್ಟೇಶನ್ ಭಾಷೆಯನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿಯಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> ಜೊತೆಗೆ <ph name="FIRST_ITEM_TITLE" /> ಅನ್ನು ಸ್ವ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -213,15 +211,6 @@
 <translation id="1796561540704213354">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1816896987747843206">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
-<translation id="1823280932251546115">ಸ್ಟೇಟಸ್ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ಇಥರ್ನೆಟ್: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ಅನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -304,6 +293,7 @@
 <translation id="2224075387478458881">ಸುರಕ್ಷಿತ ವಿಷಯವು ಗೋಚರಿಸಿದಾಗ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2227179592712503583">ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2248634276911611268">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಈ ಹೊಸ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಿಸಿ</translation>
+<translation id="2253808149208613283">ಈ ಸಾಧನವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="225680501294068881">ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="2258734398699965611">ಸೂಚಿಸಲಾದ ಫೈಲ್‌ಗಳು</translation>
@@ -353,7 +343,6 @@
 <translation id="243878895369688216">ನಿನ್ನೆ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="2440978926514840421">GIF ರೆಕಾರ್ಡಿಂಗ್ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2441427462554639370">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ತೀರಾ ಕಡಿಮೆ ಇರುವ ಕಾರಣ ರೆಕಾರ್ಡಿಂಗ್ ಕೊನೆಗೊಂಡಿದೆ</translation>
-<translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
 <translation id="2449089818483227734">ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಿದೆ</translation>
 <translation id="2450205753526923158">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್</translation>
 <translation id="2455994958736234930">www. ಮತ್ತು .com ಅನ್ನು ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ, ನಂತರ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -458,6 +447,7 @@
 <translation id="2914580577416829331">ಸ್ಕ್ರೀನ್‌ ಕ್ಯಾಪ್ಚರ್‌ಗಳು</translation>
 <translation id="2924416280450782352">ಐಟಂಗಳನ್ನು ತೋರಿಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಈ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಪುನಃ ತೆರೆದು ನೋಡಿ.</translation>
 <translation id="2931572158271115754">ಈ ಮಾಡಬೇಕಾದುದು ಪಟ್ಟಿಯಲ್ಲಿ ಏನೂ ಇಲ್ಲ.</translation>
+<translation id="2935225303485967257">ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2941112035454246133">ಕಡಿಮೆ</translation>
 <translation id="2942350706960889382">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
 <translation id="2942516765047364088">ಶೆಲ್ಫ್ ಸ್ಥಳ</translation>
@@ -661,6 +651,7 @@
 <translation id="3659667652322717492">ನೀವು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಮೈಕ್ ವರ್ತನೆಯನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="3659814201068740063">(<ph name="PERCENTAGE" />%) ರ‍ಷ್ಟು ಬ್ಯಾಟರಿ <ph name="TIME_LEFT" /> ಸಮಯ ಉಳಿದಿದೆ.
 ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="3660860940251915011">ಹೆಚ್ಚಿನ ಗೋಚರತೆಯ <ph name="FEATURE_NAME" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
 <translation id="3666266999138159418">ನಿಮ್ಮ ಫ್ಲೋಟಿಂಗ್ ವಿಂಡೋವನ್ನು ಮರೆಮಾಡಲು ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="367531336287639526">ವಿಳಾಸ ಪಟ್ಟಿಯ ಎಡಭಾಗದಲ್ಲಿರುವ ಮೊದಲ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -669,6 +660,7 @@
 <translation id="36813544980941320">ನಿಮ್ಮ ಫೋನ್ ಮತ್ತು <ph name="DEVICE_NAME" /> ನಡುವೆ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ನಂತರ <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ವೆಬ್‌ಸೈಟ್‌ಗಳು</translation>
+<translation id="3697991387880191195">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="3702809606464356667">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ, ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="3702846122927433391">ನೈಜೀರಿಯಾದಲ್ಲಿನ ಜನಸಂಖ್ಯೆ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -765,7 +757,6 @@
 <translation id="412298498316631026">ವಿಂಡೋ</translation>
 <translation id="4123259114412175274">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4125970834901680537">ಟ್ಯಾಬ್ಲೆಟ್ ಮೋಡ್‌ನಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ಟ್ರೀಮ್ ಮಾಡಲಾಗದು. ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ ನಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="4129129681837227511">ನಿಮ್ಮ ಲಾಕ್ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಲು, ಸೆಟ್ಟಿಂಗ್ ಬದಲಾಯಿಸಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4131973331381812765">ತಾಪಮಾನ: <ph name="TEMPERATURE" />°C - ಪ್ರಸ್ತುತ ವೇಗ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4132502210362661715">ನಿಮ್ಮ Chromebook ನಿಮಗೆ ಕೆಲಸವನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುವಂತಹ ಇನ್-ಬಿಲ್ಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಹೊಂದಿರುತ್ತದೆ. ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಲಾಂಚರ್‌ನಲ್ಲಿ ಹುಡುಕಿ.</translation>
 <translation id="4136724716305260864">ಸೂರ್ಯೋದಯದವರೆಗೆ ಆನ್</translation>
@@ -831,6 +822,7 @@
 <translation id="4324840740119394760">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP_NAME" /> ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="4333628967105022692">ಅನೇಕ ಬಳಕೆದಾರರು ಸೈನ್ ಇನ್ ಆಗಿರುವಾಗ ಲ್ಯಾಕ್ರೋಸ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4338109981321384717">ಭೂತಕನ್ನಡಿ</translation>
+<translation id="4351244548802238354">ಸಂವಾದವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4356872429719185452">ಹಾಟ್‌ಸ್ಪಾಟ್ ವಿವರಗಳನ್ನು ತೋರಿಸಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4371348193907997655">ಕ್ಯಾಸ್ಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -844,6 +836,7 @@
 <translation id="4389184120735010762">ನೀವು ಡಾಕ್ ಮಾಡಿದ ವರ್ಧಕದ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಒತ್ತಿದ್ದೀರಿ. ನೀವು ಅದನ್ನು ಆನ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="439598569299422042">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ಕನೆಕ್ಟ್ ಆಗಿದೆ ಹಾಗೂ ಬಳಸಲು ಸಿದ್ಧವಾಗಿದೆ. ನಿಮ್ಮ ಮೌಸ್ ಅನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="4405151984121254935">ಕನೆಕ್ಟ್ ಆಗಿರುವ ಪೆರಿಫರಲ್ ಪ್ರಕಾರವು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="4406883609789734330">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ಆಫ್ ಆಗಿದೆ.</translation>
@@ -890,6 +883,7 @@
 <translation id="4577990005084629481">ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4578906031062871102">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="458210817642223147">GIF ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
+<translation id="4582666543382004902">Wi-Fi ಬಳಸಲು ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಬಳಸಲು, Wi-Fi ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="4585337515783392668">"ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರು" ನಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4596144739579517758">ಡಾರ್ಕ್ ಥೀಮ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4611292653554630842">ಲಾಗ್ ಇನ್</translation>
@@ -990,6 +984,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> ರಂದು ಮಾರ್ಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4987738733603015246">ಡೆಸ್ಕ್ 16</translation>
 <translation id="4989163558385430922">ಎಲ್ಲವನ್ನೂ ನೋಡಿ</translation>
 <translation id="5003993274120026347">ಮುಂದಿನ ವಾಕ್ಯ</translation>
@@ -1024,7 +1019,6 @@
 <translation id="5117590920725113268">ಮುಂದಿನ ತಿಂಗಳು ತೋರಿಸಿ</translation>
 <translation id="5121628974188116412">ಪುಟದ ಕೆಳಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
-<translation id="5145331109270917438">ದಿನಾಂಕ ಮಾರ್ಪಡಿಸಿದೆ</translation>
 <translation id="5147567197700016471">ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="5150070631291639005">ಗೌಪ್ಯತಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5155897006997040331">ರೀಡಿಂಗ್ ಸ್ಪೀಡ್</translation>
@@ -1096,7 +1090,7 @@
 <translation id="5393156353051693207">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಮರುಕ್ರಮಗೊಳಿಸಲು ಎಲ್ಲಿಯಾದರೂ ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ <ph name="DRAGGED_APP_NAME" />, ಫೋಲ್ಡರ್ ರಚಿಸಲು ಬಿಡುಗಡೆ ಮಾಡಿ.</translation>
 <translation id="5397578532367286026">ಈ ಬಳಕೆದಾರರ ಬಳಕೆ ಮತ್ತು ಇತಿಹಾಸವನ್ನು chrome.com ನಲ್ಲಿ ನಿರ್ವಾಹಕರು (<ph name="MANAGER_EMAIL" />) ಪರಿಶೀಲಿಸಬಹುದು.</translation>
-<translation id="5400461572260843123">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ನೋಟಿಫಿಕೇಶನ್‌ ಕೇಂದ್ರಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಹುಡುಕಾಟ + ಎಡಕ್ಕೆ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="540713187982329711">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, ಯಾವುದೇ ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="5413656666631274079">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟ</translation>
 <translation id="5414198321558177633">ಪ್ರೊಫೈಲ್ ಪಟ್ಟಿಯನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="5426063383988017631">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -1143,7 +1137,6 @@
 <translation id="558849140439112033">ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಪ್ರದೇಶವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="5590609058453685222">ಮ್ಯೂಟ್ ಕುರಿತು ನೋಟಿಫಿಕೇಶನ್ ಆನ್ ಆಗಿದೆ. ಮ್ಯೂಟ್ ಮಾಡಿದ್ದಾಗ ನೀವು ಮಾತನಾಡಿದರೆ ನೀವು ನೋಟಿಫಿಕೇಶನ್ ಅನ್ನು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
-<translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5599242528220103262">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5600837773213129531">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು Ctrl + Alt + Z ಒತ್ತಿ.</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1153,7 +1146,7 @@
 <translation id="5620979661744857819">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ <ph name="APP_NAME" /> ಮತ್ತು ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="5646376287012673985">ಸ್ಥಳ</translation>
+<translation id="5632485077360054581">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="5662075790140998213">ಡೆಸ್ಕ್ 10</translation>
@@ -1188,9 +1181,11 @@
 <translation id="576341972084747908">ಅಪಾಯಕಾರಿ <ph name="FILENAME" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="576453121877257266">ನೈಟ್ ಲೈಟ್ ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="5764569119212455782">ಆಯ್ಕೆಮಾಡಿದ ಕೊನೆಯ ಭಾಷೆಗೆ ಬದಲಿಸಿ</translation>
+<translation id="5767730327234918501">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="5769373120130404283">ಗೌಪ್ಯತೆ ಪರದೆ</translation>
 <translation id="5773950591113557721">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ <ph name="APP_NAME" /> ಮತ್ತು ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡುತ್ತದೆ</translation>
 <translation id="5774295353725270860">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="5775936059231769503">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="5777841717266010279">ಸ್ಕ್ರೀನ್ ಹಂಚಿಕೆ ನಿಲ್ಲಿಸುವುದೇ?</translation>
 <translation id="5779721926447984944">ಪಿನ್ ಮಾಡಲಾದ ಫೈಲ್‌ಗಳು</translation>
 <translation id="5785221443435874078">ಈ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
@@ -1301,6 +1296,7 @@
 <translation id="6199775032047436064">ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಮರುತುಂಬಿಸಿ</translation>
 <translation id="6200515304866777730">ಆ್ಯಪ್‌ನಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6210042900243040400">ಹಿಂದೆ ಉಳಿಸಿದ <ph name="EMAIL" /> ಅನ್ನು <ph name="NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
+<translation id="6212097153736801627">ನಿಮ್ಮ <ph name="PERIPHERAL_NAME" /> ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="6213808132343683860">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅಥವಾ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6220928844947387476">ಈಗ ನೀವು ಮತ್ತು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಒಂದೇ ಸಮಯದಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು</translation>
 <translation id="622484624075952240">ಕೆಳಗೆ</translation>
@@ -1345,7 +1341,6 @@
 <translation id="643593192654616063">ಒಟ್ಟು <ph name="STORAGE_TOTAL_SIZE" /> ಸಂಗ್ರಹಣೆಯಲ್ಲಿ <ph name="STORAGE_IN_USE_SIZE" /> ಯಷ್ಟು ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
-<translation id="6446225358675593408">ಕಂಟೆಂಟ್‌ ಮೂಲಕ ನಿಮ್ಮ ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ಈವೆಂಟ್</translation>
 <translation id="6449483711453944360">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಅಜ್ಞಾತ ವಿಂಡೋಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6450245544201845082">ಬಲ-ಕ್ಲಿಕ್ ಶಾರ್ಟ್‌ಕಟ್ ಪ್ರಸ್ತುತ ಆಫ್ ಆಗಿದೆ</translation>
@@ -1451,6 +1446,7 @@
 <translation id="6827049576281411231">ಈವೆಂಟ್ ಪ್ಯಾನೆಲ್ ಮುಚ್ಚಿ</translation>
 <translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> ಬಟನ್‌ಗೆ ಹೋಗಿ.</translation>
 <translation id="6836499262298959512">ಅಪಾಯಕಾರಿ ಫೈಲ್</translation>
+<translation id="6837621009301897464">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಲು, ಒತ್ತಿರಿ</translation>
 <translation id="6852052252232534364">ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6855029042976311970">ಇದೀಗ ಎಡಿಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6856708615407876657">ಹುಡುಕಾಟ ಫಲಿತಾಂಶ ವರ್ಗಗಳನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
@@ -1508,6 +1504,7 @@
 <translation id="7068360136237591149">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7076293881109082629">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7076878155205969899">ಧ್ವನಿಯನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
+<translation id="7084678090004350185">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, <ph name="DEVICECOUNT" /> ಸಾಧನಗಳನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7086931198345821656">ಈ ಅಪ್‌ಡೇಟ್‌ಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಪವರ್‌ವಾಷ್‌‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಇತ್ತೀಚಿನ <ph name="SYSTEM_APP_NAME" /> ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="7088960765736518739">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಬದಲಿಸಿ</translation>
 <translation id="709015856939120012">ಪುಟದಲ್ಲಿ ಝೂಮ್‌ ಇನ್‌ ಮಾಡಿ</translation>
@@ -1527,6 +1524,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಹಳೆಯ ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="7173114856073700355">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7188494361780961876">ಮೆನುವನ್ನು ಪರದೆಯ ಮೇಲ್ಭಾಗದ ಎಡತುದಿಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7189412385142492784">ಶುಕ್ರ ಗ್ರಹ ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ</translation>
@@ -1540,13 +1538,13 @@
 <translation id="726276584504105859">ವಿಭಜಿತ ಪರದೆಯನ್ನು ಬಳಸಲು ಇಲ್ಲಿ ಡ್ರ್ಯಾಗ್‌ ಮಾಡಿ</translation>
 <translation id="7262906531272962081">ಜ್ಞಾಪನೆ ರಚಿಸಿ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + ಬ್ಯಾಕ್‍ಸ್ಪೇಸ್</translation>
+<translation id="7285232777292757180">ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲು ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಟೂಲ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="7302889331339392448">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="7303365578352795231">ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ ಉತ್ತರಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ eSIM ಅನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತಿದ್ದಾರೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="7313193732017069507">ಕ್ಯಾಮರಾ ವಿಸ್ತರಿಸಿ</translation>
 <translation id="7316261577130609484">ಹೊಸ ಕಾರ್ಯವನ್ನು ಸೇರಿಸಿ</translation>
-<translation id="7321889295239318128">ಇನ್ನಷ್ಟು ತಿಳಿಯಲು shift ಜೊತೆ tab ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="7330397557116570022">ಉಕ್ತಲೇಖನವನ್ನು ಬಳಸಲು ಪಠ್ಯದ ಫೀಲ್ಡ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="7340731148882810149">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳ ಮೆನು</translation>
@@ -1693,6 +1691,13 @@
 <translation id="7893503627044934815">ಈ ಫೈಲ್ ಅನ್ನು ತೋರಿಸುವುದು ಬೇಡ</translation>
 <translation id="7895348134893321514">ಟೋಟ್</translation>
 <translation id="7897375687985782769">ನೀವು ಪರದೆಯನ್ನು ತಿರುಗಿಸಲು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಒತ್ತಿದ್ದೀರಿ. ನೀವು ಪರದೆಯನ್ನು ತಿರುಗಿಸಲು ಬಯಸುವಿರಾ?</translation>
+<translation id="7897626842031123113">ಸ್ಥಿತಿ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
 <translation id="7902625623987030061">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆನ್ಸರ್‌‌ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
@@ -1726,7 +1731,6 @@
 <translation id="8001755249288974029">ಕರ್ಸರ್‌ನಿಂದ ಸಾಲಿನ ಆರಂಭಕ್ಕೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8004512796067398576">ಹೆಚ್ಚಿಕೆ</translation>
 <translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
-<translation id="8028993641010258682">ಗಾತ್ರ</translation>
 <translation id="8029247720646289474">ಹಾಟ್‌ಸ್ಪಾಟ್ ಕನೆಕ್ಷನ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8029629653277878342">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8030169304546394654">ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -1766,7 +1770,6 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8185090165691050712">ಲಾಕ್ ಮೋಡ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಮೆನುವನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
-<translation id="8192202700944119416">ಅಧಿಸೂಚನೆಗಳು ಮರೆಯಾಗಿವೆ.</translation>
 <translation id="8198456017687137612">ಬಿತ್ತರಿಸುವ ಟ್ಯಾಬ್‌</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8203795194971602413">ಬಲ-ಕ್ಲಿಕ್</translation>
@@ -1811,7 +1814,6 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ಕೇಸ್)</translation>
 <translation id="8420205633584771378">ಈ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="8421270167862077762">ಈ ಸಾಧನದಲ್ಲಿ <ph name="UNAVAILABLE_APPS" /> ಲಭ್ಯವಿಲ್ಲ.</translation>
-<translation id="8425213833346101688">ಬದಲಿಸಿ</translation>
 <translation id="8426708595819210923">ಶುಭ ಸಂಜೆ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ರಿಂದ <ph name="KEY_TWO" /> ವರೆಗೆ</translation>
@@ -1830,7 +1832,6 @@
 <translation id="8487699605742506766">ಹಾಟ್‌ಸ್ಪಾಟ್</translation>
 <translation id="8491237443345908933">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲು 'ಖಚಿತಪಡಿಸಿ' ಕ್ಲಿಕ್ ಮಾಡಿ. ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಇನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="8496402167048257517">Nearby ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8507563469658346379">ಪ್ರತಿಯೊಬ್ಬರು, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">ಹೊಸ ಡೆಸ್ಕ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="85123341071060231">Chromebookನ ಬ್ಲೂಟೂತ್ ಆಫ್ ಆಗಿದೆ. Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.</translation>
@@ -1921,6 +1922,7 @@
 <translation id="888982883502837004">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿವೆ. ಪರಿಶೀಲಿಸಲು ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ಅನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="889790758758811533">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ (ಸುಮಾರು <ph name="TIME_LEFT" /> ಬಾಳಿಕೆ ಬರಬಹುದು). ನಿಮ್ಮ ಸಾಧನವನ್ನು ಚಾರ್ಜ್ ಮಾಡಿ.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ಕನೆಕ್ಟ್ ಆಗಿದೆ ಹಾಗೂ ಬಳಸಲು ಸಿದ್ಧವಾಗಿದೆ. ನಿಮ್ಮ ಗ್ರಾಫಿಕ್ಸ್ ಟ್ಯಾಬ್ಲೆಟ್ ಅನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(ಶೀರ್ಷಿಕೆಯಿಲ್ಲ)</translation>
 <translation id="890616557918890486">ಮೂಲವನ್ನು ಬದಲಿಸಿ</translation>
@@ -1957,7 +1959,6 @@
 <translation id="9070640332319875144">ಅಸಿಸ್ಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9072519059834302790">ಬ್ಯಾಟರಿ ಖಾಲಿಯಾಗಲು <ph name="TIME_LEFT" /> ಸಮಯವಿದೆ.</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
-<translation id="9077404278023321866">ಟೆಂಪ್ಲೇಟ್‌ಗಳು</translation>
 <translation id="9077515519330855811">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು, ಇದೀಗ <ph name="MEDIA_TITLE" /> ಅನ್ನು ಪ್ಲೇ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="9079731690316798640">ವೈ-ಫೈ: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">ಕ್ಯಾಮರಾವನ್ನು ಮೇಲಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>

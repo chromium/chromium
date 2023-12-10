@@ -22,8 +22,8 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     private final Tab mTab;
     private Long mNavigationId;
 
-    public PageLoadMetricsObserver(CustomTabsConnection connection,
-            CustomTabsSessionToken session, Tab tab) {
+    public PageLoadMetricsObserver(
+            CustomTabsConnection connection, CustomTabsSessionToken session, Tab tab) {
         mConnection = connection;
         mSession = session;
         mTab = tab;
@@ -39,8 +39,12 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     }
 
     @Override
-    public void onNetworkQualityEstimate(WebContents webContents, long navigationId,
-            int effectiveConnectionType, long httpRttMs, long transportRttMs) {
+    public void onNetworkQualityEstimate(
+            WebContents webContents,
+            long navigationId,
+            int effectiveConnectionType,
+            long httpRttMs,
+            long transportRttMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         Bundle args = new Bundle();
@@ -51,40 +55,64 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     }
 
     @Override
-    public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartMicros, long firstContentfulPaintMs) {
+    public void onFirstContentfulPaint(
+            WebContents webContents,
+            long navigationId,
+            long navigationStartMicros,
+            long firstContentfulPaintMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        mConnection.notifySinglePageLoadMetric(mSession, PageLoadMetrics.FIRST_CONTENTFUL_PAINT,
-                navigationStartMicros, firstContentfulPaintMs);
+        mConnection.notifySinglePageLoadMetric(
+                mSession,
+                PageLoadMetrics.FIRST_CONTENTFUL_PAINT,
+                navigationStartMicros,
+                firstContentfulPaintMs);
     }
 
     @Override
-    public void onLargestContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartMicros, long largestContentfulPaintMs,
+    public void onLargestContentfulPaint(
+            WebContents webContents,
+            long navigationId,
+            long navigationStartMicros,
+            long largestContentfulPaintMs,
             long largestContentfulPaintSize) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        Bundle args = mConnection.createBundleWithNavigationStartAndPageLoadMetric(
-                PageLoadMetrics.LARGEST_CONTENTFUL_PAINT, navigationStartMicros,
-                largestContentfulPaintMs);
+        Bundle args =
+                mConnection.createBundleWithNavigationStartAndPageLoadMetric(
+                        PageLoadMetrics.LARGEST_CONTENTFUL_PAINT,
+                        navigationStartMicros,
+                        largestContentfulPaintMs);
         args.putLong(PageLoadMetrics.LARGEST_CONTENTFUL_PAINT_SIZE, largestContentfulPaintSize);
         mConnection.notifyPageLoadMetrics(mSession, args);
     }
 
     @Override
-    public void onLoadEventStart(WebContents webContents, long navigationId,
-            long navigationStartMicros, long loadEventStartMs) {
+    public void onLoadEventStart(
+            WebContents webContents,
+            long navigationId,
+            long navigationStartMicros,
+            long loadEventStartMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        mConnection.notifySinglePageLoadMetric(mSession, PageLoadMetrics.LOAD_EVENT_START,
-                navigationStartMicros, loadEventStartMs);
+        mConnection.notifySinglePageLoadMetric(
+                mSession,
+                PageLoadMetrics.LOAD_EVENT_START,
+                navigationStartMicros,
+                loadEventStartMs);
     }
 
     @Override
-    public void onLoadedMainResource(WebContents webContents, long navigationId,
-            long dnsStartMs, long dnsEndMs, long connectStartMs, long connectEndMs,
-            long requestStartMs, long sendStartMs, long sendEndMs) {
+    public void onLoadedMainResource(
+            WebContents webContents,
+            long navigationId,
+            long dnsStartMs,
+            long dnsEndMs,
+            long connectStartMs,
+            long connectEndMs,
+            long requestStartMs,
+            long sendStartMs,
+            long sendEndMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         Bundle args = new Bundle();
@@ -109,19 +137,24 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     }
 
     @Override
-    public void onLayoutShiftScore(WebContents webContents, long navigationId,
-            float layoutShiftScoreBeforeInputOrScroll, float layoutShiftScoreOverall) {
+    public void onLayoutShiftScore(
+            WebContents webContents,
+            long navigationId,
+            float layoutShiftScoreBeforeInputOrScroll,
+            float layoutShiftScoreOverall) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         Bundle args = new Bundle();
         args.putFloat(PageLoadMetrics.LAYOUT_SHIFT_SCORE, layoutShiftScoreOverall);
-        args.putFloat(PageLoadMetrics.LAYOUT_SHIFT_SCORE_BEFORE_INPUT_OR_SCROLL,
+        args.putFloat(
+                PageLoadMetrics.LAYOUT_SHIFT_SCORE_BEFORE_INPUT_OR_SCROLL,
                 layoutShiftScoreBeforeInputOrScroll);
         mConnection.notifyPageLoadMetrics(mSession, args);
     }
 
     private boolean shouldNotifyPageLoadMetrics(WebContents webContents, long navigationId) {
-        return webContents == mTab.getWebContents() && null != mNavigationId
+        return webContents == mTab.getWebContents()
+                && null != mNavigationId
                 && navigationId == mNavigationId;
     }
 }

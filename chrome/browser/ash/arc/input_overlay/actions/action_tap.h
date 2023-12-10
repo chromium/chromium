@@ -23,7 +23,7 @@ class ActionTap : public Action {
 
   // Action:
   bool ParseFromJson(const base::Value::Dict& value) override;
-  bool InitByAddingNewAction() override;
+  bool InitByAddingNewAction(const gfx::Point& target_pos) override;
   void InitByChangingActionType(Action* action) override;
   bool RewriteEvent(const ui::Event& origin,
                     const bool is_mouse_locked,

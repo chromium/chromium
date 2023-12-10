@@ -77,8 +77,9 @@ class SignalDatabaseImplTest : public testing::Test {
     auto db = std::make_unique<leveldb_proto::test::FakeDB<proto::SignalData>>(
         &db_entries_);
     db_ = db.get();
-    signal_db_ =
-        std::make_unique<SignalDatabaseImpl>(std::move(db), &test_clock_);
+    signal_db_ = std::make_unique<SignalDatabaseImpl>(
+        std::move(db), &test_clock_,
+        task_environment_.GetMainThreadTaskRunner());
 
     signal_db_->Initialize(base::DoNothing());
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -91,6 +92,7 @@ class SignalDatabaseImplTest : public testing::Test {
     db_entries_.clear();
     db_ = nullptr;
     signal_db_.reset();
+    task_environment_.RunUntilIdle();
   }
 
   void ExpectGetSamples(

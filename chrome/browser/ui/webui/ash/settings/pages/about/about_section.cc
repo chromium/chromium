@@ -57,10 +57,14 @@ using ::chromeos::settings::mojom::Subpage;
 namespace {
 
 const std::vector<SearchConcept>& GetAboutSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_DETAILED_BUILD,
        mojom::kDetailedBuildInfoSubpagePath,
-       mojom::SearchResultIcon::kChrome,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kDetailedBuild
+                        : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kDetailedBuildInfo}},
@@ -78,31 +82,36 @@ const std::vector<SearchConcept>& GetAboutSearchConcepts() {
        {.section = mojom::Section::kAboutChromeOs}},
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_CHANNEL,
        mojom::kDetailedBuildInfoSubpagePath,
-       mojom::SearchResultIcon::kChrome,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kDetailedBuild
+                        : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChangeChromeChannel}},
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_COPY_DETAILED_BUILD,
        mojom::kDetailedBuildInfoSubpagePath,
-       mojom::SearchResultIcon::kChrome,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kDetailedBuild
+                        : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCopyDetailedBuildInfo}},
       {IDS_OS_SETTINGS_TAG_ABOUT_OS_UPDATE,
        mojom::kAboutChromeOsSectionPath,
-       mojom::SearchResultIcon::kChrome,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kCheckForUpdate
+                        : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCheckForOsUpdate}},
       {IDS_OS_SETTINGS_TAG_ABOUT_HELP,
        mojom::kAboutChromeOsSectionPath,
-       mojom::SearchResultIcon::kChrome,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kHelp
+                        : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kGetHelpWithChromeOs}},
       {IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES,
        mojom::kAboutChromeOsSectionPath,
-       mojom::SearchResultIcon::kChrome,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kReleaseNotes
+                        : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSeeWhatsNew},
@@ -116,7 +125,9 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS,
        mojom::kAboutChromeOsSectionPath,
-       mojom::SearchResultIcon::kChrome,
+       ash::features::IsOsSettingsRevampWayfindingEnabled()
+           ? mojom::SearchResultIcon::kDiagnostics
+           : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDiagnostics},
@@ -132,7 +143,9 @@ const std::vector<SearchConcept>& GetFirmwareUpdatesAppSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES,
        mojom::kAboutChromeOsSectionPath,
-       mojom::SearchResultIcon::kChrome,
+       ash::features::IsOsSettingsRevampWayfindingEnabled()
+           ? mojom::SearchResultIcon::kFirmwareUpdates
+           : mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFirmwareUpdates}},
@@ -212,10 +225,10 @@ AboutSection::AboutSection(Profile* profile,
       pref_service_(pref_service),
       crostini_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<CrostiniSection>(profile,
-                                                     search_tag_registry,
-                                                     pref_service)
-              : absl::nullopt) {
+              ? std::make_optional<CrostiniSection>(profile,
+                                                    search_tag_registry,
+                                                    pref_service)
+              : std::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAboutSearchConcepts());
 
@@ -357,6 +370,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {version_ui::kARC, IDS_ARC_LABEL},
     {"aboutBuildDetailsCopyTooltipLabel",
      IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPY_TOOLTIP_LABEL},
+    {"aboutBuildDetailsCopiedToClipboardA11yLabel",
+     IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPIED_TO_CLIPBOARD_A11Y_LABEL},
     {"aboutIsArcStatusTitle", IDS_OS_SETTINGS_ABOUT_ARC_STATUS_TITLE},
     {"aboutIsDeveloperModeTitle", IDS_OS_SETTINGS_ABOUT_DEVELOPER_MODE},
     {"isEnterpriseManagedTitle",

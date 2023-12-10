@@ -112,7 +112,7 @@ ChooseFileJavaScriptFeature* ChooseFileJavaScriptFeature::GetInstance() {
   return instance.get();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ChooseFileJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kChooseFileScriptName;
 }
@@ -128,8 +128,8 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   }
   base::Value::Dict& body_dict = message.body()->GetDict();
 
-  absl::optional<double> accept_type = body_dict.FindDouble("acceptType");
-  absl::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");
+  std::optional<double> accept_type = body_dict.FindDouble("acceptType");
+  std::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");
   if (!accept_type || !has_multiple) {
     return;
   }

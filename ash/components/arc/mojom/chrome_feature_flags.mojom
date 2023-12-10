@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 6
+// Next MinVersion: 9
 
 module arc.mojom;
 
@@ -17,8 +17,8 @@ enum RoundedWindowCompatStrategy {
 
 // State of feature flags that ARC++ needs to know from Chrome.
 struct FeatureFlags {
-  // chrome://flags#qs-revamp
-  bool qs_revamp;
+  // DEPRECATED: chrome://flags#qs-revamp
+  bool deprecated_qs_revamp;
   // chrome://flags#jelly-colors
   bool jelly_colors;
   // DEPRECATED: chrome://flags#arc-trackpad-scroll-touchscreen-emulation
@@ -33,6 +33,12 @@ struct FeatureFlags {
   [MinVersion=4] bool xdg_mode;
   // chrome://flags#enable-pip-double-tap-to-resize;
   [MinVersion=5] bool enable_pip_double_tap;
+  // chrome://flags#render-arc-notifications-by-chrome;
+  [MinVersion=6] bool render_arc_notifications_by_chrome;
+  // ash::features::IsGameDashboardEnabled
+  [MinVersion=7] bool game_dashboard;
+  // chrome://flags#arc-resize-compat;
+  [MinVersion=8] bool resize_compat;
 };
 
 // This interface provides methods to propagate the feature flag status to

@@ -5,13 +5,13 @@
 #include "components/autofill/content/renderer/form_cache.h"
 
 #include <algorithm>
+#include <functional>
 #include <set>
 #include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/page_form_analyser_logger.h"
@@ -65,10 +64,12 @@ blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
     return blink::FormElementPiiType::kUnknown;
   }
 
-  if (base::StartsWith(type, "EMAIL_"))
+  if (type.starts_with("EMAIL_")) {
     return blink::FormElementPiiType::kEmail;
-  if (base::StartsWith(type, "PHONE_"))
+  }
+  if (type.starts_with("PHONE_")) {
     return blink::FormElementPiiType::kPhone;
+  }
   return blink::FormElementPiiType::kOthers;
 }
 
@@ -86,8 +87,8 @@ bool IsFormInteresting(
     base::span<const WebFormControlElement> control_elements) {
   return !form.child_frames.empty() ||
          base::ranges::any_of(control_elements,
-                              base::not_fn(&form_util::IsCheckableElement)) ||
-         base::ranges::any_of(form.fields, base::not_fn(&std::string::empty),
+                              std::not_fn(&form_util::IsCheckableElement)) ||
+         base::ranges::any_of(form.fields, std::not_fn(&std::string::empty),
                               &FormFieldData::autocomplete_attribute);
 }
 
@@ -120,7 +121,7 @@ FormCache::FormCache(WebLocalFrame* frame) : frame_(frame) {}
 FormCache::~FormCache() = default;
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
-    const FieldDataManager* field_data_manager) {
+    const FieldDataManager& field_data_manager) {
   initial_checked_state_.clear();
   initial_select_values_.clear();
   initial_selectlist_values_.clear();
@@ -227,7 +228,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 }
 
 void FormCache::ClearElement(WebFormControlElement& control_element,
-                             const WebFormControlElement& trigger_element) {
+                             const WebFormControlElement& trigger_element,
+                             FieldDataManager& field_data_manager) {
   // Don't modify the value of disabled fields.
   if (!control_element.IsEnabled())
     return;
@@ -248,10 +250,15 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
 
   WebInputElement web_input_element =
       control_element.DynamicTo<WebInputElement>();
-  if (form_util::IsTextInput(web_input_element) ||
-      form_util::IsMonthInput(web_input_element)) {
+  bool is_text_input = form_util::IsTextInput(web_input_element);
+  if (is_text_input || form_util::IsMonthInput(web_input_element)) {
     web_input_element.SetAutofillValue(blink::WebString(),
                                        WebAutofillState::kNotFilled);
+    if (is_text_input) {
+      field_data_manager.UpdateFieldDataMap(
+          form_util::GetFieldRendererId(web_input_element), std::u16string(),
+          FieldPropertiesFlags::kNoFlags);
+    }
 
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
@@ -281,7 +288,8 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
   }
 }
 
-bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
+bool FormCache::ClearSectionWithElement(const WebFormControlElement& element,
+                                        FieldDataManager& field_data_manager) {
   // The intended behaviour is:
   // * Clear the currently focused element.
   // * Send the blur event.
@@ -300,7 +308,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   if (control_elements.size() < 2 && control_elements[0].Focused()) {
     // If there is no other field to be cleared, sending the blur event and then
     // the focus event for the currently focused element does not make sense.
-    ClearElement(control_elements[0], element);
+    ClearElement(control_elements[0], element, field_data_manager);
     return true;
   }
 
@@ -308,7 +316,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   for (WebFormControlElement& control_element : control_elements) {
     if (control_element.Focused()) {
       initially_focused_element = &control_element;
-      ClearElement(control_element, element);
+      ClearElement(control_element, element, field_data_manager);
       // A blur event is emitted for the focused element if it is an initiating
       // element before the clearing happens.
       initially_focused_element->DispatchBlurEvent();
@@ -319,7 +327,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   for (WebFormControlElement& control_element : control_elements) {
     if (control_element.Focused())
       continue;
-    ClearElement(control_element, element);
+    ClearElement(control_element, element, field_data_manager);
   }
 
   // A focus event is emitted for the initiating element after clearing is
@@ -391,6 +399,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       std::string title = base::StrCat({
           "overall type: ",
           field.overall_type,
+          "\nhtml type: ",
+          field.html_type,
           "\nserver type: ",
           field.server_type,
           "\nheuristic type: ",
@@ -489,9 +499,9 @@ void FormCache::PruneInitialValueCaches(
   auto should_not_retain = [&ids_to_retain](const auto& p) {
     return !base::Contains(ids_to_retain, p.first);
   };
-  base::EraseIf(initial_select_values_, should_not_retain);
-  base::EraseIf(initial_selectlist_values_, should_not_retain);
-  base::EraseIf(initial_checked_state_, should_not_retain);
+  std::erase_if(initial_select_values_, should_not_retain);
+  std::erase_if(initial_selectlist_values_, should_not_retain);
+  std::erase_if(initial_checked_state_, should_not_retain);
 }
 
 }  // namespace autofill

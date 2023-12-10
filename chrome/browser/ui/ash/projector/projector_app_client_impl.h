@@ -52,7 +52,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OpenFeedbackDialog() const override;
   void GetVideo(
       const std::string& video_file_id,
-      const absl::optional<std::string>& resource_key,
+      const std::optional<std::string>& resource_key,
       ash::ProjectorAppClient::OnGetVideoCallback callback) const override;
   void SetAnnotatorPageHandler(
       ash::UntrustedAnnotatorPageHandlerImpl* handler) override;

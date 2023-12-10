@@ -25,9 +25,6 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "action_link.css",
     "chrome_shared.css",
-    "list.css",
-    "menu_button.css",
-    "menu.css",
     "spinner.css",
     "text_defaults.css",
     "text_defaults_md.css",

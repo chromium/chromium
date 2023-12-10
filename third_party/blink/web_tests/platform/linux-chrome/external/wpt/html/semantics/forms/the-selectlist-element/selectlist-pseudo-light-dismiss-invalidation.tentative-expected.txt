@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] selectlist should not match :open when light dismissed.
+  promise_test: Unhandled rejection with value: "error: Action click failed"
+Harness: the test ran to completion.

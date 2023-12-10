@@ -114,10 +114,8 @@ class ManagedSessionService
   // chromeos::PowerManagerClient::Observer
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
-  void OnPasswordChangeDetectedLegacy(
-      const ash::UserContext& user_context) override {}
-  void OnPasswordChangeDetected(
-      std::unique_ptr<ash::UserContext> user_context) override {}
+  void OnOnlinePasswordUnusable(std::unique_ptr<ash::UserContext> user_context,
+                                bool) override {}
   void OnPasswordChangeDetectedFor(const AccountId& account) override {}
   void OnOldEncryptionDetected(std::unique_ptr<ash::UserContext> user_context,
                                bool has_incomplete_migration) override {}

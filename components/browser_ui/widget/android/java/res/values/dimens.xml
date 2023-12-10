@@ -198,4 +198,11 @@ found in the LICENSE file.
     <dimen name="empty_state_subheading_padding_top">8dp</dimen>
     <!-- Surface Polish -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
+
+    <!-- Preference switch -->
+    <!-- Work around to adopt the material switch . See crbug/1248590. -->
+    <item type="fraction" name="material_switch_scale_fraction">0.8</item>
+    <!-- Min height required to satisfy the min touch target size-->
+    <dimen name="switch_pre_scale_min_height">60dp</dimen>
+    <dimen name="switch_with_text_min_height">@dimen/min_touch_target_size</dimen>
 </resources>

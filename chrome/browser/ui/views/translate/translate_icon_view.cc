@@ -33,7 +33,7 @@ TranslateIconView::TranslateIconView(
                          page_action_icon_delegate,
                          "Translate") {
   SetID(VIEW_ID_TRANSLATE_BUTTON);
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }
 

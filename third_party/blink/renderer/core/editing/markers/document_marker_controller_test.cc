@@ -36,9 +36,11 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -662,6 +664,74 @@ TEST_F(DocumentMarkerControllerTest, SuggestionMarkersHaveUniqueTags) {
   EXPECT_EQ(2u, MarkerController().Markers().size());
   EXPECT_NE(To<SuggestionMarker>(MarkerController().Markers()[0].Get())->Tag(),
             To<SuggestionMarker>(MarkerController().Markers()[1].Get())->Tag());
+}
+
+TEST_F(DocumentMarkerControllerTest, HighlightsAreNonOverlappingAndSorted) {
+  SetBodyContent("<div>012345678901234567890123456789</div>");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Text* text = To<Text>(div->firstChild());
+
+  HeapVector<Member<AbstractRange>> highlight_ranges;
+  Highlight* highlight1 = Highlight::Create(highlight_ranges);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "highlight1",
+      highlight1);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 10), Position(text, 15)), "highlight1",
+      highlight1);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 12), Position(text, 14)), "highlight1",
+      highlight1);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 14), Position(text, 20)), "highlight1",
+      highlight1);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 25), Position(text, 30)), "highlight1",
+      highlight1);
+
+  Highlight* highlight2 = Highlight::Create(highlight_ranges);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "highlight2",
+      highlight2);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 0), Position(text, 15)), "highlight2",
+      highlight2);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 15), Position(text, 30)), "highlight2",
+      highlight2);
+  MarkerController().AddCustomHighlightMarker(
+      EphemeralRange(Position(text, 20), Position(text, 30)), "highlight2",
+      highlight2);
+
+  MarkerController().MergeOverlappingMarkers(DocumentMarker::kCustomHighlight);
+  DocumentMarkerVector markers = MarkerController().MarkersFor(
+      *text, DocumentMarker::MarkerTypes::CustomHighlight());
+  EXPECT_EQ(5u, markers.size());
+  EXPECT_EQ(0u, markers[0]->StartOffset());
+  EXPECT_EQ(5u, markers[0]->EndOffset());
+  EXPECT_EQ("highlight1", To<CustomHighlightMarker>(markers[0].Get())
+                              ->GetHighlightName()
+                              .GetString());
+  EXPECT_EQ(0u, markers[1]->StartOffset());
+  EXPECT_EQ(15u, markers[1]->EndOffset());
+  EXPECT_EQ("highlight2", To<CustomHighlightMarker>(markers[1].Get())
+                              ->GetHighlightName()
+                              .GetString());
+  EXPECT_EQ(10u, markers[2]->StartOffset());
+  EXPECT_EQ(20u, markers[2]->EndOffset());
+  EXPECT_EQ("highlight1", To<CustomHighlightMarker>(markers[2].Get())
+                              ->GetHighlightName()
+                              .GetString());
+  EXPECT_EQ(15u, markers[3]->StartOffset());
+  EXPECT_EQ(30u, markers[3]->EndOffset());
+  EXPECT_EQ("highlight2", To<CustomHighlightMarker>(markers[3].Get())
+                              ->GetHighlightName()
+                              .GetString());
+  EXPECT_EQ(25u, markers[4]->StartOffset());
+  EXPECT_EQ(30u, markers[4]->EndOffset());
+  EXPECT_EQ("highlight1", To<CustomHighlightMarker>(markers[4].Get())
+                              ->GetHighlightName()
+                              .GetString());
 }
 
 }  // namespace blink

@@ -5,8 +5,9 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_GENERIC_PENDING_RECEIVER_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_GENERIC_PENDING_RECEIVER_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/generic_pending_receiver.mojom-shared.h"
@@ -20,7 +21,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
   static bool IsNull(const GenericPendingReceiver& receiver);
   static void SetToNull(GenericPendingReceiver* receiver);
 
-  static base::StringPiece interface_name(
+  static std::string_view interface_name(
       const GenericPendingReceiver& receiver) {
     DCHECK(receiver.interface_name().has_value());
     return receiver.interface_name().value();

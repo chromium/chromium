@@ -3,20 +3,19 @@ include_rules = [
   "+components/commerce/core/proto",
   "+components/session_proto_db",
   "+components/commerce/ios/browser",
-  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/power_bookmarks/model",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/feature_engagement/model",
-  "+ios/chrome/browser/push_notification",
+  "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/url_loading/model",
 ]
 
 specific_include_rules = {
   "commerce_push_notification_client.mm": [
-    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
-    "+ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h",
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h"
   ]
 }

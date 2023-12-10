@@ -416,11 +416,40 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         deviceHandler.completePairDevice(/*success=*/ false);
         await flushTasks();
 
-        // Simulate pairing cancelation.
+        // Simulate clicking cancel button.
         await simulateCancelation();
         // Finish event is fired when canceling from device selection page.
         await finishedPromise;
       });
+
+  test('Cancel pairing without completing pairing', async function() {
+    await init();
+    assertTrue(!!getDeviceSelectionPage());
+    const finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
+
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
+    await flushTasks();
+    await selectDevice(device.deviceProperties);
+    await flushTasks();
+
+    // Cancel pairing before it finishes, this should cancel pairing.
+    await simulateCancelation();
+
+    // Clicking cancel again should close the UI.
+    await simulateCancelation();
+    // Finish event is fired when canceling from device selection page.
+    await finishedPromise;
+  });
 
   test('Confirm code', async function() {
     await init();

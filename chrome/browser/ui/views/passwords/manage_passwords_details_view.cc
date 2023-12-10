@@ -602,20 +602,20 @@ void ManagePasswordsDetailsView::SwitchToReadingMode() {
   on_activity_callback_.Run();
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ManagePasswordsDetailsView::GetUserEnteredUsernameValue() const {
   if (username_textfield_) {
     return username_textfield_->GetText();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ManagePasswordsDetailsView::GetUserEnteredPasswordNoteValue() const {
   if (note_textarea_) {
     return note_textarea_->GetText();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {

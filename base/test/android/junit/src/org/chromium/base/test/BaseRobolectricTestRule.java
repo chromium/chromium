@@ -53,8 +53,10 @@ public class BaseRobolectricTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                setUp(description.getTestClass().getMethod(
-                        stripBrackets(description.getMethodName())));
+                setUp(
+                        description
+                                .getTestClass()
+                                .getMethod(stripBrackets(description.getMethodName())));
                 boolean testFailed = true;
                 try {
                     base.evaluate();

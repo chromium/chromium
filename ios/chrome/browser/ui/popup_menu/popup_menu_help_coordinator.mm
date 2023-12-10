@@ -14,10 +14,10 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
-#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -101,8 +101,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 #pragma mark - Public methods
 
 - (void)start {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [sceneState addObserver:self];
 
   LayoutGuideCenter* layoutGuideCenter =
@@ -112,8 +111,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)stop {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
 }
 

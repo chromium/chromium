@@ -5,11 +5,11 @@
 #ifndef ASH_SYSTEM_CAST_CAST_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_CAST_CAST_NOTIFICATION_CONTROLLER_H_
 
-#include "ash/public/cpp/cast_config_controller.h"
+#include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/cast_config_controller.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -39,7 +39,7 @@ class ASH_EXPORT CastNotificationController
  private:
   // The callback that is triggered when the cast notification is pressed,
   // either on the body or buttons.
-  void PressedCallback(absl::optional<int> button_index);
+  void PressedCallback(std::optional<int> button_index);
 
   // Stops casting to the current displayed_route_id_
   void StopCasting();
@@ -55,7 +55,7 @@ class ASH_EXPORT CastNotificationController
 
   // Freeze info for the route we are currently displaying. If the user
   // interacts with a cast, we use these values.
-  absl::optional<int> freeze_button_index_;
+  std::optional<int> freeze_button_index_;
   bool displayed_route_is_frozen_ = false;
   bool freeze_on_tray_widget_destroyed_ = false;
 

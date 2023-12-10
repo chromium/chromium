@@ -33,7 +33,7 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
   };
 
   static void BrowsingDataAccessed(content::RenderFrameHost* rfh,
-                                   BrowsingDataModel::DataKey data_key,
+                                   const BrowsingDataModel::DataKey& data_key,
                                    StorageType storage_type,
                                    bool blocked);
 
@@ -49,14 +49,16 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
   // BrowsingDataModel::Delegate:
   void GetAllDataKeys(
       base::OnceCallback<void(std::vector<DelegateEntry>)> callback) override;
-  void RemoveDataKey(BrowsingDataModel::DataKey data_key,
+  void RemoveDataKey(const BrowsingDataModel::DataKey& data_key,
                      BrowsingDataModel::StorageTypeSet storage_types,
                      base::OnceClosure callback) override;
   absl::optional<BrowsingDataModel::DataOwner> GetDataOwner(
-      BrowsingDataModel::DataKey data_key,
+      const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
   absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+      const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
+  bool IsCookieDeletionDisabled(const GURL& url) override;
 
  private:
   ChromeBrowsingDataModelDelegate(Profile* profile,

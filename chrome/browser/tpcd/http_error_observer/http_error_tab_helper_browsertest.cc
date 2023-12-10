@@ -4,7 +4,9 @@
 
 #include "chrome/browser/tpcd/http_error_observer/http_error_tab_helper.h"
 
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,6 +16,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -31,6 +35,7 @@
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
 
+namespace {
 // Handles Favicon requests so they don't produce a 404 and augment http error
 // metrics during a test
 std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
@@ -42,6 +47,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
   // console error. Any 200 response will do.
   return std::make_unique<net::test_server::BasicHttpResponse>();
 }
+}  // namespace
 
 class HTTPErrProcBrowserTest : public InProcessBrowserTest {
  public:
@@ -68,7 +74,10 @@ class HTTPErrProcBrowserTest : public InProcessBrowserTest {
                     : content_settings::CookieControlsMode::kOff));
     scoped_refptr<content_settings::CookieSettings> settings =
         CookieSettingsFactory::GetForProfile(browser()->profile());
-    ASSERT_EQ(settings->ShouldBlockThirdPartyCookies(), enabled);
+    ASSERT_EQ(
+        settings->ShouldBlockThirdPartyCookies(),
+        enabled || base::FeatureList::IsEnabled(
+                       content_settings::features::kTrackingProtection3pcd));
   }
 
   // Checks that the HTTP Error has been properly recorded in the metrics
@@ -125,9 +134,20 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, NoErr) {
             0u);
 }
 
+class HTTPErrProcPre3pcdBrowserTest : public HTTPErrProcBrowserTest {
+ public:
+  HTTPErrProcPre3pcdBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Check that the ThirdPartyCookieBreakageIndicator UKM is sent on HTTP Error
 // without cookies blocked
-IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, WithCookiesWithErr) {
+IN_PROC_BROWSER_TEST_F(HTTPErrProcPre3pcdBrowserTest, WithCookiesWithErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(false);

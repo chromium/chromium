@@ -9,6 +9,7 @@
 <translation id="1445572445564823378">இந்த நீட்டிப்பு, <ph name="PRODUCT_NAME" /> ஐ மந்தமாக்குகிறது. <ph name="PRODUCT_NAME" /> இன்
 செயல்திறனை மீட்டமைக்க, இதை நீங்கள் முடக்க வேண்டும்.</translation>
 <translation id="1468038450257740950">WebGL ஆனது ஆதரவளிக்கப்படவில்லை.</translation>
+<translation id="1610570795592207282">ஸ்கிரிப்ட்டுக்கான css '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' என்ற பின்புலப் பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="2159915644201199628">இந்தப் படத்தை குறிநீக்க முடியவில்லை: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">மொழிபெயர்ப்பு பயன்படுத்தப்பட்டது, ஆனால் மெனிபெஃஸ்ட்டில் default_locale குறிப்பிடப்படவில்லை.</translation>
@@ -19,14 +20,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> விற்பனையாளர் அனுப்பிய <ph name="PRODUCT_ID" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />) தயாரிப்பை அறிய முடியவில்லை</translation>
 <translation id="3144135466825225871">crx ஃபைலை இடமாற்றுவதில் தோல்வி. ஃபைல் பயன்பாட்டில் உள்ளதா என்று பார்க்கவும்.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_ID" /> தயாரிப்பை அறிய முடியவில்லை.</translation>
-<translation id="3302709122321372472">உள்ளடக்க ஸ்கிரிப்டுக்காக css '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை. </translation>
 <translation id="3369521687965833290">நீட்டிப்பைத் திறக்க முடியவில்லை. பாதுகாப்பாக நீட்டிப்பைத் திறக்க வேண்டுமானால், உங்கள் சுயவிவர கோப்பகத்திற்கான பாதை தரப்பட வேண்டும். சுயவிவர கோப்பகமானது கோப்பக எழுத்துடன் தொடங்க வேண்டும் மற்றும் சந்திப்பு, மவுண்ட் பாயின்ட் அல்லது சிம்லிங்கைக் கொண்டிருக்கக் கூடாது. உங்கள் சுயவிவரத்தில் அவ்வாறான பாதைகள் எதுவுமில்லை.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">விற்பனையாளர் <ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_NAME" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">தனிப்பட்ட விசைக்கான உள்ளீட்டு மதிப்பானது, செல்லுபடியாகும் பாதையாக இருக்க வேண்டும்.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' என்ற விருப்பங்கள் பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="3984413272403535372">நீட்டிப்பிற்கு உள்நுழைவதில் பிழை.</translation>
-<translation id="39964277676607559">உள்ளடக்க ஸ்கிரிப்டுக்காக  javascript '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை.</translation>
 <translation id="4115165561519362854">இந்தச் சாதனத்தின் நிர்வாகிக்கு <ph name="EXTENSION_NAME" /> இன் குறைந்தபட்ச பதிப்பான <ph name="EXTENSION_VERSION" /> தேவை. இது அந்தப் பதிப்பிற்குப் (அல்லது சமீபத்திய பதிப்பு) புதுப்பிக்கப்படும் வரை இயக்கமுடியாது.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="471800408830181311">தனிப்பட்ட விசையை வெளியனுப்புவதில் தோல்வியடைந்தது.</translation>
@@ -34,6 +33,7 @@
 <translation id="4988792151665380515">பொது விசையை ஏற்றுமதி செய்வதில் தோல்வியடைந்தது.</translation>
 <translation id="5026754133087629784">இணையப்பார்வை: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">கோப்பகத்திலிருந்து தொகுப்பிற்கான அசல் பாதையைக் கண்டறிய முடியவில்லை.</translation>
+<translation id="5160071981665899014">ஸ்கிரிப்ட்டுக்கான JavaScript '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">வடிவமாக்கப்பட்ட சாளரங்கள் ஆதரிக்கப்படாது.</translation>
 <translation id="5456409301717116725">இந்த நீட்டிப்பு விசை ஃபைல் '<ph name="KEY_PATH" />' ஐக் கொண்டுள்ளது. நீங்கள் அதை செய்ய விரும்பாமல் இருக்கலாம்.</translation>

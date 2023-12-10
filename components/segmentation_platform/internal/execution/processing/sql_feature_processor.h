@@ -33,7 +33,7 @@ class SqlFeatureProcessor : public QueryProcessor {
   ~SqlFeatureProcessor() override;
 
   // QueryProcessor implementation.
-  void Process(std::unique_ptr<FeatureProcessorState> feature_processor_state,
+  void Process(FeatureProcessorState& feature_processor_state,
                QueryProcessorCallback callback) override;
 
  private:
@@ -43,13 +43,13 @@ class SqlFeatureProcessor : public QueryProcessor {
   // Callback method for when all relevant bind values have been processed.
   void OnCustomInputProcessed(
       std::unique_ptr<CustomInputProcessor> custom_input_processor,
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      base::WeakPtr<FeatureProcessorState> feature_processor_state,
       base::flat_map<SqlFeatureAndBindValueIndices, Tensor> result);
 
   // Callback method for when all queries have been processed by the ukm
   // database.
   void OnQueriesRun(
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      base::WeakPtr<FeatureProcessorState> feature_processor_state,
       bool success,
       IndexedTensors result);
 

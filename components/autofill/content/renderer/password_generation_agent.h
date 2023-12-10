@@ -64,6 +64,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // if the generation was triggered successfully.
   void TriggeredGeneratePassword(
       TriggeredGeneratePasswordCallback callback) override;
+  void FocusNextFieldAfterPasswords() override;
 
   // Returns true if the field being changed is one where a generated password
   // is being offered. Updates the state of the popup if necessary.
@@ -178,7 +179,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Unowned pointer. Used to notify PassowrdAutofillAgent when values
   // in password fields are updated.
-  raw_ptr<PasswordAutofillAgent, DanglingUntriaged> password_agent_;
+  const raw_ptr<PasswordAutofillAgent> password_agent_;
 
   mojo::AssociatedRemote<mojom::PasswordGenerationDriver>
       password_generation_client_;

@@ -33,9 +33,12 @@ class AuraObserver : public aura::WindowEventDispatcherObserver {
     if (mouse_down_seen_ && event.type() == ui::EventType::ET_MOUSE_RELEASED)
       mouse_up_seen_ = true;
 
-    if (mouse_down_seen_ && mouse_up_seen_)
+    if (Done()) {
       run_loop_->Quit();
+    }
   }
+
+  bool Done() const { return mouse_down_seen_ && mouse_up_seen_; }
 
  private:
   // Must outlive the observer.
@@ -64,12 +67,12 @@ bool WaitForWindow(const std::string& id, bool exists) {
     return false;
   }
   base::RunLoop outer_loop;
+  bool actual_exists = false;
   auto wait_for_window = base::BindRepeating(
-      [](base::RunLoop* outer_loop, const std::string& id,
-         bool expected_exists) {
+      [](base::RunLoop* outer_loop, const std::string& id, bool expected_exists,
+         bool* actual_exists) {
         auto* lacros_service = chromeos::LacrosService::Get();
         base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        bool exists = false;
         lacros_service->GetRemote<crosapi::mojom::TestController>()
             ->DoesWindowExist(
                 id, base::BindOnce(
@@ -77,19 +80,20 @@ bool WaitForWindow(const std::string& id, bool exists) {
                           *out_exist = std::move(exist);
                           loop->Quit();
                         },
-                        &inner_loop, &exists));
+                        &inner_loop, actual_exists));
         inner_loop.Run();
 
-        if (exists == expected_exists)
+        if (*actual_exists == expected_exists) {
           outer_loop->Quit();
+        }
       },
-      &outer_loop, id, exists);
+      &outer_loop, id, exists, &actual_exists);
 
-  // Wait for the window to be available.
+  // Wait for the window to exist / not exist.
   base::RepeatingTimer timer;
   timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_window));
   outer_loop.Run();
-  return true;
+  return actual_exists == exists;
 }
 
 bool WaitForElement(const std::string& id, bool exists) {
@@ -99,12 +103,12 @@ bool WaitForElement(const std::string& id, bool exists) {
     return false;
   }
   base::RunLoop outer_loop;
+  bool actual_exists = false;
   auto wait_for_element = base::BindRepeating(
-      [](base::RunLoop* outer_loop, const std::string& id,
-         bool expected_exists) {
+      [](base::RunLoop* outer_loop, const std::string& id, bool expected_exists,
+         bool* actual_exists) {
         auto* lacros_service = chromeos::LacrosService::Get();
         base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        bool exists = false;
         lacros_service->GetRemote<crosapi::mojom::TestController>()
             ->DoesElementExist(
                 id, base::BindOnce(
@@ -112,19 +116,20 @@ bool WaitForElement(const std::string& id, bool exists) {
                           *out_exist = std::move(exist);
                           loop->Quit();
                         },
-                        &inner_loop, &exists));
+                        &inner_loop, actual_exists));
         inner_loop.Run();
 
-        if (exists == expected_exists)
+        if (*actual_exists == expected_exists) {
           outer_loop->Quit();
+        }
       },
-      &outer_loop, id, exists);
+      &outer_loop, id, exists, &actual_exists);
 
-  // Wait for the element to be available.
+  // Wait for the element to exist / not exist.
   base::RepeatingTimer timer;
   timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_element));
   outer_loop.Run();
-  return true;
+  return actual_exists == exists;
 }
 
 }  // namespace
@@ -148,12 +153,12 @@ bool WaitForShelfItem(const std::string& id, bool exists) {
     return false;
   }
   base::RunLoop outer_loop;
+  bool actual_exists = false;
   auto wait_for_shelf_item = base::BindRepeating(
-      [](base::RunLoop* outer_loop, const std::string& id,
-         bool expected_exists) {
+      [](base::RunLoop* outer_loop, const std::string& id, bool expected_exists,
+         bool* actual_exists) {
         auto* lacros_service = chromeos::LacrosService::Get();
         base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        bool exists = false;
         lacros_service->GetRemote<crosapi::mojom::TestController>()
             ->DoesItemExistInShelf(
                 id, base::BindOnce(
@@ -161,19 +166,20 @@ bool WaitForShelfItem(const std::string& id, bool exists) {
                           *out_exist = std::move(exist);
                           loop->Quit();
                         },
-                        &inner_loop, &exists));
+                        &inner_loop, actual_exists));
         inner_loop.Run();
 
-        if (exists == expected_exists)
+        if (*actual_exists == expected_exists) {
           outer_loop->Quit();
+        }
       },
-      &outer_loop, id, exists);
+      &outer_loop, id, exists, &actual_exists);
 
-  // Wait for the window to be available.
+  // Wait for the item to exist / not exist.
   base::RepeatingTimer timer;
   timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_shelf_item));
   outer_loop.Run();
-  return true;
+  return actual_exists == exists;
 }
 
 bool WaitForShelfItemState(const std::string& id,
@@ -185,13 +191,13 @@ bool WaitForShelfItemState(const std::string& id,
     return false;
   }
   base::RunLoop outer_loop;
+  uint32_t actual_state =
+      static_cast<uint32_t>(crosapi::mojom::ShelfItemState::kNormal);
   auto wait_for_state = base::BindRepeating(
       [](base::RunLoop* outer_loop, const std::string& id,
-         uint32_t expected_state) {
+         uint32_t expected_state, uint32_t* actual_state) {
         auto* lacros_service = chromeos::LacrosService::Get();
         base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        uint32_t actual_state =
-            static_cast<uint32_t>(crosapi::mojom::ShelfItemState::kNormal);
         lacros_service->GetRemote<crosapi::mojom::TestController>()
             ->GetShelfItemState(id,
                                 base::BindOnce(
@@ -200,18 +206,19 @@ bool WaitForShelfItemState(const std::string& id,
                                       *out_state = std::move(state);
                                       loop->Quit();
                                     },
-                                    &inner_loop, &actual_state));
+                                    &inner_loop, actual_state));
         inner_loop.Run();
 
-        if (actual_state == expected_state)
+        if (*actual_state == expected_state) {
           outer_loop->Quit();
+        }
       },
-      &outer_loop, id, state);
+      &outer_loop, id, state, &actual_state);
 
   base::RepeatingTimer timer;
   timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_state));
   outer_loop.Run(location);
-  return true;
+  return actual_state == state;
 }
 
 // Sends a TestController message to Ash to send a mouse click to this |window|.
@@ -235,7 +242,7 @@ bool SendAndWaitForMouseClick(aura::Window* window) {
   lacros_service->GetRemote<crosapi::mojom::TestController>()->ClickWindow(id);
   run_loop.Run();
   aura::Env::GetInstance()->RemoveWindowEventDispatcherObserver(obs.get());
-  return true;
+  return obs->Done();
 }
 
 }  // namespace browser_test_util

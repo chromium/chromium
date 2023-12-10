@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -129,7 +129,7 @@ void FakeArcSupport::UnsetMessageHost() {
 
 void FakeArcSupport::PostMessageFromNativeHost(
     const std::string& message_string) {
-  absl::optional<base::Value> parsed_json =
+  std::optional<base::Value> parsed_json =
       base::JSONReader::Read(message_string);
   DCHECK(parsed_json);
 
@@ -159,21 +159,21 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else if (*action == "showErrorPage") {
     ui_page_ = ArcSupportHost::UIPage::ERROR;
   } else if (*action == "setMetricsMode") {
-    absl::optional<bool> opt = message.FindBool("enabled");
+    std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
     metrics_mode_ = opt.value();
   } else if (*action == "setBackupAndRestoreMode") {
-    absl::optional<bool> opt = message.FindBool("enabled");
+    std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
     backup_and_restore_mode_ = opt.value();
   } else if (*action == "setLocationServiceMode") {
-    absl::optional<bool> opt = message.FindBool("enabled");
+    std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
       NOTREACHED() << message_string;
       return;

@@ -14,6 +14,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class RenderFrame;
@@ -55,10 +56,10 @@ struct ScriptsRunInfo {
                                        const base::TimeDelta& elapsed);
 
  private:
-  // The routinig id to use to notify the browser of any injections. Since the
+  // The frame token to use to notify the browser of any injections. Since the
   // frame may be deleted in injection, we don't hold on to a reference to it
   // directly.
-  int routing_id_;
+  blink::LocalFrameToken frame_token_;
 
   // The run location at which injection is happening.
   mojom::RunLocation run_location_;

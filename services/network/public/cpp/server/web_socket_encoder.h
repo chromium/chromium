@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_inflater.h"
 #include "services/network/public/cpp/server/web_socket.h"
@@ -44,13 +44,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
   static std::unique_ptr<WebSocketEncoder> CreateClient(
       const std::string& response_extensions);
 
-  WebSocket::ParseResult DecodeFrame(const base::StringPiece& frame,
+  WebSocket::ParseResult DecodeFrame(const std::string_view& frame,
                                      int* bytes_consumed,
                                      std::string* output);
-  void EncodeTextFrame(base::StringPiece frame,
+  void EncodeTextFrame(std::string_view frame,
                        int masking_key,
                        std::string* output);
-  void EncodePongFrame(base::StringPiece frame,
+  void EncodePongFrame(std::string_view frame,
                        int masking_key,
                        std::string* output);
 
@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
   bool is_current_message_compressed_ = false;
 
   bool Inflate(std::string* message);
-  bool Deflate(base::StringPiece message, std::string* output);
+  bool Deflate(std::string_view message, std::string* output);
 
   Type type_;
   std::unique_ptr<net::WebSocketDeflater> deflater_;

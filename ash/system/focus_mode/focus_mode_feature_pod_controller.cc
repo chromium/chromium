@@ -11,7 +11,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
@@ -25,7 +24,6 @@ namespace ash {
 FocusModeFeaturePodController::FocusModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  CHECK(features::IsQsRevampEnabled());
   CHECK(features::IsFocusModeEnabled());
   FocusModeController::Get()->AddObserver(this);
 }
@@ -66,15 +64,18 @@ QsFeatureCatalogName FocusModeFeaturePodController::GetCatalogName() {
 
 void FocusModeFeaturePodController::OnIconPressed() {
   auto* controller = FocusModeController::Get();
-  controller->ToggleFocusMode();
-  const bool new_state = controller->in_focus_session();
-  TrackToggleUMA(new_state);
 
-  // TODO(b/302194469): centralize bubble-closing logic.
-  if (new_state) {
-    // Close the system tray bubble. Deletes `this`.
-    tray_controller_->CloseBubble();
+  // As part of the first time user flow, if the user has never started a
+  // session before, we want to direct them to the focus panel so they can get
+  // more context and change focus settings instead of starting a session
+  // immediately.
+  if (!controller->HasStartedSessionBefore()) {
+    OnLabelPressed();
+    return;
   }
+
+  TrackToggleUMA(/*target_toggle_state=*/!controller->in_focus_session());
+  controller->ToggleFocusMode();
 }
 
 void FocusModeFeaturePodController::OnLabelPressed() {
@@ -91,6 +92,10 @@ void FocusModeFeaturePodController::OnTimerTick() {
   UpdateUI();
 }
 
+void FocusModeFeaturePodController::OnSessionDurationChanged() {
+  UpdateUI();
+}
+
 void FocusModeFeaturePodController::UpdateUI() {
   auto* controller = FocusModeController::Get();
   CHECK(controller);
@@ -103,6 +108,14 @@ void FocusModeFeaturePodController::UpdateUI() {
   tile_->SetLabel(label_text);
   tile_->SetIconButtonTooltipText(label_text);
   tile_->SetTooltipText(label_text);
+
+  // As part of the first time user flow, if the user has never started a
+  // session before, we hide the session duration sublabel since they are not
+  // able to start a focus session immediately anyway.
+  if (!controller->HasStartedSessionBefore()) {
+    tile_->SetSubLabelVisibility(false);
+    return;
+  }
 
   const base::TimeDelta session_duration_remaining =
       in_focus_session ? controller->end_time() - base::Time::Now()
@@ -117,10 +130,15 @@ void FocusModeFeaturePodController::UpdateUI() {
   const bool should_show_seconds =
       base::ClampRound<int64_t>(session_duration_remaining.InSecondsF()) <
       base::Time::kSecondsPerMinute;
-  tile_->SetSubLabel(focus_mode_util::GetDurationString(
+  const std::u16string duration_string = focus_mode_util::GetDurationString(
       session_duration_remaining,
       should_show_seconds ? focus_mode_util::TimeFormatType::kFull
-                          : focus_mode_util::TimeFormatType::kMinutesOnly));
+                          : focus_mode_util::TimeFormatType::kMinutesOnly);
+  tile_->SetSubLabel(
+      in_focus_session
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL, duration_string)
+          : duration_string);
 }
 
 }  // namespace ash

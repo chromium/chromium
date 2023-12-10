@@ -56,7 +56,7 @@ using ListenCallback =
 using AcceptCompletionCallback = base::OnceCallback<void(
     int,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket>,
-    const absl::optional<net::IPEndPoint>&,
+    const std::optional<net::IPEndPoint>&,
     mojo::ScopedDataPipeConsumerHandle,
     mojo::ScopedDataPipeProducerHandle)>;
 

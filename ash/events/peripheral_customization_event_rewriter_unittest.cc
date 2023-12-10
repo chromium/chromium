@@ -21,6 +21,7 @@
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -132,23 +133,23 @@ class TestAcceleratorObserver : public AcceleratorController::Observer {
   void reset() { action_performed_.reset(); }
 
  private:
-  absl::optional<AcceleratorAction> action_performed_;
+  std::optional<AcceleratorAction> action_performed_;
 };
 
 using EventTypeVariant = absl::variant<ui::MouseEvent, ui::KeyEvent>;
 struct EventRewriterTestData {
   EventTypeVariant incoming_event;
-  absl::optional<EventTypeVariant> rewritten_event;
-  absl::optional<mojom::Button> pressed_button;
+  std::optional<EventTypeVariant> rewritten_event;
+  std::optional<mojom::Button> pressed_button;
 
   EventRewriterTestData(EventTypeVariant incoming_event,
-                        absl::optional<EventTypeVariant> rewritten_event)
+                        std::optional<EventTypeVariant> rewritten_event)
       : incoming_event(incoming_event),
         rewritten_event(rewritten_event),
-        pressed_button(absl::nullopt) {}
+        pressed_button(std::nullopt) {}
 
   EventRewriterTestData(EventTypeVariant incoming_event,
-                        absl::optional<EventTypeVariant> rewritten_event,
+                        std::optional<EventTypeVariant> rewritten_event,
                         mojom::CustomizableButton button)
       : incoming_event(incoming_event), rewritten_event(rewritten_event) {
     pressed_button = mojom::Button();
@@ -156,7 +157,7 @@ struct EventRewriterTestData {
   }
 
   EventRewriterTestData(EventTypeVariant incoming_event,
-                        absl::optional<EventTypeVariant> rewritten_event,
+                        std::optional<EventTypeVariant> rewritten_event,
                         ui::KeyboardCode key_code)
       : incoming_event(incoming_event), rewritten_event(rewritten_event) {
     pressed_button = mojom::Button();
@@ -293,6 +294,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         .WillByDefault(testing::Return(graphics_tablet_settings_.get()));
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
         controller_.get());
+    metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
   }
 
   void TearDown() override {
@@ -301,6 +303,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     controller_scoped_resetter_.reset();
     AshTestBase::TearDown();
     scoped_feature_list_.Reset();
+    metrics_manager_.reset();
   }
 
  protected:
@@ -311,6 +314,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   mojom::MouseSettingsPtr mouse_settings_;
   mojom::GraphicsTabletSettingsPtr graphics_tablet_settings_;
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 };
 
 TEST_F(PeripheralCustomizationEventRewriterTest, MouseButtonWithoutObserving) {
@@ -331,8 +335,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
        InvalidEventTypeMouseObserving) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent event =
       CreateMouseButtonEvent(ui::ET_MOUSE_DRAGGED, ui::EF_NONE, ui::EF_NONE);
@@ -400,8 +406,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
 TEST_F(PeripheralCustomizationEventRewriterTest, MouseWheelDuringObserving) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   gfx::Vector2d expected_offset(/*x=*/100, /*y=*/50);
   ui::MouseWheelEvent event =
@@ -492,21 +500,21 @@ INSTANTIATE_TEST_SUITE_P(
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_BACK_MOUSE_BUTTON,
                                    ui::EF_BACK_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kBack,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_FORWARD_MOUSE_BUTTON,
                                    ui::EF_FORWARD_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kForward,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_MIDDLE_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
         {
@@ -514,7 +522,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_MIDDLE_MOUSE_BUTTON |
                                        ui::EF_LEFT_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
 
@@ -522,7 +530,7 @@ INSTANTIATE_TEST_SUITE_P(
         {CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED,
                                 ui::EF_BACK_MOUSE_BUTTON,
                                 ui::EF_BACK_MOUSE_BUTTON),
-         /*rewritten_event=*/absl::nullopt},
+         /*rewritten_event=*/std::nullopt},
 
         // Left click ignored for buttons from a mouse.
         {CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
@@ -564,19 +572,19 @@ INSTANTIATE_TEST_SUITE_P(
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                  ui::VKEY_A,
                                  ui::EF_COMMAND_DOWN),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_A,
         },
         {
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::EF_NONE),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_B,
         },
 
         // Test that key releases are consumed, but not sent to observers.
         {
             CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
-            absl::nullopt,
+            std::nullopt,
         },
     }),
     [](const testing::TestParamInfo<EventRewriterTestData>& info) {
@@ -589,8 +597,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MouseButtonObserverTest, EventRewriting) {
   auto data = GetParam();
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   TestEventRewriterContinuation continuation;
   rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
@@ -622,8 +632,10 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseBackButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event = CreateMouseButtonEvent(
       ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
@@ -642,8 +654,10 @@ TEST_F(MouseButtonObserverTest, MouseBackButtonRecognition) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseSideButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event = CreateMouseButtonEvent(
       ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
@@ -662,8 +676,10 @@ TEST_F(MouseButtonObserverTest, MouseSideButtonRecognition) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseForwardButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event =
       CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
@@ -683,8 +699,10 @@ TEST_F(MouseButtonObserverTest, MouseForwardButtonRecognition) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseExtraButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event =
       CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
@@ -706,8 +724,10 @@ TEST_F(MouseButtonObserverTest, MouseExtraButtonRecognition) {
 TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/false);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kDisallowCustomizations);
 
   ui::KeyEvent key_event =
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
@@ -736,8 +756,10 @@ TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {
   rewriter_->StopObserving();
   continuation.reset();
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::KeyEvent new_key_event =
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
@@ -760,6 +782,57 @@ TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {
   EXPECT_EQ(nullptr, continuation.passthrough_event);
 }
 
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       RewriteEventFromButtonEmitMetrics) {
+  TestEventRewriterContinuation continuation;
+  base::HistogramTester histogram_tester;
+  mouse_settings_->button_remappings.push_back(
+      mojom::ButtonRemapping::New("", mojom::Button::NewVkey(ui::VKEY_A),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kBrightnessDown)));
+
+  graphics_tablet_settings_->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "", mojom::Button::NewVkey(ui::VKEY_Z),
+          mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+              ui::KeyboardCode::VKEY_M, (int)ui::DomCode::US_M,
+              (int)ui::DomKey::FromCharacter('M'),
+              (int)ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+              /*key_display=*/""))));
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.AcceleratorAction."
+      "Pressed",
+      /*expected_count=*/0);
+
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.AcceleratorAction."
+      "Pressed",
+      /*expected_count=*/1u);
+
+  continuation.reset();
+
+  auto pen_button_event =
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_Z, ui::EF_COMMAND_DOWN);
+  pen_button_event.set_source_device_id(kGraphicsTabletDeviceId);
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.KeyEvent."
+      "Pressed",
+      /*expected_count=*/0);
+
+  rewriter_->RewriteEvent(pen_button_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.KeyEvent."
+      "Pressed",
+      /*expected_count=*/1u);
+}
+
 class GraphicsTabletButtonObserverTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<EventRewriterTestData> {};
@@ -772,28 +845,28 @@ INSTANTIATE_TEST_SUITE_P(
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_RIGHT_MOUSE_BUTTON,
                                    ui::EF_RIGHT_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kRight,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_BACK_MOUSE_BUTTON,
                                    ui::EF_BACK_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kBack,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_FORWARD_MOUSE_BUTTON,
                                    ui::EF_FORWARD_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kForward,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_MIDDLE_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
         {
@@ -801,7 +874,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_MIDDLE_MOUSE_BUTTON |
                                        ui::EF_LEFT_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
 
@@ -810,7 +883,7 @@ INSTANTIATE_TEST_SUITE_P(
             CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED,
                                    ui::EF_BACK_MOUSE_BUTTON,
                                    ui::EF_BACK_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
         },
 
         // Left click ignored for buttons from a graphics tablet.
@@ -849,19 +922,19 @@ INSTANTIATE_TEST_SUITE_P(
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                  ui::VKEY_A,
                                  ui::EF_COMMAND_DOWN),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_A,
         },
         {
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::EF_NONE),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_B,
         },
 
         // Test that key releases are consumed, but not sent to observers.
         {
             CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
-            absl::nullopt,
+            std::nullopt,
         },
     }),
     [](const testing::TestParamInfo<EventRewriterTestData>& info) {
@@ -874,7 +947,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
   auto data = GetParam();
 
-  rewriter_->StartObservingGraphicsTablet(kGraphicsTabletDeviceId);
+  rewriter_->StartObservingGraphicsTablet(
+      kGraphicsTabletDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   auto& event = GetEventFromVariant(data.incoming_event);
   event.set_source_device_id(kGraphicsTabletDeviceId);

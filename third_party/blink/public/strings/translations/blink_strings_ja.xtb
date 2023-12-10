@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">このテキストを半角 <ph name="MAX_CHARACTERS" /> 文字以下にしてください（現時点で半角 <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
 <translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">カメラとマイクを使用できます</translation>
 <translation id="2393030564806080191">16 進数色コード</translation>
 <translation id="2398813069815436052">ダイアログが開いています。</translation>
 <translation id="245932805758469625">残りの再生時間（秒）</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">このテキストは <ph name="MIN_CHARACTERS" /> 文字以上で指定してください（現在は <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
 <translation id="383465348367842624">「<ph name="ATSIGN" />」の前の文字列に記号「<ph name="INVALIDCHARACTER" />」を使用しないでください。</translation>
 <translation id="3846214748874656680">全画面表示を終了</translation>
+<translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4103419683916926126">ミリ秒</translation>
 <translation id="4201051445878709314">前の月を表示</translation>
 <translation id="4360991593054037559">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE_LOW" /> と <ph name="VALID_VALUE_HIGHER" /> です。</translation>
 <translation id="4522570452068850558">詳細</translation>
+<translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」に続く文字列に記号「<ph name="INVALIDCHARACTER" />」を使用しないでください。</translation>
 <translation id="4718048029184481307">ピクチャー イン ピクチャーを再生しています</translation>
 <translation id="4748357248530471599">ディスプレイ カットアウトに合わせた全画面表示に切り替えます</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">メディアをダウンロード</translation>
 <translation id="698788488269350478">展開表示されています。</translation>
 <translation id="6989848892321993519">このテキストは <ph name="MIN_CHARACTERS" /> 文字以上で指定してください（現在 1 文字で指定されています）。</translation>
+<translation id="7080893216867146095">位置情報の共有が許可されています</translation>
 <translation id="709897737746224366">指定されている形式で入力してください。</translation>
 <translation id="7102274145889307184">現在地</translation>
 <translation id="7263440858009898357">リスト内の項目を選択してください。</translation>

@@ -50,7 +50,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </variants>
 
 <histogram name="Commerce.Carts.AddToCartButtonDetection" units="ms"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -198,7 +198,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Heuristics.PartnerMerchantPatternSource"
-    enum="CommerceHeuristicsDataSource" expires_after="2024-03-17">
+    enum="CommerceHeuristicsDataSource" expires_after="2024-05-19">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -253,9 +253,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     network request, or when the server response is received and parsed, right
     before calling back the requester.
   </summary>
-  <token key="ParcelRequestTypes">
-    <variant name="ParcelRequestType"/>
-  </token>
+  <token key="ParcelRequestTypes" variants="ParcelRequestTypes"/>
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
@@ -315,69 +313,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     most likely product pages based on metadata extracted from the head section
     of the page (via local extraction). If the page navigates prior to the local
     extraction being executed, this metric is not recorded.
-  </summary>
-</histogram>
-
-<histogram
-    name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
-    enum="ShoppingDataProviderFallback" expires_after="2022-11-20">
-  <obsolete>
-    Deprecated in 06/2022. Replaced by Commerce.ShoppingService.ProductInfo.*.
-  </obsolete>
-  <owner>ayman@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records whick type of fallback data (javascript on-page heuristics) was used
-    when filling in gaps from Optimization Guide. This does not track whether
-    the page was actually bookmarked, it only indicates what information might
-    be missing or how often we get supplementary images when on a product page.
-  </summary>
-</histogram>
-
-<histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed"
-    enum="Boolean" expires_after="2022-11-20">
-  <obsolete>
-    Deprecated in 06/2022. Replaced by Commerce.ShoppingService.ProductInfo.*.
-  </obsolete>
-  <owner>ayman@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records whether fallback data (javascript on-page heuristics) was used to
-    supplement the data provided by Optimization Guide. This does not track
-    whether the page was actually bookmarked.
-  </summary>
-</histogram>
-
-<histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage"
-    enum="Boolean" expires_after="2023-01-01">
-  <obsolete>
-    Deprecated 12/2022. Replaced by Commerce.PDPStateOnNavigation.
-  </obsolete>
-  <owner>ayman@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records whether a particular navigation was determined to be a product page
-    by Optimization Guide. This doesn not track whether the page was actually
-    bookmarked.
-  </summary>
-</histogram>
-
-<histogram name="Commerce.PowerBookmarks.SubscriptionValidationResult"
-    enum="CommerceSubscriptionValidationResult" expires_after="2023-04-09">
-  <obsolete>
-    Deprecated in 11/2022. The validation logic became unnecessary with the new
-    subscriptions manager implementation.
-  </obsolete>
-  <owner>ayman@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the result of validation of a user's subscribed products between the
-    bookmarks system and the subscriptions backend. This will tell us if a user
-    has a subscription that isn't backed by bookmark locally and if the client
-    has a bookmark that claims to be tracked but has no subscription on the
-    backend. This metric is recorded when the browser starts and whenever the
-    user enters the bookmark manager (each time validation occurs).
   </summary>
 </histogram>
 
@@ -518,8 +453,8 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown"
-    enum="PriceInsightsIconLabelType" expires_after="2024-03-10">
+<histogram name="Commerce.PriceInsights.OmniboxIconClicked"
+    enum="PriceInsightsIconLabelType" expires_after="2024-06-02">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -530,8 +465,8 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.PriceInsights.OmniboxIconShownLabel"
-    enum="PriceInsightsIconLabelType" expires_after="2024-03-10">
+<histogram name="Commerce.PriceInsights.OmniboxIconShown"
+    enum="PriceInsightsIconLabelType" expires_after="2024-06-02">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -542,7 +477,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs"
-    enum="Boolean" expires_after="2024-03-10">
+    enum="Boolean" expires_after="2024-05-12">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -581,7 +516,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2024-03-24">
+    enum="PriceInsightsPriceBucket" expires_after="2024-06-02">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <summary>
@@ -596,7 +531,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceTrackedProductCount"
-    units="subscriptions" expires_after="2023-12-04">
+    units="subscriptions" expires_after="2024-06-04">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -683,7 +618,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.JavascriptExecutionTime"
-    units="ms" expires_after="2024-03-17">
+    units="ms" expires_after="2024-05-19">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -695,21 +630,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     regressions as we improve the extraction heuristics. This metric is recorded
     from the browser side which means it includes compiling and the other prep
     work done before the script is actually run on the page.
-  </summary>
-</histogram>
-
-<histogram name="Commerce.SignIn.AccountWaaStatus"
-    enum="AccountWaaStatusForCommerce" expires_after="2023-06-25">
-  <obsolete>
-    Deprecated in 01/2023. It's no longer needed.
-  </obsolete>
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the web and app activity status of user account. Emitted for clients
-    in our experiment when Chrome is foregrounded. Recorded at most once in a
-    one-day moving window. Implemented for Android.
   </summary>
 </histogram>
 
@@ -728,7 +648,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.TrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-03-17">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-05-19">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -739,7 +659,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.UntrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-03-17">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-05-19">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -749,22 +669,22 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.Subscriptions.{ManagementType}.Count"
-    units="subscriptions" expires_after="2023-04-25">
-  <obsolete>
-    Deprecated in 01/2023. Replaced by
-    Commerce.PriceTracking.PriceTrackedProductCount.
-  </obsolete>
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
+<histogram name="Commerce.{FeatureName}.IconInteractionState"
+    enum="CommerceIconInteractionState" expires_after="2024-06-01">
+  <owner>josephjoopark@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    The number of price tracking subscriptions stored in local storage for the
-    specified management type. Emitted for clients in our experiment when Chrome
-    is foregrounded. Recorded at most once in a one-day moving window.
-    Implemented for Android.
+    Records the state the &quot;{FeatureName}&quot; page action icon was in and
+    whether it was interacted with. This excludes cases where the icon was not
+    shown, and is only recorded the first time the event happens for a page
+    load.This will give us a clear picture of the effect that expanding the
+    action to show the label has on click-through.
   </summary>
-  <token key="ManagementType" variants="ManagementTypes"/>
+  <token key="FeatureName">
+    <variant name="PriceInsights"/>
+    <variant name="PriceTracking"/>
+  </token>
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.CloseReason"
@@ -944,7 +864,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2024-03-17">
+    enum="BooleanVisible" expires_after="2024-05-19">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

@@ -7,9 +7,7 @@ package org.chromium.base;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for base::Features listed in {@link BaseFeatures}
- */
+/** Java accessor for base::Features listed in {@link BaseFeatures} */
 @JNINamespace("base::android")
 public final class BaseFeatureMap extends FeatureMap {
     private static final BaseFeatureMap sInstance = new BaseFeatureMap();
@@ -24,9 +22,7 @@ public final class BaseFeatureMap extends FeatureMap {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

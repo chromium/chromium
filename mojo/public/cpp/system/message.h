@@ -6,10 +6,10 @@
 #define MOJO_PUBLIC_CPP_SYSTEM_MESSAGE_H_
 
 #include <limits>
+#include <string_view>
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/system/handle.h"
 
@@ -91,7 +91,7 @@ inline MojoResult GetMessageData(MessageHandle message,
 }
 
 inline MojoResult NotifyBadMessage(MessageHandle message,
-                                   const base::StringPiece& error) {
+                                   const std::string_view& error) {
   DCHECK(message.is_valid());
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(error.size()));
   return MojoNotifyBadMessage(message.value(), error.data(),

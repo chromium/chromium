@@ -25,10 +25,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
     CryptohomeRecoveryServiceClient {
  public:
   using OnEpochResponseCallback =
-      base::OnceCallback<void(absl::optional<CryptohomeRecoveryEpochResponse>,
+      base::OnceCallback<void(std::optional<CryptohomeRecoveryEpochResponse>,
                               CryptohomeRecoveryServerStatusCode)>;
   using OnRecoveryResponseCallback =
-      base::OnceCallback<void(absl::optional<CryptohomeRecoveryResponse>,
+      base::OnceCallback<void(std::optional<CryptohomeRecoveryResponse>,
                               CryptohomeRecoveryServerStatusCode)>;
 
   explicit CryptohomeRecoveryServiceClient(

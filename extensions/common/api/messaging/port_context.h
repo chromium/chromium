@@ -7,10 +7,9 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
-
 #include "base/debug/crash_logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -56,8 +55,8 @@ struct PortContext {
   bool is_for_service_worker() const { return worker.has_value(); }
   bool is_for_native_host() const { return !frame && !worker; }
 
-  absl::optional<FrameContext> frame;
-  absl::optional<WorkerContext> worker;
+  std::optional<FrameContext> frame;
+  std::optional<WorkerContext> worker;
 };
 
 namespace debug {
@@ -68,7 +67,7 @@ class ScopedPortContextCrashKeys {
   ~ScopedPortContextCrashKeys();
 
  private:
-  absl::optional<base::debug::ScopedCrashKeyString> extension_id_;
+  std::optional<base::debug::ScopedCrashKeyString> extension_id_;
 };
 
 }  // namespace debug

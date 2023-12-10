@@ -7,13 +7,9 @@ package org.chromium.mojo.bindings;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.Watcher;
 
-/**
- * Helper functions.
- */
+/** Helper functions. */
 public class BindingsHelper {
-    /**
-     * Alignment in bytes for mojo serialization.
-     */
+    /** Alignment in bytes for mojo serialization. */
     public static final int ALIGNMENT = 8;
 
     /**
@@ -34,34 +30,22 @@ public class BindingsHelper {
      */
     public static final int POINTER_SIZE = 8;
 
-    /**
-     * The size, in bytes, of a serialized union.
-     */
+    /** The size, in bytes, of a serialized union. */
     public static final int UNION_SIZE = 16;
 
-    /**
-     * The header for a serialized map element.
-     */
+    /** The header for a serialized map element. */
     public static final DataHeader MAP_STRUCT_HEADER = new DataHeader(24, 0);
 
-    /**
-     * The value used for the expected length of a non-fixed size array.
-     */
+    /** The value used for the expected length of a non-fixed size array. */
     public static final int UNSPECIFIED_ARRAY_LENGTH = -1;
 
-    /**
-     * Passed as |arrayNullability| when neither the array nor its elements are nullable.
-     */
+    /** Passed as |arrayNullability| when neither the array nor its elements are nullable. */
     public static final int NOTHING_NULLABLE = 0;
 
-    /**
-     * "Array bit" of |arrayNullability| is set iff the array itself is nullable.
-     */
+    /** "Array bit" of |arrayNullability| is set iff the array itself is nullable. */
     public static final int ARRAY_NULLABLE = (1 << 0);
 
-    /**
-     * "Element bit" of |arrayNullability| is set iff the array elements are nullable.
-     */
+    /** "Element bit" of |arrayNullability| is set iff the array elements are nullable. */
     public static final int ELEMENT_NULLABLE = (1 << 1);
 
     public static boolean isArrayNullable(int arrayNullability) {
@@ -72,23 +56,17 @@ public class BindingsHelper {
         return (arrayNullability & ELEMENT_NULLABLE) > 0;
     }
 
-    /**
-     * Align |size| on {@link BindingsHelper#ALIGNMENT}.
-     */
+    /** Align |size| on {@link BindingsHelper#ALIGNMENT}. */
     public static int align(int size) {
         return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
     }
 
-    /**
-     * Align |size| on {@link BindingsHelper#ALIGNMENT}.
-     */
+    /** Align |size| on {@link BindingsHelper#ALIGNMENT}. */
     public static long align(long size) {
         return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
     }
 
-    /**
-     * Compute the size in bytes of the given string encoded as utf8.
-     */
+    /** Compute the size in bytes of the given string encoded as utf8. */
     public static int utf8StringSizeInBytes(String s) {
         int res = 0;
         for (int i = 0; i < s.length(); ++i) {
@@ -119,9 +97,7 @@ public class BindingsHelper {
         return res;
     }
 
-    /**
-     * Returns |true| if and only if the two objects are equals, handling |null|.
-     */
+    /** Returns |true| if and only if the two objects are equals, handling |null|. */
     public static boolean equals(Object o1, Object o2) {
         if (o1 == o2) {
             return true;
@@ -132,9 +108,7 @@ public class BindingsHelper {
         return o1.equals(o2);
     }
 
-    /**
-     * Returns the hash code of the object, handling |null|.
-     */
+    /** Returns the hash code of the object, handling |null|. */
     public static int hashCode(Object o) {
         if (o == null) {
             return 0;
@@ -142,37 +116,27 @@ public class BindingsHelper {
         return o.hashCode();
     }
 
-    /**
-     * Returns the hash code of the value.
-     */
+    /** Returns the hash code of the value. */
     public static int hashCode(boolean o) {
         return o ? 1231 : 1237;
     }
 
-    /**
-     * Returns the hash code of the value.
-     */
+    /** Returns the hash code of the value. */
     public static int hashCode(long o) {
         return (int) (o ^ (o >>> 32));
     }
 
-    /**
-     * Returns the hash code of the value.
-     */
+    /** Returns the hash code of the value. */
     public static int hashCode(float o) {
         return Float.floatToIntBits(o);
     }
 
-    /**
-     * Returns the hash code of the value.
-     */
+    /** Returns the hash code of the value. */
     public static int hashCode(double o) {
         return hashCode(Double.doubleToLongBits(o));
     }
 
-    /**
-     * Returns the hash code of the value.
-     */
+    /** Returns the hash code of the value. */
     public static int hashCode(int o) {
         return o;
     }

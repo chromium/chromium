@@ -100,7 +100,7 @@ bool DragCaret::ShouldPaintCaret(const LayoutBlock& block) const {
 }
 
 bool DragCaret::ShouldPaintCaret(
-    const NGPhysicalBoxFragment& box_fragment) const {
+    const PhysicalBoxFragment& box_fragment) const {
   return display_item_client_->ShouldPaintCaret(box_fragment);
 }
 

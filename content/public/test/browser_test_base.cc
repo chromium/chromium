@@ -21,7 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -286,11 +285,6 @@ BrowserTestBase::BrowserTestBase() {
   registry_util::RegistryOverrideManager::
       SetAllowHKLMRegistryOverrideForIntegrationTests(/*allow=*/false);
 #endif
-
-  // This is called through base::TestSuite initially. It'll also be called
-  // inside BrowserMain, so tell the code to ignore the check that it's being
-  // called more than once
-  base::i18n::AllowMultipleInitializeCallsForTesting();
 
   embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
 
@@ -623,9 +617,6 @@ void BrowserTestBase::SetUp() {
   // multiple tests. Need to reset startup metrics to allow recording them
   // again.
   startup_metric_utils::GetBrowser().ResetSessionForTesting();
-
-  base::i18n::AllowMultipleInitializeCallsForTesting();
-  base::i18n::InitializeICU();
 
   // The ContentMainDelegate and ContentClient should have been set by
   // JNI_OnLoad for the test target.

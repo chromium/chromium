@@ -9,9 +9,7 @@ import android.os.Bundle;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
 
-/**
- * Implementation of the interface {@link ChildProcessCreationParams}.
- */
+/** Implementation of the interface {@link ChildProcessCreationParams}. */
 public class ChildProcessCreationParamsImpl {
     private static final String EXTRA_LIBRARY_PROCESS_TYPE =
             "org.chromium.content.common.child_service_params.library_process_type";
@@ -37,9 +35,14 @@ public class ChildProcessCreationParamsImpl {
     private ChildProcessCreationParamsImpl() {}
 
     /** Set params. This should be called once on start up. */
-    public static void set(String privilegedPackageName, String privilegedServicesName,
-            String sandboxedPackageName, String sandboxedServicesName,
-            boolean isExternalSandboxedService, int libraryProcessType, boolean bindToCallerCheck,
+    public static void set(
+            String privilegedPackageName,
+            String privilegedServicesName,
+            String sandboxedPackageName,
+            String sandboxedServicesName,
+            boolean isExternalSandboxedService,
+            int libraryProcessType,
+            boolean bindToCallerCheck,
             boolean ignoreVisibilityForImportance) {
         assert !sInitialized;
         sPackageNameForPrivilegedService = privilegedPackageName;
@@ -60,13 +63,15 @@ public class ChildProcessCreationParamsImpl {
     }
 
     public static String getPackageNameForPrivilegedService() {
-        return sInitialized ? sPackageNameForPrivilegedService
-                            : ContextUtils.getApplicationContext().getPackageName();
+        return sInitialized
+                ? sPackageNameForPrivilegedService
+                : ContextUtils.getApplicationContext().getPackageName();
     }
 
     public static String getPackageNameForSandboxedService() {
-        return sInitialized ? sPackageNameForSandboxedService
-                            : ContextUtils.getApplicationContext().getPackageName();
+        return sInitialized
+                ? sPackageNameForSandboxedService
+                : ContextUtils.getApplicationContext().getPackageName();
     }
 
     public static boolean getIsSandboxedServiceExternal() {

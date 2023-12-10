@@ -10,6 +10,7 @@
 #include <ios>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/base64.h"
@@ -854,7 +855,7 @@ TEST_F(DeleteRegistryKeyPartialTest, NonEmptyKeyWithPreserve) {
   {
     base::win::RegistryKeyIterator it(root_, path_.c_str());
     ASSERT_EQ(to_preserve_.size(), it.SubkeyCount());
-    std::wstring (*to_lower)(base::WStringPiece) = &base::ToLowerASCII;
+    std::wstring (*to_lower)(std::wstring_view) = &base::ToLowerASCII;
     for (; it.Valid(); ++it) {
       ASSERT_TRUE(
           base::Contains(to_preserve_, base::ToLowerASCII(it.Name()), to_lower))

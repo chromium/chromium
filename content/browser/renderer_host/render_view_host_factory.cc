@@ -31,29 +31,34 @@ RenderViewHost* RenderViewHostFactory::Create(
     int32_t main_frame_routing_id,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
-    CreateRenderViewHostCase create_case) {
+    CreateRenderViewHostCase create_case,
+    absl::optional<viz::FrameSinkId> frame_sink_id) {
   int32_t routing_id = group->process()->GetNextRoutingID();
   int32_t widget_routing_id = group->process()->GetNextRoutingID();
 
+  RenderViewHostImpl* view_host = nullptr;
   if (factory_) {
-    return factory_->CreateRenderViewHost(
+    view_host = factory_->CreateRenderViewHost(
         frame_tree, group, storage_partition_config, delegate, widget_delegate,
         routing_id, main_frame_routing_id, widget_routing_id,
+        std::move(main_browsing_context_state), create_case, frame_sink_id);
+  } else {
+    view_host = new RenderViewHostImpl(
+        frame_tree, group, storage_partition_config,
+        RenderWidgetHostFactory::Create(
+            frame_tree, widget_delegate,
+            frame_sink_id.value_or(RenderWidgetHostImpl::DefaultFrameSinkId(
+                *group, widget_routing_id)),
+            group->GetSafeRef(), widget_routing_id,
+            /*hidden=*/true, renderer_initiated_creation),
+        delegate, routing_id, main_frame_routing_id,
+        true /* has_initialized_audio_host */,
         std::move(main_browsing_context_state), create_case);
   }
 
-  const auto frame_sink_id =
-      RenderWidgetHostImpl::DefaultFrameSinkId(*group, widget_routing_id);
-  RenderViewHostImpl* view_host = new RenderViewHostImpl(
-      frame_tree, group, storage_partition_config,
-      RenderWidgetHostFactory::Create(
-          frame_tree, widget_delegate, frame_sink_id, group->GetSafeRef(),
-          widget_routing_id,
-          /*hidden=*/true, renderer_initiated_creation),
-      delegate, routing_id, main_frame_routing_id,
-      true /* has_initialized_audio_host */,
-      std::move(main_browsing_context_state), create_case);
-  view_host->GetWidget()->SetViewIsFrameSinkIdOwner(true);
+  bool reusing_previous_frame_sink = frame_sink_id.has_value();
+  view_host->GetWidget()->SetViewIsFrameSinkIdOwner(
+      !reusing_previous_frame_sink);
   return view_host;
 }
 

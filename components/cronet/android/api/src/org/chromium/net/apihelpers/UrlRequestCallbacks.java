@@ -96,23 +96,25 @@ public class UrlRequestCallbacks {
     private static <T> Future<CronetResponse<T>> addResponseFutureListener(
             InMemoryTransformCronetCallback<T> callback) {
         CompletableFuture<CronetResponse<T>> completableFuture = new CompletableFuture<>();
-        callback.addCompletionListener(new CronetRequestCompletionListener<T>() {
-            @Override
-            public void onFailed(@Nullable UrlResponseInfo info, CronetException exception) {
-                completableFuture.completeExceptionally(exception);
-            }
+        callback.addCompletionListener(
+                new CronetRequestCompletionListener<T>() {
+                    @Override
+                    public void onFailed(
+                            @Nullable UrlResponseInfo info, CronetException exception) {
+                        completableFuture.completeExceptionally(exception);
+                    }
 
-            @Override
-            public void onCanceled(@Nullable UrlResponseInfo info) {
-                completableFuture.completeExceptionally(
-                        new CronetException("The request was canceled!", null) {});
-            }
+                    @Override
+                    public void onCanceled(@Nullable UrlResponseInfo info) {
+                        completableFuture.completeExceptionally(
+                                new CronetException("The request was canceled!", null) {});
+                    }
 
-            @Override
-            public void onSucceeded(UrlResponseInfo info, T body) {
-                completableFuture.complete(new CronetResponse<>(info, body));
-            }
-        });
+                    @Override
+                    public void onSucceeded(UrlResponseInfo info, T body) {
+                        completableFuture.complete(new CronetResponse<>(info, body));
+                    }
+                });
         return completableFuture;
     }
 

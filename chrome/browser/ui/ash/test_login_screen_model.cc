@@ -31,6 +31,9 @@ void TestLoginScreenModel::EnableAuthForUser(const AccountId& account_id) {}
 void TestLoginScreenModel::DisableAuthForUser(
     const AccountId& account_id,
     const ash::AuthDisabledData& auth_disabled_data) {}
+void TestLoginScreenModel::AuthenticationStageChange(
+    ash::AuthenticationStage auth_state) {}
+
 void TestLoginScreenModel::SetTpmLockedState(const AccountId& user,
                                              bool is_locked,
                                              base::TimeDelta time_left) {}

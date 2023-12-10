@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,7 +50,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
@@ -174,7 +174,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
  public:
   explicit MockNtpCustomBackgroundService(Profile* profile)
       : NtpCustomBackgroundService(profile) {}
-  MOCK_METHOD(absl::optional<CustomBackground>, GetCustomBackground, ());
+  MOCK_METHOD(std::optional<CustomBackground>, GetCustomBackground, ());
   MOCK_METHOD(void, ResetCustomBackgroundInfo, ());
   MOCK_METHOD(void, SelectLocalBackgroundImage, (const base::FilePath&));
   MOCK_METHOD(void, AddObserver, (NtpCustomBackgroundServiceObserver*));
@@ -211,7 +211,7 @@ class MockThemeService : public ThemeService {
   MOCK_CONST_METHOD0(UsingSystemTheme, bool());
   MOCK_CONST_METHOD0(UsingExtensionTheme, bool());
   MOCK_CONST_METHOD0(GetThemeID, std::string());
-  MOCK_CONST_METHOD0(GetUserColor, absl::optional<SkColor>());
+  MOCK_CONST_METHOD0(GetUserColor, std::optional<SkColor>());
   MOCK_CONST_METHOD0(UsingDeviceTheme, bool());
 
  private:
@@ -406,9 +406,9 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   custom_background.collection_id = "test_collection";
   custom_background.daily_refresh_enabled = false;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
   ON_CALL(mock_theme_service(), GetUserColor())
-      .WillByDefault(Return(absl::optional<SkColor>()));
+      .WillByDefault(Return(std::optional<SkColor>()));
   ON_CALL(mock_theme_service(), UsingDefaultTheme())
       .WillByDefault(Return(false));
   ON_CALL(mock_theme_service(), UsingSystemTheme())
@@ -447,7 +447,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThemeWithDailyRefresh) {
   custom_background.daily_refresh_enabled = true;
   custom_background.collection_id = "test_collection";
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
 
   UpdateTheme();
   mock_page_.FlushForTesting();
@@ -465,7 +465,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.is_uploaded_image = true;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
   ON_CALL(mock_theme_service(), UsingDefaultTheme())
       .WillByDefault(Return(false));
   ON_CALL(mock_theme_service(), UsingSystemTheme())
@@ -489,7 +489,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
   custom_background.is_uploaded_image = true;
   custom_background.local_background_id = token;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
   ON_CALL(mock_theme_service(), UsingDefaultTheme())
       .WillByDefault(Return(false));
   ON_CALL(mock_theme_service(), UsingSystemTheme())
@@ -523,7 +523,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
   extension_registry->AddEnabled(extension);
 
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
   ON_CALL(mock_theme_service(), UsingDefaultTheme())
       .WillByDefault(Return(false));
   ON_CALL(mock_theme_service(), UsingExtensionTheme())

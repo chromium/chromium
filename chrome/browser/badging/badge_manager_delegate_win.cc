@@ -20,14 +20,14 @@ namespace badging {
 namespace {
 
 // Determines the badge contents and alt text.
-// absl::nullopt if the badge is not set.
+// std::nullopt if the badge is not set.
 // otherwise a pair (badge_content, badge_alt_text), based on the content of the
 // badge.
-absl::optional<std::pair<std::string, std::string>> GetBadgeContentAndAlt(
-    const absl::optional<BadgeManager::BadgeValue>& badge) {
+std::optional<std::pair<std::string, std::string>> GetBadgeContentAndAlt(
+    const std::optional<BadgeManager::BadgeValue>& badge) {
   // If there is no badge, there is no contents or alt text.
   if (!badge)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string badge_string = badging::GetBadgeString(badge.value());
   // There are 3 different cases when the badge has a value:

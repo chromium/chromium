@@ -80,7 +80,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
   AdvanceClock(kLatencyDelta);
 
   metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
-                                 /*error=*/absl::nullopt);
+                                 /*error=*/std::nullopt);
 
   // Checking records in the backend-specific histogram
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
@@ -215,7 +215,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Cancelled) {
   AdvanceClock(kLatencyDelta);
 
   metrics_recorder.RecordMetrics(SuccessStatus::kCancelled,
-                                 /*error=*/absl::nullopt);
+                                 /*error=*/std::nullopt);
 
   // Checking records in the backend-specific histogram.
   histogram_tester.ExpectTotalCount(kDurationMetric, 0);

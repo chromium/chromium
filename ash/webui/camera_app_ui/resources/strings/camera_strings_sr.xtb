@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Избриши <ph name="PAGE_NUMBER" />. страницу</translation>
 <translation id="1113173431709655881">Режим камере</translation>
 <translation id="1153190633558910465">Координатна мрежа је искључена</translation>
-<translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. страница је избрисана</translation>
 <translation id="1258009455399840361">Ротирај за 90 степени удесно</translation>
 <translation id="1417314334557041815">Измени <ph name="INDEX" />. страницу</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Обрађује се видео...</translation>
 <translation id="3789724198583203151">Ротирај за 90 степени улево</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3892148308691398805">Копирај текст</translation>
 <translation id="4060608699153044055">Не можете да снимате због недовољно меморијског простора на уређају. Да бисте почели да снимате, треба да ослободите простор на уређају.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Паузирај снимање</translation>
 <translation id="4121305183798804752">Документ је откривен</translation>
 <translation id="414641094616694804">Ова камера не може да промени резолуцију</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
-<translation id="4269820728363426813">Копирај адресу линка</translation>
 <translation id="428234092390943511">Сличица странице</translation>
 <translation id="4349714250734879769">Chrome прилагођава оквире</translation>
 <translation id="4383571725254449280">Евиденције о учинку штампања</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Снимите нормалан видео</translation>
 <translation id="7748344063862150053">Горњи десни угао документа</translation>
 <translation id="7933675232020478311">Креће се удесно надоле</translation>
-<translation id="7983668134180549431">Текст је откривен.</translation>
 <translation id="8079255378695216066">Снимање не може да почне</translation>
 <translation id="8120146556401698679">Померање, нагињање, зумирање</translation>
 <translation id="8131740175452115882">Потврди</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Снимање није могло да почне</translation>
 <translation id="8880167521484863515">4 према 3</translation>
 <translation id="8903921497873541725">Увећавање</translation>
+<translation id="8926890870105777777">Придружи ме мрежи <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Поставите све ивице документа у оквир</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="906331135292332864">Слика се обрађује…</translation>

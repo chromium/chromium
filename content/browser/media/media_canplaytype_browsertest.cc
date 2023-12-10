@@ -90,15 +90,23 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
   }
   ExecuteTest("testMp4Variants(true, true, false)");
 #elif BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
-    ExecuteTest("testMp4Variants(true, false, false)");
-  } else if (__builtin_available(macOS 11.0, *)) {
-    // the Mac compiler freaks out if __builtin_available is not the _only_
-    // condition in the if statement, which is why it's written like this.
-    ExecuteTest("testMp4Variants(true, true, false)");
-  } else {
-    ExecuteTest("testMp4Variants(true, false, false)");
+  if (__builtin_available(macOS 11.0, *)) {
+    if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+      // the Mac compiler freaks out if __builtin_available is not the _only_
+      // condition in the if statement, which is why it's written like this.
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      ExecuteTest("testMp4Variants(true, true, true)");
+#else
+      ExecuteTest("testMp4Variants(true, true, false)");
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      return;
+    }
   }
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  ExecuteTest("testMp4Variants(true, false, true)");
+#else
+  ExecuteTest("testMp4Variants(true, false, false)");
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #else
   // Other platforms query the gpu each time to find out, so it would be
   // unreliable on the bots to test for this.

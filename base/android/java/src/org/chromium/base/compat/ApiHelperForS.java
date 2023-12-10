@@ -40,16 +40,12 @@ public final class ApiHelperForS {
 
     private ApiHelperForS() {}
 
-    /**
-     * See {@link ClipDescription#isStyleText()}.
-     */
+    /** See {@link ClipDescription#isStyleText()}. */
     public static boolean isStyleText(ClipDescription clipDescription) {
         return clipDescription.isStyledText();
     }
 
-    /**
-     * See {@link ClipDescription#getConfidenceScore()}.
-     */
+    /** See {@link ClipDescription#getConfidenceScore()}. */
     public static float getConfidenceScore(
             ClipDescription clipDescription, @NonNull String entityType) {
         return clipDescription.getConfidenceScore(entityType);
@@ -63,22 +59,21 @@ public final class ApiHelperForS {
         return clipDescription.getClassificationStatus() == ClipDescription.CLASSIFICATION_COMPLETE;
     }
 
-    /**
-     * See {@link ClipData.Item#getTextLinks()}.
-     */
+    /** See {@link ClipData.Item#getTextLinks()}. */
     public static TextLinks getTextLinks(ClipData.Item item) {
         return item.getTextLinks();
     }
 
     public static boolean hasBluetoothConnectPermission() {
-        return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                       Manifest.permission.BLUETOOTH_CONNECT, Process.myPid(), Process.myUid())
+        return ApiCompatibilityUtils.checkPermission(
+                        ContextUtils.getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Process.myPid(),
+                        Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    /**
-     * See {@link android.app.PictureInPictureParams.Builder#setAutoEnterEnabled(boolean)}
-     */
+    /** See {@link android.app.PictureInPictureParams.Builder#setAutoEnterEnabled(boolean)} */
     public static void setAutoEnterEnabled(
             PictureInPictureParams.Builder builder, boolean enabled) {
         builder.setAutoEnterEnabled(enabled);
@@ -93,24 +88,18 @@ public final class ApiHelperForS {
         return builder.setIncludeTextClassification(includeTextClassification);
     }
 
-    /**
-     * See {@link android.view.textclassifier.TextSelection#getTextClassification()}
-     */
+    /** See {@link android.view.textclassifier.TextSelection#getTextClassification()} */
     public static TextClassification getTextClassification(TextSelection textSelection) {
         return textSelection.getTextClassification();
     }
 
-    /**
-     * See Context#createWindowContext.
-     */
+    /** See Context#createWindowContext. */
     public static Context createWindowContext(
             Context context, Display display, int type, Bundle options) {
         return context.createWindowContext(display, type, options);
     }
 
-    /**
-     * See {@link PendingIntent#FLAG_MUTABLE}.
-     */
+    /** See {@link PendingIntent#FLAG_MUTABLE}. */
     public static int getPendingIntentMutableFlag() {
         return PendingIntent.FLAG_MUTABLE;
     }
@@ -121,9 +110,14 @@ public final class ApiHelperForS {
         try {
             service.startForeground(id, notification, foregroundServiceType);
         } catch (ForegroundServiceStartNotAllowedException e) {
-            Log.e(TAG,
-                    "Cannot run service as foreground: " + e + " for notification channel "
-                            + notification.getChannelId() + " notification id " + id);
+            Log.e(
+                    TAG,
+                    "Cannot run service as foreground: "
+                            + e
+                            + " for notification channel "
+                            + notification.getChannelId()
+                            + " notification id "
+                            + id);
         }
     }
 }

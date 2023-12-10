@@ -5,10 +5,10 @@
 #include "extensions/browser/service_worker_task_queue.h"
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -36,7 +36,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
@@ -143,7 +142,7 @@ class ServiceWorkerTaskQueue::WorkerState {
 
   // Contains the worker's WorkerId associated with this WorkerState, once we
   // have discovered info about the worker.
-  absl::optional<WorkerId> worker_id_;
+  std::optional<WorkerId> worker_id_;
 };
 
 void ServiceWorkerTaskQueue::DidStartWorkerForScope(
@@ -273,6 +272,10 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
                                service_worker_version_id, thread_id});
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
+
+  if (g_test_observer) {
+    g_test_observer->DidInitializeServiceWorkerContext(extension_id);
+  }
 }
 
 void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
@@ -344,7 +347,7 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
 
   DCHECK_NE(RendererState::kStopped, worker_state->renderer_state_);
   worker_state->renderer_state_ = RendererState::kStopped;
-  worker_state->worker_id_ = absl::nullopt;
+  worker_state->worker_id_ = std::nullopt;
 }
 
 // static
@@ -465,7 +468,7 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   const ExtensionId extension_id = extension->id();
   RemoveRegisteredServiceWorkerInfo(extension_id);
-  absl::optional<base::UnguessableToken> activation_token =
+  std::optional<base::UnguessableToken> activation_token =
       GetCurrentActivationToken(extension_id);
 
   // Extension was never activated, this happens in tests.
@@ -490,7 +493,12 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension->id());
 
-  service_worker_context->UnregisterServiceWorker(
+  // Note: It's important that the unregistration happen immediately (rather
+  // waiting for any controllees to be closed). Otherwise, we can get into a
+  // state where the old registration is not cleared by the time we re-register
+  // the worker if the extension is being reloaded, e.g. for an update.
+  // See https://crbug.com/1501930.
+  service_worker_context->UnregisterServiceWorkerImmediately(
       extension->url(),
       blink::StorageKey::CreateFirstParty(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
@@ -640,7 +648,7 @@ void ServiceWorkerTaskQueue::RemoveRegisteredServiceWorkerInfo(
   } else {
     ExtensionPrefs::Get(browser_context_)
         ->UpdateExtensionPref(extension_id, kPrefServiceWorkerRegistrationInfo,
-                              absl::nullopt);
+                              std::nullopt);
   }
 }
 
@@ -680,12 +688,12 @@ bool ServiceWorkerTaskQueue::IsCurrentActivation(
   return activation_token == GetCurrentActivationToken(extension_id);
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 ServiceWorkerTaskQueue::GetCurrentActivationToken(
     const ExtensionId& extension_id) const {
   auto iter = activation_tokens_.find(extension_id);
   if (iter == activation_tokens_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second;
 }

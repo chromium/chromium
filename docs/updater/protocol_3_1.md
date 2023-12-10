@@ -624,6 +624,10 @@ in the response. It has the following members:
      *   "error-invalidAppId": The server is not aware of this application with
          this ID and furthermore the application ID was not in a format the
          server expected.
+     *   "error-osnotsupported": The server finds that the OS does not meet the
+         application requirements.
+     *   "error-hwnotsupported": The server finds that the computer does not
+         meet the hardware requirements of the application.
 
 #### `data` Objects (Update Check Response)
 Each data object in the response represents an answer to a data request from the

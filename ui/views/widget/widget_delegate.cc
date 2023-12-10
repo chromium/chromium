@@ -549,7 +549,7 @@ views::View* WidgetDelegateView::GetContentsView() {
   return this;
 }
 
-BEGIN_METADATA(WidgetDelegateView, View)
+BEGIN_METADATA(WidgetDelegateView)
 END_METADATA
 
 }  // namespace views

@@ -96,10 +96,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoSupportedPaymentMethodTest,
   ASSERT_TRUE(content::ExecJs(web_contents, click_buy_button_js));
   ASSERT_TRUE(WaitForObservedEvent());
 
-  histogram_tester.ExpectBucketCount(
-      "PaymentRequest.CheckoutFunnel.NoShow",
-      JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD, 1);
-
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -236,11 +232,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, first_dialog_view);
-
-  // There is one no show and one shown (verified below).
-  histogram_tester.ExpectBucketCount(
-      "PaymentRequest.CheckoutFunnel.NoShow",
-      JourneyLogger::NOT_SHOWN_REASON_CONCURRENT_REQUESTS, 1);
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =

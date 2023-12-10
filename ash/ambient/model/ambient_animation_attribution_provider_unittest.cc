@@ -5,6 +5,7 @@
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -70,16 +70,16 @@ class AmbientAnimationAttributionProviderTest : public ::testing::Test {
     cc::SkottieResourceMetadataMap resource_metadata;
     CHECK(resource_metadata.RegisterAsset("dummy-resource-path",
                                           "dummy-resource-name", asset_id_0_,
-                                          /*size=*/absl::nullopt));
+                                          /*size=*/std::nullopt));
     CHECK(resource_metadata.RegisterAsset("dummy-resource-path",
                                           "dummy-resource-name", asset_id_1_,
-                                          /*size=*/absl::nullopt));
+                                          /*size=*/std::nullopt));
     return resource_metadata;
   }
 
   void RefreshDynamicImageAssets(
-      absl::optional<std::string> asset_0_attribution,
-      absl::optional<std::string> asset_1_attribution,
+      std::optional<std::string> asset_0_attribution,
+      std::optional<std::string> asset_1_attribution,
       ::ambient::TopicType topic_type = kDefaultTopicType) {
     gfx::ImageSkia test_image =
         gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
@@ -227,7 +227,7 @@ TEST_F(AmbientAnimationAttributionProviderTestMultipleDigitIndex,
 
 TEST_F(AmbientAnimationAttributionProviderTest1DynamicAsset,
        HandlesNonAttributionTextNodes) {
-  RefreshDynamicImageAssets(absl::nullopt, "attribution_text_1");
+  RefreshDynamicImageAssets(std::nullopt, "attribution_text_1");
   // The static text node should the value that's baked into the lottie file
   // (|kLottieDataWith2TextNode1Text|).
   EXPECT_THAT(

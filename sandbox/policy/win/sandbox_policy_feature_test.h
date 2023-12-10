@@ -6,22 +6,13 @@
 #define SANDBOX_POLICY_WIN_SANDBOX_POLICY_FEATURE_TEST_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
-#include "sandbox/policy/features.h"
-#include "sandbox/policy/switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "base/win/sid.h"
+#include "sandbox/win/src/app_container.h"
+#include "sandbox/win/src/sandbox_policy.h"
+#include "sandbox/win/src/security_level.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "sandbox/policy/win/sandbox_win.h"
-#include "sandbox/win/src/app_container_base.h"
-#include "sandbox/win/src/sandbox_factory.h"
-#include "sandbox/win/src/sandbox_policy.h"
-#include "sandbox/win/src/sandbox_policy_base.h"
-#endif
-
-namespace sandbox {
-namespace policy {
+namespace sandbox::policy {
 
 class SandboxFeatureTest
     : public ::testing::Test,
@@ -49,7 +40,7 @@ class SandboxFeatureTest
 
   base::test::ScopedFeatureList feature_list_;
 };
-}  // namespace policy
-}  // namespace sandbox
+
+}  // namespace sandbox::policy
 
 #endif  // SANDBOX_POLICY_WIN_SANDBOX_POLICY_FEATURE_TEST_H_

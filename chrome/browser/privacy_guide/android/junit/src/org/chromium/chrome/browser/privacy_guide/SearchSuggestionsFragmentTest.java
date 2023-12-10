@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
@@ -31,6 +30,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -46,7 +46,7 @@ public class SearchSuggestionsFragmentTest {
     @Mock private PrefService mPrefService;
 
     private FragmentScenario mScenario;
-    private SwitchCompat mSearchSuggestionsButton;
+    private MaterialSwitchWithText mSearchSuggestionsButton;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
@@ -70,7 +70,7 @@ public class SearchSuggestionsFragmentTest {
                 FragmentScenario.launchInContainer(
                         SearchSuggestionsFragment.class,
                         Bundle.EMPTY,
-                        R.style.Theme_MaterialComponents,
+                        org.chromium.chrome.R.style.Theme_BrowserUI_DayNight,
                         new FragmentFactory() {
                             @NonNull
                             @Override

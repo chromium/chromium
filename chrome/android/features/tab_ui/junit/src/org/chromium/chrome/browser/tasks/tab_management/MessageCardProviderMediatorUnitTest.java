@@ -129,8 +129,6 @@ public class MessageCardProviderMediatorUnitTest {
     public void getMessageItemsTest_OneMessageForEachMessageType() {
         enqueueMessageItem(
                 MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.CLOSE);
-        enqueueMessageItem(
-                MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.GROUP);
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
 
         List<MessageCardProviderMediator.Message> messages = mMediator.getMessageItems();
@@ -346,22 +344,6 @@ public class MessageCardProviderMediatorUnitTest {
                         mContext.getResources()
                                 .getDimension(R.dimen.tab_cleanup_promo_card_icon_height),
                 model.get(MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS));
-    }
-
-    @Test
-    public void buildModel_ForGroupingTabSuggestion() {
-        enqueueMessageItem(
-                MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.GROUP);
-
-        PropertyModel model =
-                mMediator
-                        .getReadyMessageItemsForTesting()
-                        .get(MessageService.MessageType.TAB_SUGGESTION)
-                        .get(0)
-                        .model;
-        Assert.assertEquals(
-                MessageService.MessageType.TAB_SUGGESTION,
-                model.get(MessageCardViewProperties.MESSAGE_TYPE));
     }
 
     @Test

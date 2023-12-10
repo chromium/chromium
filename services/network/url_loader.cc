@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -40,6 +41,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/mime_sniffer.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/transport_info.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -52,6 +54,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_source_type.h"
@@ -63,6 +66,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
@@ -412,6 +416,50 @@ net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
   return updated_headers;
 }
 
+const char* GetDestinationTypePartString(
+    network::mojom::RequestDestination destination) {
+  if (destination == network::mojom::RequestDestination::kDocument) {
+    return "MainFrame";
+  } else if (destination == network::mojom::RequestDestination::kFrame ||
+             destination == network::mojom::RequestDestination::kIframe) {
+    return "SubFrame";
+  }
+  return "Subresource";
+}
+
+const char* GetCertStatePartString(const net::SSLInfo& ssl_info) {
+  if (!ssl_info.cert.get()) {
+    return "NoCert";
+  }
+  return ssl_info.is_issued_by_known_root ? "KnownRootCert" : "UnknownRootCert";
+}
+
+void MaybeRecordSharedDictionaryUsedResponseMetrics(
+    int error_code,
+    network::mojom::RequestDestination destination,
+    const net::HttpResponseInfo& response_info,
+    bool shared_dictionary_allowed_check_passed) {
+  if (response_info.did_use_shared_dictionary) {
+    base::UmaHistogramSparse(
+        base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes.",
+                      GetDestinationTypePartString(destination), ".",
+                      GetCertStatePartString(response_info.ssl_info)}),
+        -error_code);
+  }
+
+  if (shared_dictionary_allowed_check_passed &&
+      destination == network::mojom::RequestDestination::kDocument) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.",
+             net::HttpConnectionInfoCoarseToString(
+                 net::HttpConnectionInfoToCoarse(
+                     response_info.connection_info)),
+             ".", GetCertStatePartString(response_info.ssl_info)}),
+        response_info.did_use_shared_dictionary);
+  }
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -482,7 +530,6 @@ URLLoader::URLLoader(
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
       do_not_prompt_for_login_(request.do_not_prompt_for_login),
-      is_ad_tagged_(request.is_ad_tagged),
       receiver_(this, std::move(url_loader_receiver)),
       url_loader_client_(std::move(url_loader_client),
                          std::move(sync_url_loader_client)),
@@ -577,6 +624,7 @@ URLLoader::URLLoader(
   url_request_->SetReferrer(request.referrer.GetAsReferrer().spec());
   url_request_->set_referrer_policy(request.referrer_policy);
   url_request_->set_upgrade_if_insecure(request.upgrade_if_insecure);
+  url_request_->set_ad_tagged(request.is_ad_tagged);
 
   auto isolation_info = GetIsolationInfo(
       factory_params_->isolation_info,
@@ -691,6 +739,9 @@ URLLoader::URLLoader(
     url_request_->cookie_setting_overrides().Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
+
+  AddAdsHeuristicCookieSettingOverrides(
+      request.is_ad_tagged, url_request_->cookie_setting_overrides());
 
   // The `kStorageAccessGrantEligible` override will be applied (in-place) by
   // individual request jobs as appropriate, but should not be present
@@ -1232,7 +1283,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
             PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
       return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
     }
-    return net::ERR_FAILED;
+    return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
   }
 
   if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
@@ -1281,7 +1332,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->was_fetched_via_cache = url_request_->was_cached();
   response->is_validated = (response_info.cache_entry_status ==
                             net::HttpResponseInfo::ENTRY_VALIDATED);
-  response->proxy_server = url_request_->proxy_chain().proxy_server();
+  response->proxy_chain = url_request_->proxy_chain();
   response->network_accessed = response_info.network_accessed;
   response->async_revalidation_requested =
       response_info.async_revalidation_requested;
@@ -1304,8 +1355,6 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
     url_request_->GetLoadTimingInfo(&response->load_timing);
 
   if (url_request_->ssl_info().cert.get()) {
-    response->ct_policy_compliance =
-        url_request_->ssl_info().ct_policy_compliance;
     response->cert_status = url_request_->ssl_info().cert_status;
     if ((options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
         (net::IsCertStatusError(url_request_->ssl_info().cert_status) &&
@@ -1843,7 +1892,7 @@ void URLLoader::ReadMore() {
 
   CHECK(!slop_bucket_ || !slop_bucket_->IsComplete());
   auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(
-      pending_write_.get(), pending_write_buffer_offset_);
+      pending_write_, pending_write_buffer_offset_);
   read_in_progress_ = true;
   int bytes_read = url_request_->Read(
       buf.get(), static_cast<int>(pending_write_buffer_size_ -
@@ -1885,10 +1934,13 @@ void URLLoader::DidRead(int num_bytes,
     // started sending response.
     if (!consumer_handle_.is_valid()) {
       int64_t total_encoded_bytes = url_request_->GetTotalReceivedBytes();
-      int64_t delta = total_encoded_bytes - reported_total_encoded_bytes_;
-      DCHECK_LE(0, delta);
-      if (delta)
-        url_loader_client_.Get()->OnTransferSizeUpdated(delta);
+      if (ShouldSendTransferSizeUpdated()) {
+        int64_t delta = total_encoded_bytes - reported_total_encoded_bytes_;
+        DCHECK_LE(0, delta);
+        if (delta) {
+          url_loader_client_.Get()->OnTransferSizeUpdated(delta);
+        }
+      }
       reported_total_encoded_bytes_ = total_encoded_bytes;
     }
   }
@@ -1910,7 +1962,7 @@ void URLLoader::DidRead(int num_bytes,
       if (data_length > net::kMaxBytesToSniff)
         data_length = net::kMaxBytesToSniff;
 
-      base::StringPiece data(pending_write_->buffer(), data_length);
+      std::string_view data(pending_write_->buffer(), data_length);
       bool stop_sniffing_after_processing_current_data =
           (num_bytes <= 0 ||
            pending_write_buffer_offset_ >= net::kMaxBytesToSniff);
@@ -2165,6 +2217,11 @@ void URLLoader::NotifyCompleted(int error_code) {
   if (total_sent > 0) {
     UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
   }
+
+  MaybeRecordSharedDictionaryUsedResponseMetrics(
+      error_code, request_destination_, url_request_->response_info(),
+      shared_dictionary_allowed_check_passed_);
+
   if ((total_received > 0 || total_sent > 0)) {
     if (url_loader_network_observer_ && provide_data_use_updates_) {
       url_loader_network_observer_->OnDataUseUpdate(
@@ -2193,7 +2250,6 @@ void URLLoader::NotifyCompleted(int error_code) {
     status.encoded_data_length = url_request_->GetTotalReceivedBytes();
     status.encoded_body_length = url_request_->GetRawBodyBytes();
     status.decoded_body_length = total_written_bytes_;
-    status.proxy_server = url_request_->proxy_chain().proxy_server();
     status.resolve_error_info =
         url_request_->response_info().resolve_error_info;
     if (trust_token_status_)
@@ -2327,16 +2383,21 @@ void URLLoader::SetRawRequestHeadersAndNotify(
     if (!reported_cookies.empty()) {
       cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
+          url_request_->isolation_info().top_frame_origin().value_or(
+              url::Origin()),
           url_request_->site_for_cookies(), std::move(reported_cookies),
-          devtools_request_id(), /*count=*/1, is_ad_tagged_));
+          devtools_request_id(), /*count=*/1, url_request_->ad_tagged(),
+          url_request_->cookie_setting_overrides()));
     }
   }
 }
 
 bool URLLoader::IsSharedDictionaryReadAllowed() {
-  return shared_dictionary_checker_->CheckAllowedToReadAndReport(
-      url_request_->url(), url_request_->site_for_cookies(),
-      url_request_->isolation_info());
+  shared_dictionary_allowed_check_passed_ =
+      shared_dictionary_checker_->CheckAllowedToReadAndReport(
+          url_request_->url(), url_request_->site_for_cookies(),
+          url_request_->isolation_info());
+  return shared_dictionary_allowed_check_passed_;
 }
 
 void URLLoader::DispatchOnRawRequest(
@@ -2680,8 +2741,11 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
   if (!reported_cookies.empty()) {
     cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
+        url_request_->isolation_info().top_frame_origin().value_or(
+            url::Origin()),
         url_request_->site_for_cookies(), std::move(reported_cookies),
-        devtools_request_id(), /*count=*/1, is_ad_tagged_));
+        devtools_request_id(), /*count=*/1, url_request_->ad_tagged(),
+        url_request_->cookie_setting_overrides()));
     if (call_cookie_observer) {
       cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
     }
@@ -2829,6 +2893,11 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   // [spec]: 5. Return false.
   return false;
+}
+
+bool URLLoader::ShouldSendTransferSizeUpdated() const {
+  return devtools_request_id() || url_request_->ad_tagged() ||
+         !base::FeatureList::IsEnabled(features::kReduceTransferSizeUpdatedIPC);
 }
 
 }  // namespace network

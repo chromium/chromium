@@ -109,8 +109,6 @@ void IDBFactoryClient::OpenSuccess(
     Detach();
     request->OnOpenDBSuccess(std::move(db), IDBDatabaseMetadata(metadata));
     // `this` may be deleted because event dispatch can run a nested loop.
-  } else if (db) {
-    db->Close();
   }
 }
 
@@ -162,8 +160,6 @@ void IDBFactoryClient::UpgradeNeeded(
     // Not resetting |request_|.  In this instance we will have to forward at
     // least one other call in the set UpgradeNeeded() / OpenSuccess() /
     // Error().
-  } else if (db) {
-    db->Close();
   }
 }
 

@@ -18,7 +18,7 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -29,6 +29,7 @@ import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import {traceWelcomeAnimationPlay} from '../../oobe_trace.js';
 
+import {getTemplate} from './welcome.html.js';
 import {OobeWelcomeDialog} from './welcome_dialog.js';
 
 /** @const {string} */
@@ -95,7 +96,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -236,6 +237,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       'showRemoraRequisitionDialog',
       'maybeGiveChromeVoxHint',
       'setQuickStartEnabled',
+      'showQuickStartBluetoothDialog',
     ];
   }
 
@@ -388,15 +390,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    */
   onWelcomeNextButtonClicked_() {
     this.userActed('continue');
-  }
-
-  /**
-   * Handle "Quick Start" button for "Welcome" screen.
-   *
-   * @private
-   */
-  onQuickStartButtonClicked_() {
-    this.userActed('activateQuickStart');
   }
 
   /**
@@ -775,9 +768,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     });
   }
 
-  setQuickStartEnabled() {
-    this.$.welcomeScreen.isQuickStartEnabled = true;
-  }
 
   /**
    * Returns a voice name from |voices| that matches |locale|.
@@ -886,6 +876,29 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    */
   hideCFMSetupButton_(isDeviceRequisitionConfigurable, isMeet) {
     return !isDeviceRequisitionConfigurable && !isMeet;
+  }
+
+  /** ******************** Quick Start section ******************* */
+
+  setQuickStartEnabled() {
+    this.$.welcomeScreen.isQuickStartEnabled = true;
+  }
+
+  showQuickStartBluetoothDialog() {
+    this.$.welcomeScreen.onShowQuickStartBluetoothDialog_();
+  }
+
+  /**
+   * Handle "Quick Start" button for "Welcome" screen.
+   *
+   * @private
+   */
+  onActivateQuickStart_(e) {
+    if (e.detail.enableBluetooth) {
+      this.userActed('quickStartEnableBluetooth');
+    } else {
+      this.userActed('quickStartClicked');
+    }
   }
 }
 

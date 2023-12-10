@@ -5,9 +5,10 @@
 #ifndef ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_PREFS_H_
 #define ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_PREFS_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -22,18 +23,18 @@ enum class PreventedReason;
 namespace welcome_tour_prefs {
 
 // Retrieves the time that the tour was first completed. If the time has not
-// been set, returns `absl::nullopt`.
-ASH_EXPORT absl::optional<base::Time> GetTimeOfFirstTourCompletion(
+// been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<base::Time> GetTimeOfFirstTourCompletion(
     PrefService* prefs);
 
 // Retrieves the time that the tour was first prevented. If the time has not
-// been set, returns `absl::nullopt`.
-ASH_EXPORT absl::optional<base::Time> GetTimeOfFirstTourPrevention(
+// been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<base::Time> GetTimeOfFirstTourPrevention(
     PrefService* prefs);
 
 // Retrieves the reason the tour was first prevented. If the tour has not been
-// prevented, returns `absl::nullopt`.
-ASH_EXPORT absl::optional<welcome_tour_metrics::PreventedReason>
+// prevented, returns `std::nullopt`.
+ASH_EXPORT std::optional<welcome_tour_metrics::PreventedReason>
 GetReasonForFirstTourPrevention(PrefService* prefs);
 
 // Marks now as the first time the tour was prevented, with the given `reason`.

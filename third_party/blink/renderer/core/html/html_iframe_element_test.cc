@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -302,7 +303,6 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
 using HTMLIFrameElementSimTest = SimTest;
 
 TEST_F(HTMLIFrameElementSimTest, PolicyAttributeParsingError) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
   main_resource.Complete(R"(
@@ -340,6 +340,30 @@ TEST_F(HTMLIFrameElementSimTest, AllowAttributeParsingError) {
       << "Expect permissions policy parser raising error for unrecognized "
          "feature but got: "
       << ConsoleMessages().front();
+}
+
+TEST_F(HTMLIFrameElementSimTest, Adauctionheaders_SecureContext_Allowed) {
+  SimRequest main_resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Complete(R"(
+    <iframe adauctionheaders></iframe>
+  )");
+
+  EXPECT_TRUE(ConsoleMessages().empty());
+}
+
+TEST_F(HTMLIFrameElementSimTest, Adauctionheaders_InsecureContext_NotAllowed) {
+  SimRequest main_resource("http://example.com", "text/html");
+  LoadURL("http://example.com");
+  main_resource.Complete(R"(
+    <iframe adauctionheaders></iframe>
+  )");
+
+  EXPECT_EQ(ConsoleMessages().size(), 1u);
+  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+      "adAuctionHeaders: Protected Audience APIs "
+      "are only available in secure contexts."))
+      << "Unexpected error; got: " << ConsoleMessages().front();
 }
 
 TEST_F(HTMLIFrameElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {

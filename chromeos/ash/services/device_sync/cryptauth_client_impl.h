@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_CLIENT_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_CLIENT_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 struct AccessTokenInfo;
@@ -136,8 +136,8 @@ class CryptAuthClientImpl : public CryptAuthClient {
   void MakeApiCall(
       const GURL& request_url,
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<std::vector<std::pair<std::string, std::string>>>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<std::vector<std::pair<std::string, std::string>>>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)> response_callback,
       ErrorCallback error_callback,
@@ -148,8 +148,8 @@ class CryptAuthClientImpl : public CryptAuthClient {
   template <class ResponseProto>
   void OnAccessTokenFetched(
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<std::vector<std::pair<std::string, std::string>>>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<std::vector<std::pair<std::string, std::string>>>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)> response_callback,
       GoogleServiceAuthError error,

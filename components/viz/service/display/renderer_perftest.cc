@@ -145,14 +145,15 @@ base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
                          vec.size() * sizeof(T));
 }
 
-void DeleteSharedImage(scoped_refptr<RasterContextProvider> context_provider,
-                       gpu::Mailbox mailbox,
-                       const gpu::SyncToken& sync_token,
-                       bool is_lost) {
+void DeleteSharedImage(
+    scoped_refptr<RasterContextProvider> context_provider,
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::move(client_shared_image));
 }
 
 TransferableResource CreateTestTexture(
@@ -173,21 +174,19 @@ TransferableResource CreateTestTexture(
   gpu::SharedImageInterface* sii =
       child_context_provider->SharedImageInterface();
   DCHECK(sii);
-  gpu::Mailbox mailbox =
-      sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, size,
-                             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                             kPremul_SkAlphaType,
-                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
-                             MakePixelSpan(pixels))
-          ->mailbox();
+  auto client_shared_image = sii->CreateSharedImage(
+      SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel", MakePixelSpan(pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(
-      mailbox, GL_TEXTURE_2D, sync_token, size, SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      client_shared_image, GL_TEXTURE_2D, sync_token, size,
+      SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   gl_resource.color_space = gfx::ColorSpace();
-  auto release_callback = base::BindOnce(
-      &DeleteSharedImage, std::move(child_context_provider), mailbox);
+  auto release_callback =
+      base::BindOnce(&DeleteSharedImage, std::move(child_context_provider),
+                     std::move(client_shared_image));
   gl_resource.id = child_resource_provider->ImportResource(
       gl_resource, std::move(release_callback));
   return gl_resource;
@@ -281,7 +280,8 @@ class RendererPerfTest : public VizPerfTest {
     output_surface->SetNeedsSwapSizeNotifications(true);
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     display_ = std::make_unique<Display>(
-        &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
+        &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
+        /*sync_point_manager=*/nullptr, renderer_settings_, &debug_settings_,
         kArbitraryFrameSinkId, std::move(display_controller),
         std::move(output_surface), std::move(overlay_processor),
         /*display_scheduler=*/nullptr,

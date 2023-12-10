@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/levenshtein_distance.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -258,45 +259,6 @@ AutocorrectRejectionBreakdown LogSelectionEditInteractions(
   return AutocorrectRejectionBreakdown::kRejectedSelectedInvalidRange;
 }
 
-// Returns the Levenshtein distance between |str1| and |str2|.
-// Which is the minimum number of single-character edits (i.e. insertions,
-// deletions or substitutions) required to change one word into the other.
-// https://en.wikipedia.org/wiki/Levenshtein_distance
-int GetLevenshteinDistance(const std::u16string& str1,
-                           const std::u16string& str2) {
-  if (str1.size() > str2.size()) {
-    return GetLevenshteinDistance(str2, str1);
-  }
-  if (str1.size() + static_cast<size_t>(kMaxEditDistance) < str2.size()) {
-    return kMaxEditDistance;
-  }
-
-  std::vector<int> row(str1.size() + 1);
-  for (size_t i = 0; i < row.size(); ++i) {
-    row[i] = static_cast<int>(i);
-  }
-
-  for (size_t i = 0; i < str2.size(); ++i) {
-    ++row[0];
-    int previous = static_cast<int>(i);
-    bool under_cutoff = false;
-    for (size_t j = 0; j < str1.size(); ++j) {
-      int old_row = row[j + 1];
-      int cost = str2[i] == str1[j] ? 0 : 1;
-      row[j + 1] = std::min(std::min(row[j], row[j + 1]) + 1, previous + cost);
-      if (row[j + 1] < kMaxEditDistance) {
-        under_cutoff = true;
-      }
-      previous = old_row;
-    }
-
-    if (!under_cutoff) {
-      return kMaxEditDistance;
-    }
-  }
-  return row[str1.size()];
-}
-
 void MeasureAndLogAssistiveAutocorrectEditDistance(
     const std::u16string& original_text,
     const std::u16string& suggested_text,
@@ -304,8 +266,8 @@ void MeasureAndLogAssistiveAutocorrectEditDistance(
     const bool virtual_keyboard_visible) {
   const int text_length =
       std::min(static_cast<int>(original_text.length()), kMaxEditDistance);
-  const int distance = std::min(
-      GetLevenshteinDistance(original_text, suggested_text), kMaxEditDistance);
+  const int distance = base::LevenshteinDistance(original_text, suggested_text,
+                                                 kMaxEditDistance - 1);
   if (text_length <= 0 || distance <= 0) {
     return;
   }

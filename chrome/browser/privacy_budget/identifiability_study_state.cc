@@ -19,7 +19,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_tree.h"
 #include "base/dcheck_is_on.h"
-#include "base/functional/identity.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"

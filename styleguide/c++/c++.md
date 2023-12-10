@@ -22,7 +22,7 @@ Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 ## Modern C++ features
 
 Google and Chromium style
-[targets C++17](https://google.github.io/styleguide/cppguide.html#C++_Version).
+[targets C++20](https://google.github.io/styleguide/cppguide.html#C++_Version).
 Additionally, some features of supported C++ versions remain forbidden. The
 status of Chromium's C++ support is covered in more detail in
 [Modern C++ use in Chromium](c++-features.md).
@@ -39,7 +39,9 @@ status of Chromium's C++ support is covered in more detail in
     [PRESUBMIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
     `ForTesting` is the conventional suffix although similar patterns, such as
     `ForTest`, are also accepted. These suffixes are checked at presubmit time
-    to ensure the functions are called only by test files.
+    to ensure the functions are called only by test files. In the rare case of
+    adding a test-only code path to an area where a testing suffix is not
+    possible, CHECK_IS_TEST() may be appropriate.
   * Classes used only for testing should be in a GN build target that is
     marked `testonly=true`. Tests can depend on such targets, but production
     code can not.
@@ -316,10 +318,17 @@ Use the `CHECK()` family of macros to both document and verify invariants.
   * Exception: If the invariant is known to be too expensive to verify in
     production, you may fall back to `DCHECK()`. Do not do this unless
     necessary.
+  * Exception: If your pre-stable coverage is too small to prevent a stability
+    risk once `CHECK()`s hit stable, and failure doesn't obviously result in a
+    crash or security risk, you may use `CHECK(Foo(),
+    base::NotFatalUntil::M120)` with a future milestone to gather non-fatal
+    diagnostics in stable before automatically turning fatal in a later
+    milestone.
   * Historically, Chromium code used `DCHECK()` in most cases, so a great deal
     of existing code uses `DCHECK()` instead of `CHECK()`. You are encouraged
-    to migrate to `CHECK()` or add a comment explaining why DCHECK is
-    appropriate given the current guidance.
+    to migrate to `CHECK()`s with a trailing `base::NotFatalUntil::M120`
+    argument, as there's stability risk given the under-tested invariant, or add
+    a comment explaining why DCHECK is appropriate given the current guidance.
 
 Use `NOTREACHED_NORETURN()` to indicate a piece of code is unreachable. Control
 flow does not leave this call, so there should be no executable statements after
@@ -327,10 +336,16 @@ it (even return statements from non-void functions). The compiler will issue
 dead-code warnings.
   * Prefer to unconditionally `CHECK()` instead of conditionally hitting a
     `NOTREACHED[_NORETURN]()`, where feasible.
-  * Historically, Chromium code used `NOTREACHED()` for this purpose. This is
-    not annotated as `[[noreturn]]`. You are welcome (and encouraged) to migrate
-    to `NOTREACHED_NORETURN()`, just expect to need to make some tweaks to
-    surrounding code.
+  * Exception: If your pre-stable coverage is too small to prevent a stability
+    risk once `NOTREACHED_NORETURN()`s hit stable, and failure doesn't obviously
+    result in a crash or security risk, you may use `NOTREACHED(
+    base::NotFatalUntil::M120)` with a future milestone to gather non-fatal
+    diagnostics in stable before automatically turning fatal in a later
+    milestone.
+  * Historically, Chromium code used `NOTREACHED()` for this purpose.
+    [Migrating this code](https://crbug.com/851128) to be fatal (and
+    `[[noreturn]]`) is part of a `kNotReachedIsFatal` experiment.
+
 
 Use `base::ImmediateCrash()` in the rare case where it's necessary to terminate
 the current process for reasons outside its control, that are not violations of

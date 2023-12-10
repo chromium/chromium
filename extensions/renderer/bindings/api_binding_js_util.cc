@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 
+#include <optional>
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -19,7 +20,6 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -213,7 +213,7 @@ void APIBindingJSUtil::GetLastErrorMessage(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  absl::optional<std::string> last_error_message =
+  std::optional<std::string> last_error_message =
       request_handler_->last_error()->GetErrorMessage(
           arguments->GetHolderCreationContext());
   if (last_error_message) {

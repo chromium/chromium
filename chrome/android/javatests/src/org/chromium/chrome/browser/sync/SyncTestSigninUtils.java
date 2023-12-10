@@ -24,6 +24,12 @@ final class SyncTestSigninUtils {
         sSigninTestRule.addTestAccountThenSigninAndEnableSync();
     }
 
+    /** Signs out from the current test account. */
+    @CalledByNative
+    private static void signOutForTesting() {
+        sSigninTestRule.signOut();
+    }
+
     /** Sets up the test authentication environment. */
     @CalledByNative
     private static void setUpAuthForTesting() {

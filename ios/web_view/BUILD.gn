@@ -6,14 +6,14 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
-import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
-import("//ios/web_view/features.gni")
 import("//ios/web_view/repack.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
+
+_ios_web_view_output_name = "ChromeWebView"
 
 group("all_tests") {
   testonly = true
@@ -120,6 +120,8 @@ ios_web_view_sources = [
   "internal/autofill/cwv_credit_card_saver_internal.h",
   "internal/autofill/cwv_credit_card_verifier.mm",
   "internal/autofill/cwv_credit_card_verifier_internal.h",
+  "internal/autofill/ios_web_view_payments_autofill_client.h",
+  "internal/autofill/ios_web_view_payments_autofill_client.mm",
   "internal/autofill/web_view_autocomplete_history_manager_factory.h",
   "internal/autofill/web_view_autocomplete_history_manager_factory.mm",
   "internal/autofill/web_view_autofill_client_ios.h",
@@ -203,8 +205,6 @@ ios_web_view_sources = [
   "internal/passwords/web_view_affiliations_prefetcher_factory.mm",
   "internal/passwords/web_view_bulk_leak_check_service_factory.h",
   "internal/passwords/web_view_bulk_leak_check_service_factory.mm",
-  "internal/passwords/web_view_password_change_success_tracker_factory.h",
-  "internal/passwords/web_view_password_change_success_tracker_factory.mm",
   "internal/passwords/web_view_password_feature_manager.h",
   "internal/passwords/web_view_password_feature_manager.mm",
   "internal/passwords/web_view_password_manager_client.h",
@@ -410,7 +410,6 @@ ios_web_view_deps = [
   "//net:extras",
   "//services/metrics/public/cpp:metrics_cpp",
   "//services/network:network_service",
-  "//third_party/abseil-cpp:absl",
   "//ui/base",
   "//ui/display",
   "//url",
@@ -428,7 +427,7 @@ source_set("web_view_sources") {
 action("web_view_umbrella_header") {
   script = "//build/config/ios/generate_umbrella_header.py"
 
-  full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
+  full_header_path = target_gen_dir + "/" + _ios_web_view_output_name + ".h"
   outputs = [ full_header_path ]
 
   args = [
@@ -444,24 +443,16 @@ tweak_info_plist("info_plist") {
 }
 
 ios_framework_bundle("web_view") {
-  output_name = ios_web_view_output_name
+  output_name = _ios_web_view_output_name
   info_plist_target = ":info_plist"
 
   ldflags = [ "-fapplication-extension" ]
 
   public_headers = get_target_outputs(":web_view_umbrella_header")
   public_headers += ios_web_view_public_headers
-  if (ios_web_view_include_cronet) {
-    public_headers += [ "//components/cronet/ios/Cronet.h" ]
-    public_headers += grpc_public_headers
-    public_headers += cronet_native_public_headers
-  }
 
   sources = ios_web_view_public_headers
   sources += [ "internal/web_view_global_state_util.mm" ]
-  if (ios_web_view_include_cronet) {
-    sources += [ "//components/cronet/ios/Cronet.h" ]
-  }
 
   deps = [
     ":web_view_sources",
@@ -470,15 +461,8 @@ ios_framework_bundle("web_view") {
     "//testing/gtest:ios_coverage_utils",
   ]
   deps += [ ":web_view_umbrella_header" ]
-  if (ios_web_view_include_cronet) {
-    deps += [ "//components/cronet/ios:cronet_sources" ]
-  }
 
   configs += [ ":config" ]
-  if (ios_web_view_include_cronet) {
-    configs -= [ "//build/config/compiler:default_symbols" ]
-    configs += [ "//build/config/compiler:symbols" ]
-  }
 }
 
 source_set("run_all_unittests") {
@@ -657,7 +641,7 @@ action("ios_web_view_generate_license") {
 
 copy("ios_web_view_package_copy") {
   sources = [
-    "$root_out_dir/$ios_web_view_output_name.framework",
+    "$root_out_dir/$_ios_web_view_output_name.framework",
     "//AUTHORS",
     "//chrome/VERSION",
   ]
@@ -674,11 +658,11 @@ if (enable_dsyms) {
     # the target outputs that correspond to the dSYMs (since a dSYM is a
     # directory it cannot be listed as a source file). The targets that
     # generate both the dSYM and binary image are listed in deps.
-    _dsyms = [ "$root_out_dir/$ios_web_view_output_name.dSYM" ]
+    _dsyms = [ "$root_out_dir/$_ios_web_view_output_name.dSYM" ]
 
-    sources = [ "$root_out_dir/$ios_web_view_output_name.framework" ]
+    sources = [ "$root_out_dir/$_ios_web_view_output_name.framework" ]
 
-    _output = "$_package_dir/$ios_web_view_output_name.dSYM.tar.bz2"
+    _output = "$_package_dir/$_ios_web_view_output_name.dSYM.tar.bz2"
 
     outputs = [ _output ]
 

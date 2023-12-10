@@ -48,17 +48,20 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  CHECK(profile);
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-              ->GetProfileKey());
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
 
   WebsiteParentApproval::RequestLocalApproval(
       web_contents_, supervised_user::NormalizeUrl(url),
       base::BindOnce(
           &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
-          base::TimeTicks::Now()));
+          base::TimeTicks::Now()),
+      *profile);
+
   // Runs the `callback` to inform the caller that the flow initiation was
   // successful.
   std::move(callback).Run(true);

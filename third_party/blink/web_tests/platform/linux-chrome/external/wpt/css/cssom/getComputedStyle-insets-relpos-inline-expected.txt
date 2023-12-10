@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] OOF with left fixed right auto in relpos inline container
+  assert_equals: expected "140px" but got "1.125px"
+[FAIL] OOF with left auto right fixed in relpos inline container
+  assert_equals: expected "140px" but got "1.125px"
+[FAIL] OOF with left fixed right auto in relpos inline container with mixed directions
+  assert_equals: expected "140px" but got "1.125px"
+[FAIL] OOF with left auto right fixed in relpos inline container with mixed directions
+  assert_equals: expected "140px" but got "1.125px"
+Harness: the test ran to completion.

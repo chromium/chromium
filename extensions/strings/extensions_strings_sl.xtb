@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ups! Ni bilo mogoče generirati naključnega zasebnega ključa RSA.</translation>
 <translation id="1445572445564823378">Ta razširitev upočasnjuje <ph name="PRODUCT_NAME" />. Onemogočite jo, če želite obnoviti delovanje storitve <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ni podprt.</translation>
+<translation id="1610570795592207282">Ni bilo mogoče naložiti CSS-ja »<ph name="RELATIVE_PATH" />« za skript.</translation>
 <translation id="1803557475693955505">Strani za ozadje »<ph name="BACKGROUND_PAGE" />« ni bilo mogoče naložiti.</translation>
 <translation id="2159915644201199628">Slike ni bilo mogoče dekodirati: »<ph name="IMAGE_NAME" />«</translation>
 <translation id="2350172092385603347">Uporabljena je bila lokalizacija, vendar v manifestu ni bil naveden parameter default_locale.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_ID" /> (serijska številka <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Datoteke .crx ni bilo mogoče zamenjati. Preverite, ali je datoteka v uporabi.</translation>
 <translation id="3163201441334626963">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Ni bilo mogoče naložiti seznama slogov »<ph name="RELATIVE_PATH" />« za skript vsebine.</translation>
 <translation id="3369521687965833290">Razširitve ne morete odpakirati. Če želite varno odpakirati razširitev, mora biti navedena pot do imenika vašega profila, ki se začne s črko pogona in ne vsebuje spoja, točke vpenjanja ali simbolne povezave. Za vaš profil ni takšne poti.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijska številka <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavitelja <ph name="VENDOR_ID" /> (serijska številka <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vrednost vnosa za zasebni ključ mora biti veljavna pot.</translation>
 <translation id="388442998277590542">Strani z možnostmi »<ph name="OPTIONS_PAGE" />« ni bilo mogoče naložiti.</translation>
 <translation id="3984413272403535372">Med podpisovanjem razširitve je prišlo do napake.</translation>
-<translation id="39964277676607559">Ni bilo mogoče naložiti skripta JavaScript »<ph name="RELATIVE_PATH" />« za skript vsebine.</translation>
 <translation id="4115165561519362854">Skrbnik te naprave zahteva, da je <ph name="EXTENSION_NAME" /> različice najmanj <ph name="EXTENSION_VERSION" />. Ni je mogoče omogočiti, dokler ni posodobljena na to (ali novejšo) različico.</translation>
 <translation id="4233778200880751280">Ni bilo mogoče naložiti Vizitke »<ph name="ABOUT_PAGE" />«.</translation>
 <translation id="471800408830181311">Zasebnega ključa ni bilo mogoče izdati.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Javnega ključa ni bilo mogoče izvoziti.</translation>
 <translation id="5026754133087629784">Spletni pogled: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Absolutne poti do mape za pakiranje ni mogoče najti.</translation>
+<translation id="5160071981665899014">Ni bilo mogoče naložiti JavaScripta »<ph name="RELATIVE_PATH" />« za skript.</translation>
 <translation id="5356315618422219272">Komponenta appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Oblikovana okna niso podprta.</translation>
 <translation id="5456409301717116725">Ta razširitev vključuje datoteko s ključem »<ph name="KEY_PATH" />«. Verjetno ne želite narediti tega.</translation>

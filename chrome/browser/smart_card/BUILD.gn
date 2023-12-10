@@ -2,14 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/args.gni")
+
 source_set("smart_card") {
   if (is_chromeos) {
     sources = [
       "chromeos_smart_card_delegate.cc",
       "chromeos_smart_card_delegate.h",
+      "get_smart_card_context_factory.cc",
+      "get_smart_card_context_factory.h",
     ]
+
+    if (!is_chromeos_device) {
+      # When making a chromeos build for a dev linux machine, use a fake smart
+      # card device service to make manual testing during development possible.
+      sources += [
+        "fake_smart_card_device_service.cc",
+        "fake_smart_card_device_service.h",
+        "fake_smart_card_device_service_factory.cc",
+        "fake_smart_card_device_service_factory.h",
+      ]
+    }
+
     deps = [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/profiles:profile",
       "//content/public/browser:browser",
     ]
   }

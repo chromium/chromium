@@ -4,10 +4,73 @@
 
 #include "media/base/svc_scalability_mode.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 
 namespace media {
+namespace {
+constexpr SVCScalabilityMode kSVCScalabilityModeMap[3][3][3] = {
+    // kOff.
+    {
+        {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+         SVCScalabilityMode::kL1T3},
+        {SVCScalabilityMode::kS2T1, SVCScalabilityMode::kS2T2,
+         SVCScalabilityMode::kS2T3},
+        {SVCScalabilityMode::kS3T1, SVCScalabilityMode::kS3T2,
+         SVCScalabilityMode::kS3T3},
+    },
+    // kOn.
+    {
+        {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+         SVCScalabilityMode::kL1T3},
+        {SVCScalabilityMode::kL2T1, SVCScalabilityMode::kL2T2,
+         SVCScalabilityMode::kL2T3},
+        {SVCScalabilityMode::kL3T1, SVCScalabilityMode::kL3T2,
+         SVCScalabilityMode::kL3T3},
+    },
+    // kOnKeyPic.
+    {
+        {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+         SVCScalabilityMode::kL1T3},
+        {SVCScalabilityMode::kL2T1Key, SVCScalabilityMode::kL2T2Key,
+         SVCScalabilityMode::kL2T3Key},
+        {SVCScalabilityMode::kL3T1Key, SVCScalabilityMode::kL3T2Key,
+         SVCScalabilityMode::kL3T3Key},
+    }};
+}  // namespace
+
+std::vector<SVCScalabilityMode>
+GetSupportedScalabilityModesByHWEncoderForTesting() {
+  constexpr size_t kSVCMapSize =
+      sizeof(kSVCScalabilityModeMap) / sizeof(SVCScalabilityMode);
+  std::vector<SVCScalabilityMode> supported_svcs(
+      &kSVCScalabilityModeMap[0][0][0],
+      (&kSVCScalabilityModeMap[0][0][0]) + kSVCMapSize);
+  std::sort(supported_svcs.begin(), supported_svcs.end());
+  supported_svcs.erase(
+      std::unique(supported_svcs.begin(), supported_svcs.end()),
+      supported_svcs.end());
+  CHECK_EQ(supported_svcs.size(), 21u);
+  return supported_svcs;
+}
+
+SVCScalabilityMode GetSVCScalabilityMode(
+    const size_t num_spatial_layers,
+    const size_t num_temporal_layers,
+    SVCInterLayerPredMode inter_layer_pred) {
+  constexpr SVCScalabilityMode kInvalid = static_cast<SVCScalabilityMode>(-1);
+  CHECK(0 < num_spatial_layers && num_spatial_layers <= 3);
+  CHECK(0 < num_temporal_layers && num_temporal_layers <= 3);
+  CHECK(static_cast<int>(inter_layer_pred) >= 0 &&
+        static_cast<int>(inter_layer_pred) < 3);
+  auto mode =
+      kSVCScalabilityModeMap[static_cast<int>(inter_layer_pred)]
+                            [num_spatial_layers - 1][num_temporal_layers - 1];
+  CHECK_NE(mode, kInvalid);
+  return mode;
+}
 
 const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
   switch (scalability_mode) {
@@ -81,49 +144,5 @@ const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
       return "L3T3_KEY_SHIFT";
   }
   NOTREACHED_NORETURN();
-}
-
-SVCScalabilityMode GetSVCScalabilityMode(
-    const size_t num_spatial_layers,
-    const size_t num_temporal_layers,
-    SVCInterLayerPredMode inter_layer_pred) {
-  constexpr SVCScalabilityMode kInvalid = static_cast<SVCScalabilityMode>(-1);
-  constexpr SVCScalabilityMode kSVCScalabilityModeMap[3][3][3] = {
-      // kOff.
-      {
-          {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
-           SVCScalabilityMode::kL1T3},
-          {SVCScalabilityMode::kS2T1, SVCScalabilityMode::kS2T2,
-           SVCScalabilityMode::kS2T3},
-          {SVCScalabilityMode::kS3T1, SVCScalabilityMode::kS3T2,
-           SVCScalabilityMode::kS3T3},
-      },
-      // kOn.
-      {
-          {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
-           SVCScalabilityMode::kL1T3},
-          {SVCScalabilityMode::kL2T1, SVCScalabilityMode::kL2T2,
-           SVCScalabilityMode::kL2T3},
-          {SVCScalabilityMode::kL3T1, SVCScalabilityMode::kL3T2,
-           SVCScalabilityMode::kL3T3},
-      },
-      {
-          {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
-           SVCScalabilityMode::kL1T3},
-          {SVCScalabilityMode::kL2T1Key, SVCScalabilityMode::kL2T2Key,
-           SVCScalabilityMode::kL2T3Key},
-          {SVCScalabilityMode::kL3T1Key, SVCScalabilityMode::kL3T2Key,
-           SVCScalabilityMode::kL3T3Key},
-      }};
-
-  CHECK(0 < num_spatial_layers && num_spatial_layers <= 3);
-  CHECK(0 < num_temporal_layers && num_temporal_layers <= 3);
-  CHECK(static_cast<int>(inter_layer_pred) >= 0 &&
-        static_cast<int>(inter_layer_pred) < 3);
-  auto mode =
-      kSVCScalabilityModeMap[static_cast<int>(inter_layer_pred)]
-                            [num_spatial_layers - 1][num_temporal_layers - 1];
-  CHECK_NE(mode, kInvalid);
-  return mode;
 }
 }  // namespace media

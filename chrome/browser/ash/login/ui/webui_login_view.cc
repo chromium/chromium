@@ -16,7 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/web_contents_forced_title.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -106,7 +106,7 @@ WebUILoginView::WebUILoginView(const WebViewSettings& settings,
     // passed. Favor --ash-dev-shortcuts since that is explicitly added.
     if (kLoginAcceleratorData[i].action ==
             LoginAcceleratorAction::kEnableConsumerKiosk &&
-        !KioskAppManager::IsConsumerKioskEnabled()) {
+        !KioskChromeAppManager::IsConsumerKioskEnabled()) {
       continue;
     }
 
@@ -360,7 +360,7 @@ void WebUILoginView::RequestMediaAccessPermission(
 
 bool WebUILoginView::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);

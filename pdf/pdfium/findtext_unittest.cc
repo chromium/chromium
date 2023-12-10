@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/document_layout.h"
@@ -9,7 +10,6 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::InSequence;

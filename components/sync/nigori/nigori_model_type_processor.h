@@ -58,7 +58,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
 
   // NigoriLocalChangeProcessor implementation.
   void ModelReadyToSync(NigoriSyncBridge* bridge,

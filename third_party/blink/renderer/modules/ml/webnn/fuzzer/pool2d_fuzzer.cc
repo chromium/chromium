@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -30,18 +31,19 @@ V8MLRoundingType::Enum ToV8MLRoundingType(
 void ProtobufToPool2dOptions(const webnn_proto::pool2dOptions& data,
                              MLPool2dOptions* options) {
   if (data.windows_dimensions_size() > 0) {
-    options->setWindowDimensions(Vector<uint32_t>(data.windows_dimensions()));
+    options->setWindowDimensions(
+        RepeatedFieldToVector<uint32_t>(data.windows_dimensions()));
   }
   if (data.padding_size() > 0) {
-    options->setPadding(Vector<uint32_t>(data.padding()));
+    options->setPadding(RepeatedFieldToVector<uint32_t>(data.padding()));
   }
 
   if (data.strides_size() > 0) {
-    options->setStrides(Vector<uint32_t>(data.strides()));
+    options->setStrides(RepeatedFieldToVector<uint32_t>(data.strides()));
   }
 
   if (data.dilations_size() > 0) {
-    options->setDilations(Vector<uint32_t>(data.dilations()));
+    options->setDilations(RepeatedFieldToVector<uint32_t>(data.dilations()));
   }
 
   if (data.has_auto_pad()) {
@@ -57,7 +59,8 @@ void ProtobufToPool2dOptions(const webnn_proto::pool2dOptions& data,
   }
 
   if (data.output_size_size() > 0) {
-    options->setOutputSizes(Vector<uint32_t>(data.output_size()));
+    options->setOutputSizes(
+        RepeatedFieldToVector<uint32_t>(data.output_size()));
   }
 }
 }  // namespace
@@ -70,6 +73,10 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
     return page_holder.release();
   }();
 
+  // Request a full GC upon returning.
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
+
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());
 
@@ -79,9 +86,10 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
       exception_state);
   CHECK(builder);
 
-  auto* input =
-      BuildInput(builder, "input", Vector<uint32_t>(pool2d.input_dimensions()),
-                 ToV8MLOperandType(pool2d.input_type()), exception_state);
+  auto* input = BuildInput(
+      builder, "input",
+      RepeatedFieldToVector<uint32_t>(pool2d.input_dimensions()),
+      ToV8MLOperandDataType(pool2d.input_data_type()), exception_state);
   auto* pool2d_options = blink::MLPool2dOptions::Create();
   if (pool2d.has_pool2d_options()) {
     ProtobufToPool2dOptions(pool2d.pool2d_options(), pool2d_options);
@@ -98,11 +106,6 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
       builder->maxPool2d(input, pool2d_options, exception_state);
       break;
   }
-
-  page_holder->GetPage()
-      ->GetAgentGroupScheduler()
-      ->Isolate()
-      ->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

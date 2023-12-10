@@ -252,8 +252,12 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
       (first_input_generation_ts - prev_last_input_generation_ts_) <
       (vsync_interval + vsync_interval / 2);
 
+  // Sometimes the vsync interval is not accurate and is slightly more
+  // than the actual signal arrival time, adding (vsync_interval / 2)
+  // here insures the result is always ceiled.
   int curr_frame_total_vsyncs =
-      (presentation_ts - prev_presentation_ts_) / vsync_interval;
+      (presentation_ts - prev_presentation_ts_ + (vsync_interval / 2)) /
+      vsync_interval;
   int curr_frame_missed_vsyncs = curr_frame_total_vsyncs - 1;
 
   if (missed_frame && input_available) {

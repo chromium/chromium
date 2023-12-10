@@ -9,11 +9,13 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 
 namespace apps {
 
@@ -28,6 +30,7 @@ constexpr char kTypeKey[] = "type";
 constexpr char kReadinessKey[] = "readiness";
 constexpr char kNameKey[] = "name";
 constexpr char kShortNameKey[] = "short_name";
+constexpr char kPublisherIdKey[] = "publisher_id";
 constexpr char kDescriptionKey[] = "description";
 constexpr char kVersionKey[] = "version";
 constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
@@ -50,12 +53,28 @@ constexpr char kHandlesIntentsKey[] = "handles_intents";
 constexpr char kAllowUninstallKey[] = "allow_uninstall";
 constexpr char kIntentFiltersKey[] = "intent_filters";
 constexpr char kWindowModeKey[] = "window_mode";
+constexpr char kRunOnOsLoginKey[] = "run_on_os_login";
+constexpr char kAllowCloseKey[] = "allow_close";
+constexpr char kAppSizeInBytesKey[] = "app_size_in_bytes";
+constexpr char kDataSizeInBytesKey[] = "data_size_in_bytes";
+constexpr char kSupportedLocalesKey[] = "supported_locales";
+constexpr char kSelectedLocaleKey[] = "selected_locale";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
     base::StringPiece key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? absl::optional<std::string>(*value) : absl::nullopt;
+}
+
+absl::optional<uint64_t> GetUint64ValueFromDict(const base::Value::Dict& dict,
+                                                base::StringPiece key_name) {
+  const std::string* value = dict.FindString(key_name);
+  uint64_t ret = 0;
+  if (value && base::StringToUint64(*value, &ret)) {
+    return ret;
+  }
+  return absl::nullopt;
 }
 
 template <typename T>
@@ -114,6 +133,17 @@ base::Value GetValue(const AppPtr& app,
   return base::Value(ConvertPermissionsToList(app.get()->*field));
 }
 
+template <>
+base::Value GetValue(const AppPtr& app,
+                     absl::optional<RunOnOsLogin> App::*field) {
+  return base::Value(ConvertRunOnOsLoginToDict((app.get()->*field).value()));
+}
+
+template <>
+base::Value GetValue(const AppPtr& app, absl::optional<uint64_t> App::*field) {
+  return base::Value(base::NumberToString((app.get()->*field).value()));
+}
+
 template <typename T>
 void SetKey(const AppPtr& app,
             T App::*field,
@@ -133,6 +163,19 @@ void GetEnumFromKey(base::Value::Dict* value,
   if (result.has_value() && result.value() >= static_cast<int>(T::kUnknown) &&
       result.value() <= static_cast<int>(T::kMaxValue)) {
     app.get()->*field = static_cast<T>(result.value());
+  }
+}
+
+template <typename T>
+void GetListFromKey(base::Value::Dict* value,
+                    T App::*field,
+                    const std::string& key,
+                    AppPtr& app) {
+  auto* list = value->FindList(key);
+  if (list) {
+    for (auto& item : *list) {
+      (app.get()->*field).push_back(item.GetString());
+    }
   }
 }
 
@@ -215,6 +258,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::readiness, kReadinessKey, dict);
     SetKey(app, &App::name, kNameKey, dict);
     SetKey(app, &App::short_name, kShortNameKey, dict);
+    SetKey(app, &App::publisher_id, kPublisherIdKey, dict);
     SetKey(app, &App::description, kDescriptionKey, dict);
     SetKey(app, &App::version, kVersionKey, dict);
     SetKey(app, &App::additional_search_terms, kAdditionalSearchTermsKey, dict);
@@ -247,6 +291,12 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::allow_uninstall, kAllowUninstallKey, dict);
     SetKey(app, &App::intent_filters, kIntentFiltersKey, dict);
     SetKey(app, &App::window_mode, kWindowModeKey, dict);
+    SetKey(app, &App::run_on_os_login, kRunOnOsLoginKey, dict);
+    SetKey(app, &App::allow_close, kAllowCloseKey, dict);
+    SetKey(app, &App::app_size_in_bytes, kAppSizeInBytesKey, dict);
+    SetKey(app, &App::data_size_in_bytes, kDataSizeInBytesKey, dict);
+    SetKey(app, &App::supported_locales, kSupportedLocalesKey, dict);
+    SetKey(app, &App::selected_locale, kSelectedLocaleKey, dict);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(dict));
@@ -291,16 +341,12 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
 
     app->name = GetStringValueFromDict(*value, kNameKey);
     app->short_name = GetStringValueFromDict(*value, kShortNameKey);
+    app->publisher_id = GetStringValueFromDict(*value, kPublisherIdKey);
     app->description = GetStringValueFromDict(*value, kDescriptionKey);
     app->version = GetStringValueFromDict(*value, kVersionKey);
 
-    auto* additional_search_terms = value->FindList(kAdditionalSearchTermsKey);
-    if (additional_search_terms) {
-      for (auto& additional_search_term : *additional_search_terms) {
-        app->additional_search_terms.push_back(
-            additional_search_term.GetString());
-      }
-    }
+    GetListFromKey(value, &App::additional_search_terms,
+                   kAdditionalSearchTermsKey, app);
 
     int32_t icon_resource_id = IconKey::kInvalidResourceId;
     IconEffects icon_effects = IconEffects::kNone;
@@ -328,12 +374,7 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     GetEnumFromKey(value, &App::install_reason, kInstallReasonKey, app);
     GetEnumFromKey(value, &App::install_source, kInstallSourceKey, app);
 
-    auto* policy_ids = value->FindList(kPolicyIdsKey);
-    if (policy_ids) {
-      for (auto& policy_id : *policy_ids) {
-        app->policy_ids.push_back(policy_id.GetString());
-      }
-    }
+    GetListFromKey(value, &App::policy_ids, kPolicyIdsKey, app);
 
     app->is_platform_app = value->FindBool(kIsPlatformAppKey);
     app->recommendable = value->FindBool(kRecommendableKey);
@@ -363,6 +404,18 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     }
 
     GetEnumFromKey(value, &App::window_mode, kWindowModeKey, app);
+
+    app->run_on_os_login =
+        ConvertDictToRunOnOsLogin(value->FindDict(kRunOnOsLoginKey));
+
+    app->allow_close = value->FindBool(kAllowCloseKey);
+
+    app->app_size_in_bytes = GetUint64ValueFromDict(*value, kAppSizeInBytesKey);
+    app->data_size_in_bytes =
+        GetUint64ValueFromDict(*value, kDataSizeInBytesKey);
+
+    GetListFromKey(value, &App::supported_locales, kSupportedLocalesKey, app);
+    app->selected_locale = GetStringValueFromDict(*value, kSelectedLocaleKey);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));

@@ -21,16 +21,12 @@ class TouchRestrictingFrameLayout extends FrameLayout {
         super(context, atts);
     }
 
-    /**
-     * @param sheet The bottom sheet.
-     */
+    /** @param sheet The bottom sheet. */
     public void setBottomSheet(BottomSheet sheet) {
         mBottomSheet = sheet;
     }
 
-    /**
-     * @return Whether touch is enabled.
-     */
+    /** @return Whether touch is enabled. */
     private boolean isTouchDisabled() {
         return mBottomSheet == null
                 || mBottomSheet.getSheetState() == BottomSheetController.SheetState.SCROLLING;

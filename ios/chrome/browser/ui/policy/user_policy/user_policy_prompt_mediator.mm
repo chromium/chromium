@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_mediator.h"
 
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_presenter.h"
 
 @interface UserPolicyPromptMediator ()

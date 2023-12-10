@@ -4,9 +4,7 @@
 
 package org.chromium.components.messages;
 
-/**
- * An interface for the MessageDispatcher owning object.
- */
+/** An interface for the MessageDispatcher owning object. */
 public interface ManagedMessageDispatcher
         extends MessageDispatcher, MessageDispatcherProvider.Unowned {
     /**

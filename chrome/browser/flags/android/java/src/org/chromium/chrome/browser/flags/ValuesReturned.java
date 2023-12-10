@@ -9,16 +9,17 @@ import androidx.annotation.GuardedBy;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Keeps track of values returned for cached flags and field trial parameters.
- */
+/** Keeps track of values returned for cached flags and field trial parameters. */
 abstract class ValuesReturned {
     @GuardedBy("sBoolValues")
     static final Map<String, Boolean> sBoolValues = new HashMap<>();
+
     @GuardedBy("sStringValues")
     static final Map<String, String> sStringValues = new HashMap<>();
+
     @GuardedBy("sIntValues")
     static final Map<String, Integer> sIntValues = new HashMap<>();
+
     @GuardedBy("sDoubleValues")
     static final Map<String, Double> sDoubleValues = new HashMap<>();
 

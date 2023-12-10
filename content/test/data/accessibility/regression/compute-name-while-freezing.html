@@ -1,0 +1,15 @@
+<!--
+@WAIT-FOR:done
+-->
+<select id="select1"></select>
+<video>
+  <label for="select1"></label>
+</video>
+<script>
+function getName() {
+  document.querySelector('#select1').computedName;
+  document.querySelector('#select1').computedRole;
+  document.title = 'done';
+}
+document.addEventListener('DOMContentLoaded', getName);
+</script>

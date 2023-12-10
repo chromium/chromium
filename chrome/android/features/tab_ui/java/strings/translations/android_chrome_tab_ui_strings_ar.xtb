@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1075622780330595106">لم يتم استخدام <ph name="NUMBER_OF_TABS" /> من علامات التبويب مؤخرًا. هل تريد إغلاقها؟</translation>
+<translation id="1155815720264022949">هل تريد إغلاق علامات التبويب السابقة؟</translation>
 <translation id="1215127405478249895">مراجعة علامات التبويب</translation>
 <translation id="125153950246128346">يُرجى النقر للاطِّلاع على علامة تبويب أخرى</translation>
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">إخفاء شبكة ملء الشاشة</translation>
 <translation id="5076161749301278626">هل تريد الاطّلاع على مراجعات المتجر؟</translation>
 <translation id="5082793167783849073">يُرجى مقارنة الصفحات بسرعة من خلال إنشاء مجموعة. للبدء، المس رابطًا مع الاستمرار.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) لم تستخدمها مؤخرًا.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}two{لديك علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) لم تستخدمهما مؤخرًا.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب لم تستخدمها مؤخرًا.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}}</translation>
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
+<translation id="5545379293264651575">إغلاق بدون مراجعة</translation>
 <translation id="5556417849629758491">عرض معلومات المتجر، وهو خيار متاح بالقرب من أعلى الشاشة</translation>
 <translation id="5558362125926932819">إغلاق مجموعة علامات التبويب التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
 <translation id="5580090775658607195">تم جمع <ph name="TAB_COUNT" /> علامة تبويب</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">نقل علامة التبويب إلى اليسار</translation>
 <translation id="7966321538264951561">رفض الاقتراحات</translation>
 <translation id="8029301326595421733">يتم عرض المعلومات حول هذا المتجر بطول الشاشة.</translation>
-<translation id="814503310257431685">عرض الكل</translation>
 <translation id="8205266828577616993">نقل علامة التبويب إلى الأعلى</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{إغلاق علامة تبويب واحدة محدّدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}two{إغلاق علامتَي تبويب محدّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}}</translation>
 <translation id="8398929769197326728">‏مجلد جديد - ‎<ph name="CURRENT_TIMESTAMP_MS" /></translation>

@@ -23,6 +23,13 @@ struct LocaleItem;
 struct LoginUserInfo;
 struct UserAvatar;
 
+// The current authentication stage. Used to get more verbose logging.
+enum class AuthenticationStage {
+  kIdle,
+  kDoAuthenticate,
+  kUserCallback,
+};
+
 // Provides Chrome access to Ash's login UI. See additional docs for
 // ash::LoginDataDispatcher.
 class ASH_PUBLIC_EXPORT LoginScreenModel {
@@ -86,6 +93,11 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   virtual void DisableAuthForUser(
       const AccountId& account_id,
       const AuthDisabledData& auth_disabled_data) = 0;
+
+  // Called when authentication stage changed.
+  // |auth_stage|: The new authentication stage
+  virtual void AuthenticationStageChange(
+      const AuthenticationStage auth_state) = 0;
 
   virtual void SetTpmLockedState(const AccountId& user,
                                  bool is_locked,
@@ -158,6 +170,8 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
  protected:
   virtual ~LoginScreenModel();
 };
+
+std::ostream& operator<<(std::ostream&, AuthenticationStage);
 
 }  // namespace ash
 

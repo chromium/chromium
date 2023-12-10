@@ -27,7 +27,6 @@
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -43,6 +42,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -913,7 +913,7 @@ void AcceleratorControllerImpl::PerformAction(
 
   if ((action == AcceleratorAction::kVolumeDown ||
        action == AcceleratorAction::kVolumeUp) &&
-      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      display::Screen::GetScreen()->InTabletMode()) {
     if (tablet_volume_controller_.ShouldSwapSideVolumeButtons(
             accelerator.source_device_id()))
       action = action == AcceleratorAction::kVolumeDown
@@ -1247,7 +1247,7 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kShowEmojiPicker:
       base::RecordAction(UserMetricsAction("Accel_Show_Emoji_Picker"));
-      accelerators::ShowEmojiPicker();
+      accelerators::ShowEmojiPicker(accelerator.time_stamp());
       break;
     case AcceleratorAction::kToggleImeMenuBubble:
       base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
@@ -1298,13 +1298,13 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kSwitchToNextUser:
       MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SWITCH_ACTIVE_USER_BY_ACCELERATOR);
+          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Next_User"));
       accelerators::CycleUser(CycleUserDirection::NEXT);
       break;
     case AcceleratorAction::kSwitchToPreviousUser:
       MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SWITCH_ACTIVE_USER_BY_ACCELERATOR);
+          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Previous_User"));
       accelerators::CycleUser(CycleUserDirection::PREVIOUS);
       break;

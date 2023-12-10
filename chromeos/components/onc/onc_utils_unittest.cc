@@ -4,6 +4,7 @@
 
 #include "chromeos/components/onc/onc_utils.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -23,7 +24,6 @@
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::onc {
 
@@ -31,7 +31,7 @@ TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
   base::Value::Dict encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
 
-  absl::optional<base::Value::Dict> decrypted_onc =
+  std::optional<base::Value::Dict> decrypted_onc =
       Decrypt("test0000", encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
@@ -41,7 +41,7 @@ TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
   base::Value::Dict encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
 
-  absl::optional<base::Value::Dict> decrypted_onc =
+  std::optional<base::Value::Dict> decrypted_onc =
       Decrypt("test0000", encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
@@ -54,7 +54,7 @@ TEST(ONCDecrypterTest, LoadEncryptedOnc) {
       test_utils::ReadTestDictionary("decrypted.onc");
 
   std::string error;
-  absl::optional<base::Value::Dict> actual_decrypted_onc =
+  std::optional<base::Value::Dict> actual_decrypted_onc =
       Decrypt("test0000", encrypted_onc);
 
   EXPECT_TRUE(test_utils::Equals(&expected_decrypted_onc,
@@ -228,10 +228,9 @@ using ONCUtilsMaskCredentialsTest =
     testing::TestWithParam<MaskCredentialsTestCase>;
 
 TEST_P(ONCUtilsMaskCredentialsTest, Test) {
-  absl::optional<base::Value> onc_value =
-      base::JSONReader::Read(GetParam().onc);
+  std::optional<base::Value> onc_value = base::JSONReader::Read(GetParam().onc);
   ASSERT_TRUE(onc_value) << "Could not parse " << GetParam().onc;
-  absl::optional<base::Value> expected_after_masking_value =
+  std::optional<base::Value> expected_after_masking_value =
       base::JSONReader::Read(GetParam().expected_after_masking);
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;

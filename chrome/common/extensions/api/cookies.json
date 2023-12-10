@@ -6,9 +6,6 @@
   {
     "namespace": "cookies",
     "description": "Use the <code>chrome.cookies</code> API to query and modify cookies, and to be notified when they change.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "SameSiteStatus",
@@ -93,7 +90,7 @@
       {
         "name": "getAll",
         "type": "function",
-        "description": "Retrieves all cookies from a single cookie store that match the given information.  The cookies returned will be sorted, with those with the longest path first.  If multiple cookies have the same path length, those with the earliest creation time will be first.",
+        "description": "Retrieves all cookies from a single cookie store that match the given information.  The cookies returned will be sorted, with those with the longest path first.  If multiple cookies have the same path length, those with the earliest creation time will be first. Only retrieves cookies for domains which the extension has host permissions to.",
         "parameters": [
           {
             "type": "object",

@@ -17,6 +17,7 @@ module chromeos.sensors.mojom;
 const string kScale = "scale";
 const string kSamplingFrequencyAvailable = "sampling_frequency_available";
 const string kLocation = "location";
+const string kLabel = "label";
 
 // The attribute name to get the device name in SensorDevice::GetAttributes.
 const string kDeviceName = "name";
@@ -31,9 +32,16 @@ const string kDeviceName = "name";
 // will be returned.
 const string kSysPath = "syspath";
 
+// Only available for SAR sensors, needed to determine the antenna type
+// (wifi/lte).
+const string kDevlink = "devlink";
+
 const string kLocationBase = "base";
 const string kLocationLid = "lid";
 const string kLocationCamera = "camera";
+
+const string kLabelBase = "accel-base";
+const string kLabelLid = "accel-display";
 
 // As Mojo doesn't support const arrays of strings and char, and also axes are
 // trivial, let Sensor clients append the axes.

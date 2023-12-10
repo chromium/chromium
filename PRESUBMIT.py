@@ -1090,6 +1090,11 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           'fuchsia_web/webengine/browser/context_impl_browsertest\.cc',
           'fuchsia_web/webengine/browser/cookie_manager_impl_unittest\.cc',
           'fuchsia_web/webengine/browser/media_player_impl_unittest\.cc',
+          # Required to interop with interfaces from the third-party ChromeML
+          # library API.
+          'services/on_device_model/ml/chrome_ml_api\.h',
+          'services/on_device_model/ml/on_device_model_executor\.cc',
+          'services/on_device_model/ml/on_device_model_executor\.h',
           # Required to interop with interfaces from the third-party perfetto
           # library.
           'services/tracing/public/cpp/perfetto/custom_event_recorder\.cc',
@@ -1230,6 +1235,20 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\[\[(\w*::)?no_unique_address\]\]',
+      (
+        '[[no_unique_address]] does not work as expected on Windows ',
+        '(https://crbug.com/1414621). Use NO_UNIQUE_ADDRESS instead.',
+      ),
+      True,
+      [
+        # NO_UNIQUE_ADDRESS provides canonical access.
+        r'^base/compiler_specific.h',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ],
     ),
     BanRule(
       r'/#include <format>',
@@ -1560,7 +1579,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       [
-        _THIRD_PARTY_EXCEPT_BLINK,
+          # Implements BASE_DECLARE_FEATURE().
+          r'^base/feature_list\.h',
       ],
     ),
     BanRule(
@@ -1879,6 +1899,8 @@ _GENERIC_PYDEPS_FILES = [
     'chrome/test/chromedriver/log_replay/client_replay_unittest.pydeps',
     'chrome/test/chromedriver/test/run_py_tests.pydeps',
     'chromecast/resource_sizes/chromecast_resource_sizes.pydeps',
+    'components/cronet/tools/check_combined_proguard_file.pydeps',
+    'components/cronet/tools/generate_proguard_file.pydeps',
     'components/cronet/tools/generate_javadoc.pydeps',
     'components/cronet/tools/jar_src.pydeps',
     'components/module_installer/android/module_desc_java.pydeps',
@@ -7160,7 +7182,7 @@ def CheckDanglingUntriaged(input_api, output_api):
     # `win-presubmit` are particularly sensitive to reading the files. Adding
     # this check caused the bot to run 2x longer. See https://crbug.com/1486612.
     if input_api.no_diffs:
-      return []
+        return []
 
     def FilterFile(file):
         return input_api.FilterSourceFile(
@@ -7171,8 +7193,8 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     count = 0
     for f in input_api.AffectedSourceFiles(FilterFile):
-        count -= f.OldContents().count("DanglingUntriaged")
-        count += f.NewContents().count("DanglingUntriaged")
+        count -= sum([l.count("DanglingUntriaged") for l in f.OldContents()])
+        count += sum([l.count("DanglingUntriaged") for l in f.NewContents()])
 
     # Most likely, nothing changed:
     if count == 0:
@@ -7180,10 +7202,7 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     # Congrats developers for improving it:
     if count < 0:
-        message = (
-            f"DanglingUntriaged pointers removed: {-count}",
-            f"Thank you!",
-        )
+        message = f"DanglingUntriaged pointers removed: {-count}\nThank you!"
         return [output_api.PresubmitNotifyResult(message)]
 
     # Check for 'DanglingUntriaged-notes' in the description:
@@ -7199,18 +7218,18 @@ def CheckDanglingUntriaged(input_api, output_api):
         return []
 
     message = (
-        "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
-        "avoid adding new ones",
-        "",
-        "See documentation:",
-        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md",
-        "",
-        "See also the guide to fix dangling pointers:",
-        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md",
-        "",
-        "To disable this warning, please add in the commit description:",
-        "DanglingUntriaged-notes: <rational for new untriaged dangling "
-        "pointers>",
+        "Unexpected new occurrences of `DanglingUntriaged` detected. Please\n" +
+        "avoid adding new ones\n" +
+        "\n" +
+        "See documentation:\n" +
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md\n" +
+        "\n" +
+        "See also the guide to fix dangling pointers:\n" +
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md\n" +
+        "\n" +
+        "To disable this warning, please add in the commit description:\n" +
+        "DanglingUntriaged-notes: <rational for new untriaged dangling " +
+        "pointers>"
     )
     return [output_api.PresubmitPromptWarning(message)]
 

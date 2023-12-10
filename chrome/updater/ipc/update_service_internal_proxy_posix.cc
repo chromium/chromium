@@ -5,6 +5,7 @@
 #include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -33,7 +34,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -45,10 +45,10 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(10);
 
 // Connect to the server.
 // `retries` is 0 for the first try, 1 for the first retry, etc.
-absl::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
-                                                          int retries) {
+std::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
+                                                         int retries) {
   if (retries == 1 && !DialUpdateInternalService(scope)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return named_mojo_ipc_server::ConnectToServer(
       GetUpdateServiceInternalServerName(scope));
@@ -58,22 +58,22 @@ void Connect(
     UpdaterScope scope,
     int tries,
     base::Time deadline,
-    base::OnceCallback<void(absl::optional<mojo::PlatformChannelEndpoint>)>
+    base::OnceCallback<void(std::optional<mojo::PlatformChannelEndpoint>)>
         connected_callback) {
   if (base::Time::Now() > deadline) {
     LOG(ERROR) << "Failed to connect to UpdateServiceInternal remote. "
                   "Connection timed out.";
-    std::move(connected_callback).Run(absl::nullopt);
+    std::move(connected_callback).Run(std::nullopt);
     return;
   }
 
-  absl::optional<mojo::PlatformChannelEndpoint> endpoint =
+  std::optional<mojo::PlatformChannelEndpoint> endpoint =
       ConnectMojo(scope, tries);
 
   if (!endpoint) {
     VLOG(1) << "Failed to connect to UpdateService remote. "
                "No updater exists.";
-    std::move(connected_callback).Run(absl::nullopt);
+    std::move(connected_callback).Run(std::nullopt);
     return;
   }
 
@@ -96,7 +96,7 @@ UpdateServiceInternalProxyImpl::UpdateServiceInternalProxyImpl(
     : scope_(scope) {}
 
 void UpdateServiceInternalProxyImpl::Run(
-    base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+    base::OnceCallback<void(std::optional<RpcError>)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
@@ -104,11 +104,11 @@ void UpdateServiceInternalProxyImpl::Run(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindPostTaskToCurrentDefault(std::move(callback)),
           kErrorIpcDisconnect),
-      absl::nullopt));
+      std::nullopt));
 }
 
 void UpdateServiceInternalProxyImpl::Hello(
-    base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+    base::OnceCallback<void(std::optional<RpcError>)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
@@ -116,7 +116,7 @@ void UpdateServiceInternalProxyImpl::Hello(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindPostTaskToCurrentDefault(std::move(callback)),
           kErrorIpcDisconnect),
-      absl::nullopt));
+      std::nullopt));
 }
 
 UpdateServiceInternalProxyImpl::~UpdateServiceInternalProxyImpl() = default;
@@ -144,7 +144,7 @@ void UpdateServiceInternalProxyImpl::OnDisconnected() {
 
 void UpdateServiceInternalProxyImpl::OnConnected(
     mojo::PendingReceiver<mojom::UpdateServiceInternal> pending_receiver,
-    absl::optional<mojo::PlatformChannelEndpoint> endpoint) {
+    std::optional<mojo::PlatformChannelEndpoint> endpoint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!endpoint) {
     VLOG(2) << "No endpoint received.";

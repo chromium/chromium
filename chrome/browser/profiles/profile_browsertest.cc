@@ -74,7 +74,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -653,8 +652,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   Profile* incognito_profile = incognito_browser->profile();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   url_loader_factory.Bind(extensions::CreateExtensionNavigationURLLoaderFactory(
-      incognito_profile, ukm::kInvalidSourceIdObj,
-      false /* is_web_view_request */));
+      incognito_profile, false /* is_web_view_request */));
 
   // Verify that the factory works fine while the profile is still alive.
   // We don't need to test with a real extension URL - it is sufficient to

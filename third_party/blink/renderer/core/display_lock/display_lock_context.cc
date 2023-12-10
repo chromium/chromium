@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -315,19 +316,10 @@ void DisplayLockContext::Lock() {
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
 }
 
-// Should* and Did* function for the lifecycle phases. These functions control
-// whether or not to process the lifecycle for self or for children.
+// Did* function for the lifecycle phases. These functions, along with
+// Should* functions in the header, control whether or not to process the
+// lifecycle for self or for children.
 // =============================================================================
-bool DisplayLockContext::ShouldStyleChildren() const {
-  return !is_locked_ ||
-         forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
-         (document_->GetDisplayLockDocumentState()
-              .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny)) ||
-         (document_->ExistingAXObjectCache() &&
-          IsActivatable(DisplayLockActivationReason::kAccessibility));
-}
-
 void DisplayLockContext::DidStyleSelf() {
   // If we don't have a style after styling self, it means that we should revert
   // to the default state of being visible. This will get updated when we gain
@@ -356,16 +348,6 @@ void DisplayLockContext::DidStyleChildren() {
   element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
 }
 
-bool DisplayLockContext::ShouldLayoutChildren() const {
-  return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
-         (document_->GetDisplayLockDocumentState()
-              .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny)) ||
-         (document_->ExistingAXObjectCache() &&
-          document_->GetStyleEngine().SkippedContainerRecalc() &&
-          IsActivatable(DisplayLockActivationReason::kAccessibility));
-}
-
 void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;
@@ -376,25 +358,7 @@ void DisplayLockContext::DidLayoutChildren() {
   if (!is_locked_)
     RestoreScrollOffsetIfStashed();
 }
-
-bool DisplayLockContext::ShouldPrePaintChildren() const {
-  return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
-         (document_->GetDisplayLockDocumentState()
-              .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny));
-}
-
-bool DisplayLockContext::ShouldPaintChildren() const {
-  // Note that forced updates should never require us to paint, so we don't
-  // check |forced_info_| here.
-  return !is_locked_;
-}
-// End Should* and Did* functions ==============================================
-
-bool DisplayLockContext::IsActivatable(
-    DisplayLockActivationReason reason) const {
-  return activatable_mask_ & static_cast<uint16_t>(reason);
-}
+// End Did* functions ==============================================
 
 void DisplayLockContext::CommitForActivation(
     DisplayLockActivationReason reason) {
@@ -523,8 +487,8 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
       MarkAncestorsForPrePaintIfNeeded();
     }
 
-    if (emit_warnings && v8::Isolate::GetCurrent()->InContext() && document_ &&
-        element_ &&
+    if (emit_warnings && document_ &&
+        document_->GetAgent().isolate()->InContext() && element_ &&
         (!IsActivatable(DisplayLockActivationReason::kAny) ||
          RuntimeEnabledFeatures::
              WarnOnContentVisibilityRenderAccessEnabled())) {
@@ -536,7 +500,6 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
 
 void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
   if (state_ == EContentVisibility::kAuto &&
-      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangeEventEnabled() &&
       !state_change_task_pending_) {
     document_->GetExecutionContext()
         ->GetTaskRunner(TaskType::kMiscPlatformAPI)
@@ -1345,6 +1308,11 @@ void DisplayLockContext::RestoreScrollOffsetIfStashed() {
 
 bool DisplayLockContext::HasStashedScrollOffset() const {
   return stashed_scroll_offset_.has_value();
+}
+
+bool DisplayLockContext::ActivatableDisplayLocksForced() const {
+  return document_->GetDisplayLockDocumentState()
+      .ActivatableDisplayLocksForced();
 }
 
 }  // namespace blink

@@ -11,9 +11,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-/**
- * An alert dialog that offers to delete passwords which were exported.
- */
+/** An alert dialog that offers to delete passwords which were exported. */
 public class ExportDeletionDialogFragment extends DialogFragment {
     private Runnable mOnDeletionAcceptedCallback;
     private Dialog mDialog;
@@ -27,10 +25,11 @@ public class ExportDeletionDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mDialog =
-                new AlertDialog
-                        .Builder(getActivity(),
+                new AlertDialog.Builder(
+                                getActivity(),
                                 R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
-                        .setPositiveButton(R.string.exported_passwords_delete_button,
+                        .setPositiveButton(
+                                R.string.exported_passwords_delete_button,
                                 this::onDeleteButtonClicked)
                         .setNegativeButton(
                                 R.string.cancel, (DialogInterface unused, int unusedButton) -> {})
@@ -38,11 +37,15 @@ public class ExportDeletionDialogFragment extends DialogFragment {
                                 getActivity()
                                         .getResources()
                                         .getString(R.string.exported_passwords_deletion_dialog_text)
-                                        .replace("%1$s",
+                                        .replace(
+                                                "%1$s",
                                                 PasswordMigrationWarningUtil.getChannelString(
                                                         getActivity().getApplicationContext())))
-                        .setTitle(getActivity().getResources().getString(
-                                R.string.exported_passwords_deletion_dialog_title))
+                        .setTitle(
+                                getActivity()
+                                        .getResources()
+                                        .getString(
+                                                R.string.exported_passwords_deletion_dialog_title))
                         .create();
         return mDialog;
     }

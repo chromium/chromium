@@ -123,7 +123,9 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
     if (!has_alpha_) {
       is_emulated_rgbx_ = true;
     }
-    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+    // Get backend texture info needed for creating backend textures for
+    // offscreen.
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
         context_state_->gr_context_type(),
         SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type_));
     graphite_texture_ =

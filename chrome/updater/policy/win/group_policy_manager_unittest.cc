@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/win/group_policy_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/ref_counted.h"
@@ -17,7 +18,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -59,35 +59,35 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   EXPECT_EQ(policy_manager->source(), "Group Policy");
   EXPECT_FALSE(policy_manager->CloudPolicyOverridesPlatformPolicy());
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreference(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyMode(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyServer(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), std::nullopt);
 
   std::string app_id = base::WideToUTF8(TEST_APP_ID);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(app_id),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(
                 "non-exist-app-fallback-to-global"),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(app_id),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(
                 "non-exist-app-fallback-to-global"),
-            absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetChannel(app_id), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_id), absl::nullopt);
+            std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel(app_id), std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_id), std::nullopt);
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix("non-exist-app"),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(app_id),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(GroupPolicyManagerTests, PolicyRead) {
@@ -132,7 +132,7 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
   EXPECT_TRUE(policy_manager->CloudPolicyOverridesPlatformPolicy());
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(480));
 
-  absl::optional<UpdatesSuppressedTimes> suppressed_times =
+  std::optional<UpdatesSuppressedTimes> suppressed_times =
       policy_manager->GetUpdatesSuppressedTimes();
   ASSERT_TRUE(suppressed_times);
   EXPECT_EQ(suppressed_times->start_hour_, 2);
@@ -156,13 +156,13 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
                 "non-exist-app-fallback-to-global"),
             1);
   EXPECT_EQ(policy_manager->GetTargetChannel(app_id), "beta");
-  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), std::nullopt);
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_id), "55.55.");
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix("non-exist-app"),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(app_id), true);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
@@ -203,35 +203,35 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_FALSE(policy_manager->CloudPolicyOverridesPlatformPolicy());
-  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreference(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyMode(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyServer(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), std::nullopt);
 
   std::string app_id = base::WideToUTF8(TEST_APP_ID);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(app_id),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(
                 "non-exist-app-fallback-to-global"),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(app_id),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(
                 "non-exist-app-fallback-to-global"),
-            absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetChannel(app_id), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_id), absl::nullopt);
+            std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel(app_id), std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_id), std::nullopt);
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix("non-exist-app"),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(app_id),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"),
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace updater

@@ -166,6 +166,8 @@ source_set("ipc_common_sources") {
 
   if (is_android) {
     sources += [
+      "android/android_hardware_buffer_utils.cc",
+      "android/android_hardware_buffer_utils.h",
       "android/scoped_surface_request_conduit.cc",
       "android/scoped_surface_request_conduit.h",
       "gpu_surface_lookup.cc",
@@ -710,7 +712,6 @@ mojom("gpu_preferences_interface") {
 mojom("vulkan_interface") {
   generate_java = true
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 
   # TODO(crbug.com/1062364): This interface code is used by some javascript

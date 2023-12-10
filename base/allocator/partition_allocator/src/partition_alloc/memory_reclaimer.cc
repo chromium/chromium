@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
+#include "partition_alloc/memory_reclaimer.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/pcscan.h"
 #endif
 
 namespace partition_alloc {

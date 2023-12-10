@@ -179,7 +179,6 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -505,7 +504,7 @@ void EnqueueAutofocus(Element& element) {
 
 bool WillUpdateSizeContainerDuringLayout(const LayoutObject& layout_object) {
   // When a size-container LayoutObject is marked as needs layout,
-  // NGBlockNode::Layout() will resume style recalc with an up-to-date size in
+  // BlockNode::Layout() will resume style recalc with an up-to-date size in
   // StyleEngine::UpdateStyleAndLayoutTreeForContainer().
   return layout_object.NeedsLayout() &&
          layout_object.IsEligibleForSizeContainment();
@@ -593,7 +592,47 @@ int Element::DefaultTabIndex() const {
   return -1;
 }
 
-bool Element::IsFocusableStyle() const {
+bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
+  // TODO(vmpstr): Note that this may be called by accessibility during layout
+  // tree attachment, at which point we might not have cleared all of the dirty
+  // bits to ensure that the layout tree doesn't need an update. This should be
+  // fixable by deferring AX tree updates as a separate phase after layout tree
+  // attachment has happened. At that point `InStyleRecalc()` portion of the
+  // following DCHECK can be removed.
+
+  // In order to check focusable style, we use the existence of LayoutObjects
+  // as a proxy for determining whether the element would have a display mode
+  // that restricts visibility (such as display: none). However, with
+  // display-locking, it is possible that we deferred such LayoutObject
+  // creation. We need to ensure to update style and layout tree to have
+  // up-to-date information.
+  //
+  // Note also that there may be situations where focus / keyboard navigation
+  // causes us to have dirty style, so we update StyleAndLayoutTreeForNode here.
+  // If the style and layout tree are clean, then this should be a quick
+  // operation. See crbug.com/1079385 for details.
+  //
+  // Also note that if this node is ignored due to a display lock for focus
+  // activation reason, we simply return false to avoid updating style & layout
+  // tree for this node.
+  absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
+  if (UNLIKELY(update_behavior != UpdateBehavior::kStyleAndLayout)) {
+    DCHECK(!NeedsStyleRecalc()) << this;
+    disallow_scope.emplace(GetDocument().Lifecycle());
+  } else {
+    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+            *this, DisplayLockActivationReason::kUserFocus)) {
+      return false;
+    }
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                  DocumentUpdateReason::kFocus);
+  }
+
+  DCHECK(
+      !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
+      !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this))
+      << *this;
+
   if (LayoutObject* layout_object = GetLayoutObject()) {
     return layout_object->StyleRef().IsFocusable();
   }
@@ -2035,7 +2074,7 @@ Vector<gfx::Rect> Element::OutlineRectsInWidget(
 
   Vector<PhysicalRect> outline_rects = layout_object->OutlineRects(
       nullptr, PhysicalOffset(),
-      layout_object->StyleRef().OutlineRectsShouldIncludeBlockVisualOverflow());
+      layout_object->StyleRef().OutlineRectsShouldIncludeBlockInkOverflow());
   for (auto& r : outline_rects) {
     PhysicalRect physical_rect = layout_object->LocalToAbsoluteRect(r);
     gfx::Rect absolute_rect =
@@ -2153,10 +2192,14 @@ gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdate() const {
   return result;
 }
 
-DOMRect* Element::getBoundingClientRect() {
+DOMRect* Element::GetBoundingClientRect() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   return DOMRect::FromRectF(GetBoundingClientRectNoLifecycleUpdate());
+}
+
+DOMRect* Element::GetBoundingClientRectForBinding() {
+  return GetBoundingClientRect();
 }
 
 const AtomicString& Element::computedRole() {
@@ -2167,7 +2210,6 @@ const AtomicString& Element::computedRole() {
   AXContext ax_context(document, ui::kAXModeBasic);
   document.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kJavaScript);
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
 
@@ -2186,7 +2228,6 @@ const AtomicString& Element::ComputedRoleNoLifecycleUpdate() {
   // Allocating the AXContext needs to not change lifecycle states.
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean)
       << " State was: " << document.Lifecycle().GetState();
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
 
@@ -2198,7 +2239,6 @@ String Element::computedName() {
   AXContext ax_context(document, ui::kAXModeBasic);
   document.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kJavaScript);
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
 
@@ -2217,7 +2257,6 @@ String Element::ComputedNameNoLifecycleUpdate() {
   // Allocating the AXContext needs to not change lifecycle states.
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean)
       << " State was: " << document.Lifecycle().GetState();
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
 
@@ -3106,6 +3145,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
     // necessary if the animated property flipped back to the old style with no
     // change as the result.
     DCHECK(GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
+           GetDocument().GetStyleEngine().InPositionFallbackStyleRecalc() ||
            element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
   }
@@ -3141,7 +3181,8 @@ const ComputedStyle* Element::StyleForLayoutObject(
     style = context->AdjustElementStyle(style);
   }
 
-  if (style->DependsOnSizeContainerQueries()) {
+  // TODO(crbug.com/1502666): Descendants can also depend on position-fallback.
+  if (style->DependsOnSizeContainerQueries() || style->PositionFallback()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
 
@@ -3170,7 +3211,8 @@ void Element::RecalcStyleForTraversalRootAncestor() {
 
 bool Element::SkipStyleRecalcForContainer(
     const ComputedStyle& style,
-    const StyleRecalcChange& child_change) {
+    const StyleRecalcChange& child_change,
+    const StyleRecalcContext& style_recalc_context) {
   if (!GetDocument().GetStyleEngine().SkipStyleRecalcAllowed()) {
     return false;
   }
@@ -3204,6 +3246,12 @@ bool Element::SkipStyleRecalcForContainer(
   // reach the box for ::backdrop during layout. Don't skip style recalc for
   // children of containers in the top layer for this reason.
   if (style.IsRenderedInTopLayer(*this)) {
+    return false;
+  }
+
+  // We are both a size container and trying to compute position-fallback styles
+  // from layout. Our children should be the first opportunity to skip recalc.
+  if (style_recalc_context.is_position_fallback) {
     return false;
   }
 
@@ -3318,6 +3366,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
+  child_recalc_context.is_position_fallback = false;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {
@@ -3336,7 +3385,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
               cq_data->ClearAndReturnRecalcChangeForChildren().Combine(
                   child_change);
         }
-      } else if (SkipStyleRecalcForContainer(*style, child_change)) {
+      } else if (SkipStyleRecalcForContainer(*style, child_change,
+                                             style_recalc_context)) {
         return;
       }
     }
@@ -3396,7 +3446,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
     // and which element the ::first-letter inherits style from.
-    if (child_change.ReattachLayoutTree()) {
+    //
+    // If style recalc was suppressed for this element, it means it's a size
+    // query container, and child_change.ReattachLayoutTree() comes from the
+    // skipped style recalc. In that case we haven't updated the style, and we
+    // will not update the ::first-letter style in the originating element's
+    // AttachLayoutTree().
+    if (child_change.ReattachLayoutTree() && !change.IsSuppressed()) {
       // Make sure we reach this element during reattachment. There are cases
       // where we compute and store the styles for a subtree but stop attaching
       // layout objects at an element that does not allow child boxes. Marking
@@ -3472,7 +3528,7 @@ static bool NeedsContainerQueryEvaluator(
     const ComputedStyle& new_style) {
   return evaluator.DependsOnStyle() ||
          new_style.IsContainerForSizeContainerQueries() ||
-         new_style.IsContainerForStickyContainerQueries();
+         new_style.IsContainerForScrollStateContainerQueries();
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(
@@ -3640,9 +3696,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   // Update style containment tree if the style containment of the element
   // has changed.
-  if ((!new_style && old_style && old_style->ContainsStyle()) ||
-      (old_style && new_style &&
-       old_style->ContainsStyle() != new_style->ContainsStyle())) {
+  // Don't update if the style containment tree has not been initialized.
+  if (GetDocument().GetStyleEngine().GetStyleContainmentScopeTree() &&
+      ((!new_style && old_style && old_style->ContainsStyle()) ||
+       (old_style && new_style &&
+        old_style->ContainsStyle() != new_style->ContainsStyle()))) {
     StyleContainmentScopeTree& tree =
         GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
     if (old_style && old_style->ContainsStyle()) {
@@ -3721,23 +3779,21 @@ StyleRecalcChange Element::RecalcOwnStyle(
               break;
           }
         }
-        if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled()) {
-          if (diff != ComputedStyle::Difference::kEqual &&
-              (!base::ValuesEquivalent(old_style->InheritedVariables(),
-                                       new_style->InheritedVariables()) ||
-               !base::ValuesEquivalent(old_style->NonInheritedVariables(),
-                                       new_style->NonInheritedVariables()))) {
-            switch (evaluator->StyleContainerChanged()) {
-              case ContainerQueryEvaluator::Change::kNone:
-                break;
-              case ContainerQueryEvaluator::Change::kNearestContainer:
-                child_change = child_change.ForceRecalcStyleContainerChildren();
-                break;
-              case ContainerQueryEvaluator::Change::kDescendantContainers:
-                child_change =
-                    child_change.ForceRecalcStyleContainerDescendants();
-                break;
-            }
+        if (diff != ComputedStyle::Difference::kEqual &&
+            (!base::ValuesEquivalent(old_style->InheritedVariables(),
+                                     new_style->InheritedVariables()) ||
+             !base::ValuesEquivalent(old_style->NonInheritedVariables(),
+                                     new_style->NonInheritedVariables()))) {
+          switch (evaluator->StyleContainerChanged()) {
+            case ContainerQueryEvaluator::Change::kNone:
+              break;
+            case ContainerQueryEvaluator::Change::kNearestContainer:
+              child_change = child_change.ForceRecalcStyleContainerChildren();
+              break;
+            case ContainerQueryEvaluator::Change::kDescendantContainers:
+              child_change =
+                  child_change.ForceRecalcStyleContainerDescendants();
+              break;
           }
         }
       }
@@ -4305,8 +4361,9 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
     }
 
     if (slot && RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-      ShadowRoot* root = slot->ContainingShadowRoot();
-      return root->host().CachedDirectionality();
+      if (ShadowRoot* root = slot->ContainingShadowRoot()) {
+        return root->host().CachedDirectionality();
+      }
     }
 
     if (node->IsTextNode()) {
@@ -4316,7 +4373,7 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
       }
     }
 
-    if (slot) {
+    if (slot && !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
       absl::optional<TextDirection> text_direction =
           slot->ResolveAutoDirectionality<FlatTreeTraversal>(is_deferred,
                                                              stay_within);
@@ -4911,7 +4968,7 @@ const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
 }
 
 void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {
-  CHECK(RuntimeEnabledFeatures::ElementCaptureEnabled());
+  CHECK(RuntimeEnabledFeatures::ElementCaptureEnabled(GetExecutionContext()));
 
   ElementRareDataVector& rare_data = EnsureElementRareData();
   CHECK(!rare_data.GetRestrictionTargetId());
@@ -5819,7 +5876,13 @@ void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
     }
   }
 
-  if (IsFocused() == received) {
+  // We'd like to invalidate :focus style for kPage even if element's focus
+  // state has not been changed, because the element might have been focused
+  // while the page was inactive.
+  if (IsFocused() == received &&
+      (!RuntimeEnabledFeatures::
+           FocusStyleInvalidationOnPageActivationEnabled() ||
+       focus_type != mojom::blink::FocusType::kPage)) {
     return;
   }
 
@@ -5844,15 +5907,13 @@ void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
   }
   PseudoStateChanged(CSSSelector::kPseudoFocus);
 
-  if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    if (!ChildrenOrSiblingsAffectedByFocusVisible()) {
-      SetNeedsStyleRecalc(kLocalStyleChange,
-                          StyleChangeReasonForTracing::CreateWithExtraData(
-                              style_change_reason::kPseudoClass,
-                              style_change_extra_data::g_focus_visible));
-    }
-    PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
+  if (!ChildrenOrSiblingsAffectedByFocusVisible()) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::CreateWithExtraData(
+                            style_change_reason::kPseudoClass,
+                            style_change_extra_data::g_focus_visible));
   }
+  PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
 
   if (!ChildrenOrSiblingsAffectedByFocusWithin()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
@@ -6027,33 +6088,26 @@ bool Element::SupportsSpatialNavigationFocus() const {
           HasEventListeners(event_type_names::kFocusout));
 }
 
-bool Element::IsFocusableStyleAfterUpdate() const {
-  // In order to check focusable style, we use the existence of LayoutObjects
-  // as a proxy for determining whether the element would have a display mode
-  // that restricts visibility (such as display: none). However, with
-  // display-locking, it is possible that we deferred such LayoutObject
-  // creation. We need to ensure to update style and layout tree to have
-  // up-to-date information.
-  //
-  // Note also that there may be situations where focus / keyboard navigation
-  // causes us to have dirty style, so we update StyleAndLayoutTreeForNode here.
-  // If the style and layout tree are clean, then this should be a quick
-  // operation. See crbug.com/1079385 for details.
-  //
-  // Note that this isn't a part of `IsFocusableStyle()` because there are
-  // callers of that function which cannot do a layout tree update (e.g.
-  // accessibility).
-  //
-  // Also note that if this node is ignored due to a display lock for focus
-  // activation reason, we simply return false to avoid updating style & layout
-  // tree for this node.
-  if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-          *this, DisplayLockActivationReason::kUserFocus)) {
+bool Element::CanBeKeyboardFocusableScroller(
+    UpdateBehavior update_behavior) const {
+  if (!RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled()) {
     return false;
   }
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
-                                                DocumentUpdateReason::kFocus);
-  return IsFocusableStyle();
+  // A node is scrollable depending on its layout size. As such, it is important
+  // to have up to date style and layout before calling IsScrollableNode.
+  // However, for a11y code, layout updates should not be performed here.
+  absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
+  if (UNLIKELY(update_behavior != UpdateBehavior::kStyleAndLayout)) {
+    disallow_scope.emplace(GetDocument().Lifecycle());
+  } else {
+    auto* box = GetLayoutObject();
+    if (box && (box->SelfNeedsFullLayout() || box->NeedsSimplifiedLayout() ||
+                (!box->ChildLayoutBlockedByDisplayLock() &&
+                 box->ChildNeedsFullLayout()))) {
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
+    }
+  }
+  return IsScrollableNode(this);
 }
 
 // This can be slow, because it can require a tree walk. It might be
@@ -6061,9 +6115,9 @@ bool Element::IsFocusableStyleAfterUpdate() const {
 // recompute it. That would require marking that bit dirty whenever
 // a node in the subtree was mutated, or when styles for the subtree
 // were recomputed.
-bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
-  if (!RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() ||
-      !IsScrollableNode(this)) {
+bool Element::IsKeyboardFocusableScroller(
+    UpdateBehavior update_behavior) const {
+  if (!CanBeKeyboardFocusableScroller(update_behavior)) {
     return false;
   }
   // This condition is to avoid clearing the focus in the middle of a
@@ -6076,7 +6130,7 @@ bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
   for (Node* node = FlatTreeTraversal::FirstChild(*this); node;
        node = FlatTreeTraversal::Next(*node, this)) {
     if (Element* element = DynamicTo<Element>(node)) {
-      if (element->IsKeyboardFocusable()) {
+      if (element->IsKeyboardFocusable(update_behavior)) {
         return false;
       }
     }
@@ -6084,33 +6138,23 @@ bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
   return true;
 }
 
-bool Element::IsKeyboardFocusable() const {
-  if (!Element::IsFocusable()) {
+bool Element::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
+  if (!Element::IsFocusable(update_behavior)) {
     return false;
   }
-  // Note that IsScrollableContainerThatShouldBeKeyboardFocusable() will get
-  // called twice, once in IsFocusable (via SupportsFocus) and the other
-  // here. Note that IsScrollableContainerThatShouldBeKeyboardFocusable is slow.
-  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0 ||
-         IsScrollableContainerThatShouldBeKeyboardFocusable();
-}
-
-bool Element::IsFocusableStyleNeverLayoutForAccessibilityOnly() const {
-  DCHECK(!NeedsStyleRecalc()) << this;
-  DocumentLifecycle::DisallowTransitionScope scope(GetDocument().Lifecycle());
-  return IsFocusableStyle();
-}
-
-bool Element::IsFocusable(
-    bool disallow_layout_updates_for_accessibility_only) const {
-  if (UNLIKELY(disallow_layout_updates_for_accessibility_only)) {
-    return isConnected() && IsFocusableStyleNeverLayoutForAccessibilityOnly() &&
-           SupportsFocus();
+  if (!HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) &&
+      CanBeKeyboardFocusableScroller(update_behavior)) {
+    return IsKeyboardFocusableScroller(update_behavior);
   }
-  return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
+  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
 }
 
-bool Element::SupportsFocus() const {
+bool Element::IsFocusable(UpdateBehavior update_behavior) const {
+  return isConnected() && IsFocusableStyle(update_behavior) &&
+         SupportsFocus(update_behavior);
+}
+
+bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
   // SupportsFocus must return true when the element is editable, or else
   // it won't be focusable. Furthermore, supportsFocus cannot just return true
   // always or else tabIndex() will change for all HTML elements.
@@ -6120,7 +6164,7 @@ bool Element::SupportsFocus() const {
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
-         IsScrollableContainerThatShouldBeKeyboardFocusable() ||
+         CanBeKeyboardFocusableScroller(update_behavior) ||
          SupportsSpatialNavigationFocus();
 }
 
@@ -6157,9 +6201,6 @@ void Element::FocusStateChanged() {
 }
 
 void Element::FocusVisibleStateChanged() {
-  if (!RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    return;
-  }
   StyleChangeType change_type =
       GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
           ? kSubtreeStyleChange
@@ -6476,14 +6517,15 @@ String Element::outerHTML() const {
 }
 
 void Element::SetInnerHTMLInternal(const String& html,
-                                   bool include_shadow_roots,
+                                   IncludeShadowRoots include_shadow_roots,
+                                   ForceHtml force_html,
                                    ExceptionState& exception_state) {
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, include_shadow_roots,
-            exception_state)) {
+            force_html, exception_state)) {
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
@@ -6510,13 +6552,14 @@ void Element::SetInnerHTMLInternal(const String& html,
 void Element::setInnerHTML(const String& html,
                            ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
-  SetInnerHTMLInternal(html, /*include_shadow_roots=*/false, exception_state);
+  SetInnerHTMLInternal(html, IncludeShadowRoots::kDontInclude,
+                       ForceHtml::kDontForce, exception_state);
 }
 
 void Element::setInnerHTMLWithDeclarativeShadowDOMForTesting(
     const String& html) {
-  SetInnerHTMLInternal(html, /*include_shadow_roots=*/true,
-                       ASSERT_NO_EXCEPTION);
+  SetInnerHTMLInternal(html, IncludeShadowRoots::kInclude,
+                       ForceHtml::kDontForce, ASSERT_NO_EXCEPTION);
 }
 
 String Element::getInnerHTML(const GetInnerHTMLOptions* options) const {
@@ -6555,8 +6598,8 @@ void Element::setOuterHTML(const String& html,
   Node* next = nextSibling();
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      html, parent, kAllowScriptingContent,
-      /*include_shadow_roots=*/false, exception_state);
+      html, parent, kAllowScriptingContent, IncludeShadowRoots::kDontInclude,
+      ForceHtml::kDontForce, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -6706,6 +6749,15 @@ StyleScopeData* Element::GetStyleScopeData() const {
   return HasRareData() ? GetElementRareData()->GetStyleScopeData() : nullptr;
 }
 
+PositionFallbackData& Element::EnsurePositionFallbackData() {
+  return EnsureElementRareData().EnsurePositionFallbackData();
+}
+
+PositionFallbackData* Element::GetPositionFallbackData() const {
+  return HasRareData() ? GetElementRareData()->GetPositionFallbackData()
+                       : nullptr;
+}
+
 bool Element::SkippedContainerStyleRecalc() const {
   if (const ContainerQueryData* cq_data = GetContainerQueryData()) {
     return cq_data->SkippedStyleRecalc();
@@ -6775,7 +6827,7 @@ void Element::insertAdjacentHTML(const String& where,
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent,
-      /*include_shadow_roots=*/false, exception_state);
+      IncludeShadowRoots::kDontInclude, ForceHtml::kDontForce, exception_state);
   if (!fragment) {
     return;
   }
@@ -7919,14 +7971,6 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
       // would not change, but the layout object order may have.
       SetForceReattachLayoutTree();
     }
-
-    if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-      // Needs a style recalc to update the overlay property in
-      // StyleAdjuster.
-      SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(style_change_reason::kTopLayer));
-    }
   }
 }
 
@@ -8734,19 +8778,17 @@ void Element::UpdatePresentationAttributeStyle() {
   element_data.presentation_attribute_style_ =
       ComputePresentationAttributeStyle(*this);
 
-  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(GetExecutionContext())) {
-    // We could do this in CreatePresentationAttributeStyle or
-    // HTMLElement::CollectStyleForPresentationAttribute when we actually
-    // iterate over attributes, but the presentational style gets cached so
-    // those functions aren't necessarily called every time. This function
-    // actually gets called every time, so we must do this check here.
-    AttributeCollection attributes = AttributesWithoutUpdate();
-    auto* hidden_attr = attributes.Find(html_names::kHiddenAttr);
-    if (hidden_attr && hidden_attr->Value() == "until-found") {
-      EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
-    } else if (DisplayLockContext* context = GetDisplayLockContext()) {
-      context->SetIsHiddenUntilFoundElement(false);
-    }
+  // We could do this in CreatePresentationAttributeStyle or
+  // HTMLElement::CollectStyleForPresentationAttribute when we actually iterate
+  // over attributes, but the presentational style gets cached so those
+  // functions aren't necessarily called every time. This function actually gets
+  // called every time, so we must do this check here.
+  AttributeCollection attributes = AttributesWithoutUpdate();
+  auto* hidden_attr = attributes.Find(html_names::kHiddenAttr);
+  if (hidden_attr && hidden_attr->Value() == "until-found") {
+    EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
+  } else if (DisplayLockContext* context = GetDisplayLockContext()) {
+    context->SetIsHiddenUntilFoundElement(false);
   }
 }
 
@@ -8858,7 +8900,8 @@ void Element::LogAddElementIfIsolatedWorldAndInDocument(
   Vector<String, 2> argv;
   argv.push_back(element);
   argv.push_back(FastGetAttribute(attr1));
-  activity_logger->LogEvent("blinkAddElement", argv.size(), argv.data());
+  activity_logger->LogEvent(GetDocument().GetExecutionContext(),
+                            "blinkAddElement", argv.size(), argv.data());
 }
 
 void Element::LogAddElementIfIsolatedWorldAndInDocument(
@@ -8879,7 +8922,8 @@ void Element::LogAddElementIfIsolatedWorldAndInDocument(
   argv.push_back(element);
   argv.push_back(FastGetAttribute(attr1));
   argv.push_back(FastGetAttribute(attr2));
-  activity_logger->LogEvent("blinkAddElement", argv.size(), argv.data());
+  activity_logger->LogEvent(GetDocument().GetExecutionContext(),
+                            "blinkAddElement", argv.size(), argv.data());
 }
 
 void Element::LogAddElementIfIsolatedWorldAndInDocument(
@@ -8902,7 +8946,8 @@ void Element::LogAddElementIfIsolatedWorldAndInDocument(
   argv.push_back(FastGetAttribute(attr1));
   argv.push_back(FastGetAttribute(attr2));
   argv.push_back(FastGetAttribute(attr3));
-  activity_logger->LogEvent("blinkAddElement", argv.size(), argv.data());
+  activity_logger->LogEvent(GetDocument().GetExecutionContext(),
+                            "blinkAddElement", argv.size(), argv.data());
 }
 
 void Element::LogUpdateAttributeIfIsolatedWorldAndInDocument(
@@ -8923,7 +8968,8 @@ void Element::LogUpdateAttributeIfIsolatedWorldAndInDocument(
   argv.push_back(params.name.ToString());
   argv.push_back(params.old_value);
   argv.push_back(params.new_value);
-  activity_logger->LogEvent("blinkSetAttribute", argv.size(), argv.data());
+  activity_logger->LogEvent(GetDocument().GetExecutionContext(),
+                            "blinkSetAttribute", argv.size(), argv.data());
 }
 
 void Element::Trace(Visitor* visitor) const {
@@ -9606,7 +9652,7 @@ AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
 void Element::IncrementImplicitlyAnchoredElementCount() {
   DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   if (!HasImplicitlyAnchoredElement() && GetLayoutObject()) {
-    // Invalidate layout to populate itself into NGPhysical/LogicalAnchorQuery.
+    // Invalidate layout to populate itself into Physical/LogicalAnchorQuery.
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kAnchorPositioning);
     GetLayoutObject()->MarkMayHaveAnchorQuery();
@@ -9660,7 +9706,8 @@ Element* Element::ImplicitAnchorElement() {
 void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
-  SetInnerHTMLInternal(html, /*include_shadow_roots=*/true, exception_state);
+  SetInnerHTMLInternal(html, IncludeShadowRoots::kInclude, ForceHtml::kForce,
+                       exception_state);
 }
 
 }  // namespace blink

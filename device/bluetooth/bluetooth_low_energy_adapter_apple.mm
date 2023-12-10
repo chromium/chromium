@@ -606,7 +606,7 @@ void BluetoothLowEnergyAdapterApple::DidDisconnectPeripheral(
 }
 
 bool BluetoothLowEnergyAdapterApple::IsBluetoothLowEnergyDeviceSystemPaired(
-    base::StringPiece device_identifier) const {
+    std::string_view device_identifier) const {
   auto it = base::ranges::find(low_energy_devices_info_, device_identifier,
                                &DevicesInfo::value_type::first);
   if (it == low_energy_devices_info_.end()) {

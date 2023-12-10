@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -14,12 +14,12 @@
 #include <sstream>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/memory/page_size.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +29,8 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/third_party/apple_apsl/malloc.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/third_party/apple_apsl/malloc.h"
 #else
 #include <malloc.h>
 #endif
@@ -160,6 +160,12 @@ class AllocatorShimTest : public testing::Test {
       return true;
     }
     return self->next->claimed_address_function(self->next, address, context);
+  }
+
+  static size_t MockGoodSize(const AllocatorDispatch* self,
+                             size_t size,
+                             void* context) {
+    return size;
   }
 
   static unsigned MockBatchMalloc(const AllocatorDispatch* self,
@@ -352,6 +358,7 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockRealloc,       /* realloc_function */
     &AllocatorShimTest::MockFree,          /* free_function */
     &AllocatorShimTest::MockGetSizeEstimate,  /* get_size_estimate_function */
+    &AllocatorShimTest::MockGoodSize,         /* good_size */
     &AllocatorShimTest::MockClaimedAddress,   /* claimed_address_function */
     &AllocatorShimTest::MockBatchMalloc,      /* batch_malloc_function */
     &AllocatorShimTest::MockBatchFree,        /* batch_free_function */
@@ -783,6 +790,12 @@ TEST_F(AllocatorShimTest, BatchMalloc) {
                                                      pointers, kNumToAllocate));
   malloc_zone_batch_free(malloc_default_zone(), pointers, kNumToAllocate);
   // Should not crash.
+}
+
+TEST_F(AllocatorShimTest, MallocGoodSize) {
+  constexpr size_t kTestSize = 100;
+  size_t good_size = malloc_good_size(kTestSize);
+  EXPECT_GE(good_size, kTestSize);
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)

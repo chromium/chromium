@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "base/ranges/algorithm.h"
 
 namespace ash {
@@ -77,15 +78,8 @@ const OnlineWallpaperVariant* FirstValidVariant(
   return nullptr;
 }
 
-bool IsTimeOfDayWallpaper(const WallpaperInfo& wallpaper_info) {
-  const std::vector<OnlineWallpaperVariant>& variants = wallpaper_info.variants;
-  return base::ranges::any_of(
-      variants, [](const OnlineWallpaperVariant& variant) {
-        return variant.type ==
-                   backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE ||
-               variant.type ==
-                   backdrop::Image_ImageType_IMAGE_TYPE_LATE_AFTERNOON_MODE;
-      });
+bool IsTimeOfDayWallpaper(const std::string& collection_id) {
+  return collection_id == wallpaper_constants::kTimeOfDayWallpaperCollectionId;
 }
 
 }  // namespace ash

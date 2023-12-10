@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
+#include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -80,7 +81,7 @@ FetchParameters CSSImageValue::PrepareFetch(
     params.SetLazyImageDeferred();
   }
 
-  if (!url_data_.IsFromFromOriginCleanStyleSheet()) {
+  if (!url_data_.IsFromOriginCleanStyleSheet()) {
     params.SetFromOriginDirtyStyleSheet(true);
   }
 
@@ -99,9 +100,14 @@ StyleImage* CSSImageValue::CacheImage(
 
     FetchParameters params =
         PrepareFetch(document, image_request_behavior, cross_origin);
-    cached_image_ = document.GetStyleEngine().CacheStyleImage(
-        params, url_data_.GetOriginClean(), url_data_.IsAdRelated(),
-        override_image_resolution);
+    ImageResourceContent* image_content =
+        document.GetStyleEngine().CacheImageContent(params);
+    cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
+        image_content, document,
+        params.GetImageRequestBehavior() ==
+            FetchParameters::ImageRequestBehavior::kDeferImageLoad,
+        url_data_.IsFromOriginCleanStyleSheet(), url_data_.IsAdRelated(),
+        params.Url(), override_image_resolution);
   }
   return cached_image_.Get();
 }
@@ -124,6 +130,14 @@ void CSSImageValue::RestoreCachedResourceIfNeeded(
                               : initiator_name_);
 }
 
+SVGResource* CSSImageValue::EnsureSVGResource() const {
+  if (!svg_resource_) {
+    svg_resource_ = MakeGarbageCollected<ExternalSVGResourceImageContent>(
+        cached_image_->CachedImage(), NormalizedFragmentIdentifier());
+  }
+  return svg_resource_.Get();
+}
+
 bool CSSImageValue::HasFailedOrCanceledSubresources() const {
   if (!cached_image_) {
     return false;
@@ -144,6 +158,7 @@ String CSSImageValue::CustomCSSText() const {
 
 void CSSImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
+  visitor->Trace(svg_resource_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 
@@ -169,6 +184,7 @@ AtomicString CSSImageValue::NormalizedFragmentIdentifier() const {
 void CSSImageValue::ReResolveURL(const Document& document) const {
   if (url_data_.ReResolveUrl(document)) {
     cached_image_.Clear();
+    svg_resource_.Clear();
   }
 }
 

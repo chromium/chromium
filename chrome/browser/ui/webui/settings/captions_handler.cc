@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -35,14 +34,6 @@ namespace {
 constexpr char kCodeKey[] = "code";
 constexpr char kDisplayNameKey[] = "displayName";
 constexpr char kNativeDisplayNameKey[] = "nativeDisplayName";
-
-// Gets a list of locales enabled by the Finch flag.
-std::vector<std::string> GetEnabledLanguages() {
-  return base::SplitString(
-      base::GetFieldTrialParamValueByFeature(media::kLiveCaptionMultiLanguage,
-                                             "available_languages"),
-      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-}
 
 base::Value::List SortByDisplayName(
     std::vector<base::Value::Dict> language_packs) {
@@ -165,7 +156,7 @@ void CaptionsHandler::HandleInstallLanguagePacks(
 }
 
 base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
-  auto enabled_languages = GetEnabledLanguages();
+  auto enabled_languages = speech::GetEnabledLanguages();
   std::vector<base::Value::Dict> available_language_packs;
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&
@@ -192,7 +183,7 @@ base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     base::Value::Dict installed_language_pack;
-    const absl::optional<speech::SodaLanguagePackComponentConfig> config =
+    const std::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language.GetString());
     if (config && config->language_code != speech::LanguageCode::kNone) {
       installed_language_pack.Set(kCodeKey, language.GetString());

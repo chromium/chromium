@@ -17,13 +17,19 @@
 #ifndef DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_INT_MOD_N_H_
 #define DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_INT_MOD_N_H_
 
+#include <algorithm>
+#include <string>
+#include <type_traits>
+
+#include "absl/base/config.h"
 #include "absl/container/inlined_vector.h"
+#include "absl/log/absl_check.h"
 #include "absl/numeric/int128.h"
+#include "absl/status/status.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/numbers.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/str_format.h"
-#include "glog/logging.h"
+#include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 
 namespace distributed_point_functions {
 
@@ -64,7 +70,7 @@ class IntModNBase {
   // to avoid depending on value_type_helpers here.
   template <typename T>
   static T ConvertBytesTo(absl::string_view bytes) {
-    CHECK(bytes.size() == sizeof(T));
+    ABSL_CHECK(bytes.size() == sizeof(T));
     T out{0};
 #ifdef ABSL_IS_LITTLE_ENDIAN
     std::copy_n(bytes.begin(), sizeof(T), reinterpret_cast<char*>(&out));

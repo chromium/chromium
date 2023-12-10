@@ -49,8 +49,7 @@ class NotificationSharedPrefManager {
      */
     static class ActiveNotification {
         public final int notificationId;
-        @NonNull
-        public final String guid;
+        @NonNull public final String guid;
         public final int version;
 
         ActiveNotification(int version, int notificationId, @NonNull String guid) {
@@ -69,7 +68,8 @@ class NotificationSharedPrefManager {
                 return false;
             }
             ActiveNotification other = (ActiveNotification) obj;
-            return this.notificationId == other.notificationId && this.guid.equals(other.guid)
+            return this.notificationId == other.notificationId
+                    && this.guid.equals(other.guid)
                     && this.version == other.version;
         }
     }
@@ -133,11 +133,13 @@ class NotificationSharedPrefManager {
      */
     static void addActiveNotification(ActiveNotification notification) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        Set<String> activeNotifications = getMutableStringSetPreference(
-                prefs, ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS);
+        Set<String> activeNotifications =
+                getMutableStringSetPreference(
+                        prefs, ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS);
         boolean added = activeNotifications.add(serializeNotification(notification));
         if (added) {
-            prefs.writeStringSet(ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS,
+            prefs.writeStringSet(
+                    ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS,
                     activeNotifications);
         }
     }
@@ -158,12 +160,14 @@ class NotificationSharedPrefManager {
             return false;
         }
 
-        Set<String> activeNotifications = getMutableStringSetPreference(
-                prefs, ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS);
+        Set<String> activeNotifications =
+                getMutableStringSetPreference(
+                        prefs, ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS);
         boolean removed = activeNotifications.remove(serializeNotification(notification));
 
         if (removed) {
-            prefs.writeStringSet(ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS,
+            prefs.writeStringSet(
+                    ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS,
                     activeNotifications);
         }
         return removed;
@@ -181,8 +185,9 @@ class NotificationSharedPrefManager {
             return null;
         }
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        Set<String> activeNotifications = prefs.readStringSet(
-                ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS, null);
+        Set<String> activeNotifications =
+                prefs.readStringSet(
+                        ChromePreferenceKeys.SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS, null);
         if (activeNotifications == null) {
             return null;
         }

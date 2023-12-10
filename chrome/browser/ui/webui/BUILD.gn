@@ -18,6 +18,7 @@ source_set("configs") {
     "//chrome/browser/ui:ui",
     "//components/lens:buildflags",
     "//content/public/browser",
+    "//extensions/buildflags:buildflags",
     "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",
@@ -45,7 +46,6 @@ source_set("configs") {
       "//ash/webui/face_ml_app_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//ash/webui/firmware_update_ui",
-      "//ash/webui/guest_os_installer",
       "//ash/webui/help_app_ui",
       "//ash/webui/os_feedback_ui",
       "//ash/webui/print_management",
@@ -54,6 +54,7 @@ source_set("configs") {
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/status_area_internals",
       "//ash/webui/system_extensions_internals_ui",
+      "//ash/webui/vc_background_ui",
       "//chrome/browser/ash",
       "//components/cross_device/logging",
     ]

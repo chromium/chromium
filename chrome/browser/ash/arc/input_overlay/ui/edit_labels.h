@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
@@ -21,6 +22,8 @@ class NameTag;
 
 // EditLabels wraps the input labels belonging to one action.
 class EditLabels : public views::View {
+  METADATA_HEADER(EditLabels, views::View)
+
  public:
   // Create key layout view depending on action type.
   // ActionTap for keyboard binding:
@@ -56,11 +59,13 @@ class EditLabels : public views::View {
   // Called when this view is clicked upon.
   void FocusLabel();
 
+
+  // Returns Action name, such as "Joystick WASD".
+  std::u16string CalculateActionName();
+
   void set_should_update_title(bool should_update_title) {
     should_update_title_ = should_update_title;
   }
-
-  void ShowEduNudgeForEditingTip();
 
  private:
   friend class ButtonOptionsMenuTest;
@@ -72,9 +77,6 @@ class EditLabels : public views::View {
 
   // Called when `labels_` is initiated or changes the content.
   void UpdateNameTag();
-  // Called when the editing list is first loaded to assign name labels to
-  // name tags, if available.
-  void UpdateNameTagTitle();
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;

@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
-#include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator.h"
@@ -130,8 +129,7 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
   auto* locker = ScreenLocker::default_screen_locker();
   CHECK(locker);
   locker->SetAuthenticatorsForTesting(
-      base::MakeRefCounted<StubAuthenticator>(locker, user_context),
-      base::MakeRefCounted<FakeExtendedAuthenticator>(locker, user_context));
+      base::MakeRefCounted<StubAuthenticator>(locker, user_context));
 }
 
 bool ScreenLockerTester::IsLocked() {

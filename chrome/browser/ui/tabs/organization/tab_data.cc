@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -15,7 +15,8 @@ int kNextTabID = 1;
 }  // namespace
 
 TabData::TabData(TabStripModel* model, content::WebContents* web_contents)
-    : tab_id_(kNextTabID),
+    : WebContentsObserver(web_contents),
+      tab_id_(kNextTabID),
       web_contents_(web_contents),
       original_url_(web_contents->GetLastCommittedURL()) {
   CHECK(model);
@@ -25,6 +26,7 @@ TabData::TabData(TabStripModel* model, content::WebContents* web_contents)
 
   original_tab_strip_model_ = model;
   model->AddObserver(this);
+  Observe(web_contents);
 }
 
 TabData::~TabData() {
@@ -56,10 +58,20 @@ bool TabData::IsValidForOrganizing() const {
     return false;
   }
 
-  if (original_tab_strip_model_
-          ->GetTabGroupForTab(
-              original_tab_strip_model_->GetIndexOfWebContents(web_contents_))
-          .has_value()) {
+  // All non http(s) schemes are invalid.
+  if (!original_url_.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  int tab_index =
+      original_tab_strip_model_->GetIndexOfWebContents(web_contents_);
+
+  // All grouped tabs arent valid for grouping
+  if (original_tab_strip_model_->GetTabGroupForTab(tab_index).has_value()) {
+    return false;
+  }
+
+  if (original_tab_strip_model_->IsTabPinned(tab_index)) {
     return false;
   }
 
@@ -89,6 +101,7 @@ void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
       const TabStripModelChange::Replace* replace = change.GetReplace();
       if (replace->old_contents == web_contents_) {
         web_contents_ = replace->new_contents;
+        Observe(web_contents_);
         NotifyObserversOfUpdate();
       }
       return;
@@ -100,6 +113,7 @@ void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
            remove->contents) {
         if (removed_tab.contents == web_contents_) {
           web_contents_ = nullptr;
+          Observe(nullptr);
           NotifyObserversOfUpdate();
         }
       }
@@ -109,6 +123,11 @@ void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
       return;
     }
   }
+}
+
+void TabData::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  NotifyObserversOfUpdate();
 }
 
 void TabData::NotifyObserversOfUpdate() {

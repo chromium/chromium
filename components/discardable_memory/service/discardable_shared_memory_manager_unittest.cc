@@ -39,8 +39,7 @@ class TestDiscardableSharedMemory : public base::DiscardableSharedMemory {
 class TestDiscardableSharedMemoryManager
     : public DiscardableSharedMemoryManager {
  public:
-  TestDiscardableSharedMemoryManager()
-      : enforce_memory_policy_pending_(false) {}
+  TestDiscardableSharedMemoryManager() = default;
 
   void SetNow(base::Time now) { now_ = now; }
 
@@ -51,15 +50,25 @@ class TestDiscardableSharedMemoryManager
     return enforce_memory_policy_pending_;
   }
 
+  size_t on_memory_pressure_call_count() const {
+    return on_memory_pressure_call_count_;
+  }
+
  private:
   // Overriden from DiscardableSharedMemoryManager:
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
+                            memory_pressure_level) override {
+    DiscardableSharedMemoryManager::OnMemoryPressure(memory_pressure_level);
+    ++on_memory_pressure_call_count_;
+  }
   base::Time Now() const override { return now_; }
   void ScheduleEnforceMemoryPolicy() override {
     enforce_memory_policy_pending_ = true;
   }
 
   base::Time now_;
-  bool enforce_memory_policy_pending_;
+  bool enforce_memory_policy_pending_ = false;
+  size_t on_memory_pressure_call_count_ = 0;
 };
 
 class DiscardableSharedMemoryManagerTest : public testing::Test {
@@ -69,8 +78,8 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
     manager_ = std::make_unique<TestDiscardableSharedMemoryManager>();
   }
 
-  // DiscardableSharedMemoryManager requires a message loop.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // DiscardableSharedMemoryManager requires a message loop and a worker thread.
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestDiscardableSharedMemoryManager> manager_;
 };
 
@@ -237,6 +246,26 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   memory2.Unlock(0, 0);
 }
 
+TEST_F(DiscardableSharedMemoryManagerTest, OnMemoryPressure) {
+  // Flush to ensure MemoryPressureListener is created so that memory pressure
+  // notifications are received..
+  task_environment_.RunUntilIdle();
+
+  const base::MemoryPressureListener::MemoryPressureLevel pressure_levels[] = {
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL};
+
+  for (auto pressure : pressure_levels) {
+    base::MemoryPressureListener::NotifyMemoryPressure(pressure);
+  }
+
+  // Flush to ensure pending memory pressure tasks run.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(std::size(pressure_levels),
+            manager_->on_memory_pressure_call_count());
+}
+
 class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
     : public testing::Test {
  protected:
@@ -245,8 +274,8 @@ class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
     manager_ = std::make_unique<DiscardableSharedMemoryManager>();
   }
 
-  // DiscardableSharedMemoryManager requires a message loop.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // DiscardableSharedMemoryManager requires a message loop and a worker thread.
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DiscardableSharedMemoryManager> manager_;
 };
 

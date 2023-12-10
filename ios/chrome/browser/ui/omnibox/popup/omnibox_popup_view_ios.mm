@@ -20,7 +20,7 @@
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

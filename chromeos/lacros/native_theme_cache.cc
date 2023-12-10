@@ -4,8 +4,9 @@
 
 #include "chromeos/lacros/native_theme_cache.h"
 
+#include <optional>
+
 #include "chromeos/lacros/lacros_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/native_theme/native_theme_aura.h"

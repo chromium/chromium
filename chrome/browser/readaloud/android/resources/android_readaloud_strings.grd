@@ -175,7 +175,7 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_READALOUD_CLOSE_PLAYER_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string for the button that closes the 'Listen to this page' player.">
-        Tap to close “Listen to this page”.
+        Close player.
       </message>
       <message name="IDS_READALOUD_PLAYER_NAME" desc="Name of the Read Aloud player for accessiblity.">
         “Listen to this page” player.
@@ -190,10 +190,10 @@
         Chrome now playing
       </message>
       <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
-        Back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
+        Go back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
       </message>
       <message name="IDS_READALOUD_FORWARD" desc="Accessibility string for the button that seeks 'Listen to this page' playback forward by the specified number of seconds.">
-        Forward <ph name="NUMBER_OF_SECONDS">%1$s<ex>30</ex></ph> seconds
+        Fast forward <ph name="NUMBER_OF_SECONDS">%1$s<ex>30</ex></ph> seconds
       </message>
       <message name="IDS_READALOUD_PLAY" desc="Accessibility string for the 'Listen to this page' play button.">
         Play
@@ -201,17 +201,26 @@
       <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
         Pause
       </message>
+      <message name="IDS_READALOUD_SPEED" desc="Strings for the playback speed options menu so the user can select playback speed.">
+       <ph name="PLAYBACK_SPEED">%1$s<ex>1.5</ex>x</ph>
+      </message>
       <message name="IDS_READALOUD_SPEED_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' playback speed menu button.">
-        Playback speed: <ph name="PLAYBACK_SPEED">%1$s<ex>1.0</ex></ph>. Click to change.
+        <ph name="PLAYBACK_SPEED">%1$s<ex>1.0</ex></ph>x increase/decrease speed.
       </message>
       <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
         More options
       </message>
       <message name="IDS_READALOUD_MENU_BACK" desc="Accessibility string for the 'navigate back' button on the bottom sheet menus.">
-        Navigate back
+        Back
       </message>
       <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
         Playback is unavailable for this page.
+      </message>
+      <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR" desc="Message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
+        Playback unavailable
+      </message>
+      <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR_DESCRIPTION" desc="Description message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
+        Unfortunately, playback is unavailable for this page at this time. Please try again later.
       </message>
        <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
@@ -227,6 +236,9 @@
       </message>
        <message name="IDS_READALOUD_OPTIONS_MENU_TITLE" desc="Options menu title.">
         Options
+      </message>
+      <message name="IDS_READALOUD_SEEK_BAR" desc="Accessibility string for the 'seekbar'.">
+        Scrub Playback
       </message>
     </messages>
   </release>

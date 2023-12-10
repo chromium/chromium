@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sw">
+<translation id="1220509181886849806">Ungependa kutumia nenosiri lililohifadhiwa?</translation>
+<translation id="1435940442311036198">Tumia ufunguo wa siri kwenye kifaa tofauti</translation>
+<translation id="1717486229951421299">Orodha ya vitambulisho vya kujaza kwa kugusa imefunguliwa kwenye nusu ya skrini.</translation>
+<translation id="2359808026110333948">Endelea</translation>
+<translation id="2364266287022099258">Ungependa kutumia ufunguo wa siri uliohifadhiwa?</translation>
+<translation id="3399357656427473483">Orodha ya vitambulisho vya kujaza kwa kugusa.</translation>
+<translation id="3653689374478248324">Utaingia katika akaunti ya <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Ingia katika akaunti</translation>
+<translation id="4553044860350038560">Funguo zaidi za siri</translation>
+<translation id="4598345735110653698">Dhibiti manenosiri</translation>
+<translation id="4722735765955348426">Nenosiri la <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Tumia njia yako ya kufunga skini</translation>
+<translation id="5012523644916800014">Dhibiti manenosiri na funguo za siri</translation>
+<translation id="5441504010984421144">Orodha ya vitambulisho vya kujaza kwa kugusa imefunguliwa kwenye skrini nzima.</translation>
+<translation id="5591247451101092906">Ungependa kutumia nenosiri au ufunguo wa siri uliohifadhiwa?</translation>
+<translation id="5624120631404540903">Dhibiti manenosiri</translation>
+<translation id="6560306912274274630">Ufunguo wa siri wa <ph name="USERNAME" />, tumia mbinu yako ya kufunga skrini</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nenosiri jipya la tovuti hii}other{Manenosiri mapya ya tovuti hii}}</translation>
+<translation id="7286867818472074330">Chagua ufunguo wa siri</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> kati ya <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Umepokea manenosiri ya <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ameshiriki nawe nenosiri la <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Orodha ya vitambulisho imefungwa.</translation>
+</translationbundle>

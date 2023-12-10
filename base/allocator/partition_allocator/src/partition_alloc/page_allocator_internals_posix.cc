@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
 
 #include <sys/mman.h>
 
 // PA_PROT_BTI requests a page that supports BTI landing pads.
 #define PA_PROT_BTI 0x10
+
 // PA_PROT_MTE requests a page that's suitable for memory tagging.
+#if defined(ARCH_CPU_ARM64)
 #define PA_PROT_MTE 0x20
+#endif  // defined(ARCH_CPU_ARM64)
 
 namespace partition_alloc::internal {
 

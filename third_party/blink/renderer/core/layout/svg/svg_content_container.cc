@@ -224,7 +224,8 @@ gfx::RectF SVGContentContainer::ComputeStrokeBoundingBox() const {
     if (!HasValidBoundingBoxForContainer(*child)) {
       continue;
     }
-    stroke_bbox.Union(child->StrokeBoundingBox());
+    const AffineTransform& transform = child->LocalToSVGParentTransform();
+    stroke_bbox.Union(transform.MapRect(child->StrokeBoundingBox()));
   }
   return stroke_bbox;
 }

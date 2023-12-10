@@ -80,7 +80,7 @@ TEST_F(DoNotDisturbNotificationControllerTest,
   ASSERT_EQ(notification->message(), GetDoNotDisturbDescription());
 
   // Simulate a click on the notification's "Turn off" button.
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(0, std::nullopt);
   EXPECT_FALSE(GetDoNotDisturbNotification());
   EXPECT_FALSE(message_center->IsQuietMode());
 }
@@ -119,7 +119,7 @@ TEST_F(DoNotDisturbNotificationControllerWithFocusModeTest,
 
   // Check the notification creation during the focus session. First, disable
   // the DND mode in the focus session.
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(0, std::nullopt);
   EXPECT_FALSE(GetDoNotDisturbNotification());
   EXPECT_FALSE(message_center->IsQuietMode());
   // Second, enable the DND mode.

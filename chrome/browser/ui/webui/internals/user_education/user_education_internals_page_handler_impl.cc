@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
+
 #include <stdint.h>
 #include <sstream>
+#include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +22,7 @@
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
@@ -53,26 +58,153 @@ std::string GetPromoTypeString(
   }
 }
 
-int64_t GetCreatedTimestampMs(
+// Takes the name of a feature and creates a human-readable title out of it to
+// be displayed on the tester page.
+std::string GetTitleFromFeaturePromoData(
+    const base::Feature* feature,
     const user_education::FeaturePromoSpecification& spec) {
-  return 0;
+  std::string result;
+  std::string name = feature->name;
+
+  // Remove the "IPH_" prefix if one is present.
+  if (name.starts_with("IPH_")) {
+    name = name.substr(4);
+  }
+
+  // De-camel-case the string. This inserts spaces between segments that are
+  // either capitalized words or all-caps acronyms.
+  //
+  // For example, "SaveToCSVPromo" would become "Save To CSV Promo".
+  //
+  // This doesn't work for every possible string but does work for almost
+  // anything that follows established IPH naming conventions.
+  bool was_cap_before = false;
+  bool was_cap = false;
+  for (char ch : name) {
+    const bool is_cap = absl::ascii_isupper(ch);
+    if (result.length() > 1U) {
+      if (was_cap && (!is_cap || (is_cap && !was_cap_before))) {
+        const char prev = result.back();
+        result.pop_back();
+        result.push_back(' ');
+        result.push_back(prev);
+      }
+    }
+    result.push_back(ch);
+    was_cap_before = was_cap;
+    was_cap = is_cap;
+  }
+
+  return result;
+}
+
+std::string GetDescriptionFromFeaturePromoData(
+    const user_education::FeaturePromoSpecification& spec) {
+  const auto& desc = spec.metadata().triggering_condition_description;
+  return desc.empty() ? desc : "May be triggered when: " + desc;
 }
 
 std::vector<std::string> GetSupportedPlatforms(
     const user_education::FeaturePromoSpecification& spec) {
-  return std::vector<std::string>{"All"};
+  std::vector<std::string> result;
+  using Platforms =
+      user_education::FeaturePromoSpecification::Metadata::Platforms;
+  for (const auto platform : spec.metadata().platforms) {
+    switch (platform) {
+      case Platforms::kWindows:
+        result.push_back("Windows");
+        break;
+      case Platforms::kMac:
+        result.push_back("Mac");
+        break;
+      case Platforms::kLinux:
+        result.push_back("Linux");
+        break;
+      case Platforms::kChromeOSAsh:
+        result.push_back("ChromeOS Ash");
+        break;
+      case Platforms::kChromeOSLacros:
+        result.push_back("ChromeOS Lacros");
+        break;
+    }
+  }
+
+  if (result.empty()) {
+    result.push_back("Unknown");
+  }
+  return result;
 }
 
+// Takes a string resource which may have placeholder substitutions and/or
+// plural variations, and creates a single, readable exemplar string.
+//
+// This is used to describe the title and text of an IPH which normally
+// requires specific parameters to be passed at runtime via a
+// `FeaturePromoSpecification::FormatParameters`.
+//
+// For example, say the string was:
+// ```
+//   {COUNT, plural,
+//       =0 {All tabs were opened in Incognito window.}
+//       =1 {One tab was opened in Incognito window.}
+//       other {{COUNT} tabs were opened in Incognito window.}}
+// ```
+//
+// Then the resulting example text to be displayed on the tester page would be:
+//
+//   "All tabs were opened in Incognito window."
+//
+// This is not perfect, but it at least shows the form the text could take; an
+// unmodified string resource with singular/plural substitutions is quite messy.
+std::string RemoveStringPlaceholders(int message_id) {
+  std::string str = l10n_util::GetStringUTF8(message_id);
+
+  // If this is a plural string, pick the first string. Note that the first
+  // string almost never uses the count, so that won't be substituted; this
+  // could be changed in the future if that assumption is wrong.
+  if (str.starts_with('{')) {
+    auto start = str.find('{', 1);
+    if (start != std::string::npos) {
+      const auto end = str.find('}', ++start);
+      if (end != std::string::npos) {
+        str = str.substr(start, end - start);
+      }
+    }
+  }
+
+  // Allocate a full 9 replacement arguments.
+  std::vector<std::string> replacements;
+  for (int i = 0; i < 9; ++i) {
+    const char digit = static_cast<char>(u'1' + i);
+    auto& replacement = replacements.emplace_back();
+    replacement.push_back('[');
+    replacement.push_back(digit);
+    replacement.push_back(']');
+  }
+
+  return base::ReplaceStringPlaceholders(str, replacements, nullptr);
+}
+
+// Converts the title and text of a promo into the multi-part "instructions"
+// format shared by IPH and Tutorials on the tester page.
+//
+// Substitutions and plurals are stripped out of both to produce more readable
+// text; see `RemoveStringPlaceholders()`.
 std::vector<std::string> GetPromoInstructions(
     const user_education::FeaturePromoSpecification& spec) {
   std::vector<std::string> instructions;
   if (spec.bubble_title_string_id()) {
-    instructions.emplace_back(
-        l10n_util::GetStringUTF8(spec.bubble_title_string_id()));
+    instructions.push_back(
+        RemoveStringPlaceholders(spec.bubble_title_string_id()));
   }
-  instructions.emplace_back(
-      l10n_util::GetStringUTF8(spec.bubble_body_string_id()));
+  instructions.push_back(
+      RemoveStringPlaceholders(spec.bubble_body_string_id()));
   return instructions;
+}
+
+std::string GetPromoFollowedBy(
+    const user_education::FeaturePromoSpecification& spec) {
+  return spec.tutorial_id();
 }
 
 std::string GetTutorialDescription(
@@ -96,7 +228,7 @@ std::string GetTutorialTypeString(
   return desc.can_be_restarted ? "Restartable Tutorial" : "Tutorial";
 }
 
-int64_t GetCreatedTimestampMs(const user_education::TutorialDescription& desc) {
+int64_t GetTutorialMilestone(const user_education::TutorialDescription& desc) {
   return 0;
 }
 
@@ -137,9 +269,10 @@ void UserEducationInternalsPageHandlerImpl::GetTutorials(
           mojom::user_education_internals::FeaturePromoDemoPageInfo::New(
               id, GetTutorialDescription(*description), id,
               GetTutorialTypeString(*description),
-              GetCreatedTimestampMs(*description),
+              GetTutorialMilestone(*description),
               GetSupportedPlatforms(*description),
-              GetTutorialInstructions(*description)));
+              GetTutorialInstructions(*description),
+              /*followed_by=*/""));
     } else {
       NOTREACHED();
     }
@@ -174,9 +307,10 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
       info_list.emplace_back(
           mojom::user_education_internals::FeaturePromoDemoPageInfo::New(
               GetTitleFromFeaturePromoData(feature, spec),
-              spec.demo_page_info().display_description, feature->name,
-              GetPromoTypeString(spec), GetCreatedTimestampMs(spec),
-              GetSupportedPlatforms(spec), GetPromoInstructions(spec)));
+              GetDescriptionFromFeaturePromoData(spec), feature->name,
+              GetPromoTypeString(spec), spec.metadata().launch_milestone,
+              GetSupportedPlatforms(spec), GetPromoInstructions(spec),
+              GetPromoFollowedBy(spec)));
     }
   }
 
@@ -184,23 +318,23 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
 }
 
 void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
-    const std::string& title,
+    const std::string& feature_name,
     ShowFeaturePromoCallback callback) {
   const base::Feature* feature = nullptr;
   auto* const registry = GetFeaturePromoRegistry(profile_);
   if (registry) {
     const auto& feature_promo_specifications =
         registry->GetRegisteredFeaturePromoSpecifications();
-    for (const auto& [key, value] : feature_promo_specifications) {
-      if (title == GetTitleFromFeaturePromoData(key, value)) {
-        feature = key;
+    for (const auto& [cur, spec] : feature_promo_specifications) {
+      if (feature_name == cur->name) {
+        feature = cur;
         break;
       }
     }
   }
 
   if (!feature) {
-    std::move(callback).Run(std::string("Can not find IPH"));
+    std::move(callback).Run(std::string("Cannot find IPH"));
     return;
   }
 
@@ -235,17 +369,11 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
       case Failure::kFeatureDisabled:
       case Failure::kPermanentlyDismissed:
       case Failure::kSnoozed:
+      case Failure::kBlockedByGracePeriod:
+      case Failure::kBlockedByCooldown:
+      case Failure::kRecentlyAborted:
         reason = "Unexpected failure (should not happen for demo).";
     }
   }
   std::move(callback).Run(reason);
-}
-
-const std::string
-UserEducationInternalsPageHandlerImpl::GetTitleFromFeaturePromoData(
-    const base::Feature* feature,
-    const user_education::FeaturePromoSpecification& spec) {
-  return (!spec.demo_page_info().display_title.empty()
-              ? spec.demo_page_info().display_title
-              : feature->name);
 }

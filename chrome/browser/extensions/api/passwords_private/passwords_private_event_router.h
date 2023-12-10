@@ -26,8 +26,7 @@ namespace extensions {
 // onPasswordExceptionsListChanged events of changes.
 class PasswordsPrivateEventRouter : public KeyedService {
  public:
-  static PasswordsPrivateEventRouter* Create(
-      content::BrowserContext* browser_context);
+  explicit PasswordsPrivateEventRouter(content::BrowserContext* context);
 
   PasswordsPrivateEventRouter(const PasswordsPrivateEventRouter&) = delete;
   PasswordsPrivateEventRouter& operator=(const PasswordsPrivateEventRouter&) =
@@ -72,9 +71,6 @@ class PasswordsPrivateEventRouter : public KeyedService {
 
   // Notifies listeners about the timeout for password manager access.
   void OnPasswordManagerAuthTimeout();
-
- protected:
-  explicit PasswordsPrivateEventRouter(content::BrowserContext* context);
 
  private:
   void SendSavedPasswordListToListeners();

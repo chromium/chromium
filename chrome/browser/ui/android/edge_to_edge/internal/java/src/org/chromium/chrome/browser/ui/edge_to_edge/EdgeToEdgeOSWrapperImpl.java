@@ -13,9 +13,7 @@ import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 
-/**
- * Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them.
- */
+/** Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them. */
 public class EdgeToEdgeOSWrapperImpl implements EdgeToEdgeOSWrapper {
     @Override
     public void setDecorFitsSystemWindows(@NonNull Window window, boolean decorFitsSystemWindows) {

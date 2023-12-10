@@ -1,2 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLTableCellElement11
-Status	Success

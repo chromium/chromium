@@ -5,17 +5,18 @@
 #include "chromeos/printing/printer_translator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace chromeos {
@@ -112,6 +113,34 @@ std::string PrinterAddress(const Uri& uri) {
   return uri.GetHostEncoded();
 }
 
+bool ValidateAndSetPpdReference(const base::Value::Dict& ppd_resource,
+                                Printer& printer) {
+  std::optional<bool> autoconf = ppd_resource.FindBool(kAutoconf);
+  const std::string* effective_model = ppd_resource.FindString(kEffectiveModel);
+
+  bool is_autoconf = autoconf.value_or(false);
+  bool has_effective_model = effective_model && !effective_model->empty();
+  bool is_valid = is_autoconf != has_effective_model;
+  if (!is_valid) {
+    LOG(WARNING) << base::StringPrintf(
+        "Managed printer '%s' has invalid %s values: is_autoconf: %d, "
+        "has_effective_model: %d",
+        printer.display_name().c_str(), kPpdResource, is_autoconf,
+        has_effective_model);
+    return false;
+  }
+
+  if (is_autoconf) {
+    printer.mutable_ppd_reference()->autoconf = true;
+  }
+  if (has_effective_model) {
+    printer.mutable_ppd_reference()->effective_make_and_model =
+        *effective_model;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 const char kPrinterId[] = "id";
@@ -145,7 +174,7 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
     const std::string* make_and_model = ppd->FindString(kEffectiveModel);
     if (make_and_model)
       ppd_reference->effective_make_and_model = *make_and_model;
-    absl::optional<bool> autoconf = ppd->FindBool(kAutoconf);
+    std::optional<bool> autoconf = ppd->FindBool(kAutoconf);
     if (autoconf.has_value())
       ppd_reference->autoconf = *autoconf;
   }
@@ -164,6 +193,55 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
     return nullptr;
   }
 
+  return printer;
+}
+
+std::unique_ptr<Printer> ManagedPrinterToPrinter(
+    const base::Value::Dict& managed_printer) {
+  static auto LogRequiredFieldMissing = [](base::StringPiece field) {
+    LOG(WARNING) << "Managed printer is missing required field: " << field;
+  };
+
+  const std::string* guid = managed_printer.FindString(kGuid);
+  const std::string* display_name = managed_printer.FindString(kDisplayName);
+  const std::string* uri = managed_printer.FindString(kUri);
+  const base::Value::Dict* ppd_resource =
+      managed_printer.FindDict(kPpdResource);
+  const std::string* description = managed_printer.FindString(kDescription);
+  if (!guid) {
+    LogRequiredFieldMissing(kGuid);
+    return nullptr;
+  }
+  if (!display_name) {
+    LogRequiredFieldMissing(kDisplayName);
+    return nullptr;
+  }
+  if (!uri) {
+    LogRequiredFieldMissing(kUri);
+    return nullptr;
+  }
+  if (!ppd_resource) {
+    LogRequiredFieldMissing(kPpdResource);
+    return nullptr;
+  }
+
+  auto printer = std::make_unique<Printer>(*guid);
+  printer->set_source(Printer::SRC_POLICY);
+  printer->set_display_name(*display_name);
+  std::string set_uri_error_message;
+  if (!printer->SetUri(*uri, &set_uri_error_message)) {
+    LOG(WARNING) << base::StringPrintf(
+        "Managed printer '%s' has invalid %s value: %s, error: %s",
+        display_name->c_str(), kUri, uri->c_str(),
+        set_uri_error_message.c_str());
+    return nullptr;
+  }
+  if (!ValidateAndSetPpdReference(*ppd_resource, *printer)) {
+    return nullptr;
+  }
+  if (description) {
+    printer->set_description(*description);
+  }
   return printer;
 }
 

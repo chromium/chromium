@@ -9,6 +9,7 @@ module crosapi.mojom;
 struct FieldTrialGroupInfo {
   string trial_name;
   string group_name;
+  [MinVersion=1] bool? is_overridden;
 };
 
 // Interface for field trial observers. Implemented by lacros-chrome.

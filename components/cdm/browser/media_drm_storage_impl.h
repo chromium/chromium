@@ -60,6 +60,11 @@ class MediaDrmStorageImpl final
   using AllowEmptyOriginIdCB =
       base::RepeatingCallback<void(base::OnceCallback<void(bool)> callback)>;
 
+  // |callback| returns true if Licenses matching the filter are cleared, false
+  // if not.
+  using ClearMatchingLicensesFilterCB =
+      base::RepeatingCallback<bool(const GURL&)>;
+
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Get a list of origins that have persistent storage on the device.
@@ -87,12 +92,11 @@ class MediaDrmStorageImpl final
   // If all the licenses under the origin are cleared, the origin will be
   // unprovisioned, a.k.a the cert will be removed.
   // TODO(yucliu): Add unit test.
-  static void ClearMatchingLicenses(
-      PrefService* pref_service,
-      base::Time start,
-      base::Time end,
-      const base::RepeatingCallback<bool(const GURL&)>& filter,
-      base::OnceClosure complete_cb);
+  static void ClearMatchingLicenses(PrefService* pref_service,
+                                    base::Time start,
+                                    base::Time end,
+                                    const ClearMatchingLicensesFilterCB& filter,
+                                    base::OnceClosure complete_cb);
 #endif
 
   // |get_origin_id_cb| must be provided and is used to obtain an origin ID.

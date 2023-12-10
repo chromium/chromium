@@ -39,8 +39,8 @@ class CloseFullscreenButton : public views::Button {
       : views::Button(std::move(callback)) {
     std::unique_ptr<views::ImageView> close_image_view =
         std::make_unique<views::ImageView>();
-    close_image_view->SetImage(gfx::CreateVectorIcon(
-        views::kIcCloseIcon, kCloseIconSize, SK_ColorWHITE));
+    close_image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        views::kIcCloseIcon, SK_ColorWHITE, kCloseIconSize));
     // Not focusable by default, only for accessibility.
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_EXIT_FULLSCREEN_MODE));

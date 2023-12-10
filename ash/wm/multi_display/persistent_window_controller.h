@@ -11,8 +11,11 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -24,8 +27,10 @@ namespace ash {
 // Observes display changes and saves/restores window bounds persistently in
 // multi-displays scenario. It will observe and restore window bounds
 // persistently on screen rotation as well.
-class ASH_EXPORT PersistentWindowController : public display::DisplayObserver,
-                                              public SessionObserver {
+class ASH_EXPORT PersistentWindowController
+    : public display::DisplayObserver,
+      public SessionObserver,
+      public display::DisplayManagerObserver {
  public:
   // This class is used to track a list of windows with their restore bounds in
   // parent. The restore bounds in parent will be empty if it does not exist.
@@ -74,12 +79,15 @@ class ASH_EXPORT PersistentWindowController : public display::DisplayObserver,
 
  private:
   // display::DisplayObserver:
-  void OnWillProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
-  void OnDidProcessDisplayChanges() override;
+
+  // display::DisplayManagerObserver:
+  void OnWillProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // SessionObserver:
   void OnFirstSessionStarted() override;
@@ -114,6 +122,11 @@ class ASH_EXPORT PersistentWindowController : public display::DisplayObserver,
 
   // Register for DisplayObserver callbacks.
   display::ScopedDisplayObserver display_observer_{this};
+
+  // Register for display configuration changes.
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 };
 
 }  // namespace ash

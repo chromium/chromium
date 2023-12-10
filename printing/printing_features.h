@@ -55,10 +55,6 @@ extern const base::FeatureParam<bool> kEnableOopPrintDriversSandbox;
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess;
 #endif
-
-// Helper function to determine if a printing of a document should be made OOP
-// using a Print Backend service.
-COMPONENT_EXPORT(PRINTING_BASE) bool ShouldPrintJobOop();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -78,19 +74,6 @@ COMPONENT_EXPORT(PRINTING_BASE) bool ShouldPrintJobOop();
 // a pre-print-preview snapshot and sending it to the cloud for analysis.
 COMPONENT_EXPORT(PRINTING_BASE)
 BASE_DECLARE_FEATURE(kEnableCloudScanAfterPreview);
-
-// Allows the scanning to happen post-print-preview when
-// OnPrintEnterpriseConnector has a local agent service_provider instead of
-// doing a pre-print-preview snapshot and sending it to a local agent for
-// analysis. This applies to the following service_provider values:
-//  - local_user_agent
-//  - local_system_agent
-//  - brcm_chrm_cas
-//
-// TODO(b/216105729): Remove once the local content scanning post-preview UX is
-// officially supported.
-COMPONENT_EXPORT(PRINTING_BASE)
-BASE_DECLARE_FEATURE(kEnableLocalScanAfterPreview);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace features

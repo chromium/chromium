@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 namespace app_list {
@@ -238,11 +238,11 @@ class AppListClientImpl
   // (1) the active user changes, or
   // (2) the user signs out all accounts. `AppListClientImpl` is destructed in
   // this scenario.
-  absl::optional<StateForNewUser> state_for_new_user_;
+  std::optional<StateForNewUser> state_for_new_user_;
 
   // Indicates when the session of a new user becomes active. If there is no new
   // users logged in, `new_user_session_activation_time_` is null.
-  absl::optional<base::Time> new_user_session_activation_time_;
+  std::optional<base::Time> new_user_session_activation_time_;
 
   bool app_list_target_visibility_ = false;
   bool app_list_visible_ = false;

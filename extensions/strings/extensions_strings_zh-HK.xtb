@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">糟糕！產生隨機 RSA 私密金鑰失敗。</translation>
 <translation id="1445572445564823378">這個擴充功能使 <ph name="PRODUCT_NAME" /> 運作變慢。建議您停用這個擴充功能，以恢復 <ph name="PRODUCT_NAME" /> 的效能。</translation>
 <translation id="1468038450257740950">系統不支援 WebGL。</translation>
+<translation id="1610570795592207282">無法載入指令碼的 css「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="1803557475693955505">無法載入背景頁面「<ph name="BACKGROUND_PAGE" />」。</translation>
 <translation id="2159915644201199628">無法將圖片解碼：「<ph name="IMAGE_NAME" />」</translation>
 <translation id="2350172092385603347">已使用語言代碼，但是仍未在資訊清單中指定 default_locale。</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">來自供應商 <ph name="VENDOR_ID" /> 的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">無法取代 crx 檔案，請檢查檔案是否正在使用中。</translation>
 <translation id="3163201441334626963">來自供應商 <ph name="VENDOR_ID" /> 的不明產品 <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">無法載入內容指令碼的 css「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="3369521687965833290">無法為擴充功能解除封裝。如要安全解除封裝，設定檔目錄的路徑必須以磁碟代號開頭，且不能包含連接點、掛載點或符號連結。您的設定檔中沒有符合條件的路徑。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">來自供應商 <ph name="VENDOR_ID" /> 的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">私密金鑰的輸入值必須是有效的路徑。</translation>
 <translation id="388442998277590542">無法載入「<ph name="OPTIONS_PAGE" />」選項頁面。</translation>
 <translation id="3984413272403535372">簽署擴充功能時發生錯誤。</translation>
-<translation id="39964277676607559">無法載入內容指令碼的 javascript「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="4115165561519362854">這部裝置的管理員要求 <ph name="EXTENSION_NAME" /> 的版本至少要為 <ph name="EXTENSION_VERSION" />。您必須更新至該版本 (或以上版本) 才可啟用此功能。</translation>
 <translation id="4233778200880751280">無法載入網頁「<ph name="ABOUT_PAGE" />」。</translation>
 <translation id="471800408830181311">匯出私密金鑰失敗。</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">匯出公開金鑰失敗。</translation>
 <translation id="5026754133087629784">Webview：<ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">無法找到封裝目錄的絕對路徑。</translation>
+<translation id="5160071981665899014">無法載入指令碼的 javascript「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="5356315618422219272">Appview：<ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">系統不支援造型視窗。</translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。請考慮是否仍要執行。</translation>

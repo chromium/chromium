@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,6 +19,8 @@ class QuickActionItem;
 // A view in Phone Hub bubble that contains toggle button for quick actions such
 // as enable hotspot, silence phone and locate phone.
 class ASH_EXPORT QuickActionsView : public views::View {
+  METADATA_HEADER(QuickActionsView, views::View)
+
  public:
   explicit QuickActionsView(phonehub::PhoneHubManager* phone_hub_manager);
   ~QuickActionsView() override;

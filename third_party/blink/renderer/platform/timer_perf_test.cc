@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -28,6 +29,7 @@ class TimerPerfTest : public testing::Test {
     base::RunLoop::QuitCurrentDeprecated();
   }
 
+  test::TaskEnvironment task_environment_;
   base::ThreadTicks run_start_;
   base::ThreadTicks run_end_;
 };

@@ -41,8 +41,8 @@ public class WebViewSyncWrapper {
     private CallbackHelper mPageCallback = new CallbackHelper();
     private CallbackHelper mJsCallback = new CallbackHelper();
 
-    private List<ConsoleMessage> mErrorMessageList = Collections.synchronizedList(
-            new ArrayList<ConsoleMessage>());
+    private List<ConsoleMessage> mErrorMessageList =
+            Collections.synchronizedList(new ArrayList<ConsoleMessage>());
 
     public WebViewSyncWrapper(WebView wv) {
         mWebView = wv;
@@ -76,9 +76,7 @@ public class WebViewSyncWrapper {
         }
     }
 
-    /**
-     * A custom WebViewClient that signals tests when onPageStarted and onPageFinished is called
-     */
+    /** A custom WebViewClient that signals tests when onPageStarted and onPageFinished is called */
     private class SyncWebViewClient extends WebViewClient {
         @Override
         public void onPageFinished(WebView view, String url) {
@@ -88,46 +86,54 @@ public class WebViewSyncWrapper {
     }
 
     private void init() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.getSettings().setJavaScriptEnabled(true);
-                mWebView.setWebViewClient(
-                        WebViewSyncWrapper.this.new SyncWebViewClient());
-                mWebView.setWebChromeClient(new WebChromeClient() {
+        runOnUiThread(
+                new Runnable() {
                     @Override
-                    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                        if (consoleMessage.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
-                            mErrorMessageList.add(consoleMessage);
-                        }
-                        return super.onConsoleMessage(consoleMessage);
-                    }
+                    public void run() {
+                        mWebView.getSettings().setJavaScriptEnabled(true);
+                        mWebView.setWebViewClient(WebViewSyncWrapper.this.new SyncWebViewClient());
+                        mWebView.setWebChromeClient(
+                                new WebChromeClient() {
+                                    @Override
+                                    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                                        if (consoleMessage.messageLevel()
+                                                == ConsoleMessage.MessageLevel.ERROR) {
+                                            mErrorMessageList.add(consoleMessage);
+                                        }
+                                        return super.onConsoleMessage(consoleMessage);
+                                    }
 
-                    @Override
-                    public boolean onJsAlert(
-                            WebView view, String url, String message, JsResult result) {
-                        mJsCallback.notifyCalled();
-                        return super.onJsAlert(view, url, message, result);
+                                    @Override
+                                    public boolean onJsAlert(
+                                            WebView view,
+                                            String url,
+                                            String message,
+                                            JsResult result) {
+                                        mJsCallback.notifyCalled();
+                                        return super.onJsAlert(view, url, message, result);
+                                    }
+                                });
+                        mWebView.addJavascriptInterface(
+                                WebViewSyncWrapper.this.new SyncJavaScriptBridge(), JS_BRIDGE);
                     }
                 });
-                mWebView.addJavascriptInterface(
-                        WebViewSyncWrapper.this.new SyncJavaScriptBridge(),
-                        JS_BRIDGE);
-            }
-        });
     }
 
-    public void loadDataSync(final String data, final String mimeType, final String encoding,
+    public void loadDataSync(
+            final String data,
+            final String mimeType,
+            final String encoding,
             boolean confirmByJavaScript) {
         mErrorMessageList.clear();
         int currentPageCount = mPageCallback.getCallCount();
         int currentJsCount = mJsCallback.getCallCount();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.loadData(data, mimeType, encoding);
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebView.loadData(data, mimeType, encoding);
+                    }
+                });
         try {
             if (confirmByJavaScript) {
                 mJsCallback.waitForCallback(currentJsCount);
@@ -142,13 +148,14 @@ public class WebViewSyncWrapper {
         mErrorMessageList.clear();
         int currentPageCount = mPageCallback.getCallCount();
         int currentJsCount = mJsCallback.getCallCount();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.getSettings().setAllowFileAccess(true);
-                mWebView.loadUrl(FILE_URL_BASE + html);
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebView.getSettings().setAllowFileAccess(true);
+                        mWebView.loadUrl(FILE_URL_BASE + html);
+                    }
+                });
         try {
             if (confirmByJavaScript) {
                 mJsCallback.waitForCallback(currentJsCount);
@@ -168,12 +175,13 @@ public class WebViewSyncWrapper {
         } else {
             jsWithCallback = js;
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.evaluateJavascript(jsWithCallback, null);
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebView.evaluateJavascript(jsWithCallback, null);
+                    }
+                });
         try {
             mJsCallback.waitForCallback(currentJsCount, 1);
         } catch (TimeoutException e) {
@@ -192,8 +200,8 @@ public class WebViewSyncWrapper {
 
     private static void runOnUiThread(final Runnable runnable) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            throw new RuntimeException("Actions in WebViewSyncWrapper is not allowed to be run on "
-                    + "UI thread");
+            throw new RuntimeException(
+                    "Actions in WebViewSyncWrapper is not allowed to be run on " + "UI thread");
         } else {
             getInstrumentation().runOnMainSync(runnable);
         }

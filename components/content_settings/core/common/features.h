@@ -12,12 +12,6 @@
 
 namespace content_settings {
 
-#if BUILDFLAG(IS_IOS)
-// Feature to enable a better cookie controls ui.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kImprovedCookieControls);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables auto dark feature in theme settings.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
@@ -119,6 +113,21 @@ BASE_DECLARE_FEATURE(kTpcdHeuristicsGrants);
 // behavior.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool> kTpcdReadHeuristicsGrants;
+
+// Whether we should partition content settings (by StoragePartitions for
+// non-ios platforms).
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
+
+// Enables writing and reading metadata grants as a host-indexed data structure.
+// This is meant to optimize lookups when the list is large.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
+
+// The threshold for the amount of metadata grants needed to trigger usage of
+// the optimized data structure.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<int> kMetadataGrantsThreshold;
 
 }  // namespace features
 }  // namespace content_settings

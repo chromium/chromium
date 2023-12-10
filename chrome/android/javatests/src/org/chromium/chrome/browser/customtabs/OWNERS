@@ -1,3 +1,2 @@
 file://chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS
-per-file *CustomTabActivityIncognitoTest*=roagarwal@chromium.org
-per-file *CustomTabActivityIncognitoMetricTest*=roagarwal@chromium.org
+per-file CustomTabPrivacySandboxDialogTest.java=file://components/privacy_sandbox/OWNERS

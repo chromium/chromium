@@ -146,11 +146,19 @@ public class CreatorCoordinator
      * @param entryPoint the SingleWebFeedEntryPoint has the Activity been launched with.
      * @param isFollowing the initial state of if the creator is being followed.
      */
-    public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
-            WindowAndroid windowAndroid, Profile profile, String url,
-            WebContentsCreator creatorWebContents, NewTabCreator creatorOpenTab,
-            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier, int entryPoint,
-            boolean isFollowing, SignInInterstitialInitiator signInInterstitialInitiator) {
+    public CreatorCoordinator(
+            Activity activity,
+            byte[] webFeedId,
+            SnackbarManager snackbarManager,
+            WindowAndroid windowAndroid,
+            Profile profile,
+            String url,
+            WebContentsCreator creatorWebContents,
+            NewTabCreator creatorOpenTab,
+            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier,
+            int entryPoint,
+            boolean isFollowing,
+            SignInInterstitialInitiator signInInterstitialInitiator) {
         mActivity = activity;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
@@ -165,8 +173,9 @@ public class CreatorCoordinator
         mProfileView =
                 (View) LayoutInflater.from(mActivity).inflate(R.layout.creator_profile, null);
         List<FeedListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
-        contentPreviewsList.add(new FeedListContentManager.NativeViewContent(
-                getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
+        contentPreviewsList.add(
+                new FeedListContentManager.NativeViewContent(
+                        getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
         mContentManager.addContents(0, contentPreviewsList);
         mHeaderCount = 1;
 
@@ -187,14 +196,24 @@ public class CreatorCoordinator
         }
         initBottomSheet();
 
-        mCreatorProfileModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mCreatorModel, (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
-        mCreatorToolbarModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mCreatorModel, (CreatorToolbarView) mLayoutView, CreatorToolbarViewBinder::bind);
+        mCreatorProfileModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mCreatorModel,
+                        (CreatorProfileView) mProfileView,
+                        CreatorProfileViewBinder::bind);
+        mCreatorToolbarModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mCreatorModel,
+                        (CreatorToolbarView) mLayoutView,
+                        CreatorToolbarViewBinder::bind);
         setUpToolbarListener();
 
-        mMediator = new CreatorMediator(
-                mActivity, mCreatorModel, mCreatorSnackbarController, signInInterstitialInitiator);
+        mMediator =
+                new CreatorMediator(
+                        mActivity,
+                        mCreatorModel,
+                        mCreatorSnackbarController,
+                        signInInterstitialInitiator);
     }
 
     /**
@@ -204,38 +223,47 @@ public class CreatorCoordinator
      * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
      * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
      */
-    public void queryFeedStream(FeedActionDelegate feedActionDelegate,
+    public void queryFeedStream(
+            FeedActionDelegate feedActionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         if (mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY) == null) {
-            Callback<QueryResult> queryWebFeedIdCallback = result -> {
-                mCreatorModel.set(CreatorProperties.WEB_FEED_ID_KEY, result.webFeedId.getBytes());
-                mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
-                if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
-                    mCreatorModel.set(CreatorProperties.URL_KEY, result.url);
-                    mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
-                            UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-                                    new GURL(result.url)));
-                }
-                initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
-            };
+            Callback<QueryResult> queryWebFeedIdCallback =
+                    result -> {
+                        mCreatorModel.set(
+                                CreatorProperties.WEB_FEED_ID_KEY, result.webFeedId.getBytes());
+                        mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
+                        if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
+                            mCreatorModel.set(CreatorProperties.URL_KEY, result.url);
+                            mCreatorModel.set(
+                                    CreatorProperties.FORMATTED_URL_KEY,
+                                    UrlFormatter
+                                            .formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                                    new GURL(result.url)));
+                        }
+                        initFeedStream(
+                                feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
+                    };
             WebFeedBridge.queryWebFeed(
                     mCreatorModel.get(CreatorProperties.URL_KEY), queryWebFeedIdCallback);
         } else if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))
                 || TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
-            Callback<QueryResult> queryWebFeedIdCallback = result -> {
-                mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
-                mCreatorModel.set(CreatorProperties.URL_KEY, result.url);
-                mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
-                        UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-                                new GURL(result.url)));
-            };
+            Callback<QueryResult> queryWebFeedIdCallback =
+                    result -> {
+                        mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
+                        mCreatorModel.set(CreatorProperties.URL_KEY, result.url);
+                        mCreatorModel.set(
+                                CreatorProperties.FORMATTED_URL_KEY,
+                                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                        new GURL(result.url)));
+                    };
             WebFeedBridge.queryWebFeedId(
                     new String(mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY)),
                     queryWebFeedIdCallback);
             initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
         }
     }
+
     /**
      * Create the FeedStream and bind it to the RecyclerView.
      *
@@ -243,32 +271,46 @@ public class CreatorCoordinator
      * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
      * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
      */
-    private void initFeedStream(FeedActionDelegate feedActionDelegate,
+    private void initFeedStream(
+            FeedActionDelegate feedActionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Supplier<ShareDelegate> shareDelegateSupplier) {
-        mStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
-                /* isPlaceholderShownInitially */ false, mWindowAndroid,
-                /* shareSupplier */ shareDelegateSupplier, StreamKind.SINGLE_WEB_FEED,
-                feedActionDelegate, helpAndFeedbackLauncher,
-                /* FeedContentFirstLoadWatcher */ this,
-                /* streamsMediator */ new StreamsMediatorImpl(),
-                new SingleWebFeedParameters(
-                        mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), mEntryPoint),
-                new FeedSurfaceRendererBridge.Factory() {});
+        mStream =
+                new FeedStream(
+                        mActivity,
+                        mSnackbarManager,
+                        mBottomSheetController,
+                        /* isPlaceholderShownInitially= */ false,
+                        mWindowAndroid,
+                        /* shareSupplier= */ shareDelegateSupplier,
+                        StreamKind.SINGLE_WEB_FEED,
+                        feedActionDelegate,
+                        helpAndFeedbackLauncher,
+                        /* feedContentFirstLoadWatcher= */ this,
+                        /* streamsMediator= */ new StreamsMediatorImpl(),
+                        new SingleWebFeedParameters(
+                                mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), mEntryPoint),
+                        new FeedSurfaceRendererBridge.Factory() {});
 
         if (mEntryPoint == SingleWebFeedEntryPoint.MENU) {
             mStream.addOnContentChangedListener(new ContentChangedListener());
         }
 
-        mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
-                mHybridListRenderer, null, mHeaderCount);
+        mStream.bind(
+                mRecyclerView,
+                mContentManager,
+                /* feedScrollState= */ null,
+                mSurfaceScope,
+                mHybridListRenderer,
+                null,
+                mHeaderCount);
     }
 
     private class StreamsMediatorImpl implements Stream.StreamsMediator {
         @Override
         public void disableFollowButton() {
-            mRecyclerView.findViewById(R.id.creator_follow_button).setEnabled(false);
-            mRecyclerView.findViewById(R.id.creator_following_button).setEnabled(false);
+            mProfileView.findViewById(R.id.creator_follow_button).setEnabled(false);
+            mProfileView.findViewById(R.id.creator_following_button).setEnabled(false);
         }
     }
 
@@ -295,8 +337,9 @@ public class CreatorCoordinator
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 
         if (processScope != null) {
-            mDependencyProvider = new FeedSurfaceScopeDependencyProviderImpl(
-                    mActivity, mActivity, ColorUtils.inNightMode(mActivity));
+            mDependencyProvider =
+                    new FeedSurfaceScopeDependencyProviderImpl(
+                            mActivity, mActivity, ColorUtils.inNightMode(mActivity));
             mSurfaceScope = processScope.obtainFeedSurfaceScope(mDependencyProvider);
         } else {
             mDependencyProvider = null;
@@ -311,8 +354,12 @@ public class CreatorCoordinator
 
         RecyclerView view;
         if (mHybridListRenderer != null) {
-            view = (RecyclerView) mHybridListRenderer.bind(
-                    mContentManager, /* mViewportView */ null, /* useStaggeredLayout */ false);
+            view =
+                    (RecyclerView)
+                            mHybridListRenderer.bind(
+                                    mContentManager,
+                                    /* mViewportView= */ null,
+                                    /* useStaggeredLayout= */ false);
             view.setId(R.id.creator_feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
@@ -331,73 +378,87 @@ public class CreatorCoordinator
     private PropertyModel generateCreatorModel(byte[] webFeedId, String url, boolean following) {
         String formattedUrl =
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(new GURL(url));
-        PropertyModel model = new PropertyModel.Builder(CreatorProperties.ALL_KEYS)
-                                      .with(CreatorProperties.WEB_FEED_ID_KEY, webFeedId)
-                                      .with(CreatorProperties.URL_KEY, url)
-                                      .with(CreatorProperties.IS_FOLLOWED_KEY, following)
-                                      .with(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, false)
-                                      .with(CreatorProperties.FORMATTED_URL_KEY, formattedUrl)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(CreatorProperties.ALL_KEYS)
+                        .with(CreatorProperties.WEB_FEED_ID_KEY, webFeedId)
+                        .with(CreatorProperties.URL_KEY, url)
+                        .with(CreatorProperties.IS_FOLLOWED_KEY, following)
+                        .with(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, false)
+                        .with(CreatorProperties.FORMATTED_URL_KEY, formattedUrl)
+                        .build();
         return model;
     }
 
     private void getWebFeedMetadata() {
-        Callback<WebFeedMetadata> metadata_callback = result -> {
-            @WebFeedSubscriptionStatus
-            int subscriptionStatus =
-                    result == null ? WebFeedSubscriptionStatus.UNKNOWN : result.subscriptionStatus;
-            if (subscriptionStatus == WebFeedSubscriptionStatus.UNKNOWN
-                    || subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
-                mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, false);
-            } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
-                mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
-            }
-            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))
-                    && TextUtils.isEmpty(result.title)) {
-                mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
-            }
-            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))
-                    && result.visitUrl.isValid()) {
-                mCreatorModel.set(CreatorProperties.URL_KEY, result.visitUrl.getSpec());
-                mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
-                        UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-                                result.visitUrl));
-            }
-        };
+        Callback<WebFeedMetadata> metadata_callback =
+                result -> {
+                    @WebFeedSubscriptionStatus
+                    int subscriptionStatus =
+                            result == null
+                                    ? WebFeedSubscriptionStatus.UNKNOWN
+                                    : result.subscriptionStatus;
+                    if (subscriptionStatus == WebFeedSubscriptionStatus.UNKNOWN
+                            || subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
+                        mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, false);
+                    } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
+                        mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
+                    }
+                    if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))
+                            && TextUtils.isEmpty(result.title)) {
+                        mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
+                    }
+                    if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))
+                            && result.visitUrl.isValid()) {
+                        mCreatorModel.set(CreatorProperties.URL_KEY, result.visitUrl.getSpec());
+                        mCreatorModel.set(
+                                CreatorProperties.FORMATTED_URL_KEY,
+                                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                        result.visitUrl));
+                    }
+                };
         WebFeedBridge.getWebFeedMetadata(
                 mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), metadata_callback);
     }
 
-    /**
-     * Set up the bottom sheet for this activity.
-     */
+    /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
-        mScrim = new ScrimCoordinator(mActivity, new ScrimCoordinator.SystemUiScrimDelegate() {
-            @Override
-            public void setStatusBarScrimFraction(float scrimFraction) {}
+        mScrim =
+                new ScrimCoordinator(
+                        mActivity,
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {}
 
-            @Override
-            public void setNavigationBarScrimFraction(float scrimFraction) {}
-        }, mCreatorViewGroup, mActivity.getResources().getColor(R.color.default_scrim_color));
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {}
+                        },
+                        mCreatorViewGroup,
+                        mActivity.getColor(R.color.default_scrim_color));
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);
         mBottomSheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mCreatorViewGroup.addView(mBottomSheetContainer);
-        mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
-                () -> mScrim, (sheet) -> {}, mActivity.getWindow(),
-                KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
+        mBottomSheetController =
+                BottomSheetControllerFactory.createBottomSheetController(
+                        () -> mScrim,
+                        (sheet) -> {},
+                        mActivity.getWindow(),
+                        KeyboardVisibilityDelegate.getInstance(),
+                        () -> mBottomSheetContainer);
     }
 
     private void setUpToolbarListener() {
-        mRecyclerView.addOnScrollListener(new OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mCreatorModel.set(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY,
-                        recyclerView.canScrollVertically(-1));
-            }
-        });
+        mRecyclerView.addOnScrollListener(
+                new OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        mCreatorModel.set(
+                                CreatorProperties.IS_TOOLBAR_VISIBLE_KEY,
+                                recyclerView.canScrollVertically(-1));
+                    }
+                });
     }
 
     @Override
@@ -414,52 +475,62 @@ public class CreatorCoordinator
         if (mTabMediator == null) {
             float topControlsHeight =
                     mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                    / mWindowAndroid.getDisplay().getDipScale();
-            mTabMediator = new CreatorTabMediator(
-                    mBottomSheetController, new FaviconLoader(mActivity), (int) topControlsHeight);
+                            / mWindowAndroid.getDisplay().getDipScale();
+            mTabMediator =
+                    new CreatorTabMediator(
+                            mBottomSheetController,
+                            new FaviconLoader(mActivity),
+                            (int) topControlsHeight);
         }
         if (mWebContents == null) {
             assert mSheetContent == null;
             createWebContents();
-            mSheetObserver = new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetContentChanged(BottomSheetContent newContent) {
-                    if (newContent != mSheetContent) {
-                        mPeeked = false;
-                        destroyWebContents();
-                    }
-                }
-
-                @Override
-                public void onSheetStateChanged(int newState, int reason) {
-                    if (mSheetContent == null) return;
-                    switch (newState) {
-                        case BottomSheetController.SheetState.PEEK:
-                            if (!mPeeked) {
-                                mPeeked = true;
+            mSheetObserver =
+                    new EmptyBottomSheetObserver() {
+                        @Override
+                        public void onSheetContentChanged(BottomSheetContent newContent) {
+                            if (newContent != mSheetContent) {
+                                mPeeked = false;
+                                destroyWebContents();
                             }
-                            break;
-                        case BottomSheetController.SheetState.FULL:
-                            if (!mFullyOpened) {
-                                mFullyOpened = true;
-                            }
-                            break;
-                    }
-                }
+                        }
 
-                @Override
-                public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                    if (mSheetContent == null) return;
-                    mSheetContent.showOpenInNewTabButton(heightFraction);
-                }
-            };
+                        @Override
+                        public void onSheetStateChanged(int newState, int reason) {
+                            if (mSheetContent == null) return;
+                            switch (newState) {
+                                case BottomSheetController.SheetState.PEEK:
+                                    if (!mPeeked) {
+                                        mPeeked = true;
+                                    }
+                                    break;
+                                case BottomSheetController.SheetState.FULL:
+                                    if (!mFullyOpened) {
+                                        mFullyOpened = true;
+                                    }
+                                    break;
+                            }
+                        }
+
+                        @Override
+                        public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                            if (mSheetContent == null) return;
+                            mSheetContent.showOpenInNewTabButton(heightFraction);
+                        }
+                    };
             mBottomSheetController.addObserver(mSheetObserver);
             IntentRequestTracker intentRequestTracker = mWindowAndroid.getIntentRequestTracker();
-            assert intentRequestTracker
-                    != null : "ActivityWindowAndroid must have a IntentRequestTracker.";
-            mSheetContent = new CreatorTabSheetContent(mActivity, this::openInNewTab,
-                    this::onToolbarClick, this::close, getMaxViewHeight(), intentRequestTracker,
-                    mBottomsheetShareDelegateSupplier);
+            assert intentRequestTracker != null
+                    : "ActivityWindowAndroid must have a IntentRequestTracker.";
+            mSheetContent =
+                    new CreatorTabSheetContent(
+                            mActivity,
+                            this::openInNewTab,
+                            this::onToolbarClick,
+                            this::close,
+                            getMaxViewHeight(),
+                            intentRequestTracker,
+                            mBottomsheetShareDelegateSupplier);
             mTabMediator.init(mWebContents, mContentView, mSheetContent, mProfile);
             mLayoutView.addOnLayoutChangeListener(this);
         }
@@ -470,8 +541,16 @@ public class CreatorCoordinator
     }
 
     @Override
-    public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View view,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         if (mSheetContent == null) return;
 
         // It may not be possible to update the content height when the actual height changes
@@ -490,16 +569,16 @@ public class CreatorCoordinator
         return mCreatorViewGroup.getHeight();
     }
 
-    /**
-     * Close the bottomsheet tab.
-     */
+    /** Close the bottomsheet tab. */
     public void close() {
         mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
     }
 
     private void openInNewTab() {
-        String url = mBottomSheetUrl.isValid() ? mBottomSheetUrl.getSpec()
-                                               : mCreatorModel.get(CreatorProperties.URL_KEY);
+        String url =
+                mBottomSheetUrl.isValid()
+                        ? mBottomSheetUrl.getSpec()
+                        : mCreatorModel.get(CreatorProperties.URL_KEY);
         mBottomSheetController.hideContent(
                 mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
         mCreatorOpenTab.createNewTab(new LoadUrlParams(url));
@@ -520,11 +599,15 @@ public class CreatorCoordinator
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
         mWebContents = mCreatorWebContents.createWebContents();
 
-        mContentView = ContentView.createContentView(
-                mActivity, null /* eventOffsetHandler */, mWebContents);
+        mContentView =
+                ContentView.createContentView(
+                        mActivity, /* eventOffsetHandler= */ null, mWebContents);
 
-        mWebContents.initialize(VersionInfo.getProductVersion(),
-                ViewAndroidDelegate.createBasicDelegate(mContentView), mContentView, mWindowAndroid,
+        mWebContents.initialize(
+                VersionInfo.getProductVersion(),
+                ViewAndroidDelegate.createBasicDelegate(mContentView),
+                mContentView,
+                mWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
     }
 
@@ -568,8 +651,9 @@ public class CreatorCoordinator
                 List<FeedContent> privacyList = new ArrayList<>();
                 View privacyView =
                         LayoutInflater.from(mActivity).inflate(R.layout.creator_privacy, null);
-                privacyList.add(new FeedListContentManager.NativeViewContent(
-                        getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
+                privacyList.add(
+                        new FeedListContentManager.NativeViewContent(
+                                getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
                 mContentManager.addContents(mHeaderCount, privacyList);
                 mHeaderCount += privacyList.size();
                 mStream.removeOnContentChangedListener(this);
@@ -618,18 +702,23 @@ public class CreatorCoordinator
          */
         public void loadFavicon(final GURL url, Callback<Drawable> callback, Profile profile) {
             assert profile != null;
-            FaviconHelper.FaviconImageCallback imageCallback = (bitmap, iconUrl) -> {
-                Drawable drawable;
-                if (bitmap != null) {
-                    drawable = FaviconUtils.createRoundedBitmapDrawable(
-                            mContext.getResources(), bitmap);
-                } else {
-                    drawable = UiUtils.getTintedDrawable(mContext, R.drawable.ic_globe_24dp,
-                            R.color.default_icon_color_tint_list);
-                }
+            FaviconHelper.FaviconImageCallback imageCallback =
+                    (bitmap, iconUrl) -> {
+                        Drawable drawable;
+                        if (bitmap != null) {
+                            drawable =
+                                    FaviconUtils.createRoundedBitmapDrawable(
+                                            mContext.getResources(), bitmap);
+                        } else {
+                            drawable =
+                                    UiUtils.getTintedDrawable(
+                                            mContext,
+                                            R.drawable.ic_globe_24dp,
+                                            R.color.default_icon_color_tint_list);
+                        }
 
-                callback.onResult(drawable);
-            };
+                        callback.onResult(drawable);
+                    };
 
             mFaviconHelper.getLocalFaviconImageForURL(profile, url, mFaviconSize, imageCallback);
         }

@@ -12,9 +12,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebResourceRequestBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
-/**
- * Adapter between AwWebResourceRequest and WebResourceRequestBoundaryInterface.
- */
+/** Adapter between AwWebResourceRequest and WebResourceRequestBoundaryInterface. */
 @Lifetime.Temporary
 public class SupportLibWebResourceRequest implements WebResourceRequestBoundaryInterface {
     private final AwWebResourceRequest mAwRequest;
@@ -25,8 +23,8 @@ public class SupportLibWebResourceRequest implements WebResourceRequestBoundaryI
 
     @Override
     public boolean isRedirect() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_RESOURCE_REQUEST_IS_REDIRECT")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_RESOURCE_REQUEST_IS_REDIRECT")) {
             recordApiCall(ApiCall.WEB_RESOURCE_REQUEST_IS_REDIRECT);
             return mAwRequest.isRedirect;
         }

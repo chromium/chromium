@@ -245,7 +245,6 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
-    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kRenderer:
     case sandbox::mojom::Sandbox::kService:
@@ -253,6 +252,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kUtility:
       SetupCommonSandboxParameters(compiler, command_line);
       break;
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kGpu: {
       SetupGpuSandboxParameters(compiler, command_line);
       break;

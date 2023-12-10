@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/interest_group_api_operation.h"
 #include "content/public/browser/interest_group_manager.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
@@ -56,6 +58,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/proxy_config.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
@@ -63,6 +66,7 @@
 #include "services/network/public/mojom/websocket.mojom-forward.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-forward.h"
@@ -278,7 +282,7 @@ class SmartCardDelegate;
 struct CONTENT_EXPORT ClipboardPasteData {
   ClipboardPasteData(std::string text,
                      std::string image,
-                     std::vector<std::string> file_paths);
+                     std::vector<base::FilePath> file_paths);
   ClipboardPasteData();
   ClipboardPasteData(const ClipboardPasteData&);
   ClipboardPasteData(ClipboardPasteData&&);
@@ -294,7 +298,7 @@ struct CONTENT_EXPORT ClipboardPasteData {
   std::string image;
 
   // A list of full file paths to scan.
-  std::vector<std::string> file_paths;
+  std::vector<base::FilePath> file_paths;
 };
 
 // Embedder API (or SPI) for participating in browser logic, to be implemented
@@ -403,10 +407,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // debug URLs.
   virtual bool IsExplicitNavigation(ui::PageTransition transition);
 
-  // Returns whether gesture fling events should use the mobile-behavior gesture
-  // curve for scrolling.
-  virtual bool ShouldUseMobileFlingCurve();
-
   // Returns whether all instances of the specified site URL should be
   // rendered by the same process, rather than using process-per-site-instance.
   virtual bool ShouldUseProcessPerSite(BrowserContext* browser_context,
@@ -432,6 +432,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   // policy (e.g. because of --site-per-process).
   virtual bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
                                                const GURL& effective_site_url);
+
+  // Returns true if sandboxed documents with `precursor` as the opaque origin's
+  // precursor are allowed to be put into a separate process, if the
+  // IsolateSandboxedIframes feature is enabled. Defaults to true, but allows
+  // embedders to skip isolated sandboxed frames for certain cases.
+  // TODO(https://crbug.com/1501910): Remove this once we have an implementation
+  // that allows sandboxed iframes access to extension resources without giving
+  // them access to extension APIs.
+  virtual bool ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+      BrowserContext* browser_context,
+      const GURL& precursor);
 
   // Returns true unless the effective URL is part of a site that cannot live in
   // a process restricted to just that site.  This is only called if site
@@ -973,13 +984,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   //   - `kAny` may provide all null origins. It checks whether conversion
   //   measurement is allowed anywhere in `browser_context`, returning false if
   //   Attribution Reporting is not allowed by default on any origin.
+  // `can_bypass` is an out parameter that is used for transitional debug
+  // reporting to indicate whether the result can be bypassed if disallowed.
+  // `can_bypass` is required to be non-null for
+  // `kSourceTransitionalDebugReporting`, `kOsSourceTransitionalDebugReporting`,
+  // `kTriggerTransitionalDebugReporting` and
+  // `kOsTriggerTransitionalDebugReporting`.
+  //
+  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // deprecation experiment.
   virtual bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
       AttributionReportingOperation operation,
       content::RenderFrameHost* rfh,
       const url::Origin* source_origin,
       const url::Origin* destination_origin,
-      const url::Origin* reporting_origin);
+      const url::Origin* reporting_origin,
+      bool* can_bypass);
 
   // Allows the embedder to control if an OS source event should register as
   // a Web OS or OS (App) source.
@@ -1033,6 +1054,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin);
+
+  // Returns whether cookies should be allowed for requests to `url`, fetched
+  // from contexts whose storage is keyed on `storage_key`.
+  virtual bool IsFullCookieAccessAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const blink::StorageKey& storage_key);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
@@ -1669,7 +1697,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                mojo::PendingRemote<network::mojom::URLLoaderFactory>>;
   virtual void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory
@@ -2385,15 +2412,19 @@ class CONTENT_EXPORT ContentBrowserClient {
           callback);
 
   // Uploads an enterprise legacy tech event to the enterprise management server
-  // if the `url` that triggers the event is matched to any enterprise policies
-  // that are set by administrators.
+  // if the `url` or `frame_url` that triggers the event is matched to any
+  // enterprise policies that are set by administrators. For a description of
+  // reported fields, see
+  // https://crsrc.org/c/components/enterprise/common/proto/legacy_tech_events.proto
   virtual void ReportLegacyTechEvent(
       content::RenderFrameHost* render_frame_host,
       const std::string type,
       const GURL& url,
+      const GURL& frame_url,
       const std::string& filename,
       uint64_t line,
-      uint64_t column);
+      uint64_t column,
+      std::optional<LegacyTechCookieIssueDetails> cookie_issue_details);
 
   // Check whether paste is allowed. To paste, an implementation may require
   // a `render_frame_host` to have user activation or various permissions.
@@ -2583,8 +2614,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldDisableOriginAgentClusterDefault(
       BrowserContext* browser_context);
 
-  // Whether a navigation in |browser_context| should preconnect early.
-  virtual bool ShouldPreconnectNavigation(BrowserContext* browser_context);
+  // Whether a navigation in |render_frame_host| should preconnect early.
+  virtual bool ShouldPreconnectNavigation(RenderFrameHost* render_frame_host);
 
   // Returns true if First-Party Sets is enabled. The value of this method
   // should not change in a single browser session.
@@ -2718,6 +2749,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // are left uninitialized).
   virtual void SetIsMinimalMode(bool minimal) {}
 
+  // Returns whether, when using SubCaptureTargets (cropTo, restrictTo),
+  // the sub-capture target tokens should be associated with the *outermost*
+  // main-frame or embedder. If not, then the direct main-frame will be used.
+  // This even allows changing the WebContents being captured, which is a very
+  // powerful feature, and is likely only appropriate on embedded systems
+  // where the Web application is trusted.
+  virtual bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Allows the embedder to correlate backend media services with profile-keyed
   // effect settings.
@@ -2727,6 +2766,27 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
           video_effects_manager);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Re-order audio device `infos` based on user preference. The ordering will
+  // be from most preferred to least preferred.
+  virtual void PreferenceRankVideoDeviceInfos(
+      BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos);
+
+  // Re-order video device `infos` based on user preference. The ordering will
+  // be from most preferred to least preferred.
+  virtual void PreferenceRankAudioDeviceInfos(
+      BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos);
+
+  // Allows the embedder to override the proxy bypass policy used for IP
+  // Protection.
+  // Even if a domain is part of the masked domain list and is
+  // eligible for IP Protection, the embedder can use a certain policy to bypass
+  // certain network requests from IP Protection.
+  // By default, there is no bypass policy used.
+  virtual network::mojom::IpProtectionProxyBypassPolicy
+  GetIpProtectionProxyBypassPolicy();
 };
 
 }  // namespace content

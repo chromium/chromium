@@ -15,6 +15,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -111,8 +112,15 @@ bool PreloadingAttemptImpl::ShouldHoldback() {
     return holdback_status_ == PreloadingHoldbackStatus::kHoldback;
   }
 
-  bool should_holdback = PreloadingConfig::GetInstance().ShouldHoldback(
-      preloading_type_, predictor_type_);
+  bool should_holdback_due_to_preloading_config =
+      PreloadingConfig::GetInstance().ShouldHoldback(preloading_type_,
+                                                     predictor_type_);
+  bool should_holdback_due_to_autosr_holdback =
+      predictor_type_ == content_preloading_predictor::
+                             kSpeculationRulesFromAutoSpeculationRules &&
+      blink::features::kAutoSpeculationRulesHoldback.Get();
+  bool should_holdback = should_holdback_due_to_preloading_config ||
+                         should_holdback_due_to_autosr_holdback;
   if (should_holdback) {
     holdback_status_ = PreloadingHoldbackStatus::kHoldback;
   } else {
@@ -344,7 +352,10 @@ void PreloadingAttemptImpl::SetSpeculationEagerness(
             content_preloading_predictor::kSpeculationRules.ukm_value() ||
         predictor_type_.ukm_value() ==
             content_preloading_predictor::kSpeculationRulesFromIsolatedWorld
-                .ukm_value())
+                .ukm_value() ||
+        predictor_type_.ukm_value() ==
+            content_preloading_predictor::
+                kSpeculationRulesFromAutoSpeculationRules.ukm_value())
       << "predictor_type_: " << predictor_type_.name()
       << " (ukm_value = " << predictor_type_.ukm_value() << ")";
   eagerness_ = eagerness;

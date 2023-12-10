@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -17,7 +17,7 @@ namespace blink {
 namespace {
 
 #if DCHECK_IS_ON()
-void CheckNoItemsAreAssociated(const NGPhysicalBoxFragment& fragment) {
+void CheckNoItemsAreAssociated(const PhysicalBoxFragment& fragment) {
   if (const FragmentItems* fragment_items = fragment.Items()) {
     for (const FragmentItem& item : fragment_items->Items()) {
       if (item.Type() == FragmentItem::kLine) {
@@ -30,10 +30,10 @@ void CheckNoItemsAreAssociated(const NGPhysicalBoxFragment& fragment) {
 }
 
 void CheckIsLast(const FragmentItem& item) {
-  if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
+  if (const PhysicalBoxFragment* fragment = item.BoxFragment()) {
     if (!fragment->IsInline()) {
       DCHECK(!fragment->IsInlineBox());
-      DCHECK_EQ(item.IsLastForNode(), !fragment->BreakToken());
+      DCHECK_EQ(item.IsLastForNode(), !fragment->GetBreakToken());
     }
   }
 }
@@ -71,7 +71,7 @@ bool FragmentItems::IsSubSpan(const Span& span) const {
 }
 
 void FragmentItems::FinalizeAfterLayout(
-    const HeapVector<Member<const NGLayoutResult>, 1>& results,
+    const HeapVector<Member<const LayoutResult>, 1>& results,
     LayoutBlockFlow& container) {
   struct LastItem {
     const FragmentItem* item;
@@ -94,7 +94,7 @@ void FragmentItems::FinalizeAfterLayout(
 
   for (const auto& result : results) {
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+        To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const FragmentItems* fragment_items = fragment.Items();
     if (UNLIKELY(!fragment_items)) {
       may_be_non_contiguous_ifc = true;
@@ -134,7 +134,7 @@ void FragmentItems::FinalizeAfterLayout(
         // fragment items (even if we're in an inline formatting context). So
         // we're not going to find the last fragment by just looking for items.
         DCHECK(item.BoxFragment() && !item.BoxFragment()->IsInlineBox());
-        item.SetIsLastForNode(!item.BoxFragment()->BreakToken());
+        item.SetIsLastForNode(!item.BoxFragment()->GetBreakToken());
       } else {
         DCHECK(layout_object->IsInline());
         // This will be updated later if following fragments are found.
@@ -210,8 +210,9 @@ void FragmentItems::ClearAssociatedFragments(LayoutObject* container) {
   }
 #if DCHECK_IS_ON()
   if (const auto* box = DynamicTo<LayoutBox>(container)) {
-    for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments())
+    for (const PhysicalBoxFragment& fragment : box->PhysicalFragments()) {
       CheckNoItemsAreAssociated(fragment);
+    }
   }
 #endif
 }
@@ -227,7 +228,7 @@ bool FragmentItems::CanReuseAll(InlineCursor* cursor) {
 }
 
 const FragmentItem* FragmentItems::EndOfReusableItems(
-    const NGPhysicalBoxFragment& container) const {
+    const PhysicalBoxFragment& container) const {
   const FragmentItem* last_line_start = &front();
   for (InlineCursor cursor(container, *this); cursor;) {
     const FragmentItem& item = *cursor.Current();
@@ -250,7 +251,7 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
     const PhysicalLineBoxFragment& line_box_fragment = *item.LineBoxFragment();
 
     // Abort if the line propagated its descendants to outside of the line.
-    // They are propagated through NGLayoutResult, which we don't cache.
+    // They are propagated through LayoutResult, which we don't cache.
     if (line_box_fragment.HasPropagatedDescendants())
       return &item;
 
@@ -260,7 +261,7 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
       return &item;
 
     // Abort reusing block-in-inline because it may need to set
-    // |NGPreviousInflowData|.
+    // |PreviousInflowData|.
     if (UNLIKELY(line_box_fragment.IsBlockInInline()))
       return &item;
 
@@ -269,8 +270,9 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
     // partial. Remove the last fragment if it is the end of the
     // fragmentation to do so, but we should figure out how to setup the
     // states without doing this.
-    if (!line_box_fragment.BreakToken())
+    if (!line_box_fragment.GetBreakToken()) {
       return &item;
+    }
 
     last_line_start = &item;
     cursor.MoveToNextSkippingChildren();
@@ -441,7 +443,7 @@ void FragmentItems::DirtyLinesFromChangedChild(
 
 // static
 void FragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
-  for (const NGPhysicalBoxFragment& fragment : container.PhysicalFragments()) {
+  for (const PhysicalBoxFragment& fragment : container.PhysicalFragments()) {
     if (const FragmentItems* items = fragment.Items()) {
       items->front().SetDirty();
       return;
@@ -452,10 +454,9 @@ void FragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
 // static
 void FragmentItems::DirtyLinesFromNeedsLayout(
     const LayoutBlockFlow& container) {
-  DCHECK(base::ranges::any_of(container.PhysicalFragments(),
-                              [](const NGPhysicalBoxFragment& fragment) {
-                                return fragment.HasItems();
-                              }));
+  DCHECK(base::ranges::any_of(
+      container.PhysicalFragments(),
+      [](const PhysicalBoxFragment& fragment) { return fragment.HasItems(); }));
 
   // Mark dirty for the first top-level child that has |NeedsLayout|.
   //
@@ -480,9 +481,9 @@ void FragmentItems::DirtyLinesFromNeedsLayout(
 
 // static
 bool FragmentItems::ReplaceBoxFragment(
-    const NGPhysicalBoxFragment& old_fragment,
-    const NGPhysicalBoxFragment& new_fragment,
-    const NGPhysicalBoxFragment& containing_fragment) {
+    const PhysicalBoxFragment& old_fragment,
+    const PhysicalBoxFragment& new_fragment,
+    const PhysicalBoxFragment& containing_fragment) {
   for (InlineCursor cursor(containing_fragment); cursor; cursor.MoveToNext()) {
     const FragmentItem* item = cursor.Current().Item();
     if (item->BoxFragment() != &old_fragment)

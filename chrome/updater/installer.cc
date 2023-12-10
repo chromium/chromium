@@ -27,7 +27,6 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 

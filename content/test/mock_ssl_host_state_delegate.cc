@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -85,10 +86,14 @@ void MockSSLHostStateDelegate::SetHttpsEnforcementForHost(
   }
 }
 
-bool MockSSLHostStateDelegate::IsHttpsEnforcedForHost(
-    const std::string& host,
+bool MockSSLHostStateDelegate::IsHttpsEnforcedForUrl(
+    const GURL& url,
     StoragePartition* storage_partition) {
-  return base::Contains(enforce_https_hosts_, host);
+  // HTTPS-First Mode is never auto-enabled for URLs with non-default ports.
+  if (!url.port().empty()) {
+    return false;
+  }
+  return base::Contains(enforce_https_hosts_, url.host());
 }
 
 void MockSSLHostStateDelegate::RevokeUserAllowExceptions(

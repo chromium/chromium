@@ -86,33 +86,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DmgAnalysisTimedOut" enum="BooleanTimedOut"
-    expires_after="2022-09-30">
-  <obsolete>
-    Replaced with SBClientDownload.DmgArchiveAnalysisResult in 04-2022
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    For each DMG download on Mac, records whether or not analysis of the DMG
-    timed out.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.DmgIterationSuccess" enum="BooleanSuccess"
-    expires_after="2022-09-30">
-  <obsolete>
-    Removed 08-2022. SBClientDownload.DmgArchiveAnalysisResult provides strictly
-    more detail about our ability to unpack DMGs.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    For each DMG download on Mac, records whether or not we were able to iterate
-    through the partitions of the DMG.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DocumentCheckDownloadStats"
     enum="SBClientDownloadCheckDownloadStats" expires_after="2024-02-20">
   <owner>drubery@chromium.org</owner>
@@ -135,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadExtensions"
-    enum="SBClientDownloadExtensions" expires_after="2024-03-17">
+    enum="SBClientDownloadExtensions" expires_after="2024-05-19">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -161,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration.{Analysis}"
-    units="ms" expires_after="2024-03-16">
+    units="ms" expires_after="2024-05-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -265,19 +238,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
-    expires_after="2022-10-16">
-  <obsolete>
-    Replaced with SBClientDownload.FileAnalysisDuration.Document in 06-2022.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the time it takes for the SafeBrowsing download service to extract
-    info from an Office document.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
     expires_after="2024-06-08">
   <owner>drubery@chromium.org</owner>
@@ -300,7 +260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"
-    units="ms" expires_after="2024-03-02">
+    units="ms" expires_after="2024-05-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -348,17 +308,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.SevenZipEntryResult" enum="SevenZipResult"
-    expires_after="2023-12-04">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of unpacking a single entry from a 7z archive. The result
-    includes either success or a coarse-grained error. This is logged for each
-    entry of each download of a 7z archive.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo"
     enum="BooleanValid" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
@@ -387,7 +336,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
-    enum="BooleanHasUserGesture" expires_after="2024-03-02">
+    enum="BooleanHasUserGesture" expires_after="2024-05-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -424,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.Warning.FileType.{DangerType}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2024-03-02">
+    enum="SBClientDownloadExtensions" expires_after="2024-05-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -457,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
-    enum="SBDeepScanEvent" expires_after="2024-03-28">
+    enum="SBDeepScanEvent" expires_after="2024-06-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -468,7 +417,10 @@ chromium-metrics-reviews@google.com.
     cancelation or completion. This is logged for consumer scans of
     {Encryption}.
 
-    Note: Logging of PromptAccepted was lost in M118.
+    Note: Logging of PromptAccepted was lost in M118. &quot;Scan canceled&quot;
+    and &quot;Scan deleted&quot; were added in M121. &quot;Prompt accepted&quot;
+    was split into &quot;Prompt accepted&quot; and &quot;Prompt accepted from
+    chrome://downloads&quot; in M121.
   </summary>
   <token key="Encryption">
     <variant name="" summary="a file"/>
@@ -544,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ClassificationStart" enum="BooleanHit"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -558,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2024-03-17">
+    enum="SBPhishingClassifierEvent" expires_after="2024-05-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -578,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ClassifyThresholdsResult"
-    enum="SBClientDetectionClassifyThresholdsResult" expires_after="2024-03-17">
+    enum="SBClientDetectionClassifyThresholdsResult" expires_after="2024-05-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -619,8 +571,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbedder.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2023-11-12">
-  <owner>drubery@chromium.org</owner>
+    enum="SBPhishingClassifierEvent" expires_after="2024-11-12">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records events in the phishing image embedder including reasons that
@@ -660,21 +612,6 @@ chromium-metrics-reviews@google.com.
     to a non-allowlisted site)
 
     This metric is used to populate a dashboard on go/crsb-site.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.MainFrameRemoteExists" enum="BooleanExists"
-    expires_after="2022-08-29">
-  <obsolete>
-    Removed 04-2022 since the logic for how PhishingDetectors are managed
-    changed.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether we have a mojo::Remote for the main frame's
-    PhishingDetector. This is recorded on every classification (a large fraction
-    of navigations).
   </summary>
 </histogram>
 
@@ -720,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -730,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -765,7 +702,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.PreClassificationCheckResult"
     enum="SBClientDetectionPreClassificationCheckResult"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -777,21 +714,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.RequestSatisfiedFromCache" enum="BooleanHit"
-    expires_after="2022-08-03">
-  <obsolete>
-    Removed 06-2022
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The number of times that a cached phishing classification result was used,
-    rather than pinging the server.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.RTLookupForceRequest"
-    enum="BooleanForceRequest" expires_after="2024-03-31">
+    enum="BooleanForceRequest" expires_after="2024-06-02">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -814,25 +738,6 @@ chromium-metrics-reviews@google.com.
 
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.TfLiteModelLoadTime.{Scorer}" units="ms"
-    expires_after="2022-03-16">
-  <obsolete>
-    Removed 03-2023 since the value was consistently small, and we don't expect
-    it to change over time.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records how long it takes the {Scorer} to load the TfLite model file from
-    the memory mapped file into a string. This blocks the main thread, so we
-    need to ensure it is small.
-  </summary>
-  <token key="Scorer">
-    <variant name="FlatbufferScorer" summary="Flatbuffer scorer"/>
-    <variant name="ProtobufScorer" summary="Protobuf scorer"/>
-  </token>
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeaturesClearReason"

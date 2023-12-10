@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ランダムな RSA 秘密鍵を生成できませんでした。</translation>
 <translation id="1445572445564823378">この拡張機能によって <ph name="PRODUCT_NAME" /> の速度が低下しています。<ph name="PRODUCT_NAME" /> のパフォーマンスを回復するには、この拡張機能を無効にしてください。</translation>
 <translation id="1468038450257740950">WebGL はサポートされていません。</translation>
+<translation id="1610570795592207282">スクリプトの CSS「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="1803557475693955505">背景ページ「<ph name="BACKGROUND_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="2159915644201199628">画像をデコードできませんでした: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">言語/地域機能は使用されていますが、マニフェストに default_locale が指定されていません。</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3144135466825225871">crx ファイルを置き換えられませんでした。ファイルが使用されていないか確認してください。</translation>
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
-<translation id="3302709122321372472">コンテンツ スクリプトの CSS「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="3369521687965833290">拡張機能を解凍できません。拡張機能を安全に解凍するには、ドライブ文字で始まるプロフィール ディレクトリへのパスが必要です（ジャンクション、マウント ポイント、シンボリック リンクが含まれていないこと）。このようなパスがプロフィール内に存在しません。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>
 <translation id="388442998277590542">オプション ページ「<ph name="OPTIONS_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="3984413272403535372">拡張機能の署名中にエラーが発生しました。</translation>
-<translation id="39964277676607559">コンテンツ スクリプトの JavaScript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="4115165561519362854">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> バージョン <ph name="EXTENSION_VERSION" /> 以上が要件に指定されています。有効にするにはこのバージョン以上に更新する必要があります。</translation>
 <translation id="4233778200880751280">情報ページ「<ph name="ABOUT_PAGE" />」を読み込めませんでした。</translation>
 <translation id="471800408830181311">秘密鍵を出力できませんでした。</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">公開鍵をエクスポートできませんでした。</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">圧縮するディレクトリの絶対パスが見つかりません。</translation>
+<translation id="5160071981665899014">スクリプトの JavaScript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="5356315618422219272">アプリビュー: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">形状指定ウィンドウはサポートされていません。</translation>
 <translation id="5456409301717116725">この拡張機能には、鍵ファイル「<ph name="KEY_PATH" />」が含まれていますが、おそらくその必要性はありません。</translation>

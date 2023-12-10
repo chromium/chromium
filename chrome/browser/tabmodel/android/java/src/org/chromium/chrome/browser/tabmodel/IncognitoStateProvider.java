@@ -26,13 +26,14 @@ public class IncognitoStateProvider {
     public IncognitoStateProvider() {
         mIncognitoStateObservers = new ObserverList<IncognitoStateObserver>();
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                // TODO(jinsukkim): Emit this only if the state is different.
-                emitIncognitoStateChanged(newModel.isIncognito());
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        // TODO(jinsukkim): Emit this only if the state is different.
+                        emitIncognitoStateChanged(newModel.isIncognito());
+                    }
+                };
     }
 
     /**
@@ -67,9 +68,7 @@ public class IncognitoStateProvider {
         emitIncognitoStateChanged(mTabModelSelector.isIncognitoSelected());
     }
 
-    /**
-     * Destroy {@link IncognitoStateProvider} object.
-     */
+    /** Destroy {@link IncognitoStateProvider} object. */
     public void destroy() {
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);

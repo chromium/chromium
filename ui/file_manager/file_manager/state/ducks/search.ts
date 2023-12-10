@@ -7,7 +7,6 @@ import {Slice} from '../../lib/base_store.js';
 
 /**
  * @fileoverview Search slice of the store.
- * @suppress {checkTypes}
  */
 
 const slice = new Slice<State, State['search']>('search');

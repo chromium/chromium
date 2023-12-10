@@ -12,9 +12,7 @@ import org.chromium.base.PathUtils;
 import java.io.File;
 import java.util.Arrays;
 
-/**
- * A Util class for operations on {@link ComponentsProviderService} serving directory.
- */
+/** A Util class for operations on {@link ComponentsProviderService} serving directory. */
 @JNINamespace("android_webview")
 public class ComponentsProviderPathUtil {
     private static final String COMPONENTS_DIRECTORY_PATH = "components/cps";
@@ -29,9 +27,7 @@ public class ComponentsProviderPathUtil {
         return new File(PathUtils.getDataDirectory(), COMPONENTS_DIRECTORY_PATH).getAbsolutePath();
     }
 
-    /**
-     * @return The absolute path to the directory where the update service stores components.
-     */
+    /** @return The absolute path to the directory where the update service stores components. */
     public static String getComponentUpdateServiceDirectoryPath() {
         return new File(PathUtils.getDataDirectory(), COMPONENT_UPDATE_SERVICE_DIRECTORY_PATH)
                 .getAbsolutePath();
@@ -65,12 +61,14 @@ public class ComponentsProviderPathUtil {
      *         not a valid directory.
      */
     public static File[] getComponentsNewestFirst(File componentDirectory) {
-        final File[] files = componentDirectory.listFiles(
-                file -> (file.isDirectory() && file.getName().matches("[0-9]+_.+")));
+        final File[] files =
+                componentDirectory.listFiles(
+                        file -> (file.isDirectory() && file.getName().matches("[0-9]+_.+")));
 
         if (files != null && files.length > 1) {
             // Sort the array in descending order of sequence numbers.
-            Arrays.sort(files,
+            Arrays.sort(
+                    files,
                     (v1, v2) -> sequenceNumberForDirectory(v2) - sequenceNumberForDirectory(v1));
         }
         return files;

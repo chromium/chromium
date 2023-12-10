@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
   resolve_function->set_extension(empty_extension.get());
   resolve_function->set_has_callback(true);
 
-  absl::optional<base::Value> result(RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), "[\"127.0.0.1\"]", browser_context()));
   const base::Value::Dict& dict = result->GetDict();
 
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   resolve_function->set_has_callback(true);
 
   std::string function_arguments = base::StringPrintf(R"(["%s"])", kHostname);
-  absl::optional<base::Value> result(RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), function_arguments, browser_context()));
   const base::Value::Dict& dict = result->GetDict();
 

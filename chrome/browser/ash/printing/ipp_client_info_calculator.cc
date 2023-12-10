@@ -101,9 +101,9 @@ class IppClientInfoCalculatorImpl : public IppClientInfoCalculator {
                                directory_api_id, serial, asset_id, location);
     device_info_ = IppClientInfo::New(IppClientInfo::ClientType::kOther,
                                       std::move(client_name),
-                                      /*client_patches=*/absl::nullopt,
+                                      /*client_patches=*/std::nullopt,
                                       /*client_string_version=*/std::string(),
-                                      /*client_version=*/absl::nullopt);
+                                      /*client_version=*/std::nullopt);
   }
 
   void CalculateClientInfoWithOSVersion(const std::string& chrome_milestone) {
@@ -111,7 +111,7 @@ class IppClientInfoCalculatorImpl : public IppClientInfoCalculator {
     os_info_ = IppClientInfo::New(
         IppClientInfo::ClientType::kOperatingSystem, kOsInfoClientName,
         base::SysInfo::OperatingSystemVersion(), chrome_milestone,
-        /*client_version=*/absl::nullopt);
+        /*client_version=*/std::nullopt);
   }
 
   std::string GetClientNameTemplateFromCrosSettings() {

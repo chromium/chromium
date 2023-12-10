@@ -2,3 +2,6 @@ file://chromeos/LACROS_OWNERS
 
 per-file browser_data_back_migrator*.*=janagrill@google.com,vsavu@google.com
 per-file lacros_data_backward_migration_mode_policy_observer*.*=janagrill@google.com,vsavu@google.com
+
+per-file *_type_converter*.*=set noparent
+per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

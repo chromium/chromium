@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {DateTimeSettingsCardElement, SettingsDateTimePageElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {ControlledRadioButtonElement, CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {ControlledRadioButtonElement, CrSettingsPrefs, GeolocationAccessLevel, PrefsState, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -64,13 +64,21 @@ function getFakePrefs() {
         value: true,
       },
     },
+    ash: {
+      user: {
+        geolocation_access_level: {
+          key: 'ash.user.geolocation_access_level',
+          type: GeolocationAccessLevel,
+          value: GeolocationAccessLevel.ALLOWED,
+        },
+      },
+    },
   };
 }
 
 function updatePrefsWithPolicy(
-    prefs: {[key: string]: unknown}, managed: boolean,
-    valueFromPolicy: boolean): Object {
-  const prefsCopy = JSON.parse(JSON.stringify(prefs));
+    prefs: PrefsState, managed: boolean, valueFromPolicy: boolean): Object {
+  const prefsCopy = structuredClone(prefs) as any;
   if (managed) {
     prefsCopy.generated.resolve_timezone_by_geolocation_method_short
         .controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;

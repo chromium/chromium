@@ -36,17 +36,26 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
      * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
      * @param modalDialogManagerSupplier An supplier for the {@ModalDialogManager}.
      */
-    public static void create(SafetyCheckSettingsFragment settingsFragment,
-            SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
+    public static void create(
+            SafetyCheckSettingsFragment settingsFragment,
+            SafetyCheckUpdatesDelegate updatesClient,
+            SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService) {
-        new SafetyCheckCoordinator(settingsFragment, updatesClient, settingsLauncher,
-                signinLauncher, modalDialogManagerSupplier, syncService);
+        new SafetyCheckCoordinator(
+                settingsFragment,
+                updatesClient,
+                settingsLauncher,
+                signinLauncher,
+                modalDialogManagerSupplier,
+                syncService);
     }
 
-    private SafetyCheckCoordinator(SafetyCheckSettingsFragment settingsFragment,
-            SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
+    private SafetyCheckCoordinator(
+            SafetyCheckSettingsFragment settingsFragment,
+            SafetyCheckUpdatesDelegate updatesClient,
+            SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService) {
@@ -55,41 +64,54 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
         // Create the model and the mediator once the view is created.
         // The view's lifecycle is not available at this point, so observe the {@link LiveData} for
         // it to get notified when {@link onCreateView} is called.
-        mSettingsFragment.getViewLifecycleOwnerLiveData().observe(
-                mSettingsFragment, new Observer<LifecycleOwner>() {
-                    @Override
-                    public void onChanged(LifecycleOwner lifecycleOwner) {
-                        // Only interested in the event when the View becomes non-null, which
-                        // happens when {@link onCreateView} is invoked.
-                        if (lifecycleOwner == null) {
-                            return;
-                        }
-                        // Only initialize it if it hasn't been already. This guards against
-                        // multiple invocations of this method.
-                        if (mMediator == null) {
-                            // Can start observing the View's lifecycle now.
-                            lifecycleOwner.getLifecycle().addObserver(SafetyCheckCoordinator.this);
-                            // The View is available, so now we can create the Model, MCP, and
-                            // Mediator.
-                            PropertyModel model = createModelAndMcp(mSettingsFragment);
-                            mMediator = new SafetyCheckMediator(model, mUpdatesClient,
-                                    settingsLauncher, signinLauncher, syncService,
-                                    modalDialogManagerSupplier);
-                        }
-                    }
-                });
+        mSettingsFragment
+                .getViewLifecycleOwnerLiveData()
+                .observe(
+                        mSettingsFragment,
+                        new Observer<LifecycleOwner>() {
+                            @Override
+                            public void onChanged(LifecycleOwner lifecycleOwner) {
+                                // Only interested in the event when the View becomes non-null,
+                                // which happens when {@link onCreateView} is invoked.
+                                if (lifecycleOwner == null) {
+                                    return;
+                                }
+                                // Only initialize it if it hasn't been already. This guards against
+                                // multiple invocations of this method.
+                                if (mMediator == null) {
+                                    // Can start observing the View's lifecycle now.
+                                    lifecycleOwner
+                                            .getLifecycle()
+                                            .addObserver(SafetyCheckCoordinator.this);
+                                    // The View is available, so now we can create the Model, MCP,
+                                    // and Mediator.
+                                    PropertyModel model = createModelAndMcp(mSettingsFragment);
+                                    mMediator =
+                                            new SafetyCheckMediator(
+                                                    model,
+                                                    mUpdatesClient,
+                                                    settingsLauncher,
+                                                    signinLauncher,
+                                                    syncService,
+                                                    modalDialogManagerSupplier);
+                                }
+                            }
+                        });
         // Show the initial state every time the fragment is resumed (navigation from a different
         // screen, app in the background, etc).
-        mSettingsFragment.getLifecycle().addObserver(new DefaultLifecycleObserver() {
-            @Override
-            public void onResume(LifecycleOwner lifecycleOwner) {
-                if (mSettingsFragment.shouldRunSafetyCheckImmediately()) {
-                    mMediator.performSafetyCheck();
-                    return;
-                }
-                mMediator.setInitialState();
-            }
-        });
+        mSettingsFragment
+                .getLifecycle()
+                .addObserver(
+                        new DefaultLifecycleObserver() {
+                            @Override
+                            public void onResume(LifecycleOwner lifecycleOwner) {
+                                if (mSettingsFragment.shouldRunSafetyCheckImmediately()) {
+                                    mMediator.performSafetyCheck();
+                                    return;
+                                }
+                                mMediator.setInitialState();
+                            }
+                        });
     }
 
     @VisibleForTesting

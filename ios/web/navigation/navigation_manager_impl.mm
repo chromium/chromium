@@ -5,11 +5,13 @@
 #import "ios/web/navigation/navigation_manager_impl.h"
 
 #import <Foundation/Foundation.h>
+
 #import <algorithm>
 #import <memory>
 #import <utility>
 
 #import "base/containers/span.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
@@ -199,6 +201,13 @@ void NavigationManagerImpl::SerializeToProto(
 void NavigationManagerImpl::SetNativeSessionFetcher(
     SessionDataBlobFetcher native_session_fetcher) {
   CHECK(session_data_blob_fetchers_.empty());
+  if (base::FeatureList::IsEnabled(features::kForceSynthesizedRestoreSession)) {
+    // If the use of synthesized native WKWebView session is force, then drop
+    // the `native_session_fetcher`. This simulate a missing native session
+    // and force the synthese of a native WKWebView session.
+    return;
+  }
+
   AppendSessionDataBlobFetcher(std::move(native_session_fetcher),
                                SessionDataBlobSource::kSessionCache);
 }

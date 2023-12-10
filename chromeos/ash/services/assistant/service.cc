@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -49,7 +50,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "base/files/file_path.h"
@@ -134,16 +134,16 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   }
 }
 
-absl::optional<std::string> GetS3ServerUriOverride() {
+std::optional<std::string> GetS3ServerUriOverride() {
   if (g_s3_server_uri_override)
     return g_s3_server_uri_override;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> GetDeviceIdOverride() {
+std::optional<std::string> GetDeviceIdOverride() {
   if (g_device_id_override)
     return g_device_id_override;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // In the signed-out mode, we are going to run Assistant service without
@@ -439,7 +439,7 @@ void Service::UpdateAssistantManagerState() {
   if (IsSignedOutMode()) {
     // Clear |access_token_| in signed-out mode to keep it synced with what we
     // will pass to the |assistant_manager_service_|.
-    access_token_ = absl::nullopt;
+    access_token_ = std::nullopt;
   }
 
   if (!assistant_manager_service_)
@@ -693,12 +693,12 @@ void Service::UpdateListeningState() {
                                             ShouldEnableHotword());
 }
 
-absl::optional<AssistantManagerService::UserInfo> Service::GetUserInfo() const {
+std::optional<AssistantManagerService::UserInfo> Service::GetUserInfo() const {
   if (access_token_) {
     return AssistantManagerService::UserInfo(RetrievePrimaryAccountInfo().gaia,
                                              access_token_.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool Service::ShouldEnableHotword() {

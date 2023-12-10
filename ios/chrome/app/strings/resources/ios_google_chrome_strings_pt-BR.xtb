@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">O Gerenciador de senhas do Google não conseguiu verificar suas senhas. Confira sua conexão de Internet.</translation>
 <translation id="1407843355326180937">Faça login neste site e no Google Chrome para conferir seus favoritos e muito mais em todos os seus dispositivos.</translation>
 <translation id="1436059927646026729">Abrir "Minha guia mais recente" no Chrome</translation>
+<translation id="1449241544691504574">Adicionar favoritos ao Chrome</translation>
 <translation id="1462727070346936664">Faça login para aproveitar o Chrome ao máximo.</translation>
-<translation id="1479202195792305274">O Chrome pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
@@ -33,10 +33,10 @@ Considerações:
         Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
 <translation id="1843217788865538014">Use o Chrome automaticamente ao tocar em links de mensagens, documentos e outros apps.</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="1987779152850321833">Para aproveitar o Chrome ao máximo, siga as sugestões abaixo.</translation>
-<translation id="2009224836393115614">Não foi possível verificar suas senhas com o Chrome. Verifique sua conexão de Internet.</translation>
 <translation id="2056123005618757196">Seja mais eficiente com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="2120238739383482109">Abre os favoritos do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>
@@ -55,10 +55,11 @@ Considerações:
 <translation id="2574249610672786438">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="257708665678654955">Quer que na próxima vez o Google Chrome ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
+<translation id="2650286135394207535">Permita que o Chrome ajude você a rastrear seus pacotes</translation>
 <translation id="2671426118752779020">Você pode usar as senhas armazenadas no Gerenciador de senhas do Google em outros apps do iPhone.</translation>
 <translation id="2689064829982324496">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
-<translation id="2732745070297234559">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã.</translation>
+<translation id="2702250627063295552">Adicionar item da Lista de leitura ao Chrome</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
@@ -76,7 +77,6 @@ Considerações:
 <translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para acessar suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
-<translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3577555362230509265">Use o Chrome em outros apps.</translation>
 <translation id="3594076341410558780">Ocultar "Aproveite o Chrome ao máximo"</translation>
 <translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
@@ -85,6 +85,7 @@ Considerações:
 <translation id="3744018071945602754">Gerenciar senhas no Chrome</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
+<translation id="3863841106411295595">Adiciona os URLs inseridos à sua Lista de leitura no Chrome.</translation>
 <translation id="3901001113120561395">Aproveite o Chrome ao máximo.</translation>
 <translation id="3967382818307165056">Gerenciar formas de pagamento no Chrome</translation>
 <translation id="3980220367029651214">Você está trocando de contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Seus dados já existentes do Chrome são gerenciados por <ph name="DOMAIN" />. Seus dados serão excluídos desse dispositivo, mas permanecerão em <ph name="USER_EMAIL1" />.</translation>
@@ -98,12 +99,10 @@ Considerações:
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4251174643044751591">Abre a página de configurações de formas de pagamento do Chrome.</translation>
 <translation id="4453284704333523777">Gerenciar as configurações do Chrome</translation>
-<translation id="4471662743048412085">Rastrear pacotes detectados no Chrome</translation>
 <translation id="4508370294876102450">Abrir o Chrome por qualquer app</translation>
 <translation id="4523886039239821078">Alguns complementos causam a falha do Google Chrome. Desinstale-os.</translation>
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
 <translation id="4636900170638246267">Faça login neste site e no Chrome.</translation>
-<translation id="4698415050768537821">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
@@ -161,7 +160,6 @@ Considerações:
 <translation id="6815466750807582739">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Não foi possível verificar todas as senhas com o Chrome. Tente novamente mais tarde.</translation>
 <translation id="6851982868877411675">Abra as configurações do Chrome no iOS, toque em "App de navegador padrão" e selecione o Chrome.</translation>
 <translation id="6916015246697034114">Pesquisar com voz no Chrome</translation>
 <translation id="6964931465519938134">Agora você poderá usar o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>

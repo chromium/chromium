@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
@@ -34,8 +35,10 @@ class TasksComboboxModel;
 // Temporary interface to allow smooth migration from `TasksBubbleView` to
 // `GlanceablesTasksView`.
 class ASH_EXPORT GlanceablesTasksViewBase : public GlanceableTrayChildBubble {
+  METADATA_HEADER(GlanceablesTasksViewBase, GlanceableTrayChildBubble)
+
  public:
-  explicit GlanceablesTasksViewBase(DetailedViewDelegate* delegate);
+  GlanceablesTasksViewBase();
   GlanceablesTasksViewBase(const GlanceablesTasksViewBase&) = delete;
   GlanceablesTasksViewBase& operator=(const GlanceablesTasksViewBase&) = delete;
   ~GlanceablesTasksViewBase() override = default;
@@ -51,8 +54,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
  public:
   METADATA_HEADER(GlanceablesTasksView);
 
-  GlanceablesTasksView(DetailedViewDelegate* delegate,
-                       const ui::ListModel<api::TaskList>* task_lists);
+  explicit GlanceablesTasksView(const ui::ListModel<api::TaskList>* task_lists);
   GlanceablesTasksView(const GlanceablesTasksView&) = delete;
   GlanceablesTasksView& operator=(const GlanceablesTasksView&) = delete;
   ~GlanceablesTasksView() override;
@@ -94,16 +96,21 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
                            bool completed);
 
   // Saves the task (either creates or updates the existing one).
+  // `callback` - done callback passed from an individual task view.
   void SaveTask(const std::string& task_list_id,
                 const std::string& task_id,
-                const std::string& title);
+                const std::string& title,
+                api::TasksClient::OnTaskSavedCallback callback);
+
+  // Handles completion of `SaveTask`.
+  // `callback` - callback passed from an individual task view via `SaveTask`.
+  // `task`     - newly created or edited task if the request completes
+  //              successfully, `nullptr` otherwise.
+  void OnTaskSaved(api::TasksClient::OnTaskSavedCallback callback,
+                   const api::Task* task);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
-
-  // Tracks the number of tasks show. Used for sizing.
-  int num_tasks_shown_ = 0;
-  int num_tasks_ = 0;
 
   // The number of times that the tasks list has been changed during the
   // lifetime of this view.
@@ -122,6 +129,11 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
+
+  // Pending new task that was added after pressing `add_new_task_button_`.
+  // Used to limit the number of such views to only one and to remove the view
+  // from `task_items_container_view_` if needed.
+  raw_ptr<GlanceablesTaskView> pending_new_task_ = nullptr;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

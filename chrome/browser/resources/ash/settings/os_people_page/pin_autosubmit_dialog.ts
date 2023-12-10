@@ -27,7 +27,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './pin_autosubmit_dialog.html.js';
 
 // Maximum length supported by auto submit
-const AutosubmitMaxLength: number = 12;
+const AutosubmitMaxLength = 12;
 
 // Possible errors that might occur with the respective i18n string.
 const AutoSubmitErrorStringsName = {

@@ -22,7 +22,8 @@ public class DomAutomationController {
      */
     public void inject(WebContents webContents) throws TimeoutException {
         mWebContents = webContents;
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(mWebContents,
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mWebContents,
                 "window.domAutomationController = {"
                         + "  data_: [],"
                         + "  send: function(x) { this.data_.push(x) },"
@@ -37,11 +38,14 @@ public class DomAutomationController {
      */
     public String waitForResult(String failureReason) throws TimeoutException {
         assert mWebContents != null;
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            String result = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                    mWebContents, "domAutomationController.hasData()");
-            return result.equals("true");
-        }, failureReason);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    String result =
+                            JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                    mWebContents, "domAutomationController.hasData()");
+                    return result.equals("true");
+                },
+                failureReason);
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 mWebContents, "domAutomationController.getData()");
     }

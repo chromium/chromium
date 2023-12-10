@@ -9,7 +9,10 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <winternl.h>
+
 #include <string>
+#include <string_view>
+
 #include "base/values.h"
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
@@ -71,10 +74,14 @@ constexpr wchar_t kDefaultMdmUrl[] =
 
 constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
 
+// The following staleness time limits are set to 5 days to prevent file fetch
+// operations unnecessarily by GCPW when machine is offline during weekends and
+// holidays. These files are also updated by GCPW extension Windows NT service
+// regularly when the device is online.
 constexpr base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
-    base::Days(1);
+    base::Days(5);
 constexpr base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch =
-    base::Days(1);
+    base::Days(5);
 
 constexpr wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
 constexpr wchar_t kGcpwUserExperimentsFileName[] = L"ExperimentsFetchResponse";
@@ -700,7 +707,7 @@ HRESULT GetPathToDllFromHandle(HINSTANCE dll_handle,
     return hr;
   }
 
-  *path_to_dll = base::FilePath(base::WStringPiece(path, length));
+  *path_to_dll = base::FilePath(std::wstring_view(path, length));
   return S_OK;
 }
 

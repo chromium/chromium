@@ -6,6 +6,7 @@
 load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -43,6 +44,11 @@ updater_linux_builder(
         "ci/linux-updater-builder-dbg",
         "ci/linux-updater-tester-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-updater-builder-dbg",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -57,6 +63,12 @@ updater_linux_builder(
         "ci/linux-updater-builder-rel",
         "ci/linux-updater-tester-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-updater-builder-rel",
+            "release_try_builder",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -71,6 +83,11 @@ updater_mac_builder(
         "ci/mac-updater-builder-dbg",
         "ci/mac10.15-updater-tester-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-updater-builder-dbg",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -85,6 +102,12 @@ updater_mac_builder(
         "ci/mac-updater-builder-rel",
         "ci/mac10.15-updater-tester-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-updater-builder-rel",
+            "release_try_builder",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -99,6 +122,11 @@ updater_windows_builder(
         "ci/win-updater-builder-dbg",
         "ci/win10-updater-tester-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-updater-builder-dbg",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -113,6 +141,12 @@ updater_windows_builder(
         "ci/win-updater-builder-rel",
         "ci/win10-updater-tester-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-updater-builder-rel",
+            "release_try_builder",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

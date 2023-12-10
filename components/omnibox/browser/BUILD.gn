@@ -326,6 +326,7 @@ static_library("browser") {
   ]
 
   deps = [
+    "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/component_updater",
     "//components/dom_distiller/core:core",
@@ -724,6 +725,8 @@ static_library("test_support") {
 
   if (build_with_tflite_lib) {
     sources += [
+      "fake_autocomplete_scoring_model_service.cc",
+      "fake_autocomplete_scoring_model_service.h",
       "fake_on_device_tail_model_service.cc",
       "fake_on_device_tail_model_service.h",
     ]
@@ -929,7 +932,6 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 mojom("mojo_bindings") {
   sources = [ "omnibox.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 
   public_deps = [
     "//mojo/public/mojom/base",

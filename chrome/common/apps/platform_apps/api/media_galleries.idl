@@ -5,7 +5,6 @@
 
 // Use the <code>chrome.mediaGalleries</code> API to access media files (audio,
 // images, video) from the user's local disks (with the user's consent).
-[modernised_enums]
 namespace mediaGalleries {
 
   [inline_doc] enum GalleryChangeType {
@@ -154,6 +153,7 @@ namespace mediaGalleries {
     // will be empty.
     // A user gesture is required for the dialog to display. Without a user
     // gesture, the callback will run as though the user canceled.
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625"]
     static void addUserSelectedFolder(AddUserFolderCallback callback);
 
     // Get metadata about a specific media file system.

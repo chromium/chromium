@@ -40,84 +40,141 @@ how to have a library reviewed.
 
 ## Importing a crate from crates.io
 
-The `//third_party/rust/third_party.toml` crate defines the set of crates
+The `//third_party/rust/chromium_crates_io/Cargo.toml` file defines the set of crates
 depended on from first-party code. Any transitive dependencies will be found
-from those listed there. The file is a subset of a
-[standard `Cargo.toml` file](https://doc.rust-lang.org/cargo/reference/manifest.html),
-but only listing the `[dependencies]` section.
+from those listed there. The file is a [standard `Cargo.toml` file](
+https://doc.rust-lang.org/cargo/reference/manifest.html), though the crate
+itself is never built, it is only used to collect dependencies through the
+`[dependencies]` section.
 
-To use a third-party crate "bar" version 3 from first party code, add the
-following to `//third_party/rust/third_party.toml` in `[dependencies]`:
-```toml
-[dependencies]
-bar = "3"
-```
+To use a third-party crate "bar" version 3 from first party code:
+1. Change directory to the root `src/` dir of Chromium.
+1. Add the crate to `//third_party/rust/chromium_crates_io/Cargo.toml`:
+   * `vpython3 ./tools/crates/run_gnrt.py add foo` to add the latest version of `foo`.
+   * `vpython3 ./tools/crates/run_gnrt.py add foo@1.2.3` to add a specific version of `foo`.
+   * Or, directly through (nightly) cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt add foo`
+   * Or, edit the Cargo.toml by hand, finding the version you want from [crates.io](https://crates.io).
+1. Download the crate's files:
+   * `./tools/crates/run_gnrt.py vendor` to download the new crate.
+   * Or, directly through (nightly) cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt vendor`
+   * This will also apply any patches in `//third_party/rust/chromium_crates_io/patches`
+     for the crates. If a patch can not apply, the crate's download will be cancelled and
+     an error will be printed. See [patching errors](#patching-errors) below for how to resolve
+     this.
+1. Add the new files to git:
+   * `git add -f third_party/rust/chromium_crates_io/vendor`
+   * The `-f` is important, as files may be skipped otherwise from a
+     `.gitignore` inside the crate.
+1. If a crate in `//third_party/rust/chromium_crates_io/patches` was updated
+   as part of vendoring, then reapply patches to it:
+   * Go to the `//third_party/rust/chromium_crates_io` directory.
+   * `./apply_patches.sh` (this currently requires linux).
+1. (optional) If the crate is only to be used by tests and tooling, then
+   specify the `"test"` group in `//third_party/rust/chromium_crates_io/gnrt_config.toml`:
+   ```
+   [crate.foo]
+   group = "test"
+   ```
+1. Generate the `BUILD.gn` file for the new crate:
+   * `vpython3 ./tools/crates/run_gnrt.py gen`
+   * Or, directly through (nightly) cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
+1. Upload the CL, mark any `unsafe` usage with `TODO` code review comments,
+   and include a link to it in the request for third-party and security review.
+
+### Cargo features
 
 To enable a feature "spaceships" in the crate, change the entry in
-`//third_party/rust/third_party.toml` to include the feature:
+`//third_party/rust/chromium_crates_io/Cargo.toml` to include the feature:
 ```toml
 [dependencies]
 bar = { version = "3", features = [ "spaceships" ] }
 ```
 
-### Generating `BUILD.gn` files for third-party crates
-
-To generate `BUILD.gn` files for all third-party crates, and find missing
-transitive dependencies to download, use the `gnrt` tool:
-
-1. Change directory to the root `src/` dir of Chromium.
-1. Run `vpython3 ./tools/crates/run_gnrt.py gen` to build and run gnrt with the `gen` action.
-
-Or, to directly build and run gnrt with the system Rust toolchain:
-
-1. Change directory to the root `src/` dir of Chromium.
-1. Build and run `gnrt gen`:
-   `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`.
-
-This will generate a `BUILD.gn` file for each third-party crate. The `BUILD.gn`
-file changes will be visible in `git status` and can be added with `git add`.
-
-### Downloading missing third-party crates
-
-To download crate "foo", at version 4.2.3:
-1. Change directory to the root src/ dir of Chromium.
-1. Run `gnrt` with the `download` action. e.g.
-   `vpython3 ./tools/crates/run_gnrt.py download --security-critical=yes --shipped=yes foo 4.2.3`
-
-This will download the crate and unpack it into
-`//third_party/rust/foo/v4/crate`. The entire `v4` directory, which includes the
-`crate` subdirectory as well as a generated `README.chromium` file, should be
-added to the repository with `git add third_party/rust/foo/v4`.
-
-Once all the crates are downloaded and `gnrt gen` completes, a CL can be
-uploaded to go through third-party review.
-
-### Patching third-party crates.
+### Patching third-party crates
 
 You may patch a crate in tree, but save any changes made into a diff file in
-a `patches/` directory for the crate. The diff file should be generated by
-`git-format-patch` each new patch numbered consecutively so that they can be
-applied in order. For example, these files might exist if the "foo" crate was
-patched with a couple of changes:
+a `//third_party/rust/chromium_crates_io/patches/` directory for the crate.
+The diff file should be generated by `git-format-patch` each new patch numbered
+consecutively so that they can be applied in order. For example, these files
+might exist if the "foo" crate was patched with a couple of changes:
 
 ```
-//third_party/rust/foo/v4/patches/0001-Edit-the-Cargo-toml.diff
-//third_party/rust/foo/v4/patches/0002-Other-changes.diff
+//third_party/rust/chromium_crates_io/patches/foo/patches/0001-Edit-the-Cargo-toml.diff
+//third_party/rust/chromium_crates_io/patches/foo/patches/0002-Other-changes.diff
 ```
 
-### Updating existing third-party crates
+The recommended procedure to create such patches is:
 
-To update a crate "foo" to the latest version you must just re-import it at this
-time. To update from version "1.2.0" to "1.3.2":
-1. Remove the `//third_party/rust/foo/v1/crate` directory, which contains the
-   upstream code.
-1. Re-download the crate at the new version with `out/gnrt/release/gnrt download
-   foo 1.3.2`.
-1. If there are any, re-apply local patches with
-   `for i in $(find third_party/rust/foo/v1/patches/*); do patch -p1 < $i; done`
-1. Run `vpython3 ./tools/crates/run_gnrt.py gen` to re-generate all third-party
-   `BUILD.gn` files.
-1. Build `all_rust` to verify things are working.
+1. Commit the plain new version of the crate to your local git branch
+2. Modify the crate as necessary
+3. Commit that modified version
+4. Use `git format-patch <unpatched version>` to generate the patch files
+5. Add the patch files in a new, third, commit
+6. Squash them, or rely on `git cl upload` doing so
+
+#### Patching errors
+
+If `gnrt vendor` fails to apply a patch for a crate, it will cancel the download of that
+crate rather than leave it in a broken state. To recreate patches, first get a pristine
+copy of the crate by using the `--no-patches` argument:
+
+1. Download the crate without applying patches:
+   * `vpython3 ./tools/crates/run_gnrt.py vendor --no-patches=<CRATE_NAME>`
+2. Then recreate the patches as described in [Patching third-party crates](
+   #patching-third_party-crates).
+
+To verify the patches work, remove the vendored crate directory in
+`//third_party/rust/chromium_crates_io/vendor/`, named after the crate name
+and version. Then run the `vendor` action without `--no-patches` which will
+download the crate and apply the patches:
+   * `vpython3 ./tools/crates/run_gnrt.py vendor`
+
+## Security
+
+If a shipping library needs security review (has any `unsafe`), and the review
+finds it's not satisfying the [rule of 2](../docs/security/rule-of-2.md), then
+move it to the `"sandbox"` group in `//third_party/rust/chromium_crates_io/gnrt_config.toml`
+to make it clear it can't be used in a privileged process:
+```
+[crate.foo]
+group = "sandbox"
+```
+
+If a transitive dependency moves from `"safe"` to `"sandbox"` and causes
+a dependency chain across the groups, it will break the `gnrt vendor` step.
+You will need to fix the new crate so that it's deemed safe in unsafe review,
+or move the other dependent crates out of `"safe"` as well by setting their
+group in `gnrt_config.toml`.
+
+# Updating existing third-party crates
+
+To update crates to their latest minor versions:
+1. Change directory to the root `src/` dir of Chromium.
+1. Update the versions in `//third_party/rust/chromium_crates_io/Cargo.lock`.
+   * `vpython3 ./tools/crates/run_gnrt.py update`
+   * Or, directly through (nightly) cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt update`
+1. Download any updated crate's files:
+   * `./tools/crates/run_gnrt.py vendor`
+   * Or, directly through (nightly) cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt vendor`
+1. Add the downloaded files to git:
+   * `git add -f third_party/rust/chromium_crates_io/vendor`
+   * The `-f` is important, as files may be skipped otherwise from a
+     `.gitignore` inside the crate.
+1. If a crate in `//third_party/rust/chromium_crates_io/patches` was updated
+   as part of vendoring, then reapply patches to it:
+   * Go to the `//third_party/rust/chromium_crates_io` directory.
+   * `./apply_patches.sh` (this currently requires linux).
+1. Generate the `BUILD.gn` files
+   * `vpython3 ./tools/crates/run_gnrt.py gen`
+   * Or, directly through (nightly) cargo:
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
+1. Add the generated files to git:
+   * `git add -f third_party/rust`
 
 ### Directory structure for third-party crates
 
@@ -125,17 +182,20 @@ The directory structure for a crate "foo" version 3.4.2 is:
 ```
 //third_party/
     rust/
-        foo/
-            v3/
+        foo/  (for the "foo" crate)
+            v3/  (version 3.4.2 maps to the v3 epoch)
                 BUILD.gn  (generated by gnrt gen)
-                README.chromium  (generated by gnrt download)
-                crate/
-                    Cargo.toml
-                    src/
-                    ...etc...
-                patches/
+                README.chromium  (generated by gnrt vendor)
+        chromium_crates_io/
+            vendor/
+                foo-3.4.2  (crate sources downloaded from crates.io)
+            patches/
+                foo/  (patches for the "foo" crate)
                     0001-Edit-the-Cargo-toml.diff
                     0002-Other-changes.diff
+            Cargo.toml
+            Cargo.lock
+            gnrt_config.toml
 ```
 
 ## Writing a wrapper for binding generation
@@ -182,3 +242,52 @@ file, rooted in the `gen` output directory, use
    [rust-analyzer](https://rust-analyzer.github.io/) it should detect the
    `rust-project.json` and use this to give you rich browsing, autocompletion,
    type annotations etc. for all the Rust within the Chromium codebase.
+5. Point rust-analyzer to the rust toolchain in Chromium. Otherwise you will
+   need to install Rustc in your system, and Chromium uses the nightly
+   compiler, so you would need that to match. Add the following to
+   `.vscode/settings.json` in the Chromium checkout:
+   ```
+   {
+      // The rest of the settings...
+
+      "rust-analyzer.cargo.extraEnv": {
+        "PATH": "../../third_party/rust-toolchain/bin:$PATH",
+      }
+   }
+   ```
+   This assumes you are working with an output directory like `out/Debug` which
+   has two levels; adjust the number of `..` in the path according to your own
+   setup.
+
+# Using cargo
+
+If you are building a throwaway or experimental tool, you might like to use pure
+`cargo` tooling rather than `gn` and `ninja`. Even then, you may choose
+to restrict yourself to the toolchain and crates that are already approved for
+use in Chromium.
+
+Here's how.
+
+```
+export PATH_TO_CHROMIUM_SRC=~/chromium/src
+mkdir my-rust-tool
+cd my-rust-tool
+mkdir .cargo
+cat <<END > .cargo/config.toml
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "$PATH_TO_CHROMIUM_SRC/third_party/rust/chromium_crates_io/vendor"
+END
+$PATH_TO_CHROMIUM_SRC/third_party/rust-toolchain/bin/cargo init --offline
+$PATH_TO_CHROMIUM_SRC/third_party/rust-toolchain/bin/cargo run --offline
+```
+
+Most `cargo` tooling works well with this setup; one exception is `cargo add`,
+but you can still add dependencies manually to your `Cargo.toml`:
+
+```
+[dependencies]
+log = "0.4"
+```

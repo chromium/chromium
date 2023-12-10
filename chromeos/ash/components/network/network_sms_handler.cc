@@ -40,11 +40,11 @@ const char kNetworkGuidKey[] = "GUID";
 // Maximum number of messages stored for RequestUpdate(true).
 const size_t kMaxReceivedMessages = 100;
 
-absl::optional<const std::string> GetStringOptional(
+std::optional<const std::string> GetStringOptional(
     const base::Value::Dict& dict,
     const std::string& key) {
   if (!dict.FindString(key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *dict.FindString(key);
 }
@@ -60,9 +60,9 @@ const char NetworkSmsHandler::kTimestampKey[] = "timestamp";
 const base::TimeDelta NetworkSmsHandler::kFetchSmsDetailsTimeout =
     base::Seconds(60);
 
-TextMessageData::TextMessageData(absl::optional<const std::string> number,
-                                 absl::optional<const std::string> text,
-                                 absl::optional<const std::string> timestamp)
+TextMessageData::TextMessageData(std::optional<const std::string> number,
+                                 std::optional<const std::string> text,
+                                 std::optional<const std::string> timestamp)
     : number(number), text(text), timestamp(timestamp) {}
 
 TextMessageData::~TextMessageData() = default;
@@ -104,7 +104,7 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   ~ModemManager1NetworkSmsDeviceHandler() override;
 
  private:
-  void ListCallback(absl::optional<std::vector<dbus::ObjectPath>> paths);
+  void ListCallback(std::optional<std::vector<dbus::ObjectPath>> paths);
   void SmsReceivedCallback(const dbus::ObjectPath& path, bool complete);
   void GetCallback(const dbus::ObjectPath& sms_path,
                    const base::Value::Dict& dictionary);
@@ -160,7 +160,7 @@ NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
-    absl::optional<std::vector<dbus::ObjectPath>> paths) {
+    std::optional<std::vector<dbus::ObjectPath>> paths) {
   // This receives all messages, so clear any pending gets and deletes.
   retrieval_queue_.clear();
   delete_queue_.clear();
@@ -460,7 +460,7 @@ void NetworkSmsHandler::MessageReceived(const base::Value::Dict& message) {
 }
 
 void NetworkSmsHandler::ManagerPropertiesCallback(
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "NetworkSmsHandler: Failed to get manager properties.";
     return;
@@ -494,7 +494,7 @@ void NetworkSmsHandler::UpdateDevices(const base::Value::List& devices) {
 
 void NetworkSmsHandler::DevicePropertiesCallback(
     const std::string& device_path,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "NetworkSmsHandler error for: " << device_path;
     return;

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/download_item_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,10 +36,7 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
  public:
   DownloadBubbleRowViewTest()
       : TestWithBrowserView(
-            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
-  }
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   DownloadBubbleRowViewTest(const DownloadBubbleRowViewTest&) = delete;
   DownloadBubbleRowViewTest& operator=(const DownloadBubbleRowViewTest&) =
@@ -81,7 +77,6 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
   download::MockDownloadItem* download_item() { return &download_item_; }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<download::MockDownloadItem> download_item_;
   std::unique_ptr<DownloadBubbleRowViewInfo> info_;
   std::unique_ptr<DownloadBubbleRowView> row_view_;

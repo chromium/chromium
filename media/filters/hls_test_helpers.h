@@ -121,11 +121,9 @@ class MockHlsRenditionHost : public HlsRenditionHost {
                HlsDataSourceProvider::ReadCb cb),
               (override));
 
-  MOCK_METHOD(hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>,
-              ParseMediaPlaylistFromStringSource,
-              (base::StringPiece source,
-               GURL uri,
-               hls::types::DecimalInteger version),
+  MOCK_METHOD(void,
+              UpdateRenditionManifestUri,
+              (std::string, GURL, base::OnceClosure),
               (override));
 
   MOCK_METHOD(void,
@@ -133,6 +131,8 @@ class MockHlsRenditionHost : public HlsRenditionHost {
               (std::unique_ptr<HlsDataSourceStream>,
                HlsDataSourceProvider::ReadCb),
               (override));
+
+  MOCK_METHOD(void, UpdateNetworkSpeed, (uint64_t), (override));
 };
 
 class MockHlsRendition : public HlsRendition {
@@ -153,6 +153,10 @@ class MockHlsRendition : public HlsRendition {
   MOCK_METHOD(void, StartWaitingForSeek, (), (override));
   MOCK_METHOD(absl::optional<base::TimeDelta>, GetDuration, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void,
+              UpdatePlaylist,
+              (scoped_refptr<hls::MediaPlaylist>, std::optional<GURL>),
+              (override));
 };
 
 }  // namespace media

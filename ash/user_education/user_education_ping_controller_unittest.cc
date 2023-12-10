@@ -91,13 +91,13 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
 
   // Creates a ping for the specified view, returning `true` if successful.
   bool CreatePing(PingId ping_id = PingId::kTest1,
-                  const absl::optional<views::View*>& v = absl::nullopt) {
+                  const std::optional<views::View*>& v = std::nullopt) {
     return controller()->CreatePing(ping_id, v.value_or(this->view()));
   }
 
   // Expects that no ping exists for the specified view. No ping exists for a
   // view if the view does not have any associated ping layers.
-  void ExpectNoPing(const absl::optional<views::View*>& v = absl::nullopt) {
+  void ExpectNoPing(const std::optional<views::View*>& v = std::nullopt) {
     views::View* const view = v.value_or(this->view());
     EXPECT_THAT(
         view->GetLayersInOrder(),
@@ -107,7 +107,7 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
   // Asserts that a ping exists for the specified view. A ping exists for a view
   // if the view has ping layers configured with expected properties.
   void AssertPingProperties(
-      const absl::optional<views::View*>& v = absl::nullopt) {
+      const std::optional<views::View*>& v = std::nullopt) {
     views::View* const view = v.value_or(this->view());
     ASSERT_THAT(
         view->GetLayersInOrder(),

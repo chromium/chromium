@@ -340,6 +340,10 @@ struct DeviceStateProperties {
   // to start with. Displayed along with IMEI/EID to help user
   // unlock carrier locked device.
   string? serial;
+  // Indicates if the device is carrier locked.
+  // Reported only for cellular devices. Defaults to false
+  // for other device types.
+  bool is_carrier_locked = false;
 };
 
 const int32 kNoLimit = 0;

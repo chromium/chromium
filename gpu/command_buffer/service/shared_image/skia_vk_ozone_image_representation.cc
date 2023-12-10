@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -28,6 +29,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -100,11 +102,13 @@ std::vector<sk_sp<SkSurface>> SkiaVkOzoneImageRepresentation::BeginWriteAccess(
 
   if (surfaces_.empty() || final_msaa_count != surface_msaa_count_ ||
       surface_props != surfaces_.front()->props()) {
-    SkColorType sk_color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format());
     surfaces_.clear();
-    for (const auto& promise_texture : promise_textures_) {
+    for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
+      const auto& promise_texture = promise_textures_[plane];
       DCHECK(promise_texture);
+      // External sampler is not supported with WriteAccess.
+      SkColorType sk_color_type = viz::ToClosestSkColorType(
+          /*gpu_compositing=*/true, format(), plane);
       auto surface = SkSurfaces::WrapBackendTexture(
           gr_context, promise_texture->backendTexture(), surface_origin(),
           final_msaa_count, sk_color_type, color_space().ToSkColorSpace(),
@@ -206,8 +210,7 @@ bool SkiaVkOzoneImageRepresentation::BeginAccess(
         device, SemaphoreHandle(std::move(fence)));
 
     begin_access_semaphores_.emplace_back(vk_semaphore);
-    begin_semaphores->emplace_back();
-    begin_semaphores->back().initVulkan(vk_semaphore);
+    begin_semaphores->emplace_back(GrBackendSemaphores::MakeVk(vk_semaphore));
   }
 
   if (end_semaphores && need_end_fence_) {
@@ -222,8 +225,8 @@ bool SkiaVkOzoneImageRepresentation::BeginAccess(
       return false;
     }
 
-    end_semaphores->emplace_back();
-    end_semaphores->back().initVulkan(end_access_semaphore_);
+    end_semaphores->emplace_back(
+        GrBackendSemaphores::MakeVk(end_access_semaphore_));
   }
 
   mode_ = readonly ? RepresentationAccessMode::kRead

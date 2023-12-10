@@ -8,8 +8,7 @@
 #include <stddef.h>
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace net {
 class SSLSocket;
@@ -37,8 +36,8 @@ std::string GetSharedSecretHash(const std::string& tag,
 // Returns authentication bytes that must be used for the given
 // |socket|. Empty string is returned in case of failure.
 std::string GetAuthBytes(net::SSLSocket* socket,
-                         const base::StringPiece& label,
-                         const base::StringPiece& shared_secret);
+                         const std::string_view& label,
+                         const std::string_view& shared_secret);
 
 }  // namespace remoting::protocol
 

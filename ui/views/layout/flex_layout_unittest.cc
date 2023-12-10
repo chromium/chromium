@@ -42,10 +42,10 @@ using gfx::Rect;
 using gfx::Size;
 
 class MockView : public View {
+  METADATA_HEADER(MockView, View)
+
  public:
   enum class SizeMode { kUsePreferredSize, kFixedArea };
-
-  METADATA_HEADER(MockView);
 
   void SetMinimumSize(const Size& minimum_size) {
     minimum_size_ = minimum_size;
@@ -89,7 +89,7 @@ class MockView : public View {
   SizeMode size_mode_ = SizeMode::kUsePreferredSize;
 };
 
-BEGIN_METADATA(MockView, View)
+BEGIN_METADATA(MockView)
 ADD_PROPERTY_METADATA(gfx::Size, MaximumSize)
 END_METADATA
 
@@ -3276,6 +3276,121 @@ TEST_F(FlexLayoutTest, IndividualCrossAxisAlignmentInVerticalLayoutTest) {
   // default.
   EXPECT_EQ(1, v5->x());
   EXPECT_EQ(10, v5->width());
+}
+
+TEST_F(FlexLayoutTest, PreferredSizeMutationTest) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  // We want to specialize the maximum size and have different sizes within the
+  // constraints of the scene
+  const FlexSpecification custom_spec(
+      base::BindRepeating([](const View* view, const SizeBounds& maximum_size) {
+        // This custom rule looks strange, but it is constrained by the current
+        // multi-line label using GetPreferredSize(const SizeBounds&
+        // available_size). eg: HelpBubbleView. This is indeed the case. Here is
+        // a simple simulation.
+        return gfx::Size(maximum_size.width() >= 300
+                             ? 300
+                             : maximum_size.width().min_of(250),
+                         24);
+      }));
+
+  View* const v1 = AddChild(gfx::Size(10, 24));
+  v1->SetProperty(kFlexBehaviorKey, custom_spec.WithOrder(2));
+  View* const v2 = AddChild(gfx::Size(24, 24));
+  v2->SetProperty(kFlexBehaviorKey,
+                  kUnbounded.WithAlignment(views::LayoutAlignment::kEnd));
+
+  EXPECT_EQ(gfx::Size(324, 24), host_->GetPreferredSize({}));
+
+  host_->SizeToPreferredSize();
+  std::vector<Rect> expected = {{0, 0, 300, 24}, {300, 0, 24, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  host_->SetSize({300, 24});
+  expected = {{0, 0, 250, 24}, {276, 0, 24, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+}
+
+TEST_F(FlexLayoutTest, PreferredSizeMutationTest2) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  // We want to specialize the maximum size and have different sizes within the
+  // constraints of the scene
+  const FlexSpecification custom_spec(
+      base::BindRepeating([](const View* view, const SizeBounds& maximum_size) {
+        // This custom rule looks strange, but it is constrained by the current
+        // multi-line label using GetPreferredSize(const SizeBounds&
+        // available_size). eg: HelpBubbleView. This is indeed the case. Here is
+        // a simple simulation.
+        return gfx::Size(maximum_size.width() >= 300
+                             ? 300
+                             : maximum_size.width().min_of(250),
+                         24);
+      }));
+
+  View* const v1 = AddChild(gfx::Size(10, 24));
+  v1->SetProperty(kFlexBehaviorKey, custom_spec.WithOrder(2));
+  View* const v2 = AddChild(gfx::Size(24, 24));
+  v2->SetProperty(kFlexBehaviorKey,
+                  kUnbounded.WithAlignment(views::LayoutAlignment::kCenter));
+  View* const v3 = AddChild(gfx::Size(10, 24));
+  v3->SetProperty(kFlexBehaviorKey, custom_spec.WithOrder(2));
+
+  EXPECT_EQ(gfx::Size(624, 24), host_->GetPreferredSize({}));
+
+  host_->SizeToPreferredSize();
+  std::vector<Rect> expected = {
+      {0, 0, 300, 24}, {300, 0, 24, 24}, {324, 0, 300, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  // Test using critical value 300
+  host_->SetSize({300, 24});
+  expected = {{0, 0, 138, 24}, {138, 0, 24, 24}, {162, 0, 138, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  // Test using critical value 524, It comes from the critical value 250+250+24
+  // Values in [524, 622.5) should behave the same.
+  //
+  // Why is it 622.5? Because when the space less than 1.5 (300+300+24-1.5) is
+  // evenly distributed, the available space of v1 will become 300 due to
+  // rounding.
+  host_->SetSize({524, 24});
+  expected = {{0, 0, 250, 24}, {250, 0, 24, 24}, {274, 0, 250, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  // Test using critical value 623
+  host_->SetSize({623, 24});
+  expected = {{0, 0, 300, 24}, {324, 0, 24, 24}, {373, 0, 250, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+}
+
+TEST_F(FlexLayoutTest, ZeroPreferedSizeView) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 5))
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  View* const v1 = AddChild(gfx::Size(10, 24));
+  View* const v2 = AddChild(gfx::Size(0, 24));
+  v2->SetProperty(
+      kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
+  View* const v3 = AddChild(gfx::Size(24, 24));
+
+  EXPECT_EQ(gfx::Size(44, 24), host_->GetPreferredSize({}));
+
+  host_->SizeToPreferredSize();
+  std::vector<Rect> expected = {{0, 0, 10, 24}, {0, 0, 0, 0}, {20, 0, 24, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+  EXPECT_TRUE(v1->GetVisible());
+  EXPECT_FALSE(v2->GetVisible());
+  EXPECT_TRUE(v3->GetVisible());
 }
 
 // Cross-axis Fit Tests --------------------------------------------------------

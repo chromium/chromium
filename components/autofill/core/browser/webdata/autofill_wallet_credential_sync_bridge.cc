@@ -188,12 +188,16 @@ std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
 void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AutofillTable* table = GetAutofillTable();
+  // Check if we have data to delete.
+  if (table->GetAllServerCvcs().size() == 0) {
+    return;
+  }
   // For this data type, we want to delete all the data (not just the metadata)
   // when the type is disabled!
   // Note- This only clears the data from the local database and doesn't trigger
   // a `REMOVE` call to the Chrome Sync server.
-  if (AutofillTable* table = GetAutofillTable();
-      !table || !table->ClearServerCvcs()) {
+  if (!table || !table->ClearServerCvcs()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete wallet credential data from the table."});
   }
@@ -253,17 +257,19 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
       CreateMetadataChangeList();
   auto data = std::make_unique<syncer::EntityData>();
 
+  std::string key_str = base::NumberToString(change.key());
   switch (change.type()) {
     case ServerCvcChange::ADD:
     case ServerCvcChange::UPDATE:
       data->name = base::NumberToString(change.data_model().instrument_id);
       *data->specifics.mutable_autofill_wallet_credential() =
           AutofillWalletCredentialSpecificsFromStructData(change.data_model());
-      change_processor()->Put(change.key(), std::move(data),
+      change_processor()->Put(std::move(key_str), std::move(data),
                               metadata_change_list.get());
       break;
     case ServerCvcChange::REMOVE:
-      change_processor()->Delete(change.key(), metadata_change_list.get());
+      change_processor()->Delete(std::move(key_str),
+                                 metadata_change_list.get());
       break;
   }
 }

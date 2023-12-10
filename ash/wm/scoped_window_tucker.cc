@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/window_util.h"
@@ -113,6 +114,7 @@ ScopedWindowTucker::ScopedWindowTucker(std::unique_ptr<Delegate> delegate,
       left_(left),
       event_blocker_(window) {
   InitializeTuckHandleWidget();
+  window_observation_.Observe(window);
 }
 
 ScopedWindowTucker::~ScopedWindowTucker() {
@@ -223,6 +225,15 @@ void ScopedWindowTucker::OnOverviewModeEndingAnimationComplete(bool canceled) {
   OnOverviewModeChanged(/*in_overview=*/false);
 }
 
+void ScopedWindowTucker::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
+  tuck_handle->SetBounds(delegate_->GetTuckHandleBounds(left_, new_bounds));
+}
+
 void ScopedWindowTucker::InitializeTuckHandleWidget() {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -257,7 +268,7 @@ void ScopedWindowTucker::InitializeTuckHandleWidget() {
       });
   aura::Window* window_to_activate = nullptr;
   if (app_window_it == mru_windows.end()) {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       window_to_activate = Shell::Get()->app_list_controller()->GetWindow();
     }
   } else {

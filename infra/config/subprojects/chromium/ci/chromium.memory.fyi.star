@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -29,37 +30,6 @@ consoles.console_view(
 # TODO(crbug.com/1442587): Remove this builder after burning down failures
 # found when we now post-process stdout.
 ci.builder(
-    name = "linux-exp-asan-lsan-fyi-rel",
-    schedule = "with 6h interval",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "lsan",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-    ),
-    builderless = 1,
-    cores = 16,
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "experimental|linux",
-        short_name = "asan lsan",
-    ),
-    execution_timeout = 6 * time.hour,
-    reclient_jobs = reclient.jobs.DEFAULT,
-)
-
-# TODO(crbug.com/1442587): Remove this builder after burning down failures
-# found when we now post-process stdout.
-ci.builder(
     name = "linux-exp-msan-fyi-rel",
     schedule = "with 6h interval",
     triggered_by = [],
@@ -75,6 +45,14 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     # At this time, MSan is only compatibly with Focal. See
@@ -106,6 +84,15 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = 1,
     console_view_entry = consoles.console_view_entry(
         category = "experimental|linux",
@@ -131,6 +118,13 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_no_recover",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     console_view_entry = consoles.console_view_entry(
@@ -158,6 +152,16 @@ ci.builder(
             target_bits = 64,
         ),
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "dcheck_always_on",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     cores = None,

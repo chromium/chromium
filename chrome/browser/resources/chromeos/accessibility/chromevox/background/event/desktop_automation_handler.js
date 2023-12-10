@@ -109,13 +109,13 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         EventType.LIVE_REGION_CHANGED,
         event => this.onLiveRegionChanged_(event));
 
-    this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
-    this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
-    this.addListener_(EventType.MENU_START, event => {
-      Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
-      this.onEventDefault(event);
-    });
-    this.addListener_(EventType.RANGE_VALUE_CHANGED, this.onValueChanged);
+    this.addListener_(
+        EventType.LOAD_COMPLETE, event => this.onLoadComplete_(event));
+    this.addListener_(
+        EventType.FOCUS_AFTER_MENU_CLOSE, event => this.onMenuEnd_(event));
+    this.addListener_(EventType.MENU_START, event => this.onMenuStart_(event));
+    this.addListener_(
+        EventType.RANGE_VALUE_CHANGED, event => this.onValueChanged_(event));
     this.addListener_(
         EventType.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
     this.addListener_(
@@ -131,7 +131,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         EventType.TEXT_SELECTION_CHANGED, this.onEditableChanged_);
     this.addListener_(
         EventType.VALUE_IN_TEXT_FIELD_CHANGED, this.onEditableChanged_);
-    this.addListener_(EventType.VALUE_CHANGED, this.onValueChanged);
+    this.addListener_(
+        EventType.VALUE_CHANGED, event => this.onValueChanged_(event));
     this.addListener_(
         EventType.AUTOFILL_AVAILABILITY_CHANGED,
         this.onAutofillAvailabilityChanged);
@@ -312,14 +313,14 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     // Invalidate any previous editable text handler state.
-    if (!this.createTextEditHandlerIfNeeded_(evt.target, true)) {
+    if (!this.createTextEditHandlerIfNeeded_(node, true)) {
       this.textEditHandler_ = null;
     }
 
     // Discard focus events on embeddedObject and webView.
-    if (node.role === RoleType.EMBEDDED_OBJECT ||
-        node.role === RoleType.PLUGIN_OBJECT ||
-        node.role === RoleType.WEB_VIEW) {
+    const shouldDiscard = AutomationPredicate.roles(
+        [RoleType.EMBEDDED_OBJECT, RoleType.PLUGIN_OBJECT, RoleType.WEB_VIEW]);
+    if (shouldDiscard(node)) {
       return;
     }
 
@@ -373,8 +374,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   /**
    * Provides all feedback once a load complete event fires.
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onLoadComplete(evt) {
+  onLoadComplete_(evt) {
     // We are only interested in load completes on valid top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
     if (!top || top !== evt.target.root || !top.docUrl) {
@@ -536,8 +538,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    * Provides all feedback once a rangeValueChanged or a valueInTextFieldChanged
    * event fires.
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onValueChanged(evt) {
+  onValueChanged_(evt) {
     // Skip root web areas.
     if (evt.target.role === RoleType.ROOT_WEB_AREA) {
       return;
@@ -677,8 +680,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // TableView fires selection events on rows/cells
       // and we want to ignore those because it also fires focus events.
-      if (isDesktop && target.role === RoleType.CELL ||
-          target.role === RoleType.ROW) {
+      const skip = AutomationPredicate.roles([RoleType.CELL, RoleType.ROW]);
+      if (isDesktop && skip(target)) {
         return;
       }
 
@@ -710,10 +713,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           target.className === 'PopupFooterView' ||
           target.className === 'PopupWarningView' ||
           target.className === 'PopupBaseView' ||
-          target.className === 'PopupCellView' ||
+          target.className === 'PopupRowContentView' ||
           target.className ===
-              'PasswordGenerationPopupViewViews::GeneratedPasswordBox' ||
-          target.className === 'PopupCellWithButtonView') {
+              'PasswordGenerationPopupViewViews::GeneratedPasswordBox') {
         override = true;
       }
 
@@ -733,8 +735,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   /**
    * Provides all feedback once a menu end event fires.
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onMenuEnd(evt) {
+  onMenuEnd_(evt) {
     // This is a work around for Chrome context menus not firing a focus event
     // after you close them.
     chrome.automation.getFocus(focus => {
@@ -749,6 +752,15 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         ChromeVoxRange.set(range);
       }
     });
+  }
+
+  /**
+   * @param {!ChromeVoxEvent} event
+   * @private
+   */
+  onMenuStart_(event) {
+    Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
+    this.onEventDefault(event);
   }
 
   /**

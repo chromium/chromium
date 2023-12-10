@@ -8,20 +8,25 @@
  * #css_wrapper_metadata_end */
 
 /*
-Style Module that defines overrides for cr-elements on ChromeOS. This file
-plumbs semantic colors and fonts into cr-elements.
-
-To get ChromeOS System colors, an element must:
-- be beneath a <html> element with a "cros" attribute
-- have a <style include="cros-color-overrides"> module in its style module list
-- import the following URL in JS/TS
-  //resources/cr_elements/chromeos/cros_color_overrides.css.js
-
-To get ChromeOS Jelly colors, an element must:
-- have an ancestor <body> element with the "jelly-enabled" class
-- include "cros-color-overrides" style module in HTML
-- import "//resources/cr_elements/chromeos/cros_color_overrides.css.js" in JS/TS
-*/
+ * Style Module that defines overrides for cr-elements on ChromeOS. This file
+ * plumbs semantic colors and fonts into cr-elements.
+ *
+ * To get ChromeOS System colors, an element must:
+ * 1) Have an ancestor element with the "cros" attribute in the <html> tag.
+ * 2) Import the "cros_color_overrides.css.js" CSS wrapper file in JS/TS.
+ * 3) Include the "cros-color-overrides" style module in HTML.
+ *
+ * To get ChromeOS Jelly colors, an element must:
+ * 1) Have an ancestor element with the "jelly-enabled" class in the <body> tag.
+ * 2) Import the "cros_color_overrides.css.js" CSS wrapper file in JS/TS.
+ * 3) Include the "cros-color-overrides" style module in HTML.
+ *
+ * To apply ChromeOS overrides for Chrome Refresh 2023 styles, an element must:
+ * 1) Have an ancestor element with both the "cros" and "chrome-refresh-2023"
+ *    attributes in the <html> tag.
+ * 2) Import the "cros_color_overrides.css.js" CSS wrapper file in JS/TS.
+ * 3) Include the "cros-color-overrides" style module in HTML.
+ */
 
 :host-context([cros]) a:not(.item)[href] {
   color: var(--cros-link-color);
@@ -72,7 +77,7 @@ To get ChromeOS Jelly colors, an element must:
   --cr-toggle-ripple-diameter: 32px;
 }
 
-:host-context([cros]) cr-toggle:focus {
+:host-context([cros]):host-context(.focus-outline-visible) cr-toggle:focus {
   --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
 }
 
@@ -107,6 +112,11 @@ To get ChromeOS Jelly colors, an element must:
   --cr-link-color: var(--cros-sys-primary);
   --cr-primary-text-color: var(--cros-sys-on_surface);
   --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
+}
+
+:host-context([cros][chrome-refresh-2023]) {
+  --cr-focus-outline-color: var(--cros-sys-focus_ring);
+  --cr-disabled-opacity: var(--cros-disabled-opacity);
 }
 
 /* Button */
@@ -174,6 +184,19 @@ To get ChromeOS Jelly colors, an element must:
   --cr-checkbox-unchecked-ripple-opacity: 1;
 }
 
+:host-context([cros][chrome-refresh-2023]) cr-checkbox {
+  --cr-checkbox-focus-outline: none;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-checkbox[disabled] {
+  opacity: var(--cros-disabled-opacity);
+}
+
+:host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
+    cr-checkbox:focus {
+  --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
+}
+
 /* Dialog */
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
   --cr-dialog-background-color: var(--cros-sys-base_elevated);
@@ -209,12 +232,74 @@ To get ChromeOS Jelly colors, an element must:
   --cr-input-placeholder-color: var(--cros-sys-secondary);
 }
 
+:host-context([cros][chrome-refresh-2023]) cr-input {
+  --cr-input-background-color: var(--cros-sys-input_field_on_base);
+  --cr-input-border: none;
+  --cr-input-border-bottom: none;
+  --cr-input-border-radius: 8px;
+  --cr-input-label-color: var(--cros-sys-on-surface);
+  --cr-input-padding-start: 16px;
+  --cr-input-padding-end: 16px;
+  --cr-input-placeholder-color: var(--cros-sys-secondary);
+  --cr-input-underline-display: none;
+
+  /* Focused state */
+  --cr-input-focus-color: var(--cros-sys-primary);
+  --cr-input-focus-label-color: var(--cros-sys-primary);
+  --cr-input-focus-outline: 2px solid var(--cros-sys-focus_ring);
+
+  /* Hover state */
+  --cr-input-hover-background-color: transparent;
+
+  /* Invalid state */
+  --cr-input-error-color: var(--cros-sys-error);
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-input[disabled] {
+  color: currentColor;
+  opacity: var(--cros-disabled-opacity);
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-input[invalid] {
+  --cr-input-focus-outline: 2px solid var(--cros-sys-error);
+}
+
+/* Toolbar search field */
+:host-context([cros][chrome-refresh-2023]) cr-toolbar-search-field {
+  --cr-toolbar-search-field-hover-background: none;
+}
+
 /* md-select */
 :host-context(body.jelly-enabled) .md-select {
   --md-select-bg-color: var(--cros-sys-input_field_on_base);
   --md-select-focus-shadow-color: var(--cros-sys-primary);
   --md-select-option-bg-color: var(--cros-sys-base_elevated);
   --md-select-text-color: var(--cros-sys-on_surface);
+}
+
+:host-context([cros][chrome-refresh-2023]) .md-select {
+  --md-arrow-width: 7px;
+  --md-select-bg-color: var(--cros-sys-input_field_on_base);
+  --md-select-focus-shadow-color: transparent;
+  --md-select-option-bg-color: var(--cros-sys-base_elevated);
+  --md-select-side-padding: 16px;
+  --md-select-text-color: var(--cros-sys-on_surface);
+  border: none;
+  border-radius: 8px;
+  font: var(--cros-body-2-font);
+  height: 36px;
+  line-height: 36px;
+}
+
+:host-context([cros][chrome-refresh-2023]) .md-select:hover {
+  background-color: var(--md-select-bg-color);
+}
+
+:host-context([cros][chrome-refresh-2023]) .md-select[disabled] {
+  background-color: var(--md-select-bg-color);
+  border-color: transparent;
+  color: var(--md-select-text-color);
+  opacity: var(--cros-disabled-opacity);
 }
 
 /* Menu */
@@ -231,6 +316,21 @@ To get ChromeOS Jelly colors, an element must:
   --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
   --cr-radio-button-unchecked-ripple-color:
       var(--cros-sys-ripple_neutral_on_subtle);
+}
+
+:host-context([cros][chrome-refresh-2023]),
+:host-context([cros][chrome-refresh-2023]) cr-radio-button {
+  --cr-radio-button-checked-color: var(--cros-sys-primary);
+  --cr-radio-button-checked-ripple-color: var(--cros-sys-ripple_primary);
+  --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
+  --cr-radio-button-unchecked-ripple-color:
+    var(--cros-sys-ripple_neutral_on_subtle);
+  --cr-radio-button-ink-size: 40px;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-radio-button[disabled] {
+  --cr-radio-button-checked-color: var(--cros-sys-disabled);
+  --cr-radio-button-unchecked-color: var(--cros-sys-disabled);
 }
 
 :host-context(body.jelly-enabled) cr-card-radio-button {
@@ -300,6 +400,32 @@ To get ChromeOS Jelly colors, an element must:
   --cr-toggle-ripple-diameter: 32px;
 }
 
-:host-context(body.jelly-enabled) cr-toggle:focus {
+:host-context(body.jelly-enabled):host-context(.focus-outline-visible)
+    cr-toggle:focus {
   --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-toggle {
+  --cr-toggle-bar-width: 32px;
+  --cr-toggle-knob-diameter: 12px;
+  --cr-toggle-bar-border: none;
+
+  /* "On" state */
+  --cr-toggle-checked-bar-color: var(--cros-sys-primary);
+  --cr-toggle-checked-button-color: var(--cros-sys-on_primary);
+
+  /* "Off" state */
+  --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
+
+  /* Hover state */
+  --color-toggle-button-thumb-on-hover: var(--cros-sys-on_primary);
+
+  /* Disabled state */
+  --cr-toggle-disabled-opacity: var(--cros-disabled-opacity);
+}
+
+:host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
+    cr-toggle:focus {
+  --cr-toggle-ripple-ring: none;
 }

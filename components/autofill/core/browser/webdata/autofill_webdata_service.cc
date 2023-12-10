@@ -139,15 +139,6 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
       consumer);
 }
 
-WebDataServiceBase::Handle AutofillWebDataService::GetServerProfiles(
-    WebDataServiceConsumer* consumer) {
-  return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::GetServerProfiles,
-                     autofill_backend_),
-      consumer);
-}
-
 WebDataServiceBase::Handle
     AutofillWebDataService::GetCountOfValuesContainedBetween(
         const Time& begin, const Time& end, WebDataServiceConsumer* consumer) {
@@ -358,14 +349,6 @@ void AutofillWebDataService::UpdateServerCardMetadata(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::UpdateServerCardMetadata,
                      autofill_backend_, credit_card));
-}
-
-void AutofillWebDataService::UpdateServerAddressMetadata(
-    const AutofillProfile& profile) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::UpdateServerAddressMetadata,
-                     autofill_backend_, profile));
 }
 
 void AutofillWebDataService::RemoveAutofillDataModifiedBetween(

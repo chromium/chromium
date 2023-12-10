@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
+
 #import <Foundation/Foundation.h>
+
+#import <optional>
 #import <set>
 #import <vector>
 
@@ -20,10 +24,11 @@
 #import "ios/chrome/browser/promos_manager/promo.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using PromoContext = PromosManagerImpl::PromoContext;
 
@@ -41,6 +46,12 @@ const base::TimeDelta kTimeDelta1Hour = base::Hours(1);
 const PromoContext kPromoContextForActive = PromoContext{
     .was_pending = false,
 };
+
+BASE_FEATURE(kTestFeatureOne, "test_one", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureTwo, "test_two", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureThree,
+             "test_three",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -72,7 +83,7 @@ class PromosManagerImplTest : public PlatformTest {
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<PromosManagerImpl> promos_manager_;
-  std::unique_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  feature_engagement::test::MockTracker mock_tracker_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -108,9 +119,8 @@ Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
 
 void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
-  mock_tracker_ = std::make_unique<feature_engagement::test::MockTracker>();
   promos_manager_ = std::make_unique<PromosManagerImpl>(
-      local_state_.get(), &test_clock_, mock_tracker_.get(), nullptr);
+      local_state_.get(), &test_clock_, &mock_tracker_, nullptr);
   promos_manager_->Init();
 }
 
@@ -195,7 +205,7 @@ TEST_F(PromosManagerImplTest, ReturnsTestPromoForName) {
             promos_manager::Promo::Test);
 }
 
-// Tests promos_manager::PromoForName correctly returns absl::nullopt for bad
+// Tests promos_manager::PromoForName correctly returns std::nullopt for bad
 // input.
 TEST_F(PromosManagerImplTest, ReturnsNulloptForBadName) {
   EXPECT_FALSE(promos_manager::PromoForName("promos_manager::Promo::FOOBAR")
@@ -490,24 +500,11 @@ TEST_F(PromosManagerImplTest, SortPromos) {
       {promos_manager::Promo::DefaultBrowser, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
-
-  promos_manager_->impression_history_ = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180,
-          false),
-  };
-
   std::vector<promos_manager::Promo> expected = {
-      promos_manager::Promo::CredentialProviderExtension,
-      promos_manager::Promo::AppStoreRating,
-      promos_manager::Promo::DefaultBrowser,
       promos_manager::Promo::Test,
+      promos_manager::Promo::DefaultBrowser,
+      promos_manager::Promo::AppStoreRating,
+      promos_manager::Promo::CredentialProviderExtension,
   };
 
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
@@ -524,25 +521,11 @@ TEST_F(PromosManagerImplTest, SortPromosWithSomeInactivePromos) {
       {promos_manager::Promo::AppStoreRating, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180,
-          false),
-  };
-
   const std::vector<promos_manager::Promo> expected = {
-      promos_manager::Promo::AppStoreRating,
       promos_manager::Promo::Test,
+      promos_manager::Promo::AppStoreRating,
   };
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
@@ -551,29 +534,29 @@ TEST_F(PromosManagerImplTest, SortPromosWithSomeInactivePromos) {
 TEST_F(PromosManagerImplTest, ReturnsSortPromosBreakingTies) {
   CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
-      {promos_manager::Promo::Test, kPromoContextForActive},
       {promos_manager::Promo::CredentialProviderExtension,
        kPromoContextForActive},
       {promos_manager::Promo::AppStoreRating, kPromoContextForActive},
       {promos_manager::Promo::DefaultBrowser, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
+  PromoConfigsSet promoImpressionLimits;
+  promoImpressionLimits.emplace(
+      promos_manager::Promo::CredentialProviderExtension, &kTestFeatureOne);
+  promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating,
+                                &kTestFeatureTwo);
+  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser,
+                                &kTestFeatureThree);
+  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
-                                 false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating, today,
-                                 false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today, false),
-  };
+  EXPECT_CALL(mock_tracker_, IsInitialized())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, HasEverTriggered(testing::_, true))
+      .WillRepeatedly(testing::Return(false));
 
-  promos_manager_->impression_history_ = impressions;
-  EXPECT_EQ(promos_manager_->SortPromos(active_promos).size(), (size_t)4);
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos).size(), (size_t)3);
   EXPECT_EQ(promos_manager_->SortPromos(active_promos)[0],
-            promos_manager::Promo::CredentialProviderExtension);
+            promos_manager::Promo::DefaultBrowser);
 }
 
 // Tests `SortPromos` returns a single promo in a list when the impression
@@ -656,21 +639,32 @@ TEST_F(PromosManagerImplTest,
       {promos_manager::Promo::DefaultBrowser, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
+  PromoConfigsSet promoImpressionLimits;
+  promoImpressionLimits.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating,
+                                &kTestFeatureTwo);
+  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser,
+                                &kTestFeatureThree);
+  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-  };
+  EXPECT_CALL(mock_tracker_, IsInitialized())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_,
+              HasEverTriggered(testing::Ref(kTestFeatureTwo), true))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_tracker_,
+              HasEverTriggered(testing::Ref(kTestFeatureOne), true))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_,
+              HasEverTriggered(testing::Ref(kTestFeatureThree), true))
+      .WillRepeatedly(testing::Return(true));
 
   const std::vector<promos_manager::Promo> expected = {
       promos_manager::Promo::AppStoreRating,
-      promos_manager::Promo::DefaultBrowser,
       promos_manager::Promo::Test,
+      promos_manager::Promo::DefaultBrowser,
   };
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
@@ -684,7 +678,6 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
       {promos_manager::Promo::DefaultBrowser, PromoContext{true}},
       {promos_manager::Promo::PostRestoreSignInFullscreen, PromoContext{false}},
       {promos_manager::Promo::PostRestoreSignInAlert, PromoContext{false}},
-      {promos_manager::Promo::Choice, PromoContext{false}},
   };
 
   int today = TodaysDay();
@@ -703,15 +696,13 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
   promos_manager_->impression_history_ = impressions;
   std::vector<promos_manager::Promo> sorted =
       promos_manager_->SortPromos(active_promos);
-  EXPECT_EQ(sorted.size(), (size_t)5);
+  EXPECT_EQ(sorted.size(), (size_t)4);
   // tied for the type.
   EXPECT_TRUE(sorted[0] == promos_manager::Promo::PostRestoreSignInFullscreen ||
               sorted[0] == promos_manager::Promo::PostRestoreSignInAlert);
-  // Choice comes next
-  EXPECT_TRUE(sorted[2] == promos_manager::Promo::Choice);
   // with pending state, before the less recently shown promo (Test).
-  EXPECT_EQ(sorted[3], promos_manager::Promo::DefaultBrowser);
-  EXPECT_EQ(sorted[4], promos_manager::Promo::Test);
+  EXPECT_EQ(sorted[2], promos_manager::Promo::DefaultBrowser);
+  EXPECT_EQ(sorted[3], promos_manager::Promo::Test);
 }
 
 // Tests `SortPromos` sorts promos with pending state before others without.
@@ -1154,7 +1145,7 @@ TEST_F(PromosManagerImplTest,
       promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
 
   // Pending promo in Pref is updated with the correct time.
-  absl::optional<base::Time> actual_becomes_active_time = ValueToTime(
+  std::optional<base::Time> actual_becomes_active_time = ValueToTime(
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
           .Find(promos_manager::NameForPromo(
               promos_manager::Promo::CredentialProviderExtension)));
@@ -1329,7 +1320,7 @@ TEST_F(PromosManagerImplTest,
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
           .size(),
       (size_t)1);
-  absl::optional<base::Time> actual_becomes_active_time = ValueToTime(
+  std::optional<base::Time> actual_becomes_active_time = ValueToTime(
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
           .Find(promos_manager::NameForPromo(
               promos_manager::Promo::CredentialProviderExtension)));
@@ -1622,7 +1613,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
   EXPECT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::CredentialProviderExtension);
@@ -1649,7 +1640,7 @@ TEST_F(PromosManagerImplTest,
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_TRUE(promo.has_value());
@@ -1671,7 +1662,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
   // Advance to so that the none of the pending promo can become active.
   test_clock_.Advance(kTimeDelta1Hour);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_FALSE(promo.has_value());
@@ -1701,7 +1692,7 @@ TEST_F(PromosManagerImplTest,
   // fall into the two-day window since the last impression.
   test_clock_.Advance(kTimeDelta1Day);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_FALSE(promo.has_value());

@@ -11,9 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -472,7 +472,7 @@
 
 /// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
 - (UIMenuElement*)menuElementForPasteboard {
-  absl::optional<std::set<ClipboardContentType>> clipboardContentType =
+  std::optional<std::set<ClipboardContentType>> clipboardContentType =
       ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
   if (clipboardContentType.has_value()) {

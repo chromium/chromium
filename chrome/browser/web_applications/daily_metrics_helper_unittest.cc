@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/numerics/clamped_math.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"

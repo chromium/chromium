@@ -26,8 +26,8 @@ class ASH_EXPORT CoralController : public message_center::NotificationObserver {
   static bool IsSecretKeyMatched();
 
   // message_center::NotificationObserver:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   void CollectDataPeriodically();

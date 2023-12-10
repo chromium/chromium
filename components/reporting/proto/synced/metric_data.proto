@@ -407,6 +407,12 @@ message DisplayStatus {
   optional bool is_internal = 5;
 }
 
+// deliberately left empty as there is no payload for Heartbeat messages.
+// It just implicitly indicates that the sender is still alive.
+message KioskHeartbeatTelemetry {
+  // No payload
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 // IMPORTANT: Do not add additional non-message fields (bool, int, string,
@@ -438,8 +444,13 @@ message TelemetryData {
   optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
   // Website telemetry data.
   optional WebsiteTelemetry website_telemetry = 11;
+  // Kiosk Heartbeats as telemetry data
+  optional KioskHeartbeatTelemetry heartbeat_telemetry = 12;
 }
 
+// Type of event metric being reported.
+// This must be kept in sync with //tools/metrics/histograms/enums.xml's
+// EnterpriseCloudReportingMetricEventType in the Chromium repo.
 enum MetricEventType {
   EVENT_TYPE_UNSPECIFIED = 0;
   NETWORK_HTTPS_LATENCY_CHANGE = 1;
@@ -453,9 +464,10 @@ enum MetricEventType {
   WIFI_SIGNAL_STRENGTH_RECOVERED = 14;
   NETWORK_STATE_CHANGE = 15;
   VPN_CONNECTION_STATE_CHANGE = 16;
-  CRASH_FATALLY = 17;
+  FATAL_CRASH = 17;
   URL_OPENED = 18;
   URL_CLOSED = 19;
+  KIOSK_HEARTBEAT = 20;
 
   reserved 2, 3, 10, 11, 12;
 }

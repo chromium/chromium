@@ -81,6 +81,9 @@ class GuestOSApps : public KeyedService,
                          const std::vector<std::string>& updated_apps,
                          const std::vector<std::string>& removed_apps,
                          const std::vector<std::string>& inserted_apps) final;
+  void OnAppLastLaunchTimeUpdated(guest_os::VmType vm_type,
+                                  const std::string& app_id,
+                                  const base::Time& last_launch_time) override;
 
   AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,

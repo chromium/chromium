@@ -156,10 +156,10 @@ class MockRequestClient : public ResourceRequestClient {
         .Run(redirect_info, std::move(head),
              std::move(follow_redirect_callback));
   }
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
-                          mojo::ScopedDataPipeConsumerHandle body,
-                          absl::optional<mojo_base::BigBuffer> cached_metadata,
-                          base::TimeTicks response_arrival) override {
+  void OnReceivedResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     last_load_timing_ = head->load_timing;
     cached_metadata_ = std::move(cached_metadata);
     received_response_ = true;

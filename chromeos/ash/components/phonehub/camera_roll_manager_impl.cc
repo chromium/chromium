@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/phonehub/camera_roll_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -83,7 +83,7 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
 void CameraRollManagerImpl::OnPayloadFilesCreated(
     const proto::FetchCameraRollItemDataResponse& response,
     CameraRollDownloadManager::CreatePayloadFilesResult result,
-    absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
+    std::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
   switch (result) {
     case CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess:
       connection_manager_->RegisterPayloadFile(

@@ -16,9 +16,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
-/**
- * A phone specific version of the {@link FindToolbar}.
- */
+/** A phone specific version of the {@link FindToolbar}. */
 public class FindToolbarPhone extends FindToolbar {
     /**
      * Creates an instance of a {@link FindToolbarPhone}.

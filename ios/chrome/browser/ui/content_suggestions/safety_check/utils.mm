@@ -7,7 +7,6 @@
 #import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -81,18 +80,6 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& compromised_credentials,
     id<ApplicationCommands> handler) {
-  // If the new Password Checkup is disabled, always navigate users to the
-  // Password Issues overview screen for compromised passwords.
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
-    [handler showPasswordIssuesWithWarningType:password_manager::WarningType::
-                                                   kCompromisedPasswordsWarning
-                                      referrer:password_manager::
-                                                   PasswordCheckReferrer::
-                                                       kSafetyCheckMagicStack];
-
-    return;
-  }
-
   // If there's only one compromised credential, navigate users to the detail
   // view for that particular credential.
   if (compromised_credentials.size() == 1) {
@@ -164,7 +151,7 @@ int CheckIssuesCount(SafetyCheckState* state) {
   return invalid_check_count;
 }
 
-bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time) {
+bool CanRunSafetyCheck(std::optional<base::Time> last_run_time) {
   // The Safety Check should be run if it's never been run before.
   if (!last_run_time.has_value()) {
     return true;
@@ -180,7 +167,7 @@ bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time) {
 }
 
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
-    absl::optional<base::Time> last_run_time) {
+    std::optional<base::Time> last_run_time) {
   if (!last_run_time.has_value()) {
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -18,7 +19,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
@@ -87,7 +87,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
 
   bool SupportsFeature(wgpu::FeatureName feature);
 
-  absl::optional<error::ContextLostReason> GetResetStatus() const;
+  std::optional<error::ContextLostReason> GetResetStatus() const;
 
   void OnError(WGPUErrorType error_type, const char* message);
 
@@ -110,7 +110,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 
   mutable base::Lock context_lost_lock_;
-  absl::optional<error::ContextLostReason> context_lost_reason_
+  std::optional<error::ContextLostReason> context_lost_reason_
       GUARDED_BY(context_lost_lock_);
 };
 

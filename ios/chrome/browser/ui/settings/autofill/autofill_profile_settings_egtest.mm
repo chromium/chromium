@@ -10,7 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
@@ -145,10 +145,6 @@ id<GREYMatcher> MigrateToAccountButton() {
 
   if ([self isRunningTest:@selector(testMigrateToAccount)] ||
       [self isRunningTest:@selector(testIncompleteProfileMigrateToAccount)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAccountProfileStorage);
-    config.features_enabled.push_back(
-        autofill::features::kAutofillRequireNameForProfileImport);
     config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }

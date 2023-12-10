@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
+<translation id="1155815720264022949">¿Quieres cerrar las pestañas anteriores?</translation>
 <translation id="1215127405478249895">Revisar las pestañas</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
 <translation id="1499635324672558517">¿Quieres cerrar todas las pestañas de incógnito?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
 <translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
 <translation id="5082793167783849073">Forma un grupo para comparar las páginas rápidamente. Para comenzar, mantén presionado un vínculo.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tienes <ph name="TABS_COUNT_ONE" /> pestaña que no usaste recientemente}other{Tienes <ph name="TABS_COUNT_MANY" /> pestañas que no usaste recientemente}}</translation>
 <translation id="5339733443032484186">Tu pestaña más reciente</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
+<translation id="5545379293264651575">Cerrar sin revisar</translation>
 <translation id="5556417849629758491">Ver información de la tienda (la opción está disponible cerca de la parte superior de la pantalla)</translation>
 <translation id="5558362125926932819">Cerrar el grupo de pestañas, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5580090775658607195">Se agruparon <ph name="TAB_COUNT" /> pestañas</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Mover la pestaña a la derecha</translation>
 <translation id="7966321538264951561">Descarta las sugerencias.</translation>
 <translation id="8029301326595421733">La hoja de información sobre esta tienda está totalmente abierta</translation>
-<translation id="814503310257431685">Ver todos</translation>
 <translation id="8205266828577616993">Mover la pestaña hacia arriba</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cierra <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cierra <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

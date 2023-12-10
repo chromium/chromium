@@ -841,7 +841,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       "GL_ANGLE_texture_usage",
       "GL_CHROMIUM_bind_uniform_location",
       "GL_CHROMIUM_sync_query",
-      "GL_CHROMIUM_texture_filtering_hint",
       "GL_EXT_debug_marker",
       "GL_EXT_memory_object",
       "GL_EXT_memory_object_fd",
@@ -994,10 +993,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     bound_buffers_[GL_DISPATCH_INDIRECT_BUFFER] = 0;
   }
   bound_element_array_buffer_dirty_ = false;
-
-  if (feature_info_->feature_flags().chromium_texture_filtering_hint) {
-    api()->glHintFn(GL_TEXTURE_FILTERING_HINT_CHROMIUM, GL_NICEST);
-  }
 
   lose_context_when_out_of_memory_ =
       attrib_helper.lose_context_when_out_of_memory;
@@ -1401,10 +1396,7 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->workarounds().max_copy_texture_chromium_size;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
-  caps.gpu_rasterization =
-      group_->gpu_feature_info()
-          .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
-      kGpuFeatureStatusEnabled;
+  caps.gpu_rasterization = false;
   caps.msaa_is_slow = MSAAIsSlow(feature_info_->workarounds());
   caps.avoid_stencil_buffers =
       feature_info_->workarounds().avoid_stencil_buffers;

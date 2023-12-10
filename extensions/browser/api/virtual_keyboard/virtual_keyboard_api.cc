@@ -23,7 +23,7 @@ void VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures(
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardRestrictFeaturesFunction::Run() {
-  absl::optional<api::virtual_keyboard::RestrictFeatures::Params> params =
+  std::optional<api::virtual_keyboard::RestrictFeatures::Params> params =
       api::virtual_keyboard::RestrictFeatures::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

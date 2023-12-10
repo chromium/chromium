@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include <atomic>
+#include <bit>
 #include <cstddef>
 #include <map>
 #include <string>
 #include <tuple>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/allocation_guard.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
 #include "build/build_config.h"
+#include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/chromecast_buildflags.h"
+#include "partition_alloc/memory_reclaimer.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
+#include "partition_alloc/shim/allocator_shim_internals.h"
+#include "partition_alloc/shim/nonscannable_allocator.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
@@ -154,13 +154,12 @@ class MainPartitionConstructor {
         // and only one is supported at a time.
         partition_alloc::PartitionOptions::kDisabled;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    auto* new_root = new (buffer)
-        partition_alloc::PartitionRoot(partition_alloc::PartitionOptions{
-            .aligned_alloc = partition_alloc::PartitionOptions::kAllowed,
-            .thread_cache = thread_cache,
-            .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
-            .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
-        });
+    partition_alloc::PartitionOptions opts;
+    opts.aligned_alloc = partition_alloc::PartitionOptions::kAllowed;
+    opts.thread_cache = thread_cache;
+    opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
+    opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+    auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
 
     return new_root;
   }
@@ -219,7 +218,7 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
   // mismatch. (see below the default_dispatch definition).
   if (alignment <= partition_alloc::internal::kAlignment) {
     // This is mandated by |posix_memalign()| and friends, so should never fire.
-    PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
+    PA_CHECK(std::has_single_bit(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on
     // Mac, where PartitionPageSize() isn't constexpr.
     return Allocator()->AllocInline<partition_alloc::AllocFlags::kNoHooks>(
@@ -427,6 +426,10 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 }
 
 #if BUILDFLAG(IS_APPLE)
+size_t PartitionGoodSize(const AllocatorDispatch*, size_t size, void* context) {
+  return Allocator()->AllocationCapacityFromRequestedSize(size);
+}
+
 bool PartitionClaimedAddress(const AllocatorDispatch*,
                              void* address,
                              void* context) {
@@ -530,7 +533,8 @@ void ConfigurePartitions(
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
-    size_t scheduler_loop_quarantine_capacity_in_bytes) {
+    size_t scheduler_loop_quarantine_capacity_in_bytes,
+    ZappingByFreeFlags zapping_by_free_flags) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
   // out the aligned partition.
@@ -572,23 +576,31 @@ void ConfigurePartitions(
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
-      new_main_allocator(partition_alloc::PartitionOptions{
-          .aligned_alloc = !use_dedicated_aligned_partition
-                               ? partition_alloc::PartitionOptions::kAllowed
-                               : partition_alloc::PartitionOptions::kDisallowed,
-          .thread_cache = partition_alloc::PartitionOptions::kDisabled,
-          .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
-          .backup_ref_ptr = enable_brp
-                                ? partition_alloc::PartitionOptions::kEnabled
-                                : partition_alloc::PartitionOptions::kDisabled,
-          .ref_count_size = ref_count_size,
-          .scheduler_loop_quarantine_capacity_in_bytes =
-              scheduler_loop_quarantine_capacity_in_bytes,
-          .memory_tagging = {
-              .enabled = enable_memory_tagging
-                             ? partition_alloc::PartitionOptions::kEnabled
-                             : partition_alloc::PartitionOptions::kDisabled,
-              .reporting_mode = memory_tagging_reporting_mode}});
+      new_main_allocator([&]() {
+        partition_alloc::PartitionOptions opts;
+        opts.aligned_alloc =
+            !use_dedicated_aligned_partition
+                ? partition_alloc::PartitionOptions::kAllowed
+                : partition_alloc::PartitionOptions::kDisallowed;
+        opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
+        opts.backup_ref_ptr =
+            enable_brp ? partition_alloc::PartitionOptions::kEnabled
+                       : partition_alloc::PartitionOptions::kDisabled;
+        opts.ref_count_size = ref_count_size;
+        opts.zapping_by_free_flags =
+            zapping_by_free_flags
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
+        opts.scheduler_loop_quarantine_capacity_in_bytes =
+            scheduler_loop_quarantine_capacity_in_bytes;
+        opts.memory_tagging = {
+            .enabled = enable_memory_tagging
+                           ? partition_alloc::PartitionOptions::kEnabled
+                           : partition_alloc::PartitionOptions::kDisabled,
+            .reporting_mode = memory_tagging_reporting_mode};
+        return opts;
+      }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
   partition_alloc::PartitionRoot* new_aligned_root;
@@ -597,12 +609,15 @@ void ConfigurePartitions(
     // result in one less partition, but come at a cost of commingling types.
     static partition_alloc::internal::base::NoDestructor<
         partition_alloc::PartitionAllocator>
-        new_aligned_allocator(partition_alloc::PartitionOptions{
-            .aligned_alloc = partition_alloc::PartitionOptions::kAllowed,
-            .thread_cache = partition_alloc::PartitionOptions::kDisabled,
-            .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
-            .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
-        });
+        new_aligned_allocator([&]() {
+          partition_alloc::PartitionOptions opts;
+          opts.aligned_alloc = partition_alloc::PartitionOptions::kAllowed;
+          opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+          opts.star_scan_quarantine =
+              partition_alloc::PartitionOptions::kAllowed;
+          opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+          return opts;
+        }());
     new_aligned_root = new_aligned_allocator->root();
   } else {
     // The new main root can also support AlignedAlloc.
@@ -640,7 +655,7 @@ void ConfigurePartitions(
 
 // TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
 // the new version.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,
@@ -656,13 +671,15 @@ void ConfigurePartitions(
               ? partition_alloc::TagViolationReportingMode::kSynchronous
               : partition_alloc::TagViolationReportingMode::kDisabled;
 
-  // We don't use this feature in PDFium.
+  // We don't use these features in PDFium.
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+  auto zapping_by_free_flags = ZappingByFreeFlags(false);
 
-  ConfigurePartitions(
-      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
-      split_main_partition, use_dedicated_aligned_partition, ref_count_size,
-      distribution, scheduler_loop_quarantine_capacity_in_bytes);
+  ConfigurePartitions(enable_brp, enable_memory_tagging,
+                      memory_tagging_reporting_mode, split_main_partition,
+                      use_dedicated_aligned_partition, ref_count_size,
+                      distribution, scheduler_loop_quarantine_capacity_in_bytes,
+                      zapping_by_free_flags);
 }
 
 // No synchronization provided: `PartitionRoot.flags` is only written
@@ -708,8 +725,10 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &allocator_shim::internal::
         PartitionGetSizeEstimate,  // get_size_estimate_function
 #if BUILDFLAG(IS_APPLE)
+    &allocator_shim::internal::PartitionGoodSize,        // good_size
     &allocator_shim::internal::PartitionClaimedAddress,  // claimed_address
 #else
+    nullptr,  // good_size
     nullptr,  // claimed_address
 #endif
     &allocator_shim::internal::PartitionBatchMalloc,  // batch_malloc_function
@@ -779,7 +798,7 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
                                      &nonquarantinable_allocator_dumper);
   }
 
-  struct mallinfo info = {0};
+  struct mallinfo info = {};
   info.arena = 0;  // Memory *not* allocated with mmap().
 
   // Memory allocated with mmap(), aka virtual size.

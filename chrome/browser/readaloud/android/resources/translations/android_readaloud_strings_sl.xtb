@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1178581264944972037">Prekini</translation>
-<translation id="2558806128245168542">Pomik nazaj</translation>
-<translation id="3523426587027570423">Dotaknite se, če želite zapreti predvajalnik »Poslušanje te strani«.</translation>
+<translation id="1921351128855867012">Previjanje naprej za <ph name="NUMBER_OF_SECONDS" /> s</translation>
+<translation id="1984328900355667246">Predvajanje ni na voljo</translation>
+<translation id="3023502830214299618">Predvajanje za to stran trenutno ni na voljo. Poskusite znova pozneje.</translation>
+<translation id="3807208219231826020">Predvajanje s pomikanjem po posnetku</translation>
+<translation id="385051799172605136">Nazaj</translation>
 <translation id="4431240646217225907">Označevanje besedila in samodejno pomikanje</translation>
 <translation id="4654641641922242357">Predvajalnik »Poslušanje te strani«.</translation>
-<translation id="4731877163452936634">Hitrost predvajanja: <ph name="PLAYBACK_SPEED" />. Kliknite za zamenjavo.</translation>
+<translation id="4872475766448853257">Vrnitev za <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="5234971936051226002">Predvajalnik »Poslušanje te strani« je pomanjšan.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="6315170314923504164">Glasovne nastavitve</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6846298663435243399">Nalaganje poteka …</translation>
 <translation id="7587250070160020374">Chrome zdaj predvaja</translation>
-<translation id="7945822420239537236">Previjanje naprej za <ph name="NUMBER_OF_SECONDS" /> s</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> s nazaj</translation>
 <translation id="8136852699834914183">Predvajanje za to stran ni na voljo.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />-kratno povečanje/zmanjšanje hitrosti.</translation>
+<translation id="8407011429883244666">Zapiranje predvajalnika.</translation>
 <translation id="8953618380150219653">Predvajalnik »Poslušanje te strani« je odprt pri polni višini.</translation>
 </translationbundle>

@@ -200,6 +200,7 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   // A helper to load an existing owner key or generate a new one when
   // necessary.
   std::unique_ptr<OwnerKeyLoader> owner_key_loader_;
+  crypto::ScopedSECKEYPrivateKey old_owner_key_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

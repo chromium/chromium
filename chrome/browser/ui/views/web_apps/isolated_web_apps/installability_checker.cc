@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -31,24 +31,25 @@ std::unique_ptr<InstallabilityChecker> InstallabilityChecker::CreateAndStart(
     Profile* profile,
     WebAppProvider* web_app_provider,
     const base::FilePath& bundle_path,
-    Delegate* delegate) {
-  std::unique_ptr<InstallabilityChecker> checker = base::WrapUnique(
-      new InstallabilityChecker(profile, web_app_provider, delegate));
+    base::OnceCallback<void(Result)> callback) {
+  std::unique_ptr<InstallabilityChecker> checker =
+      base::WrapUnique(new InstallabilityChecker(profile, web_app_provider,
+                                                 std::move(callback)));
   checker->Start(bundle_path);
   return checker;
 }
 
 InstallabilityChecker::~InstallabilityChecker() = default;
 
-InstallabilityChecker::InstallabilityChecker(Profile* profile,
-                                             WebAppProvider* web_app_provider,
-                                             Delegate* delegate)
+InstallabilityChecker::InstallabilityChecker(
+    Profile* profile,
+    WebAppProvider* web_app_provider,
+    base::OnceCallback<void(Result)> callback)
     : profile_(profile),
       web_app_provider_(web_app_provider),
-      delegate_(delegate) {
+      callback_(std::move(callback)) {
   CHECK(profile_);
   CHECK(web_app_provider_);
-  CHECK(delegate_);
 }
 
 void InstallabilityChecker::Start(const base::FilePath& bundle_path) {
@@ -62,7 +63,7 @@ void InstallabilityChecker::OnLoadedUrlInfo(
     IsolatedWebAppLocation location,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   if (!url_info.has_value()) {
-    delegate_->OnBundleInvalid(url_info.error());
+    std::move(callback_).Run(BundleInvalid{url_info.error()});
     return;
   }
   SignedWebBundleMetadata::Create(
@@ -74,7 +75,7 @@ void InstallabilityChecker::OnLoadedUrlInfo(
 void InstallabilityChecker::OnLoadedMetadata(
     base::expected<SignedWebBundleMetadata, std::string> metadata) {
   if (!metadata.has_value()) {
-    delegate_->OnBundleInvalid(metadata.error());
+    std::move(callback_).Run(BundleInvalid{metadata.error()});
     return;
   }
   web_app_provider_->scheduler().CheckIsolatedWebAppBundleInstallability(
@@ -86,21 +87,23 @@ void InstallabilityChecker::OnLoadedMetadata(
 void InstallabilityChecker::OnInstallabilityChecked(
     SignedWebBundleMetadata metadata,
     InstallabilityCheckResult installability_check_result,
-    absl::optional<base::Version> installed_version) {
+    std::optional<base::Version> installed_version) {
   switch (installability_check_result) {
     case InstallabilityCheckResult::kInstallable:
-      delegate_->OnBundleInstallable(metadata);
+      std::move(callback_).Run(BundleInstallable{metadata});
       return;
     case InstallabilityCheckResult::kUpdatable:
       CHECK(installed_version.has_value());
-      delegate_->OnBundleUpdatable(metadata, installed_version.value());
+      std::move(callback_).Run(
+          BundleUpdatable{metadata, installed_version.value()});
       return;
     case InstallabilityCheckResult::kOutdated:
       CHECK(installed_version.has_value());
-      delegate_->OnBundleOutdated(metadata, installed_version.value());
+      std::move(callback_).Run(
+          BundleOutdated{metadata, installed_version.value()});
       return;
     case InstallabilityCheckResult::kShutdown:
-      delegate_->OnProfileShutdown();
+      std::move(callback_).Run(ProfileShutdown{});
       return;
   }
 }

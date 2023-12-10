@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
   CHECK(base::CommandLine::Init(argc, argv));
   const auto& cmd = *base::CommandLine::ForCurrentProcess();
   auto features = std::make_unique<base::FeatureList>();
-  features->InitializeFromCommandLine(
+  features->InitFromCommandLine(
       cmd.GetSwitchValueASCII(switches::kEnableFeatures),
       cmd.GetSwitchValueASCII(switches::kDisableFeatures));
   base::FeatureList::SetInstance(std::move(features));

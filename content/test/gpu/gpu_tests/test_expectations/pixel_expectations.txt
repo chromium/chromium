@@ -12,7 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus
+#             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -344,7 +344,6 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/1287280 [ android android-pixel-6 no-passthrough android-chromium ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
@@ -358,9 +357,6 @@ crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
 # WebGPU interop fails -- pixel color diff
 crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
-crbug.com/1445575 [ debug-x64 no-clang-coverage nvidia-0x2184 passthrough target-cpu-64 win10 ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/1445575 [ debug-x64 no-clang-coverage nvidia-0x2184 passthrough target-cpu-64 win10 ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
@@ -387,13 +383,10 @@ crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch 
 crbug.com/1392806 [ chromeos chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
 # Shader compilation failure on lacros device bots.
-crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_WebGLSadCanvas [ RetryOnFailure ]
-crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-octopus ] Pixel_WebGLSadCanvas [ RetryOnFailure ]
+crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-octopus ] Pixel_WebGLSadCanvas [ Failure ]
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
-crbug.com/1456755 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLDisplayP3 [ Failure ]
-crbug.com/1471713 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUToDataURL [ Failure ]
@@ -410,11 +403,18 @@ crbug.com/1494227 [ mac graphite-enabled intel release no-asan ] Pixel_CSSFilter
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
-# GL Crash on Nexus 5X causing flakes
-crbug.com/1489248 [ android android-chromium android-nexus-5x no-clang-coverage ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
 
 # Fails almost consistently, but likely to pass when run on its own in the retry.
 crbug.com/1484212 [ win debug nvidia ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
+
+# Fails with hung renderer
+crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
+
+
+# Flaky failures vulkan queue submission, causing dchecks on CQ
+crbug.com/1495573 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/1495573 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
+crbug.com/1495573 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

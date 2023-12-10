@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -71,6 +72,7 @@ class CanvasResourceProviderTest : public Test {
   void TearDown() override { SharedGpuContext::ResetForTesting(); }
 
  protected:
+  test::TaskEnvironment task_environment_;
   cc::StubDecodeCache image_decode_cache_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;

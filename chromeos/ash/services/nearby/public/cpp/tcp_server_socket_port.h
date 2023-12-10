@@ -6,8 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_TCP_SERVER_SOCKET_PORT_H_
 
 #include <cstdint>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace ash {
 namespace nearby {
@@ -25,8 +24,8 @@ class TcpServerSocketPort {
 
   // Creates a TcpServerSocketPort from the input |port| value. Returns nullopt
   // if |port| is not in the interval [kMin, kMax].
-  static absl::optional<TcpServerSocketPort> FromInt(int port);
-  static absl::optional<TcpServerSocketPort> FromUInt16(uint16_t port);
+  static std::optional<TcpServerSocketPort> FromInt(int port);
+  static std::optional<TcpServerSocketPort> FromUInt16(uint16_t port);
 
   // Creates a TcpServerSocketPort with a random port number in the range [kMin,
   // kMax].

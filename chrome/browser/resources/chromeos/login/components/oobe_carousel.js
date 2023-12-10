@@ -21,12 +21,24 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
+import './common_styles/oobe_common_styles.css.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from './behaviors/oobe_scrollable_behavior.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeScrollableBehaviorInterface}
+ */
+const OobeCarouselBase =
+    mixinBehaviors([OobeScrollableBehavior], PolymerElement);
+
 
 /** @polymer */
-class OobeCarousel extends PolymerElement {
+class OobeCarousel extends OobeCarouselBase {
   static get is() {
     return 'oobe-carousel';
   }
@@ -63,7 +75,7 @@ class OobeCarousel extends PolymerElement {
        */
       slideDurationInSeconds: {
         type: Number,
-        value: 10,
+        value: 8,
         observer: 'restartAutoTransition_',
       },
 
@@ -118,6 +130,18 @@ class OobeCarousel extends PolymerElement {
     this.prepareCarousel_();
     this.restartAutoTransition_();
     this.hideNonActiveSlides_();
+
+    const slidesContainer = this.shadowRoot.querySelector('#slidesContainer');
+    slidesContainer.addEventListener(
+        'mouseenter', (e) => this.stopAutoTransition_());
+    slidesContainer.addEventListener(
+        'mouseleave', (e) => this.startAutoTransition_());
+
+    const scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
+    if (!scrollContainer || !slidesContainer) {
+      return;
+    }
+    this.initScrollableObservers(scrollContainer, slidesContainer);
   }
 
   /**
@@ -125,7 +149,7 @@ class OobeCarousel extends PolymerElement {
    * Count slides and create dots. Set a11y label on slides.
    */
   prepareCarousel_() {
-    this.slides = this.$.slot.assignedElements();
+    this.slides = this.shadowRoot.querySelector('#slot').assignedElements();
     this.totalSlides = this.slides.length;
     this.dots = [...Array(this.totalSlides).keys()];
     for (let i = 0; i < this.totalSlides; ++i) {
@@ -171,7 +195,7 @@ class OobeCarousel extends PolymerElement {
   startAutoTransition_() {
     if (this.autoTransition && this.slideDurationInSeconds != null) {
       this.timerID = setInterval(
-          this.moveNext.bind(this), (this.slideDurationInSeconds * 1000));
+          () => this.moveNext(), (this.slideDurationInSeconds * 1000));
     }
   }
 
@@ -322,6 +346,10 @@ class OobeCarousel extends PolymerElement {
     // Call offsetWidth to apply |toStyle| and render |toElement|.
     void toElement.offsetWidth;
 
+    // Trigger oobe_scroll_behavior to update scroll indicators
+    // as scrollbar can appear immediately on unhiding a tall slide
+    this.applyScrollClassTags_();
+
     toElement.classList.add('animated');
     fromElement.classList.add('animated');
     toElement.classList.remove(toStyle);
@@ -331,6 +359,10 @@ class OobeCarousel extends PolymerElement {
     toElement.addEventListener('transitionend', OobeCarousel.removeAnimateTo_);
     fromElement.addEventListener(
         'transitionend', OobeCarousel.removeAnimateFrom_);
+    // Trigger oobe_scroll_behavior to update scroll indicators
+    // in case the transition was from a tall to a narrow slide
+    fromElement.addEventListener(
+        'transitionend', () => this.applyScrollClassTags_(), {once: true});
   }
 
   /**

@@ -19,6 +19,10 @@ class BulkLeakCheckServiceInterface;
 class RecipientsFetcher;
 }
 
+namespace base {
+class TimeDelta;
+}
+
 namespace tests_hook {
 
 // Returns true if app group access should be disabled as tests don't have the
@@ -99,6 +103,12 @@ void SetUpTestsIfPresent();
 // Runs the integration tests.  This is not used by EarlGrey-based integration
 // tests.
 void RunTestsIfPresent();
+
+// Minimum duration of password checks. The password check UI displays checks as
+// in progress for at least this duration in order to avoid updating the UI too
+// fast and making it flicker. Test targets do not have an artificial minimum
+// duration as it can make test flaky.
+base::TimeDelta PasswordCheckMinimumDuration();
 
 }  // namespace tests_hook
 

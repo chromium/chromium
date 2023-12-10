@@ -88,6 +88,10 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.requested_resolution_alignment;
   }
+  static bool supports_frame_size_change(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.supports_frame_size_change;
+  }
   static base::span<const std::vector<uint8_t>,
                     media::VideoEncoderInfo::kMaxSpatialLayers>
   fps_allocation(const media::VideoEncoderInfo& video_encoder_info) {

@@ -313,15 +313,16 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
     }
   }
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+      primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
   resource.threat_source =
       g_browser_process->safe_browsing_service()
           ->database_manager()
@@ -358,15 +359,16 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
   auto* ui_manager =
       g_browser_process->safe_browsing_service()->ui_manager().get();
 
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+      primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = kRequestUrl;
   resource.is_subresource = false;
   resource.is_subframe = false;
   resource.threat_type = safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
   resource.threat_source =
       g_browser_process->safe_browsing_service()
           ->database_manager()
@@ -409,15 +411,16 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
       is_giant_webview = true;
     }
   }
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+      primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
   resource.threat_source =
       g_browser_process->safe_browsing_service()
           ->database_manager()

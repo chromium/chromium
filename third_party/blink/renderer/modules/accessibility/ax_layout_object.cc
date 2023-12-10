@@ -293,7 +293,8 @@ Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {
     return list_marker->ListItem(*layout_object_)->GetNode();
   }
 
-  if (layout_object_->IsAnonymous()) {
+  if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
+      layout_object_->IsAnonymous()) {
     if (LayoutBlock* layout_block =
             LayoutObject::FindNonAnonymousContainingBlock(layout_object_)) {
       return layout_block->GetNode();
@@ -519,7 +520,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // FIXME(aboxhall): may need to move?
-  absl::optional<String> alt_text = GetCSSAltText(node);
+  std::optional<String> alt_text = GetCSSAltText(DynamicTo<Element>(GetNode()));
   if (alt_text)
     return alt_text->empty();
 
@@ -887,7 +888,7 @@ String AXLayoutObject::TextAlternative(
     AXRelatedObjectVector* related_objects,
     NameSources* name_sources) const {
   if (layout_object_) {
-    absl::optional<String> text_alternative = GetCSSAltText(GetNode());
+    std::optional<String> text_alternative = GetCSSAltText(GetElement());
     bool found_text_alternative = false;
     if (text_alternative) {
       if (name_sources) {

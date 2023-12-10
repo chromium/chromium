@@ -168,7 +168,9 @@ include_rules = [
   "-ios/chrome/browser",
 
   # Shared dependencies.
+  "+ios/chrome/browser/shared/coordinator",
   "+ios/chrome/browser/shared/model",
+  "+ios/chrome/browser/shared/ui",
   "+ios/chrome/browser/shared/public",
 
   # ios/chrome/browser should not depend on ios/chrome/browser/ui except

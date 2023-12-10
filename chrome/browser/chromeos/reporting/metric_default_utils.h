@@ -47,6 +47,14 @@ constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
     base::Minutes(5);
 
+// Default record upload frequency for KioskHeartbeats.
+constexpr base::TimeDelta kDefaultKioskHeartbeatUploadFrequency =
+    base::Minutes(2);
+
+// Default record upload frequency for KioskHeartbeats.
+constexpr base::TimeDelta kDefaultKioskHeartbeatUploadFrequencyForTesting =
+    base::Minutes(1);
+
 // Default website telemetry collection rate.
 constexpr base::TimeDelta kDefaultWebsiteTelemetryCollectionRate =
     base::Minutes(15);
@@ -67,6 +75,16 @@ constexpr base::TimeDelta kMinimumAppUsageTime = base::Milliseconds(1);
 
 // Minimum usage time threshold for website usage reporting.
 constexpr base::TimeDelta kMinimumWebsiteUsageTime = base::Milliseconds(1);
+
+// App event reporting rate limiter configuration.
+constexpr size_t kAppEventsTotalSize = 4u * 1024u * 1024u;  // 4 MiB
+constexpr base::TimeDelta kAppEventsWindow = base::Seconds(10);
+constexpr size_t kAppEventsBucketCount = 10u;
+
+// Website event reporting rate limiter configuration.
+constexpr size_t kWebsiteEventsTotalSize = 10u * 1024u * 1024u;  // 10 MiB
+constexpr base::TimeDelta kWebsiteEventsWindow = base::Seconds(10);
+constexpr size_t kWebsiteEventsBucketCount = 10u;
 
 // Default value that controls app inventory reporting. Set to false even though
 // the corresponding user policy is a list type to signify reporting is
@@ -107,6 +125,10 @@ constexpr bool kReportWebsiteActivityEnabledDefaultValue = false;
 
 // Returns the default report upload frequency for the current environment.
 const base::TimeDelta GetDefaultReportUploadFrequency();
+
+// Returns the default event checking rate for KioskHeartbeats and the current
+// environment
+const base::TimeDelta GetDefaultKioskHeartbeatUploadFrequency();
 
 // Returns the default metric collection rate for the current environment.
 const base::TimeDelta GetDefaultCollectionRate(base::TimeDelta default_rate);

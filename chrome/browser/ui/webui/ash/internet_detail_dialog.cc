@@ -146,7 +146,7 @@ InternetDetailDialog::~InternetDetailDialog() {
   --s_internet_detail_dialog_count;
 }
 
-const std::string& InternetDetailDialog::Id() {
+std::string InternetDetailDialog::Id() {
   return network_id_;
 }
 

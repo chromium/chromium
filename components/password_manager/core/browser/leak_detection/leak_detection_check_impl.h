@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class GoogleServiceAuthError;
@@ -42,7 +42,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
       LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      absl::optional<std::string> api_key);
+      std::optional<std::string> api_key);
   ~LeakDetectionCheckImpl() override;
 
   // Returns true if there is a Google account to use for the leak detection
@@ -76,8 +76,8 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   // Does the network request to check the credentials.
   void DoLeakRequest(
       LookupSingleLeakData data,
-      absl::optional<std::string> access_token,
-      absl::optional<std::string> api_key,
+      std::optional<std::string> access_token,
+      std::optional<std::string> api_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when the single leak lookup request is done. |response| is null in
@@ -86,7 +86,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   // null.
   void OnLookupSingleLeakResponse(
       std::unique_ptr<SingleLookupResponse> response,
-      absl::optional<LeakDetectionError> error);
+      std::optional<LeakDetectionError> error);
 
   // Called when the network response is analazyed on the background thread. The
   // method is called on the main thread.

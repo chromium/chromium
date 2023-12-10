@@ -506,6 +506,31 @@ TEST_F(KeyboardPrefHandlerTest, PreservesOldSettings) {
   EXPECT_EQ(kDictFakeValue, *value);
 }
 
+TEST_F(KeyboardPrefHandlerTest, LastUpdated) {
+  CallUpdateKeyboardSettings(kKeyboardKey1, kKeyboardSettings1,
+                             /*is_external=*/true);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
+  auto* settings_dict = devices_dict.FindDict(kKeyboardKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  auto* time_stamp1 = settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, time_stamp1);
+
+  mojom::KeyboardSettingsPtr updated_settings = kKeyboardSettings1.Clone();
+  updated_settings->top_row_are_fkeys = !updated_settings->top_row_are_fkeys;
+  CallUpdateKeyboardSettings(kKeyboardKey1, *updated_settings);
+
+  const auto& updated_devices_dict =
+      pref_service_->GetDict(prefs::kKeyboardDeviceSettingsDictPref);
+  const auto* updated_settings_dict =
+      updated_devices_dict.FindDict(kKeyboardKey1);
+  ASSERT_NE(nullptr, updated_settings_dict);
+  auto* updated_time_stamp1 =
+      updated_settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, updated_time_stamp1);
+  ASSERT_NE(time_stamp1, updated_time_stamp1);
+}
+
 TEST_F(KeyboardPrefHandlerTest, UpdateSettings) {
   CallUpdateKeyboardSettings(kKeyboardKey1, kKeyboardSettings1,
                              /*is_external=*/true);

@@ -72,7 +72,14 @@ ServiceWorkerKeepalive::ServiceWorkerKeepalive(
 
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
   CHECK(process_manager);
-  CHECK(process_manager->HasServiceWorker(worker_id_));
+  // TODO(https://crbug.com/1501930): Investigate the circumstances in which
+  // this CHECK can fail. It's possible the service worker called an API before
+  // it fully finished initializing.
+  // This isn't ideal, but the keepalive mechanism in ProcessManager doesn't
+  // rely on a service worker registered in the process manager (all the data
+  // is in the worker ID), so the below is not inherently unsafe (but needs to
+  // be fixed).
+  // CHECK(process_manager->HasServiceWorker(worker_id_));
 
   request_uuid_ = process_manager->IncrementServiceWorkerKeepaliveCount(
       worker_id_, timeout_type, activity_type_, activity_extra_data_);

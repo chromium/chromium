@@ -404,10 +404,13 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
-  DCHECK(!streaming_prefetch_request_);
+  CHECK(!streaming_prefetch_request_);
   // Bind to the content/ navigation code.
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound());
+
+  CHECK(!is_activated_);
   is_activated_ = true;
+
   if (network_url_loader_) {
     network_url_loader_->SetPriority(resource_request.priority, -1);
   }
@@ -434,10 +437,10 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     return;
   }
 
-  // In the edge case we were between owners when fallback occurred, we need to
-  // resume the receiver.
-  if (is_in_fallback_) {
-    url_loader_receiver_.Resume();
+  // In the edge case we were between owners when a response error happened,
+  // fallback was deferred until here.
+  if (is_scheduled_to_fallback_) {
+    Fallback();
   }
 
   // Headers have not been received yet, we can forward the response if
@@ -535,7 +538,15 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
       // kSearchPrefetchBlockBeforeHeaders enabled.
       DCHECK(navigation_prefetch_ ||
              SearchPrefetchBlockBeforeHeadersIsEnabled());
-      Fallback();
+
+      // SetUpForwardingClient() needs to be called before fallback.
+      if (is_activated_) {
+        Fallback();
+      } else {
+        // Wait until SetUpForwardingClient() is called.
+        CHECK(!is_scheduled_to_fallback_);
+        is_scheduled_to_fallback_ = true;
+      }
       return;
     }
     DCHECK(streaming_prefetch_request_);
@@ -786,10 +797,15 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
 }
 
 void StreamingSearchPrefetchURLLoader::RunEventQueue() {
-  DCHECK(forwarding_client_);
-  DCHECK(!streaming_prefetch_request_);
+  CHECK(forwarding_client_);
+  CHECK(!streaming_prefetch_request_);
   for (auto& event : event_queue_) {
     std::move(event).Run();
+    if (!forwarding_client_) {
+      // The null forwarding client indicates that the event failed for some
+      // reason. Stop processing the remaining events.
+      break;
+    }
   }
   event_queue_.clear();
 }
@@ -890,12 +906,20 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
 }
 
 void StreamingSearchPrefetchURLLoader::Fallback() {
-  DCHECK(!is_in_fallback_);
-  DCHECK(navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled());
+  CHECK(navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled());
+
+  is_scheduled_to_fallback_ = false;
+
+  CHECK(!is_in_fallback_);
+  is_in_fallback_ = true;
+
+  // SetUpForwardingClient() should be called before fallback.
+  CHECK(is_activated_);
+  CHECK(resource_request_);
+  CHECK(forwarding_client_);
 
   network_url_loader_.reset();
   url_loader_receiver_.reset();
-  is_in_fallback_ = true;
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(
@@ -912,12 +936,6 @@ void StreamingSearchPrefetchURLLoader::Fallback() {
       base::Unretained(this)));
   if (paused_) {
     network_url_loader_->PauseReadingBodyFromNet();
-  }
-  // Pause the url loader until we have a forwarding client, this should be
-  // rare, but can happen when the callback to this URL Loader is called at a
-  // later point than when it taken from the prefetch service.
-  if (!forwarding_client_) {
-    url_loader_receiver_.Pause();
   }
 }
 

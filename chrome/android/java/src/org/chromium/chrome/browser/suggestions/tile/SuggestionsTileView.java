@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.url.GURL;
+
 /**
  * The view for a site suggestion tile. Displays the title of the site beneath a large icon. If a
  * large icon isn't available, displays a rounded rectangle with a single letter in its place.
@@ -24,9 +25,7 @@ public class SuggestionsTileView extends TileView {
     /** The data currently associated to this tile. */
     private SiteSuggestion mData;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SuggestionsTileView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -38,8 +37,11 @@ public class SuggestionsTileView extends TileView {
      * @param titleLines The number of text lines to use for the tile title.
      */
     public void initialize(Tile tile, int titleLines) {
-        super.initialize(TitleUtil.getTitleForDisplay(tile.getTitle(), tile.getUrl()),
-                tile.isOfflineAvailable(), tile.getIcon(), titleLines);
+        super.initialize(
+                TitleUtil.getTitleForDisplay(tile.getTitle(), tile.getUrl()),
+                tile.isOfflineAvailable(),
+                tile.getIcon(),
+                titleLines);
         mData = tile.getData();
         setIconViewLayoutParams(tile);
         setTitleParams();
@@ -91,8 +93,9 @@ public class SuggestionsTileView extends TileView {
 
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) getTitleView().getLayoutParams();
-        marginLayoutParams.topMargin = getResources().getDimensionPixelSize(
-                R.dimen.tile_view_title_margin_top_modern_polish);
+        marginLayoutParams.topMargin =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
     }
 
     /** Update the background for the tile view icon for polishing purposes. */

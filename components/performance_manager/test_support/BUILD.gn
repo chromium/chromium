@@ -11,6 +11,7 @@ source_set("test_support_common") {
   sources = [
     "decorators_utils.h",
     "graph_impl.h",
+    "resource_attribution/gtest_util.h",
     "run_in_graph.cc",
     "run_in_graph.h",
     "test_browser_child_process.cc",
@@ -48,8 +49,8 @@ source_set("test_support") {
     "mock_graphs.h",
     "performance_manager_test_harness.cc",
     "performance_manager_test_harness.h",
-    "resource_attribution/simulated_cpu_measurement_delegate.cc",
-    "resource_attribution/simulated_cpu_measurement_delegate.h",
+    "resource_attribution/measurement_delegates.cc",
+    "resource_attribution/measurement_delegates.h",
     "test_worker_node_factory.cc",
     "test_worker_node_factory.h",
   ]

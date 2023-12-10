@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Beklager. Forsøket på å opprette tilfeldig RSA-privatnøkkel mislyktes.</translation>
 <translation id="1445572445564823378">Denne utvidelsen gjør <ph name="PRODUCT_NAME" /> tregere. Du bør deaktivere den for å gjenopprette ytelsen til <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL støttes ikke.</translation>
+<translation id="1610570795592207282">Kunne ikke laste inn CSS-filen «<ph name="RELATIVE_PATH" />» for skriptet.</translation>
 <translation id="1803557475693955505">Kan ikke laste inn bakgrunnssiden <ph name="BACKGROUND_PAGE" />.</translation>
 <translation id="2159915644201199628">Kunne ikke dekode bilde: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">Lokaliseringen er brukt, men default_locale var ikke spesifisert i manifestet.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3144135466825225871">Kunne ikke erstatte .crx-fil. Kontroller om filen er i bruk.</translation>
 <translation id="3163201441334626963">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Kan ikke laste inn <ph name="RELATIVE_PATH" /> for innholdsskript.</translation>
 <translation id="3369521687965833290">Kan ikke pakke ut utvidelse. For å kunne pakke ut en utvidelse på en sikker måte, må det finnes en bane til profilkatalogen din som begynner med en harddiskbokstav og som ikke inneholder en forbindelse, et innsettingspunkt eller en symlink. Det finnes ingen slik bane for profilen din.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inndataverdien for privatnøkkelen må være en gyldig bane.</translation>
 <translation id="388442998277590542">Kan ikke laste inn alternativsiden <ph name="OPTIONS_PAGE" />.</translation>
 <translation id="3984413272403535372">Det oppstod en feil under signeringen av utvidelsen.</translation>
-<translation id="39964277676607559">Kan ikke laste inn JavaScript <ph name="RELATIVE_PATH" /> for innholdsskript.</translation>
 <translation id="4115165561519362854">Administratoren for denne maskinen krever at <ph name="EXTENSION_NAME" /> har en minimumsversjon på <ph name="EXTENSION_VERSION" />. Den kan ikke slås på før den er oppdatert til denne versjonen (eller høyere).</translation>
 <translation id="4233778200880751280">Kunne ikke laste inn info-siden «<ph name="ABOUT_PAGE" />».</translation>
 <translation id="471800408830181311">Kan ikke mate ut privatnøkkelen.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Kan ikke eksportere den offentlige nøkkelen.</translation>
 <translation id="5026754133087629784">Nettvisning: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Finner ikke den absolutte banen til katalogen som skal pakkes.</translation>
+<translation id="5160071981665899014">Kunne ikke laste inn JavaScript-filen «<ph name="RELATIVE_PATH" />» for skriptet.</translation>
 <translation id="5356315618422219272">Appvisning: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Formede vinduer støttes ikke.</translation>
 <translation id="5456409301717116725">Denne utvidelsen inneholder nøkkelfilen «<ph name="KEY_PATH" />». Du ønsker sannsynligvis ikke å gjøre dette.</translation>

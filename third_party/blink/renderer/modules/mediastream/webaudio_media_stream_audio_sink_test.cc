@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -48,6 +49,7 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
     WebHeap::CollectAllGarbageForTesting();
   }
 
+  test::TaskEnvironment task_environment_;
   media::AudioParameters source_params_;
   media::AudioParameters sink_params_;
   std::unique_ptr<media::AudioBus> sink_bus_;

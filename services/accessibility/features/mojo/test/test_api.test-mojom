@@ -48,4 +48,7 @@ interface TestBindingInterface {
     // Called when the test is complete indicating if the test was successful
     // or failed.
     TestComplete(bool success);
+
+    // Log a statement to the terminal.
+    Log(string log_string);
 };

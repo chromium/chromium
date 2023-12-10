@@ -40,6 +40,7 @@ enum WebNavigationType {
   kWebNavigationTypeReload,
   kWebNavigationTypeFormResubmittedBackForward,
   kWebNavigationTypeFormResubmittedReload,
+  kWebNavigationTypeRestore,
   kWebNavigationTypeOther
 };
 

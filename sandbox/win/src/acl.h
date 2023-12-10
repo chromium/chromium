@@ -13,7 +13,7 @@ namespace sandbox {
 
 // Returns the RID associated with a given IntegrityLevel value. This returns
 // an empty value if `integrity_level` is set to INTEGRITY_LEVEL_LAST.
-absl::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level);
+std::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level);
 
 // Sets the integrity label on a object.
 // `handle` should be an open handle with WRITE_OWNER access.

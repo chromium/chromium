@@ -1,0 +1,54 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++details
+++++++++genericContainer ignored
+++++++++++disclosureTriangle collapsed name='the summary'
+++++++++++++listMarker ignored
+++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++staticText name='the summary'
+++++++++++++++inlineTextBox name='the summary'
+++++++++genericContainer ignored
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++paragraph ignored invisible
+++++++++++++staticText ignored invisible name='The details, shown when expanded.'
+++++++++++staticText ignored invisible name='<newline>  '
+++++++section
+++++++++details
+++++++++++genericContainer ignored
+++++++++++++disclosureTriangleGrouped name='materials' setSize=3 posInSet=1
+++++++++++++++listMarker ignored
+++++++++++++++++staticText ignored name='%E2%96%BE '
+++++++++++++++staticText name='materials'
+++++++++++++++++inlineTextBox name='materials'
+++++++++++genericContainer ignored
+++++++++++++paragraph
+++++++++++++++staticText name='Info about what it's made of.'
+++++++++++++++++inlineTextBox name='Info about what it's made of.'
+++++++++details
+++++++++++genericContainer ignored
+++++++++++++disclosureTriangleGrouped collapsed name='dimensions' setSize=3 posInSet=2
+++++++++++++++listMarker ignored
+++++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++staticText name='dimensions'
+++++++++++++++++inlineTextBox name='dimensions'
+++++++++++genericContainer ignored
+++++++++++++staticText ignored invisible name='<newline>      '
+++++++++++++staticText ignored invisible name='<newline>      '
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible name='Info about how big it is.'
+++++++++++++staticText ignored invisible name='<newline>    '
+++++++++details
+++++++++++genericContainer ignored
+++++++++++++disclosureTriangleGrouped collapsed name='origin' setSize=3 posInSet=3
+++++++++++++++listMarker ignored
+++++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++staticText name='origin'
+++++++++++++++++inlineTextBox name='origin'
+++++++++++genericContainer ignored
+++++++++++++staticText ignored invisible name='<newline>      '
+++++++++++++staticText ignored invisible name='<newline>      '
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible name='Info about where it was built.'
+++++++++++++staticText ignored invisible name='<newline>    '

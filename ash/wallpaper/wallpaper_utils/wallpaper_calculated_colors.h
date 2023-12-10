@@ -5,14 +5,8 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_CALCULATED_COLORS_H_
 #define ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_CALCULATED_COLORS_H_
 
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-
-namespace color_utils {
-struct ColorProfile;
-}  // namespace color_utils
 
 namespace ash {
 
@@ -22,9 +16,7 @@ namespace ash {
 struct ASH_EXPORT WallpaperCalculatedColors {
   WallpaperCalculatedColors();
 
-  WallpaperCalculatedColors(const std::vector<SkColor>& prominent_colors,
-                            SkColor k_mean_color,
-                            SkColor celebi_color);
+  WallpaperCalculatedColors(SkColor k_mean_color, SkColor celebi_color);
 
   WallpaperCalculatedColors(const WallpaperCalculatedColors& other);
   WallpaperCalculatedColors& operator=(const WallpaperCalculatedColors& other);
@@ -38,9 +30,6 @@ struct ASH_EXPORT WallpaperCalculatedColors {
 
   ~WallpaperCalculatedColors();
 
-  SkColor GetProminentColor(color_utils::ColorProfile color_profile) const;
-
-  std::vector<SkColor> prominent_colors;
   SkColor k_mean_color = SK_ColorTRANSPARENT;
   // Result of image sampling algorithm as described in
   // https://arxiv.org/abs/1101.0395.

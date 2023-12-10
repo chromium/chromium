@@ -267,14 +267,17 @@ class ReloadPagesAction : public Action {
 #if BUILDFLAG(IS_ANDROID)
     // This covers regular tabs, PWAs, and CCTs.
     for (TabModel* model : TabModelList::models()) {
+      if (model->GetProfile() != profile) {
+        continue;  // Deliberately ignore incognito.
+      }
 #else
     // This covers regular tabs and PWAs.
     for (Browser* browser : *BrowserList::GetInstance()) {
       TabStripModel* model = browser->tab_strip_model();
-#endif  // BUILDFLAG(IS_ANDROID)
-      if (model->GetProfile() != profile) {
+      if (model->profile() != profile) {
         continue;  // Deliberately ignore incognito.
       }
+#endif  // BUILDFLAG(IS_ANDROID)
       for (int i = 0; i < model->GetTabCount(); i++) {
         model->GetWebContentsAt(i)->GetController().Reload(
             content::ReloadType::NORMAL,

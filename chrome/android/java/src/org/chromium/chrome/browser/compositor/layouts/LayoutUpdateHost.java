@@ -41,9 +41,7 @@ public interface LayoutUpdateHost {
      */
     void doneHiding();
 
-    /**
-     * Tells its host that the Layout is done it's preliminary showing animation.
-     */
+    /** Tells its host that the Layout is done it's preliminary showing animation. */
     void doneShowing();
 
     /**

@@ -87,6 +87,13 @@ class BLINK_EXPORT WebElement : public WebNode {
   // https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
   bool IsContentEditable() const;
 
+  // Returns true if the frame's selection is inside this editable element.
+  bool ContainsFrameSelection() const;
+
+  // Returns the selected text if this element contains the selection.
+  // Otherwise returns the empty string.
+  WebString SelectedText() const;
+
   // Simulates a paste of `text` event into `this` element.
   //
   // There are three different behaviors depending on `replace_all` and which

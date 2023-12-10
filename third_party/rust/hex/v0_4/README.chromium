@@ -5,4 +5,5 @@ Version: 0.4.3
 Security Critical: no
 Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/hex-0.4.3/LICENSE-APACHE
 Revision: b2b4370b5bf021b98ee7adc92233e8de3f2de792

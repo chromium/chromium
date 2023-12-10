@@ -138,12 +138,12 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
 }
 
 InlineItemTextIndex LineInfo::End() const {
-  return BreakToken() ? BreakToken()->Start() : ItemsData().End();
+  return GetBreakToken() ? GetBreakToken()->Start() : ItemsData().End();
 }
 
 unsigned LineInfo::EndTextOffset() const {
-  return BreakToken() ? BreakToken()->StartTextOffset()
-                      : ItemsData().text_content.length();
+  return GetBreakToken() ? GetBreakToken()->StartTextOffset()
+                         : ItemsData().text_content.length();
 }
 
 unsigned LineInfo::InflowEndOffset() const {
@@ -459,7 +459,7 @@ LayoutUnit LineInfo::ComputeTotalBlockSize(
 }
 
 std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info) {
-  // Feel free to add more NGLneInfo members.
+  // Feel free to add more LineInfo members.
   ostream << "LineInfo available_width_=" << line_info.AvailableWidth()
           << " width_=" << line_info.Width() << " Results=[\n";
   for (const auto& result : line_info.Results()) {

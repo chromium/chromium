@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
 #include <vector>
 
-#include "base/containers/cxx20_erase_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -210,7 +210,7 @@ void ScopedGeolocationOverrider::FakeGeolocationContext::BindGeolocation(
 
 void ScopedGeolocationOverrider::FakeGeolocationContext::OnPermissionRevoked(
     const url::Origin& origin) {
-  base::EraseIf(impls_, [&origin](const auto& impl) {
+  std::erase_if(impls_, [&origin](const auto& impl) {
     if (!origin.IsSameOriginWith(impl->url())) {
       return false;
     }

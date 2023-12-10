@@ -34,7 +34,10 @@ public:
   void Initialize();
 
   absl::optional<const ProjectValidator*>
-    GetProjectValidator(const std::string& project_name);
+    GetProjectValidator(base::StringPiece project_name) const;
+
+  absl::optional<base::StringPiece>
+    GetProjectName(uint64_t project_name_hash) const;
 
   static Validators* Get();
 
@@ -43,6 +46,7 @@ private:
 
   std::unordered_map<base::StringPiece, std::unique_ptr<ProjectValidator>>
       validators_;
+  std::unordered_map<uint64_t, base::StringPiece> project_name_map_;
 }};
 
 }}  // namespace validator
@@ -88,14 +92,25 @@ Validators::Validators() {{
 
 void Validators::Initialize() {{
   {project_map};
+
+  {name_map};
 }}
 
 absl::optional<const ProjectValidator*>
-  Validators::GetProjectValidator(const std::string& project_name) {{
+  Validators::GetProjectValidator(base::StringPiece project_name) const {{
     const auto it = validators_.find(project_name);
-     if (it == validators_.end())
-        return absl::nullopt;
-     return it->second.get();
+    if (it == validators_.end())
+      return absl::nullopt;
+    return it->second.get();
+}}
+
+absl::optional<base::StringPiece>
+  Validators::GetProjectName(uint64_t project_name_hash) const {{
+    const auto it = project_name_map_.find(project_name_hash);
+    if (it == project_name_map_.end())
+      return absl::nullopt;
+    // This lookup will never fail.
+    return it->second;
 }}
 
 // static
@@ -114,10 +129,7 @@ class {project.validator} final :
     public ::metrics::structured::ProjectValidator {{
   public:
     {project.validator}();
-    ~{project.validator}();
-
-    absl::optional<const EventValidator*> GetEventValidator(
-      const std::string& event_name) const override;
+    ~{project.validator}() override;
 
     void Initialize();
 
@@ -128,10 +140,6 @@ class {project.validator} final :
         StructuredEventProto_EventType_{project.event_type};
     static constexpr int kKeyRotationPeriod =
         {project.key_rotation_period};
-
-  private:
-    std::unordered_map<base::StringPiece,
-        std::unique_ptr<EventValidator>> event_validators_;
 }};
 
 {project.validator}::{project.validator}() :
@@ -148,17 +156,12 @@ class {project.validator} final :
 
 void {project.validator}::Initialize() {{
   {event_validator_map};
+
+  {event_name_map};
 }}
 
 {project.validator}::~{project.validator}() = default;
 
-absl::optional<const EventValidator*> {project.validator}::GetEventValidator(
-                                        const std::string& event_name) const {{
-   const auto it = event_validators_.find(event_name);
-   if (it == event_validators_.end())
-      return absl::nullopt;
-   return it->second.get();
-}}
 """
 
 IMPL_EVENT_VALIDATOR_TEMPLATE = """\
@@ -166,18 +169,11 @@ class {event.validator_name} final :
     public ::metrics::structured::EventValidator {{
   public:
     {event.validator_name}();
-    ~{event.validator_name}() override;
+    ~{event.validator_name}();
 
     void Initialize();
 
     static constexpr uint64_t kEventNameHash = UINT64_C({event.name_hash});
-
-    absl::optional<MetricMetadata>
-      GetMetricMetadata(const std::string& metric_name) const override;
-
-  private:
-    std::unordered_map<base::StringPiece, EventValidator::MetricMetadata>
-        metric_metadata_;
 }};
 
 {event.validator_name}::{event.validator_name}() :
@@ -193,14 +189,10 @@ void {event.validator_name}::Initialize() {{
   metric_metadata_ = {{
     {metric_hash_map}
    }};
-}}
 
-absl::optional<EventValidator::MetricMetadata>
-{event.validator_name}::GetMetricMetadata(const std::string& metric_name)
-const {{
-   const auto it = metric_metadata_.find(metric_name);
-   if (it == metric_metadata_.end())
-      return absl::nullopt;
-   return it->second;
+
+  metrics_name_map_ = {{
+    {metrics_name_map}
+  }};
 }}
 """

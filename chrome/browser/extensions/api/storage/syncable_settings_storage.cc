@@ -323,6 +323,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   sync_processor_->NotifyChanges(changes);
 
   observer_->Run(extension_id_, StorageAreaNamespace::kSync,
+                 /*session_access_level=*/absl::nullopt,
                  value_store::ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.

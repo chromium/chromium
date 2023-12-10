@@ -110,10 +110,50 @@ void aom_upsampled_pred_sse2(MACROBLOCKD *xd, const struct AV1Common *const cm, 
                                           int subpel_y_q3, const uint8_t *ref, int ref_stride, int subpel_search);
 #define aom_upsampled_pred aom_upsampled_pred_sse2
 
-void av1_apply_selfguided_restoration_c(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-void av1_apply_selfguided_restoration_sse4_1(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-void av1_apply_selfguided_restoration_avx2(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-RTCD_EXTERN void (*av1_apply_selfguided_restoration)(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
+int av1_apply_selfguided_restoration_c(const uint8_t* dat,
+                                       int width,
+                                       int height,
+                                       int stride,
+                                       int eps,
+                                       const int* xqd,
+                                       uint8_t* dst,
+                                       int dst_stride,
+                                       int32_t* tmpbuf,
+                                       int bit_depth,
+                                       int highbd);
+int av1_apply_selfguided_restoration_sse4_1(const uint8_t* dat,
+                                            int width,
+                                            int height,
+                                            int stride,
+                                            int eps,
+                                            const int* xqd,
+                                            uint8_t* dst,
+                                            int dst_stride,
+                                            int32_t* tmpbuf,
+                                            int bit_depth,
+                                            int highbd);
+int av1_apply_selfguided_restoration_avx2(const uint8_t* dat,
+                                          int width,
+                                          int height,
+                                          int stride,
+                                          int eps,
+                                          const int* xqd,
+                                          uint8_t* dst,
+                                          int dst_stride,
+                                          int32_t* tmpbuf,
+                                          int bit_depth,
+                                          int highbd);
+RTCD_EXTERN int (*av1_apply_selfguided_restoration)(const uint8_t* dat,
+                                                    int width,
+                                                    int height,
+                                                    int stride,
+                                                    int eps,
+                                                    const int* xqd,
+                                                    uint8_t* dst,
+                                                    int dst_stride,
+                                                    int32_t* tmpbuf,
+                                                    int bit_depth,
+                                                    int highbd);
 
 int64_t av1_block_error_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
 int64_t av1_block_error_sse2(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
@@ -320,10 +360,30 @@ uint32_t av1_get_crc32c_value_c(void *crc_calculator, uint8_t *p, size_t length)
 uint32_t av1_get_crc32c_value_sse4_2(void *crc_calculator, uint8_t *p, size_t length);
 RTCD_EXTERN uint32_t (*av1_get_crc32c_value)(void *crc_calculator, uint8_t *p, size_t length);
 
-void av1_get_horver_correlation_full_c( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
-void av1_get_horver_correlation_full_sse4_1( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
-void av1_get_horver_correlation_full_avx2( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
-RTCD_EXTERN void (*av1_get_horver_correlation_full)( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
+void av1_get_horver_correlation_full_c(const int16_t* diff,
+                                       int stride,
+                                       int w,
+                                       int h,
+                                       float* hcorr,
+                                       float* vcorr);
+void av1_get_horver_correlation_full_sse4_1(const int16_t* diff,
+                                            int stride,
+                                            int w,
+                                            int h,
+                                            float* hcorr,
+                                            float* vcorr);
+void av1_get_horver_correlation_full_avx2(const int16_t* diff,
+                                          int stride,
+                                          int w,
+                                          int h,
+                                          float* hcorr,
+                                          float* vcorr);
+RTCD_EXTERN void (*av1_get_horver_correlation_full)(const int16_t* diff,
+                                                    int stride,
+                                                    int w,
+                                                    int h,
+                                                    float* hcorr,
+                                                    float* vcorr);
 
 void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
 void av1_get_nz_map_contexts_sse2(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
@@ -471,17 +531,27 @@ void av1_lowbd_fwd_txfm_sse4_1(const int16_t *src_diff, tran_low_t *coeff, int d
 void av1_lowbd_fwd_txfm_avx2(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 RTCD_EXTERN void (*av1_lowbd_fwd_txfm)(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 
-void av1_nn_fast_softmax_16_c( const float *input_nodes, float *output);
-void av1_nn_fast_softmax_16_sse3( const float *input_nodes, float *output);
-RTCD_EXTERN void (*av1_nn_fast_softmax_16)( const float *input_nodes, float *output);
+void av1_nn_fast_softmax_16_c(const float* input_nodes, float* output);
+void av1_nn_fast_softmax_16_sse3(const float* input_nodes, float* output);
+RTCD_EXTERN void (*av1_nn_fast_softmax_16)(const float* input_nodes,
+                                           float* output);
 
-void av1_nn_predict_c( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
-void av1_nn_predict_sse3( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
+void av1_nn_predict_c(const float* input_nodes,
+                      const NN_CONFIG* const nn_config,
+                      int reduce_prec,
+                      float* const output);
+void av1_nn_predict_sse3(const float* input_nodes,
+                         const NN_CONFIG* const nn_config,
+                         int reduce_prec,
+                         float* const output);
 void av1_nn_predict_avx2(const float* input_nodes,
                          const NN_CONFIG* const nn_config,
                          int reduce_prec,
                          float* const output);
-RTCD_EXTERN void (*av1_nn_predict)( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
+RTCD_EXTERN void (*av1_nn_predict)(const float* input_nodes,
+                                   const NN_CONFIG* const nn_config,
+                                   int reduce_prec,
+                                   float* const output);
 
 void av1_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t * qm_ptr, const qm_val_t * iqm_ptr, int log_scale);
 #define av1_quantize_b av1_quantize_b_c
@@ -554,10 +624,51 @@ uint64_t av1_wedge_sse_from_residuals_sse2(const int16_t *r1, const int16_t *d, 
 uint64_t av1_wedge_sse_from_residuals_avx2(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 RTCD_EXTERN uint64_t (*av1_wedge_sse_from_residuals)(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 
-void av1_wiener_convolve_add_src_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
-void av1_wiener_convolve_add_src_sse2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
-void av1_wiener_convolve_add_src_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
-RTCD_EXTERN void (*av1_wiener_convolve_add_src)(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
+void av1_wiener_convolve_add_src_c(const uint8_t* src,
+                                   ptrdiff_t src_stride,
+                                   uint8_t* dst,
+                                   ptrdiff_t dst_stride,
+                                   const int16_t* filter_x,
+                                   int x_step_q4,
+                                   const int16_t* filter_y,
+                                   int y_step_q4,
+                                   int w,
+                                   int h,
+                                   const WienerConvolveParams* conv_params);
+void av1_wiener_convolve_add_src_sse2(const uint8_t* src,
+                                      ptrdiff_t src_stride,
+                                      uint8_t* dst,
+                                      ptrdiff_t dst_stride,
+                                      const int16_t* filter_x,
+                                      int x_step_q4,
+                                      const int16_t* filter_y,
+                                      int y_step_q4,
+                                      int w,
+                                      int h,
+                                      const WienerConvolveParams* conv_params);
+void av1_wiener_convolve_add_src_avx2(const uint8_t* src,
+                                      ptrdiff_t src_stride,
+                                      uint8_t* dst,
+                                      ptrdiff_t dst_stride,
+                                      const int16_t* filter_x,
+                                      int x_step_q4,
+                                      const int16_t* filter_y,
+                                      int y_step_q4,
+                                      int w,
+                                      int h,
+                                      const WienerConvolveParams* conv_params);
+RTCD_EXTERN void (*av1_wiener_convolve_add_src)(
+    const uint8_t* src,
+    ptrdiff_t src_stride,
+    uint8_t* dst,
+    ptrdiff_t dst_stride,
+    const int16_t* filter_x,
+    int x_step_q4,
+    const int16_t* filter_y,
+    int y_step_q4,
+    int w,
+    int h,
+    const WienerConvolveParams* conv_params);
 
 void cdef_copy_rect8_16bit_to_16bit_c(uint16_t *dst, int dstride, const uint16_t *src, int sstride, int width, int height);
 void cdef_copy_rect8_16bit_to_16bit_sse2(uint16_t *dst, int dstride, const uint16_t *src, int sstride, int width, int height);

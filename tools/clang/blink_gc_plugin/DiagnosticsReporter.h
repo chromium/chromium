@@ -110,6 +110,9 @@ class DiagnosticsReporter {
                            const clang::CXXRecordDecl* gc_type);
   void MemberOnStack(const clang::VarDecl* var);
   void AdditionalPadding(const clang::RecordDecl* var, size_t padding);
+  void WeakPtrToGCed(const clang::Decl* decl,
+                     const clang::CXXRecordDecl* weak_ptr,
+                     const clang::CXXRecordDecl* gc_type);
 
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
@@ -144,19 +147,20 @@ class DiagnosticsReporter {
   unsigned diag_left_most_base_must_be_polymorphic_;
   unsigned diag_base_class_must_declare_virtual_trace_;
   unsigned diag_class_must_crtp_itself_;
+  unsigned diag_weak_ptr_to_gc_managed_class_;
 
   unsigned diag_base_requires_tracing_note_;
   unsigned diag_field_requires_tracing_note_;
   unsigned diag_field_should_not_be_traced_note_;
   unsigned diag_raw_ptr_to_gc_managed_class_note_;
   unsigned diag_ref_ptr_to_gc_managed_class_note_;
-  unsigned diag_weak_ptr_to_gc_managed_class_note_;
   unsigned diag_reference_ptr_to_gc_managed_class_note_;
   unsigned diag_own_ptr_to_gc_managed_class_note_;
   unsigned diag_unique_ptr_to_gc_managed_class_note_;
   unsigned diag_member_to_gc_unmanaged_class_note_;
   unsigned diag_stack_allocated_field_note_;
   unsigned diag_member_in_unmanaged_class_note_;
+  unsigned diag_ptr_to_member_in_unmanaged_class_note_;
   unsigned diag_part_object_to_gc_derived_class_note_;
   unsigned diag_part_object_contains_gc_root_note_;
   unsigned diag_part_object_contains_gc_root_ref_note_;

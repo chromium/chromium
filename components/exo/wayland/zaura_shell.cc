@@ -16,7 +16,6 @@
 #include "ash/display/display_util.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -747,12 +746,13 @@ chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
   return chromeos::OrientationType::kAny;
 }
 
-using AuraSurfaceConfigureCallback =
-    base::RepeatingCallback<void(const gfx::Rect& bounds,
-                                 chromeos::WindowStateType state_type,
-                                 bool resizing,
-                                 bool activated,
-                                 float raster_scale)>;
+using AuraSurfaceConfigureCallback = base::RepeatingCallback<void(
+    const gfx::Rect& bounds,
+    chromeos::WindowStateType state_type,
+    bool resizing,
+    bool activated,
+    float raster_scale,
+    std::optional<chromeos::WindowStateType> restore_state_type)>;
 
 uint32_t HandleAuraSurfaceConfigureCallback(
     wl_resource* resource,
@@ -763,10 +763,12 @@ uint32_t HandleAuraSurfaceConfigureCallback(
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset,
-    float raster_scale) {
+    float raster_scale,
+    std::optional<chromeos::WindowStateType> restore_state_type) {
   uint32_t serial =
       serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
-  callback.Run(bounds, state_type, resizing, activated, raster_scale);
+  callback.Run(bounds, state_type, resizing, activated, raster_scale,
+               restore_state_type);
   xdg_surface_send_configure(resource, serial);
   wl_client_flush(wl_resource_get_client(resource));
   return serial;
@@ -818,9 +820,8 @@ void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
   shell_surface_->SetOrientationLock(OrientationLock(lock_type));
 }
 
-void AuraToplevel::SetWindowRoundedCornerRadius(
-    const gfx::RoundedCornersF& radii) {
-  shell_surface_->SetWindowCornerRadii(radii);
+void AuraToplevel::SetWindowCornersRadii(const gfx::RoundedCornersF& radii) {
+  shell_surface_->SetWindowCornersRadii(radii);
 }
 
 void AuraToplevel::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
@@ -982,6 +983,10 @@ void AuraToplevel::SetCanFullscreen(bool can_fullscreen) {
   shell_surface_->SetCanFullscreen(can_fullscreen);
 }
 
+void AuraToplevel::SetShadowCornersRadii(const gfx::RoundedCornersF& radii) {
+  shell_surface_->SetShadowCornersRadii(radii);
+}
+
 void AuraToplevel::IntentToSnap(uint32_t snap_direction) {
   switch (snap_direction) {
     case ZAURA_SURFACE_SNAP_DIRECTION_NONE:
@@ -1011,11 +1016,13 @@ void AddState(wl_array* states, T state) {
   *value = state;
 }
 
-void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
-                               chromeos::WindowStateType state_type,
-                               bool resizing,
-                               bool activated,
-                               float raster_scale) {
+void AuraToplevel::OnConfigure(
+    const gfx::Rect& bounds,
+    chromeos::WindowStateType state_type,
+    bool resizing,
+    bool activated,
+    float raster_scale,
+    std::optional<chromeos::WindowStateType> restore_state_type) {
   wl_array states;
   wl_array_init(&states);
   if (state_type == chromeos::WindowStateType::kMaximized)
@@ -1030,6 +1037,14 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
       // TODO(oshima): Immersive should probably be default.
       // Investigate and fix.
       AddState(&states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);
+    }
+    // If the window was maxmized before it is fullscreened, we should
+    // keep this state while it is fullscreened. This is what X11 apps, and
+    // thus standard wayland apps expect, and they may rely on this behavior
+    // even though this is not explicitly specified in the protocol spec.
+    if (restore_state_type.has_value() &&
+        restore_state_type.value() == chromeos::WindowStateType::kMaximized) {
+      AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
     }
   }
   if (resizing)
@@ -1205,19 +1220,18 @@ const uint32_t kFixedBugIds[] = {
 // Implements aura shell interface and monitors workspace state needed
 // for the aura shell interface.
 class WaylandAuraShell : public ash::DesksController::Observer,
-                         public ash::TabletModeObserver,
                          public ash::OverviewObserver,
+                         public display::DisplayObserver,
                          public SeatObserver {
  public:
   WaylandAuraShell(wl_resource* aura_shell_resource, Display* display)
       : aura_shell_resource_(aura_shell_resource), seat_(display->seat()) {
-    WMHelper* helper = WMHelper::GetInstance();
-    helper->AddTabletModeObserver(this);
     ash::DesksController::Get()->AddObserver(this);
     ash::Shell::Get()->overview_controller()->AddObserver(this);
+    display::Screen::GetScreen()->AddObserver(this);
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
-      auto layout_mode = helper->InTabletMode()
+      auto layout_mode = display::Screen::GetScreen()->InTabletMode()
                              ? ZAURA_SHELL_LAYOUT_MODE_TABLET
                              : ZAURA_SHELL_LAYOUT_MODE_WINDOWED;
       zaura_shell_send_layout_mode(aura_shell_resource_, layout_mode);
@@ -1262,32 +1276,28 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   WaylandAuraShell(const WaylandAuraShell&) = delete;
   WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
   ~WaylandAuraShell() override {
-    WMHelper* helper = WMHelper::GetInstance();
-    helper->RemoveTabletModeObserver(this);
+    display::Screen::GetScreen()->RemoveObserver(this);
     ash::Shell::Get()->overview_controller()->RemoveObserver(this);
     ash::DesksController::Get()->RemoveObserver(this);
     if (seat_)
       seat_->RemoveObserver(this);
   }
 
-  // Overridden from ash::TabletModeObserver:
-  void OnTabletModeStarted() override {
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override {
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
-      zaura_shell_send_layout_mode(aura_shell_resource_,
-                                   ZAURA_SHELL_LAYOUT_MODE_TABLET);
-      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+      if (state == display::TabletState::kInTabletMode) {
+        zaura_shell_send_layout_mode(aura_shell_resource_,
+                                     ZAURA_SHELL_LAYOUT_MODE_TABLET);
+        wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+      } else if (state == display::TabletState::kExitingTabletMode) {
+        zaura_shell_send_layout_mode(aura_shell_resource_,
+                                     ZAURA_SHELL_LAYOUT_MODE_WINDOWED);
+        wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+      }
     }
   }
-  void OnTabletModeEnding() override {
-    if (wl_resource_get_version(aura_shell_resource_) >=
-        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
-      zaura_shell_send_layout_mode(aura_shell_resource_,
-                                   ZAURA_SHELL_LAYOUT_MODE_WINDOWED);
-      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
-    }
-  }
-  void OnTabletModeEnded() override {}
 
   // ash::DesksController::Observer:
   void OnDeskAdded(const ash::Desk* desk, bool from_undo) override {
@@ -1440,7 +1450,18 @@ void aura_toplevel_set_window_corner_radii(wl_client* client,
                                            uint32_t upper_right_radius,
                                            uint32_t lower_right_radius,
                                            uint32_t lower_left_radius) {
-  GetUserDataAs<AuraToplevel>(resource)->SetWindowRoundedCornerRadius(
+  GetUserDataAs<AuraToplevel>(resource)->SetWindowCornersRadii(
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius));
+}
+
+void aura_toplevel_set_shadow_corners_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius) {
+  GetUserDataAs<AuraToplevel>(resource)->SetShadowCornersRadii(
       gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
                            lower_right_radius, lower_left_radius));
 }
@@ -1694,7 +1715,8 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_can_fullscreen,
     aura_toplevel_unset_can_fullscreen,
     aura_toplevel_set_float_to_location,
-    aura_toplevel_set_window_corner_radii};
+    aura_toplevel_set_window_corner_radii,
+    aura_toplevel_set_shadow_corners_radii};
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
                                                         wl_resource* resource) {

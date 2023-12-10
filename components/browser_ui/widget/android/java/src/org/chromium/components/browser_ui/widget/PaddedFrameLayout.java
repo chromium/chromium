@@ -29,9 +29,7 @@ public class PaddedFrameLayout extends FrameLayout {
     private int mTopPadding;
     private int mBottomPadding;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public PaddedFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PaddedFrameLayout);

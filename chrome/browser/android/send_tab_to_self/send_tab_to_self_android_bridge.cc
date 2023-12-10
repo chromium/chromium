@@ -23,6 +23,7 @@
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -135,10 +136,10 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(
           ProfileAndroid::FromProfileAndroid(j_profile));
-  absl::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
       service ? service->GetEntryPointDisplayReason(
                     GURL(ConvertJavaStringToUTF8(env, j_url_to_share)))
-              : absl::nullopt;
+              : std::nullopt;
 
   if (!reason) {
     return nullptr;

@@ -28,10 +28,8 @@ struct PLATFORM_EXPORT SchedulingPolicy {
     ValidPolicies(DisableAlignWakeUps);
   };
 
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                base::trait_helpers::AreValidTraits<ValidPolicies,
-                                                    ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires base::trait_helpers::AreValidTraits<ValidPolicies, ArgTypes...>
   constexpr SchedulingPolicy(ArgTypes... args)
       : disable_aggressive_throttling(
             base::trait_helpers::HasTrait<DisableAggressiveThrottling,

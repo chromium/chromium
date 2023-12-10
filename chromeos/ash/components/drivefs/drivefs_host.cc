@@ -25,11 +25,29 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace drivefs {
+
 namespace {
 
 constexpr char kDataPath[] = "GCache/v2";
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& os, const drivefs::SyncStatus& status) {
+  switch (status) {
+    case SyncStatus::kNotFound:
+      return os << "not_found";
+    case SyncStatus::kCompleted:
+      return os << "completed";
+    case SyncStatus::kQueued:
+      return os << "queued";
+    case SyncStatus::kInProgress:
+      return os << "in_progress";
+    case SyncStatus::kError:
+      return os << "error";
+    default:
+      return os << "unknown";
+  }
+}
 
 std::unique_ptr<DriveFsBootstrapListener>
 DriveFsHost::Delegate::CreateMojoListener() {
@@ -78,7 +96,7 @@ class DriveFsHost::MountState : public DriveFsSession {
       DriveFsHost::Delegate* delegate) {
     auto access_token = auth_delegate->GetCachedAccessToken();
     mojom::DriveFsConfigurationPtr config = {
-        absl::in_place,
+        std::in_place,
         auth_delegate->GetAccountId().GetUserEmail(),
         std::move(access_token),
         auth_delegate->IsMetricsCollectionEnabled(),
@@ -106,6 +124,27 @@ class DriveFsHost::MountState : public DriveFsSession {
                       const std::string& app_id,
                       const std::vector<std::string>& scopes,
                       GetAccessTokenCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
+    host_->account_token_delegate_->GetAccessToken(
+        !token_fetch_attempted_,
+        base::BindOnce(
+            [](GetAccessTokenCallback callback, mojom::AccessTokenStatus status,
+               mojom::AccessTokenPtr access_token) {
+              if (status != mojom::AccessTokenStatus::kSuccess) {
+                std::move(callback).Run(status, "");
+                return;
+              }
+              std::move(callback).Run(status, access_token->token);
+            },
+            std::move(callback)));
+    token_fetch_attempted_ = true;
+  }
+
+  void GetAccessTokenWithExpiry(
+      const std::string& client_id,
+      const std::string& app_id,
+      const std::vector<std::string>& scopes,
+      GetAccessTokenWithExpiryCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
     host_->account_token_delegate_->GetAccessToken(!token_fetch_attempted_,
                                                    std::move(callback));

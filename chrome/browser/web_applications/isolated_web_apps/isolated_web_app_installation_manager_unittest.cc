@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/task/task_traits.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/repeating_test_future.h"

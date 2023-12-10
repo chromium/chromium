@@ -4,9 +4,9 @@
 
 #include "content/browser/notifications/platform_notification_context_impl.h"
 
+#include <set>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -283,7 +283,7 @@ void PlatformNotificationContextImpl::CreateService(
 void PlatformNotificationContextImpl::RemoveService(
     BlinkNotificationServiceImpl* service) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::EraseIf(
+  std::erase_if(
       services_,
       [service](const std::unique_ptr<BlinkNotificationServiceImpl>& ptr) {
         return ptr.get() == service;
@@ -352,7 +352,7 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
   }
 
   // Erase all valid origins so we're left with invalid ones.
-  base::EraseIf(origins, [controller](const GURL& origin) {
+  std::erase_if(origins, [controller](const GURL& origin) {
     auto permission = controller
                           ->GetPermissionResultForOriginWithoutContext(
                               blink::PermissionType::NOTIFICATIONS,

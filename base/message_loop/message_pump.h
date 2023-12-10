@@ -33,6 +33,13 @@ class BASE_EXPORT MessagePump {
 
   static void InitializeFeatures();
 
+  // Manage the state of |kAlignWakeUps| and the leeway of the process.
+  static void OverrideAlignWakeUpsState(bool enabled, TimeDelta leeway);
+  static void ResetAlignWakeUpsState();
+  static bool GetAlignWakeUpsEnabled();
+  static TimeDelta GetLeewayIgnoringThreadOverride();
+  static TimeDelta GetLeewayForCurrentThread();
+
   // Creates the default MessagePump based on |type|. Caller owns return value.
   static std::unique_ptr<MessagePump> Create(MessagePumpType type);
 
@@ -153,6 +160,11 @@ class BASE_EXPORT MessagePump {
     // that the message pump is idle (out of application work and ideally out of
     // native work -- if it can tell).
     virtual void BeforeWait() = 0;
+
+    // May be called when starting to process native work and it is guaranteed
+    // that DoWork() will be called again before sleeping. Allows the delegate
+    // to skip unnecessary ScheduleWork() calls.
+    virtual void BeginNativeWorkBeforeDoWork() = 0;
 
     // Returns the nesting level at which the Delegate is currently running.
     virtual int RunDepth() = 0;

@@ -300,7 +300,7 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
 
     program->AttachShader(&shader_manager_, vertex_shader);
     program->AttachShader(&shader_manager_, fragment_shader);
-    program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+    program->Link(nullptr, this);
     return program;
   }
 
@@ -322,7 +322,7 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
       SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms,
                               service_id);
     }
-    program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+    program->Link(nullptr, this);
     GLint link_status;
     program->GetProgramiv(GL_LINK_STATUS, &link_status);
     return (static_cast<bool>(link_status) == expected_link_status);
@@ -830,7 +830,7 @@ TEST_F(ProgramManagerWithShaderTest, GLDriverReturnsGLUnderscoreUniform) {
   ASSERT_TRUE(program != nullptr);
   EXPECT_TRUE(program->AttachShader(&shader_manager_, vshader));
   EXPECT_TRUE(program->AttachShader(&shader_manager_, fshader));
-  program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+  program->Link(nullptr, this);
   GLint value = 0;
   program->GetProgramiv(GL_ACTIVE_ATTRIBUTES, &value);
   EXPECT_EQ(4, value);
@@ -894,7 +894,7 @@ TEST_F(ProgramManagerWithShaderTest, SimilarArrayNames) {
   ASSERT_TRUE(program != nullptr);
   EXPECT_TRUE(program->AttachShader(&shader_manager_, vshader));
   EXPECT_TRUE(program->AttachShader(&shader_manager_, fshader));
-  program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+  program->Link(nullptr, this);
 
   // Check that we get the correct locations.
   EXPECT_EQ(kUniform2FakeLocation,
@@ -988,7 +988,7 @@ TEST_F(ProgramManagerWithShaderTest, GLDriverReturnsWrongTypeInfo) {
   ASSERT_TRUE(program != nullptr);
   EXPECT_TRUE(program->AttachShader(&shader_manager_, vshader));
   EXPECT_TRUE(program->AttachShader(&shader_manager_, fshader));
-  program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+  program->Link(nullptr, this);
   // Check that we got the good type, not the bad.
   // Check Attribs
   for (unsigned index = 0; index < kNumAttribs; ++index) {
@@ -1943,8 +1943,7 @@ TEST_F(ProgramManagerWithShaderTest, TooManyVaryings) {
   Program* program =
       SetupProgramForVariables(kVertexVaryings, 2, kFragmentVaryings, 2);
 
-  EXPECT_FALSE(
-      program->CheckVaryingsPacking(Program::kCountOnlyStaticallyUsed));
+  EXPECT_FALSE(program->CheckVaryingsPacking());
   EXPECT_TRUE(LinkAsExpected(program, false));
 }
 
@@ -1961,26 +1960,8 @@ TEST_F(ProgramManagerWithShaderTest, TooManyInactiveVaryings) {
   Program* program =
       SetupProgramForVariables(kVertexVaryings, 2, kFragmentVaryings, 2);
 
-  EXPECT_TRUE(
-      program->CheckVaryingsPacking(Program::kCountOnlyStaticallyUsed));
+  EXPECT_TRUE(program->CheckVaryingsPacking());
   EXPECT_TRUE(LinkAsExpected(program, true));
-}
-
-// Varyings go over 8 rows but some are inactive.
-// However, we still fail the check if kCountAll option is used.
-TEST_F(ProgramManagerWithShaderTest, CountAllVaryingsInPacking) {
-  const VarInfo kVertexVaryings[] = {
-      { GL_FLOAT_VEC4, 4, GL_MEDIUM_FLOAT, true, "a", kVarVarying },
-      { GL_FLOAT_VEC4, 5, GL_MEDIUM_FLOAT, true, "b", kVarVarying }
-  };
-  const VarInfo kFragmentVaryings[] = {
-      { GL_FLOAT_VEC4, 4, GL_MEDIUM_FLOAT, false, "a", kVarVarying },
-      { GL_FLOAT_VEC4, 5, GL_MEDIUM_FLOAT, true, "b", kVarVarying }
-  };
-  Program* program =
-      SetupProgramForVariables(kVertexVaryings, 2, kFragmentVaryings, 2);
-
-  EXPECT_FALSE(program->CheckVaryingsPacking(Program::kCountAll));
 }
 
 TEST_F(ProgramManagerWithShaderTest, BindUniformLocation) {
@@ -2042,7 +2023,7 @@ TEST_F(ProgramManagerWithShaderTest, BindUniformLocation) {
   const size_t kNumUniforms = std::size(kUniforms);
   SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms,
                           kServiceProgramId);
-  program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+  program->Link(nullptr, this);
 
   EXPECT_EQ(kUniform1DesiredLocation,
             program->GetUniformFakeLocation(kUniform1Name));
@@ -2079,7 +2060,7 @@ TEST_F(ProgramManagerWithShaderTest, ZeroSizeUniformMarkedInvalid) {
   ASSERT_TRUE(program != nullptr);
   program->AttachShader(&shader_manager_, vertex_shader);
   program->AttachShader(&shader_manager_, fragment_shader);
-  program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
+  program->Link(nullptr, this);
 
   EXPECT_FALSE(program->IsValid());
 }
@@ -2306,7 +2287,7 @@ TEST_F(ProgramManagerWithCacheTest, CacheProgramOnSuccessfulLink) {
   SetShadersCompiled();
   SetExpectationsForProgramLink();
   SetExpectationsForProgramCached();
-  EXPECT_TRUE(program_->Link(nullptr, Program::kCountOnlyStaticallyUsed, this));
+  EXPECT_TRUE(program_->Link(nullptr, this));
 }
 
 TEST_F(ProgramManagerWithCacheTest, LoadProgramOnProgramCacheHit) {
@@ -2319,7 +2300,7 @@ TEST_F(ProgramManagerWithCacheTest, LoadProgramOnProgramCacheHit) {
   SetExpectationsForNotCachingProgram();
   SetExpectationsForProgramLoadSuccess();
 
-  EXPECT_TRUE(program_->Link(nullptr, Program::kCountOnlyStaticallyUsed, this));
+  EXPECT_TRUE(program_->Link(nullptr, this));
 }
 
 TEST_F(ProgramManagerWithCacheTest, RelinkOnChangedCompileOptions) {
@@ -2330,7 +2311,7 @@ TEST_F(ProgramManagerWithCacheTest, RelinkOnChangedCompileOptions) {
   SetShadersCompiled("b");
   SetExpectationsForProgramLink();
   SetExpectationsForProgramNotLoaded();
-  EXPECT_TRUE(program_->Link(nullptr, Program::kCountOnlyStaticallyUsed, this));
+  EXPECT_TRUE(program_->Link(nullptr, this));
 }
 
 // For some compilers, using make_tuple("a", "bb") would end up

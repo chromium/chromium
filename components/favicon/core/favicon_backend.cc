@@ -630,9 +630,6 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
                                   const favicon_base::IconTypeSet& icon_types,
                                   const std::vector<int>& desired_sizes,
                                   bool fallback_to_host) {
-  // Time the query.
-  base::TimeTicks beginning_time = base::TimeTicks::Now();
-
   // Get FaviconIDs for |page_url| and one of |icon_types|.
   std::vector<IconMapping> icon_mappings;
   db_->GetIconMappingsForPageURL(page_url, icon_types, &icon_mappings);
@@ -656,11 +653,7 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
   for (size_t i = 0; i < icon_mappings.size(); ++i)
     favicon_ids.push_back(icon_mappings[i].icon_id);
 
-  auto results =
-      GetFaviconBitmapResultsForBestMatch(favicon_ids, desired_sizes);
-  UMA_HISTOGRAM_TIMES("History.GetFavIconFromDB",  // historical name
-                      base::TimeTicks::Now() - beginning_time);
-  return results;
+  return GetFaviconBitmapResultsForBestMatch(favicon_ids, desired_sizes);
 }
 
 std::vector<favicon_base::FaviconRawBitmapResult>

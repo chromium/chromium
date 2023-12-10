@@ -25,7 +25,7 @@
  * - Whether sticky mode was active.
  */
 
-import {KeyCode} from '../../common/key_code.js';
+import {Key, KeyCode} from '../../common/key_code.js';
 
 import {Command} from './command.js';
 
@@ -46,7 +46,7 @@ export let KeyBinding;
  *   prefixKey: (boolean|undefined),
  *   stickyMode: (boolean|undefined),
  *   keys: {
- *     keyCode: !Array<!KeyCode>,
+ *     keyCode: !Array<!Key.Code>,
  *     altKey: (!Array<boolean>|undefined),
  *     altGraphKey: (!Array<boolean>|undefined),
  *     ctrlKey: (!Array<boolean>|undefined),

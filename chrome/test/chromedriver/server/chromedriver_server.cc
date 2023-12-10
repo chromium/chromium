@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/chromedriver/constants/version.h"
+#include "chrome/test/chromedriver/keycode_text_conversion.h"
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/server/http_handler.h"
 #include "chrome/test/chromedriver/server/http_server.h"
@@ -463,6 +464,10 @@ int main(int argc, char *argv[]) {
 #endif
 
   mojo::core::Init();
+
+#if BUILDFLAG(IS_OZONE)
+  InitializeOzoneKeyboardEngineManager();
+#endif
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       kChromeDriverProductShortName);

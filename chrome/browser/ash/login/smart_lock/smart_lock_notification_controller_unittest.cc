@@ -69,7 +69,7 @@ TEST_F(SmartLockNotificationControllerTest,
   const char kNotificationId[] = "easyunlock_notification_ids.chromebook_added";
 
   notification_controller_->ShowChromebookAddedNotification();
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kNotificationId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(1u, notification->buttons().size());
@@ -77,33 +77,33 @@ TEST_F(SmartLockNotificationControllerTest,
 
   // Clicking notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(0, std::nullopt);
 
   // Clicking the notification itself should also launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 }
 
 TEST_F(SmartLockNotificationControllerTest, TestShowPairingChangeNotification) {
   const char kNotificationId[] = "easyunlock_notification_ids.pairing_change";
 
   notification_controller_->ShowPairingChangeNotification();
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kNotificationId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(2u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
   // Clicking the notification itself should do nothing.
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 
   // Clicking 1st notification button should lock screen settings.
   EXPECT_CALL(*notification_controller_, LockScreen());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(0, std::nullopt);
 
   // Clicking 2nd notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(1, absl::nullopt);
+  notification->delegate()->Click(1, std::nullopt);
 }
 
 TEST_F(SmartLockNotificationControllerTest,
@@ -112,7 +112,7 @@ TEST_F(SmartLockNotificationControllerTest,
       "easyunlock_notification_ids.pairing_change_applied";
 
   notification_controller_->ShowPairingChangeAppliedNotification(kPhoneName);
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kNotificationId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(1u, notification->buttons().size());
@@ -123,11 +123,11 @@ TEST_F(SmartLockNotificationControllerTest,
 
   // Clicking notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(0, std::nullopt);
 
   // Clicking the notification itself should also launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 }
 
 TEST_F(SmartLockNotificationControllerTest,

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/early_prefs/early_prefs_writer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -103,7 +103,7 @@ void EarlyPrefsWriter::ScheduleWrite() {
   writer_->ScheduleWrite(this);
 }
 
-absl::optional<std::string> EarlyPrefsWriter::SerializeData() {
+std::optional<std::string> EarlyPrefsWriter::SerializeData() {
   std::string output;
   if (!base::JSONWriter::Write(root_, &output)) {
     NOTREACHED_NORETURN() << "Failed to serialize early preferences : "

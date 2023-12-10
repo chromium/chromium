@@ -57,6 +57,10 @@ class TabSearchContainer : public views::View,
   void HideTabOrganization();
   void SetLockedExpansionModeForTesting(LockedExpansionMode mode);
 
+  void OnOrganizeButtonClicked();
+  void OnOrganizeButtonDismissed();
+  void OnOrganizeButtonTimeout();
+
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
 
@@ -83,6 +87,7 @@ class TabSearchContainer : public views::View,
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
   raw_ptr<TabOrganizationService, DanglingUntriaged> tab_organization_service_ =
       nullptr;
+  raw_ptr<const Browser> browser_;
 
   // Animation controlling expansion and collapse of tab_organization_button_.
   gfx::SlideAnimation expansion_animation_{this};

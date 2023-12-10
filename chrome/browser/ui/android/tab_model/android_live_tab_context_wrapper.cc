@@ -44,12 +44,12 @@ sessions::LiveTab* AndroidLiveTabContextCloseWrapper::GetLiveTabAt(
       scoped_web_contents_->web_contents());
 }
 
-absl::optional<tab_groups::TabGroupId>
+std::optional<tab_groups::TabGroupId>
 AndroidLiveTabContextCloseWrapper::GetTabGroupForTab(int relative_index) const {
   auto it = tab_id_to_tab_group_.find(GetTabAt(relative_index)->GetAndroidId());
   return it != tab_id_to_tab_group_.end()
              ? it->second
-             : absl::optional<tab_groups::TabGroupId>();
+             : std::optional<tab_groups::TabGroupId>();
 }
 
 const tab_groups::TabGroupVisualData*
@@ -93,7 +93,7 @@ sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,

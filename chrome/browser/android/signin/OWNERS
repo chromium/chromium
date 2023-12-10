@@ -8,5 +8,5 @@ chrome-signin-android-reviews@google.com
 # Note: When adding owners here, remember to also update the gwsq config for
 # chrome-signin-android-reviews@google.com!
 
-bsazonov@chromium.org
-triploblastic@chromium.org
+bsazonov@chromium.org       #{LAST_RESORT_SUGGESTION}
+triploblastic@chromium.org  #{LAST_RESORT_SUGGESTION}

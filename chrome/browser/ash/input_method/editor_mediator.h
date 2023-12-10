@@ -91,6 +91,9 @@ class EditorMediator : public EditorEventSink,
 
   EditorPanelManager* panel_manager() { return &panel_manager_; }
 
+  bool SetTextQueryProviderResponseForTesting(
+      const std::vector<std::string>& mock_results);
+
  private:
   struct SurroundingText {
     std::u16string text;

@@ -212,35 +212,35 @@ void ApplyTestState(
                                         base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1ConsentDecisionMade): {
+    case (StateKey::kM1ConsentDecisionPreviouslyMade): {
       SCOPED_TRACE("State Setup: M1 consent decision made");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1ConsentDecisionMade,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1EEANoticeAcknowledged): {
+    case (StateKey::kM1EEANoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 eea notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1EEANoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1RowNoticeAcknowledged): {
+    case (StateKey::kM1RowNoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 row notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1RowNoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1RestrictedNoticeAcknowledged): {
+    case (StateKey::kM1RestrictedNoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 restricted notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1PromptSuppressedReason): {
+    case (StateKey::kM1PromptPreviouslySuppressedReason): {
       SCOPED_TRACE("State Setup: M1 prompt suppressed value");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1PromptSuppressed,
@@ -965,15 +965,8 @@ void SetupTestState(
       map, std::move(managed_provider),
       HostContentSettingsMap::POLICY_PROVIDER);
 
-  // Only adjust the Privacy Sandbox preference which should be being consulted
-  // based on feature state.
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                      base::Value(privacy_sandbox_enabled));
-  } else {
-    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabled,
-                                      base::Value(privacy_sandbox_enabled));
-  }
+  testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
+                                    base::Value(privacy_sandbox_enabled));
 }
 
 void RunTestCase(

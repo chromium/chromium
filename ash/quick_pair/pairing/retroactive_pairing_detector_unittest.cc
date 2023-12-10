@@ -5,6 +5,7 @@
 #include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
@@ -13,6 +14,9 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/message_stream/fake_bluetooth_socket.h"
 #include "ash/quick_pair/message_stream/fake_message_stream_lookup.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
@@ -39,7 +43,6 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -56,6 +59,7 @@ const std::vector<uint8_t> kModelIdBytes = {
     /*message_code=*/0x01,
     /*additional_data_length=*/0x00, 0x03,
     /*additional_data=*/0xAA,        0xBB, 0xCC};
+const std::vector<uint8_t> kModelIdBytesNoMetadata = {0xAA, 0xBB, 0xCC};
 const std::string kModelId = "AABBCC";
 
 const std::vector<uint8_t> kBleAddressBytes = {
@@ -97,6 +101,36 @@ CreateTestBluetoothDevice(std::string address) {
       /*paired=*/true, /*connected=*/false);
 }
 
+class FakeFastPairGattServiceClientImplFactory
+    : public ash::quick_pair::FastPairGattServiceClientImpl::Factory {
+ public:
+  ~FakeFastPairGattServiceClientImplFactory() override = default;
+
+  ash::quick_pair::FakeFastPairGattServiceClient*
+  fake_fast_pair_gatt_service_client() {
+    return fake_fast_pair_gatt_service_client_;
+  }
+
+ private:
+  // FastPairGattServiceClientImpl::Factory:
+  std::unique_ptr<ash::quick_pair::FastPairGattServiceClient> CreateInstance(
+      device::BluetoothDevice* device,
+      scoped_refptr<device::BluetoothAdapter> adapter,
+      base::OnceCallback<void(std::optional<ash::quick_pair::PairFailure>)>
+          on_initialized_callback) override {
+    auto fake_fast_pair_gatt_service_client =
+        std::make_unique<ash::quick_pair::FakeFastPairGattServiceClient>(
+            device, adapter, std::move(on_initialized_callback));
+    fake_fast_pair_gatt_service_client_ =
+        fake_fast_pair_gatt_service_client.get();
+    return fake_fast_pair_gatt_service_client;
+  }
+
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient,
+          DanglingUntriaged | ExperimentalAsh>
+      fake_fast_pair_gatt_service_client_ = nullptr;
+};
+
 }  // namespace
 
 namespace ash {
@@ -111,6 +145,9 @@ class RetroactivePairingDetectorTest
 
   void SetUp() override {
     AshTestBase::SetUp();
+    FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
+        &fast_pair_gatt_service_factory_);
+
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
@@ -168,11 +205,23 @@ class RetroactivePairingDetectorTest
     mock_pairer_broker_->NotifyDevicePaired(fp_device);
   }
 
-  void PairFastPairDeviceWithClassicBluetooth(bool new_paired_status,
-                                              std::string classic_address) {
+  void PairFastPairDeviceWithClassicBluetooth(
+      bool new_paired_status,
+      std::string classic_address,
+      bool test_hid_already_connected = false) {
     bluetooth_device_ = CreateTestBluetoothDevice(classic_address);
     bluetooth_device_->AddUUID(ash::quick_pair::kFastPairBluetoothUuid);
+    bluetooth_device_->SetType(
+        device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
     auto* bt_device_ptr = bluetooth_device_.get();
+    if (test_hid_already_connected) {
+      // Simulate a GATT service client connection already open and connected
+      auto gatt_service_client = FastPairGattServiceClientImpl::Factory::Create(
+          bt_device_ptr, adapter_.get(), base::DoNothing());
+      FastPairGattServiceClientLookup::GetInstance()->InsertFakeForTesting(
+          bt_device_ptr, std::move(gatt_service_client));
+      SetGattServiceClientConnected(true);
+    }
     adapter_->AddMockDevice(std::move(bluetooth_device_));
     adapter_->NotifyDevicePairedChanged(bt_device_ptr, new_paired_status);
   }
@@ -200,6 +249,24 @@ class RetroactivePairingDetectorTest
     SimulateUserLogin(kUserEmail, user_type);
   }
 
+  void SetGattServiceClientConnected(bool connected) {
+    fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
+        ->SetConnected(connected);
+  }
+
+  void RunGattClientInitializedCallback(
+      std::optional<PairFailure> pair_failure) {
+    fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
+        ->RunOnGattClientInitializedCallback(pair_failure);
+  }
+
+  void RunReadModelIdCallback(
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value) {
+    fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
+        ->RunReadModelIdCallback(error_code, value);
+  }
+
  protected:
   bool retroactive_pair_found_ = false;
   scoped_refptr<Device> retroactive_device_;
@@ -215,6 +282,8 @@ class RetroactivePairingDetectorTest
   raw_ptr<FakeMessageStreamLookup, ExperimentalAsh>
       fake_message_stream_lookup_ = nullptr;
   std::unique_ptr<FakeFastPairRepository> fast_pair_repository_;
+
+  FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
 
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
@@ -2076,6 +2145,113 @@ TEST_F(RetroactivePairingDetectorTest, NoCrashWhenFootprintsResponseIsSlow) {
 
   // Trigger the response.
   fast_pair_repository_->TriggerIsDeviceSavedToAccountCallback();
+}
+
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_Success) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices,
+                            features::kFastPairSavedDevicesStrictOptIn,
+                            features::kFastPairHID},
+      /*disabled_features=*/{});
+  fast_pair_repository_->SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  // Test the normal retroactive pair flow of a BLE HID
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kBleAddress);
+  SetGattServiceClientConnected(true);
+  RunGattClientInitializedCallback(/*pair_failure=*/std::nullopt);
+  RunReadModelIdCallback(/*error_code=*/std::nullopt, kModelIdBytesNoMetadata);
+
+  EXPECT_TRUE(retroactive_pair_found_);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
+}
+
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionOpen_Success) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices,
+                            features::kFastPairSavedDevicesStrictOptIn,
+                            features::kFastPairHID},
+      /*disabled_features=*/{});
+  fast_pair_repository_->SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  // If GATT connection already open, we expect a read to Model ID
+  // immediately after.
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kBleAddress,
+      /*test_hid_already_connected=*/true);
+  RunReadModelIdCallback(/*error_code*/ std::nullopt, kModelIdBytesNoMetadata);
+
+  EXPECT_TRUE(retroactive_pair_found_);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
+}
+
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionFailure) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices,
+                            features::kFastPairSavedDevicesStrictOptIn,
+                            features::kFastPairHID},
+      /*disabled_features=*/{});
+  fast_pair_repository_->SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kBleAddress);
+  SetGattServiceClientConnected(true);
+
+  // If we get an error while create the GATT connection, we shouldn't
+  // expect a retroactive pairable device to be found.
+  RunGattClientInitializedCallback(PairFailure::kCreateGattConnection);
+  EXPECT_FALSE(retroactive_pair_found_);
+}
+
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_ReadModelIdFailure) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices,
+                            features::kFastPairSavedDevicesStrictOptIn,
+                            features::kFastPairHID},
+      /*disabled_features=*/{});
+  fast_pair_repository_->SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kBleAddress);
+  SetGattServiceClientConnected(true);
+  RunGattClientInitializedCallback(/*pair_failure=*/std::nullopt);
+
+  // If we get an error while reading model ID, we shouldn't expect a
+  // retroactive pairable device to be found.
+  RunReadModelIdCallback(
+      /*error_code=*/device::BluetoothGattService::GattErrorCode::kNotSupported,
+      kModelIdBytesNoMetadata);
+  EXPECT_FALSE(retroactive_pair_found_);
 }
 
 }  // namespace quick_pair

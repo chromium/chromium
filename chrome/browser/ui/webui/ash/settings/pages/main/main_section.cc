@@ -79,7 +79,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
   // text which is left empty when the banner should not be shown.
   std::u16string eol_return_banner_text;
   if (device_managed && handler->ShouldShowUpdateRequiredEolBanner()) {
-    absl::optional<int> days = handler->GetTimeRemainingInDays();
+    std::optional<int> days = handler->GetTimeRemainingInDays();
     // We only need to show the banner if less than equal to one week remains to
     // reach the update required deadline.
     if (days && days.value() <= 7) {
@@ -179,8 +179,11 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  html_source->AddBoolean("isRevampWayfindingEnabled",
-                          ash::features::IsOsSettingsRevampWayfindingEnabled());
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+  html_source->AddBoolean("isRevampWayfindingEnabled", kIsRevampEnabled);
+  html_source->AddString("chromeRefresh2023Attribute",
+                         kIsRevampEnabled ? "chrome-refresh-2023" : "");
 
   html_source->AddBoolean("isGuest", IsGuestModeActive());
   html_source->AddBoolean(
@@ -199,10 +202,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddInteger(
       "entryPointEnumSize",
       static_cast<int>(PersonalizationEntryPoint::kMaxValue) + 1);
-
-  html_source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsOsSettingsTestChromeRefresh() ? "chrome-refresh-2023" : "");
 
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
@@ -298,7 +297,7 @@ std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
                                             IDS_OS_SETTINGS_PROFILE_LABEL_V2);
   plural_string_handler->AddLocalizedString(
       "nearbyShareContactVisibilityNumUnreachable",
-      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE_PH);
 
   plural_string_handler->AddLocalizedString(
       "lockScreenNumberFingerprints",

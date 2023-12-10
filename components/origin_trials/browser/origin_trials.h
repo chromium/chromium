@@ -83,9 +83,24 @@ class OriginTrials : public KeyedService,
 
   void NotifyStatusChange(const url::Origin& origin,
                           const std::string& partition_site,
+                          bool match_subdomains,
                           const std::string& trial,
                           bool enabled);
   void NotifyPersistedTokensCleared();
+
+  // Returns true if `origin` can use a token made for `token_origin`. For
+  // `origin` to use `token_origin`'s token, at least one of the following must
+  // be true:
+  //  - `origin` equals `token_origin`
+  //  - `match_subdomains` is true and `origin` is a subdomain of `token_origin`
+  // NOTE: This is meant to mirror the logic used in
+  // `blink::TrialToken::ValidateOrigin()`.
+  // TODO(crbug.com/1227440): Find a way to share/reuse the logic in
+  // `blink::TrialToken`. Otherwise, the logic could change in one place and not
+  // the other.
+  bool MatchesTokenOrigin(const url::Origin& token_origin,
+                          bool match_subdomains,
+                          const url::Origin& origin) const;
 
   void PersistTokensInternal(const url::Origin& origin,
                              const url::Origin& partition_origin,

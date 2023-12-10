@@ -6,15 +6,24 @@
 
 #import "base/check_op.h"
 #import "base/files/file_path.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/serialized_navigation_entry.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace session_util {
+namespace {
+
+// Suffix appended to the SceneState session identifier for inactive Browsers.
+constexpr base::StringPiece kInactiveBrowserIdentifierSuffix = "-Inactive";
+
+}  // namespace
 
 std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
     ChromeBrowserState* browser_state,
@@ -29,6 +38,25 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
       last_committed_item_index,
       sessions::IOSSerializedNavigationBuilder::ToNavigationItems(navigations));
   return web_state;
+}
+
+std::string GetSessionIdentifier(Browser* browser) {
+  SceneState* scene_state = browser->GetSceneState();
+  NSString* scene_session = scene_state.sceneSessionID;
+  DCHECK(scene_session.length);
+
+  return GetSessionIdentifier(base::SysNSStringToUTF8(scene_session),
+                              browser->IsInactive());
+}
+
+std::string GetSessionIdentifier(const std::string& scene_session_identifier,
+                                 bool inactive_browser) {
+  if (!inactive_browser) {
+    return scene_session_identifier;
+  }
+
+  return base::StrCat(
+      {scene_session_identifier, kInactiveBrowserIdentifierSuffix});
 }
 
 }  // namespace session_util

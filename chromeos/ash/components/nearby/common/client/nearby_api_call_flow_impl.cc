@@ -140,7 +140,7 @@ void NearbyApiCallFlowImpl::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  absl::optional<NearbyHttpError> error;
+  std::optional<NearbyHttpError> error;
   std::string error_message;
   if (net_error == net::OK) {
     int response_code = -1;

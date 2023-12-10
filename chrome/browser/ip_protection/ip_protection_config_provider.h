@@ -130,12 +130,14 @@ class IpProtectionConfigProvider
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.
   void RequestOAuthToken(uint32_t batch_size,
+                         network::mojom::IpProtectionProxyLayer proxy_layer,
                          TryGetAuthTokensCallback callback);
   void OnRequestOAuthTokenCompleted(
       std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
           oauth_token_fetcher,
       base::TimeTicks oauth_token_fetch_start_time,
       uint32_t batch_size,
+      network::mojom::IpProtectionProxyLayer proxy_layer,
       TryGetAuthTokensCallback callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
@@ -144,6 +146,7 @@ class IpProtectionConfigProvider
   // request a blind-signed auth token for use at the IP Protection proxies.
   void FetchBlindSignedToken(signin::AccessTokenInfo access_token_info,
                              uint32_t batch_size,
+                             network::mojom::IpProtectionProxyLayer proxy_layer,
                              TryGetAuthTokensCallback callback);
   void OnFetchBlindSignedTokenCompleted(
       base::TimeTicks bsa_get_tokens_start_time,

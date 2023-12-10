@@ -87,7 +87,7 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetConsumer(
 }
 
 void PasswordSettingsUpdaterAndroidBridgeHelperImpl::GetPasswordSettingValue(
-    absl::optional<SyncingAccount> account,
+    std::optional<SyncingAccount> account,
     PasswordManagerSetting setting) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(dispatcher_bridge_);
@@ -100,7 +100,7 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::GetPasswordSettingValue(
 }
 
 void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetPasswordSettingValue(
-    absl::optional<SyncingAccount> account,
+    std::optional<SyncingAccount> account,
     PasswordManagerSetting setting,
     bool value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);

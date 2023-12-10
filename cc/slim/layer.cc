@@ -52,17 +52,8 @@ scoped_refptr<Layer> Layer::Create() {
   }
   return base::AdoptRef(new Layer(std::move(cc_layer)));
 }
-
 Layer::Layer(scoped_refptr<cc::Layer> cc_layer)
-    : cc_layer_(std::move(cc_layer)),
-      id_(g_next_id.GetNext() + 1),
-      is_drawable_(false),
-      contents_opaque_(false),
-      draws_content_(false),
-      hide_layer_and_subtree_(false),
-      masks_to_bounds_(false),
-      property_changed_(false),
-      subtree_property_changed_(false) {}
+    : cc_layer_(std::move(cc_layer)), id_(g_next_id.GetNext() + 1) {}
 
 Layer::~Layer() {
   RemoveAllChildren();
@@ -466,12 +457,12 @@ gfx::Transform Layer::ComputeTransformToParent() const {
   return transform;
 }
 
-absl::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
+std::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
   // TODO(crbug.com/1408128): Consider caching this result since GetInverse
   // may be expensive.
   gfx::Transform inverse_transform;
   if (!transform_.GetInverse(&inverse_transform)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // TransformFromParent is:
   // transform_origin x inverse_transform x -transform_origin x -position
@@ -528,7 +519,7 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
       render_pass.CreateAndAppendSharedQuadState();
   const gfx::Rect layer_rect{bounds()};
   DCHECK(layer_rect.Contains(visible_rect));
-  absl::optional<gfx::Rect> clip_opt;
+  std::optional<gfx::Rect> clip_opt;
   if (clip_in_target) {
     clip_opt = *clip_in_target;
   }

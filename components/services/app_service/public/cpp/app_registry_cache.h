@@ -58,6 +58,14 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     // observation to get a set of the app types which have been initialized.
     virtual void OnAppTypeInitialized(apps::AppType app_type) {}
 
+    // Called whenever AppRegistryCache.OnApps is called with
+    // `should_notify_initialized` is true, when the publisher publishes apps
+    // for the first time after the system startup. AppRegistryCache's internal
+    // variables haven't been updated, so `states_` and `deltas_in_progress_`
+    // are having the old app info, not include any new app info in `delta`.
+    virtual void OnAppsInitialized(const std::vector<AppPtr>& deltas,
+                                   apps::AppType app_type) {}
+
     // Called when the AppRegistryCache object (the thing that this observer
     // observes) will be destroyed. In response, the observer, `this`, should
     // call "cache->RemoveObserver(this)", whether directly or indirectly (e.g.

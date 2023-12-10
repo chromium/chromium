@@ -104,7 +104,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
 #if BUILDFLAG(IS_APPLE)
-  void AnnounceText(const std::u16string& text) override;
+  void AnnounceTextAs(const std::u16string& text,
+                      AnnouncementType announcement_type) override;
 #endif
 
   AXPlatformNodeDelegate* GetDelegate() const override;

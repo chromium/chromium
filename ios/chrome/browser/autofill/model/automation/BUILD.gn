@@ -1,0 +1,62 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "automation_action.h",
+    "automation_action.mm",
+    "automation_action_egtest.mm",
+    "automation_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser:autofill_test_bundle_data",
+    "//components/strings",
+    "//ios/chrome/browser/autofill/model:constants",
+    "//ios/chrome/browser/ui/infobars:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+  ]
+  frameworks = [ "XCTest.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "automation_app_interface.h",
+    "automation_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  frameworks = [ "XCTest.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "automation_app_interface.h",
+    "automation_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}

@@ -57,6 +57,7 @@ class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& network_id) override {}
   void ShowCarrierAccountDetail(const std::string& network_id) override {}
+  void ShowCarrierUnlockNotification() override {}
   void ShowPortalSignin(const std::string& network_id,
                         ash::NetworkConnect::Source source) override {}
   void ShowNetworkConnectError(const std::string& error_name,
@@ -77,6 +78,7 @@ class MobileDataNotificationsTest : public testing::Test {
   void SetUp() override {
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
     testing::Test::SetUp();
+    ash::LoginState::Initialize();
     SetupUserManagerAndProfileManager();
     SetupSystemNotifications();
     AddUserAndSetActive(kTestUserName);
@@ -93,6 +95,7 @@ class MobileDataNotificationsTest : public testing::Test {
     network_connect_delegate_.reset();
     profile_manager_.reset();
     user_manager_enabler_.reset();
+    ash::LoginState::Shutdown();
     testing::Test::TearDown();
   }
 

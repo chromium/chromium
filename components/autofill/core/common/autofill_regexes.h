@@ -84,4 +84,4 @@ class AutofillRegexCache {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_REGEXES_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_REGEXES_H_

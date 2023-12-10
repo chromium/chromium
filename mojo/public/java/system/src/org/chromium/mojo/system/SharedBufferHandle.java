@@ -6,20 +6,14 @@ package org.chromium.mojo.system;
 
 import java.nio.ByteBuffer;
 
-/**
- * A buffer that can be shared between applications.
- */
+/** A buffer that can be shared between applications. */
 public interface SharedBufferHandle extends Handle {
 
-    /**
-     * Flags for the shared buffer creation operation.
-     */
+    /** Flags for the shared buffer creation operation. */
     public static class CreateFlags extends Flags<CreateFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final CreateFlags NONE = CreateFlags.none().immutable();
 
         /**
@@ -37,12 +31,9 @@ public interface SharedBufferHandle extends Handle {
         public static CreateFlags none() {
             return new CreateFlags(FLAG_NONE);
         }
-
     }
 
-    /**
-     * Used to specify creation parameters for a shared buffer to |Core#createSharedBuffer()|.
-     */
+    /** Used to specify creation parameters for a shared buffer to |Core#createSharedBuffer()|. */
     public static class CreateOptions {
         private CreateFlags mFlags = CreateFlags.NONE;
 
@@ -52,18 +43,13 @@ public interface SharedBufferHandle extends Handle {
         public CreateFlags getFlags() {
             return mFlags;
         }
-
     }
 
-    /**
-     * Flags for the shared buffer duplication operation.
-     */
+    /** Flags for the shared buffer duplication operation. */
     public static class DuplicateFlags extends Flags<DuplicateFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final DuplicateFlags NONE = DuplicateFlags.none().immutable();
 
         /**
@@ -81,7 +67,6 @@ public interface SharedBufferHandle extends Handle {
         public static DuplicateFlags none() {
             return new DuplicateFlags(FLAG_NONE);
         }
-
     }
 
     /**
@@ -97,18 +82,13 @@ public interface SharedBufferHandle extends Handle {
         public DuplicateFlags getFlags() {
             return mFlags;
         }
-
     }
 
-    /**
-     * Flags for the shared buffer map operation.
-     */
+    /** Flags for the shared buffer map operation. */
     public static class MapFlags extends Flags<MapFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final MapFlags NONE = MapFlags.none().immutable();
 
         /**
@@ -126,7 +106,6 @@ public interface SharedBufferHandle extends Handle {
         public static MapFlags none() {
             return new MapFlags(FLAG_NONE);
         }
-
     }
 
     /**
@@ -152,9 +131,6 @@ public interface SharedBufferHandle extends Handle {
      */
     public ByteBuffer map(long offset, long numBytes, MapFlags flags);
 
-    /**
-     * Unmap a buffer pointer that was mapped by |map()|.
-     */
+    /** Unmap a buffer pointer that was mapped by |map()|. */
     public void unmap(ByteBuffer buffer);
-
 }

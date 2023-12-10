@@ -6,17 +6,18 @@
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_REPORT_SCHEDULER_TIMER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -39,15 +40,17 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
     // Should be overridden with a method that gets the next report time that
     // the timer should fire at and returns it via the callback. If there is no
-    // next report time, `absl::nullopt` should be returned instead.
+    // next report time, `std::nullopt` should be returned instead.
     virtual void GetNextReportTime(
-        base::OnceCallback<void(absl::optional<base::Time>)>,
+        base::OnceCallback<void(std::optional<base::Time>)>,
         base::Time now) = 0;
 
-    // Called when the timer is fired, with the current time `now`. `Refresh()`
-    // is automatically called after. If this causes a `GetNextReportTime()`
-    // call, that will be passed the same `now`.
-    virtual void OnReportingTimeReached(base::Time now) = 0;
+    // Called when the timer is fired, with the current time `now` and the time
+    // the timer was instructed to fire `timer_desired_run_time`. `Refresh()` is
+    // automatically called after. If this causes a `GetNextReportTime()` call,
+    // that will be passed the same `now`.
+    virtual void OnReportingTimeReached(base::Time now,
+                                        base::Time timer_desired_run_time) = 0;
 
     // Called when the connection changes from online to offline. When this
     // happens the timer is paused which means `OnReportingTimeReached` will not
@@ -61,7 +64,7 @@ class CONTENT_EXPORT ReportSchedulerTimer
     // the given argument; this may be necessary after the report times were
     // adjusted.
     virtual void AdjustOfflineReportTimes(
-        base::OnceCallback<void(absl::optional<base::Time>)>) = 0;
+        base::OnceCallback<void(std::optional<base::Time>)>) = 0;
   };
 
   explicit ReportSchedulerTimer(std::unique_ptr<Delegate> delegate);
@@ -77,7 +80,7 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
   // Schedules `reporting_time_reached_timer_` to fire at that time, unless the
   // timer is already set to fire earlier.
-  void MaybeSet(absl::optional<base::Time> reporting_time);
+  void MaybeSet(std::optional<base::Time> reporting_time);
 
  private:
   void OnTimerFired();

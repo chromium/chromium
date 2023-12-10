@@ -157,9 +157,7 @@ public final class UnownedUserDataHost {
      */
     private Handler mHandler;
 
-    /**
-     * The core data structure within this host.
-     */
+    /** The core data structure within this host. */
     private HashMap<UnownedUserDataKey<?>, WeakReference<? extends UnownedUserData>>
             mUnownedUserDataMap = new HashMap<>();
 
@@ -174,14 +172,14 @@ public final class UnownedUserDataHost {
 
     /**
      * Stores a {@link WeakReference} to {@code object} using the given {@code key}.
-     * <p>
-     * If the key is already attached to a different host, it is detached from that host.
      *
-     * @param key    the key to use for the object.
+     * <p>If the key is already attached to a different host, it is detached from that host.
+     *
+     * @param key the key to use for the object.
      * @param newValue the object to store.
-     * @param <T>    the type of {@link UnownedUserData}.
+     * @param <T> the type of {@link UnownedUserData}.
      */
-    /* package */<T extends UnownedUserData> void set(
+    /* package */ <T extends UnownedUserData> void set(
             @NonNull UnownedUserDataKey<T> key, @NonNull T newValue) {
         checkState();
 
@@ -203,7 +201,7 @@ public final class UnownedUserDataHost {
      * @return the stored version or {@code null} if it is not stored or has been garbage collected.
      */
     @Nullable
-    /* package */<T extends UnownedUserData> T get(@NonNull UnownedUserDataKey<T> key) {
+    /* package */ <T extends UnownedUserData> T get(@NonNull UnownedUserDataKey<T> key) {
         checkState();
 
         WeakReference<? extends UnownedUserData> valueWeakRef = mUnownedUserDataMap.get(key);
@@ -223,7 +221,7 @@ public final class UnownedUserDataHost {
      * @param key the key to use for the object.
      * @param <T> the type of {@link UnownedUserData}.
      */
-    /* package */<T extends UnownedUserData> void remove(@NonNull UnownedUserDataKey<T> key) {
+    /* package */ <T extends UnownedUserData> void remove(@NonNull UnownedUserDataKey<T> key) {
         checkState();
 
         WeakReference<? extends UnownedUserData> valueWeakRef = mUnownedUserDataMap.remove(key);

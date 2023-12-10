@@ -35,8 +35,8 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
 
     /** @return The launcher for help and feedback actions. */
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
-        assert mHelpAndFeedbackLauncher
-                != null : "Attempting to use the HelpAndFeedbackLauncher before initialization.";
+        assert mHelpAndFeedbackLauncher != null
+                : "Attempting to use the HelpAndFeedbackLauncher before initialization.";
         return mHelpAndFeedbackLauncher;
     }
 

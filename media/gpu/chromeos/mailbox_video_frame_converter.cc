@@ -15,12 +15,14 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -95,6 +97,19 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
 
     gpu_channel_ = get_gpu_channel_cb_.Run();
     return !!gpu_channel_;
+  }
+
+  absl::optional<gpu::SharedImageCapabilities> GetCapabilities() override {
+    DCHECK(gpu_task_runner_->BelongsToCurrentThread());
+    if (!gpu_channel_) {
+      return absl::nullopt;
+    }
+
+    gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
+    DCHECK(shared_image_stub);
+    gpu::SharedImageFactory* factory = shared_image_stub->factory();
+    CHECK(factory);
+    return factory->MakeCapabilities();
   }
 
   gpu::SharedImageStub::SharedImageDestructionCallback CreateSharedImage(
@@ -540,11 +555,20 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   const gfx::Size shared_image_size =
       GetRectSizeFromOrigin(destination_visible_rect);
 
+  const absl::optional<gpu::SharedImageCapabilities> shared_image_caps =
+      gpu_delegate_->GetCapabilities();
+
+  if (!shared_image_caps.has_value()) {
+    OnError(FROM_HERE, "Can't get the SharedImageCapabilities");
+    return false;
+  }
+
   // The allocated SharedImages should be usable for the (Display) compositor
   // and, potentially, for overlays (Scanout).
   uint32_t shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  if (video_frame->metadata().is_webgpu_compatible) {
+  if (video_frame->metadata().is_webgpu_compatible &&
+      !shared_image_caps->disable_webgpu_shared_images) {
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
   }
 

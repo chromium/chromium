@@ -28,7 +28,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // Applicable actions: DISCARD, OPEN_SUBPAGE
     BUBBLE_MAINPAGE = 1,
     // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
-    // PROCEED_DEEP_SCAN
+    // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
     BUBBLE_SUBPAGE = 2,
     // Applicable actions: DISCARD, KEEP
     DOWNLOADS_PAGE = 3,
@@ -67,7 +67,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     OPEN_SUBPAGE = 8,
     // The user clicks proceed on a prompt for deep scanning.
     PROCEED_DEEP_SCAN = 9,
-    kMaxValue = PROCEED_DEEP_SCAN
+    // The user clicks the learn more link on the bubble subpage.
+    OPEN_LEARN_MORE_LINK = 10,
+    kMaxValue = OPEN_LEARN_MORE_LINK
   };
 
   struct WarningActionEvent {

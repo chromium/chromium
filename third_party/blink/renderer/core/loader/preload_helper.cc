@@ -162,7 +162,7 @@ KURL GetBestFitImageURL(const Document& document,
                         const String& image_sizes) {
   float source_size = SizesAttributeParser(media_values, image_sizes,
                                            document.GetExecutionContext())
-                          .length();
+                          .Size();
   ImageCandidate candidate = BestFitSourceForImageAttributes(
       media_values->DevicePixelRatio(), source_size, href, image_srcset);
   return base_url.IsNull() ? document.CompleteURL(candidate.ToString())

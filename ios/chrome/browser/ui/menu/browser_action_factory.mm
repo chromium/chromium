@@ -10,7 +10,6 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -85,9 +84,8 @@
 
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block {
   // Wrap the block with the incognito auth check, if necessary.
-  IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-      agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                         ->GetSceneState()];
+  IncognitoReauthSceneAgent* reauthAgent =
+      [IncognitoReauthSceneAgent agentFromScene:self.browser->GetSceneState()];
   if (reauthAgent.authenticationRequired) {
     block = ^{
       [reauthAgent
@@ -326,7 +324,9 @@
                   OpenNewTabCommand* command =
                       [OpenNewTabCommand commandWithIncognito:NO];
                   command.shouldFocusOmnibox = YES;
-                  [handler openURLInNewTab:command];
+                  [UIView performWithoutAnimation:^{
+                    [handler openURLInNewTab:command];
+                  }];
                 }];
 
   if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
@@ -349,7 +349,9 @@
                         OpenNewTabCommand* command =
                             [OpenNewTabCommand commandWithIncognito:YES];
                         command.shouldFocusOmnibox = YES;
-                        [handler openURLInNewTab:command];
+                        [UIView performWithoutAnimation:^{
+                          [handler openURLInNewTab:command];
+                        }];
                       }];
 
   if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
@@ -362,8 +364,8 @@
 - (UIAction*)actionToSearchCopiedImage {
   __weak __typeof(self) weakSelf = self;
 
-  void (^clipboardAction)(absl::optional<gfx::Image>) =
-      ^(absl::optional<gfx::Image> optionalImage) {
+  void (^clipboardAction)(std::optional<gfx::Image>) =
+      ^(std::optional<gfx::Image> optionalImage) {
         if (!optionalImage || !weakSelf) {
           return;
         }
@@ -400,8 +402,8 @@
   id<LoadQueryCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LoadQueryCommands);
 
-  void (^clipboardAction)(absl::optional<GURL>) =
-      ^(absl::optional<GURL> optionalURL) {
+  void (^clipboardAction)(std::optional<GURL>) =
+      ^(std::optional<GURL> optionalURL) {
         if (!optionalURL) {
           return;
         }
@@ -428,8 +430,8 @@
   id<LoadQueryCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LoadQueryCommands);
 
-  void (^clipboardAction)(absl::optional<std::u16string>) =
-      ^(absl::optional<std::u16string> optionalText) {
+  void (^clipboardAction)(std::optional<std::u16string>) =
+      ^(std::optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

@@ -129,6 +129,16 @@ void CryptoResultImpl::ClearResolver() {
   resolver_ = nullptr;
 }
 
+ExecutionContext* CryptoResultImpl::GetExecutionContext() {
+  // Duplicate some of the checks done by ScriptPromiseResolver.
+  if (!resolver_ || !resolver_->GetExecutionContext() ||
+      resolver_->GetExecutionContext()->IsContextDestroyed()) {
+    return nullptr;
+  }
+
+  return resolver_->GetExecutionContext();
+}
+
 void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
                                          const WebString& error_details) {
   if (!resolver_)

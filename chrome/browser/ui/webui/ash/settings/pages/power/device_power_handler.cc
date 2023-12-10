@@ -325,7 +325,7 @@ void PowerHandler::HandleSetAdaptiveCharging(const base::Value::List& args) {
 }
 
 void PowerHandler::SendBatteryStatus() {
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
   bool charging = proto->battery_state() ==
@@ -367,7 +367,7 @@ void PowerHandler::SendBatteryStatus() {
 }
 
 void PowerHandler::SendPowerSources() {
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
   base::Value::List sources_list;
@@ -459,7 +459,7 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
 }
 
 void PowerHandler::OnGotSwitchStates(
-    absl::optional<PowerManagerClient::SwitchStates> result) {
+    std::optional<PowerManagerClient::SwitchStates> result) {
   if (!result.has_value()) {
     return;
   }

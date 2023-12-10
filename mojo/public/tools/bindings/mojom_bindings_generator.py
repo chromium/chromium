@@ -51,7 +51,6 @@ import crbug_1001171
 
 _BUILTIN_GENERATORS = {
     "c++": "mojom_cpp_generator",
-    "webui_js_bridge": "mojom_webui_js_bridge_generator",
     "javascript": "mojom_js_generator",
     "java": "mojom_java_generator",
     "mojolpm": "mojom_mojolpm_generator",

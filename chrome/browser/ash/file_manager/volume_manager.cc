@@ -1293,14 +1293,16 @@ void VolumeManager::OnClipboardDataChanged() {
   }
 
   ui::DataTransferEndpoint dte(ui::EndpointType::kClipboardHistory);
-  const auto* data = clipboard->GetClipboardData(&dte);
-  if (!data || data->custom_data_format() !=
-                   ui::ClipboardFormatType::WebCustomDataType().GetName()) {
+  std::string web_custom_data;
+  const ui::ClipboardData* data = clipboard->GetClipboardData(&dte);
+  if (data) {
+    web_custom_data = data->GetWebCustomData();
+  }
+  if (web_custom_data.empty()) {
     return;
   }
 
-  base::Pickle pickle(data->custom_data_data().data(),
-                      data->custom_data_data().size());
+  base::Pickle pickle(web_custom_data.data(), web_custom_data.size());
   std::vector<ui::FileInfo> file_info =
       file_manager::util::ParseFileSystemSources(
           base::OptionalToPtr(data->source()), pickle);

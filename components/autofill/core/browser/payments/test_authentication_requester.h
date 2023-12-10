@@ -67,8 +67,8 @@ class TestAuthenticationRequester
           response) override;
   void OnVirtualCardRiskBasedAuthenticationResponseReceived(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details)
-      override;
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+          response_details) override;
 
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 
@@ -78,8 +78,14 @@ class TestAuthenticationRequester
 
   std::u16string number() { return number_; }
 
-  payments::PaymentsClient::UnmaskResponseDetails response_details() const {
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails response_details()
+      const {
     return response_details_;
+  }
+
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
+  risk_based_authentication_response() {
+    return risk_based_authentication_response_;
   }
 
   payments::FullCardRequest::FailureType failure_type() {
@@ -102,7 +108,11 @@ class TestAuthenticationRequester
   std::u16string number_;
 
   // Unmask response returned from UnmaskCard request.
-  payments::PaymentsClient::UnmaskResponseDetails response_details_;
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails response_details_;
+
+  // Authentication response returned from CreditCardRiskBasedAuthenticator.
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
+      risk_based_authentication_response_;
 
   base::WeakPtrFactory<TestAuthenticationRequester> weak_ptr_factory_{this};
 };

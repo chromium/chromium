@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
-#include "ash/constants/ash_features.h"
+#include <optional>
+#include <string>
+
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
@@ -17,9 +19,8 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include "ui/gfx/image/image_skia.h"
 
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {
   ClearCounts();
@@ -40,10 +41,12 @@ void TestWallpaperController::ClearCounts() {
   show_override_wallpaper_count_[/*always_on_top=*/true] = 0;
   remove_override_wallpaper_count_ = 0;
   remove_user_wallpaper_count_ = 0;
-  wallpaper_info_ = absl::nullopt;
+  wallpaper_info_ = std::nullopt;
   update_current_wallpaper_layout_count_ = 0;
-  update_current_wallpaper_layout_layout_ = absl::nullopt;
+  update_current_wallpaper_layout_layout_ = std::nullopt;
   update_daily_refresh_wallpaper_count_ = 0;
+  one_shot_wallpaper_count_ = 0;
+  sea_pen_wallpaper_count_ = 0;
 }
 
 void TestWallpaperController::SetClient(
@@ -210,6 +213,26 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
   return true;
 }
 
+void TestWallpaperController::SetSeaPenWallpaper(
+    const AccountId& account_id,
+    const ash::SeaPenImage& sea_pen_image,
+    SetWallpaperCallback callback) {
+  ++sea_pen_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::SetSeaPenWallpaperFromFile(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    SetWallpaperCallback callback) {
+  ++sea_pen_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  std::move(callback).Run(/*success=*/true);
+}
+
 void TestWallpaperController::ConfirmPreviewWallpaper() {
   NOTIMPLEMENTED();
 }
@@ -241,7 +264,8 @@ void TestWallpaperController::ShowSigninWallpaper() {
 
 void TestWallpaperController::ShowOneShotWallpaper(
     const gfx::ImageSkia& image) {
-  NOTIMPLEMENTED();
+  ++one_shot_wallpaper_count_;
+  ShowWallpaperImage(image);
 }
 
 void TestWallpaperController::ShowOverrideWallpaper(
@@ -320,7 +344,7 @@ bool TestWallpaperController::IsWallpaperControlledByPolicy(
   return false;
 }
 
-absl::optional<ash::WallpaperInfo>
+std::optional<ash::WallpaperInfo>
 TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_;
 }

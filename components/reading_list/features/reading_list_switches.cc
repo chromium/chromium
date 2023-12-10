@@ -19,8 +19,6 @@ BASE_FEATURE(kReadLaterBackendMigration,
 
 bool IsReadingListAccountStorageUIEnabled() {
   return base::FeatureList::IsEnabled(
-             syncer::kReadingListEnableDualReadingListModel) &&
-         base::FeatureList::IsEnabled(
              syncer::kReadingListEnableSyncTransportModeUponSignIn);
 }
 

@@ -67,8 +67,8 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     // by default unless specified.
     EXPECT_CALL(*user_token_key_permissions_manager_,
                 IsKeyAllowedForUsage(_, _, _))
-        .WillRepeatedly(base::test::RunOnceCallback<0>(/*allowed=*/false,
-                                                       Status::kSuccess));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
+            /*allowed=*/false, Status::kSuccess));
 
     system_token_key_permissions_manager_ =
         std::make_unique<platform_keys::MockKeyPermissionsManager>();
@@ -77,8 +77,8 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     // by default unless specified.
     EXPECT_CALL(*system_token_key_permissions_manager_,
                 IsKeyAllowedForUsage(_, _, _))
-        .WillRepeatedly(
-            base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
+            /*allowed=*/true, Status::kSuccess));
 
     platform_keys::KeyPermissionsManagerImpl::
         SetSystemTokenKeyPermissionsManagerForTesting(

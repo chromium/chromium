@@ -36,7 +36,7 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
 
   void NotifyHostStatusChanged(
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDevice>& host_device);
+      const std::optional<multidevice::RemoteDevice>& host_device);
   void NotifyFeatureStateChanged(
       const base::flat_map<mojom::Feature, mojom::FeatureState>&
           feature_states);
@@ -60,7 +60,7 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
 
   std::vector<std::tuple<mojom::Feature,
                          bool,
-                         absl::optional<std::string>,
+                         std::optional<std::string>,
                          SetFeatureEnabledStateCallback>>&
   set_feature_enabled_args() {
     return set_feature_enabled_args_;
@@ -115,7 +115,7 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
   void GetHostStatus(GetHostStatusCallback callback) override;
   void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
-                              const absl::optional<std::string>& auth_token,
+                              const std::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
@@ -146,7 +146,7 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
   std::vector<GetHostStatusCallback> get_host_args_;
   std::vector<std::tuple<mojom::Feature,
                          bool,
-                         absl::optional<std::string>,
+                         std::optional<std::string>,
                          SetFeatureEnabledStateCallback>>
       set_feature_enabled_args_;
   std::vector<GetFeatureStatesCallback> get_feature_states_args_;

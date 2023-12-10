@@ -27,7 +27,7 @@ TEST(SkottieResourceMetadataTest, SkottieResourceMetadataMapRegistersAssets) {
                                  "test-resource-id-1", gfx::Size(100, 100)));
   ASSERT_TRUE(resource_map.RegisterAsset("test-resource-path-2",
                                          "test-resource-name-2",
-                                         "test-resource-id-2", absl::nullopt));
+                                         "test-resource-id-2", std::nullopt));
   EXPECT_THAT(
       resource_map.asset_storage(),
       UnorderedElementsAre(
@@ -42,7 +42,7 @@ TEST(SkottieResourceMetadataTest, SkottieResourceMetadataMapRegistersAssets) {
                              FILE_PATH_LITERAL(
                                  "test-resource-path-2/test-resource-name-2"))
                              .NormalizePathSeparators(),
-                         Eq(absl::nullopt)))));
+                         Eq(std::nullopt)))));
 }
 
 TEST(SkottieResourceMetadataTest,
@@ -50,10 +50,10 @@ TEST(SkottieResourceMetadataTest,
   SkottieResourceMetadataMap resource_map;
   ASSERT_TRUE(resource_map.RegisterAsset("test-resource-path-1",
                                          "test-resource-name-1",
-                                         "test-resource-id-1", absl::nullopt));
+                                         "test-resource-id-1", std::nullopt));
   EXPECT_FALSE(resource_map.RegisterAsset("test-resource-path-2",
                                           "test-resource-name-2",
-                                          "test-resource-id-1", absl::nullopt));
+                                          "test-resource-id-1", std::nullopt));
 }
 
 TEST(SkottieResourceMetadataTest,
@@ -61,7 +61,7 @@ TEST(SkottieResourceMetadataTest,
   SkottieResourceMetadataMap resource_map;
   EXPECT_FALSE(resource_map.RegisterAsset("test-resource-path",
                                           "test-resource-name",
-                                          /*resource_id=*/"", absl::nullopt));
+                                          /*resource_id=*/"", std::nullopt));
 }
 
 TEST(SkottieResourceMetadataTest,
@@ -69,7 +69,7 @@ TEST(SkottieResourceMetadataTest,
   SkottieResourceMetadataMap resource_map;
   EXPECT_FALSE(resource_map.RegisterAsset("test-resource-path",
                                           "/absolute-resource-name",
-                                          /*resource_id=*/"", absl::nullopt));
+                                          /*resource_id=*/"", std::nullopt));
 }
 
 TEST(SkottieResourceMetadataTest, HashSkottieResourceIdReturnsMatchingHashes) {

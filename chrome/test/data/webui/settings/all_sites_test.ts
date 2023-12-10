@@ -398,7 +398,7 @@ suite('DisableFirstPartySets', function() {
   test('clear data "no sites" string', async function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        structuredClone(TEST_MULTIPLE_SITE_GROUP));
     const googleSiteGroup = createSiteGroup('google.com', 'google.com', [
       'https://www.google.com',
       'https://docs.google.com',
@@ -619,7 +619,7 @@ suite('DisableFirstPartySets', function() {
   test('cancelling the confirm dialog on clear all data works', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        structuredClone(TEST_MULTIPLE_SITE_GROUP));
     testElement.forceListUpdateForTesting();
     clearDataViaClearAllButton('cancel-button');
   });
@@ -629,7 +629,7 @@ suite('DisableFirstPartySets', function() {
     // Clone this object to avoid propagating changes made in this test.
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        structuredClone(TEST_MULTIPLE_SITE_GROUP));
     const googleSiteGroup = createSiteGroup('google.com', 'google.com', [
       'https://www.google.com',
       'https://docs.google.com',
@@ -652,10 +652,10 @@ suite('DisableFirstPartySets', function() {
       async function() {
         // Test when there is one origin has permissions settings.
         // Clone this object to avoid propagating changes made in this test.
-        const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-        siteGroup.origins[0].hasPermissionSettings = true;
+        const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+        siteGroup.origins[0]!.hasPermissionSettings = true;
         testElement.siteGroupMap.set(
-            siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+            siteGroup.groupingKey, structuredClone(siteGroup));
         const googleSiteGroup = createSiteGroup('google.com', 'google.com', [
           'https://www.google.com',
           'https://docs.google.com',
@@ -716,7 +716,7 @@ suite('DisableFirstPartySets', function() {
   test('remove site group', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        structuredClone(TEST_MULTIPLE_SITE_GROUP));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -731,13 +731,13 @@ suite('DisableFirstPartySets', function() {
   });
 
   test('remove origin', async function() {
-    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-    siteGroup.origins[0].numCookies = 1;
-    siteGroup.origins[1].numCookies = 2;
-    siteGroup.origins[2].numCookies = 3;
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    siteGroup.origins[0]!.numCookies = 1;
+    siteGroup.origins[1]!.numCookies = 2;
+    siteGroup.origins[2]!.numCookies = 3;
     siteGroup.numCookies = 6;
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -745,13 +745,13 @@ suite('DisableFirstPartySets', function() {
     confirmDialog();
 
     assertEquals(
-        siteGroup.origins[0].origin,
+        siteGroup.origins[0]!.origin,
         await browserProxy.whenCalled(
             'clearUnpartitionedOriginDataAndCookies'));
 
     const [origin, types, setting] =
         await browserProxy.whenCalled('setOriginPermissions');
-    assertEquals(origin, siteGroup.origins[0].origin);
+    assertEquals(origin, siteGroup.origins[0]!.origin);
     assertEquals(types, null);  // Null affects all content types.
     assertEquals(setting, ContentSetting.DEFAULT);
 
@@ -762,15 +762,15 @@ suite('DisableFirstPartySets', function() {
   });
 
   test('remove partitioned origin', async function() {
-    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-    siteGroup.origins[0].isPartitioned = true;
-    siteGroup.origins[0].numCookies = 1;
-    siteGroup.origins[1].numCookies = 2;
-    siteGroup.origins[2].numCookies = 3;
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    siteGroup.origins[0]!.isPartitioned = true;
+    siteGroup.origins[0]!.numCookies = 1;
+    siteGroup.origins[1]!.numCookies = 2;
+    siteGroup.origins[2]!.numCookies = 3;
     siteGroup.numCookies = 6;
 
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -789,7 +789,7 @@ suite('DisableFirstPartySets', function() {
     const [origin, groupingKey] =
         await browserProxy.whenCalled('clearPartitionedOriginDataAndCookies');
 
-    assertEquals(siteGroup.origins[0].origin, origin);
+    assertEquals(siteGroup.origins[0]!.origin, origin);
     assertEquals(siteGroup.groupingKey, groupingKey);
     assertEquals(
         1, browserProxy.getCallCount('clearPartitionedOriginDataAndCookies'));
@@ -800,7 +800,7 @@ suite('DisableFirstPartySets', function() {
   test('cancel remove site group', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        structuredClone(TEST_MULTIPLE_SITE_GROUP));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -813,13 +813,13 @@ suite('DisableFirstPartySets', function() {
   });
 
   test('cancel remove origin', function() {
-    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-    siteGroup.origins[0].numCookies = 1;
-    siteGroup.origins[1].numCookies = 2;
-    siteGroup.origins[2].numCookies = 3;
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    siteGroup.origins[0]!.numCookies = 1;
+    siteGroup.origins[1]!.numCookies = 2;
+    siteGroup.origins[2]!.numCookies = 3;
     siteGroup.numCookies = 6;
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -833,10 +833,10 @@ suite('DisableFirstPartySets', function() {
   });
 
   test('permissions bullet point visbility', function() {
-    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-    siteGroup.origins[0].hasPermissionSettings = true;
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    siteGroup.origins[0]!.hasPermissionSettings = true;
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -850,9 +850,9 @@ suite('DisableFirstPartySets', function() {
     assertTrue(isChildVisible(testElement, '#permissionsBulletPoint'));
     cancelDialog();
 
-    siteGroup.origins[0].hasPermissionSettings = false;
+    siteGroup.origins[0]!.hasPermissionSettings = false;
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -869,9 +869,9 @@ suite('DisableFirstPartySets', function() {
 
   test('dynamic strings', async function() {
     // Single origin, no apps.
-    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -901,9 +901,9 @@ suite('DisableFirstPartySets', function() {
     cancelDialog();
 
     // Single origin with app.
-    siteGroup.origins[0].isInstalled = true;
+    siteGroup.origins[0]!.isInstalled = true;
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -934,9 +934,9 @@ suite('DisableFirstPartySets', function() {
     cancelDialog();
 
     // Site group, multiple sites, multiple apps.
-    siteGroup.origins[1].isInstalled = true;
+    siteGroup.origins[1]!.isInstalled = true;
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -953,11 +953,10 @@ suite('DisableFirstPartySets', function() {
     cancelDialog();
 
     // Site group, single origin, no app.
-    const singleOriginSiteGroup =
-        JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+    const singleOriginSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
     testElement.siteGroupMap.set(
         singleOriginSiteGroup.groupingKey,
-        JSON.parse(JSON.stringify(singleOriginSiteGroup)));
+        structuredClone(singleOriginSiteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -974,10 +973,10 @@ suite('DisableFirstPartySets', function() {
     cancelDialog();
 
     // Site group, single origin, one app.
-    singleOriginSiteGroup.origins[0].isInstalled = true;
+    singleOriginSiteGroup.origins[0]!.isInstalled = true;
     testElement.siteGroupMap.set(
         singleOriginSiteGroup.groupingKey,
-        JSON.parse(JSON.stringify(singleOriginSiteGroup)));
+        structuredClone(singleOriginSiteGroup));
     testElement.forceListUpdateForTesting();
     flush();
 
@@ -1161,10 +1160,10 @@ suite('EnableFirstPartySets', function() {
   }
 
   test('remove site via overflow menu', async function() {
-    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     siteGroup.fpsOwner = 'google.com';
     testElement.siteGroupMap.set(
-        siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+        siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
     assertEquals(testElement.$.allSitesList.items!.length, 1);
     removeSiteViaOverflowMenu('action-button');
@@ -1177,10 +1176,10 @@ suite('EnableFirstPartySets', function() {
 
   test(
       'cancelling the confirm dialog on removing site works', async function() {
-        const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+        const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
         siteGroup.fpsOwner = 'google.com';
         testElement.siteGroupMap.set(
-            siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+            siteGroup.groupingKey, structuredClone(siteGroup));
         testElement.forceListUpdateForTesting();
         removeSiteViaOverflowMenu('cancel-button');
       });
@@ -1188,7 +1187,7 @@ suite('EnableFirstPartySets', function() {
   test('click and remove site entry with remove button', async function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        structuredClone(TEST_MULTIPLE_SITE_GROUP));
     testElement.forceListUpdateForTesting();
     flush();
     removeFirstSiteGroup();
@@ -1204,7 +1203,7 @@ suite('EnableFirstPartySets', function() {
       async function() {
         testElement.siteGroupMap.set(
             TEST_MULTIPLE_SITE_GROUP.groupingKey,
-            JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+            structuredClone(TEST_MULTIPLE_SITE_GROUP));
         testElement.forceListUpdateForTesting();
         flush();
         removeFirstSiteGroup();
@@ -1214,7 +1213,7 @@ suite('EnableFirstPartySets', function() {
   test('filter sites by first party set owner', async function() {
     TEST_SITE_GROUPS.forEach(siteGroup => {
       testElement.siteGroupMap.set(
-          siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+          siteGroup.groupingKey, structuredClone(siteGroup));
     });
     testElement.forceListUpdateForTesting();
     flush();
@@ -1270,7 +1269,7 @@ suite('EnableFirstPartySets', function() {
       async function() {
         TEST_FPS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
-              siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+              siteGroup.groupingKey, structuredClone(siteGroup));
         });
         testElement.forceListUpdateForTesting();
         flush();
@@ -1298,7 +1297,7 @@ suite('EnableFirstPartySets', function() {
       async function() {
         TEST_FPS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
-              siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+              siteGroup.groupingKey, structuredClone(siteGroup));
         });
         testElement.forceListUpdateForTesting();
         flush();
@@ -1364,7 +1363,7 @@ suite('EnableFirstPartySets', function() {
       function() {
         TEST_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
-              siteGroup.groupingKey, JSON.parse(JSON.stringify(siteGroup)));
+              siteGroup.groupingKey, structuredClone(siteGroup));
         });
         testElement.forceListUpdateForTesting();
         flush();

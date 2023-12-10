@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "ash/components/arc/arc_features.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_system_stat_collector.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +42,6 @@
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -67,10 +68,10 @@ struct ArcGraphicsTracingHandler::ActiveTrace {
   base::Time timestamp;
 
   // This must be destructed on the UI thread, so make it manually-destructable
-  // with absl::optional.
-  absl::optional<base::OneShotTimer> stop_timer;
+  // with std::optional.
+  std::optional<base::OneShotTimer> stop_timer;
 
-  arc::TraceTimestamps stamps;
+  arc::PresentFramesTracer present_frames;
 };
 
 namespace {
@@ -181,7 +182,7 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
                                      &common_model.system_model());
 
   trace->model.set_skip_structure_validation();
-  if (!trace->model.Build(common_model, trace->stamps)) {
+  if (!trace->model.Build(common_model, trace->present_frames)) {
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
 
@@ -233,7 +234,8 @@ base::trace_event::TraceConfig GetTracingConfig() {
 }  // namespace
 
 base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
-    std::string_view title) {
+    std::string_view title,
+    base::Time timestamp) {
   constexpr size_t kMaxNameSize = 32;
   char normalized_name[kMaxNameSize];
   size_t index = 0;
@@ -251,7 +253,7 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
   normalized_name[index] = 0;
 
   const std::string time =
-      base::UnlocalizedTimeFormatWithPattern(Now(), "yyyy-MM-dd_HH-mm-ss");
+      base::UnlocalizedTimeFormatWithPattern(timestamp, "yyyy-MM-dd_HH-mm-ss");
   return GetDownloadsFolder().AppendASCII(base::StringPrintf(
       "overview_tracing_%s_%s.json", normalized_name, time.c_str()));
 }
@@ -272,10 +274,6 @@ ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
 ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
   wm_helper_->RemoveActivationObserver(this);
   DiscardActiveArcWindow();
-
-  if (active_trace_) {
-    StopTracing();
-  }
 }
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
@@ -292,7 +290,7 @@ void ArcGraphicsTracingHandler::RegisterMessages() {
 void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
                                                   aura::Window* gained_active,
                                                   aura::Window* lost_active) {
-  // Handle ARC current active window if any.
+  // Handle ARC current active window if any. This stops any ongoing trace.
   DiscardActiveArcWindow();
 
   if (!gained_active)
@@ -305,11 +303,6 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   arc_active_window_ = gained_active;
   arc_active_window_->AddObserver(this);
   arc_active_window_->AddPreTargetHandler(this);
-
-  // Limit tracing by newly activated window.
-  if (active_trace_) {
-    active_trace_->time_min = SystemTicksNow();
-  }
 
   exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
   CHECK(surface);
@@ -379,10 +372,8 @@ void ArcGraphicsTracingHandler::OnCommit(exo::Surface* surface) {
     return;
   }
 
-  active_trace_->stamps.AddCommit(SystemTicksNow());
-  surface->RequestPresentationCallback(
-      base::BindRepeating(&ArcGraphicsTracingHandler::RecordPresentedFrame,
-                          weak_ptr_factory_.GetWeakPtr()));
+  active_trace_->present_frames.AddCommit(SystemTicksNow());
+  active_trace_->present_frames.ListenForPresent(surface);
 }
 
 void ArcGraphicsTracingHandler::UpdateActiveArcWindowInfo() {
@@ -469,11 +460,9 @@ void ArcGraphicsTracingHandler::StartTracing() {
   active_trace_ = std::make_unique<ActiveTrace>();
 
   active_trace_->system_stat_collector.Start(max_tracing_time_);
-
-  // Timestamp and app information would be updated when |OnTracingStarted| is
-  // called.
   active_trace_->timestamp = Now();
   UpdateActiveArcWindowInfo();
+  active_trace_->time_min = SystemTicksNow();
 
   StartTracingOnController(
       GetTracingConfig(),
@@ -484,7 +473,12 @@ void ArcGraphicsTracingHandler::StartTracing() {
 void ArcGraphicsTracingHandler::StopTracing() {
   SetStatus("Building model...");
 
-  active_trace_->stop_timer->Stop();
+  // |stop_timer| will already be nullopt in the case that the window was or
+  // deactivated before OnTracingStarted was invoked.
+  if (!active_trace_->stop_timer) {
+    active_trace_.reset();
+    return;
+  }
   active_trace_->stop_timer.reset();
 
   active_trace_->time_max = SystemTicksNow();
@@ -523,10 +517,6 @@ void ArcGraphicsTracingHandler::OnTracingStarted() {
     return;
   }
 
-  active_trace_->timestamp = Now();
-  UpdateActiveArcWindowInfo();
-
-  active_trace_->time_min = SystemTicksNow();
   active_trace_->stop_timer.emplace();
   active_trace_->stop_timer->Start(
       FROM_HERE, active_trace_->system_stat_collector.max_interval(),
@@ -540,7 +530,8 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
   std::string string_data;
   string_data.swap(*trace_data);
 
-  const base::FilePath model_path = GetModelPathFromTitle(trace->task_title);
+  const base::FilePath model_path =
+      GetModelPathFromTitle(trace->task_title, trace->timestamp);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -548,17 +539,6 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
                      std::move(trace), model_path),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcGraphicsTracingHandler::RecordPresentedFrame(
-    const gfx::PresentationFeedback& frame) {
-  if (frame.failed()) {
-    VLOG(5) << "Presentation failed";
-  } else if (frame.timestamp == base::TimeTicks()) {
-    VLOG(5) << "Discarded frame";
-  } else if (active_trace_) {
-    active_trace_->stamps.AddPresent(frame.timestamp);
-  }
 }
 
 void ArcGraphicsTracingHandler::OnGraphicsModelReady(

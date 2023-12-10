@@ -17,7 +17,6 @@ namespace blink {
 const char Ink::kSupplementName[] = "Ink";
 
 Ink* Ink::ink(Navigator& navigator) {
-  DCHECK(RuntimeEnabledFeatures::DelegatedInkTrailsEnabled());
   Ink* ink = Supplement<Navigator>::From<Ink>(navigator);
   if (!ink) {
     ink = MakeGarbageCollected<Ink>(navigator);
@@ -31,8 +30,6 @@ Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 ScriptPromise Ink::requestPresenter(ScriptState* state,
                                     InkPresenterParam* presenter_param,
                                     ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::DelegatedInkTrailsEnabled());
-
   if (!state->ContextIsValid()) {
     exception_state.ThrowException(
         ToExceptionCode(ESErrorType::kError),

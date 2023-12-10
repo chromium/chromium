@@ -56,11 +56,6 @@ void LogUninstallProfileResult(HermesResponseStatus status) {
                                 status);
 }
 
-void LogRequestPendingProfilesResult(HermesResponseStatus status) {
-  base::UmaHistogramEnumeration(
-      "Network.Cellular.ESim.RequestPendingProfiles.Result", status);
-}
-
 void LogRequestPendingProfilesLatency(base::TimeDelta call_latency) {
   UMA_HISTOGRAM_LONG_TIMES(
       "Network.Cellular.ESim.RequestPendingProfiles.Latency", call_latency);

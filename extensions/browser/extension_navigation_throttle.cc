@@ -29,7 +29,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
@@ -37,7 +36,6 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "ui/base/page_transition_types.h"
 
@@ -187,13 +185,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  ukm::SourceIdObj source_id = ukm::SourceIdObj::FromInt64(
-      navigation_handle()->GetNextPageUkmSourceId());
-
   // If the navigation is to an unknown or disabled extension, block it.
   if (!target_extension) {
-    RecordExtensionResourceAccessResult(
-        source_id, url, ExtensionResourceAccessResult::kFailure);
     // TODO(nick): This yields an unsatisfying error page; use a different error
     // code once that's supported. https://crbug.com/649869
     return content::NavigationThrottle::BLOCK_REQUEST;
@@ -207,8 +200,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
                                  : url.path_piece().substr(1);
     if (!IconsInfo::GetIcons(target_extension)
              .ContainsPath(resource_root_relative_path)) {
-      RecordExtensionResourceAccessResult(
-          source_id, url, ExtensionResourceAccessResult::kFailure);
       return content::NavigationThrottle::BLOCK_REQUEST;
     }
   }
@@ -227,8 +218,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
         target_extension->permissions_data()->HasAPIPermission(
             mojom::APIPermissionID::kWebView);
     if (!has_webview_permission) {
-      RecordExtensionResourceAccessResult(
-          source_id, url, ExtensionResourceAccessResult::kCancel);
       return content::NavigationThrottle::CANCEL;
     }
   }
@@ -261,8 +250,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
         storage_partition_config.partition_name(), url.path(),
         navigation_handle()->GetPageTransition(), &allowed);
     if (!allowed) {
-      RecordExtensionResourceAccessResult(
-          source_id, url, ExtensionResourceAccessResult::kFailure);
       return content::NavigationThrottle::BLOCK_REQUEST;
     }
   }
@@ -270,8 +257,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   if (target_extension->is_platform_app() &&
       ShouldBlockNavigationToPlatformAppResource(target_extension,
                                                  *navigation_handle())) {
-    RecordExtensionResourceAccessResult(
-        source_id, url, ExtensionResourceAccessResult::kFailure);
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
@@ -318,8 +303,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 
   // Cancel cross-origin-initiator navigations to blob: or filesystem: URLs.
   if (!url_has_extension_scheme) {
-    RecordExtensionResourceAccessResult(source_id, url,
-                                        ExtensionResourceAccessResult::kCancel);
     return content::NavigationThrottle::CANCEL;
   }
 
@@ -327,8 +310,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // manifest's "web_accessible_resources" section.
   if (!WebAccessibleResourcesInfo::IsResourceWebAccessible(
           target_extension, url.path(), &initiator_origin)) {
-    RecordExtensionResourceAccessResult(
-        source_id, url, ExtensionResourceAccessResult::kFailure);
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
@@ -341,8 +322,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // here.
   // TODO(karandeepb): Investigate if this check can be removed.
   if (target_extension->is_platform_app()) {
-    RecordExtensionResourceAccessResult(source_id, url,
-                                        ExtensionResourceAccessResult::kCancel);
     return content::NavigationThrottle::CANCEL;
   }
 
@@ -351,8 +330,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       registry->enabled_extensions().GetExtensionOrAppByURL(
           initiator_origin.GetURL());
   if (initiator_extension && initiator_extension->is_platform_app()) {
-    RecordExtensionResourceAccessResult(
-        source_id, url, ExtensionResourceAccessResult::kFailure);
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 

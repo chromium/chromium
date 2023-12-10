@@ -41,30 +41,13 @@ void RecordWasFullRedirectChainServedHistogram(
 
 }  // namespace
 
-// static
-std::unique_ptr<PrefetchURLLoaderInterceptor>
-PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-    int frame_tree_node_id,
-    absl::optional<blink::DocumentToken> initiator_document_token,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container) {
-  if (!initiator_document_token) {
-    // This is expected to occur only in unit tests.
-    return nullptr;
-  }
-
-  return std::make_unique<PrefetchURLLoaderInterceptor>(
-      frame_tree_node_id, *initiator_document_token,
-      std::move(serving_page_metrics_container));
-}
-
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
     int frame_tree_node_id,
-    const blink::DocumentToken& initiator_document_token,
+    std::optional<blink::DocumentToken> initiator_document_token,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container)
     : frame_tree_node_id_(frame_tree_node_id),
-      initiator_document_token_(initiator_document_token),
+      initiator_document_token_(std::move(initiator_document_token)),
       serving_page_metrics_container_(
           std::move(serving_page_metrics_container)) {}
 
@@ -128,12 +111,18 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     return;
   }
 
+  if (!initiator_document_token_.has_value()) {
+    // TODO(crbug.com/1500135): Construct PrefetchContainer::Key for browser
+    // triggered navigations.
+    std::move(get_prefetch_callback).Run({});
+    return;
+  }
+
   prefetch_match_resolver.SetOnPrefetchToServeReadyCallback(base::BindOnce(
       &OnGotPrefetchToServe, frame_tree_node_id_, tentative_resource_request,
       std::move(get_prefetch_callback)));
-
   prefetch_service->GetPrefetchToServe(
-      PrefetchContainer::Key(initiator_document_token_,
+      PrefetchContainer::Key(initiator_document_token_.value(),
                              tentative_resource_request.url),
       serving_page_metrics_container_, prefetch_match_resolver);
 }

@@ -33,7 +33,7 @@ class DeclarativeNetRequestUpdateDynamicRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnDynamicRulesUpdated(absl::optional<std::string> error);
+  void OnDynamicRulesUpdated(std::optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
@@ -50,7 +50,7 @@ class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
 
  private:
   void OnDynamicRulesFetched(
-      absl::optional<api::declarative_net_request::GetDynamicRules::Params>,
+      api::declarative_net_request::GetDynamicRules::Params params,
       declarative_net_request::ReadJSONRulesResult read_json_result);
 };
 
@@ -68,7 +68,7 @@ class DeclarativeNetRequestUpdateSessionRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnSessionRulesUpdated(absl::optional<std::string> error);
+  void OnSessionRulesUpdated(std::optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetSessionRulesFunction : public ExtensionFunction {
@@ -95,7 +95,7 @@ class DeclarativeNetRequestUpdateEnabledRulesetsFunction
   ~DeclarativeNetRequestUpdateEnabledRulesetsFunction() override;
 
  private:
-  void OnEnabledStaticRulesetsUpdated(absl::optional<std::string> error);
+  void OnEnabledStaticRulesetsUpdated(std::optional<std::string> error);
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;
@@ -127,7 +127,7 @@ class DeclarativeNetRequestUpdateStaticRulesFunction
   ~DeclarativeNetRequestUpdateStaticRulesFunction() override;
 
  private:
-  void OnStaticRulesUpdated(absl::optional<std::string> error);
+  void OnStaticRulesUpdated(std::optional<std::string> error);
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;

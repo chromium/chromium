@@ -13,10 +13,10 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <bit>
 #include <memory>
 #include <set>
 
-#include "base/bits.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/target_process.h"
@@ -96,10 +96,9 @@ TEST(InterceptionManagerTest, GetGranularAlignedRandomOffset) {
   // sizeof(DllInterceptionData).
   const size_t kThunkBytes = 544;
 
-  // ciel(log2(544)) = 10.
+  // log2_ceiling(544) = 10.
   // Alignment must be 2^10 = 1024.
-  const size_t kAlignmentBits = base::bits::Log2Ceiling(kThunkBytes);
-  const size_t kAlignment = static_cast<size_t>(1) << kAlignmentBits;
+  const size_t kAlignment = std::bit_ceil(kThunkBytes);
 
   const size_t kAllocGranularity = 65536;
 

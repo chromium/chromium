@@ -153,7 +153,7 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.local_state = local_state();
 
   // Prepare for a pixel test if having pixel init params.
-  absl::optional<pixel_test::InitParams> pixel_test_init_params =
+  std::optional<pixel_test::InitParams> pixel_test_init_params =
       CreatePixelTestInitParams();
   if (pixel_test_init_params) {
     PrepareForPixelDiffTest();
@@ -243,9 +243,9 @@ display::Display::Rotation AshTestBase::GetCurrentInternalDisplayRotation() {
   return GetActiveDisplayRotation(display::Display::InternalDisplayId());
 }
 
-absl::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
+std::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AshTestBase::UpdateDisplay(const std::string& display_specs) {

@@ -33,7 +33,6 @@ base::Value::Dict NetLogCookieMonsterCookieAdded(
   dict.Set("same_site", CookieSameSiteToString(cookie->SameSite()));
   dict.Set("is_persistent", cookie->IsPersistent());
   dict.Set("sync_requested", sync_requested);
-  dict.Set("same_party", cookie->IsSameParty());
   return dict;
 }
 

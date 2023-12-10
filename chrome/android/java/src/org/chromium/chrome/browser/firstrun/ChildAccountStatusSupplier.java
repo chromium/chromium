@@ -38,7 +38,8 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
      * @param appRestrictionInfo instance of {@link FirstRunAppRestrictionInfo} that can
      *         be used to check app restrictions (see class-level JavaDoc).
      */
-    public ChildAccountStatusSupplier(AccountManagerFacade accountManagerFacade,
+    public ChildAccountStatusSupplier(
+            AccountManagerFacade accountManagerFacade,
             FirstRunAppRestrictionInfo appRestrictionInfo) {
         mChildAccountStatusStartTime = SystemClock.elapsedRealtime();
 
@@ -82,7 +83,8 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
         Boolean value = tryCalculateSupplierValue();
         if (value == null) return;
 
-        RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
+        RecordHistogram.recordTimesHistogram(
+                "MobileFre.ChildAccountStatusDuration",
                 SystemClock.elapsedRealtime() - mChildAccountStatusStartTime);
         mValue.set(value);
     }

@@ -9,9 +9,12 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 namespace reporting {
@@ -21,6 +24,39 @@ class FatalCrashEventsObserver::TestEnvironment {
   using ShouldReportResult =
       FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult;
 
+  // Save file paths provider for tests.
+  class SaveFilePathsProvider
+      : public FatalCrashEventsObserver::SaveFilePathsProviderInterface {
+   public:
+    SaveFilePathsProvider();
+    SaveFilePathsProvider(const SaveFilePathsProvider&) = delete;
+    SaveFilePathsProvider& operator=(const SaveFilePathsProvider&) = delete;
+    virtual ~SaveFilePathsProvider();
+
+    // SaveFilePathsProviderInterface:
+    base::FilePath GetReportedLocalIdSaveFilePath() const override;
+    base::FilePath GetUploadedCrashInfoSaveFilePath() const override;
+
+   private:
+    // Temporary dir for storing save files.
+    base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
+  };
+
+  // Posts a task that blocks a sequence, and unblocks when requested. User must
+  // ensure that the blocking task is cleared when this object is destroyed.
+  class SequenceBlocker {
+   public:
+    explicit SequenceBlocker(
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    SequenceBlocker(const SequenceBlocker&) = delete;
+    SequenceBlocker& operator=(const SequenceBlocker&) = delete;
+
+    void Unblock();
+
+   private:
+    std::atomic<bool> blocked_{true};
+  };
   static constexpr size_t kMaxNumOfLocalIds{
       ReportedLocalIdManager::kMaxNumOfLocalIds};
   static constexpr size_t kMaxSizeOfLocalIdEntryQueue{
@@ -35,22 +71,22 @@ class FatalCrashEventsObserver::TestEnvironment {
   TestEnvironment& operator=(const TestEnvironment&) = delete;
   ~TestEnvironment();
 
-  // Gets the path to the save file that contains reported local IDs.
-  const base::FilePath& GetReportedLocalIdSaveFilePath() const;
-
-  // Gets the path to the save file that contains uploaded crash info.
-  const base::FilePath& GetUploadedCrashInfoSaveFilePath() const;
+  // Gets the paths to the save files.
+  const SaveFilePathsProvider& GetSaveFilePathsProvider() const;
 
   // Creates a `FatalCrashEventsObserver` object that uses `save_file_path_` as
-  // the save file and returns the pointer.
-  std::unique_ptr<FatalCrashEventsObserver> CreateFatalCrashEventsObserver()
-      const;
+  // the save file and returns the pointer. If
+  // `reported_local_id_io_task_runner` is not null, use it as the io task
+  // runner and do not flush IO tasks (i.e., leave the control of the task
+  // runner to the caller).
+  std::unique_ptr<FatalCrashEventsObserver> CreateFatalCrashEventsObserver(
+      scoped_refptr<base::SequencedTaskRunner>
+          reported_local_id_io_task_runner = nullptr,
+      scoped_refptr<base::SequencedTaskRunner>
+          uploaded_crash_info_io_task_runner = nullptr) const;
 
-  // Sets whether to continue postprocessing after event observed callback is
-  // called.
-  static void SetInterruptedAfterEventObserved(
-      FatalCrashEventsObserver& observer,
-      bool interrupted_after_event_observed);
+  // Get the mutable test settings of the observer.
+  static SettingsForTest& GetTestSettings(FatalCrashEventsObserver& observer);
 
   // Gets the size of the queue that saves local IDs. In tests, an access to a
   // private member is not normally recommended since it is generally not
@@ -59,15 +95,28 @@ class FatalCrashEventsObserver::TestEnvironment {
   // usage is correctly limited.
   static size_t GetLocalIdEntryQueueSize(FatalCrashEventsObserver& observer);
 
-  // Flushes all IO tasks.
+  // Flushes all IO tasks at the time of the call.
   static void FlushIoTasks(FatalCrashEventsObserver& observer);
 
+  // Flush the tasks on the given task runner at the time of the call.
+  static void FlushTaskRunner(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  // Flush the tasks on the given task runner at the time of the call. Also
+  // posts a blocking task to the calling thread to prevent the calling thread
+  // to move forward beyond the current tasks in queue. Unblock the calling
+  // thread once the IO tasks are flushed.
+  static void FlushTaskRunnerWithCurrentSequenceBlocked(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  // Get allowed crash types. Proxy of `FatalCrashEvents::GetAllowedCrashTypes`.
+  static const base::flat_set<
+      ::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
+  GetAllowedCrashTypes();
+
  private:
-  base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
-  base::FilePath reported_local_id_save_file_path_{
-      temp_dir_.Append("REPORTED_LOCAL_IDS")};
-  base::FilePath uploaded_crash_info_save_file_path_{
-      temp_dir_.Append("UPLOADED_CRASH_INFO")};
+  // Save file paths used in unit tests.
+  const SaveFilePathsProvider save_file_paths_provider_;
 };
 }  // namespace reporting
 

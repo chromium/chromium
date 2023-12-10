@@ -38,15 +38,22 @@ class NavigationHandle;
 
 namespace web_app {
 
-class AppLock;
+class WithAppResources;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
+
+enum class AppRelaunchState {
+  kAppClosingForRelaunch,
+  kAppAboutToRelaunch,
+  kAppRelaunched
+};
 
 using UninstallScheduledCallback = base::OnceCallback<void(bool)>;
 using UninstallCompleteCallback =
     base::OnceCallback<void(webapps::UninstallResultCode code)>;
 using WebAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
+using FirstRunServiceCompletedCallback = base::OnceCallback<void(bool success)>;
 
 // Overrides the app identity update dialog's behavior for testing, allowing the
 // test to auto-accept or auto-skip the dialog.
@@ -73,6 +80,11 @@ using LaunchWebAppCallback =
     base::OnceCallback<void(base::WeakPtr<Browser> browser,
                             base::WeakPtr<content::WebContents> web_contents,
                             apps::LaunchContainer container)>;
+using LaunchWebAppDebugValueCallback =
+    base::OnceCallback<void(base::WeakPtr<Browser> browser,
+                            base::WeakPtr<content::WebContents> web_contents,
+                            apps::LaunchContainer container,
+                            base::Value debug_value)>;
 
 enum class LaunchWebAppWindowSetting {
   // The window container and disposition from the launch params are used,
@@ -175,12 +187,21 @@ class WebAppUiManager {
   // windows if configured by the launch handlers, etc. See
   // `web_app::LaunchWebApp` and `WebAppLaunchProcess` for more info.
   // If the app_id is invalid, an empty browser window is opened.
-  virtual void WaitForFirstRunAndLaunchWebApp(
-      apps::AppLaunchParams params,
-      LaunchWebAppWindowSetting launch_setting,
+  // Note: this function should typically be run after the completion of the
+  // `WebAppUiManager::WaitForFirstRunService` function.
+  // Any lock that locks apps will extend the `WithAppResources` mixin.
+  virtual void LaunchWebApp(apps::AppLaunchParams params,
+                            LaunchWebAppWindowSetting launch_setting,
+                            Profile& profile,
+                            LaunchWebAppDebugValueCallback callback,
+                            WithAppResources& app_resources) = 0;
+
+  // This function calls the callback as soon as first run service is completed.
+  // Note: The callback will be called synchronously on platforms that do not
+  // have a first-run service.
+  virtual void WaitForFirstRunService(
       Profile& profile,
-      LaunchWebAppCallback callback,
-      AppLock& lock) = 0;
+      FirstRunServiceCompletedCallback callback) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Migrates launcher state, such as parent folder id, position in App Launcher
@@ -196,6 +217,15 @@ class WebAppUiManager {
       const std::vector<std::string>& app_names,
       base::WeakPtr<Profile> profile) = 0;
 #endif
+
+  // Displays the user about the status of a force app relaunch. This happens
+  // when a placeholder with `placeholder_app_id` is installed and running, and
+  // then is updated with an app with `final_app_id`.
+  virtual void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
+                                      const webapps::AppId& final_app_id,
+                                      const std::u16string& final_app_name,
+                                      base::WeakPtr<Profile> profile,
+                                      AppRelaunchState relaunch_state) = 0;
 
   // Creates a new Browser tab on the "about:blank" URL. Creates a new browser
   // if there isn't one that is already open.
@@ -245,6 +275,13 @@ class WebAppUiManager {
   virtual void MaybeCreateEnableSupportedLinksInfobar(
       content::WebContents* web_contents,
       const std::string& launch_name) = 0;
+
+  // Creates the IPH bubble for apps that are launched via link capturing being
+  // enabled.
+  virtual void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+      content::WebContents* web_contents,
+      Profile* profile,
+      const std::string& app_id) = 0;
 
  private:
   base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;

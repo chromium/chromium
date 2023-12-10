@@ -32,8 +32,8 @@ class ASH_EXPORT NotificationMetricsRecorder
   void OnNotificationAdded(const std::string& notification_id) override;
   void OnNotificationClicked(
       const std::string& notification_id,
-      const absl::optional<int>& button_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<int>& button_index,
+      const std::optional<std::u16string>& reply) override;
   void OnNotificationDisplayed(
       const std::string& notification_id,
       const message_center::DisplaySource source) override;

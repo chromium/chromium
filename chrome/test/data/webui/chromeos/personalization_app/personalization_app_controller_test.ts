@@ -10,33 +10,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {baseSetup} from './personalization_app_test_utils.js';
+import {baseSetup, filterAndFlattenState} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
-
-/**
- * Get a sub-property in obj. Splits on '.'
- */
-function getProperty(obj: object, key: string): unknown {
-  let ref: any = obj;
-  for (const part of key.split('.')) {
-    ref = ref[part];
-  }
-  return ref;
-}
-
-/**
- * Returns a function that returns only nested subproperties in state.
- */
-function filterAndFlattenState(keys: string[]): (state: any) => any {
-  return (state) => {
-    const result: any = {};
-    for (const key of keys) {
-      result[key] = getProperty(state, key);
-    }
-    return result;
-  };
-}
 
 function getImageKey(image: DisplayableImage): string|undefined {
   if (isDefaultImage(image)) {

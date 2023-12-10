@@ -20,11 +20,9 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * Handling touch events for resizing the Window.
- */
-class PartialCustomTabHandleStrategy
-        extends GestureDetector.SimpleOnGestureListener implements CustomTabToolbar.HandleStrategy {
+/** Handling touch events for resizing the Window. */
+class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureListener
+        implements CustomTabToolbar.HandleStrategy {
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
@@ -68,8 +66,11 @@ class PartialCustomTabHandleStrategy
         void onDragEnd(int flingDistance);
     }
 
-    public PartialCustomTabHandleStrategy(Context context, BooleanSupplier isFullHeight,
-            Supplier<Integer> status, DragEventCallback dragEventCallback,
+    public PartialCustomTabHandleStrategy(
+            Context context,
+            BooleanSupplier isFullHeight,
+            Supplier<Integer> status,
+            DragEventCallback dragEventCallback,
             Callback<Runnable> closeAnimation) {
         mIsFullHeight = isFullHeight;
         mStatus = status;

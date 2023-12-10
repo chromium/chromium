@@ -1,4 +1,4 @@
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 chrishtr@chromium.org
 danakj@chromium.org
@@ -13,7 +13,7 @@ kinuko@chromium.org
 mkwst@chromium.org
 pdr@chromium.org
 tkent@chromium.org
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 
 # This is for the common case of adding or renaming files. If you're doing

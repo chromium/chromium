@@ -29,6 +29,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
+#include "ui/display/screen.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 
@@ -80,9 +81,8 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
 };
 
 std::string GetDeviceModeSuffix() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode()
-             ? "TabletMode"
-             : "ClamshellMode";
+  return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
+                                                      : "ClamshellMode";
 }
 
 void RecordDurationMetrics(
@@ -214,6 +214,25 @@ void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
 LoginUnlockThroughputRecorder::TimeMarker::TimeMarker(const std::string& name)
     : name_(name) {}
 
+void LoginUnlockThroughputRecorder::EnsureTracingSliceNamed() {
+  // EnsureTracingSliceNamed() should be called only on expected events.
+  // If login ThroughputRecording did not start with either OnAuthSuccess
+  // or LoggedInStateChanged the tracing slice will have the "-unordered"
+  // suffix.
+  //
+  // Depending on the login flow this function may get called multiple times.
+  if (login_time_markers_.empty()) {
+    // The first event will name the tracing row.
+    AddLoginTimeMarker(kLoginThroughput);
+    primary_user_logged_in_ = base::TimeTicks::Now();
+  }
+}
+
+void LoginUnlockThroughputRecorder::OnAuthSuccess() {
+  EnsureTracingSliceNamed();
+  AddLoginTimeMarker("OnAuthSuccess");
+}
+
 void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   auto* login_state = LoginState::Get();
   auto logged_in_user = login_state->GetLoggedInUserType();
@@ -224,9 +243,9 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   if (!login_state->IsUserLoggedIn())
     return;
 
-  // The first event will name the tracing row.
-  if (login_time_markers_.empty())
-    AddLoginTimeMarker(kLoginThroughput);
+  const base::TimeTicks old_primary_user_logged_in = primary_user_logged_in_;
+  EnsureTracingSliceNamed();
+  AddLoginTimeMarker("UserLoggedIn");
 
   if (logged_in_user != LoginState::LOGGED_IN_USER_OWNER &&
       logged_in_user != LoginState::LOGGED_IN_USER_REGULAR) {
@@ -235,9 +254,16 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   }
 
   user_logged_in_ = true;
+
+  // Report UserLoggedIn histogram if we had OnAuthSuccess() event previously.
+  if (!old_primary_user_logged_in.is_null()) {
+    const base::TimeDelta duration =
+        base::TimeTicks::Now() - old_primary_user_logged_in;
+    base::UmaHistogramTimes("Ash.Login.LoggedInStateChanged", duration);
+  }
+
   ui_recorder_.OnUserLoggedIn();
   auto* primary_root = Shell::GetPrimaryRootWindow();
-  primary_user_logged_in_ = base::TimeTicks::Now();
 
   auto* rec = new ui::TotalAnimationThroughputReporter(
       primary_root->GetHost()->compositor(),
@@ -568,6 +594,8 @@ void LoginUnlockThroughputRecorder::AddLoginTimeMarker(
         "Ash.UnlockAnimation.Smoothness.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Smoothness.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("ArcUiAvailable");
+    REPORT_LOGIN_THROUGHPUT_EVENT("OnAuthSuccess");
+    REPORT_LOGIN_THROUGHPUT_EVENT("UserLoggedIn");
     if (!reported) {
       constexpr char kFailedEvent[] = "FailedToReportEvent";
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(

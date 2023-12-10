@@ -58,12 +58,13 @@ public class ImprovedBookmarkRowCoordinator {
 
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_ID, bookmarkId);
 
-        // Title
+        // Title.
         if (displayPref == BookmarkRowDisplayPref.COMPACT && bookmarkItem.isFolder()) {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.TITLE,
                     String.format(
-                            bookmarkItem.getTitle() + " (%s)",
+                            "%s (%s)",
+                            bookmarkItem.getTitle(),
                             BookmarkUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel)));
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.TITLE, bookmarkItem.getTitle());
@@ -106,7 +107,7 @@ public class ImprovedBookmarkRowCoordinator {
             propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
         }
 
-        // Icon
+        // Icon.
         resolveImagesForBookmark(propertyModel, bookmarkItem);
 
         return propertyModel;

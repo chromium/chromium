@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/chromebox_for_meetings/diagnostics/diagnostics_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cfm {
 namespace {

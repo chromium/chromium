@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1000498691615767391">Veldu möppu til að opna</translation>
+<translation id="1014208178561091457">Ekki var hægt að afrita <ph name="FILE_NAME" /> því skráin er dulkóðuð.</translation>
 <translation id="1047956942837015229">Eyðir <ph name="COUNT" /> atriðum...</translation>
 <translation id="1049926623896334335">Word-skjal</translation>
 <translation id="1056775291175587022">Engin net</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Deila möppu með Parallels Desktop</translation>
 <translation id="1439919885608649279">Einstaklingur með blóm</translation>
 <translation id="1458457385801829801">Fjarlægja <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Ekki var hægt að afrita <ph name="NUMBER_OF_FILES" /> skrár því þær eru dulkóðaðar.</translation>
 <translation id="1471718551822868769">Slóvakíska</translation>
 <translation id="1482884275703521657">Finnska</translation>
 <translation id="148466539719134488">Svissneskt</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Ekki tiltækt</translation>
 <translation id="3254434849914415189">Veldu sjálfgefið forrit fyrir <ph name="FILE_TYPE" />-skrár:</translation>
 <translation id="3255159654094949700">Arabíska</translation>
+<translation id="326396468955264502">Ekki var hægt að færa <ph name="NUMBER_OF_FILES" /> skrár því þær eru dulkóðaðar.</translation>
 <translation id="3264582393905923483">Samhengi</translation>
 <translation id="3272909651715601089">Ekki tókst að opna „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Verið að undirbúa</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 möppu deilt með <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Varúð: Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss.  <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappa</translation>
+<translation id="3529424493985988200">Hafðu samband við kerfisstjóra til að fá frekari upplýsingar.</translation>
 <translation id="3548125359243647069">Rangt PIN-númer var slegið inn of oft.</translation>
 <translation id="3549797760399244642">Fara á drive.google.com...</translation>
 <translation id="3553048479571901246">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Skráin var opnuð á öðru skjáborði. Skiptu yfir í <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) til að skoða hana.</translation>
 <translation id="6394388407447716302">Skrifvarin</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> atriði</translation>
+<translation id="6407769893376380348">Ekki var hægt að færa <ph name="FILE_NAME" /> því skráin er dulkóðuð.</translation>
 <translation id="642282551015776456">Ekki er hægt að nota þetta heiti sem skráar- eða möppuheiti</translation>
 <translation id="6423031066725912715">Víetnamska með TCVN-lyklaborði</translation>
 <translation id="6430271654280079150">Þú átt 1 tilraun eftir.</translation>

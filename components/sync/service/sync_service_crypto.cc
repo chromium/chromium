@@ -160,16 +160,12 @@ std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori) {
     return std::string();
   }
 
-  std::string encoded_key;
-  base::Base64Encode(encrypted_key, &encoded_key);
-  return encoded_key;
+  return base::Base64Encode(encrypted_key);
 }
 
 }  // namespace
 
-SyncServiceCrypto::State::State()
-    : passphrase_key_derivation_params(KeyDerivationParams::CreateForPbkdf2()) {
-}
+SyncServiceCrypto::State::State() = default;
 
 SyncServiceCrypto::State::~State() = default;
 

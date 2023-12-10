@@ -131,7 +131,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   // Add Paste and Go option to the editing menu
   RegisterEditMenuItem([[UIMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE)
@@ -146,6 +146,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
   RegisterEditMenuItem([[UIMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
              action:@selector(searchCopiedText:)]);
+#endif
 
   self.textField.placeholderTextColor = [self placeholderAndClearButtonColor];
   self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
@@ -426,6 +427,59 @@ const CGFloat kClearButtonImageSize = 17.0f;
   } else {
     NOTREACHED() << "Check canPerformKeyboardAction before!";
   }
+}
+
+- (UIMenu*)textField:(UITextField*)textField
+    editMenuForCharactersInRange:(NSRange)range
+                suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
+    API_AVAILABLE(ios(16)) {
+  NSMutableArray* actions = [suggestedActions mutableCopy];
+  if ([self canPerformAction:@selector(searchCopiedImage:) withSender:nil]) {
+    UIAction* searchCopiedImage = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE)
+                  image:nil
+             identifier:nil
+                handler:^(__kindof UIAction* _Nonnull action) {
+                  [self searchCopiedImage:nil];
+                }];
+    [actions addObject:searchCopiedImage];
+  }
+
+  if ([self canPerformAction:@selector(lensCopiedImage:) withSender:nil]) {
+    UIAction* searchCopiedImageWithLens =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS)
+                            image:nil
+                       identifier:nil
+                          handler:^(__kindof UIAction* _Nonnull action) {
+                            [self lensCopiedImage:nil];
+                          }];
+    [actions addObject:searchCopiedImageWithLens];
+  }
+
+  if ([self canPerformAction:@selector(visitCopiedLink:) withSender:nil]) {
+    UIAction* visitCopiedLink = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)
+                  image:nil
+             identifier:nil
+                handler:^(__kindof UIAction* _Nonnull action) {
+                  [self visitCopiedLink:nil];
+                }];
+    [actions addObject:visitCopiedLink];
+  }
+
+  if ([self canPerformAction:@selector(searchCopiedText:) withSender:nil]) {
+    UIAction* searchCopiedText = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
+                  image:nil
+             identifier:nil
+                handler:^(__kindof UIAction* _Nonnull action) {
+                  [self searchCopiedText:nil];
+                }];
+    [actions addObject:searchCopiedText];
+  }
+
+  return [UIMenu menuWithChildren:actions];
 }
 
 #pragma mark - OmniboxConsumer

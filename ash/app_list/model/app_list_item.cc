@@ -7,6 +7,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/containers/contains.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
@@ -207,4 +208,16 @@ void AppListItem::SetIsNewInstall(bool is_new_install) {
     observer.ItemIsNewInstallChanged();
   }
 }
+
+void AppListItem::SetAppStatus(AppStatus app_status) {
+  if (metadata_->app_status == app_status) {
+    return;
+  }
+
+  metadata_->app_status = app_status;
+  for (auto& observer : observers_) {
+    observer.ItemAppStatusUpdated();
+  }
+}
+
 }  // namespace ash

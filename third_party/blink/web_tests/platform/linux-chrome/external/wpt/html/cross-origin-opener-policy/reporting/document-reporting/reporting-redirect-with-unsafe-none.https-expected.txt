@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Same origin openee redirected to same-origin with unsafe-none
+  assert_equals: expected 1 but got 0
+[FAIL] Cross origin openee redirected to same-origin with unsafe-none
+  assert_equals: expected 1 but got 0
+Harness: the test ran to completion.

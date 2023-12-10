@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] An async script does not block the parser while downloading
-  assert_equals: expected "[\"2\",\"1\"]" but got "[\"1\",\"2\"]"
+  assert_equals: expected "[\\"2\\",\\"1\\"]" but got "[\\"1\\",\\"2\\"]"
 Harness: the test ran to completion.
 

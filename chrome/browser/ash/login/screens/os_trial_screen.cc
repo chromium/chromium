@@ -15,11 +15,11 @@ constexpr const char kUserActionBackClicked[] = "os-trial-back";
 // static
 std::string OsTrialScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::NEXT_TRY:
+    case Result::kNextTry:
       return "NextTry";
-    case Result::NEXT_INSTALL:
+    case Result::kNextInstall:
       return "NextInstall";
-    case Result::BACK:
+    case Result::kBack:
       return "Back";
   }
 }
@@ -44,11 +44,11 @@ void OsTrialScreen::HideImpl() {}
 void OsTrialScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionTryNextClicked) {
-    exit_callback_.Run(Result::NEXT_TRY);
+    exit_callback_.Run(Result::kNextTry);
   } else if (action_id == kUserActionInstallNextClicked) {
-    exit_callback_.Run(Result::NEXT_INSTALL);
+    exit_callback_.Run(Result::kNextInstall);
   } else if (action_id == kUserActionBackClicked) {
-    exit_callback_.Run(Result::BACK);
+    exit_callback_.Run(Result::kBack);
   } else {
     BaseScreen::OnUserAction(args);
   }

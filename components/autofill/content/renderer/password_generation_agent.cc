@@ -362,10 +362,6 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
       return;
     }
     password_agent_->TrackAutofilledElement(password_element);
-
-    // Advance focus to the next input field. We assume password fields in
-    // an account creation form are always adjacent.
-    render_frame()->GetWebView()->AdvanceFocus(false);
   }
   CHECK(base::Contains(current_generation_item_->password_elements_,
                        current_generation_item_->generation_element_));
@@ -386,7 +382,22 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // has changed. Without this we will overwrite the generated
     // password with an Autofilled password when saving.
     // https://crbug.com/493455
-    password_agent_->UpdateStateForTextChange(password_element);
+    password_agent_->autofill_agent().UpdateStateForTextChange(
+        password_element, FieldPropertiesFlags::kUserTyped);
+  }
+}
+
+void PasswordGenerationAgent::FocusNextFieldAfterPasswords() {
+  if (!current_generation_item_ || !render_frame()) {
+    return;
+  }
+
+  for (const WebInputElement& password_element :
+       current_generation_item_->password_elements_) {
+    if (password_element ==
+        password_agent_->focused_element().DynamicTo<WebInputElement>()) {
+      render_frame()->GetWebView()->AdvanceFocus(false);
+    }
   }
 }
 
@@ -443,7 +454,8 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
         is_generation_element_password_type,
         GetTextDirectionForElement(
             current_generation_item_->generation_element_),
-        current_generation_item_->form_data_);
+        current_generation_item_->form_data_,
+        current_generation_item_->generation_element_.Value().Utf16().empty());
     std::move(callback).Run(std::move(password_generation_ui_data));
     current_generation_item_->generation_popup_shown_ = true;
   } else {
@@ -629,7 +641,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     // password fields.
     for (const auto& password_element :
          current_generation_item_->password_elements_) {
-      password_agent_->UpdateStateForTextChange(password_element);
+      password_agent_->autofill_agent().UpdateStateForTextChange(
+          password_element, FieldPropertiesFlags::kUserTyped);
     }
   }
   return true;
@@ -663,7 +676,8 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
           current_generation_item_->generation_element_),
       is_generation_element_password_type,
       GetTextDirectionForElement(current_generation_item_->generation_element_),
-      current_generation_item_->form_data_);
+      current_generation_item_->form_data_,
+      current_generation_item_->generation_element_.Value().Utf16().empty());
   current_generation_item_->generation_popup_shown_ = true;
   GetPasswordGenerationDriver().AutomaticGenerationAvailable(
       password_generation_ui_data);

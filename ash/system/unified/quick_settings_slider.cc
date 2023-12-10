@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/quick_settings_slider.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/notreached.h"
@@ -80,8 +79,6 @@ float GetSliderWidth(Style slider_style) {
 QuickSettingsSlider::QuickSettingsSlider(views::SliderListener* listener,
                                          Style slider_style)
     : views::Slider(listener), slider_style_(slider_style) {
-  if (!features::IsQsRevampEnabled())
-    return;
   SetValueIndicatorRadius(kFullSliderRoundedRadius);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
@@ -114,15 +111,6 @@ int QuickSettingsSlider::GetInactiveRadioSliderRoundedCornerRadius() {
 }
 
 SkColor QuickSettingsSlider::GetThumbColor() const {
-  // TODO(b/256705775): Updates the color when QsRevamp is disabled but Jelly is
-  // enabled.
-  if (!features::IsQsRevampEnabled()) {
-    using Type = AshColorProvider::ContentLayerType;
-    return AshColorProvider::Get()->GetContentLayerColor(
-        (style() == RenderingStyle::kMinimalStyle) ? Type::kSliderColorInactive
-                                                   : Type::kSliderColorActive);
-  }
-
   switch (slider_style_) {
     case Style::kDefault:
     case Style::kRadioActive:
@@ -141,11 +129,6 @@ SkColor QuickSettingsSlider::GetThumbColor() const {
 }
 
 SkColor QuickSettingsSlider::GetTroughColor() const {
-  // TODO(b/256705775): Updates the color when QsRevamp is disabled but Jelly is
-  // enabled.
-  if (!features::IsQsRevampEnabled())
-    return ColorUtil::GetSecondToneColor(GetThumbColor());
-
   switch (slider_style_) {
     case Style::kDefault:
       return GetColorProvider()->GetColor(
@@ -164,13 +147,6 @@ SkColor QuickSettingsSlider::GetTroughColor() const {
 }
 
 void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
-  // Paints the `QuickSettingsSlider`. If the feature is not enabled, use
-  // `Slider::OnPaint()`.
-  if (!ash::features::IsQsRevampEnabled()) {
-    views::Slider::OnPaint(canvas);
-    return;
-  }
-
   const gfx::Rect content = GetContentsBounds();
   const float slider_width = GetSliderWidth(slider_style_);
   const float slider_radius = GetSliderRoundedCornerRadius(slider_style_);

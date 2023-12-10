@@ -283,7 +283,7 @@ TEST_F(WebUIAllowlistProviderTest,
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
-      third_party_url, net::SiteForCookies(), absl::nullopt,
+      third_party_url, net::SiteForCookies(), std::nullopt,
       net::CookieSettingOverrides()));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
@@ -342,7 +342,7 @@ TEST_F(WebUIAllowlistProviderTest,
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
-      third_party_url, net::SiteForCookies(), absl::nullopt,
+      third_party_url, net::SiteForCookies(), std::nullopt,
       net::CookieSettingOverrides()));
 
   // Other permissions aren't affected.

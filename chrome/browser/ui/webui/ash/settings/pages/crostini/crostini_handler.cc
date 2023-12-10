@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -202,7 +201,6 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(&CrostiniHandler::HandleSetVmDeviceShared,
                             handler_weak_ptr_factory_.GetWeakPtr()));
   }
-  if (bruschetta::BruschettaFeatures::Get()->IsEnabled()) {
     web_ui()->RegisterMessageCallback(
         "requestBruschettaInstallerView",
         base::BindRepeating(
@@ -213,7 +211,6 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(
             &CrostiniHandler::HandleRequestBruschettaUninstallerView,
             handler_weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void CrostiniHandler::OnJavascriptAllowed() {

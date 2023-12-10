@@ -94,4 +94,4 @@ class VisualDebuggerTestBase : public testing::Test {
 }  // namespace viz
 
 #endif  // BUILDFLAG(USE_VIZ_DEBUGGER)
-#endif
+#endif  // COMPONENTS_VIZ_SERVICE_DEBUGGER_VIZ_DEBUGGER_UNITTESTS_VIZ_DEBUGGER_UNITTEST_BASE_H_

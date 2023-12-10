@@ -33,8 +33,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/printing/printer_query_oop.h"
-#include "printing/printing_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -45,12 +45,13 @@ namespace printing {
 
 namespace {
 
-bool ShouldPrintingContextSkipSystemCalls() {
+PrintingContext::ProcessBehavior GetPrintingContextProcessBehavior() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  return features::ShouldPrintJobOop();
-#else
-  return false;
+  if (ShouldPrintJobOop()) {
+    return PrintingContext::ProcessBehavior::kOopEnabledSkipSystemCalls;
+  }
 #endif
+  return PrintingContext::ProcessBehavior::kOopDisabled;
 }
 
 class PrintingContextDelegate : public PrintingContext::Delegate {
@@ -107,7 +108,7 @@ std::unique_ptr<PrinterQuery> PrinterQuery::Create(
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::ShouldPrintJobOop()) {
+  if (ShouldPrintJobOop()) {
     return base::WrapUnique(new PrinterQueryOop(rfh_id));
   }
 #endif
@@ -119,7 +120,7 @@ PrinterQuery::PrinterQuery(content::GlobalRenderFrameHostId rfh_id)
           std::make_unique<PrintingContextDelegate>(rfh_id)),
       printing_context_(
           PrintingContext::Create(printing_context_delegate_.get(),
-                                  ShouldPrintingContextSkipSystemCalls())),
+                                  GetPrintingContextProcessBehavior())),
       rfh_id_(rfh_id),
       cookie_(PrintSettings::NewCookie()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -268,7 +269,7 @@ void PrinterQuery::UpdatePrintableArea(
   base::ScopedAllowBlocking allow_blocking;
   std::string printer_name = base::UTF16ToUTF8(print_settings->device_name());
   crash_keys::ScopedPrinterInfo crash_key(
-      print_backend->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 
   PRINTER_LOG(EVENT) << "Updating paper printable area in-process for "
                      << printer_name;
@@ -295,8 +296,8 @@ void PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
   // The purpose of `print_context` is to set the default printable area. To do
   // so, it doesn't need a RFH, so just default initialize the RFH id.
   PrintingContextDelegate delegate((content::GlobalRenderFrameHostId()));
-  std::unique_ptr<PrintingContext> print_context =
-      PrintingContext::Create(&delegate, /*skip_system_calls=*/false);
+  std::unique_ptr<PrintingContext> print_context = PrintingContext::Create(
+      &delegate, PrintingContext::ProcessBehavior::kOopDisabled);
   print_context->SetPrintSettings(print_settings);
   print_context->SetDefaultPrintableAreaForVirtualPrinters();
   print_settings = print_context->settings();
@@ -338,7 +339,7 @@ void PrinterQuery::UpdatePrintSettings(base::Value::Dict new_settings,
         PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
     std::string printer_name = *new_settings.FindString(kSettingDeviceName);
     crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
+        printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
     PrinterBasicInfo basic_info;

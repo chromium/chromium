@@ -342,7 +342,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfShutdownFails) {
   CallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(BorealisUninstallResult::kShutdownFailed));
 
-  FakeConciergeClient()->set_stop_vm_response(absl::nullopt);
+  FakeConciergeClient()->set_stop_vm_response(std::nullopt);
 
   installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
@@ -360,7 +360,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfDiskNotRemoved) {
   EXPECT_CALL(callback_factory,
               Call(BorealisUninstallResult::kRemoveDiskFailed));
 
-  FakeConciergeClient()->set_destroy_disk_image_response(absl::nullopt);
+  FakeConciergeClient()->set_destroy_disk_image_response(std::nullopt);
 
   installer()->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
@@ -447,7 +447,7 @@ TEST_F(BorealisUninstallerTest, SuccessfulUninstallationRecordsMetrics) {
 
 TEST_F(BorealisUninstallerTest, FailedUninstallationRecordsMetrics) {
   // Fail via shutdown, as that is the first step.
-  FakeConciergeClient()->set_stop_vm_response(absl::nullopt);
+  FakeConciergeClient()->set_stop_vm_response(std::nullopt);
 
   installer()->Uninstall(base::DoNothing());
   task_environment_.RunUntilIdle();

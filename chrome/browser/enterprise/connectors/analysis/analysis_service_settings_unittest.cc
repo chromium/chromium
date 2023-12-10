@@ -61,7 +61,6 @@ constexpr char kNormalSettings[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
 })";
 
@@ -129,7 +128,6 @@ constexpr char kNoProviderSettings[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
 })";
 
@@ -146,7 +144,6 @@ constexpr char kNoEnabledPatternsSettings[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
 })";
 
 constexpr char kNormalSettingsWithCustomMessage[] = R"({
@@ -165,7 +162,6 @@ constexpr char kNormalSettingsWithCustomMessage[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
   "custom_messages": [
     {
@@ -197,7 +193,6 @@ constexpr char kNormalSettingsDlpRequiresBypassJustification[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
   "require_justification_tags": ["dlp"],
 })";
@@ -290,7 +285,6 @@ constexpr char kNormalSourceDestinationSettings[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
 })";
 
@@ -441,7 +435,6 @@ constexpr char kNoProviderSourceDestinationSettings[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
 })";
 
@@ -495,7 +488,6 @@ constexpr char kNothingEnabledSourceDestinationSettings[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
 })";
 
 constexpr char kNormalSourceDestinationSettingsWithCustomMessage[] = R"({
@@ -519,7 +511,6 @@ constexpr char kNormalSourceDestinationSettingsWithCustomMessage[] = R"({
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
   "custom_messages": [
     {
@@ -557,7 +548,6 @@ constexpr char
   "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
   "require_justification_tags": ["dlp"],
 })";
@@ -640,7 +630,6 @@ AnalysisSettings NormalSettingsWithTags(
   settings.default_action = DefaultAction::kBlock;
   settings.block_password_protected_files = true;
   settings.block_large_files = true;
-  settings.block_unsupported_file_types = true;
   settings.minimum_data_size = 123;
   return settings;
 }
@@ -787,8 +776,6 @@ TEST_P(AnalysisServiceSettingsTest, CloudTest) {
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
               expected_settings()->block_large_files);
-    ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
-              expected_settings()->block_unsupported_file_types);
     ASSERT_TRUE(
         analysis_settings.value().cloud_or_local_settings.is_cloud_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.analysis_url(),
@@ -837,8 +824,6 @@ TEST_P(AnalysisServiceSettingsTest, LocalTest) {
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
               expected_settings()->block_large_files);
-    ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
-              expected_settings()->block_unsupported_file_types);
     ASSERT_TRUE(
         analysis_settings.value().cloud_or_local_settings.is_local_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.local_path(),
@@ -1031,8 +1016,6 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, CloudTest) {
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
               expected_settings()->block_large_files);
-    ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
-              expected_settings()->block_unsupported_file_types);
     ASSERT_TRUE(
         analysis_settings.value().cloud_or_local_settings.is_cloud_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.analysis_url(),
@@ -1081,8 +1064,6 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, LocalTest) {
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
               expected_settings()->block_large_files);
-    ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
-              expected_settings()->block_unsupported_file_types);
     ASSERT_TRUE(
         analysis_settings.value().cloud_or_local_settings.is_local_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.local_path(),

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "base/bits.h"
@@ -39,7 +40,6 @@
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
 #include "gin/gin_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8-snapshot.h"
@@ -60,7 +60,7 @@ namespace {
 base::MemoryMappedFile* g_mapped_snapshot = nullptr;
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-absl::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
+std::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
 #endif
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
@@ -319,9 +319,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8SingleThreadedGCInBackground,
                          "--single-threaded-gc-in-background",
                          "--no-single-threaded-gc-in-background");
-  SetV8FlagsIfOverridden(features::kV8MidtierRegallocFallback,
-                         "--turbo-use-mid-tier-regalloc-for-huge-functions",
-                         "--no-turbo-use-mid-tier-regalloc-for-huge-functions");
 
   if (base::FeatureList::IsEnabled(features::kV8ConcurrentSparkplug)) {
     if (int max_threads = features::kV8ConcurrentSparkplugMaxThreads.Get()) {
@@ -342,6 +339,16 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     if (int old_time = features::kV8FlushCodeOldTime.Get()) {
       SetV8FlagsFormatted("--bytecode-old-time=%i", old_time);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebAssemblyMoreAggressiveCodeCaching)) {
+    SetV8FlagsFormatted(
+        "--wasm-caching-threshold=%d --wasm-caching-hard-threshold=%d "
+        "--wasm-caching-timeout-ms=%d",
+        features::kWebAssemblyMoreAggressiveCodeCachingThreshold.Get(),
+        features::kWebAssemblyMoreAggressiveCodeCachingHardThreshold.Get(),
+        features::kWebAssemblyMoreAggressiveCodeCachingTimeoutMs.Get());
   }
 
   // Make sure aliases of kV8SlowHistograms only enable the feature to
@@ -368,9 +375,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptSymbolAsWeakMapKey,
                          "--harmony-symbol-as-weakmap-key",
                          "--no-harmony-symbol-as-weakmap-key");
-  SetV8FlagsIfOverridden(features::kJavaScriptChangeArrayByCopy,
-                         "--harmony-change-array-by-copy",
-                         "--no-harmony-change-array-by-copy");
   if (base::FeatureList::IsEnabled(features::kJavaScriptRabGsab)) {
     SetV8Flags("--harmony-rab-gsab");
   } else {
@@ -422,6 +426,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-experimental-wasm-multi-memory");
   SetV8FlagsIfOverridden(features::kWebAssemblyTurboshaft, "--turboshaft-wasm",
                          "--no-turboshaft-wasm");
+  SetV8FlagsIfOverridden(features::kWebAssemblyTurboshaftInstructionSelection,
+                         "--turboshaft-wasm-instruction-selection-staged",
+                         "--no-turboshaft-wasm-instruction-selection-staged");
 
   if (js_command_line_flags.empty())
     return;

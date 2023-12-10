@@ -4,6 +4,7 @@
 
 #include "ash/shelf/drag_handle.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -25,9 +26,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -525,5 +526,8 @@ void DragHandle::StopDragHandleNudgeShowTimer() {
   show_drag_handle_nudge_timer_.Stop();
   overview_observation_.Reset();
 }
+
+BEGIN_METADATA(DragHandle)
+END_METADATA
 
 }  // namespace ash

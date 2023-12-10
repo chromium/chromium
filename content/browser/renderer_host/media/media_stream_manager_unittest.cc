@@ -286,6 +286,11 @@ class TestMediaStreamDispatcherHost
   void OnStreamStarted(const std::string& label) override {}
 
 #if !BUILDFLAG(IS_ANDROID)
+  void SendWheel(const base::UnguessableToken& device_id,
+                 blink::mojom::CapturedWheelActionPtr action,
+                 SendWheelCallback callback) override {}
+  void GetZoomLevel(const base::UnguessableToken& device_id,
+                    GetZoomLevelCallback callback) override {}
   void FocusCapturedSurface(const std::string& label, bool focus) override {}
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
                              media::mojom::SubCaptureTargetType type,
@@ -667,7 +672,7 @@ class MediaStreamManagerTest : public ::testing::Test
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<MockAudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  raw_ptr<MockVideoCaptureProvider, DanglingUntriaged> video_capture_provider_;
+  raw_ptr<MockVideoCaptureProvider> video_capture_provider_;
   std::unique_ptr<MediaStreamProviderListenerMock> stream_provider_listener_;
   size_t screen_count_ = 0;
   base::RunLoop run_loop_;
@@ -1294,6 +1299,11 @@ TEST_F(MediaStreamManagerTest, RegisterUnregisterHosts) {
   // Shutting down MediaStreamManager disconnects the remaining pipes.
   EXPECT_TRUE(dispatcher_client2.is_connected());
   EXPECT_TRUE(video_capture_client2.is_connected());
+  // `video_capture_provider_` is pointing at the MockVideoCaptureProvider
+  // owned by MediaDevicesManager and will be destroyed as part of calling
+  // WillDestroyCurrentMessageLoop. Clearing it here avoids a dangling
+  // pointer.
+  video_capture_provider_ = nullptr;
   media_stream_manager_->WillDestroyCurrentMessageLoop();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(dispatcher_client2.is_connected());

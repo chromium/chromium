@@ -49,6 +49,11 @@
       <structure type="lottie" name="IDR_WELCOME_TOUR_DIALOG_IMAGE" file="unscaled_resources/welcome_tour_dialog_image.json" compress="gzip" />
       <!-- VC Nudge -->
       <structure type="lottie" name="IDR_SPEAK_ON_MUTE_OPT_IN_NUDGE_IMAGE" file="unscaled_resources/speak_on_mute_opt_in_nudge_image.json" compress="gzip" />
+      <!-- Screen Capture Education -->
+      <structure type="lottie" name="IDR_SCREEN_CAPTURE_EDUCATION_KEYBOARD_IMAGE" file="unscaled_resources/screen_capture_education_keyboard.json" compress="gzip" />
+      <structure type="lottie" name="IDR_SCREEN_CAPTURE_EDUCATION_NUDGE_IMAGE" file="unscaled_resources/screen_capture_education_nudge.json" compress="gzip" />
+      <!-- Game Dashboard Controls Setup Nudge -->
+      <structure type="lottie" name="IDR_GAME_DASHBOARD_CONTROLS_SETUP_NUDGE" file="unscaled_resources/game_dashboard_controls_setup_nudge.json" compress="gzip" />
     </structures>
   </release>
 </grit>

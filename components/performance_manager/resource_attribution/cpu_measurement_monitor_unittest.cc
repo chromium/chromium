@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -36,7 +35,8 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
+#include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
@@ -44,30 +44,10 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
-
-// Test result printers. These need to go in the same namespace as the type
-// being printed.
-
-std::ostream& operator<<(std::ostream& os, const ResultMetadata& metadata) {
-  return os << "measurement_time:" << metadata.measurement_time;
-}
-
-std::ostream& operator<<(std::ostream& os, const CPUTimeResult& result) {
-  return os << "cpu:" << result.cumulative_cpu
-            << ",start_time:" << result.start_time
-            << ",metadata:" << result.metadata << " ("
-            << (result.metadata.measurement_time - result.start_time) << ")";
-}
-
-std::ostream& operator<<(std::ostream& os, const ResourceContext& context) {
-  absl::visit([&os](const auto& token) { os << token.ToString(); }, context);
-  return os;
-}
 
 namespace {
 
@@ -76,28 +56,45 @@ using ::testing::Conditional;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
-using ::testing::Optional;
+using ::testing::VariantWith;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
 }  // namespace
 
 // A test that creates mock processes to simulate exact CPU usage.
-class CPUMeasurementMonitorTest : public GraphTestHarness {
+class ResourceAttrCPUMonitorTest : public GraphTestHarness {
  protected:
   using Super = GraphTestHarness;
 
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
-    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        delegate_factory_.GetFactoryCallback());
+    // These tests validate specific timing of measurements around process
+    // creation and destruction.
+    delegate_factory_.SetRequireValidProcesses(true);
+    cpu_monitor_.SetDelegateFactoryForTesting(&delegate_factory_);
   }
 
   // Creates a renderer process and starts mocking its CPU measurements. By
   // default the process will use 100% CPU as long as it's alive.
   TestNodeWrapper<ProcessNodeImpl> CreateMockCPURenderer() {
-    auto process_node = CreateProcessNodeAutoId(content::PROCESS_TYPE_RENDERER);
+    auto process_node = CreateRendererProcessNode();
+    SetProcessCPUUsage(process_node.get(), 1.0);
+    return process_node;
+  }
+
+  // Creates a process of type `process_type` and starts mocking its CPU
+  // measurements. By default the process will use 100% CPU as long as it's
+  // alive.
+  TestNodeWrapper<ProcessNodeImpl> CreateMockCPUProcess(
+      content::ProcessType process_type) {
+    if (process_type == content::PROCESS_TYPE_RENDERER) {
+      return CreateMockCPURenderer();
+    }
+    auto process_node = (process_type == content::PROCESS_TYPE_BROWSER)
+                            ? CreateBrowserProcessNode()
+                            : CreateBrowserChildProcessNode(process_type);
     SetProcessCPUUsage(process_node.get(), 1.0);
     return process_node;
   }
@@ -141,25 +138,28 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
     current_measurements_ = cpu_monitor_.UpdateAndGetCPUMeasurements();
   }
 
-  // GMock matcher expecting that a given CPUTimeResult equals
-  // `last_measurements_[context] + expected_delta`. That is, since the last
-  // time `context` was tested, expect that `expected_delta` was added to its
-  // CPU measurement, which was taken at `expected_measurement_time`.
-  auto CPUDeltaMatches(const ResourceContext& context,
-                       base::TimeDelta expected_delta,
-                       base::TimeTicks expected_measurement_time =
-                           base::TimeTicks::Now()) const {
+  // GMock matcher expecting that a given QueryResult variant contains a
+  // CPUTimeResult with cumulative_cpu `last_measurements_[context] +
+  // expected_delta`. That is, since the last time `context` was tested, expect
+  // that `expected_delta` was added to its CPU measurement, which was taken at
+  // `expected_measurement_time`. `expected_algorithm` is the measurement
+  // algorithm that should be used, which defaults to the algorithm used for
+  // processes (kDirectMeasurement).
+  auto CPUDeltaMatchesWithMeasurementTime(
+      const ResourceContext& context,
+      base::TimeDelta expected_delta,
+      base::TimeTicks expected_measurement_time,
+      MeasurementAlgorithm expected_algorithm =
+          MeasurementAlgorithm::kDirectMeasurement) const {
     base::TimeDelta expected_cpu = expected_delta;
     base::TimeTicks expected_start_time;
     const auto last_it = last_measurements_.find(context);
     if (last_it != last_measurements_.end()) {
-      expected_cpu += last_it->second.cumulative_cpu;
-      expected_start_time = last_it->second.start_time;
+      expected_cpu += absl::get<CPUTimeResult>(last_it->second).cumulative_cpu;
+      expected_start_time =
+          absl::get<CPUTimeResult>(last_it->second).start_time;
     }
-    return AllOf(
-        Field("metadata", &CPUTimeResult::metadata,
-              Field("measurement_time", &ResultMetadata::measurement_time,
-                    expected_measurement_time)),
+    return VariantWith<CPUTimeResult>(AllOf(
         Field("cumulative_cpu", &CPUTimeResult::cumulative_cpu, expected_cpu),
         // `start_time` should not change. If this was the first measurement,
         // allow any non-null `start_time`. Note Conditional() doesn't
@@ -168,13 +168,28 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
         // temporary.
         Field("start_time", &CPUTimeResult::start_time,
               Conditional(last_it != last_measurements_.end(),
-                          expected_start_time, Not(base::TimeTicks()))));
+                          expected_start_time, Not(base::TimeTicks()))),
+        ResultMetadataMatches<CPUTimeResult>(expected_measurement_time,
+                                             expected_algorithm)));
   }
 
-  // GMock matcher expecting that a given CPUTimeResult has the given
-  // `expected_start_time`.
+  // As CPUDeltaMatchesWithMeasurementTime, but assumes the mock clock hasn't
+  // advanced since the measurement (so the measurement time is "now").
+  auto CPUDeltaMatches(const ResourceContext& context,
+                       base::TimeDelta expected_delta,
+                       MeasurementAlgorithm expected_algorithm =
+                           MeasurementAlgorithm::kDirectMeasurement) const {
+    return CPUDeltaMatchesWithMeasurementTime(
+        context, expected_delta,
+        /*expected_measurement_time=*/base::TimeTicks::Now(),
+        expected_algorithm);
+  }
+
+  // GMock matcher expecting that a given QueryResult variant contains a
+  // CPUTimeResult with the given `expected_start_time`.
   auto StartTimeMatches(base::TimeTicks expected_start_time) const {
-    return Field("start_time", &CPUTimeResult::start_time, expected_start_time);
+    return VariantWith<CPUTimeResult>(
+        Field("start_time", &CPUTimeResult::start_time, expected_start_time));
   }
 
   // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
@@ -188,13 +203,13 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   // Cached results from UpdateAndGetCPUMeasurements(). Most tests will validate
   // the difference between the "last" and "current" measurements, which is
   // easier to follow than the full cumulative measurements at any given time.
-  std::map<ResourceContext, CPUTimeResult> last_measurements_;
-  std::map<ResourceContext, CPUTimeResult> current_measurements_;
+  std::map<ResourceContext, QueryResult> last_measurements_;
+  std::map<ResourceContext, QueryResult> current_measurements_;
 };
 
 // Tests that renderers created at various points around CPU measurement
 // snapshots are handled correctly.
-TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
+TEST_F(ResourceAttrCPUMonitorTest, CreateTiming) {
   // Renderer in existence before StartMonitoring().
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
@@ -212,7 +227,7 @@ TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
   // Renderer creation racing with StartMonitoring(). Its pid will not be
   // available until after monitoring starts.
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
-  ASSERT_EQ(renderer2->process_id(), base::kNullProcessId);
+  ASSERT_EQ(renderer2->GetProcessId(), base::kNullProcessId);
 
   // `renderer1` begins measurement as soon as StartMonitoring is called.
   // `renderer2` begins measurement when its pid is available.
@@ -298,7 +313,7 @@ TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
 
 // Tests that renderers exiting at various points around CPU measurement
 // snapshots are handled correctly.
-TEST_F(CPUMeasurementMonitorTest, ExitTiming) {
+TEST_F(ResourceAttrCPUMonitorTest, ExitTiming) {
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
@@ -377,14 +392,17 @@ TEST_F(CPUMeasurementMonitorTest, ExitTiming) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_THAT(current_measurements_[renderer4->GetResourceContext()],
-              CPUDeltaMatches(renderer4->GetResourceContext(),
-                              base::TimeDelta(), previous_update_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer4->GetResourceContext(), base::TimeDelta(),
+                  previous_update_time));
   EXPECT_THAT(current_measurements_[renderer5->GetResourceContext()],
-              CPUDeltaMatches(renderer5->GetResourceContext(),
-                              base::TimeDelta(), previous_update_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer5->GetResourceContext(), base::TimeDelta(),
+                  previous_update_time));
   EXPECT_THAT(current_measurements_[renderer6->GetResourceContext()],
-              CPUDeltaMatches(renderer6->GetResourceContext(),
-                              base::TimeDelta(), previous_update_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer6->GetResourceContext(), base::TimeDelta(),
+                  previous_update_time));
 
   EXPECT_THAT(current_measurements_[renderer7->GetResourceContext()],
               CPUDeltaMatches(renderer7->GetResourceContext(),
@@ -402,7 +420,7 @@ TEST_F(CPUMeasurementMonitorTest, ExitTiming) {
 
 // Tests that varying CPU usage between measurement snapshots is reported
 // correctly.
-TEST_F(CPUMeasurementMonitorTest, VaryingMeasurements) {
+TEST_F(ResourceAttrCPUMonitorTest, VaryingMeasurements) {
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
@@ -466,15 +484,52 @@ TEST_F(CPUMeasurementMonitorTest, VaryingMeasurements) {
                               kTimeBetweenMeasurements));
 }
 
+// Tests that CPU usage of non-renderers is measured.
+TEST_F(ResourceAttrCPUMonitorTest, AllProcessTypes) {
+  const std::vector<content::ProcessType> kProcessTypes{
+      content::PROCESS_TYPE_BROWSER,        content::PROCESS_TYPE_RENDERER,
+      content::PROCESS_TYPE_UTILITY,        content::PROCESS_TYPE_ZYGOTE,
+      content::PROCESS_TYPE_SANDBOX_HELPER, content::PROCESS_TYPE_GPU};
+
+  std::map<content::ProcessType, TestNodeWrapper<ProcessNodeImpl>>
+      process_nodes;
+  std::map<content::ProcessType, double> expected_cpu_percent;
+
+  double next_cpu_percent = 0.9;
+  for (const auto process_type : kProcessTypes) {
+    auto process = CreateMockCPUProcess(process_type);
+    SetProcessId(process.get());
+    SetProcessCPUUsage(process.get(), next_cpu_percent);
+    process_nodes[process_type] = std::move(process);
+    expected_cpu_percent[process_type] = next_cpu_percent;
+    next_cpu_percent -= 0.1;
+  }
+
+  StartMonitoring();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+  for (const auto process_type : kProcessTypes) {
+    const ProcessContext& process_context =
+        process_nodes.at(process_type)->GetResourceContext();
+    EXPECT_THAT(current_measurements_[process_context],
+                CPUDeltaMatches(process_context,
+                                kTimeBetweenMeasurements *
+                                    expected_cpu_percent.at(process_type)))
+        << "process type " << process_type;
+  }
+}
+
 // Tests that CPU usage of processes is correctly distributed between frames and
 // workers in those processes, and correctly aggregated to pages containing
 // frames and workers from multiple processes.
-TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
+TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
 
-  // Track CPU usage of the mock utility process to make sure that measuring it
-  // doesn't crash. Currently only measurements of renderer processes are
-  // stored anywhere, so there are no other expectations to verify.
+  // The mock browser and utility processes should be measured, but do not
+  // contain frames or workers so should not affect the distribution of
+  // measurements.
+  SetProcessCPUUsage(mock_graph.browser_process.get(), 0.8);
   SetProcessCPUUsage(mock_graph.utility_process.get(), 0.7);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
@@ -502,10 +557,23 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   const WorkerContext& worker_context = mock_graph.worker->GetResourceContext();
   const WorkerContext& other_worker_context =
       mock_graph.other_worker->GetResourceContext();
+  const ProcessContext& browser_process_context =
+      mock_graph.browser_process->GetResourceContext();
+  const ProcessContext& utility_process_context =
+      mock_graph.utility_process->GetResourceContext();
   const ProcessContext& process_context =
       mock_graph.process->GetResourceContext();
   const ProcessContext& other_process_context =
       mock_graph.other_process->GetResourceContext();
+
+  EXPECT_THAT(current_measurements_[browser_process_context],
+              AllOf(CPUDeltaMatches(browser_process_context,
+                                    kTimeBetweenMeasurements * 0.8),
+                    StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(current_measurements_[utility_process_context],
+              AllOf(CPUDeltaMatches(utility_process_context,
+                                    kTimeBetweenMeasurements * 0.7),
+                    StartTimeMatches(monitoring_start_time)));
 
   // `process` splits its 60% CPU usage evenly between `frame`, `other_frame`
   // and `worker`. `other_process` splits its 50% CPU usage evenly between
@@ -525,24 +593,29 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
                     StartTimeMatches(monitoring_start_time)));
 
   EXPECT_THAT(current_measurements_[frame_context],
-              AllOf(CPUDeltaMatches(frame_context, split_process_cpu_delta),
+              AllOf(CPUDeltaMatches(frame_context, split_process_cpu_delta,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(monitoring_start_time)));
   EXPECT_THAT(
       current_measurements_[other_frame_context],
-      AllOf(CPUDeltaMatches(other_frame_context, split_process_cpu_delta),
+      AllOf(CPUDeltaMatches(other_frame_context, split_process_cpu_delta,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(monitoring_start_time)));
   EXPECT_THAT(current_measurements_[worker_context],
-              AllOf(CPUDeltaMatches(worker_context, split_process_cpu_delta),
+              AllOf(CPUDeltaMatches(worker_context, split_process_cpu_delta,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(monitoring_start_time)));
 
   EXPECT_THAT(
       current_measurements_[child_frame_context],
-      AllOf(CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta),
+      AllOf(CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(monitoring_start_time)));
-  EXPECT_THAT(current_measurements_[other_worker_context],
-              AllOf(CPUDeltaMatches(other_worker_context,
-                                    other_process_split_cpu_delta),
-                    StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(
+      current_measurements_[other_worker_context],
+      AllOf(CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta,
+                            MeasurementAlgorithm::kSplit),
+            StartTimeMatches(monitoring_start_time)));
 
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
@@ -550,15 +623,17 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   // MockMultiplePagesAndWorkersWithMultipleProcessesGraph.
   EXPECT_THAT(
       current_measurements_[page_context],
-      AllOf(CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.4),
+      AllOf(CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.4,
+                            MeasurementAlgorithm::kSum),
             StartTimeMatches(monitoring_start_time)));
   EXPECT_THAT(
       current_measurements_[other_page_context],
-      AllOf(CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.7),
+      AllOf(CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.7,
+                            MeasurementAlgorithm::kSum),
             StartTimeMatches(monitoring_start_time)));
 
-  // Modify the CPU usage of each process, ensure all frames and workers are
-  // updated.
+  // Modify the CPU usage of each renderer process, ensure all frames and
+  // workers are updated.
   SetProcessCPUUsage(mock_graph.process.get(), 0.3);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.8);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
@@ -578,27 +653,34 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
       CPUDeltaMatches(other_process_context, kTimeBetweenMeasurements * 0.8));
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[other_frame_context],
-              CPUDeltaMatches(other_frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(other_frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[worker_context],
-              CPUDeltaMatches(worker_context, split_process_cpu_delta));
+              CPUDeltaMatches(worker_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(
       current_measurements_[child_frame_context],
-      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[other_worker_context],
-      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
 
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`.
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.2));
+              CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.2,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(
       current_measurements_[other_page_context],
-      CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.9));
+      CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.9,
+                      MeasurementAlgorithm::kSum));
 
   // Drop CPU usage of `other_process` to 0%. Only advance part of the normal
   // measurement interval, to be sure that the percentage usage doesn't depend
@@ -621,31 +703,38 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
               CPUDeltaMatches(other_process_context, base::TimeDelta()));
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[other_frame_context],
-              CPUDeltaMatches(other_frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(other_frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[worker_context],
-              CPUDeltaMatches(worker_context, split_process_cpu_delta));
+              CPUDeltaMatches(worker_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(
       current_measurements_[child_frame_context],
-      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[other_worker_context],
-      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
 
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`.
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, kShortInterval * 0.2));
+              CPUDeltaMatches(page_context, kShortInterval * 0.2,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, kShortInterval * 0.1));
+              CPUDeltaMatches(other_page_context, kShortInterval * 0.1,
+                              MeasurementAlgorithm::kSum));
 }
 
 // Tests that CPU usage of processes is correctly distributed between FrameNodes
 // and WorkerNodes that are added and removed between measurements.
-TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
+TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
@@ -736,13 +825,16 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
               CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
   EXPECT_THAT(
       current_measurements_[frame_context],
-      CPUDeltaMatches(frame_context, process_4way_split + process_5way_split));
+      CPUDeltaMatches(frame_context, process_4way_split + process_5way_split,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame1_context],
               AllOf(CPUDeltaMatches(new_frame1_context,
-                                    process_4way_split + process_5way_split),
+                                    process_4way_split + process_5way_split,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time1)));
   EXPECT_THAT(current_measurements_[new_frame2_context],
-              AllOf(CPUDeltaMatches(new_frame2_context, process_5way_split),
+              AllOf(CPUDeltaMatches(new_frame2_context, process_5way_split,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time2)));
   EXPECT_FALSE(base::Contains(current_measurements_, new_frame3_context));
 
@@ -752,20 +844,24 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
   EXPECT_THAT(
       current_measurements_[child_frame_context],
       CPUDeltaMatches(child_frame_context,
-                      other_process_3way_split + other_process_4way_split));
+                      other_process_3way_split + other_process_4way_split,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[new_worker1_context],
-      AllOf(CPUDeltaMatches(new_worker1_context, other_process_3way_split +
-                                                     other_process_4way_split),
+      AllOf(CPUDeltaMatches(new_worker1_context,
+                            other_process_3way_split + other_process_4way_split,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time1)));
   EXPECT_THAT(
       current_measurements_[new_worker2_context],
-      AllOf(CPUDeltaMatches(new_worker2_context, other_process_4way_split),
+      AllOf(CPUDeltaMatches(new_worker2_context, other_process_4way_split,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time2)));
   EXPECT_FALSE(base::Contains(current_measurements_, new_worker3_context));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta));
+              CPUDeltaMatches(page_context, expected_page_delta,
+                              MeasurementAlgorithm::kSum));
 
   new_frame1.reset();
   new_worker1.reset();
@@ -803,18 +899,20 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
               CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
   EXPECT_THAT(
       current_measurements_[frame_context],
-      CPUDeltaMatches(frame_context, process_5way_split + process_4way_split));
-  EXPECT_THAT(
-      current_measurements_[new_frame1_context],
-      CPUDeltaMatches(new_frame1_context, base::TimeDelta(),
-                      /*expected_measurement_time=*/node_removed_time1));
-  EXPECT_THAT(
-      current_measurements_[new_frame2_context],
-      CPUDeltaMatches(new_frame2_context, process_5way_split,
-                      /*expected_measurement_time=*/node_removed_time2));
+      CPUDeltaMatches(frame_context, process_5way_split + process_4way_split,
+                      MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_frame1_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_frame1_context, base::TimeDelta(), node_removed_time1,
+                  MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_frame2_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_frame2_context, process_5way_split, node_removed_time2,
+                  MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame3_context],
               AllOf(CPUDeltaMatches(new_frame3_context,
-                                    process_5way_split + process_4way_split),
+                                    process_5way_split + process_4way_split,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time3)));
 
   EXPECT_THAT(
@@ -823,28 +921,31 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
   EXPECT_THAT(
       current_measurements_[child_frame_context],
       CPUDeltaMatches(child_frame_context,
-                      other_process_4way_split + other_process_3way_split));
-  EXPECT_THAT(
-      current_measurements_[new_worker1_context],
-      CPUDeltaMatches(new_worker1_context, base::TimeDelta(),
-                      /*expected_measurement_time=*/node_removed_time1));
-  EXPECT_THAT(
-      current_measurements_[new_worker2_context],
-      CPUDeltaMatches(new_worker2_context, other_process_4way_split,
-                      /*expected_measurement_time=*/node_removed_time2));
+                      other_process_4way_split + other_process_3way_split,
+                      MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_worker1_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_worker1_context, base::TimeDelta(), node_removed_time1,
+                  MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_worker2_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_worker2_context, other_process_4way_split,
+                  node_removed_time2, MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[new_worker3_context],
-      AllOf(CPUDeltaMatches(new_worker3_context, other_process_4way_split +
-                                                     other_process_3way_split),
+      AllOf(CPUDeltaMatches(new_worker3_context,
+                            other_process_4way_split + other_process_3way_split,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time3)));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta2));
+              CPUDeltaMatches(page_context, expected_page_delta2,
+                              MeasurementAlgorithm::kSum));
 }
 
 // Tests that WorkerNode CPU usage is correctly distributed to pages as clients
 // are added and removed.
-TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
+TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
@@ -882,20 +983,26 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
       kTimeBetweenMeasurements * 0.5 / 3;
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, process_split));
+              CPUDeltaMatches(frame_context, process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker1_context],
-              CPUDeltaMatches(new_worker1_context, process_split));
+              CPUDeltaMatches(new_worker1_context, process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[child_frame_context],
-              CPUDeltaMatches(child_frame_context, other_process_split));
+              CPUDeltaMatches(child_frame_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker2_context],
-              CPUDeltaMatches(new_worker2_context, other_process_split));
+              CPUDeltaMatches(new_worker2_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, 2 * process_split));
+              CPUDeltaMatches(page_context, 2 * process_split,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
               CPUDeltaMatches(other_page_context,
-                              process_split + 2 * other_process_split));
+                              process_split + 2 * other_process_split,
+                              MeasurementAlgorithm::kSum));
 
   // Half-way through the interval, make `frame` a client of `new_worker1` and
   // `worker` a client of `new_worker2`.
@@ -914,20 +1021,26 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
       /*second half, 4 nodes*/ (3 * process_split + other_process_split) / 2;
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, process_split));
+              CPUDeltaMatches(frame_context, process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker1_context],
-              CPUDeltaMatches(new_worker1_context, process_split));
+              CPUDeltaMatches(new_worker1_context, process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[child_frame_context],
-              CPUDeltaMatches(child_frame_context, other_process_split));
+              CPUDeltaMatches(child_frame_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker2_context],
-              CPUDeltaMatches(new_worker2_context, other_process_split));
+              CPUDeltaMatches(new_worker2_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta));
+              CPUDeltaMatches(page_context, expected_page_delta,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
               CPUDeltaMatches(other_page_context,
-                              process_split + 2 * other_process_split));
+                              process_split + 2 * other_process_split,
+                              MeasurementAlgorithm::kSum));
 
   // Half-way through the interval, make `other_worker` a client of
   // `new_worker2` instead of `worker`.
@@ -954,9 +1067,11 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
       /*second half, 4 nodes*/ (process_split + 3 * other_process_split) / 2;
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta2));
+              CPUDeltaMatches(page_context, expected_page_delta2,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, expected_other_page_delta));
+              CPUDeltaMatches(other_page_context, expected_other_page_delta,
+                              MeasurementAlgorithm::kSum));
 
   // Test workers with multiple clients, and multiple paths to the same
   // FrameNode or PageNode.
@@ -990,9 +1105,11 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta3));
+              CPUDeltaMatches(page_context, expected_page_delta3,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, expected_other_page_delta2));
+              CPUDeltaMatches(other_page_context, expected_other_page_delta2,
+                              MeasurementAlgorithm::kSum));
 
   // Break the link between `new_worker2` and `new_worker1`. `new_worker2`
   // should still be in `page` because a path to `frame` still exists:
@@ -1003,9 +1120,11 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta3));
+              CPUDeltaMatches(page_context, expected_page_delta3,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, expected_other_page_delta2));
+              CPUDeltaMatches(other_page_context, expected_other_page_delta2,
+                              MeasurementAlgorithm::kSum));
 
   // Need to remove all clients before deleting WorkerNodes
   auto remove_clients = [](TestNodeWrapper<WorkerNodeImpl>& worker) {
@@ -1026,7 +1145,7 @@ TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
 }
 
 // Tests that errors returned from ProcessMetrics are correctly ignored.
-TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
+TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   const TestNodeWrapper<ProcessNodeImpl> renderer1 = CreateMockCPURenderer();
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
@@ -1078,11 +1197,13 @@ TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
 
   // After an error the previous measurement should be returned unchanged.
   EXPECT_THAT(current_measurements_[renderer1->GetResourceContext()],
-              CPUDeltaMatches(renderer1->GetResourceContext(),
-                              base::TimeDelta(), previous_measurement_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer1->GetResourceContext(), base::TimeDelta(),
+                  previous_measurement_time));
   EXPECT_THAT(current_measurements_[renderer2->GetResourceContext()],
-              CPUDeltaMatches(renderer2->GetResourceContext(),
-                              base::TimeDelta(), previous_measurement_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer2->GetResourceContext(), base::TimeDelta(),
+                  previous_measurement_time));
   EXPECT_FALSE(
       base::Contains(current_measurements_, renderer3->GetResourceContext()));
   EXPECT_FALSE(
@@ -1118,7 +1239,7 @@ TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
 
 // A test that creates real processes, to verify that measurement works with the
 // timing of real node creation.
-class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
+class ResourceAttrCPUMonitorTimingTest : public PerformanceManagerTestHarness {
  protected:
   using Super = PerformanceManagerTestHarness;
 
@@ -1144,7 +1265,7 @@ class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
   std::unique_ptr<CPUMeasurementMonitor> cpu_monitor_;
 };
 
-TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
+TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   SetContents(CreateTestWebContents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.example.com/"));
@@ -1153,6 +1274,8 @@ TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
       FrameContext::FromRenderFrameHost(main_rfh()).value();
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
+  base::WeakPtr<ProcessNode> browser_process_node =
+      PerformanceManager::GetProcessNodeForBrowserProcess();
 
   // Since process() returns a MockRenderProcessHost, ProcessNode is created
   // but has no pid. (Equivalent to the time between OnProcessNodeAdded and
@@ -1162,11 +1285,17 @@ TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(process_node);
     EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
 
-    // Process can't be measured yet.
+    // "Browser" process is the test harness, which already has a pid.
+    ASSERT_TRUE(browser_process_node);
+    EXPECT_NE(browser_process_node->GetProcessId(), base::kNullProcessId);
+
+    // Renderer process can't be measured yet, browser can.
     const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
     EXPECT_FALSE(
         base::Contains(measurements, process_node->GetResourceContext()));
     EXPECT_FALSE(base::Contains(measurements, frame_context));
+    EXPECT_TRUE(base::Contains(measurements,
+                               browser_process_node->GetResourceContext()));
   });
 
   // Assign a real process to the ProcessNode. (Will call
@@ -1182,27 +1311,42 @@ TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
   // Let some time pass so there's CPU to measure after monitoring starts.
   LetTimePass();
 
+  auto get_cumulative_cpu =
+      [](std::map<ResourceContext, QueryResult> measurements,
+         const ResourceContext& context) -> base::TimeDelta {
+    return absl::get<CPUTimeResult>(measurements.at(context)).cumulative_cpu;
+  };
+
   base::TimeDelta cumulative_process_cpu;
+  base::TimeDelta cumulative_browser_process_cpu;
   base::TimeDelta cumulative_frame_cpu;
   RunInGraph([&] {
     ASSERT_TRUE(process_node);
+    ASSERT_TRUE(browser_process_node);
     EXPECT_TRUE(process_node->GetProcess().IsValid());
+    EXPECT_TRUE(browser_process_node->GetProcess().IsValid());
 
-    // Process can be measured now.
+    // Both processes can be measured now.
     const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
 
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
     cumulative_process_cpu =
-        measurements.at(process_node->GetResourceContext()).cumulative_cpu;
+        get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_FALSE(cumulative_process_cpu.is_negative());
 
+    ASSERT_TRUE(base::Contains(measurements,
+                               browser_process_node->GetResourceContext()));
+    cumulative_browser_process_cpu = get_cumulative_cpu(
+        measurements, browser_process_node->GetResourceContext());
+    EXPECT_FALSE(cumulative_browser_process_cpu.is_negative());
+
     ASSERT_TRUE(base::Contains(measurements, frame_context));
-    cumulative_frame_cpu = measurements.at(frame_context).cumulative_cpu;
+    cumulative_frame_cpu = get_cumulative_cpu(measurements, frame_context);
     EXPECT_FALSE(cumulative_frame_cpu.is_negative());
   });
 
-  // Simulate that the process died.
+  // Simulate that the renderer process died.
   process()->SimulateRenderProcessExit(
       base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
   LetTimePass();
@@ -1220,13 +1364,13 @@ TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
     const base::TimeDelta new_process_cpu =
-        measurements.at(process_node->GetResourceContext()).cumulative_cpu;
+        get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_GE(new_process_cpu, cumulative_process_cpu);
     cumulative_process_cpu = new_process_cpu;
 
     ASSERT_TRUE(base::Contains(measurements, frame_context));
     const base::TimeDelta new_frame_cpu =
-        measurements.at(frame_context).cumulative_cpu;
+        get_cumulative_cpu(measurements, frame_context);
     EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
     cumulative_frame_cpu = new_frame_cpu;
   });
@@ -1246,13 +1390,13 @@ TEST_F(CPUMeasurementMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
     const base::TimeDelta new_process_cpu =
-        measurements.at(process_node->GetResourceContext()).cumulative_cpu;
+        get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_GE(new_process_cpu, cumulative_process_cpu);
     cumulative_process_cpu = new_process_cpu;
 
     ASSERT_TRUE(base::Contains(measurements, frame_context));
     const base::TimeDelta new_frame_cpu =
-        measurements.at(frame_context).cumulative_cpu;
+        get_cumulative_cpu(measurements, frame_context);
     EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
     cumulative_frame_cpu = new_frame_cpu;
   });

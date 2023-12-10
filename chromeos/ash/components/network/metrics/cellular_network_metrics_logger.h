@@ -37,11 +37,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     kMatchesLastGoodApn = 0,
     kDoesNotMatchLastGoodApn = 1,
     kMatchesLastConnectedAttachAndDefault = 2,
-    kMatchesLastConnectedAttachHasMatchingDatabaseApn = 3,
-    kMatchesLastConnectedAttachHasNoMatchingDatabaseApn = 4,
+    kMatchesLastConnectedAttachHasMatchingDatabaseApn = 3,    // deprecated
+    kMatchesLastConnectedAttachHasNoMatchingDatabaseApn = 4,  // deprecated
     kMatchesLastConnectedDefaultNoLastConnectedAttach = 5,
     kNoMatchingConnectedApn = 6,
-    kMaxValue = kNoMatchingConnectedApn
+    kMatchesLastConnectedAttachOnlyAndDefaultExists = 7,
+    kMatchesLastConnectedDefaultOnlyAndAttachExists = 8,
+    kMaxValue = kMatchesLastConnectedDefaultOnlyAndAttachExists
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -269,8 +271,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static void LogModifyCustomApnResult(
       bool success,
       std::vector<chromeos::network_config::mojom::ApnType> old_apn_types,
-      absl::optional<chromeos::network_config::mojom::ApnState> apn_state,
-      absl::optional<chromeos::network_config::mojom::ApnState> old_apn_state);
+      std::optional<chromeos::network_config::mojom::ApnState> apn_state,
+      std::optional<chromeos::network_config::mojom::ApnState> old_apn_state);
   static void LogUnmanagedCustomApnMigrationType(
       UnmanagedApnMigrationType type);
   static void LogManagedCustomApnMigrationType(ManagedApnMigrationType type);
@@ -299,13 +301,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   // |status| is not provided this function assumes that we failed to inhibit
   // the cellular device.
   static void LogSmdsScanResult(const std::string& smds_activation_code,
-                                absl::optional<HermesResponseStatus> status);
+                                std::optional<HermesResponseStatus> status);
 
   // Returns the eSIM installation result for the provided Hermes response
   // status. When the status is unavailable, assume that we failed to inhibit
   // the cellular device.
   static ESimOperationResult ComputeESimOperationResult(
-      absl::optional<HermesResponseStatus> status);
+      std::optional<HermesResponseStatus> status);
 
   // Returns whether |status| is considered a "user error" and should be
   // filtered when emitting to eSIM installation result histograms. An Hermes
@@ -326,7 +328,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   // ConnectionInfoMetricsLogger::Observer:
   void OnConnectionResult(
       const std::string& guid,
-      const absl::optional<std::string>& shill_error) override;
+      const std::optional<std::string>& shill_error) override;
 
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;

@@ -13,9 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Handles click events of list items by {@link Delegate#onItemSelected(PropertyModel)}.
  */
 public interface ListMenu {
-    /**
-     * Delegate handling list item click event of {@link ListMenu}.
-     */
+    /** Delegate handling list item click event of {@link ListMenu}. */
     @FunctionalInterface
     interface Delegate {
         void onItemSelected(PropertyModel item);

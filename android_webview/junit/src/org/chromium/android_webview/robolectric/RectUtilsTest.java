@@ -19,9 +19,7 @@ import org.chromium.base.test.util.Feature;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for FindAddress implementation.
- */
+/** Tests for FindAddress implementation. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class RectUtilsTest {
     @Test

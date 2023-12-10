@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <string>
 
 #include "base/check.h"
@@ -32,7 +33,7 @@ class MultiplanarFormatDataView;
 // images (eg. RGBA) or multiplanar images (eg. NV12). This format can be
 // either SingleplanarFormat or MultiplanarFormat (PlaneConfig + Subsampling +
 // ChannelFormat).
-class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
+class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
  public:
   // Specifies how YUV (and optionally A) are divided among planes. Planes are
   // separated by underscores in the enum value names. Within each plane the
@@ -51,6 +52,8 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   // and V). If alpha is present it is not subsampled.
   enum class Subsampling : uint8_t {
     k420,  // 1 set of UV values for each 2x2 block of Y values.
+    k422,  // 1 set of UV values for each 2x1 block of Y values.
+    k444,  // No subsampling. UV values for each Y.
   };
 
   // Specifies the channel format for Y plane in the YUV (and optionally A)
@@ -168,8 +171,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   int BitsPerPixel() const;
 
   bool operator==(const SharedImageFormat& o) const;
-  bool operator!=(const SharedImageFormat& o) const;
-  bool operator<(const SharedImageFormat& o) const;
+  std::weak_ordering operator<=>(const SharedImageFormat& o) const;
 
  private:
   enum class PlaneType : uint8_t {
@@ -195,8 +197,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
 #endif
 
       bool operator==(const MultiplanarFormat& o) const;
-      bool operator!=(const MultiplanarFormat& o) const;
-      bool operator<(const MultiplanarFormat& o) const;
+      std::weak_ordering operator<=>(const MultiplanarFormat& o) const;
     };
 
     SharedImageFormatUnion() {}
@@ -346,10 +347,6 @@ inline constexpr SharedImageFormat kI420 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_U_V,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k8);
-
-// All known multiplanar formats.
-static constexpr SharedImageFormat kAll[5] = {kYV12, kNV12, kNV12A, kP010,
-                                              kI420};
 }  // namespace MultiPlaneFormat
 
 }  // namespace viz

@@ -178,10 +178,10 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
-absl::optional<SaveUpdateAddressProfileBubbleController::HeaderImages>
+std::optional<SaveUpdateAddressProfileBubbleController::HeaderImages>
 SaveUpdateAddressProfileBubbleControllerImpl::GetHeaderImages() const {
   if (is_migration_to_account_) {
-    absl::optional<AccountInfo> account =
+    std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
     if (account) {
@@ -202,7 +202,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetHeaderImages() const {
         .dark = ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS_DARK)};
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetBodyText()
@@ -212,7 +212,7 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetBodyText()
         ContentAutofillClient::FromWebContents(web_contents())
             ->GetPersonalDataManager();
 
-    absl::optional<AccountInfo> account =
+    std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
@@ -298,7 +298,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetCancelCallbackValue() const {
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetFooterMessage()
     const {
   if (address_profile_->source() == AutofillProfile::Source::kAccount) {
-    absl::optional<AccountInfo> account =
+    std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
@@ -415,7 +415,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
 std::u16string
 SaveUpdateAddressProfileBubbleControllerImpl::GetEditorFooterMessage() const {
   if (is_migration_to_account_) {
-    absl::optional<AccountInfo> account =
+    std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
     return l10n_util::GetStringFUTF16(

@@ -28,6 +28,7 @@ class MockCompositorFrameSinkClient
   MOCK_METHOD1(OnBeginFramePausedChanged, void(bool paused));
   MOCK_METHOD1(OnCompositorFrameTransitionDirectiveProcessed,
                void(uint32_t sequence_id));
+  MOCK_METHOD1(OnSurfaceEvicted, void(const viz::LocalSurfaceId&));
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};

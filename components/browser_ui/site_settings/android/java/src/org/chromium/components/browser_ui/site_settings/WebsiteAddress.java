@@ -67,9 +67,14 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         if (originOrHostOrPattern.contains(SCHEME_SUFFIX)) {
             Uri uri = Uri.parse(originOrHostOrPattern);
             String origin = trimTrailingBackslash(originOrHostOrPattern);
-            boolean omitProtocolAndPort = UrlConstants.HTTP_SCHEME.equals(uri.getScheme())
-                    && (uri.getPort() == -1 || uri.getPort() == 80);
-            return new WebsiteAddress(originOrHostOrPattern, origin, uri.getScheme(), uri.getHost(),
+            boolean omitProtocolAndPort =
+                    UrlConstants.HTTP_SCHEME.equals(uri.getScheme())
+                            && (uri.getPort() == -1 || uri.getPort() == 80);
+            return new WebsiteAddress(
+                    originOrHostOrPattern,
+                    origin,
+                    uri.getScheme(),
+                    uri.getHost(),
                     omitProtocolAndPort);
         }
 
@@ -81,7 +86,11 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
                 originOrHostOrPattern, origin, scheme, originOrHostOrPattern, omitProtocolAndPort);
     }
 
-    private WebsiteAddress(String originOrHostPattern, String origin, String scheme, String host,
+    private WebsiteAddress(
+            String originOrHostPattern,
+            String origin,
+            String scheme,
+            String host,
             boolean omitProtocolAndPort) {
         mOriginOrHostPattern = originOrHostPattern;
         mOrigin = origin;
@@ -109,18 +118,17 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
 
     public String getTitle() {
         if (mOrigin == null) return mHost;
-        return UrlFormatter.formatUrlForSecurityDisplay(mOrigin.contains(ANY_SUBDOMAIN_PATTERN)
+        return UrlFormatter.formatUrlForSecurityDisplay(
+                mOrigin.contains(ANY_SUBDOMAIN_PATTERN)
                         ? mOrigin.replace(ANY_SUBDOMAIN_PATTERN, "")
                         : mOrigin,
                 mOmitProtocolAndPort ? SchemeDisplay.OMIT_HTTP_AND_HTTPS : SchemeDisplay.SHOW);
     }
 
-    /**
-     * Returns true if {@code url} matches this WebsiteAddress's origin or host pattern.
-     */
+    /** Returns true if {@code url} matches this WebsiteAddress's origin or host pattern. */
     public boolean matches(String url) {
-        return WebsitePreferenceBridgeJni.get().urlMatchesContentSettingsPattern(
-                url, mOriginOrHostPattern);
+        return WebsitePreferenceBridgeJni.get()
+                .urlMatchesContentSettingsPattern(url, mOriginOrHostPattern);
     }
 
     /**
@@ -130,8 +138,10 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     public String getDomainAndRegistry() {
         if (mDomainAndRegistry == null) {
             // getDomainAndRegistry works better having a protocol prefix.
-            mDomainAndRegistry = UrlUtilities.getDomainAndRegistry(
-                    (mOrigin != null) ? mOrigin : UrlConstants.HTTP_URL_PREFIX + mHost, false);
+            mDomainAndRegistry =
+                    UrlUtilities.getDomainAndRegistry(
+                            (mOrigin != null) ? mOrigin : UrlConstants.HTTP_URL_PREFIX + mHost,
+                            false);
             if (mDomainAndRegistry == null || mDomainAndRegistry.isEmpty()) {
                 mDomainAndRegistry = mHost;
             }
@@ -143,7 +153,8 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     public boolean equals(Object obj) {
         if (obj instanceof WebsiteAddress) {
             WebsiteAddress other = (WebsiteAddress) obj;
-            return Objects.equals(mOrigin, other.mOrigin) && Objects.equals(mScheme, other.mScheme)
+            return Objects.equals(mOrigin, other.mOrigin)
+                    && Objects.equals(mScheme, other.mScheme)
                     && Objects.equals(mHost, other.mHost);
         }
         return false;
@@ -196,8 +207,9 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
             mAddress = mHost;
         }
         int endIndex = mAddress.indexOf(getDomainAndRegistry());
-        return --endIndex > startIndex ? mAddress.substring(startIndex, endIndex).split("\\.")
-                                       : new String[0];
+        return --endIndex > startIndex
+                ? mAddress.substring(startIndex, endIndex).split("\\.")
+                : new String[0];
     }
 
     private static String trimTrailingBackslash(String origin) {

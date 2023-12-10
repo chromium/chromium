@@ -106,9 +106,8 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
   // discouraged (see https://codereview.chromium.org/939673002).
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   CommitObserver observer(
-      RenderFrame::FromRoutingID(
-          shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID())
-          ->GetWebFrame()
+      blink::WebLocalFrame::FromFrameToken(
+          shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken())
           ->View());
 
   // Wait for the commit corresponding to the load.

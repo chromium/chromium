@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_algorithm.h"
 
 namespace blink {
@@ -106,7 +106,7 @@ const LogicalLineItems& FragmentItemsBuilder::GetLogicalLineItems(
 
 void FragmentItemsBuilder::AssociateLogicalLineItems(
     LogicalLineItems* line_items,
-    const NGPhysicalFragment& line_fragment) {
+    const PhysicalFragment& line_fragment) {
   DCHECK(!current_line_items_ || current_line_items_ == line_items);
   current_line_items_ = line_items;
   DCHECK(!current_line_fragment_);
@@ -199,7 +199,7 @@ void FragmentItemsBuilder::AddItems(LogicalLineItem* child_begin,
 }
 
 void FragmentItemsBuilder::AddListMarker(
-    const NGPhysicalBoxFragment& marker_fragment,
+    const PhysicalBoxFragment& marker_fragment,
     const LogicalOffset& offset) {
   DCHECK(!is_converted_to_physical_);
 
@@ -210,9 +210,9 @@ void FragmentItemsBuilder::AddListMarker(
 }
 
 FragmentItemsBuilder::AddPreviousItemsResult
-FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
+FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
                                        const FragmentItems& items,
-                                       NGBoxFragmentBuilder* container_builder,
+                                       BoxFragmentBuilder* container_builder,
                                        const FragmentItem* end_item,
                                        wtf_size_t max_lines) {
   if (end_item) {
@@ -223,7 +223,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
     if (UNLIKELY(items.FirstLineText() && !first_line_text_content_)) {
       // Don't reuse previous items if they have different `::first-line` style
       // but |this| doesn't. Reaching here means that computed style doesn't
-      // change, but |FragmentItem| has wrong |NGStyleVariant|.
+      // change, but |FragmentItem| has wrong |StyleVariant|.
       return AddPreviousItemsResult();
     }
   } else {
@@ -271,7 +271,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
         // Block-in-inline should have been prevented by |EndOfReusableItems|.
         DCHECK(!line_fragment->IsBlockInInline());
         const auto* break_token =
-            To<InlineBreakToken>(line_fragment->BreakToken());
+            To<InlineBreakToken>(line_fragment->GetBreakToken());
         DCHECK(break_token);
         const InlineItemsData* current_items_data;
         if (UNLIKELY(break_token->UseFirstLineStyle()))
@@ -311,7 +311,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
         // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
         // Such block needs to copy PostLayout fragment while running simplified
         // layout.
-        absl::optional<NGPhysicalBoxFragment::AllowPostLayoutScope>
+        absl::optional<PhysicalBoxFragment::AllowPostLayoutScope>
             allow_post_layout;
         if (line_child.IsRelayoutBoundary())
           allow_post_layout.emplace();
@@ -324,7 +324,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
 
         // Be sure to pick the post-layout fragment.
         const FragmentItem& new_item = items_.back().item;
-        if (const NGPhysicalBoxFragment* box = new_item.BoxFragment()) {
+        if (const PhysicalBoxFragment* box = new_item.BoxFragment()) {
           box = box->PostLayout();
           new_item.GetMutableForCloning().ReplaceBoxFragment(*box);
         }

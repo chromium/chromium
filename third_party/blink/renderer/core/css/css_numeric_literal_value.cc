@@ -132,6 +132,11 @@ int CSSNumericLiteralValue::ComputeInteger() const {
   return ClampTo<int>(num_);
 }
 
+double CSSNumericLiteralValue::ComputeNumber() const {
+  DCHECK(IsNumber());
+  return ClampTo<double>(num_);
+}
+
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                    double multiplier) const {
   LengthUnitType length_type;

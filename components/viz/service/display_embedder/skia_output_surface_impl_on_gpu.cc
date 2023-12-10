@@ -80,6 +80,7 @@
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -102,23 +103,20 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
 #endif
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
-#if BUILDFLAG(OZONE_PLATFORM_X11)
-#define USE_OZONE_PLATFORM_X11
-#endif
 #endif
 
 #if (BUILDFLAG(ENABLE_VULKAN) || BUILDFLAG(SKIA_USE_DAWN)) && \
-    defined(USE_OZONE_PLATFORM_X11)
+    BUILDFLAG(IS_OZONE_X11)
 #include "components/viz/service/display_embedder/skia_output_device_x11.h"
 #endif
 
@@ -935,7 +933,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
       std::vector<GrBackendSemaphore> end_semaphores;
 
       auto scoped_write = representation->BeginScopedWriteAccess(
-          /*final_msaa_count=*/1, surface_props, gfx::Rect(), &begin_semaphores,
+          /*final_msaa_count=*/1, surface_props, &begin_semaphores,
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
@@ -1670,7 +1668,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
       // TODO(https://crbug.com/1226672): Use BeginScopedReadAccess instead
       scoped_access = backing_representation->BeginScopedWriteAccess(
-          /*final_msaa_count=*/1, surface_props, gfx::Rect(), &begin_semaphores,
+          /*final_msaa_count=*/1, surface_props, &begin_semaphores,
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
       surface = scoped_access->surface();
@@ -1985,6 +1983,10 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
       if (!gl_surface_) {
         return false;
       }
+
+      if (gl_surface_->SupportsSwapTimestamps()) {
+        gl_surface_->SetEnableSwapTimestamps();
+      }
     }
 
 #if BUILDFLAG(IS_MAC)
@@ -2112,7 +2114,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
         GetDidSwapBuffersCompleteCallback());
   }
   if (MayFallBackToSkiaOutputDeviceX11()) {
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
     if (output_device) {
       output_device_ = std::move(output_device);
     } else {
@@ -2124,7 +2126,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     if (output_device_) {
       return true;
     }
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILDFLAG(IS_OZONE_X11)
   }
   if (!output_device) {
     return false;
@@ -2154,7 +2156,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
     // TODO(rivr): Set up a Vulkan swapchain so that Linux can also use
     // SkiaOutputDeviceDawn.
     if (MayFallBackToSkiaOutputDeviceX11()) {
@@ -2180,13 +2182,20 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
       }
       output_device_ = std::move(output_device);
     }
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
     presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
+#if BUILDFLAG(IS_ANDROID)
+    // NOTE: The fallback case for SurfaceControl not being used is not yet
+    // supported.
+    // TODO(crbug.com/1505768): Get SkiaOutputDeviceDawn to work on Android and
+    // use it here if `presenter_` is null as is being done for Windows above.
+    CHECK(presenter_);
+#endif
 #if BUILDFLAG(IS_MAC)
     if (features::UseGpuVsync()) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
     }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
             presenter_, dependency_, shared_image_factory_.get(),
@@ -2196,9 +2205,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         GetDidSwapBuffersCompleteCallback());
 #else
     NOTREACHED_NORETURN();
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
   }
-#endif
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
   return !!output_device_;
 }
 
@@ -2338,7 +2347,7 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     if (release_fence.is_null()) {
       LOG(ERROR) << "Unable to create a release fence for Vulkan.";
     } else {
-      semaphores.emplace_back(item.first.vkSemaphore());
+      semaphores.emplace_back(GrBackendSemaphores::GetVkSemaphore(item.first));
     }
     std::move(item.second).Run(std::move(release_fence));
     pending_release_fence_cbs_.pop_front();
@@ -2437,6 +2446,9 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 
   destroy_after_swap_.clear();
   context_state_->UpdateSkiaOwnedMemorySize();
+  UMA_HISTOGRAM_EXACT_LINEAR("Gpu.FenceHandle.CloneCountsPerSubmit",
+                             gfx::GpuFenceHandle::GetAndClearNumberOfClones(),
+                             200);
 }
 
 bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {
@@ -2463,10 +2475,6 @@ const gpu::GpuPreferences& SkiaOutputSurfaceImplOnGpu::GetGpuPreferences()
 
 GpuVSyncCallback SkiaOutputSurfaceImplOnGpu::GetGpuVSyncCallback() {
   return gpu_vsync_callback_;
-}
-
-base::TimeDelta SkiaOutputSurfaceImplOnGpu::GetGpuBlockedTimeSinceLastSwap() {
-  return dependency_->GetGpuBlockedTimeSinceLastSwap();
 }
 
 void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
@@ -2615,7 +2623,7 @@ gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForVulkan(
     const GrBackendSemaphore& semaphore) {
   DCHECK(is_using_vulkan());
 
-  if (semaphore.vkSemaphore() == VK_NULL_HANDLE) {
+  if (GrBackendSemaphores::GetVkSemaphore(semaphore) == VK_NULL_HANDLE) {
     return {};
   }
 
@@ -2623,10 +2631,10 @@ gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForVulkan(
   VkDevice device =
       vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
 
-  auto handle =
-      implementation->GetSemaphoreHandle(device, semaphore.vkSemaphore());
+  auto handle = implementation->GetSemaphoreHandle(
+      device, GrBackendSemaphores::GetVkSemaphore(semaphore));
   if (!handle.is_valid()) {
-    vkDestroySemaphore(device, semaphore.vkSemaphore(),
+    vkDestroySemaphore(device, GrBackendSemaphores::GetVkSemaphore(semaphore),
                        /*pAllocator=*/nullptr);
     LOG(ERROR) << "Failed to create a release fence for Vulkan.";
     return {};
@@ -2649,8 +2657,7 @@ bool SkiaOutputSurfaceImplOnGpu::CreateAndStoreExternalSemaphoreVulkan(
     return false;
   }
 
-  end_semaphores.emplace_back();
-  end_semaphores.back().initVulkan(semaphore);
+  end_semaphores.emplace_back(GrBackendSemaphores::MakeVk(semaphore));
   return true;
 }
 #endif

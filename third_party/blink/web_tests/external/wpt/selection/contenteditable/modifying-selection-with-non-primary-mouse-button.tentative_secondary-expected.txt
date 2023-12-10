@@ -1,12 +1,7 @@
 This is a testharness.js-based test.
-[PASS] secondary click should set focus to clicked editable element and collapse selection around the clicked point
-[PASS] secondary click should move caret in an editable element
-[PASS] secondary click shouldn't move caret in an editable element if the default of mousedown event is prevented
-[PASS] secondary click shouldn't move caret in an editable element if the default of pointerdown event is prevented
 [FAIL] Shift + secondary click should extend the selection
   promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup mixed with other actions, please use test_driver.send_keys. See crbug.com/893480."
 [FAIL] Shift + secondary click in a link shouldn't extend the selection
   promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup mixed with other actions, please use test_driver.send_keys. See crbug.com/893480."
-[PASS] secondary mouse button down should move caret, but its button up shouldn't move caret
 Harness: the test ran to completion.
 

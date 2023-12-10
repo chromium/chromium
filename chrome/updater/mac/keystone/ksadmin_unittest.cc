@@ -211,7 +211,7 @@ TEST(KSAdminTest, Register) {
       base::Thread::Options(base::MessagePumpType::IO, 0));
   std::string out;
   wait_thread.task_runner()->PostTaskAndReply(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
+      FROM_HERE, base::BindLambdaForTesting([&] {
         EXPECT_EQ(
             RunKSAdmin(&out, {"--register", "--version", "1.2.3.4", "--xcpath",
                               "/xc_path", "--tag-key", "tag_key", "--tag-path",

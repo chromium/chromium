@@ -96,10 +96,6 @@ mojom_component("tokens") {
           cpp = "::blink::ExecutionContextToken"
         },
         {
-          mojom = "blink.mojom.PortalToken"
-          cpp = "::blink::PortalToken"
-        },
-        {
           mojom = "blink.mojom.V8ContextToken"
           cpp = "::blink::V8ContextToken"
         },

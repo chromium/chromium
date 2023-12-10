@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -75,7 +75,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   ConvertOpCallback convert_op_callback;
-  absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
+  std::optional<bool> save_layer_alpha_should_preserve_lcd_text;
   bool is_analyzing = false;
 };
 
@@ -373,13 +373,13 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // required for an MSAA sample count for raster.
   int num_slow_paths_up_to_min_for_MSAA_ = 0;
 
-  bool has_non_aa_paint_ : 1;
-  bool has_discardable_images_ : 1;
-  bool has_draw_ops_ : 1;
-  bool has_draw_text_ops_ : 1;
-  bool has_save_layer_ops_ : 1;
-  bool has_save_layer_alpha_ops_ : 1;
-  bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1;
+  bool has_non_aa_paint_ : 1 = false;
+  bool has_discardable_images_ : 1 = false;
+  bool has_draw_ops_ : 1 = false;
+  bool has_draw_text_ops_ : 1 = false;
+  bool has_save_layer_ops_ : 1 = false;
+  bool has_save_layer_alpha_ops_ : 1 = false;
+  bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1 = false;
 };
 
 }  // namespace cc

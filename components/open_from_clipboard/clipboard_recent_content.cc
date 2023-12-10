@@ -37,7 +37,11 @@ void ClipboardRecentContent::SetInstance(
 
 // static
 base::TimeDelta ClipboardRecentContent::MaximumAgeOfClipboard() {
+#if BUILDFLAG(IS_ANDROID)
+  int default_maximum_age = base::Minutes(3).InSeconds();
+#else
   int default_maximum_age = base::Minutes(10).InSeconds();
+#endif  // BUILDFLAG(IS_ANDROID)
   int value = base::GetFieldTrialParamByFeatureAsInt(
       kClipboardMaximumAge, kClipboardMaximumAgeParam, default_maximum_age);
   return base::Seconds(value);

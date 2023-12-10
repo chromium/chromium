@@ -55,15 +55,6 @@ public abstract class TabCreator {
      */
     public abstract Tab createFrozenTab(TabState state, int id, int index);
 
-    /*
-     * Creates a new tab which is detached from the tab model.
-     * @params type Information about where the tab was created from.
-     * @params boolean initializeRenderer whether to initialize renderer during WebContents creation
-     * or not.
-     */
-    public abstract @Nullable Tab buildDetachedSpareTab(
-            @TabLaunchType int type, boolean initializeRenderer);
-
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for
      * {@link #createNewTab} with the default {@link LoadUrlParams} and no parent tab.
@@ -83,8 +74,11 @@ public abstract class TabCreator {
      * @param url         URL to show in the Tab. (Needed only for asynchronous tab creation.)
      * @return            Whether a Tab was created successfully.
      */
-    public abstract boolean createTabWithWebContents(@Nullable Tab parent, WebContents webContents,
-            @TabLaunchType int type, @NonNull GURL url);
+    public abstract boolean createTabWithWebContents(
+            @Nullable Tab parent,
+            WebContents webContents,
+            @TabLaunchType int type,
+            @NonNull GURL url);
 
     /**
      * Creates a tab around the native web contents pointer.
@@ -98,22 +92,18 @@ public abstract class TabCreator {
         return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
     }
 
-    /**
-     * Creates a new tab and loads the NTP.
-     */
-    public final void launchNTP() {
-        launchNTP(TabLaunchType.FROM_CHROME_UI);
+    /** Creates a new tab and loads the NTP. */
+    public final void launchNtp() {
+        launchNtp(TabLaunchType.FROM_CHROME_UI);
     }
 
-    /**
-     * Creates a new tab and loads the NTP.
-     */
-    public final void launchNTP(@TabLaunchType int type) {
+    /** Creates a new tab and loads the NTP. */
+    public final void launchNtp(@TabLaunchType int type) {
         try {
-            TraceEvent.begin("TabCreator.launchNTP");
+            TraceEvent.begin("TabCreator.launchNtp");
             launchUrl(UrlConstants.NTP_URL, type);
         } finally {
-            TraceEvent.end("TabCreator.launchNTP");
+            TraceEvent.end("TabCreator.launchNtp");
         }
     }
 }

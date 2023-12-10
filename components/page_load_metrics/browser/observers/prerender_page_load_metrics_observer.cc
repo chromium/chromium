@@ -399,25 +399,24 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
 
   DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
 
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  if (!normalized_responsiveness_metrics.num_user_interactions) {
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
+  if (!responsiveness_metrics_normalization.num_user_interactions()) {
     return;
   }
 
-  const page_load_metrics::NormalizedInteractionLatencies& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
-
-  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
-      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
-          normalized_responsiveness_metrics.num_user_interactions,
-          max_event_durations.worst_ten_latencies);
+  base::TimeDelta high_percentile2_max_event_duration =
+      responsiveness_metrics_normalization.ApproximateHighPercentile()
+          .value()
+          .interaction_latency;
 
   UmaHistogramCustomTimes(
       internal::kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration,
-      max_event_durations.worst_latency, base::Milliseconds(1),
-      base::Seconds(60), 50);
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
+      base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::
           kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
@@ -425,18 +424,20 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
       base::Seconds(60), 50);
   base::UmaHistogramCounts1000(
       internal::kHistogramPrerenderNumInteractions,
-      normalized_responsiveness_metrics.num_user_interactions);
+      responsiveness_metrics_normalization.num_user_interactions());
 
   ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
   builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-      max_event_durations.worst_latency.InMilliseconds());
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency.InMilliseconds());
 
   builder
       .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
   builder.SetInteractiveTiming_NumInteractions(
       ukm::GetExponentialBucketMinForCounts1000(
-          normalized_responsiveness_metrics.num_user_interactions));
+          responsiveness_metrics_normalization.num_user_interactions()));
 
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -445,13 +446,17 @@ std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
     const std::string& histogram_name) const {
   DCHECK(trigger_type_.has_value());
   switch (trigger_type_.value()) {
-    case content::PrerenderTriggerType::kSpeculationRule:
+    case content::PreloadingTriggerType::kSpeculationRule:
       DCHECK(embedder_histogram_suffix_.empty());
       return histogram_name + ".SpeculationRule";
-    case content::PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case content::PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       DCHECK(embedder_histogram_suffix_.empty());
       return histogram_name + ".SpeculationRuleFromIsolatedWorld";
-    case content::PrerenderTriggerType::kEmbedder:
+    case content::PreloadingTriggerType::
+        kSpeculationRuleFromAutoSpeculationRules:
+      DCHECK(embedder_histogram_suffix_.empty());
+      return histogram_name + ".SpeculationRuleFromAutoSpeculationRules";
+    case content::PreloadingTriggerType::kEmbedder:
       DCHECK(!embedder_histogram_suffix_.empty());
       return histogram_name + ".Embedder_" + embedder_histogram_suffix_;
   }

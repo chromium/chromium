@@ -5,16 +5,17 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+# Empty group for package discovery.
+group("fuzzer") {
+}
+
 static_library("fuzzer_support") {
   sources = [
-    "data_accessor.cc",
-    "data_accessor.h",
-    "form_data_producer.cc",
-    "form_data_producer.h",
+    "form_predictions_producer.cc",
+    "form_predictions_producer.h",
   ]
 
   deps = [
-    "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser/form_parsing",
@@ -42,29 +43,6 @@ static_library("fuzzer_support_proto") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "data_accessor_unittest.cc" ]
-
-  deps = [
-    ":fuzzer_support",
-    "//base",
-    "//testing/gtest",
-  ]
-}
-
-# TODO(crbug.com/845426): There are currently four fuzzers, all combinations of
-# two binary parameters. The first parameter is whether the input data for the
-# fuzzed code is prepared directly from the raw fuzzing string, or from a
-# protobuf description. The second parameter is whether the fuzzed code is the
-# iOS-specific FormData parser, or the generic one. Ultimately, there will be
-# only the generic one, but currently it is under development, so both parsers
-# are used (and need to be fuzzed). The iOS parser is older and its fuzzer's
-# name did not hint at the "iOS" restriction. It is better to keep that name
-# the same, because the security team watches statistics of the fuzzers
-# (https://crbug.com/828705#c11) and renaming causes confusion. So instead, the
-# new fuzzer has the "_generic" suffix on its target name.
-
 fuzzer_test("password_manager_form_data_parser_fuzzer") {
   sources = [ "form_data_parser_fuzzer.cc" ]
 
@@ -73,6 +51,7 @@ fuzzer_test("password_manager_form_data_parser_fuzzer") {
     "//base",
     "//base:i18n",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:fuzzer_support",
     "//components/password_manager/core/browser/form_parsing",
   ]
 

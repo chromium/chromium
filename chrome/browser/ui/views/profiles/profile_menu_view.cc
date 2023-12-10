@@ -190,7 +190,7 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
                : ColoredImageForMenu(kSyncPausedCircleIcon, ui::kColorIcon);
   }
 
-  absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
+  std::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
   if (!error) {
     return features::IsChromeRefresh2023()
                ? ColoredImageForMenu(kSyncChromeRefreshIcon,
@@ -490,7 +490,7 @@ void ProfileMenuView::BuildIdentity() {
   }
 
   std::u16string profile_name;
-  absl::optional<EditButtonParams> edit_button_params;
+  std::optional<EditButtonParams> edit_button_params;
 // Profile names are not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   profile_name = profile_attributes->GetLocalProfileName();
@@ -556,7 +556,7 @@ void ProfileMenuView::BuildGuestIdentity() {
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/absl::nullopt, profiles::GetGuestAvatar(), menu_title_,
+      /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(), menu_title_,
       menu_subtitle_, header_art_icon);
 }
 
@@ -599,7 +599,7 @@ void ProfileMenuView::BuildSyncInfo() {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
-  const absl::optional<AvatarSyncErrorType> error =
+  const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile);
   if (error) {
     BuildSyncInfoWithCallToAction(

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_action_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "url/gurl.h"
 
@@ -74,14 +75,23 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kFirstRunShareClicked);
+
   [self.delegate passwordSharingFirstRunCoordinatorDidAccept:self];
 }
 
 - (void)confirmationAlertSecondaryAction {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kFirstRunCancelClicked);
+
   [self.delegate passwordSharingFirstRunCoordinatorWasDismissed:self];
 }
 
 - (void)learnMoreLinkWasTapped {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kFirstRunLearnMoreClicked);
+
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand

@@ -198,12 +198,12 @@ TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   // Enables mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
   // Disables mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
@@ -238,7 +238,7 @@ TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
   dst_ids.emplace_back(second_id);
   display_manager()->SetMirrorMode(
       display::MirrorMode::kMixed,
-      absl::make_optional<display::MixedMirrorModeParams>(primary_id, dst_ids));
+      std::make_optional<display::MixedMirrorModeParams>(primary_id, dst_ids));
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_TRUE(display_manager()->mixed_mirror_mode_params());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
@@ -246,7 +246,7 @@ TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
   EXPECT_EQ(gfx::Rect(502, 0, 400, 200), w3->GetBoundsInScreen());
 
   // Turn off mixed mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_FALSE(display_manager()->mixed_mirror_mode_params());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());

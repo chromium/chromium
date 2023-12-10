@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <compare>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -73,6 +74,9 @@ using FieldPropertiesMask = std::underlying_type_t<FieldPropertiesFlags>;
 // For the HTML snippet |<option value="US">United States</option>|, the
 // value is "US" and the contents is "United States".
 struct SelectOption {
+  friend bool operator==(const SelectOption& lhs,
+                         const SelectOption& rhs) = default;
+
   std::u16string value;
   std::u16string content;
 };
@@ -81,11 +85,16 @@ struct SelectOption {
 class Section {
  public:
   struct Autocomplete {
+    friend auto operator<=>(const Autocomplete& lhs,
+                            const Autocomplete& rhs) = default;
+    friend bool operator==(const Autocomplete& lhs,
+                           const Autocomplete& rhs) = default;
+
     std::string section;
     HtmlFieldMode mode = HtmlFieldMode::kNone;
   };
 
-  using Default = base::StrongAlias<struct DefaultTag, absl::monostate>;
+  using Default = absl::monostate;
 
   struct FieldIdentifier {
     FieldIdentifier() = default;
@@ -96,9 +105,10 @@ class Section {
           local_frame_id(local_frame_id),
           field_renderer_id(field_renderer_id) {}
 
-    friend bool operator==(const FieldIdentifier& a, const FieldIdentifier& b);
-    friend bool operator!=(const FieldIdentifier& a, const FieldIdentifier& b);
-    friend bool operator<(const FieldIdentifier& a, const FieldIdentifier& b);
+    friend auto operator<=>(const FieldIdentifier& lhs,
+                            const FieldIdentifier& rhs) = default;
+    friend bool operator==(const FieldIdentifier& lhs,
+                           const FieldIdentifier& rhs) = default;
 
     std::string field_name;
     size_t local_frame_id;
@@ -114,9 +124,12 @@ class Section {
   Section(const Section& section);
   ~Section();
 
-  friend bool operator==(const Section& a, const Section& b);
-  friend bool operator!=(const Section& a, const Section& b);
-  friend bool operator<(const Section& a, const Section& b);
+  // `absl::variant` does not implement `operator<=>` - therefore the ordering
+  // needs to be specified manually. Once `absl::variant` is `std::variant`,
+  // this return type can become `auto`.
+  friend std::strong_ordering operator<=>(const Section& lhs,
+                                          const Section& rhs) = default;
+  friend bool operator==(const Section& lhs, const Section& rhs) = default;
   explicit operator bool() const;
 
   bool is_from_autocomplete() const;
@@ -243,11 +256,6 @@ struct FormFieldData {
   bool HadFocus() const;
   bool WasPasswordAutofilled() const;
 
-  // Returns the currently selected text. Returns the empty string if
-  // `selection_start` and/or `selection_end` are out of bounds.
-  std::u16string GetSelection() const;
-  std::u16string_view GetSelectionAsStringView() const;
-
   // NOTE: Update `SameFieldAs()` and `FormFieldDataAndroid::SimilarFieldAs()`
   // if needed when adding new a member.
 
@@ -261,15 +269,21 @@ struct FormFieldData {
   std::u16string id_attribute;
   std::u16string name_attribute;
   std::u16string label;
+
+  // The form control element's value or the contenteditable's text content,
+  // depending on the `form_control_type`.
+  // Truncated at `kMaxStringLength`.
+  // TODO(crbug.com/1501362): Extract the value of contenteditables on iOS.
   std::u16string value;
-  // The range within `value` that is selected. `selection_start` points at the
-  // first selected character, `selection_end` points after the last selected
-  // character. That is, if nothing is selected, `selection_start` and
-  // `selection_end` are identical and represent the cursor position.
-  // Use GetSelection() or GetSelectionAsStringView() to safely get the selected
-  // substring of `value`.
-  uint32_t selection_start = 0;
-  uint32_t selection_end = 0;
+
+  // The selected text, or the empty string if no text is selected.
+  // Truncated at `50 * kMaxStringLength`.
+  // This is not necessarily a substring of `value` because both strings are
+  // truncated, and because for rich-text contenteditables the selection and
+  // text content differ in whitespace.
+  // TODO(crbug.com/1501362): Extract on iOS.
+  std::u16string selected_text;
+
   FormControlType form_control_type = FormControlType::kInputText;
   std::string autocomplete_attribute;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete;
@@ -349,8 +363,8 @@ struct FormFieldData {
   // serialised for storage.
   bool is_enabled = false;
   bool is_readonly = false;
-  // Contains value that was either manually typed or autofilled on user
-  // trigger.
+  // Contains password, username or credit card number value that was either
+  // manually typed or autofilled on user trigger into a text-mode input field.
   std::u16string user_input;
 
   // The options of a select box.

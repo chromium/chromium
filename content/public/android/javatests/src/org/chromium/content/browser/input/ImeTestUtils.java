@@ -11,9 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Utilities for testing IME (input method editor).
- */
+/** Utilities for testing IME (input method editor). */
 public class ImeTestUtils {
     private static final long MAX_WAIT_TIME_MILLIS = 5000;
 

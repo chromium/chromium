@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 
 #import <memory>
+#import <optional>
 #import <utility>
 
 #import "base/notreached.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 BROWSER_USER_DATA_KEY_IMPL(LiveTabContextBrowserAgent)
 
@@ -77,10 +77,10 @@ LiveTabContextBrowserAgent::GetExtraDataForWindow() const {
   return std::map<std::string, std::string>();
 }
 
-absl::optional<tab_groups::TabGroupId>
+std::optional<tab_groups::TabGroupId>
 LiveTabContextBrowserAgent::GetTabGroupForTab(int index) const {
   // Not supported by iOS.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const tab_groups::TabGroupVisualData*
@@ -123,7 +123,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
@@ -143,7 +143,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
 
 sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,

@@ -63,6 +63,7 @@ class BatteryNotificationTest : public AshTestBase {
   }
 
   void TearDown() override {
+    OverrideIsBatterySaverAllowedForTesting(absl::nullopt);
     battery_notification_.reset();
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
@@ -98,7 +99,7 @@ class BatteryNotificationTest : public AshTestBase {
       bool expected_bsm_state_after_click) {
     auto VerifyBatterySaverModeState =
         [](base::RunLoop* run_loop, bool active,
-           absl::optional<power_manager::BatterySaverModeState> state) {
+           std::optional<power_manager::BatterySaverModeState> state) {
           ASSERT_TRUE(state);
           EXPECT_EQ(state->enabled(), active);
           run_loop->Quit();
@@ -119,7 +120,7 @@ class BatteryNotificationTest : public AshTestBase {
 
     // Click the button to turn off/on battery saver mode depending on
     // NotificationState.
-    notification->delegate()->Click(0, absl::nullopt);
+    notification->delegate()->Click(0, std::nullopt);
 
     // Test that notification is dismissed after button is pressed.
     EXPECT_EQ(GetBatteryNotification(), nullptr);
@@ -157,16 +158,6 @@ class BatteryNotificationTest : public AshTestBase {
     EXPECT_EQ(values.expected_button_size, buttons.size());
     EXPECT_EQ(values.expected_button_title,
               buttons.size() != 0 ? buttons[0].title : u"");
-  }
-
-  void SetBatterySaverFeature(bool enabled) {
-    scoped_feature_list_.reset();
-    if (enabled) {
-      scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
-          features::kBatterySaver);
-    } else {
-      scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    }
   }
 
   void SetNotificationStateForTesting(
@@ -250,7 +241,7 @@ class BatteryNotificationTest : public AshTestBase {
 // Keep test for backwards compatibility for time-based notifications.
 TEST_F(BatteryNotificationTest, LowPowerNotification) {
   // Disable Battery Saver feature to test original notification.
-  SetBatterySaverFeature(false);
+  OverrideIsBatterySaverAllowedForTesting(false);
 
   // Set the rounded value matches the low power threshold, percentage here is
   // arbitrary.

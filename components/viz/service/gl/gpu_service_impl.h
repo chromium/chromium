@@ -517,6 +517,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   void RemoveGmbClient(int client_id);
 
+  std::string GetShaderPrefixKey();
+
   gpu::webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory() {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
     return dawn_caching_interface_factory_.get();
@@ -631,6 +633,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   base::ProcessId host_process_id_ = base::kNullProcessId;
 
   base::RepeatingClosure wake_up_closure_;
+
+  std::string shader_prefix_key_;
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};

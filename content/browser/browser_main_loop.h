@@ -22,18 +22,12 @@
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/ozone_buildflags.h"
 
 #if defined(USE_AURA)
 namespace aura {
 class Env;
 }
-#endif
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/buildflags.h"  // nogncheck
-#if BUILDFLAG(OZONE_PLATFORM_X11)
-#define USE_OZONE_PLATFORM_X11
-#endif
 #endif
 
 namespace base {

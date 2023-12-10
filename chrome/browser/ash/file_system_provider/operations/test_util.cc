@@ -21,7 +21,7 @@ LoggingDispatchEventImpl::~LoggingDispatchEventImpl() = default;
 
 bool LoggingDispatchEventImpl::DispatchRequest(
     int request_id,
-    absl::optional<std::string> file_system_id,
+    std::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
   events_.push_back(std::move(event));
   return dispatch_reply_;
@@ -29,7 +29,7 @@ bool LoggingDispatchEventImpl::DispatchRequest(
 
 void LoggingDispatchEventImpl::CancelRequest(
     int request_id,
-    absl::optional<std::string> file_system_id) {}
+    std::optional<std::string> file_system_id) {}
 
 void LogStatusCallback(StatusCallbackLog* log, base::File::Error result) {
   log->push_back(result);

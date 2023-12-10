@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Forkort denne tekst til <ph name="MAX_CHARACTERS" /> tegn eller færre (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="2247351761944213033">Uge <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="2393030564806080191">Hexadecimal farveværdi</translation>
 <translation id="2398813069815436052">dialogboksen er åbnet.</translation>
 <translation id="245932805758469625">antal sekunder tilbage af videoen</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="383465348367842624">Den del, der kommer før "<ph name="ATSIGN" />", må ikke indeholde "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Afslut fuld skærm</translation>
+<translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4103419683916926126">Millisekunder</translation>
 <translation id="4201051445878709314">Vis den foregående måned</translation>
 <translation id="4360991593054037559">Angiv en gyldig værdi. De to nærmeste gyldige værdier er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="4664250907885839816">Den del, der kommer efter "<ph name="ATSIGN" />", må ikke indeholde symbolet "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Afspiller i integreret billede</translation>
 <translation id="4748357248530471599">skift fra skærmhak til fuld skærm</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">download medier</translation>
 <translation id="698788488269350478">udvidet.</translation>
 <translation id="6989848892321993519">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket ét tegn).</translation>
+<translation id="7080893216867146095">Deling af lokation er tilladt</translation>
 <translation id="709897737746224366">Find et match til det anmodede format.</translation>
 <translation id="7102274145889307184">aktuel lokation</translation>
 <translation id="7263440858009898357">Vælg et punkt på listen.</translation>

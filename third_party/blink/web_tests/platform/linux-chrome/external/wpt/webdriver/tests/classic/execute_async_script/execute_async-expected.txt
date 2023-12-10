@@ -1,19 +1,4 @@
 This is a wdspec test.
-[PASS] test_null_parameter_value
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   assert 200 == 404
-[PASS] test_primitive_serialization[null-None]
-[PASS] test_primitive_serialization[undefined-None]
-[PASS] test_primitive_serialization[true-True]
-[PASS] test_primitive_serialization[false-False]
-[PASS] test_primitive_serialization[23-23]
-[PASS] test_primitive_serialization['foo'-foo]
-[PASS] test_primitive_serialization[String.fromCharCode(0)-\x00]
-[PASS] test_abort_by_user_prompt[alert]
-[PASS] test_abort_by_user_prompt[confirm]
-[PASS] test_abort_by_user_prompt[prompt]
-[PASS] test_abort_by_user_prompt_twice[alert]
-[PASS] test_abort_by_user_prompt_twice[confirm]
-[PASS] test_abort_by_user_prompt_twice[prompt]
 Harness: the test ran to completion.

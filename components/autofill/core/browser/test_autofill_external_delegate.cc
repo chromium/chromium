@@ -31,34 +31,35 @@ void TestAutofillExternalDelegate::OnPopupHidden() {
   run_loop_.Quit();
 }
 
-void TestAutofillExternalDelegate::OnQuery(const FormData& form,
-                                           const FormFieldData& field,
-                                           const gfx::RectF& bounds) {
+void TestAutofillExternalDelegate::OnQuery(
+    const FormData& form,
+    const FormFieldData& field,
+    const gfx::RectF& bounds,
+    AutofillSuggestionTriggerSource trigger_source) {
   on_query_seen_ = true;
   on_suggestions_returned_seen_ = false;
+  trigger_source_ = trigger_source;
 
   // If necessary, call the superclass's OnQuery to set up its other fields
   // properly.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnQuery(form, field, bounds);
+    AutofillExternalDelegate::OnQuery(form, field, bounds, trigger_source);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
     const std::vector<Suggestion>& suggestions,
-    AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
-  trigger_source_ = trigger_source;
   is_all_server_suggestions_ = is_all_server_suggestions;
 
   // If necessary, call the superclass's OnSuggestionsReturned in order to
   // execute logic relating to showing the popup or not.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnSuggestionsReturned(
-        field_id, suggestions, trigger_source, is_all_server_suggestions);
+    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
+                                                    is_all_server_suggestions);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {
@@ -106,6 +107,13 @@ void TestAutofillExternalDelegate::CheckSuggestions(
   ASSERT_EQ(expected_num_suggestions, suggestions_.size());
 }
 
+void TestAutofillExternalDelegate::CheckSuggestionsNotReturned(
+    FieldGlobalId field_id) {
+  if (on_suggestions_returned_seen_) {
+    EXPECT_NE(field_id, field_id_);
+  }
+}
+
 void TestAutofillExternalDelegate::CheckNoSuggestions(FieldGlobalId field_id) {
   CheckSuggestions(field_id, 0, nullptr);
 }
@@ -118,6 +126,11 @@ void TestAutofillExternalDelegate::CheckSuggestionCount(
 
   EXPECT_EQ(field_id, field_id_);
   ASSERT_EQ(expected_num_suggestions, suggestions_.size());
+}
+
+const std::vector<Suggestion>& TestAutofillExternalDelegate::suggestions()
+    const {
+  return suggestions_;
 }
 
 bool TestAutofillExternalDelegate::on_query_seen() const {

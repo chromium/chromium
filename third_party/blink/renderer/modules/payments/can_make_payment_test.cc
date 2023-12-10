@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -21,6 +22,8 @@ using payments::mojom::blink::PaymentErrorReason;
 using payments::mojom::blink::PaymentRequestClient;
 
 TEST(HasEnrolledInstrumentTest, RejectPromiseOnUserCancel) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -35,6 +38,8 @@ TEST(HasEnrolledInstrumentTest, RejectPromiseOnUserCancel) {
 }
 
 TEST(HasEnrolledInstrumentTest, RejectPromiseOnUnknownError) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -49,6 +54,8 @@ TEST(HasEnrolledInstrumentTest, RejectPromiseOnUnknownError) {
 }
 
 TEST(HasEnrolledInstrumentTest, RejectDuplicateRequest) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -61,6 +68,8 @@ TEST(HasEnrolledInstrumentTest, RejectDuplicateRequest) {
 }
 
 TEST(HasEnrolledInstrumentTest, RejectQueryQuotaExceeded) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -75,6 +84,8 @@ TEST(HasEnrolledInstrumentTest, RejectQueryQuotaExceeded) {
 }
 
 TEST(HasEnrolledInstrumentTest, ReturnHasNoEnrolledInstrument) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -92,6 +103,8 @@ TEST(HasEnrolledInstrumentTest, ReturnHasNoEnrolledInstrument) {
 }
 
 TEST(HasEnrolledInstrumentTest, ReturnHasEnrolledInstrument) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -109,6 +122,8 @@ TEST(HasEnrolledInstrumentTest, ReturnHasEnrolledInstrument) {
 }
 
 TEST(CanMakePaymentTest, RejectPromiseOnUserCancel) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -123,6 +138,8 @@ TEST(CanMakePaymentTest, RejectPromiseOnUserCancel) {
 }
 
 TEST(CanMakePaymentTest, RejectPromiseOnUnknownError) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
 
   MockFunctionScope funcs(scope.GetScriptState());
@@ -138,6 +155,8 @@ TEST(CanMakePaymentTest, RejectPromiseOnUnknownError) {
 }
 
 TEST(CanMakePaymentTest, RejectDuplicateRequest) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -150,6 +169,8 @@ TEST(CanMakePaymentTest, RejectDuplicateRequest) {
 }
 
 TEST(CanMakePaymentTest, ReturnCannotMakePayment) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -167,6 +188,8 @@ TEST(CanMakePaymentTest, ReturnCannotMakePayment) {
 }
 
 TEST(CanMakePaymentTest, ReturnCanMakePayment) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(

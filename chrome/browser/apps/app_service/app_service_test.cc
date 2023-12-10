@@ -15,6 +15,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "components/services/app_service/public/cpp/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
@@ -26,6 +27,7 @@ AppServiceTest::~AppServiceTest() = default;
 void AppServiceTest::SetUp(Profile* profile) {
   app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile);
   app_service_proxy_->ReinitializeForTesting(profile);
+  WaitForAppServiceProxyReady(app_service_proxy_);
 }
 
 void AppServiceTest::UninstallAllApps(Profile* profile) {
@@ -67,6 +69,19 @@ bool AppServiceTest::AreIconImageEqual(const gfx::ImageSkia& src,
                                        const gfx::ImageSkia& dst) {
   return gfx::test::AreBitmapsEqual(src.GetRepresentation(1.0f).GetBitmap(),
                                     dst.GetRepresentation(1.0f).GetBitmap());
+}
+
+void WaitForAppServiceProxyReady(AppServiceProxy* proxy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    return;
+  }
+
+  base::test::TestFuture<void> result;
+  CHECK(proxy->OnReady());
+  proxy->OnReady()->Post(FROM_HERE, result.GetCallback());
+  CHECK(result.Wait());
+#endif
 }
 
 }  // namespace apps

@@ -60,7 +60,7 @@ class PriceInsightsIconView : public PageActionIconView {
   void MaybeShowPageActionLabel();
 
   // Gets the label type from the commerce tab helper. This is a proxy method
-  // for ShoppingListUiTabHelper::GetPriceInsightsIconLabelTypeForPage.
+  // for CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage.
   PriceInsightsIconView::PriceInsightsIconLabelType GetLabelTypeForPage();
 
   // Update the label for the page action based on the last known label type.
@@ -79,10 +79,6 @@ class PriceInsightsIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
-
-  // Last shown label type.
-  PriceInsightsIconView::PriceInsightsIconLabelType last_shown_label_type_ =
-      PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_

@@ -84,10 +84,6 @@ bool AutofillDriverIOS::CanShowAutofillUi() const {
   return true;
 }
 
-bool AutofillDriverIOS::RendererIsAvailable() {
-  return true;
-}
-
 std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence,

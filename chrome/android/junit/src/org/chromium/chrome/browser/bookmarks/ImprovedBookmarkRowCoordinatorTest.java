@@ -11,8 +11,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -38,6 +40,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
@@ -136,7 +141,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
                 model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
     }
 
-
     @Test
     public void testShoppingCoordinator() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
@@ -185,6 +189,28 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertEquals(
                 "Folder A No bookmarks",
                 model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    public void testFolder_compactConversionString() {
+        // Need to be careful when formatting user generating content, https://crbug.com/1509959.
+        BookmarkId folderId = new BookmarkId(100, BookmarkType.NORMAL);
+        BookmarkItem folder =
+                new BookmarkItem(
+                        folderId,
+                        "Folder %M %d %s",
+                        null,
+                        true,
+                        MOBILE_BOOKMARK_ID,
+                        true,
+                        false,
+                        0,
+                        false,
+                        0);
+        when(mBookmarkModel.getBookmarkById(folderId)).thenReturn(folder);
+        PropertyModel model = mCoordinator.createBasePropertyModel(folderId);
+
+        assertEquals("Folder %M %d %s (0)", model.get(ImprovedBookmarkRowProperties.TITLE));
     }
 
     @Test

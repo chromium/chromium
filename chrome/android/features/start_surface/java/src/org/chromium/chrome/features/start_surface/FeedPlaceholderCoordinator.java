@@ -31,16 +31,20 @@ public class FeedPlaceholderCoordinator {
     }
 
     private void setUpPlaceholderView() {
-        mFeedPlaceholderView = (FeedPlaceholderLayout) LayoutInflater.from(mContext).inflate(
-                R.layout.feed_placeholder_layout, null, false);
+        mFeedPlaceholderView =
+                (FeedPlaceholderLayout)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.feed_placeholder_layout, null, false);
         // Header blank size should be consistent with
         // R.layout.new_tab_page_snippets_expandable_header_with_menu.
-        mFeedPlaceholderView.setBlankHeaderHeight(mContext.getResources().getDimensionPixelSize(
-                R.dimen.snippets_article_header_menu_size));
+        mFeedPlaceholderView.setBlankHeaderHeight(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.snippets_article_header_menu_size));
         mParentView.addView(mFeedPlaceholderView);
         MarginLayoutParams lp = (MarginLayoutParams) mFeedPlaceholderView.getLayoutParams();
-        int contentPadding = mContext.getResources().getDimensionPixelSize(
-                R.dimen.content_suggestions_card_modern_padding);
+        int contentPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.content_suggestions_card_modern_padding);
         lp.setMargins(contentPadding, 0, contentPadding, 0);
         mFeedPlaceholderView.requestLayout();
     }
@@ -57,7 +61,9 @@ public class FeedPlaceholderCoordinator {
         long layoutInflationCompleteMs = mFeedPlaceholderView.getLayoutInflationCompleteMs();
         assert layoutInflationCompleteMs >= activityCreationTimeMs;
 
-        StartSurfaceConfiguration.recordHistogram(FEEDS_PLACEHOLDER_SHOWN_TIME_UMA,
-                layoutInflationCompleteMs - activityCreationTimeMs, true);
+        StartSurfaceConfiguration.recordHistogram(
+                FEEDS_PLACEHOLDER_SHOWN_TIME_UMA,
+                layoutInflationCompleteMs - activityCreationTimeMs,
+                true);
     }
 }

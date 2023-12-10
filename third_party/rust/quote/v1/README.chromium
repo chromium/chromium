@@ -5,5 +5,5 @@ Version: 1.0.33
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: 
+License File: //third_party/rust/chromium_crates_io/vendor/quote-1.0.33/LICENSE-APACHE
 Revision: 8beec4c311a196d0adc9fb70188226d9c1f8bf1c

@@ -71,19 +71,16 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
       kAshOsFeedbackUntrustedResources, kAshOsFeedbackUntrustedResourcesSize));
   untrusted_source->AddResourcePath("help_content.js",
                                     IDR_ASH_OS_FEEDBACK_HELP_CONTENT_JS);
+  untrusted_source->AddResourcePath("help_content.html.js",
+                                    IDR_ASH_OS_FEEDBACK_HELP_CONTENT_HTML_JS);
   untrusted_source->AddResourcePath("feedback_types.js",
                                     IDR_ASH_OS_FEEDBACK_FEEDBACK_TYPES_JS);
   untrusted_source->AddResourcePath(
-      "file_path.mojom-lite.js",
-      IDR_ASH_OS_FEEDBACK_MOJO_PUBLIC_MOJOM_BASE_FILE_PATH_MOJOM_LITE_JS);
+      "help_resources_icons.html.js",
+      IDR_ASH_OS_FEEDBACK_HELP_RESOURCES_ICONS_HTML_JS);
   untrusted_source->AddResourcePath(
-      "safe_base_name.mojom-lite.js",
-      IDR_ASH_OS_FEEDBACK_MOJO_PUBLIC_MOJOM_BASE_SAFE_BASE_NAME_MOJOM_LITE_JS);
-  untrusted_source->AddResourcePath(
-      "help_resources_icons.js", IDR_ASH_OS_FEEDBACK_HELP_RESOURCES_ICONS_JS);
-  untrusted_source->AddResourcePath(
-      "mojom/os_feedback_ui.mojom-lite.js",
-      IDR_ASH_OS_FEEDBACK_MOJOM_OS_FEEDBACK_UI_MOJOM_LITE_JS);
+      "os_feedback_ui.mojom-webui.js",
+      IDR_ASH_OS_FEEDBACK_OS_FEEDBACK_UI_MOJOM_WEBUI_JS);
 
   untrusted_source->SetDefaultResource(
       IDR_ASH_OS_FEEDBACK_UNTRUSTED_UNTRUSTED_INDEX_HTML);

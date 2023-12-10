@@ -20,8 +20,16 @@
   h2 {
     padding-inline-start: var(--cr-section-padding);
   }
+
+  #accessStatusRow[actionable]:hover {
+    background-color: var(--cr-hover-background-color);
+  }
 </style>
-<div class="settings-box first">
+<div
+    id="accessStatusRow"
+    class="settings-box first"
+    actionable$="[[!shouldDisableMicrophoneToggle_]]"
+    on-click="onAccessStatusRowClick_">
   <div class="start settings-box-text" aria-hidden="true">
     <div id="onOffText" on$="[[prefs.ash.user.microphone_allowed.value]]">
       [[computeOnOffText_(prefs.ash.user.microphone_allowed.value)]]
@@ -34,7 +42,8 @@
     <cr-toggle
         id="microphoneToggle"
         checked="{{prefs.ash.user.microphone_allowed.value}}"
-        disabled="[[shouldDisableMicrophoneToggle_]]">
+        disabled="[[shouldDisableMicrophoneToggle_]]"
+        on-click="onMicrophoneToggleClick_">
     </cr-toggle>
   </div>
   <paper-tooltip

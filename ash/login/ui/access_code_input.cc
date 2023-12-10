@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -41,6 +42,9 @@ constexpr int kObscuredGlyphSpacingDp = 6;
 constexpr int kAccessCodeInputFieldWidthDp = 24;
 constexpr int kAccessCodeBetweenInputFieldsGapDp = 8;
 }  // namespace
+
+BEGIN_METADATA(AccessCodeInput)
+END_METADATA
 
 FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
                              OnEnter on_enter,
@@ -111,10 +115,10 @@ void FlexCodeInput::Backspace() {
   // This triggers ContentsChanged(), which calls |on_input_change_|.
 }
 
-absl::optional<std::string> FlexCodeInput::GetCode() const {
+std::optional<std::string> FlexCodeInput::GetCode() const {
   std::u16string code = code_field_->GetText();
   if (!code.length()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::UTF16ToUTF8(code);
 }
@@ -187,6 +191,9 @@ bool FlexCodeInput::HandleKeyEvent(views::Textfield* sender,
   return false;
 }
 
+BEGIN_METADATA(FlexCodeInput)
+END_METADATA
+
 AccessibleInputField::AccessibleInputField()
     : SystemTextfield(SystemTextfield::Type::kMedium) {}
 
@@ -218,6 +225,9 @@ void AccessibleInputField::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // We override NameFrom after this call.
   node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
+
+BEGIN_METADATA(AccessibleInputField)
+END_METADATA
 
 FixedLengthCodeInput::FixedLengthCodeInput(int length,
                                            OnInputChange on_input_change,
@@ -312,13 +322,13 @@ void FixedLengthCodeInput::Backspace() {
 }
 
 // Returns access code as string if all fields contain input.
-absl::optional<std::string> FixedLengthCodeInput::GetCode() const {
+std::optional<std::string> FixedLengthCodeInput::GetCode() const {
   std::string result;
   size_t length;
   for (auto* field : input_fields_) {
     length = field->GetText().length();
     if (!length) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     DCHECK_EQ(1u, length);
@@ -604,5 +614,8 @@ AccessibleInputField* FixedLengthCodeInput::ActiveField() const {
 const std::u16string& FixedLengthCodeInput::ActiveInput() const {
   return ActiveField()->GetText();
 }
+
+BEGIN_METADATA(FixedLengthCodeInput)
+END_METADATA
 
 }  // namespace ash

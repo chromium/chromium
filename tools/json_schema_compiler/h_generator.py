@@ -25,8 +25,6 @@ class _Generator(object):
     self._type_helper = cpp_type_generator
     self._generate_error_messages = namespace.compiler_options.get(
         'generate_error_messages', False)
-    self._modernised_enums = namespace.compiler_options.get(
-        'modernised_enums', False)
 
   def Generate(self):
     """Generates a Code object with the .h for a single namespace.
@@ -57,6 +55,7 @@ class _Generator(object):
       .Append()
       .Append('#include <map>')
       .Append('#include <memory>')
+      .Append('#include <optional>')
       .Append('#include <string>')
       .Append('#include <vector>')
       .Append()
@@ -152,8 +151,7 @@ class _Generator(object):
     """Generate a code object with the  declaration of a C++ enum.
     """
     c = Code()
-    c.Sblock('enum {enum_type} {name} {{'.format(
-      enum_type=('class' if self._modernised_enums else ''),
+    c.Sblock('enum class {name} {{'.format(
       name=enum_name))
 
     # Explicitly initialize kNone to 0, since we rely on default initialization
@@ -168,13 +166,8 @@ class _Generator(object):
       c.Append(current_enum_string + ',')
 
     # Adding kMaxValue, which is friendly to enumaration histogram macros.
-    if self._modernised_enums:
-      c.Append('kMaxValue = {last_key_value},'.format(
-                last_key_value=current_enum_string))
-    else:
-      c.Append('{last_key} = {last_key_value},'.format(
-          last_key=self._type_helper.GetEnumLastValue(type_),
-          last_key_value=current_enum_string))
+    c.Append('kMaxValue = {last_key_value},'.format(
+              last_key_value=current_enum_string))
 
     c.Eblock('};')
     return c
@@ -261,8 +254,8 @@ class _Generator(object):
         .Append('~%(classname)s();')
         .Append('%(classname)s(const %(classname)s&) = delete;')
         .Append('%(classname)s& operator=(const %(classname)s&) = delete;')
-        .Append('%(classname)s(%(classname)s&& rhs);')
-        .Append('%(classname)s& operator=(%(classname)s&& rhs);')
+        .Append('%(classname)s(%(classname)s&& rhs) noexcept;')
+        .Append('%(classname)s& operator=(%(classname)s&& rhs) noexcept;')
       )
 
       if type_.origin.from_manifest_keys:
@@ -292,14 +285,6 @@ class _Generator(object):
           .Comment('Creates a deep copy of %s.' % classname)
           .Append('%s Clone() const;' % classname)
         )
-        if is_toplevel:
-          (c.Append()
-            .Comment('Creates a %s object from a base::Value, or NULL on '
-                     'failure.' % classname)
-            .Append('static std::unique_ptr<%s> FromValueDeprecated(%s);' % (
-                classname, self._GenerateParams(('const base::Value& value',),
-                  error_as_ptr=True)))
-          )
 
         return_type = self._type_helper.GetOptionalReturnType(
             classname, support_errors=self._generate_error_messages)
@@ -412,13 +397,13 @@ class _Generator(object):
           'returning errors with `base::expected`.')
       )
 
-    (c.Append('static absl::optional<Params> Create(%s);' %
+    (c.Append('static std::optional<Params> Create(%s);' %
                 self._GenerateParams(
                     ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
-      .Append('Params(Params&& rhs);')
-      .Append('Params& operator=(Params&& rhs);')
+      .Append('Params(Params&& rhs) noexcept;')
+      .Append('Params& operator=(Params&& rhs) noexcept;')
       .Append('~Params();')
       .Append()
       .Cblock(self._GenerateTypes(p.type_ for p in function.params))
@@ -539,11 +524,10 @@ class _Generator(object):
     return c
 
   def _GenerateParams(
-        self, params, generate_error_messages=None, error_as_ptr=None):
+        self, params, generate_error_messages=None):
     """Builds the parameter list for a function, given an array of parameters.
     If |generate_error_messages| is specified, it overrides
     |self._generate_error_messages|.
-    |error_as_ptr| is used to indicate a pointer argument should be preserved.
     """
     # |error| is populated with warnings and/or errors found during parsing.
     # |error| being set does not necessarily imply failure and may be
@@ -553,11 +537,5 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      if error_as_ptr:
-        # TODO(crbug.com/1415174): error_as_ptr argument should eventually be
-        # removed, once all sites making use of FromValueDeprecated get
-        # migrated, and FromValueDeprecated is removed.
-        params += ('std::u16string* error',)
-      else:
-        params += ('std::u16string& error',)
+      params += ('std::u16string& error',)
     return ', '.join(str(p) for p in params)

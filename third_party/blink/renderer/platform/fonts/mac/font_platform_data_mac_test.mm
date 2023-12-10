@@ -8,6 +8,7 @@
 #include "base/apple/foundation_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
@@ -15,14 +16,18 @@
 namespace blink {
 
 namespace {
+
 constexpr SkFourByteTag kOpszTag = SkSetFourByteTag('o', 'p', 's', 'z');
 constexpr SkFourByteTag kWghtTag = SkSetFourByteTag('w', 'g', 'h', 't');
 
 sk_sp<SkTypeface> MakeSystemFontOfSize(float size) {
-  return SkMakeTypefaceFromCTFont(base::apple::NSToCFPtrCast(MatchNSFontFamily(
-      font_family_names::kSystemUi, 0, FontSelectionValue(400), size)));
+  return SkMakeTypefaceFromCTFont(MatchSystemUIFont(kNormalWeightValue,
+                                                    kNormalSlopeValue,
+                                                    kNormalWidthValue, size)
+                                      .release());
 }
-}
+
+}  // namespace
 
 TEST(FontPlatformDataMacTest, VariableOpticalSizingThreshold) {
   // Before macOS 10.15, the system font did not have variable optical sizing.

@@ -9,13 +9,13 @@
 namespace ukm {
 
 UkmEntryBuilder::UkmEntryBuilder(ukm::SourceId source_id,
-                                 base::StringPiece event_name)
+                                 std::string_view event_name)
     : ukm::internal::UkmEntryBuilderBase(source_id,
                                          base::HashMetricName(event_name)) {}
 
 UkmEntryBuilder::~UkmEntryBuilder() {}
 
-void UkmEntryBuilder::SetMetric(base::StringPiece metric_name, int64_t value) {
+void UkmEntryBuilder::SetMetric(std::string_view metric_name, int64_t value) {
   SetMetricInternal(base::HashMetricName(metric_name), value);
 }
 

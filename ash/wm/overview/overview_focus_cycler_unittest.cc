@@ -8,13 +8,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -28,7 +26,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -255,7 +252,7 @@ TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
 }
 
 // Tests three monitors where the grid becomes empty on one of the monitors.
-TEST_P(OverviewFocusCyclerTest, ThreeMonitor) {
+TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
   UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window3(
@@ -338,7 +335,8 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   const gfx::PointF start_point = item->target_bounds().CenterPoint();
   const gfx::PointF end_point(20.f, 20.f);
   GetOverviewSession()->InitiateDrag(item, start_point,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, end_point);
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
@@ -444,12 +442,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? desk_bar_view->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view->expanded_state_new_desk_button()
-                          ->GetInnerButton()),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
   // Tests that tabbing past the new desk button, we focus the save to a new
@@ -501,12 +494,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   // Tests that after the desks templates button (if the feature was enabled),
   // we get to the new desk button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? desk_bar_view->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view->expanded_state_new_desk_button()
-                          ->GetInnerButton()),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
 
   // Tests that after the new desk button comes the preview views and the desk
   // name views in reverse order.
@@ -573,12 +561,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
 
   // Check for the new desk button.
   SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? desk_bar_view->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view->expanded_state_new_desk_button()
-                          ->GetInnerButton()),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
@@ -633,12 +616,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? desk_bar_view1->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view1->expanded_state_new_desk_button()
-                          ->GetInnerButton()),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view1->new_desk_button(), GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
@@ -665,12 +643,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? desk_bar_view2->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view2->expanded_state_new_desk_button()
-                          ->GetInnerButton()),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view2->new_desk_button(), GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
@@ -697,12 +670,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? desk_bar_view3->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view3->expanded_state_new_desk_button()
-                          ->GetInnerButton()),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view3->new_desk_button(), GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
@@ -767,17 +735,9 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   EXPECT_EQ(1u, desks_controller->desks().size());
   EXPECT_NE(desk2, desks_controller->GetDeskAtIndex(0));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    // When Jellyroll is enabled, desks bar never goes back to zero state after
-    // it's initialized.
-    EXPECT_FALSE(desk_bar_view->IsZeroState());
-    EXPECT_FALSE(desk_bar_view->mini_views().empty());
-  } else {
-    // Go back to zero state since there is only a single desk and mini views
-    // are empty in zero state.
-    EXPECT_TRUE(desk_bar_view->IsZeroState());
-    EXPECT_TRUE(desk_bar_view->mini_views().empty());
-  }
+  // Desks bar never goes back to zero state after it's initialized.
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
+  EXPECT_FALSE(desk_bar_view->mini_views().empty());
 }
 
 TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
@@ -847,19 +807,9 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
   EXPECT_EQ(nullptr, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  if (is_jellyroll_enabled) {
-    EXPECT_FALSE(desk_bar_view->IsZeroState());
-  } else {
-    EXPECT_TRUE(desk_bar_view->IsZeroState());
-  }
-
-  EXPECT_EQ(is_jellyroll_enabled
-                ? desk_bar_view->mini_views()[0]->desk_preview()
-                : static_cast<OverviewFocusableView*>(
-                      desk_bar_view->zero_state_default_desk_button()),
+  // Desks bar never goes back to zero state after it's initialized.
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
+  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
 }
 
@@ -872,13 +822,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateCloseHighlightOnNewDeskButton) {
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desk_bar_view->IsZeroState());
-  const views::LabelButton* new_desk_button;
-  if (chromeos::features::IsJellyEnabled()) {
-    new_desk_button = desk_bar_view->new_desk_button();
-  } else {
-    new_desk_button =
-        desk_bar_view->expanded_state_new_desk_button()->GetInnerButton();
-  }
+  const views::LabelButton* new_desk_button = desk_bar_view->new_desk_button();
   const auto* desks_controller = DesksController::Get();
 
   auto check_name_view_at_index = [this, desks_controller](
@@ -921,47 +865,24 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
 
   // Remove one desk to enter zero state desks bar.
-  auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
-  event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->MoveMouseTo(
+      mini_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
-  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  event_generator->ClickLeftButton();
+  LeftClickOn(GetCloseDeskButtonForMiniView(mini_view));
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  if (is_jellyroll_enabled) {
-    ASSERT_FALSE(desks_bar_view->IsZeroState());
-  } else {
-    ASSERT_TRUE(desks_bar_view->IsZeroState());
-  }
+  // Desks bar never goes back to zero state after it's initialized.
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
 
   // Both zero state default desk button and zero state new desk button can be
   // focused in overview mode.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(is_jellyroll_enabled
-                ? desks_bar_view->mini_views()[0]->desk_preview()
-                : static_cast<OverviewFocusableView*>(
-                      desks_bar_view->zero_state_default_desk_button()),
+  EXPECT_EQ(desks_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(is_jellyroll_enabled
-                ? desks_bar_view->mini_views()[0]->desk_name_view()
-                : static_cast<OverviewFocusableView*>(
-                      desks_bar_view->zero_state_new_desk_button()),
+  EXPECT_EQ(desks_bar_view->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
 
-  // Trigger the zero state default desk button will focus on the default desk's
-  // name view.
-  if (!is_jellyroll_enabled) {
-    SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(desks_bar_view->zero_state_default_desk_button(),
-              GetHighlightedView());
-    SendKey(ui::VKEY_RETURN);
-  }
   EXPECT_EQ(desks_bar_view->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
   ToggleOverview();
@@ -976,11 +897,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(is_jellyroll_enabled
-                ? desks_bar_view->new_desk_button()
-                : static_cast<OverviewFocusableView*>(
-                      desks_bar_view->zero_state_new_desk_button()),
-            GetHighlightedView());
+  EXPECT_EQ(desks_bar_view->new_desk_button(), GetHighlightedView());
   SendKey(ui::VKEY_RETURN);
   EXPECT_EQ(desks_bar_view->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
@@ -1027,22 +944,14 @@ TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
             GetHighlightedView());
 
   // Remove one desk to have only one desk left.
-  auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
-  event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->MoveMouseTo(
+      mini_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
-  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  event_generator->ClickLeftButton();
+  LeftClickOn(GetCloseDeskButtonForMiniView(mini_view));
 
-  // When Jellyroll is enabled, desks bar never goes back to zero state after
-  // it's initialized.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    ASSERT_FALSE(desks_bar_view->IsZeroState());
-  } else {
-    ASSERT_TRUE(desks_bar_view->IsZeroState());
-  }
+  // Desks bar never goes back to zero state after it's initialized.
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
 
   // Try tabbing after removing the second desk triggers us to transition to
   // zero state desks bar. There should not be a crash.

@@ -5,14 +5,14 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_COMPRESSED_POINTER_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_COMPRESSED_POINTER_H_
 
+#include <bit>
 #include <climits>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
@@ -78,7 +78,7 @@ constexpr bool IsDecayedSame =
 class CompressedPointerBaseGlobal final {
  public:
   static constexpr size_t kUsefulBits =
-      base::bits::CountTrailingZeroBits(PartitionAddressSpace::CorePoolsSize());
+      std::countr_zero(PartitionAddressSpace::CorePoolsSize());
   static_assert(kUsefulBits >= sizeof(uint32_t) * CHAR_BIT);
   static constexpr size_t kBitsToShift =
       kUsefulBits - sizeof(uint32_t) * CHAR_BIT;

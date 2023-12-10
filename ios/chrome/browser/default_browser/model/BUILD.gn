@@ -17,11 +17,10 @@ source_set("utils") {
     "//components/feature_engagement/public",
     "//components/sync/service",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/signin/model:signin_util",
   ]
   public_deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]

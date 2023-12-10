@@ -11,9 +11,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Helper implementation of {@link TileProvider} for tests.
- */
+/** Helper implementation of {@link TileProvider} for tests. */
 public class TestTileProvider implements TileProvider {
     private List<QueryTile> mTiles = new ArrayList<>();
 
@@ -33,7 +31,11 @@ public class TestTileProvider implements TileProvider {
      * matching purposes.
      */
     public TestTileProvider(TileProvider realProvider) {
-        realProvider.getQueryTiles(null, tiles -> { mTiles = tiles; });
+        realProvider.getQueryTiles(
+                null,
+                tiles -> {
+                    mTiles = tiles;
+                });
     }
 
     /**
@@ -87,9 +89,15 @@ public class TestTileProvider implements TileProvider {
         List<QueryTile> children = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             String id = prefix + "_" + i;
-            children.add(new QueryTile(id + "_id", id + "_displayTitle", id + "_accessibilityText",
-                    id + "_queryText", new GURL[] {JUnitTestGURLs.EXAMPLE_URL}, null,
-                    buildTiles(id, levelsLeft - 1, count)));
+            children.add(
+                    new QueryTile(
+                            id + "_id",
+                            id + "_displayTitle",
+                            id + "_accessibilityText",
+                            id + "_queryText",
+                            new GURL[] {JUnitTestGURLs.EXAMPLE_URL},
+                            null,
+                            buildTiles(id, levelsLeft - 1, count)));
         }
 
         return children;

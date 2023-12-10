@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">Google Şifre Yöneticisi, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="1407843355326180937">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chrome'da oturum açın.</translation>
 <translation id="1436059927646026729">Chrome'daki en son sekmemi aç</translation>
+<translation id="1449241544691504574">Chrome'a yer işareti ekle</translation>
 <translation id="1462727070346936664">Chrome'dan en iyi şekilde yararlanmak için oturum açın.</translation>
-<translation id="1479202195792305274">Chrome, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="1491435845014430217">"Chrome'u Kapattığınızda Gizli Sekmeleri Kilitleyin" seçeneğini etkinleştirin.</translation>
 <translation id="1493827051843127077">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chrome'u varsayılan olarak ayarlayın</translation>
 <translation id="1504372625950710826">Chrome, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
@@ -33,10 +33,10 @@ Dikkate alınması gereken noktalar:
         Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="1682483655351012182">Chrome Verilerimi Senkronize Et</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Girilen URL'leri Chrome'daki yer işaretlerinize ekler.</translation>
 <translation id="1843217788865538014">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda otomatik olarak Chrome'u kullanın.</translation>
 <translation id="1917964099031477364">Bu hesap ve kaydedilmemiş tüm veriler, Chrome'un yanı sıra bu cihazdaki diğer Google uygulamalarından kaldırılacak.</translation>
 <translation id="1987779152850321833">Chrome'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın.</translation>
-<translation id="2009224836393115614">Chrome, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2056123005618757196">Basit, güvenli ve her zamankinden daha hızlı Google Chrome ile daha fazlasını yapın.</translation>
 <translation id="2120238739383482109">Chrome yer işaretlerini açar.</translation>
 <translation id="2147651015520127414">Chrome, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
@@ -58,7 +58,7 @@ Dikkate alınması gereken noktalar:
 <translation id="2671426118752779020">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="2689064829982324496">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
-<translation id="2732745070297234559">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
+<translation id="2702250627063295552">Okuma Listesi Öğesini Chrome'a Ekle</translation>
 <translation id="2736805085127235148">Chrome bildirimleri cihaz ayarlarınızda devre dışı bırakılmış.</translation>
 <translation id="2767464022270041271">Kaydedilen şifre yok. Google Şifre Yöneticisi, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="2868822340714096138">Chrome'da Tarama Verilerini Temizle</translation>
@@ -76,7 +76,6 @@ Dikkate alınması gereken noktalar:
 <translation id="3472587960215700950">Chrome, algılanan adreslerle ilgili yol tarifleri ve yerel bilgiler sağlamak için Google Haritalar'ı kullanır.</translation>
 <translation id="3503014945441706099">Bu Chrome profilinde Gelişmiş Güvenli Tarama'yı da edinin</translation>
 <translation id="3522659714780527202">Chrome kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın</translation>
-<translation id="3533694711092285624">Kaydedilen şifre yok. Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir.</translation>
 <translation id="3577555362230509265">Chrome'u başka uygulamalarda kullanın.</translation>
 <translation id="3594076341410558780">"Chrome'dan en iyi şekilde yararlanın"ı gizleyin</translation>
 <translation id="3655656110921623717">Bu durumda Chrome her seferinde mobil siteyi ister.</translation>
@@ -85,6 +84,7 @@ Dikkate alınması gereken noktalar:
 <translation id="3744018071945602754">Chrome'daki şifreleri yönet</translation>
 <translation id="3827545470516145620">Bu cihazda standart güvenlik korumasına sahipsiniz</translation>
 <translation id="384394811301901750">Google Chrome şu anda kameranızı kullanamıyor</translation>
+<translation id="3863841106411295595">Girilen URL'leri Chrome'daki okuma listenize ekler.</translation>
 <translation id="3901001113120561395">Chrome'dan en iyi şekilde yararlanın.</translation>
 <translation id="3967382818307165056">Chrome'daki ödeme yöntemlerini yönet</translation>
 <translation id="3980220367029651214">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chrome verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
@@ -98,12 +98,10 @@ Dikkate alınması gereken noktalar:
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4251174643044751591">Chrome'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="4453284704333523777">Chrome ayarlarını yönet</translation>
-<translation id="4471662743048412085">Chrome'da Algılanan Kargoları Takip Et</translation>
-<translation id="4508370294876102450">Chrome'u İstediğiniz Uygulamadan Açın</translation>
+<translation id="4508370294876102450">Chrome'u istediğiniz uygulamadan açın</translation>
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="4633328489441962921">Chrome, güncellemeleri denetleyemiyor</translation>
 <translation id="4636900170638246267">Bu sitede ve Chrome'da oturum açın.</translation>
-<translation id="4698415050768537821">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="4761869838909035636">Chrome Güvenlik Kontrolü Yürüt</translation>
 <translation id="4819268619367838612">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
@@ -161,7 +159,6 @@ Dikkate alınması gereken noktalar:
 <translation id="6815466750807582739">Ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
 
 Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="6851982868877411675">iOS'te Chrome Ayarları'nı açtıktan sonra "Varsayılan Tarayıcı Uygulaması"na dokunup Chrome'u seçin.</translation>
 <translation id="6916015246697034114">Chrome'da Sesle Arama Yap</translation>
 <translation id="6964931465519938134">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
@@ -231,7 +228,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="8897749957032330183">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
-<translation id="8949681853939555434">Chrome'u varsayılan tarayıcınız olarak ayarlama</translation>
+<translation id="8949681853939555434">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="8969290730818637510">İzni kabul ederek:
 <ph name="BEGIN_INDENT" />  • Sizinkine benzer kullanımı olan kişiler için Chrome'u daha iyi hale getirmemize yardımcı olun.<ph name="END_INDENT" />
 

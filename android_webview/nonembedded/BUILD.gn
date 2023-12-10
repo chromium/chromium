@@ -181,8 +181,6 @@ source_set("nonembedded") {
     "component_updater/aw_component_update_service.h",
     "component_updater/aw_component_updater_configurator.cc",
     "component_updater/aw_component_updater_configurator.h",
-    "component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy.cc",
-    "component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy.h",
     "component_updater/registration.cc",
     "component_updater/registration.h",
     "net/network_fetcher_task.cc",

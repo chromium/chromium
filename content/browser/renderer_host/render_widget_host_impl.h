@@ -36,8 +36,6 @@
 #include "content/browser/renderer_host/input/input_disposition_handler.h"
 #include "content/browser/renderer_host/input/input_router_impl.h"
 #include "content/browser/renderer_host/input/render_widget_host_latency_tracker.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
@@ -46,6 +44,8 @@
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/common/input/event_with_latency_info.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_controller.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host.h"
@@ -786,7 +786,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const absl::optional<std::vector<gfx::Rect>>& character_bounds,
       const absl::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
-  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() override;
+  StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
@@ -807,6 +807,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void ProgressFlingIfNeeded(base::TimeTicks current_time);
   void StopFling();
+
+  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase();
 
   // The RenderWidgetHostImpl will keep showing the old page (for a while) after
   // navigation until the first frame of the new page arrives. This reduces
@@ -924,6 +926,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // to its renderer side widget. If the renderer issued a FrameSink request
   // before this handoff, the request is buffered and will be issued here.
   void SetViewIsFrameSinkIdOwner(bool is_owner);
+  bool view_is_frame_sink_id_owner() const {
+    return view_is_frame_sink_id_owner_;
+  }
 
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
@@ -969,14 +974,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // ---------------------------------------------------------------------------
 
   bool IsMouseLocked() const;
-
-  // The View associated with the RenderWidgetHost. The lifetime of this object
-  // is associated with the lifetime of the Render process. If the Renderer
-  // crashes, its View is destroyed and this pointer becomes NULL, even though
-  // render_view_host_ lives on to load another URL (creating a new View while
-  // doing so).
-  base::WeakPtr<RenderWidgetHostViewBase> view_;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(FullscreenDetectionTest,
                            EncompassingDivNotFullscreen);
@@ -1537,6 +1534,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // produce frames associated with `frame_sink_id_` only when it owns that
   // FrameSinkId.
   bool view_is_frame_sink_id_owner_{false};
+
+  // The View associated with the RenderWidgetHost. The lifetime of this object
+  // is associated with the lifetime of the Render process. If the Renderer
+  // crashes, its View is destroyed and this pointer becomes NULL, even though
+  // render_view_host_ lives on to load another URL (creating a new View while
+  // doing so).
+  base::WeakPtr<RenderWidgetHostViewBase> view_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

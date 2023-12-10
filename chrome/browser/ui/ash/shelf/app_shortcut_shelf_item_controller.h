@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_APP_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -83,7 +83,7 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   // action. Otherwise, it returns nullopt.
   // |filter_predicate| is used to filter out unwanted options to advance to
   // based on their corresponding windows.
-  absl::optional<ash::ShelfAction> AdvanceToNextApp(
+  std::optional<ash::ShelfAction> AdvanceToNextApp(
       const ItemFilterPredicate& filter_predicate);
 
   // Returns true if the application is a V2 app.

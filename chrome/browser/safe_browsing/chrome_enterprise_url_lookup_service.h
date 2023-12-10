@@ -90,7 +90,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   absl::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
-  double GetMinAllowedTimestampForReferrerChains() const override;
+  base::Time GetMinAllowedTimestampForReferrerChains() const override;
 
   // Unowned object used for checking profile based settings.
   raw_ptr<Profile, DanglingUntriaged> profile_;

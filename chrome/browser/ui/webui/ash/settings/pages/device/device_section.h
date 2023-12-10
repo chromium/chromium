@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_SECTION_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/night_light_controller.h"
@@ -18,7 +19,6 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefService;
@@ -89,10 +89,10 @@ class DeviceSection : public OsSettingsSection,
   system::PointerDeviceObserver pointer_device_observer_;
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;
-  absl::optional<InputsSection> inputs_subsection_;
-  absl::optional<PowerSection> power_subsection_;
-  absl::optional<PrintingSection> printing_subsection_;
-  absl::optional<StorageSection> storage_subsection_;
+  std::optional<InputsSection> inputs_subsection_;
+  std::optional<PowerSection> power_subsection_;
+  std::optional<PrintingSection> printing_subsection_;
+  std::optional<StorageSection> storage_subsection_;
   mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
       cros_display_config_observer_receiver_{this};
 };

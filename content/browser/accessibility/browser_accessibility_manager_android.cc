@@ -85,16 +85,6 @@ bool BrowserAccessibilityManagerAndroid::ShouldAllowImageDescriptions() {
          allow_image_descriptions_for_testing_;
 }
 
-bool BrowserAccessibilityManagerAndroid::ShouldRespectDisplayedPasswordText() {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  return wcax ? wcax->should_respect_displayed_password_text() : false;
-}
-
-bool BrowserAccessibilityManagerAndroid::ShouldExposePasswordText() {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  return wcax ? wcax->should_expose_password_text() : false;
-}
-
 BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
   // On Android, don't follow active descendant when focus is in a textfield,
   // otherwise editable comboboxes such as the search field on google.com do

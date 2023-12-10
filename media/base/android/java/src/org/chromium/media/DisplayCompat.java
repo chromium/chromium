@@ -176,9 +176,11 @@ public final class DisplayCompat {
      */
     private static Point getPhysicalDisplaySize(
             @NonNull Context context, @NonNull Display display) {
-        Point displaySize = Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                ? parsePhysicalDisplaySizeFromSystemProperties("sys.display-size", display)
-                : parsePhysicalDisplaySizeFromSystemProperties("vendor.display-size", display);
+        Point displaySize =
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+                        ? parsePhysicalDisplaySizeFromSystemProperties("sys.display-size", display)
+                        : parsePhysicalDisplaySizeFromSystemProperties(
+                                "vendor.display-size", display);
         if (displaySize != null) {
             return displaySize;
         } else if (isSonyBravia4kTv(context)) {
@@ -202,7 +204,8 @@ public final class DisplayCompat {
      * @return true if the display is a Sony BRAVIA TV that supports 4k
      */
     private static boolean isSonyBravia4kTv(@NonNull Context context) {
-        return isTv(context) && "Sony".equals(Build.MANUFACTURER)
+        return isTv(context)
+                && "Sony".equals(Build.MANUFACTURER)
                 && Build.MODEL.startsWith("BRAVIA")
                 && context.getPackageManager().hasSystemFeature("com.sony.dtv.hardware.panel.qfhd");
     }

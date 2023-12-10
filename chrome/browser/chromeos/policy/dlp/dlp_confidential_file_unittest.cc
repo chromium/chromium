@@ -28,6 +28,10 @@ TEST_F(DlpConfidentialFileTest, ComparisonWithDifferentPaths) {
   DlpConfidentialFile file2 = DlpConfidentialFile(base::FilePath(kFilePath2));
 
   EXPECT_TRUE(file1 != file2);
+  EXPECT_TRUE(file1 < file2);
+  EXPECT_TRUE(file1 <= file2);
+  EXPECT_FALSE(file1 > file2);
+  EXPECT_FALSE(file1 >= file2);
 }
 
 TEST_F(DlpConfidentialFileTest, ComparisonWithSamePaths) {

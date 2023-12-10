@@ -72,14 +72,15 @@ class SigninUI {
   // Clears authentication data that were stored for user onboarding.
   virtual void ClearOnboardingAuthSession() = 0;
 
-  // Show legacy password changed dialog. If `show_password_error` is true, user
-  // already tried to enter old password but it turned out to be incorrect.
-  // New implementation would start Recovery flow instead.
-  virtual void ShowPasswordChangedDialogLegacy(const AccountId& account_id,
-                                               bool password_incorrect) = 0;
+  // Start authentication flow that would use factors beyond
+  // online authentication factor (Recovery, old online password,
+  // fallback to local password/PIN, etc).
+  virtual void UseAlternativeAuthentication(
+      std::unique_ptr<UserContext> user_context,
+      bool online_password_mismatch) = 0;
 
-  // Start Cryptohome recovery flow and show the screen.
-  virtual void StartCryptohomeRecovery(
+  // Runs an extra step of local authentication.
+  virtual void RunLocalAuthentication(
       std::unique_ptr<UserContext> user_context) = 0;
 
   virtual void ShowSigninError(SigninError error,

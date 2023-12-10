@@ -48,9 +48,9 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
     entries_.clear();
     call_count_ = 0;
   }
-  PhysicalRect LastIntersectionRect() const {
+  gfx::RectF LastIntersectionRect() const {
     if (entries_.empty())
-      return PhysicalRect();
+      return gfx::RectF();
     const IntersectionGeometry& geometry = entries_.back()->GetGeometry();
     return geometry.IntersectionRect();
   }

@@ -139,7 +139,7 @@ class PredictorInitializer : public TestObserver {
   void OnPredictorInitialized() override { run_loop_.Quit(); }
 
  private:
-  raw_ptr<ResourcePrefetchPredictor> predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -173,10 +173,11 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
       bool success) override {
     ResolveHostRequestInfo preconnect_info{url.host(),
                                            network_anonymization_key};
-    if (success)
+    if (success) {
       successful_dns_lookups_.insert(preconnect_info);
-    else
+    } else {
       unsuccessful_dns_lookups_.insert(preconnect_info);
+    }
     CheckForWaitingLoop();
   }
 
@@ -186,10 +187,11 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
       bool success) override {
     ResolveProxyRequestInfo resolve_info{url::Origin::Create(url),
                                          network_anonymization_key};
-    if (success)
+    if (success) {
       successful_proxy_lookups_.insert(resolve_info);
-    else
+    } else {
       unsuccessful_proxy_lookups_.insert(resolve_info);
+    }
     CheckForWaitingLoop();
   }
 
@@ -307,8 +309,9 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
         waiting_on_dns_ = ResolveHostRequestInfo();
         break;
       case WaitEvent::kProxy:
-        if (!HasProxyBeenLookedUp(waiting_on_proxy_))
+        if (!HasProxyBeenLookedUp(waiting_on_proxy_)) {
           return;
+        }
         waiting_on_proxy_ = ResolveProxyRequestInfo();
         break;
     }
@@ -365,8 +368,9 @@ class TestPrefetchManagerObserver : public PrefetchManager::Observer {
   void WaitForPrefetchesForNavigation(const GURL& url) {
     DCHECK(waiting_url_.is_empty());
     DCHECK(!url.is_empty());
-    if (done_urls_.find(url) != done_urls_.end())
+    if (done_urls_.find(url) != done_urls_.end()) {
       return;
+    }
     waiting_url_ = url;
     base::RunLoop loop;
     done_callback_ = loop.QuitClosure();
@@ -445,6 +449,8 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     initializer.EnsurePredictorInitialized();
   }
 
+  void TearDownOnMainThread() override { loading_predictor_ = nullptr; }
+
   // Navigates to an URL without blocking until the navigation finishes.
   // Returns an observer that can be used to wait for the navigation
   // completion.
@@ -487,8 +493,9 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     auto prediction = std::make_unique<PreconnectPrediction>();
     bool has_prediction = loading_predictor_->resource_prefetch_predictor()
                               ->PredictPreconnectOrigins(url, prediction.get());
-    if (!has_prediction)
+    if (!has_prediction) {
       return nullptr;
+    }
     return prediction;
   }
 
@@ -513,8 +520,9 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
 
   static std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != "/favicon.ico")
+    if (request.relative_url != "/favicon.ico") {
       return nullptr;
+    }
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -552,7 +560,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer preconnecting_test_server_;
 
  private:
-  raw_ptr<LoadingPredictor, DanglingUntriaged> loading_predictor_ = nullptr;
+  raw_ptr<LoadingPredictor> loading_predictor_ = nullptr;
   std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
   std::unique_ptr<net::test_server::ConnectionTracker>
       preconnecting_server_connection_tracker_;
@@ -1071,7 +1079,7 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         browser()->profile()->GetURLLoaderFactory().get(),
-        simple_loader_helper.GetCallback());
+        simple_loader_helper.GetCallbackDeprecated());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
     if (url.IntPort() == embedded_test_server()->port()) {
@@ -1267,8 +1275,9 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
 
     // Verify that the redirect from |redirecting_url| to |destination_url| was
     // learned and preconnected to.
-    if (i == 1)
+    if (i == 1) {
       preconnecting_server_connection_tracker()->WaitForAcceptedConnections(1);
+    }
     EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
     // Verify that the preconnects to |embedded_test_server| were made using
@@ -1289,7 +1298,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         browser()->profile()->GetURLLoaderFactory().get(),
-        simple_loader_helper.GetCallback());
+        simple_loader_helper.GetCallbackDeprecated());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
     EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
@@ -1980,8 +1989,9 @@ class LoadingPredictorPrefetchBrowserTest
 
   // Returns once all expected requests have been received.
   void WaitForRequests() {
-    if (expected_requests_.empty())
+    if (expected_requests_.empty()) {
       return;
+    }
     base::RunLoop loop;
     quit_ = loop.QuitClosure();
     loop.Run();
@@ -2000,8 +2010,9 @@ class LoadingPredictorPrefetchBrowserTest
     // (which includes host+port).
     GURL url = request.GetURL();
     auto host_iter = request.headers.find("Host");
-    if (host_iter != request.headers.end())
+    if (host_iter != request.headers.end()) {
       url = GURL("http://" + host_iter->second + request.relative_url);
+    }
 
     // Remove the expected request.
     auto it = expected_requests_.find(url);
@@ -2010,8 +2021,9 @@ class LoadingPredictorPrefetchBrowserTest
     expected_requests_.erase(it);
 
     // Finish if done.
-    if (expected_requests_.empty() && quit_)
+    if (expected_requests_.empty() && quit_) {
       std::move(quit_).Run();
+    }
   }
 
   base::flat_set<GURL> expected_requests_;
@@ -2021,8 +2033,9 @@ class LoadingPredictorPrefetchBrowserTest
 // Tests that the LoadingPredictor performs prefetching
 // for a navigation which it has a prediction for and there isn't a local
 // prediction available.
-IN_PROC_BROWSER_TEST_P(LoadingPredictorPrefetchBrowserTest,
-                       DISABLED_PrepareForPageLoadWithPredictionForPrefetchNoLocalHint) {
+IN_PROC_BROWSER_TEST_P(
+    LoadingPredictorPrefetchBrowserTest,
+    DISABLED_PrepareForPageLoadWithPredictionForPrefetchNoLocalHint) {
   GURL url = embedded_test_server()->GetURL(
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
@@ -2315,6 +2328,8 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  void TearDownOnMainThread() override { web_contents_ = nullptr; }
+
   content::WebContents* web_contents() { return web_contents_; }
 
   content::test::PrerenderTestHelper prerender_test_helper_;
@@ -2323,7 +2338,7 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() { return web_contents_; }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {

@@ -9,14 +9,15 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
@@ -111,12 +112,17 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   [self.gridConsumer setPageIdleStatus:NO];
   base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   [self.gridConsumer prepareForDismissal];
-  [self addNewItem];
-  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
-  [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
-                                       focusOmnibox:NO];
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
+  // Present the tab only if it have been added.
+  if ([self addNewItem]) {
+    [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
+    [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
+                                         focusOmnibox:NO];
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridFailedCreateIncognitoTab"));
+  }
 }
 
 #pragma mark - Parent's function
@@ -159,6 +165,11 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
       _incognitoDisabled = isDisabled;
       [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
     }
+    if (isDisabled) {
+      // Close all incognito tabs for supervised users. If the user was on an
+      // incognito tab, the disabled tab grid will be displayed.
+      [self closeAllItems];
+    }
   }
 }
 
@@ -184,8 +195,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
           prefs::kSupervisedUserId, _prefChangeRegistrar.get());
     }
 
-    // Pretend the preference changed to force setting _incognitoDisabled.
-    [self onPreferenceChanged:prefs::kSupervisedUserId];
+    _incognitoDisabled = [self isIncognitoModeDisabled];
   }
 }
 
@@ -210,6 +220,9 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
 - (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
     didUpdateAuthenticationRequirement:(BOOL)isRequired {
   if (_selected) {
+    if (isRequired) {
+      self.currentMode = TabGridModeNormal;
+    }
     [self configureToolbarsButtons];
   }
 }
@@ -226,7 +239,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   }
 
   return ShouldFilterWebSitesForSupervisedUsers() &&
-         supervised_user::IsSubjectToParentalControls(prefService);
+         supervised_user::IsSubjectToParentalControls(*prefService);
 }
 
 @end

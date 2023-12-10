@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/ranges/ranges.h"
@@ -203,7 +202,7 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
         GetMatchPatterns(kSomeName, LanguageCode(lang), pattern_source());
     expected.insert(expected.end(), patterns.begin(), patterns.end());
   }
-  base::EraseIf(expected,
+  std::erase_if(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
   EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),

@@ -46,6 +46,7 @@
 
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
@@ -83,6 +84,8 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 
   absl::optional<cc::SnapContainerData> snap_container_data_;
   absl::optional<cc::SnappedTargetData> snapped_target_data_;
+  absl::optional<cc::SnappedTargetData> snapchanging_target_data_;
+  std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -417,6 +420,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // coordinates, clipped by the parent's client rect.
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
+      const PhysicalBoxStrut& scroll_margin,
       const mojom::blink::ScrollIntoViewParamsPtr&) override;
 
   // Returns true if the scrollable area is user-scrollable and it does
@@ -545,6 +549,16 @@ class CORE_EXPORT PaintLayerScrollableArea final
   const cc::SnappedTargetData* GetSnappedTargetData() const override;
   void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
 
+  const cc::SnappedTargetData* GetSnapChangingTargetData() const override;
+  void SetSnapChangingTargetData(
+      absl::optional<cc::SnappedTargetData>) override;
+  void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+      const gfx::PointF&) override;
+  const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
+  void SetImplSnapStrategy(
+      std::unique_ptr<cc::SnapSelectionStrategy> strategy) override;
+  void EnqueueSnapChangingEventFromImplIfNeeded() override;
+
   void DisposeImpl() override;
 
   void SetPendingHistoryRestoreScrollOffset(
@@ -563,7 +577,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void SetTickmarksOverride(Vector<gfx::Rect> tickmarks);
 
-  bool ShouldDirectlyCompositeScrollbar(const Scrollbar&) const;
+  bool MayCompositeScrollbar(const Scrollbar&) const;
 
   void EstablishScrollbarRoot(bool freeze_horizontal, bool freeze_vertical);
   void ClearScrollbarRoot();
@@ -668,19 +682,21 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   gfx::Size PixelSnappedBorderBoxSize() const;
 
-  void InvalidatePaintOfScrollbarIfNeeded(
-      const PaintInvalidatorContext&,
-      bool needs_paint_invalidation,
-      Scrollbar* scrollbar,
-      bool& previously_was_overlay,
-      bool& previously_was_directly_composited,
-      gfx::Rect& visual_rect);
+  void InvalidatePaintOfScrollbarIfNeeded(const PaintInvalidatorContext&,
+                                          bool needs_paint_invalidation,
+                                          Scrollbar* scrollbar,
+                                          bool& previously_was_overlay,
+                                          bool& previously_might_be_composited,
+                                          gfx::Rect& visual_rect);
 
   void DelayableClampScrollOffsetAfterOverflowChange();
   void ClampScrollOffsetAfterOverflowChangeInternal();
   Element* GetElementForScrollStart() const;
 
   void SetShouldCheckForPaintInvalidation();
+
+  bool UsedColorSchemeScrollbarsChanged(const ComputedStyle* old_style) const;
+  bool IsGlobalRootNonOverlayScroller() const;
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
@@ -719,7 +735,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point scroll_origin_;
 
   // The width/height of our scrolled area.
-  // This is OverflowModel's layout overflow translated to physical
+  // This is OverflowModel's scrollable overflow translated to physical
   // coordinates. See OverflowModel for the different overflow and
   // LayoutBoxModelObject for the coordinate systems.
   PhysicalRect overflow_rect_;
@@ -753,8 +769,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // These are not bitfields because they need to be passed as references.
   bool horizontal_scrollbar_previously_was_overlay_ = false;
   bool vertical_scrollbar_previously_was_overlay_ = false;
-  bool horizontal_scrollbar_previously_was_directly_composited_ = false;
-  bool vertical_scrollbar_previously_was_directly_composited_ = false;
+  bool horizontal_scrollbar_previously_might_be_composited_ = false;
+  bool vertical_scrollbar_previously_might_be_composited_ = false;
   gfx::Rect horizontal_scrollbar_visual_rect_;
   gfx::Rect vertical_scrollbar_visual_rect_;
   gfx::Rect scroll_corner_and_resizer_visual_rect_;

@@ -279,8 +279,7 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   int bottom_edge = vertical_padding;
 
   // Add some extra space so that borders don't overlap. This padding between
-  // items also takes care of padding at the edge of the shelf (unless hotseat
-  // is enabled).
+  // items also takes care of padding at the edge of the shelf.
   int right_edge;
   if (is_child_on_edge) {
     right_edge = ShelfConfig::Get()->control_button_edge_spacing(

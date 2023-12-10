@@ -24,7 +24,7 @@ using ServerCache = std::map<std::string, std::string>;
 std::pair<std::string, std::string> SplitHTTP(const std::string& http_text);
 
 // Streams in text format. For consistency, taken from anonymous namespace in
-// components/autofill/core/browser/autofill_download_manager.cc
+// components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
 std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillQueryContents& query);
 std::ostream& operator<<(std::ostream& out,

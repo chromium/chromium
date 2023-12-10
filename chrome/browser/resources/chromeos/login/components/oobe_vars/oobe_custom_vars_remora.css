@@ -119,6 +119,7 @@
 
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 48px;
+      --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);
 
       /* Welcome screen */
       --selection-entry-height: 72px;

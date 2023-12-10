@@ -51,7 +51,8 @@ public class VariationsSeedFetcher {
 
     // Note: ChromeVariations = 2 means "Disable all variations".
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
-            NetworkTrafficAnnotationTag.createComplete("chrome_variations_android",
+            NetworkTrafficAnnotationTag.createComplete(
+                    "chrome_variations_android",
                     "semantics {"
                             + "  sender: 'Chrome Variations Service (Android)'"
                             + "  description:"
@@ -97,18 +98,14 @@ public class VariationsSeedFetcher {
     // Values for the "Variations.FirstRun.SeedFetchResult" sparse histogram, which also logs
     // HTTP result codes. These are negative so that they don't conflict with the HTTP codes.
     // These values should not be renumbered or re-used since they are logged to UMA.
-    @VisibleForTesting
-    public static final int SEED_FETCH_RESULT_DELTA_PATCH_EXCEPTION = -6;
-    @VisibleForTesting
-    public static final int SEED_FETCH_RESULT_INVALID_IM_HEADER = -5;
+    @VisibleForTesting public static final int SEED_FETCH_RESULT_DELTA_PATCH_EXCEPTION = -6;
+    @VisibleForTesting public static final int SEED_FETCH_RESULT_INVALID_IM_HEADER = -5;
     // private static final int SEED_FETCH_RESULT_INVALID_DATE_HEADER = -4;
     private static final int SEED_FETCH_RESULT_UNKNOWN_HOST_EXCEPTION = -3;
     private static final int SEED_FETCH_RESULT_TIMEOUT = -2;
-    @VisibleForTesting
-    public static final int SEED_FETCH_RESULT_IOEXCEPTION = -1;
+    @VisibleForTesting public static final int SEED_FETCH_RESULT_IOEXCEPTION = -1;
 
-    @VisibleForTesting
-    static final String VARIATIONS_INITIALIZED_PREF = "variations_initialized";
+    @VisibleForTesting static final String VARIATIONS_INITIALIZED_PREF = "variations_initialized";
 
     @VisibleForTesting
     public static final String SEED_FETCH_DELTA_COMPRESSION =
@@ -119,9 +116,13 @@ public class VariationsSeedFetcher {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @VisibleForTesting
-    @IntDef({DeltaCompression.REQUESTED_RECEIVED, DeltaCompression.REQUESTED_NOT_RECEIVED,
-            DeltaCompression.NOT_REQUESTED_RECEIVED, DeltaCompression.NOT_REQUESTED_NOT_RECEIVED,
-            DeltaCompression.NUM_ENTRIES})
+    @IntDef({
+        DeltaCompression.REQUESTED_RECEIVED,
+        DeltaCompression.REQUESTED_NOT_RECEIVED,
+        DeltaCompression.NOT_REQUESTED_RECEIVED,
+        DeltaCompression.NOT_REQUESTED_NOT_RECEIVED,
+        DeltaCompression.NUM_ENTRIES
+    })
     public @interface DeltaCompression {
         int REQUESTED_RECEIVED = 0;
         int REQUESTED_NOT_RECEIVED = 1;
@@ -197,8 +198,8 @@ public class VariationsSeedFetcher {
     @VisibleForTesting
     protected List<String> getAvailableInstanceManipulations() {
         List<String> compressions = new ArrayList<String>();
-        if (CommandLine.getInstance().hasSwitch(
-                    VariationsSwitches.ENABLE_FINCH_SEED_DELTA_COMPRESSION)) {
+        if (CommandLine.getInstance()
+                .hasSwitch(VariationsSwitches.ENABLE_FINCH_SEED_DELTA_COMPRESSION)) {
             compressions.add(VariationsCompressionUtils.DELTA_COMPRESSION_HEADER);
         }
         compressions.add(VariationsCompressionUtils.GZIP_COMPRESSION_HEADER);
@@ -210,8 +211,9 @@ public class VariationsSeedFetcher {
         // TODO(crbug/1302862): Consider reusing native VariationsService::GetVariationsServerURL().
         String urlString;
         if (CommandLine.getInstance().hasSwitch(VariationsSwitches.VARIATIONS_SERVER_URL)) {
-            urlString = CommandLine.getInstance().getSwitchValue(
-                    VariationsSwitches.VARIATIONS_SERVER_URL);
+            urlString =
+                    CommandLine.getInstance()
+                            .getSwitchValue(VariationsSwitches.VARIATIONS_SERVER_URL);
         } else if (params.mIsFastFetchMode) {
             urlString = DEFAULT_FAST_VARIATIONS_SERVER_URL;
         } else {
@@ -236,8 +238,9 @@ public class VariationsSeedFetcher {
             urlString += "&milestone=" + params.mMilestone;
         }
 
-        String forcedChannel = CommandLine.getInstance().getSwitchValue(
-                VariationsSwitches.FAKE_VARIATIONS_CHANNEL);
+        String forcedChannel =
+                CommandLine.getInstance()
+                        .getSwitchValue(VariationsSwitches.FAKE_VARIATIONS_CHANNEL);
         if (forcedChannel != null) {
             params.mChannel = forcedChannel;
         }
@@ -276,8 +279,12 @@ public class VariationsSeedFetcher {
             return Objects.hash(mPlatform, mRestrictMode, mMilestone, mChannel, mIsFastFetchMode);
         }
 
-        private SeedFetchParameters(@VariationsPlatform int platform, String restrictMode,
-                String milestone, String channel, boolean isFastFetchMode) {
+        private SeedFetchParameters(
+                @VariationsPlatform int platform,
+                String restrictMode,
+                String milestone,
+                String channel,
+                boolean isFastFetchMode) {
             this.mPlatform = platform;
             this.mRestrictMode = restrictMode;
             this.mMilestone = milestone;
@@ -380,11 +387,12 @@ public class VariationsSeedFetcher {
         // Applies the {@code deltaPatch} to {@code previousSeedData} and returns the uncompressed
         // seed.
         @VisibleForTesting
-        public static byte[] resolveDeltaCompression(byte[] deltaPatch, byte[] previousSeedData,
-                boolean isGzipCompressed) throws DeltaPatchException {
-            assert CommandLine.getInstance().hasSwitch(
-                    VariationsSwitches.ENABLE_FINCH_SEED_DELTA_COMPRESSION)
-                : "Delta compression not enabled";
+        public static byte[] resolveDeltaCompression(
+                byte[] deltaPatch, byte[] previousSeedData, boolean isGzipCompressed)
+                throws DeltaPatchException {
+            assert CommandLine.getInstance()
+                            .hasSwitch(VariationsSwitches.ENABLE_FINCH_SEED_DELTA_COMPRESSION)
+                    : "Delta compression not enabled";
             try {
                 if (isGzipCompressed) {
                     // Resolve gzip compression before applying the delta patch.
@@ -436,9 +444,16 @@ public class VariationsSeedFetcher {
         @Override
         public String toString() {
             if (BuildConfig.ENABLE_ASSERTS) {
-                return "SeedInfo{signature=\"" + signature + "\" country=\"" + country
-                        + "\" date=\"" + date + "\" isGzipCompressed=" + isGzipCompressed
-                        + " seedData=" + Arrays.toString(seedData);
+                return "SeedInfo{signature=\""
+                        + signature
+                        + "\" country=\""
+                        + country
+                        + "\" date=\""
+                        + date
+                        + "\" isGzipCompressed="
+                        + isGzipCompressed
+                        + " seedData="
+                        + Arrays.toString(seedData);
             }
             return super.toString();
         }
@@ -476,8 +491,12 @@ public class VariationsSeedFetcher {
             SeedFetchInfo fetchInfo = downloadContent(params, null);
             if (fetchInfo.seedInfo != null) {
                 SeedInfo info = fetchInfo.seedInfo;
-                VariationsSeedBridge.setVariationsFirstRunSeed(info.seedData, info.signature,
-                        info.country, info.date, info.isGzipCompressed);
+                VariationsSeedBridge.setVariationsFirstRunSeed(
+                        info.seedData,
+                        info.signature,
+                        info.country,
+                        info.date,
+                        info.isGzipCompressed);
             }
             // VARIATIONS_INITIALIZED_PREF should still be set to true when exceptions occur
             prefs.edit().putBoolean(VARIATIONS_INITIALIZED_PREF, true).apply();
@@ -490,17 +509,25 @@ public class VariationsSeedFetcher {
 
     private void recordRequestedAndReceivedDeltaCompression(boolean requested, boolean received) {
         if (requested && received) {
-            RecordHistogram.recordEnumeratedHistogram(SEED_FETCH_DELTA_COMPRESSION,
-                    DeltaCompression.REQUESTED_RECEIVED, DeltaCompression.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SEED_FETCH_DELTA_COMPRESSION,
+                    DeltaCompression.REQUESTED_RECEIVED,
+                    DeltaCompression.NUM_ENTRIES);
         } else if (requested && !received) {
-            RecordHistogram.recordEnumeratedHistogram(SEED_FETCH_DELTA_COMPRESSION,
-                    DeltaCompression.REQUESTED_NOT_RECEIVED, DeltaCompression.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SEED_FETCH_DELTA_COMPRESSION,
+                    DeltaCompression.REQUESTED_NOT_RECEIVED,
+                    DeltaCompression.NUM_ENTRIES);
         } else if (!requested && received) {
-            RecordHistogram.recordEnumeratedHistogram(SEED_FETCH_DELTA_COMPRESSION,
-                    DeltaCompression.NOT_REQUESTED_RECEIVED, DeltaCompression.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SEED_FETCH_DELTA_COMPRESSION,
+                    DeltaCompression.NOT_REQUESTED_RECEIVED,
+                    DeltaCompression.NUM_ENTRIES);
         } else {
-            RecordHistogram.recordEnumeratedHistogram(SEED_FETCH_DELTA_COMPRESSION,
-                    DeltaCompression.NOT_REQUESTED_NOT_RECEIVED, DeltaCompression.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SEED_FETCH_DELTA_COMPRESSION,
+                    DeltaCompression.NOT_REQUESTED_NOT_RECEIVED,
+                    DeltaCompression.NUM_ENTRIES);
         }
     }
 
@@ -571,8 +598,9 @@ public class VariationsSeedFetcher {
                 boolean isGzipCompressed = receivedIm.isGzipCompressed;
                 // Resolve the delta compression immediately as we only use the patched data.
                 if (receivedIm.isDeltaCompressed) {
-                    seedData = SeedInfo.resolveDeltaCompression(
-                            seedData, currInfo.getVariationsSeedBytes(), isGzipCompressed);
+                    seedData =
+                            SeedInfo.resolveDeltaCompression(
+                                    seedData, currInfo.getVariationsSeedBytes(), isGzipCompressed);
                     isGzipCompressed = false;
                 }
                 // Ensure seed is gzip compressed.

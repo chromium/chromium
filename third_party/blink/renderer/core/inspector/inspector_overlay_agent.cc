@@ -1506,7 +1506,8 @@ void InspectorOverlayAgent::EvaluateInOverlay(
 
 String InspectorOverlayAgent::EvaluateInOverlayForTest(const String& script) {
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
-  v8::HandleScope handle_scope(ToIsolate(OverlayMainFrame()));
+  v8::Isolate* isolate = ToIsolate(OverlayMainFrame());
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Value> string =
       ClassicScript::CreateUnspecifiedScript(
           script, ScriptSourceLocationType::kInspector)
@@ -1514,7 +1515,7 @@ String InspectorOverlayAgent::EvaluateInOverlayForTest(const String& script) {
               To<LocalFrame>(OverlayMainFrame())->DomWindow(),
               ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled)
           .GetSuccessValueOrEmpty();
-  return ToCoreStringWithUndefinedOrNullCheck(string);
+  return ToCoreStringWithUndefinedOrNullCheck(isolate, string);
 }
 
 void InspectorOverlayAgent::OnResizeTimer(TimerBase*) {

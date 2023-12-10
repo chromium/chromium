@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
@@ -17,8 +17,8 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/table_painters.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 
 namespace blink {
@@ -45,12 +45,25 @@ void LayoutTable::Trace(Visitor* visitor) const {
   LayoutBlock::Trace(visitor);
 }
 
+// https://drafts.csswg.org/css-tables-3/#fixup-algorithm
+// 3.2. If the box’s parent is an inline, run-in, or ruby box (or any box that
+// would perform inlinification of its children), then an inline-table box must
+// be generated; otherwise it must be a table box.
+bool LayoutTable::ShouldCreateInlineAnonymous(const LayoutObject& parent) {
+  return RuntimeEnabledFeatures::RubyInlinifyEnabled()
+             ? (parent.IsLayoutInline() || parent.IsRubyBase() ||
+                parent.IsRubyText())
+             : parent.IsLayoutInline();
+}
+
 LayoutTable* LayoutTable::CreateAnonymousWithParent(
     const LayoutObject& parent) {
+  const ComputedStyle& parent_style = parent.StyleRef();
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(),
-          parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
+          parent_style, ShouldCreateInlineAnonymous(parent)
+                            ? EDisplay::kInlineTable
+                            : EDisplay::kTable);
   auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
   new_table->SetDocumentForAnonymous(&parent.GetDocument());
   new_table->SetStyle(new_style);
@@ -68,7 +81,7 @@ bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
     return false;
   }
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   return first_section != grouped_children.end() &&
          (*first_section).GetLayoutBox() == section;
@@ -77,7 +90,7 @@ bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
 LayoutTableSection* LayoutTable::FirstSection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
     return To<LayoutTableSection>((*first_section).GetLayoutBox());
@@ -88,7 +101,7 @@ LayoutTableSection* LayoutTable::FirstSection() const {
 LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
     auto* section_object =
@@ -104,7 +117,7 @@ LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
 LayoutTableSection* LayoutTable::LastNonEmptySection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto last_section = --grouped_children.end();
   if (last_section != grouped_children.end()) {
     auto* section_object =
@@ -122,9 +135,9 @@ LayoutTableSection* LayoutTable::NextSection(
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   bool found = false;
-  for (NGBlockNode section : grouped_children) {
+  for (BlockNode section : grouped_children) {
     if (found &&
         (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
       return To<LayoutTableSection>(section.GetLayoutBox());
@@ -141,11 +154,11 @@ LayoutTableSection* LayoutTable::PreviousSection(
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutTable*>(this)));
+      BlockNode(const_cast<LayoutTable*>(this)));
   auto stop = --grouped_children.begin();
   bool found = false;
   for (auto it = --grouped_children.end(); it != stop; --it) {
-    NGBlockNode section = *it;
+    BlockNode section = *it;
     if (found &&
         (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
       return To<LayoutTableSection>(section.GetLayoutBox());
@@ -159,7 +172,7 @@ LayoutTableSection* LayoutTable::PreviousSection(
 
 wtf_size_t LayoutTable::ColumnCount() const {
   NOT_DESTROYED();
-  const NGLayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
+  const LayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
   if (!cached_layout_result)
     return 0;
   return cached_layout_result->TableColumnCount();

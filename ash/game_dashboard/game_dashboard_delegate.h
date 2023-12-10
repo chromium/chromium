@@ -10,6 +10,10 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ash {
 
 // The delegate of the `GameDashboardController` which facilitates communication
@@ -27,6 +31,13 @@ class ASH_EXPORT GameDashboardDelegate {
 
   // Gets the app name by `app_id`.
   virtual std::string GetArcAppName(const std::string& app_id) const = 0;
+
+  // Records `ScalableIph::kGameWindowOpened` event.
+  virtual void RecordGameWindowOpenedEvent(aura::Window* window) = 0;
+
+  // Shows the compat mode resize toggle menu, which requires the app `window`
+  // param when creating the `ResizeToggleMenu` object.
+  virtual void ShowResizeToggleMenu(aura::Window* window) = 0;
 };
 
 }  // namespace ash

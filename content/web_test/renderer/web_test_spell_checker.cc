@@ -22,7 +22,7 @@ void Append(blink::WebVector<blink::WebString>* data,
   for (size_t i = 0; i < data->size(); ++i)
     result[i] = (*data)[i];
   result[data->size()] = item;
-  data->Swap(result);
+  data->swap(result);
 }
 
 bool IsASCIIAlpha(char ch) {

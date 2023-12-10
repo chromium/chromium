@@ -133,7 +133,7 @@ public class AttributionReportingTest {
 
     @SmallTest
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @CommandLineFlags.Add(
             "enable-features="
                     + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
@@ -146,7 +146,7 @@ public class AttributionReportingTest {
 
     @LargeTest
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @CommandLineFlags.Add(
             "enable-features="
                     + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
@@ -191,7 +191,7 @@ public class AttributionReportingTest {
 
     @LargeTest
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @CommandLineFlags.Add(
             "enable-features="
                     + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
@@ -235,7 +235,7 @@ public class AttributionReportingTest {
 
     @LargeTest
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @CommandLineFlags.Add(
             "enable-features="
                     + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
@@ -279,7 +279,7 @@ public class AttributionReportingTest {
 
     @LargeTest
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @CommandLineFlags.Add(
             "enable-features="
                     + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE

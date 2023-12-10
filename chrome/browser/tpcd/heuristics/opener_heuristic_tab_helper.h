@@ -58,6 +58,9 @@ class OpenerHeuristicTabHelper
     void EmitTopLevel(const GURL& tracker_url,
                       OptionalBool has_iframe,
                       bool is_current_interaction);
+    // Create a storage access grant, if eligible per experiment flags.
+    void MaybeCreateOpenerHeuristicGrant(const GURL& url,
+                                         base::TimeDelta grant_duration);
     // See if the opener page has an iframe from the same site.
     OptionalBool GetOpenerHasSameSiteIframe(const GURL& popup_url);
 
@@ -86,6 +89,11 @@ class OpenerHeuristicTabHelper
     size_t url_index_ = 0;
     bool interaction_reported_ = false;
     bool toplevel_reported_ = false;
+
+    // Whether the last committed navigation in this popup WCO is ad-tagged.
+    // Used for UKM metrics and for gating storage access grant creation (under
+    // a flag).
+    bool is_last_navigation_ad_tagged_ = false;
 
     scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   };
@@ -117,6 +125,10 @@ class OpenerHeuristicTabHelper
   void EmitPostPopupCookieAccess(const ukm::SourceId& source_id,
                                  const content::CookieAccessDetails& details,
                                  absl::optional<PopupsStateValue> value);
+  // Check whether `source_render_frame_host` is a valid popup initiator frame,
+  // per the experiment flags.
+  bool PassesIframeInitiatorCheck(
+      content::RenderFrameHost* source_render_frame_host);
 
   // WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;

@@ -29,7 +29,7 @@ const std::vector<std::string> WeeklyTime::kWeekDays = {
 
 WeeklyTime::WeeklyTime(int day_of_week,
                        int milliseconds,
-                       absl::optional<int> timezone_offset)
+                       std::optional<int> timezone_offset)
     : day_of_week_(day_of_week),
       milliseconds_(milliseconds),
       timezone_offset_(timezone_offset) {
@@ -107,14 +107,14 @@ WeeklyTime WeeklyTime::GetGmtWeeklyTime(base::Time time) {
 WeeklyTime WeeklyTime::GetLocalWeeklyTime(base::Time time) {
   base::Time::Exploded exploded;
   time.LocalExplode(&exploded);
-  WeeklyTime result = GetWeeklyTimeFromExploded(exploded, absl::nullopt);
+  WeeklyTime result = GetWeeklyTimeFromExploded(exploded, std::nullopt);
   return result;
 }
 
 // static
 std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromProto(
     const em::WeeklyTimeProto& container,
-    absl::optional<int> timezone_offset) {
+    std::optional<int> timezone_offset) {
   if (!container.has_day_of_week() ||
       container.day_of_week() == em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED) {
     LOG(ERROR) << "Day of week is absent or unspecified.";
@@ -138,7 +138,7 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromProto(
 // static
 std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromDict(
     const base::Value::Dict& dict,
-    absl::optional<int> timezone_offset) {
+    std::optional<int> timezone_offset) {
   auto* day_of_week = dict.FindString(kDayOfWeek);
   if (!day_of_week) {
     LOG(ERROR) << "day_of_week is absent.";
@@ -167,9 +167,8 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromDict(
                                       timezone_offset);
 }
 
-WeeklyTime GetWeeklyTimeFromExploded(
-    const base::Time::Exploded& exploded,
-    const absl::optional<int> timezone_offset) {
+WeeklyTime GetWeeklyTimeFromExploded(const base::Time::Exploded& exploded,
+                                     const std::optional<int> timezone_offset) {
   int day_of_week = exploded.day_of_week == 0 ? 7 : exploded.day_of_week;
   int milliseconds = static_cast<int>(
       base::Hours(exploded.hour).InMilliseconds() +

@@ -8,9 +8,7 @@ import static junit.framework.Assert.assertEquals;
 
 import org.chromium.chrome.browser.gcore.ChromeGoogleApiClient;
 
-/**
- * Mock of ChromeGoogleApiClient that tracks which methods are called.
- */
+/** Mock of ChromeGoogleApiClient that tracks which methods are called. */
 public class MockChromeGoogleApiClient implements ChromeGoogleApiClient {
     private final Object mLock = new Object();
 

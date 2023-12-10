@@ -70,6 +70,10 @@ export class DirectoryTreePageObject {
     this.selectors_ = new DirectoryTreeSelectors_(useNewTree);
   }
 
+  get isNewTree() {
+    return this.useNewTree_;
+  }
+
   /**
    * Returns the selector for the tree root.
    * @return {string}
@@ -87,6 +91,16 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Returns the selector by the tree label.
+   *
+   * @param {string} label Label of the tree item
+   * @return {string}
+   */
+  itemSelectorByLabel(label) {
+    return this.selectors_.itemByLabel(label);
+  }
+
+  /**
    * Wait for the selected(aka "active" in the old tree implementation) tree
    * item with the label.
    *
@@ -95,6 +109,18 @@ export class DirectoryTreePageObject {
    */
   async waitForSelectedItemByLabel(label) {
     return this.remoteCall_.waitForElement(
+        this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
+  }
+
+  /**
+   * Wait for the selected(aka "active" in the old tree implementation) tree
+   * item with the label to be lost.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForSelectedItemLostByLabel(label) {
+    await this.remoteCall_.waitForElementLost(
         this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
   }
 
@@ -207,7 +233,6 @@ export class DirectoryTreePageObject {
   getItemLabel(item) {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
-      return '';
     }
     return this.useNewTree_ ? item.attributes['label'] :
                               item.attributes['entry-label'];
@@ -222,7 +247,6 @@ export class DirectoryTreePageObject {
   getItemVolumeType(item) {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
-      return '';
     }
     return item.attributes['volume-type-for-testing'];
   }
@@ -235,7 +259,6 @@ export class DirectoryTreePageObject {
   assertItemDisabled(item) {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
-      return;
     }
     // Empty value for "disabled" means it's disabled.
     chrome.test.assertEq('', item.attributes['disabled']);

@@ -198,10 +198,6 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
   if (!MakeContextCurrent(stub_))
     return false;
 
-  gpu::gles2::ContextGroup* group = stub_->decoder_context()->GetContextGroup();
-  if (!group)
-    return false;
-
   const auto& coded_size = spec.coded_size;
 
   gpu::ContextResult result;

@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
 
 // An fake implementation of NearbyShareDeviceDataUpdater for use in unit tests.
 class FakeNearbyShareDeviceDataUpdater : public NearbyShareDeviceDataUpdater {
@@ -26,7 +26,8 @@ class FakeNearbyShareDeviceDataUpdater : public NearbyShareDeviceDataUpdater {
   // Advances the request queue and invokes request callback with the input
   // parameter |response|.
   void RunNextRequest(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response);
 
   const std::string& device_id() const { return device_id_; }
 

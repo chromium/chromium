@@ -1,11 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Property animation-name value 'none'
-[PASS] Property animation-name value 'foo'
-[PASS] Property animation-name value 'Both'
-[PASS] Property animation-name value 'ease-in'
-[PASS] Property animation-name value 'infinite'
-[PASS] Property animation-name value 'paused'
-[PASS] Property animation-name value 'first, second, third'
 [FAIL] Property animation-name value '"something"'
   assert_true: '"something"' is a supported value for animation-name. expected true got false
 Harness: the test ran to completion.

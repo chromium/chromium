@@ -221,7 +221,7 @@ class TrustworthinessTestTraits : public url::UrlOriginTestTraits {
   static bool IsOriginPotentiallyTrustworthy(const OriginType& origin) {
     return network::IsOriginPotentiallyTrustworthy(origin);
   }
-  static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
+  static bool IsUrlPotentiallyTrustworthy(std::string_view str) {
     return network::IsUrlPotentiallyTrustworthy(GURL(str));
   }
   static bool IsOriginOfLocalhost(const OriginType& origin) {

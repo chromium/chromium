@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -89,7 +89,7 @@ class EventRouter
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
-      const absl::optional<std::string>& package_name) override;
+      const std::optional<std::string>& package_name) override;
 
   // KeyedService overrides.
   void Shutdown() override;

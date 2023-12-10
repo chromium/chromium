@@ -243,7 +243,7 @@ void TetherNotificationPresenter::RemoveConnectionToHostFailedNotification() {
 
 void TetherNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (button_index) {
     DCHECK_EQ(kPotentialHotspotNotificationId, notification_id);
     DCHECK_EQ(0, *button_index);

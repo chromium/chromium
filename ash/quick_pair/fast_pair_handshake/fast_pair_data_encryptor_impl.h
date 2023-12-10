@@ -65,16 +65,16 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
   // FastPairDataEncryptor
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override;
-  const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>& GetPublicKey()
+  const std::optional<std::array<uint8_t, kPublicKeyByteSize>>& GetPublicKey()
       override;
   void ParseDecryptedResponse(
       const std::vector<uint8_t>& encrypted_response_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+      base::OnceCallback<void(const std::optional<DecryptedResponse>&)>
           callback) override;
   void ParseDecryptedPasskey(
       const std::vector<uint8_t>& encrypted_passkey_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-          callback) override;
+      base::OnceCallback<void(const std::optional<DecryptedPasskey>&)> callback)
+      override;
   std::vector<uint8_t> CreateAdditionalDataPacket(
       std::array<uint8_t, kNonceSizeBytes> nonce,
       const std::vector<uint8_t>& additional_data) override;
@@ -107,8 +107,8 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
 
   // The public key is only required during initial pairing and optional during
   // communication with paired devices.
-  absl::optional<std::array<uint8_t, kPublicKeyByteSize>> public_key_ =
-      absl::nullopt;
+  std::optional<std::array<uint8_t, kPublicKeyByteSize>> public_key_ =
+      std::nullopt;
 
   base::WeakPtrFactory<FastPairDataEncryptorImpl> weak_ptr_factory_{this};
 };

@@ -4149,7 +4149,11 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SellerWorkletTest, ForDebuggingOnlyReportsDisabled) {
+TEST_F(SellerWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1", R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),

@@ -51,8 +51,8 @@ struct TestLeakDetectionRequest : public LeakDetectionRequestInterface {
   ~TestLeakDetectionRequest() override = default;
   // LeakDetectionRequestInterface:
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const absl::optional<std::string>& access_token,
-                        const absl::optional<std::string>& api_key,
+                        const std::optional<std::string>& access_token,
+                        const std::optional<std::string>& api_key,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override {
     encrypted_payload_ = std::move(payload.encrypted_payload);
@@ -87,9 +87,9 @@ class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
   // Initializes |leak_check_| with the appropriate identity environment based
   // on the provided |user_signed_in| parameter.
   void InitializeLeakCheck(bool user_signed_in) {
-    absl::optional<std::string> api_key = kApiKey;
+    std::optional<std::string> api_key = kApiKey;
     if (user_signed_in) {
-      api_key = absl::nullopt;
+      api_key = std::nullopt;
       AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
       identity_env().SetCookieAccounts({{info.email, info.gaia}});
       identity_env().SetRefreshTokenForAccount(info.account_id);
@@ -190,7 +190,7 @@ TEST_P(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
   EXPECT_CALL(
       *network_request,
       LookupSingleLeak(
-          _, Optional(access_token), /*api_key=*/Eq(absl::nullopt),
+          _, Optional(access_token), /*api_key=*/Eq(std::nullopt),
           AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                       ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                 Field(&LookupSingleLeakPayload::encrypted_payload, Ne(""))),
@@ -219,7 +219,7 @@ TEST_P(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
   EXPECT_CALL(
       *network_request,
       LookupSingleLeak(
-          _, Optional(access_token), /*api_key=*/Eq(absl::nullopt),
+          _, Optional(access_token), /*api_key=*/Eq(std::nullopt),
           AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                       ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                 Field(&LookupSingleLeakPayload::encrypted_payload, Ne(""))),
@@ -269,7 +269,7 @@ TEST_P(LeakDetectionCheckImplTest, PassesAPIKeys) {
   EXPECT_CALL(
       *network_request,
       LookupSingleLeak(
-          _, /*access_token=*/Eq(absl::nullopt), Optional(Eq(kApiKey)),
+          _, /*access_token=*/Eq(std::nullopt), Optional(Eq(kApiKey)),
           AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                       ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                 Field(&LookupSingleLeakPayload::encrypted_payload, Ne(""))),
@@ -303,7 +303,7 @@ TEST_P(LeakDetectionCheckImplTest, ParseResponse_DecryptionError) {
               OnLeakDetectionDone(false, GURL(kExampleCom), Eq(kUsername16),
                                   Eq(kPassword16)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), absl::nullopt);
+      .Run(std::move(response), std::nullopt);
   task_env().RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample(
@@ -335,7 +335,7 @@ TEST_P(LeakDetectionCheckImplTest, ParseResponse_NoLeak) {
               OnLeakDetectionDone(false, GURL(kExampleCom), Eq(kUsername16),
                                   Eq(kPassword16)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), absl::nullopt);
+      .Run(std::move(response), std::nullopt);
   task_env().RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample(
@@ -373,7 +373,7 @@ TEST_P(LeakDetectionCheckImplTest, ParseResponse_Leak) {
               OnLeakDetectionDone(true, GURL(kExampleCom), Eq(kUsername16),
                                   Eq(kPassword16)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), absl::nullopt);
+      .Run(std::move(response), std::nullopt);
   task_env().RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample(

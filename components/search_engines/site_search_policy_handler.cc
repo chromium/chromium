@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -58,7 +59,12 @@ base::Value SiteSearchDictFromPolicyValue(
   CHECK(url);
   dict.Set(DefaultSearchManager::kURL, *url);
 
-  dict.Set(DefaultSearchManager::kCreatedByPolicy, true);
+  dict.Set(
+      DefaultSearchManager::kFeaturedByPolicy,
+      policy_dict.FindBool(SiteSearchPolicyHandler::kFeatured).value_or(false));
+
+  dict.Set(DefaultSearchManager::kCreatedByPolicy,
+           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
   dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
 
   // TODO(b/307543761): Create a new field `featured_by_policy` and setting
@@ -196,6 +202,16 @@ bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
   return true;
 }
 
+void WarnIfNonHttpsUrl(const std::string& policy_name,
+                       const std::string& url,
+                       PolicyErrorMap* errors) {
+  GURL gurl(url);
+  if (!gurl.SchemeIs(url::kHttpsScheme)) {
+    errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                     url);
+  }
+}
+
 bool ShortcutAlreadySeen(
     const std::string& policy_name,
     const std::string& shortcut,
@@ -222,8 +238,10 @@ bool ShortcutAlreadySeen(
 const char SiteSearchPolicyHandler::kName[] = "name";
 const char SiteSearchPolicyHandler::kShortcut[] = "shortcut";
 const char SiteSearchPolicyHandler::kUrl[] = "url";
+const char SiteSearchPolicyHandler::kFeatured[] = "featured";
 
 const int SiteSearchPolicyHandler::kMaxSiteSearchProviders = 100;
+const int SiteSearchPolicyHandler::kMaxFeaturedProviders = 3;
 
 SiteSearchPolicyHandler::SiteSearchPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
@@ -259,13 +277,31 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
   }
 
+  int num_featured = base::ranges::count_if(
+      site_search_providers, [](const base::Value& provider) {
+        return provider.GetDict()
+            .FindBool(SiteSearchPolicyHandler::kFeatured)
+            .value_or(false);
+      });
+  if (num_featured > kMaxFeaturedProviders) {
+    errors->AddError(
+        policy_name(),
+        IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_FEATURED_PROVIDERS_LIMIT_ERROR,
+        base::NumberToString(kMaxFeaturedProviders));
+    return false;
+  }
+
   base::flat_set<std::string> shortcuts_already_seen;
   base::flat_set<std::string> duplicated_shortcuts;
   for (const base::Value& provider : site_search_providers) {
     const std::string& shortcut = GetShortcut(provider);
     const std::string& url = GetUrl(provider);
 
-    if (ShortcutIsEmpty(policy_name(), shortcut, errors) ||
+    // TODO(b/309457951): Add validation to ensure that at most 3 entries are
+    //                    featured_by_policy.
+
+    bool invalid_entry =
+        ShortcutIsEmpty(policy_name(), shortcut, errors) ||
         NameIsEmpty(policy_name(), GetName(provider), errors) ||
         UrlIsEmpty(policy_name(), url, errors) ||
         ShortcutHasWhitespace(policy_name(), shortcut, errors) ||
@@ -274,8 +310,12 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                    policies, errors) ||
         ShortcutAlreadySeen(policy_name(), shortcut, shortcuts_already_seen,
                             errors, &duplicated_shortcuts) ||
-        ReplacementStringIsMissingFromUrl(policy_name(), url, errors)) {
+        ReplacementStringIsMissingFromUrl(policy_name(), url, errors);
+
+    if (invalid_entry) {
       ignored_shortcuts_.insert(shortcut);
+    } else {
+      WarnIfNonHttpsUrl(policy_name(), url, errors);
     }
 
     shortcuts_already_seen.insert(shortcut);

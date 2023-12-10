@@ -108,7 +108,8 @@ class VideoEncoderShim::EncoderImpl {
   void Encode(scoped_refptr<media::VideoFrame> frame, bool force_keyframe);
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer, uint8_t* mem);
   void RequestEncodingParametersChange(const media::Bitrate& bitrate,
-                                       uint32_t framerate);
+                                       uint32_t framerate,
+                                       const absl::optional<gfx::Size>& size);
   void Stop();
 
  private:
@@ -259,13 +260,20 @@ void VideoEncoderShim::EncoderImpl::UseOutputBitstreamBuffer(
 
 void VideoEncoderShim::EncoderImpl::RequestEncodingParametersChange(
     const media::Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   // If this is changed to use variable bitrate encoding, change the mode check
   // to check that the mode matches the current mode.
   if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
     NotifyErrorStatus(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     return;
   }
+
+  if (size.has_value()) {
+    NotifyErrorStatus(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
+    return;
+  }
+
   framerate_ = framerate;
 
   uint32_t bitrate_kbit = bitrate.target_bps() / 1000;
@@ -454,14 +462,15 @@ void VideoEncoderShim::UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) {
 
 void VideoEncoderShim::RequestEncodingParametersChange(
     const media::Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK(RenderThreadImpl::current());
 
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &VideoEncoderShim::EncoderImpl::RequestEncodingParametersChange,
-          base::Unretained(encoder_impl_.get()), bitrate, framerate));
+          base::Unretained(encoder_impl_.get()), bitrate, framerate, size));
 }
 
 void VideoEncoderShim::Destroy() {

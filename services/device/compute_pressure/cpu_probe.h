@@ -61,6 +61,10 @@ class CpuProbe {
   // Stop the timer.
   void Stop();
 
+  base::TimeDelta GetRandomizationTimeForTesting() const {
+    return randomization_time_;
+  }
+
  protected:
   // The constructor is intentionally only exposed to subclasses. Production
   // code must use the Create() factory method.
@@ -70,6 +74,11 @@ class CpuProbe {
   // Called periodically while the CpuProbe is running.
   // This function can be overridden in tests to deal with `sample`.
   virtual void OnPressureSampleAvailable(PressureSample sample);
+
+  // Implements the "break calibration" mitigation by toggling the
+  // |state_randomization_requested_| flag every |randomization_time_|
+  // interval.
+  void ToggleStateRandomization();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -83,6 +92,9 @@ class CpuProbe {
   // Calculate PressureState based on PressureSample.
   mojom::PressureState CalculateState(const PressureSample&);
 
+  // Variable storing |randomization_timer_| time.
+  base::TimeDelta randomization_time_;
+
   // Last state stored as index instead of value.
   size_t last_state_index_ =
       static_cast<size_t>(mojom::PressureState::kNominal);
@@ -91,6 +103,12 @@ class CpuProbe {
   base::RepeatingTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
   const base::TimeDelta sampling_interval_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Drive randomization interval by invoking `ToggleStateRandomization()`.
+  base::OneShotTimer randomization_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Flag to indicate that state randomization has been requested.
+  bool state_randomization_requested_ = false;
 
   // Called with each sample reading.
   base::RepeatingCallback<void(mojom::PressureState)> sampling_callback_

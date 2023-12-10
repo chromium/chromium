@@ -64,9 +64,13 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
-  const views::View* chips_container_for_testing() const {
-    return chips_container_;
-  }
+  void ResetPreTargetHandler();
+
+  void DisableMenu();
+
+  views::View* chips_container_for_testing() { return chips_container_; }
+
+  EditorMenuTextfieldView* textfield_for_testing() { return textfield_; }
 
  private:
   void InitLayout(const PresetTextQueries& preset_text_queries);
@@ -80,8 +84,6 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   void OnSettingsButtonPressed();
   void OnChipButtonPressed(const std::string& text_query_id);
-
-  void ResetPreTargetHandler();
 
   EditorMenuMode editor_menu_mode_;
 

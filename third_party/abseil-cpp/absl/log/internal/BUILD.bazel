@@ -220,6 +220,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:log_severity",
+        "//absl/base:no_destructor",
         "//absl/base:raw_logging_internal",
         "//absl/cleanup",
         "//absl/log:globals",

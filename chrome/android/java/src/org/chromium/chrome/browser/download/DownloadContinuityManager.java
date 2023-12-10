@@ -29,12 +29,14 @@ public abstract class DownloadContinuityManager {
     protected static class DownloadUpdate {
         int mNotificationId;
         Notification mNotification;
-        @DownloadStatus
-        int mDownloadStatus;
+        @DownloadStatus int mDownloadStatus;
         Context mContext;
 
-        DownloadUpdate(int notificationId, @Nullable Notification notification,
-                @DownloadStatus int downloadStatus, Context context) {
+        DownloadUpdate(
+                int notificationId,
+                @Nullable Notification notification,
+                @DownloadStatus int downloadStatus,
+                Context context) {
             mNotificationId = notificationId;
             mNotification = notification;
             mDownloadStatus = downloadStatus;
@@ -61,14 +63,19 @@ public abstract class DownloadContinuityManager {
      * @param notification The notification associated with the id. Can be null if
      *     {@link DownloadNotificationService} tries to cancel a notification.
      */
-    public void updateDownloadStatus(Context context, @DownloadStatus int downloadStatus,
-            int notificationId, @Nullable Notification notification) {
+    public void updateDownloadStatus(
+            Context context,
+            @DownloadStatus int downloadStatus,
+            int notificationId,
+            @Nullable Notification notification) {
         if (!isEnabled()) return;
         if (downloadStatus != DownloadStatus.IN_PROGRESS) {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "updateDownloadStatus status: " + downloadStatus + ", id: " + notificationId);
         }
-        mDownloadUpdateQueue.put(notificationId,
+        mDownloadUpdateQueue.put(
+                notificationId,
                 new DownloadUpdate(notificationId, notification, downloadStatus, context));
         processDownloadUpdateQueue(false /* not isProcessingPending */);
     }

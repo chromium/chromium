@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -66,7 +67,8 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         browser()->window()->GetNativeWindow());
 
-    content::WebContents* webui_webcontents = dialog->webui_->GetWebContents();
+    content::WebContents* webui_webcontents =
+        dialog->delegate_->GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(webui_webcontents));
     webui_webcontents->GetPrimaryMainFrame()->SetWebUIProperty(
         "expectedUrl", chrome::kChromeUICertificateViewerURL);

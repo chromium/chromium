@@ -87,6 +87,27 @@ std::string GetStringNameForOptimizationType(
       return "Compose";
     case proto::OptimizationType::PIX_PAYMENT_MERCHANT_ALLOWLIST:
       return "PixPaymentMerchantAllowlist";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_FLIGHT_BENEFITS:
+      return "SharedCreditCardFlightBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_DINING_BENEFITS:
+      return "SharedCreditCardDiningBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_GROCERY_BENEFITS:
+      return "SharedCreditCardGroceryBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
+      return "SharedCreditCardEntertainmentBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_STREAMING_BENEFITS:
+      return "SharedCreditCardStreamingBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_SUBSCRIPTION_BENEFITS:
+      return "SharedCreditCardSubscriptionBenefits";
+    case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS:
+      return "CapitalOneCreditCardDiningBenefits";
+    case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS:
+      return "CapitalOneCreditCardGroceryBenefits";
+    case proto::OptimizationType::
+        CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
+      return "CapitalOneCreditCardEntertainmentBenefits";
+    case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS:
+      return "CapitalOneCreditCardStreamingBenefits";
   }
 
   // The returned string is used to record histograms for the optimization type.

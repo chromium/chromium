@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Chromium-н саяхны табуудыг харах</translation>
 <translation id="4408912345039114853">Chromium-н Аюулгүй байдлын шалгалтыг явуулах</translation>
 <translation id="4432744876818348753">Chromium-г бүрэн ашиглахын тулд нэвтэрнэ үү.</translation>
+<translation id="4498832288620833153">Таны Chromium-н унших жагсаалтад оруулсан URL-уудыг нэмнэ.</translation>
 <translation id="452436063477828504">Та Google Бүртгэлдээ Chromium-н өгөгдлийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
 <translation id="4555020257205549924">Энэ онцлог асаалттай үед Chromium бусад хэл дээрх хуудсыг Google Орчуулагчаар орчуулахыг санал болгоно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium-д Төлбөрийн хэрэгслүүдийн тохиргооны хуудсыг нээнэ.</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">Бусад аппад хадгалсан нууц үгнүүдээ хялбархан авахын тулд Автоматаар бөглөх хэсэгт Chromium-г ашиглана уу</translation>
 <translation id="5076601183701536878">Chromium-н интернэтээр үзсэн өгөгдлийг арилгах</translation>
 <translation id="5131565040785979529">Танай байгууллага, <ph name="DOMAIN" /> таны нэвтэрсэн бүртгэл болон Chromium-г хэрхэн ашиглахыг удирдана.</translation>
+<translation id="5146749061471423558">Chromium-д хавчуурга нэмэх</translation>
 <translation id="5171868502429358653">Chromium-д нэвтэрнэ үү</translation>
 <translation id="5213683223491576284">Нууц үгний менежерийг Chromium-д нээнэ.</translation>
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
@@ -114,6 +116,7 @@
 
         Гарахаасаа өмнө хэдэн минут хүлээж үзнэ үү. Хэрэв та одоо гарвал энэ өгөгдлийг устгана.</translation>
 <translation id="5308226104666789935">Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
+<translation id="5311557153294205270">Таны Chromium-н хавчуургад оруулсан URL-уудыг нэмнэ.</translation>
 <translation id="5396916991083608703">Chromium-г өгөгдмөлөөр тохируулах уу?</translation>
 <translation id="5453478652154926037">Chromium таны нууц үгнүүдийг шалгах боломжгүй.</translation>
 <translation id="5521125884468363740">Та Chromium-г хаанаас ч ашигласан табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">Google Бүртгэлдээ Chromium-н өгөгдлийг үргэлжлүүлэн ашиглана уу</translation>
 <translation id="7006920032187763988">Та Нууц үгний менежерт хадгалсан нууц үгнүүдээ iPad дээрх бусад аппад ашиглах боломжтой.</translation>
 <translation id="7018284295775193585">Chromium-г шинэчлэх боломжгүй байна</translation>
-<translation id="7025471822960602362">Chromium-д илрүүлсэн илгээмжүүдийг хянах</translation>
 <translation id="7045244423563602563">Chromium-г өөрийн болгоoрой</translation>
 <translation id="7055269218854630176">Танай байгууллага болох <ph name="DOMAIN" /> таны нэвтэрч буй бүртгэл болон Chromium-г хэрхэн ашиглаж болохыг удирдана. Танай администратор тодорхой онцлогуудыг тохируулах эсвэл хязгаарлах боломжтой.</translation>
 <translation id="7099326575020694068">Chromium таны камерыг хувааж харах горимд ашиглах боломжгүй</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">Бусад апп дахь холбоосыг товших бүрдээ Chromium-г нээгээрэй</translation>
 <translation id="7931842119211730154">Таныг Chromium-г хаах үед Нууцлалтай табыг түгжинэ</translation>
 <translation id="7934404985878918282">Chromium-н Унших жагсаалтыг харах</translation>
+<translation id="7971753607796745700">Унших жагсаалтын зүйлийг Chromium-д нэмэх</translation>
 <translation id="7980860476903281594">Chromium таны байршлыг таны зөвшөөрсөн сайтуудтай хуваалцана.</translation>
 <translation id="7995166854192397899">Зөвлөмжүүдийг таны бусад төхөөрөмжийн хөтчийн үйл ажиллагаанд тань тулгуурлан харуулдаг. Зөвлөмжүүд авахын тулд бүх төхөөрөмждөө Chromium-д нэвтэрнэ үү.</translation>
 <translation id="800195749539500647">Chromium-г бүрэн ашиглаарай</translation>

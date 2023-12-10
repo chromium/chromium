@@ -25,6 +25,7 @@ public class KeyPrefix {
     public String createKey(String stem) {
         return mPrefix + stem;
     }
+
     /**
      * @param index An int to generate a unique key.
      * @return The complete SharedPreferences key to be passed to {@link SharedPreferencesManager}.

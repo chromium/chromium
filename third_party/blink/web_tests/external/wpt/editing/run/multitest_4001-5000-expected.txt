@@ -1,1092 +1,180 @@
 This is a testharness.js-based test.
-Found 1000 tests; 912 PASS, 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("backcolor") after
+Found 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foo<hr>abar"
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foo<hr>abar"
 [FAIL] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("backcolor") after
 [FAIL] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "fooab<b>c</b>dabar"
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "fooab<b>c</b>dabar"
 [FAIL] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("backcolor") after
 [FAIL] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foo<img src=\"/img/lion.svg\">abar"
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [FAIL] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"background-color:rgb(0, 255, 255)\"><br></span>bar"
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandState("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"background-color:rgb(0, 255, 255)\\"><br></span>bar"
 [FAIL] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foo<span style=\"background-color:rgb(0, 255, 255)\"><br>a</span>bar"
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foo<span style=\\"background-color:rgb(0, 255, 255)\\"><br>a</span>bar"
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "foo<div>bar</div>"
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandState("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandValue("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</p>" but got "foo<div><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>"
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</p>" but got "foo<div><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>"
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar": execCommand("justifycenter", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandState("backcolor") after
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("justifycenter") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandState("justifycenter") before
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("justifycenter") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandState("justifycenter") after
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
   assert_equals: Wrong result returned expected "center" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("justifycenter", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div style=\"text-align:center\">fooabar</div>"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifycenter") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifycenter") before
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifycenter") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifycenter") after
 [FAIL] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
   assert_equals: Wrong result returned expected "center" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar": execCommand("justifyfull", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandState("backcolor") after
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("justifyfull") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandState("justifyfull") before
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("justifyfull") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandState("justifyfull") after
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("justifyfull", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div style=\"text-align:justify\">fooabar</div>"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyfull") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyfull") before
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyfull") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyfull") after
 [FAIL] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar": execCommand("justifyleft", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandState("backcolor") after
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("justifyleft") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandState("justifyleft") before
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("justifyleft") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandState("justifyleft") after
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("justifyleft", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "fooabar"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "fooabar"
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyleft") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyleft") before
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyleft") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyleft") after
 [FAIL] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar": execCommand("justifyright", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandState("backcolor") after
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandIndeterm("justifyright") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandState("justifyright") before
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandIndeterm("justifyright") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandState("justifyright") after
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
   assert_equals: Wrong result returned expected "right" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("justifyright", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:right\">foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div style=\"text-align:right\">fooabar</div>"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgba(0, 0, 0, 0)"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyright") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyright") before
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyright") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyright") after
 [FAIL] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
   assert_equals: Wrong result returned expected "right" but got "true"
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar": execCommand("outdent", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandState("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandValue("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandIndeterm("outdent") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandState("outdent") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandValue("outdent") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandIndeterm("outdent") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandState("outdent") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandValue("outdent") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("outdent", false, "") return value
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("outdent") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("outdent") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("outdent") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("outdent") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("outdent") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("outdent") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["backcolor","#00FFFF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar": execCommand("delete", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fobar" but got "foobar"
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandIndeterm("delete") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandState("delete") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandValue("delete") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandIndeterm("delete") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandState("delete") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""]] "foo[]bar" queryCommandValue("delete") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("delete", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<a href=\"http://www.google.com/\"><font color=\"#000000\">a</font></a>bar" but got "fooabar"
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("delete") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("delete") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("delete") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("delete") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("delete") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("delete") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar": execCommand("formatblock", false, "<div>") return value
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<a href=\\"http://www.google.com/\\"><font color=\\"#000000\\">a</font></a>bar" but got "fooabar"
 [FAIL] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foobar</div>" but got "<div>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</div>"
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("formatblock") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandState("formatblock") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandValue("formatblock") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("formatblock") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandState("formatblock") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"]] "foo[]bar" queryCommandValue("formatblock") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("formatblock", false, "<div>") return value
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("formatblock") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("formatblock") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar": execCommand("forwarddelete", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foobar</div>" but got "<div>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</div>"
 [FAIL] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooar" but got "foobar"
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("forwarddelete") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandState("forwarddelete") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandValue("forwarddelete") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("forwarddelete") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandState("forwarddelete") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""]] "foo[]bar" queryCommandValue("forwarddelete") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("forwarddelete", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com/\"><font color=\"#000000\">a</font></a>ar" but got "fooabar"
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forwarddelete") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("forwarddelete") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forwarddelete") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forwarddelete") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("forwarddelete") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forwarddelete") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com/\\"><font color=\\"#000000\\">a</font></a>ar" but got "fooabar"
 [FAIL] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</blockquote>"
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("indent", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</blockquote>"
 [FAIL] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<a href=\"http://www.google.com/\">a</a>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo<a href=\"http://www.google.com/\">a</a>bar</blockquote>"
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<a href=\\"http://www.google.com/\\">a</a>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foo<a href=\\"http://www.google.com/\\">a</a>bar</blockquote>"
 [FAIL] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><a href=\"http://www.google.com/\">a</a>bar" but got "foo<hr>abar"
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><a href=\\"http://www.google.com/\\">a</a>bar" but got "foo<hr>abar"
 [FAIL] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<a href=\"http://www.google.com/\">a</a>bar" but got "fooab<b>c</b>dabar"
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<a href=\\"http://www.google.com/\\">a</a>bar" but got "fooab<b>c</b>dabar"
 [FAIL] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><a href=\"http://www.google.com/\">a</a>bar" but got "foo<img src=\"/img/lion.svg\">abar"
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><a href=\\"http://www.google.com/\\">a</a>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [FAIL] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><a href=\"http://www.google.com/\">a</a>bar" but got "foo<br>abar"
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><a href=\\"http://www.google.com/\\">a</a>bar" but got "foo<br>abar"
 [FAIL] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</li></ol>"
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</li></ol>"
 [FAIL] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "foo<div>bar</div>"
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><a href=\"http://www.google.com/\">a</a>bar</p>" but got "foo<div>abar</div>"
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><a href=\\"http://www.google.com/\\">a</a>bar</p>" but got "foo<div>abar</div>"
 [FAIL] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</li></ul>"
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</li></ul>"
 [FAIL] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar": execCommand("justifycenter", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foobar</div>" but got "<div style=\"text-align:center\">foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</div>"
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("justifycenter") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandState("justifycenter") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foobar</div>" but got "<div style=\\"text-align:center\\">foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</div>"
 [FAIL] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("justifycenter") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandState("justifycenter") after
 [FAIL] [["createlink","http://www.google.com/"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
   assert_equals: Wrong result returned expected "center" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("justifycenter", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifycenter") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifycenter") before
 [FAIL] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifycenter") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifycenter") after
 [FAIL] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
   assert_equals: Wrong result returned expected "center" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar": execCommand("justifyfull", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foobar</div>" but got "<div style=\"text-align:justify\">foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</div>"
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("justifyfull") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandState("justifyfull") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foobar</div>" but got "<div style=\\"text-align:justify\\">foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</div>"
 [FAIL] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("justifyfull") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandState("justifyfull") after
 [FAIL] [["createlink","http://www.google.com/"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("justifyfull", false, "") return value
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyfull") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyfull") before
 [FAIL] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyfull") after
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyfull") after
 [FAIL] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["createlink","http://www.google.com/"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
 Harness: the test ran to completion.
 

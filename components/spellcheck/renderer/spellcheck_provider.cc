@@ -24,6 +24,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -85,15 +86,10 @@ void SpellCheckProvider::DictionaryUpdateObserverImpl::OnDictionaryUpdated(
   }
 }
 
-SpellCheckProvider::SpellCheckProvider(
-    content::RenderFrame* render_frame,
-    SpellCheck* spellcheck,
-    service_manager::LocalInterfaceProvider* embedder_provider)
-    : content::RenderFrameObserver(render_frame),
-      spellcheck_(spellcheck),
-      embedder_provider_(embedder_provider) {
+SpellCheckProvider::SpellCheckProvider(content::RenderFrame* render_frame,
+                                       SpellCheck* spellcheck)
+    : content::RenderFrameObserver(render_frame), spellcheck_(spellcheck) {
   DCHECK(spellcheck_);
-  DCHECK(embedder_provider);
   if (render_frame)  // NULL in unit tests.
     render_frame->GetWebFrame()->SetTextCheckClient(this);
 
@@ -106,15 +102,6 @@ SpellCheckProvider::~SpellCheckProvider() {
 
 void SpellCheckProvider::ResetDictionaryUpdateObserverForTesting() {
   dictionary_update_observer_.reset();
-}
-
-spellcheck::mojom::SpellCheckHost& SpellCheckProvider::GetSpellCheckHost() {
-  if (spell_check_host_)
-    return *spell_check_host_;
-
-  embedder_provider_->GetInterface(
-      spell_check_host_.BindNewPipeAndPassReceiver());
-  return *spell_check_host_;
 }
 
 void SpellCheckProvider::RequestTextChecking(
@@ -213,9 +200,8 @@ void SpellCheckProvider::RequestTextCheckingFromBrowser(
   // available for browser process, so we ask the system spellchecker
   // over mojo or return an empty result if the checker is not available.
   GetSpellCheckHost().RequestTextCheck(
-      text, routing_id(),
-      base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
-                     weak_factory_.GetWeakPtr(), last_identifier_, text));
+      text, base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
+                           weak_factory_.GetWeakPtr(), last_identifier_, text));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -256,6 +242,19 @@ void SpellCheckProvider::FocusedElementChanged(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+spellcheck::mojom::SpellCheckHost& SpellCheckProvider::GetSpellCheckHost() {
+  if (spell_check_host_) {
+    return *spell_check_host_.get();
+  }
+
+  // We shodulnt't get here in tests, `spell_check_host_` should have been set.
+  CHECK(render_frame());
+
+  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+      spell_check_host_.BindNewPipeAndPassReceiver());
+  return *spell_check_host_.get();
+}
+
 bool SpellCheckProvider::IsSpellCheckingEnabled() const {
   return spellcheck_->IsSpellcheckEnabled();
 }
@@ -277,7 +276,7 @@ void SpellCheckProvider::CheckSpelling(
     // browser process side to avoid a blocking IPC.
     spellcheck::PerLanguageSuggestions per_language_suggestions;
     spellcheck_->SpellCheckWord(word.c_str(), kWordStart, word.size(),
-                                routing_id(), &offset, &length,
+                                GetSpellCheckHost(), &offset, &length,
                                 &per_language_suggestions);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -297,7 +296,7 @@ void SpellCheckProvider::CheckSpelling(
         base::saturated_cast<int>(word.size()));
   } else {
     spellcheck_->SpellCheckWord(word.c_str(), kWordStart, word.size(),
-                                routing_id(), &offset, &length,
+                                GetSpellCheckHost(), &offset, &length,
                                 /* optional suggestions vector */ nullptr);
     spellcheck_renderer_metrics::RecordCheckedTextLengthNoSuggestions(
         base::saturated_cast<int>(word.size()));
@@ -330,21 +329,22 @@ void SpellCheckProvider::OnRespondSpellingService(
 
   // If |success| is false, we use local spellcheck as a fallback.
   if (!success) {
-    spellcheck_->RequestTextChecking(line, std::move(completion));
+    spellcheck_->RequestTextChecking(line, std::move(completion),
+                                     weak_factory_.GetWeakPtr());
     return;
   }
 
   // Double-check the returned spellchecking results with Hunspell to visualize
   // the differences between ours and the enhanced spell checker.
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
-  spellcheck_->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
-                                         /*line_offset=*/0, line, results,
-                                         &textcheck_results);
+  spellcheck_->CreateTextCheckingResults(
+      SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, GetSpellCheckHost(),
+      /*line_offset=*/0, line, results, &textcheck_results);
   completion->DidFinishCheckingText(textcheck_results);
 
   // Cache the request and the converted results.
   last_request_ = line;
-  last_results_.Swap(textcheck_results);
+  last_results_.swap(textcheck_results);
 }
 #endif
 
@@ -388,7 +388,7 @@ void SpellCheckProvider::OnRespondTextCheck(
   }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-  spellcheck_->CreateTextCheckingResults(result_filter,
+  spellcheck_->CreateTextCheckingResults(result_filter, GetSpellCheckHost(),
                                          /*line_offset=*/0, line, results,
                                          &textcheck_results);
 
@@ -405,7 +405,7 @@ void SpellCheckProvider::OnRespondTextCheck(
 
   // Cache the request and the converted results.
   last_request_ = line;
-  last_results_.Swap(textcheck_results);
+  last_results_.swap(textcheck_results);
 }
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 

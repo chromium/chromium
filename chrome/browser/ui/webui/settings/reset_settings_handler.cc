@@ -33,7 +33,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/common/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -117,12 +116,6 @@ void ResetSettingsHandler::RegisterMessages() {
       base::BindRepeating(
           &ResetSettingsHandler::HandleGetTriggeredResetToolName,
           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
-      "onPowerwashDialogShow",
-      base::BindRepeating(&ResetSettingsHandler::OnShowPowerwashDialog,
-                          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ResetSettingsHandler::HandleResetProfileSettings(
@@ -245,9 +238,6 @@ void ResetSettingsHandler::ResetProfile(
                      callback_weak_ptr_factory_.GetWeakPtr(), callback_id,
                      send_settings, request_origin));
   base::RecordAction(base::UserMetricsAction("ResetProfile"));
-  UMA_HISTOGRAM_ENUMERATION(
-      "ProfileReset.ResetRequestOrigin", request_origin,
-      reset_report::ChromeResetReport::ResetRequestOrigin_MAX + 1);
 }
 
 ProfileResetter* ResetSettingsHandler::GetResetter() {
@@ -287,15 +277,5 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
   base::Value string_value(reset_tool_name);
   ResolveJavascriptCallback(callback_id, string_value);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ResetSettingsHandler::OnShowPowerwashDialog(
-    const base::Value::List& args) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Reset.ChromeOS.PowerwashDialogShown",
-      ash::reset::DialogViewType::kFromOptions,
-      ash::reset::DialogViewType::kCount);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings

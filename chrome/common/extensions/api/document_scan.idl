@@ -24,10 +24,327 @@ namespace documentScan {
     DOMString mimeType;
   };
 
+  // OperationResult is an enum that indicates the result of each operation
+  // performed by the backend.  It contains the same causes as SANE_Status plus
+  // additional statuses that come from the IPC layers and image conversion
+  // stages.
+  [nodoc] enum OperationResult {
+    // An unknown or generic failure occurred.
+    UNKNOWN,
+
+    // Operation succeeded.
+    SUCCESS,
+
+    // The operation is not supported.
+    UNSUPPORTED,
+
+    // The operation was cancelled.
+    CANCELLED,
+
+    // The device is busy.
+    DEVICE_BUSY,
+
+    // Data or argument is invalid.
+    INVALID,
+
+    // Value is the wrong type for the underlying option.
+    WRONG_TYPE,
+
+    // No more data is available.
+    EOF,
+
+    // The document feeder is jammed.
+    ADF_JAMMED,
+
+    // The document feeder is empty.
+    ADF_EMPTY,
+
+    // The flatbed cover is open.
+    COVER_OPEN,
+
+    // An error occurred while communicating with the device.
+    IO_ERROR,
+
+    // The device requires authentication.
+    ACCESS_DENIED,
+
+    // Not enough memory was available to complete the operation.
+    NO_MEMORY,
+
+    // The device was not reachable.
+    UNREACHABLE,
+
+    // The device was disconnected.
+    MISSING,
+
+    // An internal error occurred.
+    INTERNAL_ERROR
+  };
+
+  // How the scanner is connected to the computer.
+  [nodoc] enum ConnectionType {
+    UNSPECIFIED,
+    USB,
+    NETWORK
+  };
+
+  // ScannerInfo contains general information about a scanner device.  It is
+  // intended for filtering and constructing user-facing information, not for
+  // configuring a scan.
+  [nodoc] dictionary ScannerInfo {
+    // For connecting with <code>openScanner</code>.
+    DOMString scannerId;
+
+    // Printable name for displaying in the UI.
+    DOMString name;
+
+    // Scanner manufacturer.
+    DOMString manufacturer;
+
+    // Scanner model if available, or a generic description.
+    DOMString model;
+
+    // For matching against other <code>ScannerInfo</code> entries that point
+    // to the same physical device.
+    DOMString deviceUuid;
+
+    // How the scanner is connected to the computer.
+    ConnectionType connectionType;
+
+    // If true, the scanner connection's transport cannot be intercepted by a
+    // passive listener, such as TLS or USB.
+    boolean secure;
+
+    // MIME types that can be requested for returned scans.
+    DOMString[] imageFormats;
+  };
+
+  // The type of an option.  This is the same set of types as SANE_Value_Type.
+  [nodoc] enum OptionType {
+    // Unknown option type.  <code>value</code> will be unset.
+    UNKNOWN,
+
+    // true/false only.  <code>value</code> will be a boolean.
+    BOOL,
+
+    // Signed 32-bit integer.  <code>value</code> will be long or long[],
+    // depending on whether the option takes more than one value.
+    INT,
+
+    // Double in the range -32768-32767.9999 with a resolution of 1/65535.
+    // <code>value</code> will be double or double[] depending on whether the
+    // option takes more than one value.
+    FIXED,
+
+    // A sequence of any bytes except NUL ('\0').  <code>value</code> will be a
+    // DOMString.
+    STRING,
+
+    // Hardware button or toggle.  No value.
+    BUTTON,
+
+    // Grouping option.  No value.  This is included for compatibility, but
+    // will not normally be returned in <code>ScannerOption</code> values.  Use
+    // <code>getOptionGroups()</code> to retrieve the list of groups with their
+    // member options.
+    GROUP
+  };
+
+  // The unit of measurement for an option.  This is the same set of units as
+  // SANE_Unit.
+  [nodoc] enum OptionUnit {
+    // Value is a unitless number, e.g. threshold.
+    UNITLESS,
+
+    // Value is a number of pixels, e.g., scan dimensions.
+    PIXEL,
+
+    // Value is the number of bits, e.g., color depth.
+    BIT,
+
+    // Value is measured in millimeters, e.g., scan dimensions.
+    MM,
+
+    // Value is measured in dots per inch, e.g., resolution.
+    DPI,
+
+    // Value is a percent, e.g., brightness.
+    PERCENT,
+
+    // Value is measured in microseconds, e.g., exposure time.
+    MICROSECOND
+  };
+
+  // The type of constraint represented by an OptionConstraint.
+  [nodoc] enum ConstraintType {
+    // Constraint represents a range of <code>OptionType.INT</code> values.
+    // <code>min</code>, <code>max</code>, and <code>quant</code> will be
+    // <code>long</code>, and <code>list</code> will be unset.
+    INT_RANGE,
+
+    // Constraint represents a range of <code>OptionType.FIXED</code> values.
+    // <code>min</code>, <code>max</code>, and <code>quant</code> will be
+    // <code>double</code>, and <code>list</code> will be unset.
+    FIXED_RANGE,
+
+    // Constraint represents a specific list of <code>OptionType.INT</code>
+    // values.  <code>list</code> will contain <code>long</code> values, and
+    // the other fields will be unset.
+    INT_LIST,
+
+    // Constraint represents a specific list of <code>OptionType.FIXED</code>
+    // values.  <code>list</code> will contain <code>double</code> values, and
+    // the other fields will be unset.
+    FIXED_LIST,
+
+    // Constraint represents a specific list of <code>OptionType.STRING</code>
+    // values.  <code>list</code> will contain <code>DOMString</code> values,
+    // and the other fields will be unset.
+    STRING_LIST
+  };
+
+  // <code>OptionConstraint</code> represents the same set of value constraints
+  // as SANE_Constraint_Type, with the exception that an unconstrained value is
+  // represented by a lack of constraint rather than a special
+  // SANE_CONSTRAINT_NONE value.
+  [nodoc] dictionary OptionConstraint {
+      ConstraintType type;
+      (long or double)? min;
+      (long or double)? max;
+      (long or double)? quant;
+      (long[] or double[] or DOMString[])? list;
+  };
+
+  // How an option can be changed.
+  [nodoc] enum Configurability {
+      // Option is read-only and cannot be changed.
+      NOT_CONFIGURABLE,
+
+      // Option can be set in software.
+      SOFTWARE_CONFIGURABLE,
+
+      // Option can be set by the user toggling/pushing a hardware button.
+      HARDWARE_CONFIGURABLE
+  };
+
+  // A self-describing configurable scanner option and current value, in the
+  // same style as SANE's SANE_Option_Descriptor and sane_control_option().
+  [nodoc] dictionary ScannerOption {
+    // Option name using lowercase a-z, numbers, and dashes.
+    DOMString name;
+
+    // Printable one-line title.
+    DOMString title;
+
+    // Longer description of the option.
+    DOMString description;
+
+    // The type that <code>value</code> will contain and that is needed for
+    // setting this option.
+    OptionType type;
+
+    // Unit of measurement for this option.
+    OptionUnit unit;
+
+    // Current value of the option if relevant. Note the type passed here must
+    // match the type specified in <code>type</code>.
+    (boolean or long or long[] or double or double[] or DOMString)? value;
+
+    // Constraint on possible values.
+    OptionConstraint? constraint;
+
+    // Can be detected from software.
+    boolean isDetectable;
+
+    // Whether/how the option can be changed.
+    Configurability configurability;
+
+    // Can be automatically set by the backend.
+    boolean isAutoSettable;
+
+    // Emulated by the backend if true.
+    boolean isEmulated;
+
+    // Option is active and can be set/retrieved.  If false, the
+    // <code>value</code> field will not be set.
+    boolean isActive;
+
+    // UI should not display this option by default.
+    boolean isAdvanced;
+
+    // Option is used for internal configuration and should never be displayed
+    // in the UI.
+    boolean isInternal;
+  };
+
+  // A set of criteria passed to <code>getScannerList()</code>.  Only devices
+  // that match all of the criteria will be returned.
+  [nodoc] dictionary DeviceFilter {
+    // Only return scanners that are directly attached to the computer.
+    boolean? local;
+
+    // Only return scanners that use a secure transport, such as USB or TLS.
+    boolean? secure;
+  };
+
+  // The response from <code>getScannerList()</code>.
+  [nodoc] dictionary GetScannerListResponse {
+    // The backend's enumeration result.  Note that partial results could be
+    // returned even if this indicates an error.
+    OperationResult result;
+
+    // A possibly-empty list of scanners that match the provided
+    // <code>DeviceFilter</code>.
+    ScannerInfo[] scanners;
+  };
+
+  // The response from <code>openScanner()</code>.
+  [nodoc] dictionary OpenScannerResponse {
+    // Same scanner ID passed to <code>openScanner()</code>.
+    DOMString scannerId;
+
+    // Backend result of opening the scanner.
+    OperationResult result;
+
+    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a handle
+    // to the scanner that can be used for further operations.
+    DOMString? scannerHandle;
+
+    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a
+    // key-value mapping from option names to <code>ScannerOption</code>.
+    object? options;
+  };
+
+  // The response from <code>closeScanner()</code>.
+  [nodoc] dictionary CloseScannerResponse {
+    // Same scanner handle passed to <code>closeScanner()</code>.
+    DOMString scannerHandle;
+
+    // Backend result of closing the scanner.  Even if this value is not
+    // <code>OperationResult.SUCCESS</code>, the handle will be invalid and
+    // should not be used for any further operations.
+    OperationResult result;
+  };
+
   // Callback from the <code>scan</code> method.
   // |result| The results from the scan, if successful.
   // Otherwise will return null and set runtime.lastError.
   callback ScanCallback = void (ScanResults result);
+
+  // Callback from the <code>getScannerList</code> method.
+  // |response| The response from enumeration, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback GetScannerListCallback = void (GetScannerListResponse response);
+
+  // Callback from the <code>openScanner</code> method.
+  // |response| The response from opening the scanner, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback OpenScannerCallback = void (OpenScannerResponse response);
+
+  // Callback from the <code>closeScanner</code> method.
+  // |response| The response from closing the scanner, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback CloseScannerCallback = void (CloseScannerResponse response);
 
   interface Functions {
     // Performs a document scan.  On success, the PNG data will be
@@ -36,5 +353,31 @@ namespace documentScan {
     // |callback| : Called with the result and data from the scan.
     [supportsPromises] static void scan(ScanOptions options,
                                         ScanCallback callback);
+
+    // Gets the list of available scanners.  On success, the list will be
+    // sent to the callback.
+    // |filter| : <code>DeviceFilter</code> indicating which types of scanners
+    // should be returned.
+    // |callback| : Called with the result and list of scanners.
+    [nodoc, supportsPromises] static void getScannerList(
+        DeviceFilter filter, GetScannerListCallback callback);
+
+    // Opens a scanner for exclusive access.  On success, the response containing
+    // a scanner handle and configuration will be sent to the callback.
+    // |scannerId| : Scanner id previously returned from <code>getScannerList</code>
+    // indicating which scanner should be opened.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void openScanner(
+        DOMString scannerId, OpenScannerCallback callback);
+
+    // Closes a previously opened scanner handle.  A response indicating the
+    // outcome will be sent to the callback.  Even if the response is not a
+    // success, the supplied handle will become invalid and should not be used
+    // for further operations.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void closeScanner(
+        DOMString scannerHandle, CloseScannerCallback callback);
   };
 };

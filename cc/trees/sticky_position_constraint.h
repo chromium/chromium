@@ -19,17 +19,17 @@ struct CC_EXPORT StickyPositionConstraint {
   StickyPositionConstraint(const StickyPositionConstraint& other);
   StickyPositionConstraint& operator=(const StickyPositionConstraint& other);
 
-  bool is_anchored_left : 1;
-  bool is_anchored_right : 1;
-  bool is_anchored_top : 1;
-  bool is_anchored_bottom : 1;
+  bool is_anchored_left : 1 = false;
+  bool is_anchored_right : 1 = false;
+  bool is_anchored_top : 1 = false;
+  bool is_anchored_bottom : 1 = false;
 
   // The offset from each edge of the ancestor scroller (or the viewport) to
   // try to maintain to the sticky box as we scroll.
-  float left_offset;
-  float right_offset;
-  float top_offset;
-  float bottom_offset;
+  float left_offset = 0;
+  float right_offset = 0;
+  float top_offset = 0;
+  float bottom_offset = 0;
 
   // The rectangle in which the sticky box is able to be positioned. This may be
   // smaller than the scroller viewport due to things like padding.

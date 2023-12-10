@@ -90,7 +90,7 @@ import java.io.IOException;
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
 // with Start surface enabled.
-@DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, ChromeFeatureList.START_SURFACE_ANDROID})
+@DisableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE, ChromeFeatureList.START_SURFACE_ANDROID})
 public class TabGridIphTest {
     private ModalDialogManager mModalDialogManager;
 
@@ -231,6 +231,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1504246")
     public void testRenderIph_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 

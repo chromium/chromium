@@ -4,7 +4,9 @@
 
 #include "net/disk_cache/blockfile/stats.h"
 
-#include "base/bits.h"
+#include <bit>
+#include <cstdint>
+
 #include "base/check.h"
 #include "base/format_macros.h"
 #include "base/strings/string_util.h"
@@ -261,7 +263,7 @@ int Stats::GetStatsBucket(int32_t size) {
     return (size - 20 * 1024) / 4096 + 11;
 
   // From this point on, use a logarithmic scale.
-  int result = base::bits::Log2Floor(size) + 1;
+  int result = std::bit_width<uint32_t>(size);
 
   static_assert(kDataSizesLength > 16, "update the scale");
   if (result >= kDataSizesLength)

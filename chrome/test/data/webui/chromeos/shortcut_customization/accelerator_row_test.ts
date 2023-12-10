@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://shortcut-customization/js/accelerator_row.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,7 +14,6 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {AcceleratorSource, AcceleratorState, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -78,8 +78,9 @@ suite('acceleratorRowTest', function() {
         rowElement!.shadowRoot!.querySelector(
                                    '#descriptionText')!.textContent!.trim());
 
-    const keys1: NodeListOf<InputKeyElement> =
-        acceleratorElements[0]!.shadowRoot!.querySelectorAll('input-key');
+    const keys1: NodeListOf<ShortcutInputKeyElement> =
+        acceleratorElements[0]!.shadowRoot!.querySelectorAll(
+            'shortcut-input-key');
     // SHIFT + CONTROL + g
     assertEquals(3, keys1.length);
     assertEquals(
@@ -91,8 +92,8 @@ suite('acceleratorRowTest', function() {
     assertEquals(
         'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
 
-    const keys2 =
-        acceleratorElements[1]!.shadowRoot!.querySelectorAll('input-key');
+    const keys2 = acceleratorElements[1]!.shadowRoot!.querySelectorAll(
+        'shortcut-input-key');
     // CONTROL + c
     assertEquals(2, keys2.length);
     assertEquals(
@@ -235,13 +236,14 @@ suite('acceleratorRowTest', function() {
         rowElement!.shadowRoot!.querySelector('text-accelerator');
     assertFalse(!!textAccelElement);
 
-    const keys1: NodeListOf<InputKeyElement> =
-        acceleratorElements[0]!.shadowRoot!.querySelectorAll('input-key');
+    const keys1: NodeListOf<ShortcutInputKeyElement> =
+        acceleratorElements[0]!.shadowRoot!.querySelectorAll(
+            'shortcut-input-key');
     // SHIFT + CONTROL + g
     assertEquals(3, keys1.length);
 
-    const keys2 =
-        acceleratorElements[1]!.shadowRoot!.querySelectorAll('input-key');
+    const keys2 = acceleratorElements[1]!.shadowRoot!.querySelectorAll(
+        'shortcut-input-key');
     // CONTROL + c
     assertEquals(2, keys2.length);
   });

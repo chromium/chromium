@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Kustuta <ph name="PAGE_NUMBER" />. leht</translation>
 <translation id="1113173431709655881">Kaamerarežiim</translation>
 <translation id="1153190633558910465">Ruudustik on välja lülitatud</translation>
-<translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. leht on kustutatud</translation>
 <translation id="1258009455399840361">Pööra 90 kraadi päripäeva</translation>
 <translation id="1417314334557041815">Muuda <ph name="INDEX" />. lehte</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Video töötlemine ...</translation>
 <translation id="3789724198583203151">Pööra 90 kraadi vastupäeva</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="4060608699153044055">Te ei saa salvestada, sest seadmes on liiga vähe salvestusruumi. Salvestamise alustamiseks peate oma seadmes ruumi vabastama.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Peata salvestamine</translation>
 <translation id="4121305183798804752">Tuvastati dokument</translation>
 <translation id="414641094616694804">See kaamera ei saa eraldusvõimet muuta</translation>
 <translation id="4176463684765177261">Keelatud</translation>
-<translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="428234092390943511">Lehe pisipilt</translation>
 <translation id="4349714250734879769">Kaadreid skaleerib Chrome</translation>
 <translation id="4383571725254449280">Toimivuslogide trükkimine</translation>
@@ -144,7 +141,6 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7726641833034062494">Tavalise video salvestamine</translation>
 <translation id="7748344063862150053">Dokumendi parem ülanurk</translation>
 <translation id="7933675232020478311">Liigub paremale alla</translation>
-<translation id="7983668134180549431">Tuvastati tekst.</translation>
 <translation id="8079255378695216066">Salvestamist ei saanud alustada</translation>
 <translation id="8120146556401698679">Panoraamimine, kallutamine, suumimine</translation>
 <translation id="8131740175452115882">Kinnita</translation>
@@ -163,6 +159,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8870695351537079478">Salvestamise alustamine ebaõnnestus</translation>
 <translation id="8880167521484863515">4 : 3</translation>
 <translation id="8903921497873541725">Suurendab</translation>
+<translation id="8926890870105777777">Liituge võrguga „<ph name="WIFINAME" />”</translation>
 <translation id="9045010116236796332">Paigutage kõik dokumendi servad raami sisse</translation>
 <translation id="9045155556724273246">10 sekundit</translation>
 <translation id="906331135292332864">Pildi töötlemine …</translation>

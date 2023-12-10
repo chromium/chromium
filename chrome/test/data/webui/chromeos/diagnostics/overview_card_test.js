@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/overview_card.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeSystemInfo, fakeSystemInfoWithoutBoardName, fakeSystemInfoWithTBD} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';

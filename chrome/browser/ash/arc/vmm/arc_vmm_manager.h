@@ -137,8 +137,8 @@ class ArcVmmManager : public KeyedService,
   base::ObserverList<Observer> observer_list_;
 
   // Log the time stamp and result of last shrink memory request.
-  absl::optional<base::Time> last_shrink_timestamp_;
-  absl::optional<bool> last_shrink_result_;
+  std::optional<base::Time> last_shrink_timestamp_;
+  std::optional<bool> last_shrink_result_;
 
   // Repeat timer for checking and trimming ARCVM memory regularly. According
   // current design in concierge, if the vmm swap status is enabled, the vmm

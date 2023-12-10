@@ -1,0 +1,41 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "lens_browser_agent.h",
+    "lens_browser_agent.mm",
+    "lens_tab_helper.h",
+    "lens_tab_helper.mm",
+  ]
+  deps = [
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/web/public",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "lens_tab_helper_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

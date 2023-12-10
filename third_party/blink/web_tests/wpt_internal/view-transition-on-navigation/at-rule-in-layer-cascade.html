@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View Transitions: @view-transitions cascaldes correclty with layers.</title>
+<title>View Transitions: @view-transition cascaldes correclty with layers.</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -8,18 +8,18 @@
 @layer inertA, inertB, active;
 
 @layer inertA {
-  @view-transitions {
-    navigation-trigger: none;
+  @view-transition {
+    navigation: none;
   }
 }
 @layer active {
-  @view-transitions {
-    navigation-trigger: cross-document-same-origin;
+  @view-transition {
+    navigation: auto;
   }
 }
 @layer inertB {
-  @view-transitions {
-    navigation-trigger: none;
+  @view-transition {
+    navigation: none;
   }
 }
 </style>

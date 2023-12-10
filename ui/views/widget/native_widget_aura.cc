@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -43,6 +44,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -116,6 +118,31 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
       return false;
   }
   return false;
+}
+
+// Adds `window` as a child of `parent`. If `parent` is nullptr, find an
+// appropriate parent by consulting an implementation of WindowParentingClient
+// attached at the root Window of the tree where `window` lives.
+void ReparentAuraWindow(aura::Window* window, aura::Window* parent) {
+  if (parent) {
+    parent->AddChild(window);
+  } else {
+    // The following looks weird, but it's the equivalent of what aura has
+    // always done. (The previous behaviour of aura::Window::SetParent() used
+    // NULL as a special value that meant ask the WindowParentingClient where
+    // things should go.)
+    //
+    // This probably isn't strictly correct, but its an invariant that a Window
+    // in use will be attached to a RootWindow, so we can't just call
+    // RemoveChild here. The only possible thing that could assign a RootWindow
+    // in this case is the stacking client of the current RootWindow. This
+    // matches our previous behaviour; the global stacking client would almost
+    // always reattach the window to the same RootWindow.
+    aura::Window* root_window = window->GetRootWindow();
+    aura::client::ParentWindowWithContext(window, root_window,
+                                          root_window->GetBoundsInScreen(),
+                                          display::kInvalidDisplayId);
+  }
 }
 
 }  // namespace
@@ -327,6 +354,10 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
 }
 
 void NativeWidgetAura::OnWidgetInitDone() {}
+
+void NativeWidgetAura::ReparentNativeViewImpl(gfx::NativeView new_parent) {
+  ReparentAuraWindow(GetNativeView(), new_parent);
+}
 
 std::unique_ptr<NonClientFrameView>
 NativeWidgetAura::CreateNonClientFrameView() {
@@ -1384,24 +1415,13 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
   for (auto* widget : widgets)
     widget->NotifyNativeViewHierarchyWillChange();
 
-  if (new_parent) {
-    new_parent->AddChild(native_view);
+  Widget* child_widget = Widget::GetWidgetForNativeView(native_view);
+
+  if (base::FeatureList::IsEnabled(features::kDesktopWidgetReparentAura) &&
+      child_widget) {
+    child_widget->native_widget_private()->ReparentNativeViewImpl(new_parent);
   } else {
-    // The following looks weird, but it's the equivalent of what aura has
-    // always done. (The previous behaviour of aura::Window::SetParent() used
-    // NULL as a special value that meant ask the WindowParentingClient where
-    // things should go.)
-    //
-    // This probably isn't strictly correct, but its an invariant that a Window
-    // in use will be attached to a RootWindow, so we can't just call
-    // RemoveChild here. The only possible thing that could assign a RootWindow
-    // in this case is the stacking client of the current RootWindow. This
-    // matches our previous behaviour; the global stacking client would almost
-    // always reattach the window to the same RootWindow.
-    aura::Window* root_window = native_view->GetRootWindow();
-    aura::client::ParentWindowWithContext(native_view, root_window,
-                                          root_window->GetBoundsInScreen(),
-                                          display::kInvalidDisplayId);
+    ReparentAuraWindow(native_view, new_parent);
   }
 
   // And now, notify them that they have a brand new parent.

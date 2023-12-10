@@ -7,13 +7,11 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 
 namespace ui {
 
@@ -40,10 +38,12 @@ class X11PropertyChangeWaiter : public x11::EventObserver {
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
 
+  const raw_ptr<x11::Connection> connection_;
+
   x11::Window x_window_;
   const char* property_;
 
-  std::unique_ptr<x11::XScopedEventSelector> x_window_events_;
+  x11::ScopedEventSelector x_window_events_;
 
   // Whether Wait() should block.
   bool wait_;

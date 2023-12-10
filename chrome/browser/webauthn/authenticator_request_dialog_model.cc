@@ -128,7 +128,7 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
     AuthenticatorTransport transport) {
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      return vector_icons::kUsbIcon;
+      return kUsbSecurityKeyIcon;
     case AuthenticatorTransport::kInternal:
       return kLaptopIcon;
     case AuthenticatorTransport::kHybrid:
@@ -336,6 +336,32 @@ absl::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
   return absl::nullopt;
 }
 
+// Returns whether the given authenticator type is implemented within Chrome
+// itself for the purposes of `StartPlatformAuthenticatorFlow`.
+bool IsChromeImplemented(device::AuthenticatorType type) {
+  // Note: it must never be possible for any machine to observe two different
+  // sources of "Chrome implemented" credentials. I.e. a given platform only
+  // ever has one type of Chrome-implemented platform authenticator.
+  // This is CHECKed in `StartFlow`.
+  switch (type) {
+    case device::AuthenticatorType::kWinNative:
+      return false;
+    case device::AuthenticatorType::kTouchID:
+      return true;
+    case device::AuthenticatorType::kChromeOS:
+      return true;
+    case device::AuthenticatorType::kPhone:
+      return false;
+    case device::AuthenticatorType::kICloudKeychain:
+      return false;
+    case device::AuthenticatorType::kEnclave:
+      return false;
+    case device::AuthenticatorType::kOther:
+      // For testing purposes.
+      return true;
+  }
+}
+
 }  // namespace
 
 AuthenticatorRequestDialogModel::EphemeralState::EphemeralState() = default;
@@ -411,6 +437,23 @@ void AuthenticatorRequestDialogModel::StartFlow(
   use_conditional_mediation_ = use_conditional_mediation;
 
   if (base::FeatureList::IsEnabled(
+          device::kWebAuthnChromeImplementedInvariant)) {
+    // All recognised credentials that are "Chrome implemented" are from the
+    // same source, i.e. a platform never has two Chrome implemented platform
+    // authenticators.
+    std::optional<device::AuthenticatorType> chrome_implemented_type;
+    for (const auto& cred : transport_availability_.recognized_credentials) {
+      if (IsChromeImplemented(cred.source)) {
+        if (chrome_implemented_type.has_value()) {
+          CHECK_EQ(*chrome_implemented_type, cred.source);
+        } else {
+          chrome_implemented_type = cred.source;
+        }
+      }
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(
           device::kWebAuthnSortRecognizedCredentials)) {
     SortRecognizedCredentials();
   }
@@ -476,8 +519,19 @@ void AuthenticatorRequestDialogModel::
          (transport_availability_.has_empty_allow_list &&
           // iCloud Keychain has its own confirmation UI and we don't want to
           // duplicate it.
-          cred->value().source !=
-              device::AuthenticatorType::kICloudKeychain))) {
+          cred->value().source != device::AuthenticatorType::kICloudKeychain)
+#if BUILDFLAG(IS_MAC)
+         ||
+         // Never auto-trigger macOS profile credentials without either a local
+         // biometric or a UV requirement because, otherwise, there'll not be
+         // *any* UI.
+         (cred->value().source == device::AuthenticatorType::kTouchID &&
+          transport_availability_.user_verification_requirement !=
+              device::UserVerificationRequirement::kRequired &&
+          !local_biometrics_override_for_testing_.value_or(
+              device::fido::mac::DeviceHasBiometricsAvailable()))
+#endif
+             )) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else {
       mechanism.callback.Run();
@@ -656,27 +710,44 @@ void AuthenticatorRequestDialogModel::TryUsbDevice() {
 }
 
 void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
-  // Never try the platform authenticator if the request is known in advance to
-  // fail. Proceed to a special error screen instead.
   if (transport_availability_.request_type ==
       device::FidoRequestType::kGetAssertion) {
-    DCHECK_NE(transport_availability_.has_platform_authenticator_credential,
-              device::FidoRequestHandlerBase::RecognizedCredential::kUnknown);
-    if (transport_availability_.has_platform_authenticator_credential ==
-        device::FidoRequestHandlerBase::RecognizedCredential::
-            kNoRecognizedCredential) {
-      SetCurrentStep(Step::kErrorInternalUnrecognized);
-      return;
+    switch (transport_availability_.has_platform_authenticator_credential) {
+      case device::FidoRequestHandlerBase::RecognizedCredential::kUnknown:
+        CHECK(false);
+        break;
+      case device::FidoRequestHandlerBase::RecognizedCredential::
+          kNoRecognizedCredential:
+        // Never try the platform authenticator if the request is known in
+        // advance to fail. Proceed to a special error screen instead.
+        SetCurrentStep(Step::kErrorInternalUnrecognized);
+        return;
+      case device::FidoRequestHandlerBase::RecognizedCredential::
+          kHasRecognizedCredential:
+        break;
     }
 
     // If the platform authenticator reports known credentials, show them in the
-    // UI.
-    if (!transport_availability_.recognized_credentials.empty()) {
+    // UI. It is possible for the platform authenticator to report
+    // `kHasRecognizedCredential` without reporting any metadata (e.g. Chrome
+    // OS) but `recognized_credentials` could include other credentials. So we
+    // need to filter to check that metadata for a Chrome-implemented platform
+    // authenticator is really present.
+    std::vector<device::DiscoverableCredentialMetadata> platform_credentials;
+    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+      std::ranges::copy_if(
+          transport_availability_.recognized_credentials,
+          std::back_inserter(platform_credentials),
+          [](const auto& cred) { return IsChromeImplemented(cred.source); });
+    } else {
+      platform_credentials = transport_availability_.recognized_credentials;
+    }
+
+    if (!platform_credentials.empty()) {
       if (transport_availability_.has_empty_allow_list) {
         // For discoverable credential requests, show an account picker.
         if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-          ephemeral_state_.creds_ =
-              RecognizedCredentialsFor(device::AuthenticatorType::kTouchID);
+          ephemeral_state_.creds_ = std::move(platform_credentials);
         } else {
           ephemeral_state_.creds_ =
               transport_availability_.recognized_credentials;
@@ -685,14 +756,9 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
                            ? Step::kPreSelectSingleAccount
                            : Step::kPreSelectAccount);
       } else {
-        // For requests with an allow list, pre-select a random credential. On
-        // macOS, iCloud Keychain is started via a different function, so don't
-        // select an iCloud Keychain credential.
         if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-          const auto cred =
-              RecognizedCredentialsFor(device::AuthenticatorType::kTouchID)
-                  .at(0);
-          ephemeral_state_.creds_ = {std::move(cred)};
+          // For requests with an allow list, pre-select a random credential.
+          ephemeral_state_.creds_ = {platform_credentials.front()};
         } else {
           ephemeral_state_.creds_ = {
               transport_availability_.recognized_credentials.front()};
@@ -996,7 +1062,8 @@ void AuthenticatorRequestDialogModel::OnRetryUserVerification(int attempts) {
 
 void AuthenticatorRequestDialogModel::OnResidentCredentialConfirmed() {
   DCHECK_EQ(current_step(), Step::kResidentCredentialConfirmation);
-  HideDialogAndDispatchToPlatformAuthenticator();
+  HideDialogAndDispatchToPlatformAuthenticator(
+      device::AuthenticatorType::kWinNative);
 }
 
 void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
@@ -1468,7 +1535,8 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi() {
       !transport_availability_.win_native_ui_shows_resident_credential_notice) {
     SetCurrentStep(Step::kResidentCredentialConfirmation);
   } else {
-    HideDialogAndDispatchToPlatformAuthenticator();
+    HideDialogAndDispatchToPlatformAuthenticator(
+        device::AuthenticatorType::kWinNative);
   }
 }
 
@@ -1479,10 +1547,15 @@ void AuthenticatorRequestDialogModel::StartICloudKeychain() {
               kHasRecognizedCredential &&
       !transport_availability_.has_empty_allow_list) {
     // For requests with an allow list, pre-select a random credential.
-    const auto cred =
-        RecognizedCredentialsFor(device::AuthenticatorType::kICloudKeychain)[0];
+    const device::DiscoverableCredentialMetadata* selected = nullptr;
+    for (const auto& cred : transport_availability_.recognized_credentials) {
+      if (cred.source == device::AuthenticatorType::kICloudKeychain) {
+        selected = &cred;
+        break;
+      }
+    }
     account_preselected_callback_.Run(device::PublicKeyCredentialDescriptor(
-        device::CredentialType::kPublicKey, cred.cred_id,
+        device::CredentialType::kPublicKey, selected->cred_id,
         {AuthenticatorTransport::kInternal}));
   }
 
@@ -2109,28 +2182,22 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     }
 #endif
 
-    const bool is_passkey_request =
-        resident_key_requirement() !=
-        device::ResidentKeyRequirement::kDiscouraged;
-    if (is_passkey_request) {
-      // If attachment=any, then don't jump to suggesting a phone.
-      // TODO(crbug.com/1426628): makeCredential requests should always have
-      // `make_credential_attachment` set. Stop being hesitant.
-      if ((!transport_availability_.make_credential_attachment ||
-           *transport_availability_.make_credential_attachment !=
-               device::AuthenticatorAttachment::kAny) &&
-          paired_phone_names().empty()) {
-        priority_list.emplace_back(Mechanism::AddPhone());
+    // If attachment=any, then don't jump to suggesting any specific mechanism.
+    if (*transport_availability_.make_credential_attachment !=
+        device::AuthenticatorAttachment::kAny) {
+      const bool is_passkey_request =
+          resident_key_requirement() !=
+          device::ResidentKeyRequirement::kDiscouraged;
+      if (is_passkey_request) {
+        if (paired_phone_names().empty()) {
+          priority_list.emplace_back(Mechanism::AddPhone());
+        }
+      } else {
+        // This seems like it might be an error (crbug.com/1426244) as we might
+        // still want to jump to platform authenticators for passkey requests if
+        // we don't jump to a phone.
+        priority_list.emplace_back(Mechanism::WindowsAPI());
       }
-    } else {
-      // This seems like it might be an error (crbug.com/1426244) as we might
-      // still want to jump to platform authenticators for passkey requests if
-      // we don't jump to a phone.
-      if (kShowCreatePlatformPasskeyStep) {
-        priority_list.emplace_back(
-            Mechanism::Transport(AuthenticatorTransport::kInternal));
-      }
-      priority_list.emplace_back(Mechanism::WindowsAPI());
     }
   }
 
@@ -2146,20 +2213,6 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   }
 
   return absl::nullopt;
-}
-
-std::vector<device::DiscoverableCredentialMetadata>
-AuthenticatorRequestDialogModel::RecognizedCredentialsFor(
-    device::AuthenticatorType source) {
-  std::vector<device::DiscoverableCredentialMetadata> ret;
-  for (const auto& cred : transport_availability_.recognized_credentials) {
-    if (cred.source == source ||
-        // kOther is also accepted for unittests.
-        cred.source == device::AuthenticatorType::kOther) {
-      ret.push_back(cred);
-    }
-  }
-  return ret;
 }
 
 void AuthenticatorRequestDialogModel::OnPasskeysChanged(
@@ -2186,10 +2239,16 @@ void AuthenticatorRequestDialogModel::
         absl::optional<device::AuthenticatorType> type) {
   HideDialog();
 
+  // Prefer to use the enclave authenticator over a platform authenticator
+  // if the device has registered to use it.
+  if (!type && is_enclave_authenticator_available_) {
+    type = device::AuthenticatorType::kEnclave;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // The Windows-native UI already handles retrying so we do not offer a second
   // level of retry in that case.
-  if (type != device::AuthenticatorType::kEnclave) {
+  if (type && *type != device::AuthenticatorType::kEnclave) {
     offer_try_again_in_ui_ = false;
   }
 #elif BUILDFLAG(IS_MAC)

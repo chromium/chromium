@@ -6,6 +6,7 @@
 
 #include <gdk/gdk.h>
 
+#include <optional>
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -19,7 +20,6 @@
 #include "remoting/host/linux/keyboard_layout_monitor_wayland.h"
 #include "remoting/host/linux/wayland_utils.h"
 #include "remoting/proto/control.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -145,8 +145,7 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   // which is a pain.
   connection_ = x11::Connection::Get();
   auto& xkb = connection_->xkb();
-  if (xkb.UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
-          .Sync()) {
+  if (xkb.present()) {
     constexpr auto kXkbAllStateComponentsMask =
         static_cast<x11::Xkb::StatePart>(0x3fff);
     xkb.SelectEvents({

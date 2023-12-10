@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Generetes a wrapper TS file around a source CSS file holding a Polymer style
-# module, or a Polymer <custom-style> holding CSS variable. Any metadata
+# module, or a Polymer <style> holding CSS variable. Any metadata
 # necessary for populating the wrapper file are provided in the form of special
 # CSS comments. The ID of a style module is inferred from the filename, for
 # example foo_style.css will be held in a module with ID 'foo-style'.
@@ -30,7 +30,7 @@ _INCLUDE_REGEX = '#include='
 _SCHEME_REGEX = '#scheme='
 _TYPE_REGEX = '#type='
 
-_STYLE_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_POLYMER_STYLE_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const styleMod = document.createElement(\'dom-module\');
@@ -43,17 +43,37 @@ styleMod.appendChild(html`
 `.content);
 styleMod.register(\'%(id)s\');"""
 
-_VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_POLYMER_VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const template = html`
-<custom-style>
-  <style>
+<style>
 %(content)s
-  </style>
-</custom-style>
+</style>
 `;
 document.head.appendChild(template.content);"""
+
+# Template for Lit component CSS styles.
+_LIT_STYLE_TEMPLATE = """import {css} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
+%(imports)s
+
+export function getCss() {
+  return css`%(content)s`;
+}"""
+
+_LIT_VARS_TEMPLATE = """import {css} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
+%(imports)s
+
+const result = css`%(content)s`;
+document.adoptedStyleSheets = [...document.adoptedStyleSheets!, result.styleSheet!];"""
+
+# Map holding all the different types of CSS files to generate wrappers for.
+_TEMPLATE_MAP = {
+    'style': _POLYMER_STYLE_TEMPLATE,
+    'style-lit': _LIT_STYLE_TEMPLATE,
+    'vars': _POLYMER_VARS_TEMPLATE,
+    'vars-lit': _LIT_VARS_TEMPLATE,
+}
 
 
 def _parse_style_line(line, metadata):
@@ -63,12 +83,10 @@ def _parse_style_line(line, metadata):
         'include'], f'Found multiple "{_INCLUDE_REGEX}" lines. Only one should exist.'
     metadata['include'] = line[include_match.end():]
 
-  import_match = re.search(_IMPORT_REGEX, line)
-  if import_match:
-    metadata['imports'].append(line[import_match.end():])
+  _parse_import_line(line, metadata)
 
 
-def _parse_vars_line(line, metadata):
+def _parse_import_line(line, metadata):
   import_match = re.search(_IMPORT_REGEX, line)
   if import_match:
     metadata['imports'].append(line[import_match.end():])
@@ -107,7 +125,7 @@ def _extract_metadata(css_file):
           type_match = re.search(_TYPE_REGEX, line)
           if type_match:
             type = line[type_match.end():]
-            assert type in ['style', 'vars']
+            assert type in ['style', 'style-lit', 'vars', 'vars-lit']
 
             if type == 'style':
               id = path.splitext(path.basename(css_file))[0].replace('_', '-')
@@ -119,7 +137,7 @@ def _extract_metadata(css_file):
                   'scheme': metadata['scheme'],
                   'type': type,
               }
-            elif type == 'vars':
+            elif type == 'style-lit' or type == 'vars' or type == 'vars-lit':
               metadata = {
                   'imports': [],
                   'metadata_end_line': -1,
@@ -129,8 +147,9 @@ def _extract_metadata(css_file):
 
         elif metadata['type'] == 'style':
           _parse_style_line(line, metadata)
-        elif metadata['type'] == 'vars':
-          _parse_vars_line(line, metadata)
+        elif metadata['type'] == 'style-lit' or metadata['type'] == 'vars' or \
+            metadata['type'] == 'vars-lit':
+          _parse_import_line(line, metadata)
 
         if metadata['scheme'] == 'default':
           scheme_match = re.search(_SCHEME_REGEX, line)
@@ -210,28 +229,30 @@ def main(argv):
     elif metadata['scheme'] == 'relative':
       scheme = ''
 
-    wrapper = None
+    substitutions = None
     if metadata['type'] == 'style':
       include = ''
       if metadata['include']:
         parsed_include = metadata['include']
         include = f' include="{parsed_include}"'
 
-      wrapper = _STYLE_TEMPLATE % {
+      substitutions = {
           'imports': _urls_to_imports(metadata['imports']),
           'content': content,
           'include': include,
           'id': metadata['id'],
           'scheme': scheme,
       }
-    elif metadata['type'] == 'vars':
-      wrapper = _VARS_TEMPLATE % {
+    elif metadata['type'] == 'style-lit' or metadata['type'] == 'vars' or \
+        metadata['type'] == 'vars-lit':
+      substitutions = {
           'imports': _urls_to_imports(metadata['imports']),
           'content': content,
           'scheme': scheme,
       }
 
-    assert wrapper
+    assert substitutions
+    wrapper = _TEMPLATE_MAP[metadata['type']] % substitutions
 
     out_folder_for_file = path.join(out_folder, path.dirname(in_file))
     makedirs(out_folder_for_file, exist_ok=True)

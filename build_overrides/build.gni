@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/features.gni")
 import("//build/config/gclient_args.gni")
 
@@ -39,7 +39,7 @@ declare_args() {
   # to //third_party/perfetto's client library.
   # TODO(crbug/1006541): Switch to perfetto's client library on all platforms.
   use_perfetto_client_library =
-      (is_linux || is_android || (use_blink && is_ios)) && !is_castos
+      (is_linux || is_android || (use_blink && is_ios) || is_win) && !is_castos
 
   # Limits the defined //third_party/android_deps targets to only "buildCompile"
   # and "buildCompileNoDeps" targets. This is useful for third-party

@@ -62,4 +62,18 @@ found in the LICENSE file.
         <!-- Click event uses dark mode colors -->
         <item name="colorControlHighlight">@color/ripple_material_dark</item>
     </style>
+    <!-- Incognito switch theme overlay -->
+    <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
+         -->
+    <style name="ThemeOverlay.BrowserUI.Switch.Incognito" parent="">
+        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorOnSurface">@color/baseline_neutral_90</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorPrimary">@color/baseline_primary_80</item>
+        <item name="colorOnPrimary">@color/baseline_primary_20</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorSurfaceContainerHighest">@color/default_bg_color_dark_elev_5_baseline</item>
+    </style>
 </resources>

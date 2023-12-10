@@ -61,7 +61,7 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
     controller()->OnBubbleClosed(closed_reason);
   }
 
-  std::u16string saved_nickname() { return saved_nickname_; }
+  std::u16string_view saved_nickname() { return saved_nickname_; }
 
  protected:
   TestIbanBubbleControllerImpl* controller() {
@@ -73,11 +73,11 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
  private:
   void LocalSaveIbanCallback(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
-      std::optional<std::u16string> nickname) {
-    saved_nickname_ = nickname.value_or(u"");
+      std::u16string_view nickname) {
+    saved_nickname_ = nickname;
   }
 
-  std::u16string saved_nickname_;
+  std::u16string_view saved_nickname_;
   base::WeakPtrFactory<IbanBubbleControllerImplTest> weak_ptr_factory_{this};
 };
 

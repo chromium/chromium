@@ -21,6 +21,7 @@
 #include "chrome/grit/signin_resources.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -39,10 +40,12 @@ std::string GetChoiceListJSON(Profile& profile) {
 
     const std::u16string icon_path = GetGeneratedIconPath(
         choice->keyword(), /*parent_directory_path=*/u"images/");
-    choice_value.Set("prepopulate_id", choice->prepopulate_id());
+    choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
-    choice_value.Set("icon_path", icon_path);
+    choice_value.Set("iconPath", icon_path);
     choice_value.Set("url", choice->url());
+    choice_value.Set("marketingSnippet",
+                     search_engines::GetMarketingSnippetString(choice->data()));
     choice_value_list.Append(std::move(choice_value));
   }
   std::string json_choice_list;
@@ -69,7 +72,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "subtitleInfoLinkA11yLabel",
       IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
-  source->AddLocalizedString("buttonText",
+  source->AddLocalizedString("submitButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
   source->AddLocalizedString("infoDialogTitle",
                              IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE);
@@ -87,6 +90,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("fakeOmniboxText",
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
+  source->AddLocalizedString("moreButtonText",
+                             IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
 
   AddGeneratedIconResources(source, /*directory=*/"images/");
   source->AddResourcePath("images/left_illustration.svg",
@@ -103,6 +108,10 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
+  source->AddBoolean("withMarketingSnippets",
+                     switches::kWithSearchEngineMarketingSnippets.Get());
+  source->AddBoolean("withForcedScroll",
+                     switches::kWithForcedScrollEnabled.Get());
 
   webui::SetupChromeRefresh2023(source);
 

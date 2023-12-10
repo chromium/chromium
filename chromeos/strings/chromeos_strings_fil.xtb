@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1003363546227723021">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media</translation>
 <translation id="1014750484722996375">Mga Desk</translation>
 <translation id="1018219910092211213">Hindi ma-resolve ang DNS</translation>
 <translation id="1018656279737460067">Nakansela</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="1175951029573070619">Katamtaman (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alisin</translation>
+<translation id="1191518099344003522">Naka-enable ang APN.</translation>
 <translation id="1195447618553298278">Hindi kilalang error.</translation>
 <translation id="1196959502276349371">Bersyon <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">I-play/I-pause</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">home ng browser</translation>
 <translation id="1526389707933164996">Animation ng screen saver</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
+<translation id="1539242642795599947">Default at attach ang uri ng APN.</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kulay ng backlit</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">I-install ang ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pababang arrow</translation>
 <translation id="1858620243986915808">I-attach ang screenshot</translation>
+<translation id="1871413952174074704">Hindi puwedeng lumampas sa <ph name="CHAR_LIMIT" /> (na) character ang APN</translation>
 <translation id="1871569928317311284">I-off ang madilim na tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">I-off ang dark mode</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Pag-navigate sa browser</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
+<translation id="2875812231449496375">I-on ito para sa pinakamahuhusay na resulta sa wallpaper na ito. Puwede mong i-off ang setting na ito anumang oras.</translation>
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="2880569433548999039">Screen saver na paggalaw ng ulap</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="3583278742022654445">Mahina ang signal. Subukang mas lumapit sa source ng signal ng Wi-Fi.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ang user-friendly na pangalan ng <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="3600339377155080675">Mirror ng screen</translation>
 <translation id="3602290021589620013">I-preview</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
 <translation id="4333390807948134856">Napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">key</translation>
-<translation id="435692326371619097">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">Default ang uri ng APN.</translation>
 <translation id="437294888293595148">I-reset ang lahat ng shortcut</translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">Itago ang ulat</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media.</translation>
 <translation id="5035083460461104704">Kulay ng tema</translation>
 <translation id="5038292761217083259">multicolor na keyboard</translation>
 <translation id="5039804452771397117">Payagan</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Buo</translation>
 <translation id="5142961317498132443">Pag-authenticate</translation>
+<translation id="5145081769226915336">Awtomatikong i-on ang dark mode?</translation>
 <translation id="5154917547274118687">Memorya</translation>
 <translation id="5160857336552977725">Mag-sign in sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5757187557809630523">susunod na track</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
+<translation id="5763838252932650682">Nire-restart at ina-update ang <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Taasan ang liwanag ng display</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">Hindi ka pa nakakonekta. Kung nagrerekomenda ang iyong mobile carrier ng custom na APN, ilagay ang impormasyon ng APN sa pamamagitan ng pagpili sa "+ Bagong APN"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Default na Wallpaper</translation>
+<translation id="6001235009374883388">Attach ang uri ng APN.</translation>
 <translation id="6017514345406065928">Berde</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">I-enable ang awtomatikong buwanang pag-reset</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7180865173735832675">I-customize</translation>
 <translation id="7184043045742675738">Mag-click sa anumang key para i-customize ang iyong button. Baguhin ang posisyon ng key gamit ang mouse o mga arrow key.</translation>
+<translation id="7212547870105584639">Pamahalaan ang mga setting ng APN ng network. Bumubuo ang mga APN ng koneksyon sa pagitan ng cellular network at internet. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mga update sa firmware para sa mga external na device</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>
 <translation id="7297226631177386107">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTPS na website</translation>
 <translation id="7297726121602187087">Dark green</translation>
+<translation id="7301262279595293068">Maghintay habang ina-update ang application na ito</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Magtanong sa mga eksperto sa forum ng tulong ng Chromebook</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">Light pink</translation>
 <translation id="982713511914535780">Patakbuhin ang pagsusuri sa Discharge</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>
+<translation id="995062385528875723">Hindi puwedeng gumamit ng mga may accent na titik, non-Latin na alpabeto, o mga simbolo</translation>
 </translationbundle>

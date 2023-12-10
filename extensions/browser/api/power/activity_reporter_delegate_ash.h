@@ -19,7 +19,7 @@ class ActivityReporterDelegateAsh : public ActivityReporterDelegate {
   ~ActivityReporterDelegateAsh() override;
 
   // PowerApi
-  absl::optional<std::string> ReportActivity() const override;
+  std::optional<std::string> ReportActivity() const override;
 };
 
 }  // namespace extensions

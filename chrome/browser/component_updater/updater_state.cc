@@ -16,7 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -142,7 +142,7 @@ UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
   state.last_autoupdate_started = GetUpdaterLastStartedAU(is_machine);
   state.last_checked = GetUpdaterLastChecked(is_machine);
   state.is_autoupdate_check_enabled = IsAutoupdateCheckEnabled();
-  state.update_policy = [this]() {
+  state.update_policy = [this] {
     const int update_policy = GetUpdatePolicy();
     DCHECK((update_policy >= 0 && update_policy <= 3) || update_policy == -1);
     return update_policy;

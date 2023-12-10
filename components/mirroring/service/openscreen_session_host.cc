@@ -33,6 +33,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
+#include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "components/mirroring/service/udp_socket_client.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "components/openscreen_platform/network_context.h"
@@ -1139,7 +1140,7 @@ void OpenscreenSessionHost::NegotiateRemoting() {
 void OpenscreenSessionHost::InitMediaRemoter(
     const openscreen::cast::RemotingCapabilities& capabilities) {
   rpc_dispatcher_ =
-      std::make_unique<OpenscreenRpcDispatcher>(session_->session_messenger());
+      std::make_unique<RpcDispatcherImpl>(session_->session_messenger());
   media_remoter_ = std::make_unique<MediaRemoter>(
       *this,
       ToRemotingSinkMetadata(capabilities,

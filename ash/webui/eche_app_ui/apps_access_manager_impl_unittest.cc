@@ -692,7 +692,7 @@ TEST_F(AppsAccessManagerImplTest, FlipAccessNotGrantedToGranted) {
 
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
-      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*expected_enabled=*/true, /*expected_auth_token=*/std::nullopt,
       /*success=*/true);
 }
 
@@ -727,7 +727,7 @@ TEST_F(AppsAccessManagerImplTest, AccessNotChanged) {
 
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
-      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*expected_enabled=*/true, /*expected_auth_token=*/std::nullopt,
       /*success=*/true);
 }
 
@@ -763,7 +763,7 @@ TEST_F(AppsAccessManagerImplTest, InitiallyEnableApps) {
   // when Phone Hub is enabled and access has been granted.
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
-      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*expected_enabled=*/true, /*expected_auth_token=*/std::nullopt,
       /*success=*/true);
 }
 
@@ -782,7 +782,7 @@ TEST_F(AppsAccessManagerImplTest,
 
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
-      /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*expected_enabled=*/false, /*expected_auth_token=*/std::nullopt,
       /*success=*/true);
 }
 
@@ -799,7 +799,7 @@ TEST_F(AppsAccessManagerImplTest,
 
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
-      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*expected_enabled=*/true, /*expected_auth_token=*/std::nullopt,
       /*success=*/true);
 }
 
@@ -865,7 +865,7 @@ TEST_F(AppsAccessManagerImplTest,
 
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
-      /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*expected_enabled=*/false, /*expected_auth_token=*/std::nullopt,
       /*success=*/true);
   EXPECT_EQ(1u, GetNumObserverCalls());
 }

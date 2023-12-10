@@ -6,10 +6,13 @@ source_set("autofill") {
   sources = [
     "chrome_autofill_client_ios.h",
     "chrome_autofill_client_ios.mm",
+    "ios_chrome_payments_autofill_client.h",
+    "ios_chrome_payments_autofill_client.mm",
   ]
   deps = [
     ":autofill_ui",
     ":bridges",
+    ":common",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -30,20 +33,20 @@ source_set("autofill") {
     "//components/translate/core/browser",
     "//components/variations/service",
     "//google_apis",
-    "//ios/chrome/browser/autofill",
-    "//ios/chrome/browser/autofill:autofill_shared",
-    "//ios/chrome/browser/autofill/bottom_sheet",
-    "//ios/chrome/browser/autofill/manual_fill",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:model_shared",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/manual_fill",
     "//ios/chrome/browser/device_reauth",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/plus_addresses/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/translate/model:model",
@@ -162,6 +165,17 @@ source_set("autofill_metrics") {
   deps = [ "//base" ]
 }
 
+source_set("common") {
+  sources = [
+    "scoped_autofill_payment_reauth_module_override.h",
+    "scoped_autofill_payment_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -170,6 +184,7 @@ source_set("eg2_tests") {
     "save_profile_egtest.mm",
   ]
   deps = [
+    ":common",
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
@@ -179,8 +194,8 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/metrics:eg_test_support+eg2",
-    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/infobars:eg_test_support+eg2",
     "//ios/chrome/browser/ui/infobars/banners:public",
@@ -205,6 +220,7 @@ source_set("eg_app_support+eg2") {
     "autofill_app_interface.mm",
   ]
   deps = [
+    ":common",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
@@ -213,10 +229,11 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/ios/browser:test_support",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
-    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/web/public:public",
@@ -234,6 +251,7 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
@@ -251,7 +269,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/prefs:test_support",
-    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/list_model",

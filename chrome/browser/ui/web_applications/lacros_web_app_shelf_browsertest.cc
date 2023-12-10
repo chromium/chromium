@@ -32,11 +32,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/app_constants/constants.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -51,30 +53,32 @@ constexpr char kSecondAppUrlHost[] = "second-pwa.test";
 
 namespace web_app {
 
-class LacrosWebAppShelfBrowserTest : public WebAppNavigationBrowserTest {
+class LacrosWebAppShelfBrowserTest : public WebAppControllerBrowserTest {
  public:
   LacrosWebAppShelfBrowserTest() = default;
   ~LacrosWebAppShelfBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    WebAppNavigationBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(https_server().Start());
-  }
 
  protected:
   // If ash is does not contain the relevant test controller functionality, then
   // there's nothing to do for this test.
   bool IsServiceAvailable() {
     DCHECK(IsWebAppsCrosapiEnabled());
-    if (chromeos::LacrosService::Get()
-            ->GetInterfaceVersion<crosapi::mojom::TestController>() <
-        static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                             kGetShelfItemStateMinVersion)) {
+    uint32_t version =
+        chromeos::LacrosService::Get()
+            ->GetInterfaceVersion<crosapi::mojom::TestController>();
+    using MethodMinVersions = crosapi::mojom::TestController::MethodMinVersions;
+    if (version < MethodMinVersions::kGetShelfItemStateMinVersion ||
+        version < MethodMinVersions::kSelectContextMenuForShelfItemMinVersion) {
       LOG(WARNING) << "Unsupported ash version.";
       return false;
     }
     return true;
   }
+
+  base::test::ScopedFeatureList tab_strip_feature_{
+      blink::features::kDesktopPWAsTabStrip};
+  base::test::ScopedFeatureList tab_strip_customizations_feature_{
+      blink::features::kDesktopPWAsTabStripCustomizations};
 };
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
@@ -82,11 +86,11 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
     GTEST_SKIP();
 
   const GURL app1_url =
-      https_server().GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
+      https_server()->GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
   const webapps::AppId app1_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
 
-  const GURL app2_url = https_server().GetURL(
+  const GURL app2_url = https_server()->GetURL(
       kSecondAppUrlHost, "/web_apps/standalone/basic.html");
   const webapps::AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
@@ -129,16 +133,16 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Navigation) {
     GTEST_SKIP();
 
   const GURL app1_url =
-      https_server().GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
+      https_server()->GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
   const webapps::AppId app1_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
 
-  const GURL app2_url = https_server().GetURL(
+  const GURL app2_url = https_server()->GetURL(
       kSecondAppUrlHost, "/web_app_shortcuts/shortcuts.html");
   const webapps::AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
-  GURL out_of_scope_url = https_server().GetURL("/empty.html");
+  GURL out_of_scope_url = https_server()->GetURL("/empty.html");
 
   Browser* app_browser1 = LaunchWebAppBrowser(app1_id);
   {
@@ -178,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
   if (!IsServiceAvailable())
     GTEST_SKIP();
 
-  const GURL app_url = https_server().GetURL(kFirstAppUrlHost,
-                                             "/web_apps/minimal_ui/basic.html");
+  const GURL app_url = https_server()->GetURL(
+      kFirstAppUrlHost, "/web_apps/minimal_ui/basic.html");
   const webapps::AppId app_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
 
@@ -213,13 +217,13 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
 
   auto& test_controller = chromeos::LacrosService::Get()
                               ->GetRemote<crosapi::mojom::TestController>();
-  const GURL app1_url = https_server().GetURL(
+  const GURL app1_url = https_server()->GetURL(
       kFirstAppUrlHost, "/web_apps/standalone/basic.html");
   const webapps::AppId app1_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
 
   const GURL app2_url =
-      https_server().GetURL(kSecondAppUrlHost, "/web_apps/basic.html");
+      https_server()->GetURL(kSecondAppUrlHost, "/web_apps/basic.html");
   const webapps::AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
@@ -430,6 +434,48 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
       app_constants::kLacrosAppId,
       static_cast<uint32_t>(ShelfItemState::kRunning)));
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app1_id, /*exists=*/false));
+}
+
+// Tests that opening a new window for a tabbed web app opens a new window.
+// TODO(crbug.com/1490336): Make this run on Ash as well.
+IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, NewTabbedWindow) {
+  const absl::optional<std::vector<std::string>>& capabilities =
+      chromeos::BrowserParamsProxy::Get()->AshCapabilities();
+  if (!capabilities || !base::Contains(*capabilities, "crbug/1490336")) {
+    GTEST_SKIP() << "Unsupported Ash version.";
+  }
+
+  if (!IsServiceAvailable()) {
+    GTEST_SKIP() << "Unsupported Ash version.";
+  }
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
+
+  webapps::AppId app_id = InstallWebAppFromPage(
+      browser(),
+      https_server()->GetURL("/web_apps/tab_strip_customizations.html"));
+  const WebApp& app =
+      *WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppById(
+          app_id);
+  ASSERT_EQ(app.display_mode_override().front(), DisplayMode::kTabbed);
+  ASSERT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+      app.tab_strip()->home_tab));
+
+  ui_test_utils::BrowserChangeObserver browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  {
+    base::test::TestFuture<bool> future;
+    // Should select the "New window" menu item.
+    test_controller->SelectContextMenuForShelfItem(app_id, /*index=*/0,
+                                                   future.GetCallback());
+    ASSERT_TRUE(future.Get());
+  }
+
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(browser_observer.Wait(), app_id));
 }
 
 }  // namespace web_app

@@ -33,6 +33,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_network_transaction.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -600,12 +601,10 @@ class QuicNetworkTransactionTest
     }
     // QUIC v1 and QUIC v2 are considered a match, because they have the same
     // ALPN token.
-    if ((connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
-         connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8) &&
-        (response->connection_info ==
-             HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
-         response->connection_info ==
-             HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8)) {
+    if ((connection_info == HttpConnectionInfo::kQUIC_RFC_V1 ||
+         connection_info == HttpConnectionInfo::kQUIC_2_DRAFT_8) &&
+        (response->connection_info == HttpConnectionInfo::kQUIC_RFC_V1 ||
+         response->connection_info == HttpConnectionInfo::kQUIC_2_DRAFT_8)) {
       return;
     }
 
@@ -636,8 +635,7 @@ class QuicNetworkTransactionTest
     EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
     EXPECT_FALSE(response->was_fetched_via_spdy);
     EXPECT_FALSE(response->was_alpn_negotiated);
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-              response->connection_info);
+    EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
   }
 
   void CheckWasSpdyResponse(HttpNetworkTransaction* trans) {
@@ -647,8 +645,7 @@ class QuicNetworkTransactionTest
     EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
     EXPECT_TRUE(response->was_fetched_via_spdy);
     EXPECT_TRUE(response->was_alpn_negotiated);
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-              response->connection_info);
+    EXPECT_EQ(HttpConnectionInfo::kHTTP2, response->connection_info);
   }
 
   void CheckResponseData(HttpNetworkTransaction* trans,

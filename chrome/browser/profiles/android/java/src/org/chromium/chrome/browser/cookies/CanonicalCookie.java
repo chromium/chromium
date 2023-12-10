@@ -34,9 +34,22 @@ class CanonicalCookie {
     private final int mSourcePort;
 
     /** Constructs a CanonicalCookie */
-    CanonicalCookie(String name, String value, String domain, String path, long creation,
-            long expiration, long lastAccess, long lastUpdate, boolean secure, boolean httpOnly,
-            int sameSite, int priority, boolean sameParty, String partitionKey, int sourceScheme,
+    CanonicalCookie(
+            String name,
+            String value,
+            String domain,
+            String path,
+            long creation,
+            long expiration,
+            long lastAccess,
+            long lastUpdate,
+            boolean secure,
+            boolean httpOnly,
+            int sameSite,
+            int priority,
+            boolean sameParty,
+            String partitionKey,
+            int sourceScheme,
             int sourcePort) {
         mName = name;
         mValue = value;
@@ -212,7 +225,8 @@ class CanonicalCookie {
     }
 
     private static CanonicalCookie createFromStream(DataInputStream in) throws IOException {
-        return new CanonicalCookie(in.readUTF(), // name
+        return new CanonicalCookie(
+                in.readUTF(), // name
                 in.readUTF(), // value
                 in.readUTF(), // domain
                 in.readUTF(), // path

@@ -8,8 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -17,7 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 
@@ -44,7 +42,7 @@ public class MenuUnitTest {
     private final Activity mActivity;
     private Menu mMenu;
     @Mock Callback<Integer> mHandler;
-    @Mock CompoundButton.OnCheckedChangeListener mChangeListener;
+    @Mock Callback<Boolean> mToggleHandler;
 
     public MenuUnitTest() {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
@@ -85,22 +83,12 @@ public class MenuUnitTest {
         item.setValue(false);
         assertFalse(toggle.isChecked());
 
-        // test setChangeListener()
-        item.setChangeListener(mChangeListener);
-        item.setValue(true);
-        verify(mChangeListener).onCheckedChanged(any(CompoundButton.class), eq(true));
+        // test toggle listener
+        item.setToggleHandler(mToggleHandler);
         item.setValue(false);
-        verify(mChangeListener).onCheckedChanged(any(CompoundButton.class), eq(false));
-
-        // test onClick()
-        mMenu.setItemClickHandler(mHandler);
-        item.setValue(false);
+        // change the value
         assertTrue(item.getChildAt(0).performClick());
-        assertTrue(toggle.isChecked());
-        assertTrue(item.getChildAt(0).performClick());
-        assertFalse(toggle.isChecked());
-
-        verify(mHandler, times(2)).onResult(1);
+        verify(mToggleHandler).onResult(true);
     }
 
     @Test
@@ -112,13 +100,6 @@ public class MenuUnitTest {
         assertTrue(radioButton.isChecked());
         item.setValue(false);
         assertFalse(radioButton.isChecked());
-
-        // test setChangeListener()
-        item.setChangeListener(mChangeListener);
-        item.setValue(true);
-        verify(mChangeListener, never()).onCheckedChanged(any(CompoundButton.class), eq(true));
-        item.setValue(false);
-        verify(mChangeListener, never()).onCheckedChanged(any(CompoundButton.class), eq(false));
 
         // test onClick()
         mMenu.setItemClickHandler(mHandler);
@@ -134,11 +115,12 @@ public class MenuUnitTest {
 
     @Test
     public void testSetItemEnabled() {
-        MenuItem item = mMenu.addItem(1, 0, "test item", Action.NONE);
-        item.setItemEnabled(true);
-        assertEquals(View.VISIBLE, item.getVisibility());
+        MenuItem item = mMenu.addItem(1, 0, "test item", Action.TOGGLE);
+        item.setToggleHandler(mToggleHandler);
         item.setItemEnabled(false);
-        assertEquals(View.GONE, item.getVisibility());
+
+        item.performClick();
+        verify(mToggleHandler, never()).onResult(anyBoolean());
     }
 
     @Test
@@ -176,7 +158,17 @@ public class MenuUnitTest {
     @Test
     public void testOnRadioButtonSelected() {
         mMenu.setRadioTrueHandler(mHandler);
+        for (int i = 0; i < 3; i++) {
+            mMenu.addItem(i, 0, "test item", Action.RADIO);
+        }
+        mMenu.onRadioButtonSelected(0);
         mMenu.onRadioButtonSelected(1);
         verify(mHandler).onResult(1);
+        assertFalse(
+                ((RadioButton) mMenu.getItem(0).findViewById(R.id.readaloud_radio_button))
+                        .isChecked());
+        assertFalse(
+                ((RadioButton) mMenu.getItem(2).findViewById(R.id.readaloud_radio_button))
+                        .isChecked());
     }
 }

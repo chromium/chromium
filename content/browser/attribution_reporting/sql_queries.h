@@ -15,7 +15,7 @@ static_assert(static_cast<int>(
               "update `report_type=0` clause below");
 inline constexpr const char kMinPrioritySql[] =
     "SELECT metadata,report_id FROM reports "
-    "WHERE source_id=? AND report_time=? AND report_type=0";
+    "WHERE source_id=? AND initial_report_time=? AND report_type=0";
 
 // Rows are ordered by source_id instead of source_time because the former is
 // strictly increasing while the latter is subject to clock adjustments. This

@@ -7,6 +7,7 @@
 
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/input_filter.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting::protocol {
 
@@ -19,11 +20,15 @@ namespace remoting::protocol {
 // calculated values are clamped to the monitor's area, to guard against
 // unexpected behavior for out-of-range inputs.
 //
+// The client may send fractional coordinates without a `screen_id` property. In
+// this case, the fallback geometry will be used for the scaling calculation.
+//
 // For MouseEvents with fractional coordinates, if the calculation fails, the
 // event is discarded (as it is likely a broken or outdated event which should
 // not be injected). Reasons for failure include:
-// * A fractional-coordinate field (x, y, or screen_id) is not present.
-// * The screen_id is not found in the latest video-layout.
+// * A fractional-coordinate field (x or y) is not present.
+// * The screen_id is present but is not found in the latest video-layout.
+// * The screen_id is not present, and no fallback geometry has been set.
 //
 // For TouchEvents, these can have any number of TouchEventPoints. If any
 // touch-point has a fractional-coordinate but the calculation fails,
@@ -50,12 +55,28 @@ class FractionalInputFilter : public InputFilter {
   // injection.
   void set_video_layout(const VideoLayout& layout);
 
+  // This method sets the fallback geometry to be used for fractional
+  // coordinates which don't have `screen_id`. If no fallback is set (or has
+  // empty size), no fallback will be used - events will be dropped if
+  // their fractional coordinates don't include any screen_id.
+  void set_fallback_geometry(webrtc::DesktopRect geometry);
+
   // InputStub overrides.
   void InjectMouseEvent(const MouseEvent& event) override;
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
+  // Attempts to use the event's fractional coordinates to compute new x,y
+  // values for the event. Returns true if successful and new_x, new_y hold the
+  // values. The event must be a protobuf type with x, y and
+  // fractional_coordinate fields.
+  bool ComputeXY(int& new_x, int& new_y, const auto& event);
+
   VideoLayout video_layout_;
+
+  // webrtc::DesktopRect is a convenient choice because it uses 32-bit values
+  // which match the proto definitions for VideoTrackLayout fields.
+  webrtc::DesktopRect fallback_geometry_;
 };
 
 }  // namespace remoting::protocol

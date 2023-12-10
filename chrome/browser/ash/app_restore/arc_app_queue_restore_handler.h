@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -285,7 +285,7 @@ class ArcAppQueueRestoreHandler
   ResourcedClient::PressureLevel pressure_level_ =
       ResourcedClient::PressureLevel::MODERATE;
 
-  absl::optional<bool> should_apply_cpu_restirction_;
+  std::optional<bool> should_apply_cpu_restirction_;
 
   // Record if the restore process faced memory pressure or CPU usage limiting.
   bool was_memory_pressured_ = false;
@@ -295,7 +295,7 @@ class ArcAppQueueRestoreHandler
 
   // Cpu usage rate count window. It save the cpu usage in a time interval.
   std::list<CpuTick> cpu_tick_window_;
-  absl::optional<CpuTick> last_cpu_tick_;
+  std::optional<CpuTick> last_cpu_tick_;
   base::RepeatingTimer cpu_tick_count_timer_;
 
   base::ScopedObservation<apps::AppRegistryCache,

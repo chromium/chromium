@@ -64,7 +64,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
   }
 
  protected:
-  auto CheckInconitoWindowOpened() {
+  auto CheckIncognitoWindowOpened() {
     return Check(base::BindLambdaForTesting([]() {
       Browser* new_browser;
       if (BrowserList::GetIncognitoBrowserCount() == 1) {
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoMenuItem) {
   RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
                   SelectMenuItem(AppMenuModel::kIncognitoMenuItem),
-                  CheckInconitoWindowOpened());
+                  CheckIncognitoWindowOpened());
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
 
   RunTestSequence(
       SendAccelerator(kToolbarAppMenuButtonElementId, incognito_accelerator),
-      CheckInconitoWindowOpened());
+      CheckIncognitoWindowOpened());
 }
 
 class ExtensionsMenuModelInteractiveTest : public AppMenuModelInteractiveTest {

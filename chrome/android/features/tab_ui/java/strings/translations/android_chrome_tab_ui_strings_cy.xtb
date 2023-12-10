@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1075622780330595106">Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
+<translation id="1155815720264022949">Eisiau cau hen dabiau?</translation>
 <translation id="1215127405478249895">Adolygu tabiau</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
 <translation id="1499635324672558517">Cau pob tab Anhysbys</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Cuddio'r grid sgrîn lawn</translation>
 <translation id="5076161749301278626">Gweld adolygiadau'r siop?</translation>
 <translation id="5082793167783849073">Cymharwch dudalennau'n gyflym drwy wneud grŵp. I ddechrau, cyffyrddwch a daliwch ddolen.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Mae gennych <ph name="TABS_COUNT_ONE" /> tab nad ydych wedi'i ddefnyddio'n ddiweddar}zero{Mae gennych <ph name="TABS_COUNT_MANY" /> tabiau nad ydych wedi'u defnyddio'n ddiweddar}two{Mae gennych <ph name="TABS_COUNT_MANY" /> dab nad ydych wedi'u defnyddio'n ddiweddar}few{Mae gennych <ph name="TABS_COUNT_MANY" /> thab nad ydych wedi'u defnyddio'n ddiweddar}many{Mae gennych <ph name="TABS_COUNT_MANY" /> thab nad ydych wedi'u defnyddio'n ddiweddar}other{Mae gennych <ph name="TABS_COUNT_MANY" /> tab nad ydych wedi'u defnyddio'n ddiweddar}}</translation>
 <translation id="5339733443032484186">Eich tab diwethaf</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
+<translation id="5545379293264651575">Cau heb adolygu</translation>
 <translation id="5556417849629758491">Gweld gwybodaeth siop, opsiwn ar gael yn agos at frig y sgrîn</translation>
 <translation id="5558362125926932819">Cau'r grŵp tabiau â <ph name="NUMBER_OF_TABS" /> o dabiau</translation>
 <translation id="5580090775658607195">Mae <ph name="TAB_COUNT" /> o dabiau wedi'u grwpio</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Symud tab i'r dde</translation>
 <translation id="7966321538264951561">Diystyru'r awgrymiadau.</translation>
 <translation id="8029301326595421733">Gwybodaeth am y siop hon wedi'i hagor ar uchder llawn</translation>
-<translation id="814503310257431685">Gweld popeth</translation>
 <translation id="8205266828577616993">Symud y tab i fyny</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cau'r <ph name="TABS_COUNT_ONE" /> tab a ddewisir}zero{Cau'r <ph name="TABS_COUNT_MANY" /> tab a ddewisir}two{Cau'r <ph name="TABS_COUNT_MANY" /> dab a ddewisir}few{Cau'r <ph name="TABS_COUNT_MANY" /> thab a ddewisir}many{Cau'r <ph name="TABS_COUNT_MANY" /> thab a ddewisir}other{Cau'r <ph name="TABS_COUNT_MANY" /> tab a ddewisir}}</translation>
 <translation id="8398929769197326728">Ffolder Newydd - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

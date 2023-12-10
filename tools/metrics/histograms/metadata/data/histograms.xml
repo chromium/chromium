@@ -84,66 +84,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DataReductionProxy.BypassedBytes" units="bytes"
-    expires_after="2022-04-20">
-  <obsolete>
-    Data reduction proxy was turned down.
-  </obsolete>
-  <owner>bengr@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Counts the response bytes that did not go through the data reduction proxy
-    as the result of a bypass event.
-  </summary>
-</histogram>
-
-<histogram name="DataReductionProxy.EnabledState"
-    enum="DataReductionProxyEnabledState" expires_after="2022-04-20">
-  <obsolete>
-    Data reduction proxy was turned down.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Samples of user interactions with the Data Saver settings menu across all
-    platforms (android, IOS, desktop extension). Data is collected whenever user
-    toggles the ON/OFF switch in the settings menu for reducing data usage.
-
-    For desktop, Off-to-On/On-to-Off histogram count will increment when the
-    data saver extension is installed/uninstalled respectively as well.
-  </summary>
-</histogram>
-
-<histogram name="DataReductionProxy.ProxyPrefMigrationResult"
-    enum="DataReductionProxyProxyPrefMigrationResult"
-    expires_after="2022-04-20">
-  <obsolete>
-    Data reduction proxy was turned down.
-  </obsolete>
-  <owner>sclittle@chromium.org</owner>
-  <owner>src/chrome/browser/data_saver/OWNERS</owner>
-  <summary>
-    Records the result of migrating the Data Reduction Proxy away from being
-    configured via a proxy preference, including cases when no migration action
-    was taken.
-  </summary>
-</histogram>
-
-<histogram name="DataReductionProxy.StartupState"
-    enum="DataReductionProxyStartupState" expires_after="2022-04-20">
-  <obsolete>
-    Data reduction proxy was turned down.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Samples of the state of the data reduction proxy on Chrome startup. The
-    proxy will either be unavailable (the feature hasn't been rolled out to this
-    user yet), not enabled (the feature is available but the user doesn't have
-    it turned on), or enabled (the feature is enabled and turned on).
-  </summary>
-</histogram>
-
 <histogram name="DataUse.AppTabState" units="bytes" expires_after="2023-05-07">
   <owner>spelchat@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -154,50 +94,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataUse.BackgroundToDataRecievedPerByte" units="ms"
-    expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    The time since Chrome is in background when background data use happens.
-    Recorded for each byte of background data use. The source of traffic whether
-    from user browsing or chrome services is added as suffix to this histogram.
-  </summary>
-</histogram>
-
-<histogram name="DataUse.BackgroundToFirstDownstream" units="ms"
-    expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    The time since Chrome is in background when first background data use
-    happens. Recorded when first background downstream data use after Chrome is
-    in background. The source of traffic whether from user browsing or chrome
-    services is added as suffix to this histogram.
-  </summary>
-</histogram>
-
-<histogram name="DataUse.BytesReceived2" units="bytes"
-    expires_after="2022-06-19">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Count of total bytes received by the Chrome on the network. This is recorded
-    when requests complete.
-  </summary>
-</histogram>
-
 <histogram name="DataUse.BytesReceived3.Delegate" units="bytes"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -205,19 +103,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of total bytes received by the Chrome on the network, as reported by
     the network delegate. This is recorded when requests complete.
-  </summary>
-</histogram>
-
-<histogram name="DataUse.BytesSent" units="bytes" expires_after="2022-08-28">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>spelchat@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Count of total bytes sent by the Chrome on the network. With network
-    servicification this is recorded when requests complete.
   </summary>
 </histogram>
 
@@ -242,46 +127,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Data use of user traffic by different content types. Recorded in KB when
     network bytes are received by Chrome.
-  </summary>
-</histogram>
-
-<histogram name="DataUse.FavIcon.Downstream" units="bytes"
-    expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the downstream network data use of favicon requests. Logged when the
-    request is completed or redirected. Zero bytes are recorded when the request
-    is served from cache.
-  </summary>
-</histogram>
-
-<histogram name="DataUse.FavIcon.Downstream.Non200Response" units="bytes"
-    expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the downstream network data use of favicon requests with non 200
-    response code. Logged when the request is completed or redirected.
-  </summary>
-</histogram>
-
-<histogram name="DataUse.PageTransition.UserTrafficKB"
-    enum="DataUsePageTransition" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Data use of user traffic by different core page transition types. Recorded
-    in KB when the URL request finishes.
   </summary>
 </histogram>
 

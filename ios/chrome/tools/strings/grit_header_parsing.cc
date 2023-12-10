@@ -65,12 +65,12 @@ bool FillResourcesFromGritHeader(const base::FilePath& header,
 
 }  // namespace
 
-absl::optional<ResourceMap> LoadResourcesFromGritHeaders(
+std::optional<ResourceMap> LoadResourcesFromGritHeaders(
     const std::vector<base::FilePath>& headers) {
   ResourceMap resource_map;
   for (const base::FilePath& header : headers) {
     if (!FillResourcesFromGritHeader(header, resource_map)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return resource_map;

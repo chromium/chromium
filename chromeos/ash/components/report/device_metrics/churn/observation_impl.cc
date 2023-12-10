@@ -252,7 +252,7 @@ void ObservationImpl::OnCheckMembershipQueryComplete(
 }
 
 void ObservationImpl::CheckIn() {
-  absl::optional<FresnelImportDataRequest> import_request =
+  std::optional<FresnelImportDataRequest> import_request =
       GenerateImportRequestBody();
   if (!import_request.has_value()) {
     LOG(ERROR) << "Failed to create the import request body.";
@@ -314,7 +314,7 @@ ObservationImpl::GetPsmIdentifiersToQuery() {
   return query_psm_ids;
 }
 
-absl::optional<FresnelImportDataRequest>
+std::optional<FresnelImportDataRequest>
 ObservationImpl::GenerateImportRequestBody() {
   FresnelImportDataRequest import_request;
   import_request.set_use_case(kPsmUseCase);
@@ -338,13 +338,13 @@ ObservationImpl::GenerateImportRequestBody() {
   if (!local_state->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0)) {
     FresnelImportData* import_data = import_request.add_import_data();
-    absl::optional<FresnelImportData> period_0_data =
+    std::optional<FresnelImportData> period_0_data =
         GenerateObservationImportData(0);
 
     if (!period_0_data.has_value()) {
       LOG(ERROR) << "Failed to generate import data request body since period 0"
                  << " could not be generated. ";
-      return absl::nullopt;
+      return std::nullopt;
     }
     *import_data = period_0_data.value();
   }
@@ -352,13 +352,13 @@ ObservationImpl::GenerateImportRequestBody() {
   if (!local_state->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1)) {
     FresnelImportData* import_data = import_request.add_import_data();
-    absl::optional<FresnelImportData> period_1_data =
+    std::optional<FresnelImportData> period_1_data =
         GenerateObservationImportData(1);
 
     if (!period_1_data.has_value()) {
       LOG(ERROR) << "Failed to generate import data request body since period 1"
                  << " could not be generated. ";
-      return absl::nullopt;
+      return std::nullopt;
     }
     *import_data = period_1_data.value();
   }
@@ -366,13 +366,13 @@ ObservationImpl::GenerateImportRequestBody() {
   if (!local_state->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2)) {
     FresnelImportData* import_data = import_request.add_import_data();
-    absl::optional<FresnelImportData> period_2_data =
+    std::optional<FresnelImportData> period_2_data =
         GenerateObservationImportData(2);
 
     if (!period_2_data.has_value()) {
       LOG(ERROR) << "Failed to generate import data request body since period 2"
                  << " could not be generated. ";
-      return absl::nullopt;
+      return std::nullopt;
     }
     *import_data = period_2_data.value();
   }
@@ -380,23 +380,23 @@ ObservationImpl::GenerateImportRequestBody() {
   return import_request;
 }
 
-absl::optional<FresnelImportData>
-ObservationImpl::GenerateObservationImportData(int period) {
+std::optional<FresnelImportData> ObservationImpl::GenerateObservationImportData(
+    int period) {
   DCHECK(period >= 0 && period <= 2) << "Period must be in [0,2] range.";
   FresnelImportData import_data;
 
   base::Time active_ts = GetParams()->GetActiveTs();
-  absl::optional<base::Time> last_month_ts = utils::GetPreviousMonth(active_ts);
-  absl::optional<base::Time> two_months_ago_ts =
+  std::optional<base::Time> last_month_ts = utils::GetPreviousMonth(active_ts);
+  std::optional<base::Time> two_months_ago_ts =
       utils::GetPreviousMonth(last_month_ts.value_or(base::Time()));
-  absl::optional<base::Time> next_month_ts = utils::GetNextMonth(active_ts);
-  absl::optional<base::Time> two_months_later_ts =
+  std::optional<base::Time> next_month_ts = utils::GetNextMonth(active_ts);
+  std::optional<base::Time> two_months_later_ts =
       utils::GetNextMonth(next_month_ts.value_or(base::Time()));
 
   if (!last_month_ts.has_value() || !two_months_ago_ts.has_value() ||
       !next_month_ts.has_value() || !two_months_later_ts.has_value()) {
     LOG(ERROR) << "Failed to get observation periods.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string cur_month = utils::TimeToYYYYMMString(active_ts);
@@ -413,18 +413,18 @@ ObservationImpl::GenerateObservationImportData(int period) {
         utils::TimeToYYYYMMString(two_months_ago_ts.value()) + "-" + cur_month;
   }
 
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_id =
       utils::GeneratePsmIdentifier(GetParams()->GetHighEntropySeed(),
                                    psm_rlwe::RlweUseCase_Name(kPsmUseCase),
                                    window_id);
-  absl::optional<ChurnObservationMetadata> observation_metadata =
+  std::optional<ChurnObservationMetadata> observation_metadata =
       active_status_->CalculateObservationMetadata(active_ts, period);
 
   if (window_id.empty() || !psm_id.has_value() ||
       !observation_metadata.has_value()) {
     LOG(ERROR) << "Failed to generate observation import data for period = "
                << period;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   import_data.set_plaintext_id(psm_id.value().sensitive_id());

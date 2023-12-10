@@ -17,6 +17,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -57,10 +58,13 @@ std::vector<Position> ParseLocation(const base::Value::List& position) {
   return positions;
 }
 
-// Add a default position in the `positions`.
-void InitPositions(std::vector<Position>& positions) {
+// Add `anchor_to_target` in the `positions`. `vector` is a normalized vector
+// from `Position::anchor_` to target position. Here the `Position::anchor_` is
+// default origin (0, 0).
+void InitPositions(std::vector<Position>& positions,
+                   const gfx::Vector2dF& vector) {
   positions.emplace_back(PositionType::kDefault);
-  positions.back().set_anchor_to_target(gfx::Vector2dF(0.5, 0.5));
+  positions.back().set_anchor_to_target(vector);
 }
 
 }  // namespace
@@ -117,20 +121,20 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
     LogEvent(event);
 }
 
-absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
+std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
     const base::StringPiece key_name) {
   const std::string* key = value.FindString(kKey);
   if (!key) {
     LOG(ERROR) << "No key-value for {" << key_name << "}.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto code = ui::KeycodeConverter::CodeStringToDomCode(*key);
   if (code == ui::DomCode::NONE) {
     LOG(ERROR)
         << "Invalid key code string. It should be similar to {KeyA}, but got {"
         << *key << "}.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   // "modifiers" is optional.
   const base::Value::List* modifier_list = value.FindList(kModifiers);
@@ -148,7 +152,7 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
       }
     }
   }
-  return absl::make_optional<std::pair<ui::DomCode, int>>(code, modifiers);
+  return std::make_optional<std::pair<ui::DomCode, int>>(code, modifiers);
 }
 
 Action::Action(TouchInjector* touch_injector)
@@ -260,13 +264,17 @@ void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
   name_label_index_ = proto.name_index();
 }
 
-bool Action::InitByAddingNewAction() {
+bool Action::InitByAddingNewAction(const gfx::Point& target_pos) {
   DCHECK(touch_injector_);
   id_ = touch_injector_->GetNextNewActionID();
   is_new_ = true;
 
-  InitPositions(original_positions_);
-  InitPositions(current_positions_);
+  const auto bounds = touch_injector_->content_bounds();
+  const gfx::Vector2dF anchor_vector =
+      gfx::Vector2dF(1.0 * target_pos.x() / bounds.width(),
+                     1.0 * target_pos.y() / bounds.height());
+  InitPositions(original_positions_, anchor_vector);
+  InitPositions(current_positions_, anchor_vector);
   UpdateTouchDownPositions();
 
   return true;
@@ -421,11 +429,11 @@ const Position& Action::GetCurrentDisplayedPosition() {
                                             : original_positions_[0]);
 }
 
-absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
+std::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
   if (!touch_id_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  auto touch_event = absl::make_optional<ui::TouchEvent>(
+  auto touch_event = std::make_optional<ui::TouchEvent>(
       ui::EventType::ET_TOUCH_CANCELLED, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
@@ -435,11 +443,11 @@ absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
   return touch_event;
 }
 
-absl::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
+std::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
   if (!touch_id_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  auto touch_event = absl::make_optional<ui::TouchEvent>(
+  auto touch_event = std::make_optional<ui::TouchEvent>(
       ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
@@ -472,6 +480,10 @@ void Action::RemoveDefaultAction() {
 bool Action::IsDeleted() {
   return IsDefaultAction() &&
          current_input_->input_sources() == InputSource::IS_NONE;
+}
+
+bool Action::IsActive() {
+  return !!touch_id_;
 }
 
 bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
@@ -631,7 +643,7 @@ void Action::OnTouchReleased() {
   last_touch_root_location_.set_y(0);
   DCHECK(touch_id_);
   TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
-  touch_id_ = absl::nullopt;
+  touch_id_ = std::nullopt;
   keys_pressed_.clear();
   if (original_positions_.empty()) {
     return;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+
+
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -32,5 +34,10 @@ public class MultiWindowTestUtils {
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+    }
+
+    /** Enabled multi instance. */
+    public static void enableMultiInstance() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
     }
 }

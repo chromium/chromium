@@ -36,23 +36,35 @@ public class BookmarkActivity extends SnackbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean isIncognito = IntentUtils.safeGetBooleanExtra(
-                getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        mBookmarkManagerCoordinator = new BookmarkManagerCoordinator(this,
-                IntentUtils.safeGetParcelableExtra(
-                        getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
-                true, isIncognito, getSnackbarManager(), Profile.getLastUsedRegularProfile(),
-                new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
+        boolean isIncognito =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
+        mBookmarkManagerCoordinator =
+                new BookmarkManagerCoordinator(
+                        this,
+                        IntentUtils.safeGetParcelableExtra(
+                                getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
+                        true,
+                        isIncognito,
+                        getSnackbarManager(),
+                        Profile.getLastUsedRegularProfile(),
+                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
         setContentView(mBookmarkManagerCoordinator.getView());
         if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator,
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mBookmarkManagerCoordinator,
                     SecondaryActivity.BOOKMARK);
         } else {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                    mBookmarkManagerCoordinator::onBackPressed, SecondaryActivity.BOOKMARK);
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mBookmarkManagerCoordinator::onBackPressed,
+                    SecondaryActivity.BOOKMARK);
         }
     }
 
@@ -66,8 +78,9 @@ public class BookmarkActivity extends SnackbarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
-            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(
-                    data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
+            BookmarkId bookmarkId =
+                    BookmarkId.getBookmarkIdFromString(
+                            data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
             mBookmarkManagerCoordinator.openBookmark(bookmarkId);
         }
     }

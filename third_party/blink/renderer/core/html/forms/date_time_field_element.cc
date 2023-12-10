@@ -222,7 +222,7 @@ void DateTimeFieldElement::SetDisabled() {
                           style_change_extra_data::g_disabled));
 }
 
-bool DateTimeFieldElement::SupportsFocus() const {
+bool DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
   return !IsDisabled() && !IsFieldOwnerDisabled();
 }
 

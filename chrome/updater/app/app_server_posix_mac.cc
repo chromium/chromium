@@ -4,7 +4,9 @@
 
 #import "chrome/updater/app/app_server_posix.h"
 
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/mac/setup/keystone.h"
 #include "chrome/updater/registration_data.h"
@@ -20,6 +22,16 @@ bool AppServerPosix::MigrateLegacyUpdaters(
   // See crbug.com/1453460.
   return MigrateKeystoneApps(GetKeystoneFolderPath(updater_scope()).value(),
                              register_callback);
+}
+
+void AppServerPosix::RepairUpdater(UpdaterScope scope, bool is_internal) {
+  // Repair broken ksadmin shims - Chrome M119 and before can delete them
+  // during user->system promotion.
+  std::optional<base::FilePath> ksadmin_path = GetKSAdminPath(scope);
+  if (ksadmin_path && !base::PathExists(*ksadmin_path)) {
+    VLOG(2) << "Reinstalling Keystone shims.";
+    InstallKeystone(scope);
+  }
 }
 
 scoped_refptr<App> MakeAppServer() {

@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -13,12 +14,11 @@
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/invoke.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
@@ -370,9 +370,6 @@ InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
   return result;
 }
 
-template <typename T>
-constexpr bool IsCallbackValue = base::IsBaseCallback<T>::value;
-
 template <typename T, typename SFINAE = void>
 struct IsCallable {
   static constexpr bool value = false;
@@ -405,7 +402,8 @@ struct MaybeBindHelper;
 
 // Callbacks are already callbacks, so can be returned as-is.
 template <typename F>
-struct MaybeBindHelper<F, std::enable_if_t<IsCallbackValue<F>>> {
+  requires(base::IsBaseCallback<F>)
+struct MaybeBindHelper<F> {
   template <class G>
   static auto MaybeBind(G&& function) {
     return std::forward<G>(function);
@@ -655,7 +653,7 @@ InteractionSequence::Builder BuildSubsequence(
 
 #define INTERACTIVE_TEST_UNWRAP_IMPL(arg, Arg)                    \
   [&]() {                                                         \
-    if constexpr (internal::IsCallbackValue<Arg>) {               \
+    if constexpr (base::IsBaseCallback<Arg>) {                    \
       return std::move(arg).Run();                                \
     } else if constexpr (internal::IsFunctionPointerValue<Arg>) { \
       return (*arg)();                                            \

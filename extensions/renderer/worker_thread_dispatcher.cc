@@ -200,7 +200,7 @@ void WorkerThreadDispatcher::ForwardIPC(int worker_thread_id,
 
 // static
 void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
-    const absl::optional<ExtensionId>& extension_id) {
+    const std::optional<ExtensionId>& extension_id) {
   DCHECK(worker_thread_util::IsWorkerThread());
   DCHECK(!extension_id || !extension_id->empty())
       << "If provided, `extension_id` must be non-empty.";
@@ -260,7 +260,7 @@ bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
 }
 
 void WorkerThreadDispatcher::UpdateAllServiceWorkerBindings() {
-  UpdateBindingsHelper(absl::nullopt);
+  UpdateBindingsHelper(std::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
@@ -466,7 +466,10 @@ void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   // Note that this will run right away on the IO thread and the worker thread
   // will not have processed the event. The browser does not use this callback
   // when ENABLE_EXTENSIONS_LEGACY_IPC is enabled so this is fine.
-  std::move(callback).Run();
+  // `event_will_run_in_lazy_background_page_script` will always be false since
+  // this event will run for a service worker not a lazy background page.
+  std::move(callback).Run(
+      /*event_will_run_in_lazy_background_page_script=*/false);
 }
 
 void WorkerThreadDispatcher::OnDispatchOnConnect(
@@ -521,7 +524,7 @@ void WorkerThreadDispatcher::OnDispatchOnDisconnect(
 void WorkerThreadDispatcher::AddWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
-    const absl::optional<base::UnguessableToken>& activation_sequence,
+    const std::optional<base::UnguessableToken>& activation_sequence,
     ScriptContext* script_context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system) {
   if (!service_worker_data) {
@@ -694,7 +697,7 @@ ScriptContextSetIterable* WorkerThreadDispatcher::GetScriptContextSet() {
 }
 
 bool WorkerThreadDispatcher::UpdateBindingsHelper(
-    const absl::optional<ExtensionId>& extension_id) {
+    const std::optional<ExtensionId>& extension_id) {
   bool success = true;
   base::AutoLock lock(task_runner_map_lock_);
   for (const auto& task_runner_info : task_runner_map_) {

@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -68,6 +69,76 @@ void DocumentScanScanFunction::OnScanCompleted(
   }
 
   Respond(WithArguments(scan_results->ToValue()));
+}
+
+DocumentScanGetScannerListFunction::DocumentScanGetScannerListFunction() =
+    default;
+DocumentScanGetScannerListFunction::~DocumentScanGetScannerListFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DocumentScanGetScannerListFunction::Run() {
+  auto params = api::document_scan::GetScannerList::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->GetScannerList(
+          ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
+          extension_, std::move(params->filter),
+          base::BindOnce(
+              &DocumentScanGetScannerListFunction::OnScannerListReceived,
+              this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanGetScannerListFunction::OnScannerListReceived(
+    api::document_scan::GetScannerListResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::GetScannerList::Results::Create(response)));
+}
+
+DocumentScanOpenScannerFunction::DocumentScanOpenScannerFunction() = default;
+DocumentScanOpenScannerFunction::~DocumentScanOpenScannerFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanOpenScannerFunction::Run() {
+  auto params = api::document_scan::OpenScanner::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->OpenScanner(
+          extension_, std::move(params->scanner_id),
+          base::BindOnce(&DocumentScanOpenScannerFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanOpenScannerFunction::OnResponseReceived(
+    api::document_scan::OpenScannerResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::OpenScanner::Results::Create(response)));
+}
+
+DocumentScanCloseScannerFunction::DocumentScanCloseScannerFunction() = default;
+DocumentScanCloseScannerFunction::~DocumentScanCloseScannerFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanCloseScannerFunction::Run() {
+  auto params = api::document_scan::CloseScanner::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->CloseScanner(
+          extension_, std::move(params->scanner_handle),
+          base::BindOnce(&DocumentScanCloseScannerFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanCloseScannerFunction::OnResponseReceived(
+    api::document_scan::CloseScannerResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::CloseScanner::Results::Create(response)));
 }
 
 }  // namespace extensions

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_CLIENT_CLIENT_RESOURCE_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -76,9 +77,14 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
       std::vector<ReturnedResource> transferable_resources);
 
   // Receives a resource from an external client that can be used in compositor
-  // frames, via the returned ResourceId.
+  // frames, via the returned ResourceId. Can be provided with an optional
+  // `evicted_callback`, which will be invoked once we are no longer visible and
+  // have been evicted. When `evicted_callback` is called the client should
+  // invoke `RemoveImportedResources` to unlock the resource. Allowing the
+  // resource to be released when it is returned from the parent.
   ResourceId ImportResource(const TransferableResource& resource,
-                            ReleaseCallback release_callback);
+                            ReleaseCallback release_callback,
+                            ResourceEvictedCallback evicted_callback = {});
   // Removes an imported resource, which will call the ReleaseCallback given
   // originally, once the resource is no longer in use by any compositor frame.
   void RemoveImportedResource(ResourceId resource_id);
@@ -108,6 +114,9 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // Checks whether a resource is in use by a consumer.
   bool InUseByConsumer(ResourceId id);
 
+  void SetEvicted(bool evicted);
+  void SetVisible(bool visible);
+
   size_t num_resources_for_testing() const;
 
  private:
@@ -119,12 +128,30 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
       base::OnceCallback<void(std::vector<GLbyte*>* tokens)>
           verify_sync_tokens);
 
+  // Validates the memory impact of resources that are locked once we are both
+  // evicted and no longer visible. This will also notify clients of eviction
+  // via any `RemoveImportedResources`. If resources have been already returned
+  // by the parent (the Display Compositor's FrameSink) this can lead to them
+  // being returned to the client (such as cc::LayerTreeHostImpl.)
+  void HandleEviction();
+
   THREAD_CHECKER(thread_checker_);
 
   base::flat_map<ResourceId, ImportedResource> imported_resources_;
   // The ResourceIds in ClientResourceProvider start from 1 to avoid
   // conflicts with id from DisplayResourceProvider.
   ResourceIdGenerator id_generator_;
+
+  // Whether the Client has had its Surface Evicted. When `true` all
+  // `imported_resources_` are no longer required by the Parent. Though we need
+  // to wait until we are not `visible_` as the Client may still use them.
+  bool evicted_ = false;
+
+  // Whether the Client is visible. While ClientResourceProvider is not
+  // thread-safe, it is often used in a multi-threaded Renderer. While `true`
+  // all `imported_resources_` may still be used by the Client. So it is not
+  // safe to release them, even if we have been `evicted_`.
+  bool visible_ = false;
 };
 
 }  // namespace viz

@@ -33,9 +33,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Used for displaying a paint preview representation of a tab on startup.
- */
+/** Used for displaying a paint preview representation of a tab on startup. */
 public class StartupPaintPreview implements PlayerManager.Listener {
     private Tab mTab;
     private StartupPaintPreviewMetrics mMetricsHelper;
@@ -58,16 +56,14 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private static final int SNACKBAR_DURATION_MS = 8 * 1000;
 
     @IntDef({
-            State.READY,
-            State.SHOWING,
-            State.REMOVED,
-            State.NO_CAPTURE,
+        State.READY,
+        State.SHOWING,
+        State.REMOVED,
+        State.NO_CAPTURE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
-        /**
-         * Ready to be shown.
-         */
+        /** Ready to be shown. */
         int READY = 0;
 
         /**
@@ -76,20 +72,18 @@ public class StartupPaintPreview implements PlayerManager.Listener {
          */
         int SHOWING = 1;
 
-        /**
-         * The paint preview has been removed.
-         */
+        /** The paint preview has been removed. */
         int REMOVED = 2;
 
-        /**
-         * There was no capture available for the current tab.
-         */
+        /** There was no capture available for the current tab. */
         int NO_CAPTURE = 3;
     }
 
-    public StartupPaintPreview(Tab tab,
+    public StartupPaintPreview(
+            Tab tab,
             BrowserStateBrowserControlsVisibilityDelegate visibilityDelegate,
-            Runnable progressSimulatorCallback, Callback<Boolean> progressPreventionCallback) {
+            Runnable progressSimulatorCallback,
+            Callback<Boolean> progressPreventionCallback) {
         mTab = tab;
         mMetricsHelper = new StartupPaintPreviewMetrics();
         mTabbedPaintPreview = TabbedPaintPreview.get(mTab);
@@ -146,14 +140,14 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         mOnDismissed = null;
         mTab.removeObserver(mStartupTabObserver);
 
-        @State
-        int oldState = mState;
+        @State int oldState = mState;
         mState = State.REMOVED;
         if (oldState != State.SHOWING) return;
 
-        boolean needsAnimation = exitCause == ExitCause.TAB_FINISHED_LOADING
-                || exitCause == ExitCause.SNACK_BAR_ACTION
-                || exitCause == ExitCause.PULL_TO_REFRESH;
+        boolean needsAnimation =
+                exitCause == ExitCause.TAB_FINISHED_LOADING
+                        || exitCause == ExitCause.SNACK_BAR_ACTION
+                        || exitCause == ExitCause.PULL_TO_REFRESH;
         mTabbedPaintPreview.remove(needsAnimation);
         if (exitCause == ExitCause.TAB_FINISHED_LOADING) showUpgradeToast();
         dismissSnackbar();
@@ -167,25 +161,29 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         if (snackbarManager == null) return;
 
         if (mSnackbarController == null) {
-            mSnackbarController = new SnackbarManager.SnackbarController() {
-                @Override
-                public void onAction(Object actionData) {
-                    mShowingSnackbar = false;
-                    remove(ExitCause.SNACK_BAR_ACTION);
-                }
+            mSnackbarController =
+                    new SnackbarManager.SnackbarController() {
+                        @Override
+                        public void onAction(Object actionData) {
+                            mShowingSnackbar = false;
+                            remove(ExitCause.SNACK_BAR_ACTION);
+                        }
 
-                @Override
-                public void onDismissNoAction(Object actionData) {
-                    mShowingSnackbar = false;
-                }
-            };
+                        @Override
+                        public void onDismissNoAction(Object actionData) {
+                            mShowingSnackbar = false;
+                        }
+                    };
         }
 
         Resources resources = mTab.getContext().getResources();
-        Snackbar snackbar = Snackbar.make(
-                resources.getString(R.string.paint_preview_startup_upgrade_snackbar_message),
-                mSnackbarController, Snackbar.TYPE_NOTIFICATION,
-                Snackbar.UMA_PAINT_PREVIEW_UPGRADE_NOTIFICATION);
+        Snackbar snackbar =
+                Snackbar.make(
+                        resources.getString(
+                                R.string.paint_preview_startup_upgrade_snackbar_message),
+                        mSnackbarController,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_PAINT_PREVIEW_UPGRADE_NOTIFICATION);
         snackbar.setAction(
                 resources.getString(R.string.paint_preview_startup_upgrade_snackbar_action), null);
         snackbar.setDuration(SNACKBAR_DURATION_MS);
@@ -206,8 +204,10 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private void showUpgradeToast() {
         if (mTab == null || mTab.isHidden()) return;
 
-        Toast.makeText(mTab.getContext(), R.string.paint_preview_startup_auto_upgrade_toast,
-                     Toast.LENGTH_SHORT)
+        Toast.makeText(
+                        mTab.getContext(),
+                        R.string.paint_preview_startup_auto_upgrade_toast,
+                        Toast.LENGTH_SHORT)
                 .show();
     }
 
@@ -230,8 +230,12 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         // interaction by |delayMs|. This is to account for 'heavy' pages that take a while
         // to finish painting and avoid having flickers when switching from paint preview
         // to the live page.
-        new Handler().postDelayed(
-                () -> { remove(ExitCause.TAB_FINISHED_LOADING); }, DEFAULT_INITIAL_REMOVE_DELAY_MS);
+        new Handler()
+                .postDelayed(
+                        () -> {
+                            remove(ExitCause.TAB_FINISHED_LOADING);
+                        },
+                        DEFAULT_INITIAL_REMOVE_DELAY_MS);
     }
 
     @Override

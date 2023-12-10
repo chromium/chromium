@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
-[PASS] Synthetic small caps should produce the same width as manually uppercased, downscaled text.
-[PASS] Strings containing uppercased sharp S should not be truncated.
 Harness: the test ran to completion.
 

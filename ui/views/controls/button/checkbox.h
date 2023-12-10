@@ -23,9 +23,9 @@ namespace views {
 // A native themed class representing a checkbox.  This class does not use
 // platform specific objects to replicate the native platforms looks and feel.
 class VIEWS_EXPORT Checkbox : public LabelButton {
- public:
-  METADATA_HEADER(Checkbox);
+  METADATA_HEADER(Checkbox, LabelButton)
 
+ public:
   explicit Checkbox(const std::u16string& label = std::u16string(),
                     PressedCallback callback = PressedCallback(),
                     int button_context = style::CONTEXT_BUTTON);

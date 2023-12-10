@@ -9,6 +9,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"

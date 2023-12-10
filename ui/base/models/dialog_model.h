@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 // views::Widget* const widget =
 //     views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
 // widget->Show();
-class COMPONENT_EXPORT(UI_BASE) DialogModel final {
+class COMPONENT_EXPORT(UI_BASE) DialogModel final : public DialogModelBase {
  public:
   // A variant for button callbacks that allows different behavior to be
   // specified when a button is pressed.
@@ -479,19 +479,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return close_on_deactivate_;
   }
 
-  // Accessor for ordered fields in the model. This includes DialogButtons even
-  // though they should be handled separately (OK button has fixed position in
-  // dialog).
+  // TODO(pbos): Replace this with a section() or something.
   const std::vector<std::unique_ptr<DialogModelField>>& fields(
       base::PassKey<DialogModelHost>) {
-    return fields_;
+    return contents_.fields(GetPassKey());
   }
 
  private:
-  base::PassKey<DialogModel> GetPassKey() {
-    return base::PassKey<DialogModel>();
-  }
-
   void AddField(std::unique_ptr<DialogModelField> field);
 
   // Runs the appropriate variant of the provided ButtonCallbackVariant and
@@ -517,7 +511,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   ImageModel dark_mode_banner_;
 
   absl::optional<DialogButton> override_default_button_;
-  std::vector<std::unique_ptr<DialogModelField>> fields_;
+  DialogModelSection contents_;
   ElementIdentifier initially_focused_field_;
   bool is_alert_dialog_ = false;
 

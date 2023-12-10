@@ -61,7 +61,6 @@ mojom("mojom") {
     "identity_manager.mojom",
     "idle_service.mojom",
     "image_writer.mojom",
-    "in_session_auth.mojom",
     "kerberos_in_browser.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
@@ -84,6 +83,7 @@ mojom("mojom") {
     "notification.mojom",
     "nullable_primitives.mojom",
     "parent_access.mojom",
+    "passkeys.mojom",
     "policy_namespace.mojom",
     "policy_service.mojom",
     "power.mojom",
@@ -131,6 +131,7 @@ mojom("mojom") {
   public_deps = [
     ":video_capture",
     "//chromeos/components/drivefs/mojom",
+    "//chromeos/components/in_session_auth/mojom",
     "//chromeos/components/payments/mojom",
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",

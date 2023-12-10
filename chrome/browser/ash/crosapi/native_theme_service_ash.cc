@@ -63,14 +63,14 @@ mojom::NativeThemeInfoPtr NativeThemeServiceAsh::GetNativeThemeInfo() {
     return info;
   }
 
-  absl::optional<ui::ColorProviderKey::SchemeVariant> scheme =
+  std::optional<ui::ColorProviderKey::SchemeVariant> scheme =
       theme->scheme_variant();
   if (scheme) {
     info->scheme_variant = VariantToScheme(*scheme);
 
     // Only set seed color if we also have a `scheme`. Color palette generation
     // is more predictable this way.
-    absl::optional<SkColor> user_color = theme->user_color();
+    std::optional<SkColor> user_color = theme->user_color();
     if (user_color.has_value()) {
       info->seed_color = *user_color;
     }

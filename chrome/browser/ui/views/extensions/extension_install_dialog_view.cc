@@ -124,7 +124,7 @@ END_METADATA
 class RatingStar : public views::ImageView {
  public:
   METADATA_HEADER(RatingStar);
-  explicit RatingStar(const gfx::ImageSkia& image) { SetImage(image); }
+  explicit RatingStar(const ui::ImageModel& image) { SetImage(image); }
   RatingStar(const RatingStar&) = delete;
   RatingStar& operator=(const RatingStar&) = delete;
   ~RatingStar() override = default;
@@ -160,7 +160,8 @@ END_METADATA
 
 void AddResourceIcon(const gfx::ImageSkia* skia_image, void* data) {
   views::View* parent = static_cast<views::View*>(data);
-  parent->AddChildView(new RatingStar(*skia_image));
+  parent->AddChildView(
+      new RatingStar(ui::ImageModel::FromImageSkia(*skia_image)));
 }
 
 void ShowExtensionInstallDialogImpl(
@@ -466,7 +467,7 @@ void ExtensionInstallDialogView::AddedToWidget() {
   gfx::Size size(image->width(), image->height());
   size.SetToMin(gfx::Size(icon_size, icon_size));
   icon->SetImageSize(size);
-  icon->SetImage(*image);
+  icon->SetImage(ui::ImageModel::FromImageSkia(*image));
 
   layout->AddRows(1, views::TableLayout::kFixedSize);
   title_container->AddChildView(std::move(icon));

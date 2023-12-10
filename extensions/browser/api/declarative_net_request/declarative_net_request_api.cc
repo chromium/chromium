@@ -5,10 +5,10 @@
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
-
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -37,7 +37,6 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -50,7 +49,7 @@ namespace dnr_api = api::declarative_net_request;
 // the API call is for all tabs.
 bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
                             const Extension* extension,
-                            absl::optional<int> tab_id,
+                            std::optional<int> tab_id,
                             std::string* error) {
   bool can_call =
       declarative_net_request::HasDNRFeedbackPermission(extension, tab_id);
@@ -83,10 +82,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   using Params = dnr_api::UpdateDynamicRules::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   std::vector<int> rule_ids_to_remove;
   if (params->options.remove_rule_ids)
@@ -121,7 +118,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateDynamicRulesFunction::OnDynamicRulesUpdated(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
@@ -139,10 +136,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestGetDynamicRulesFunction::Run() {
   using Params = dnr_api::GetDynamicRules::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   auto source = declarative_net_request::FileBackedRulesetSource::CreateDynamic(
       browser_context(), extension()->id());
@@ -157,12 +152,12 @@ DeclarativeNetRequestGetDynamicRulesFunction::Run() {
       FROM_HERE, std::move(read_dynamic_rules),
       base::BindOnce(
           &DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched,
-          this, std::move(params)));
+          this, std::move(params).value()));
   return RespondLater();
 }
 
 void DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched(
-    absl::optional<dnr_api::GetDynamicRules::Params> params,
+    dnr_api::GetDynamicRules::Params params,
     declarative_net_request::ReadJSONRulesResult read_json_result) {
   using Status = declarative_net_request::ReadJSONRulesResult::Status;
 
@@ -178,8 +173,8 @@ void DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched(
     return;
   }
 
-  if (params->filter) {
-    FilterRules(read_json_result.rules, *params->filter);
+  if (params.filter) {
+    FilterRules(read_json_result.rules, *params.filter);
   }
 
   Respond(ArgumentList(
@@ -195,10 +190,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   using Params = dnr_api::UpdateSessionRules::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   std::vector<int> rule_ids_to_remove;
   if (params->options.remove_rule_ids)
@@ -230,7 +223,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
@@ -248,10 +241,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestGetSessionRulesFunction::Run() {
   using Params = dnr_api::GetSessionRules::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
@@ -278,10 +269,8 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   using RulesetID = declarative_net_request::RulesetID;
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   std::set<RulesetID> ids_to_disable;
   std::set<RulesetID> ids_to_enable;
@@ -339,7 +328,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateEnabledRulesetsFunction::
-    OnEnabledStaticRulesetsUpdated(absl::optional<std::string> error) {
+    OnEnabledStaticRulesetsUpdated(std::optional<std::string> error) {
   if (error)
     Respond(Error(std::move(*error)));
   else
@@ -390,10 +379,8 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
   using RuleIdsToUpdate = declarative_net_request::
       DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
       DNRManifestData::GetManifestIDToRulesetMap(*extension());
@@ -425,7 +412,7 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateStaticRulesFunction::OnStaticRulesUpdated(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   if (error) {
     Respond(Error(std::move(*error)));
   } else {
@@ -444,10 +431,8 @@ DeclarativeNetRequestGetDisabledRuleIdsFunction::Run() {
   using RulesetID = declarative_net_request::RulesetID;
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
       DNRManifestData::GetManifestIDToRulesetMap(*extension());
@@ -493,12 +478,10 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   using Params = dnr_api::GetMatchedRules::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  absl::optional<int> tab_id;
+  std::optional<int> tab_id;
   base::Time min_time_stamp = base::Time::Min();
 
   if (params->filter) {
@@ -567,10 +550,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   using Params = dnr_api::SetExtensionActionOptions::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   declarative_net_request::RulesMonitorService* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
@@ -636,10 +617,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   using Params = dnr_api::IsRegexSupported::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   bool is_case_sensitive = params->regex_options.is_case_sensitive
                                ? *params->regex_options.is_case_sensitive
@@ -726,10 +705,8 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
   using Params = dnr_api::TestMatchOutcome::Params;
 
-  std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), error);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
+  auto params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   // Create a RequestParams for the pretend request.
 

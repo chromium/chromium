@@ -8,9 +8,7 @@ import org.chromium.base.ThreadUtils;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Used for Js Java interaction, to delete the document start JavaScript snippet.
- */
+/** Used for Js Java interaction, to delete the document start JavaScript snippet. */
 public class ScriptHandler {
     private WeakReference<AwContents> mAwContentsRef;
     private int mScriptId;

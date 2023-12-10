@@ -14,8 +14,7 @@
 
 class ExtensionIconSet;
 
-namespace extensions {
-namespace manifest_handler_helpers {
+namespace extensions::manifest_handler_helpers {
 
 // Tokenize a dictionary path.
 std::vector<base::StringPiece> TokenizeDictionaryPath(base::StringPiece path);
@@ -33,7 +32,6 @@ bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
                              ExtensionIconSet* icons,
                              std::u16string* error);
 
-}  // namespace manifest_handler_helpers
-}  // namespace extensions
+}  // namespace extensions::manifest_handler_helpers
 
 #endif  // EXTENSIONS_COMMON_MANIFEST_HANDLER_HELPERS_H_

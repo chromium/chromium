@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
+#include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
@@ -193,26 +194,32 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
 
   static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
-
-  gfx::GpuMemoryBufferId kBufferId(webxr->next_memory_buffer_id++);
-  buffer->gmb = gpu::GpuMemoryBufferImplAndroidHardwareBuffer::Create(
-      kBufferId, size, format, usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback());
-
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                 gpu::SHARED_IMAGE_USAGE_GLES2;
-  buffer->mailbox_holder = mailbox_bridge_->CreateSharedImage(
-      buffer->gmb.get(), gfx::ColorSpace(), shared_image_usage);
+
+  // Create a new AHardwareBuffer backed handle.
+  buffer->scoped_ahb_handle =
+      gpu::CreateScopedHardwareBufferHandle(size, format, usage);
+
+  // Create a GMB Handle from AHardwareBuffer handle.
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  // GpuMemoryBufferId is not used in this case and hence hardcoding it to 1
+  // here.
+  gmb_handle.id = gfx::GpuMemoryBufferId(1);
+  gmb_handle.android_hardware_buffer = buffer->scoped_ahb_handle.Clone();
+
+  buffer->mailbox_holder =
+      mailbox_bridge_->CreateSharedImage(std::move(gmb_handle), format, size,
+                                         gfx::ColorSpace(), shared_image_usage);
   DVLOG(2) << ": CreateSharedImage, mailbox="
            << buffer->mailbox_holder.mailbox.ToDebugString() << ", SyncToken="
            << buffer->mailbox_holder.sync_token.ToDebugString();
 
-  base::android::ScopedHardwareBufferHandle ahb =
-      buffer->gmb->CloneHandle().android_hardware_buffer;
-
   // Create an EGLImage for the buffer.
-  auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
+  auto egl_image =
+      gpu::CreateEGLImageFromAHardwareBuffer(buffer->scoped_ahb_handle.get());
   if (!egl_image.is_valid()) {
     DLOG(WARNING) << __func__ << ": ERROR: failed to initialize image!";
     return false;

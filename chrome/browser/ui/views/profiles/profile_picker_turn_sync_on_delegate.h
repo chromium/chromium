@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 class Profile;
@@ -65,9 +65,9 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   void FinishSyncConfirmation(
       LoginUIService::SyncConfirmationUIClosedResult result);
 
-  // Shows the enterprise welcome screen.
-  void ShowEnterpriseWelcome(EnterpriseProfileWelcomeUI::ScreenType type);
-  void OnEnterpriseWelcomeClosed(EnterpriseProfileWelcomeUI::ScreenType type,
+  // Shows the managed user notice screen.
+  void ShowManagedUserNotice(ManagedUserProfileNoticeUI::ScreenType type);
+  void OnManagedUserNoticeClosed(ManagedUserProfileNoticeUI::ScreenType type,
                                  signin::SigninChoice choice);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

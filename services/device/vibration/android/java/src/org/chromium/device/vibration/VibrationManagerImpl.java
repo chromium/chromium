@@ -45,7 +45,7 @@ public class VibrationManagerImpl implements VibrationManager {
         // TODO(mvanouwerkerk): What happens if permission is revoked? Handle this better.
         mHasVibratePermission =
                 appContext.checkCallingOrSelfPermission(android.Manifest.permission.VIBRATE)
-                == PackageManager.PERMISSION_GRANTED;
+                        == PackageManager.PERMISSION_GRANTED;
         if (!mHasVibratePermission) {
             Log.w(TAG, "Failed to use vibrate API, requires VIBRATE permission.");
         }
@@ -61,8 +61,10 @@ public class VibrationManagerImpl implements VibrationManager {
     public void vibrate(long milliseconds, Vibrate_Response callback) {
         // Though the Blink implementation already sanitizes vibration times, don't
         // trust any values passed from the client.
-        long sanitizedMilliseconds = Math.max(MINIMUM_VIBRATION_DURATION_MS,
-                Math.min(milliseconds, MAXIMUM_VIBRATION_DURATION_MS));
+        long sanitizedMilliseconds =
+                Math.max(
+                        MINIMUM_VIBRATION_DURATION_MS,
+                        Math.min(milliseconds, MAXIMUM_VIBRATION_DURATION_MS));
 
         if (mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_SILENT
                 && mHasVibratePermission) {
@@ -82,9 +84,7 @@ public class VibrationManagerImpl implements VibrationManager {
         callback.call();
     }
 
-    /**
-     * A factory for implementations of the VibrationManager interface.
-     */
+    /** A factory for implementations of the VibrationManager interface. */
     public static class Factory implements InterfaceFactory<VibrationManager> {
         public Factory() {}
 

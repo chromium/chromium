@@ -13,7 +13,7 @@ http://127.0.0.1:8000/devtools/resources/inspected-page.html == http://127.0.0.1
 Resources Tree:
 Frames
     top
-        Stylesheets
+        CSS
             styles-initial.css
         inspected-page.html
 Sources:
@@ -70,12 +70,12 @@ Resources Tree:
 Frames
     top
         resource-tree-frame-add-iframe.html
-            Scripts
-                script-navigated.js
-            Stylesheets
+            CSS
                 styles-navigated.css
+            JavaScript
+                script-navigated.js
             resource-tree-frame-add-iframe.html
-        Stylesheets
+        CSS
             styles-initial.css
         inspected-page.html
 Sources:

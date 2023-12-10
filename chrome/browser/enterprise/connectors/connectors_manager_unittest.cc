@@ -37,7 +37,7 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
 namespace enterprise_connectors {
@@ -67,7 +67,6 @@ constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
     "block_until_verdict": 1,
     "block_password_protected": true,
     "block_large_files": true,
-    "block_unsupported_file_types": true,
   },
 ])";
 
@@ -83,7 +82,6 @@ constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
     "block_until_verdict": 1,
     "block_password_protected": true,
     "block_large_files": true,
-    "block_unsupported_file_types": true,
   },
 ])";
 
@@ -115,8 +113,6 @@ class ConnectorsManagerTest : public testing::Test {
     ASSERT_EQ(settings.block_password_protected_files,
               expected_block_password_protected_files_);
     ASSERT_EQ(settings.block_large_files, expected_block_large_files_);
-    ASSERT_EQ(settings.block_unsupported_file_types,
-              expected_block_unsupported_file_types_);
     for (const auto& expected_tag : expected_tags_) {
       const std::string& tag = expected_tag.first;
       ASSERT_TRUE(settings.tags.count(tag));
@@ -178,7 +174,6 @@ class ConnectorsManagerTest : public testing::Test {
   BlockUntilVerdict expected_block_until_verdict_ = BlockUntilVerdict::kNoBlock;
   bool expected_block_password_protected_files_ = false;
   bool expected_block_large_files_ = false;
-  bool expected_block_unsupported_file_types_ = false;
 
   std::set<std::string> expected_mime_types_;
 };
@@ -246,8 +241,6 @@ class ConnectorsManagerConnectorPoliciesTest
           expected_settings.value().block_until_verdict;
       expected_block_password_protected_files_ =
           expected_settings.value().block_password_protected_files;
-      expected_block_unsupported_file_types_ =
-          expected_settings.value().block_unsupported_file_types;
       expected_block_large_files_ = expected_settings.value().block_large_files;
     }
   }
@@ -263,7 +256,6 @@ class ConnectorsManagerConnectorPoliciesTest
     settings.block_until_verdict = BlockUntilVerdict::kBlock;
     settings.block_password_protected_files = true;
     settings.block_large_files = true;
-    settings.block_unsupported_file_types = true;
 
     if (url == kDlpAndMalwareUrl)
       settings.tags = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
@@ -411,7 +403,6 @@ constexpr char kNormalCloudSourceDestinationSettingsPref[] = R"([{
   "block_until_verdict": 1,
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
 }])";
 
@@ -479,7 +470,6 @@ constexpr char kNormalLocalSourceDestinationSettingsPref[] = R"([{
   "block_until_verdict": 1,
   "block_password_protected": true,
   "block_large_files": true,
-  "block_unsupported_file_types": true,
   "minimum_data_size": 123,
 }])";
 
@@ -579,8 +569,6 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
           expected_settings.value().block_until_verdict;
       expected_block_password_protected_files_ =
           expected_settings.value().block_password_protected_files;
-      expected_block_unsupported_file_types_ =
-          expected_settings.value().block_unsupported_file_types;
       expected_block_large_files_ = expected_settings.value().block_large_files;
     }
   }
@@ -599,7 +587,6 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
     settings.block_until_verdict = BlockUntilVerdict::kBlock;
     settings.block_password_protected_files = true;
     settings.block_large_files = true;
-    settings.block_unsupported_file_types = true;
 
     if (volume_pair == &kDlpMalwareVolumePair1 ||
         volume_pair == &kDlpMalwareVolumePair2) {
@@ -736,7 +723,6 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
-    expected_block_unsupported_file_types_ = true;
 
     // The "local_test" service provider doesn't support the "malware" tag, so
     // remove it from expectations.
@@ -850,7 +836,6 @@ TEST_P(ConnectorsManagerAnalysisConnectorsSourceDestinationTest,
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
-    expected_block_unsupported_file_types_ = true;
 
     // The "local_test" service provider doesn't support the "malware" tag, so
     // remove it from expectations.
@@ -965,7 +950,6 @@ TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
-    expected_block_unsupported_file_types_ = true;
 
     // The "local_test" service provider doesn't support the "malware" tag, so
     // remove it from expectations.
@@ -992,7 +976,6 @@ TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
     expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
-    expected_block_unsupported_file_types_ = true;
 
     expected_tags_ = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
 

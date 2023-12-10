@@ -6,12 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::multidevice {
 
@@ -59,16 +59,16 @@ class RemoteDeviceCache {
   //
   // For best results, pass in both IDs when available since the device could
   // have been written to the cache with one of the IDs missing.
-  absl::optional<RemoteDeviceRef> GetRemoteDevice(
-      const absl::optional<std::string>& instance_id,
-      const absl::optional<std::string>& legacy_device_id) const;
+  std::optional<RemoteDeviceRef> GetRemoteDevice(
+      const std::optional<std::string>& instance_id,
+      const std::optional<std::string>& legacy_device_id) const;
 
  private:
   RemoteDeviceCache();
 
   std::shared_ptr<RemoteDevice> GetRemoteDeviceFromCache(
-      const absl::optional<std::string>& instance_id,
-      const absl::optional<std::string>& legacy_device_id) const;
+      const std::optional<std::string>& instance_id,
+      const std::optional<std::string>& legacy_device_id) const;
 
   std::vector<std::shared_ptr<RemoteDevice>> cached_remote_devices_;
 };

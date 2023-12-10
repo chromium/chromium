@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
+#include "chrome/browser/web_applications/commands/launch_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
@@ -851,6 +852,10 @@ void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
 #endif
 }
 
+base::WeakPtr<WebAppCommandScheduler> WebAppCommandScheduler::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,
                                        LaunchWebAppWindowSetting option,
                                        LaunchWebAppCallback callback,
@@ -902,17 +907,11 @@ void WebAppCommandScheduler::LaunchAppWithKeepAlives(
          std::unique_ptr<ScopedKeepAlive> browser_keep_alive) {},
       std::move(profile_keep_alive), std::move(browser_keep_alive)));
 
-  // Unretained is safe because this callback is lives on the WebAppProvider
-  // (via the WebAppCommandManager), which is a Profile KeyedService. It is
-  // destructed when the profile is shutting down as well. So it is impossible
-  // for this callback to be run with the WebAppUiManager being destructed.
   webapps::AppId app_id = params.app_id;
-  ScheduleCallbackWithLock(
-      "LaunchApp", std::make_unique<AppLockDescription>(app_id),
-      base::BindOnce(&WebAppUiManager::WaitForFirstRunAndLaunchWebApp,
-                     base::Unretained(&provider_->ui_manager()),
-                     std::move(params), launch_setting, std::ref(*profile_),
-                     std::move(callback)),
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<LaunchWebAppCommand>(&profile_.get(), provider_.get(),
+                                            std::move(params), launch_setting,
+                                            std::move(callback)),
       location);
 }
 

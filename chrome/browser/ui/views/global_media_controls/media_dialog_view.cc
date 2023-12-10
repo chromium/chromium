@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
@@ -67,6 +68,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 
+using global_media_controls::GlobalMediaControlsEntryPoint;
 using media_session::mojom::MediaSessionAction;
 
 namespace {
@@ -209,10 +211,11 @@ void MediaDialogView::RefreshMediaItem(
   if (!observed_items_[id]) {
     return;
   }
-
+  bool show_devices =
+      entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   observed_items_[id]->UpdateFooterView(BuildFooter(id, item, profile_));
   observed_items_[id]->UpdateDeviceSelector(BuildDeviceSelector(
-      id, item, service_, service_, profile_, entry_point_));
+      id, item, service_, service_, profile_, entry_point_, show_devices));
 
   UpdateBubbleSize();
 }
@@ -657,16 +660,17 @@ void MediaDialogView::SetLiveCaptionTitle(const std::u16string& new_text) {
   UpdateBubbleSize();
 }
 
-
 std::unique_ptr<global_media_controls::MediaItemUIView>
 MediaDialogView::BuildMediaItemUIView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  bool show_devices =
+      entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   return std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, BuildFooter(id, item, profile_),
-      BuildDeviceSelector(id, item, service_, service_, profile_,
-                          entry_point_));
+      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
+                          show_devices));
 }
 
-BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(MediaDialogView)
 END_METADATA

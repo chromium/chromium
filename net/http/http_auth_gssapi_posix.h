@@ -10,7 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"

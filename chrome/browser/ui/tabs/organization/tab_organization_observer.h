@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_OBSERVER_H_
 
 class Browser;
+class TabOrganizationSession;
 
 class TabOrganizationObserver {
  public:
@@ -14,8 +15,15 @@ class TabOrganizationObserver {
   virtual void OnToggleActionUIState(const Browser* browser, bool should_show) {
   }
 
-  // Called when a session request is started.
-  virtual void OnStartRequest(const Browser* browser) {}
+  // Called when a session is created.
+  virtual void OnSessionCreated(const Browser* browser,
+                                TabOrganizationSession* session) {}
+
+  // Called when the user accepts a suggested tab group.
+  virtual void OnOrganizationAccepted(const Browser* browser) {}
+
+  // Called when the user invokes the feature directly.
+  virtual void OnUserInvokedFeature(const Browser* browser) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_OBSERVER_H_

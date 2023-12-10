@@ -35,6 +35,14 @@ const base::FeatureParam<std::string> kSyntheticTrialGroupOverride{
     &features::kCookieDeprecationFacilitatedTesting,
     "synthetic_trial_group_override", ""};
 
+bool NeedsOnboardingForExperiment() {
+  if (!kDisable3PCookies.Get() && !kEnableSilentOnboarding.Get()) {
+    return false;
+  }
+
+  return kNeedOnboardingForSyntheticTrial.Get();
+}
+
 }  // namespace
 
 // TODO(b/302798031): This flag is needed to deflake
@@ -83,7 +91,7 @@ ExperimentManagerImpl::ExperimentManagerImpl() {
   // If client eligibility is already known, do not recompute it.
   if (IsClientEligible().has_value()) {
     // The user must be re-registered to the synthetic trial on restart.
-    UpdateSyntheticTrialRegistration();
+    MaybeUpdateSyntheticTrialRegistration();
     return;
   }
 
@@ -132,7 +140,7 @@ void ExperimentManagerImpl::CaptureEligibilityInLocalStatePref() {
 
   // Register or unregister for the synthetic trial based on the new
   // eligibility local state pref.
-  UpdateSyntheticTrialRegistration();
+  MaybeUpdateSyntheticTrialRegistration();
 
   // Run the EligibilityDecisionCallback for every profile that marked its
   // eligibility.
@@ -142,7 +150,11 @@ void ExperimentManagerImpl::CaptureEligibilityInLocalStatePref() {
   callbacks_.clear();
 }
 
-void ExperimentManagerImpl::UpdateSyntheticTrialRegistration() {
+void ExperimentManagerImpl::MaybeUpdateSyntheticTrialRegistration() {
+  if (!CanRegisterSyntheticTrial()) {
+    return;
+  }
+
   absl::optional<bool> is_client_eligible = IsClientEligible();
   CHECK(is_client_eligible.has_value());
 
@@ -166,6 +178,7 @@ absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
   switch (g_browser_process->local_state()->GetInteger(
       prefs::kTPCDExperimentClientState)) {
     case static_cast<int>(utils::ExperimentState::kEligible):
+    case static_cast<int>(utils::ExperimentState::kOnboarded):
       return true;
     case static_cast<int>(utils::ExperimentState::kIneligible):
       return false;
@@ -179,6 +192,58 @@ absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
 
 bool ExperimentManagerImpl::DidVersionChange() const {
   return did_version_change_;
+}
+
+void ExperimentManagerImpl::NotifyProfileTrackingProtectionOnboarded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!NeedsOnboardingForExperiment()) {
+    return;
+  }
+
+  switch (g_browser_process->local_state()->GetInteger(
+      prefs::kTPCDExperimentClientState)) {
+    case static_cast<int>(utils::ExperimentState::kEligible):
+      break;
+    case static_cast<int>(utils::ExperimentState::kIneligible):
+    case static_cast<int>(utils::ExperimentState::kOnboarded):
+      return;
+    case static_cast<int>(utils::ExperimentState::kUnknownEligibility):
+      if (kForceEligibleForTesting.Get()) {
+        break;
+      } else {
+        return;
+      }
+    default:
+      // invalid
+      return;
+  }
+
+  g_browser_process->local_state()->SetInteger(
+      prefs::kTPCDExperimentClientState,
+      static_cast<int>(utils::ExperimentState::kOnboarded));
+
+  MaybeUpdateSyntheticTrialRegistration();
+}
+
+bool ExperimentManagerImpl::CanRegisterSyntheticTrial() const {
+  switch (g_browser_process->local_state()->GetInteger(
+      prefs::kTPCDExperimentClientState)) {
+    case static_cast<int>(utils::ExperimentState::kEligible):
+      return !NeedsOnboardingForExperiment();
+    case static_cast<int>(utils::ExperimentState::kIneligible):
+    case static_cast<int>(utils::ExperimentState::kOnboarded):
+      return true;
+    case static_cast<int>(utils::ExperimentState::kUnknownEligibility):
+      if (kForceEligibleForTesting.Get()) {
+        return !NeedsOnboardingForExperiment();
+      } else {
+        return false;
+      }
+    default:
+      // invalid
+      return true;
+  }
 }
 
 }  // namespace tpcd::experiment

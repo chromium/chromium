@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] .test 2: center
+  assert_equals: \n<div class="test" style="align-content: center" title="center">\n    <div class="in-flow" data-offset-y="35"></div>\n    <div class="in-flow">\n      <span class="label">CENTER</span>\n      <span class="abspos" data-offset-y="20">ABS</span>\n      <span class="relpos" data-offset-y="20">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 35 but got 25
+[FAIL] .test 3: end
+  assert_equals: \n<div class="test" style="align-content: end" title="end">\n    <div class="in-flow" data-offset-y="35"></div>\n    <div class="in-flow">\n      <span class="label">END</span>\n      <span class="abspos" data-offset-y="20">ABS</span>\n      <span class="relpos" data-offset-y="20">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 35 but got 15
+[FAIL] .test 5: last baseline
+  assert_equals: \n<div class="test" style="align-content: last baseline" title="last baseline">\n    <div class="in-flow" data-offset-y="35"></div>\n    <div class="in-flow">\n      <span class="label">LAST BASELINE</span>\n      <span class="abspos" data-offset-y="20">ABS</span>\n      <span class="relpos" data-offset-y="20">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 35 but got 30
+[FAIL] .test 7: flex-end
+  assert_equals: \n<div class="test" style="align-content: flex-end" title="flex-end">\n    <div class="in-flow" data-offset-y="35"></div>\n    <div class="in-flow">\n      <span class="label">FLEX-END</span>\n      <span class="abspos" data-offset-y="20">ABS</span>\n      <span class="relpos" data-offset-y="20">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 35 but got 15
+Harness: the test ran to completion.
+

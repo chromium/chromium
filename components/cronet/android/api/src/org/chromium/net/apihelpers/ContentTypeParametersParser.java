@@ -34,8 +34,11 @@ final class ContentTypeParametersParser {
         String parameterName = getNextToken();
         if (currentChar() != '=') {
             throw new ContentTypeParametersParserException(
-                    "Invalid parameter format: expected = at " + mCurrentPosition + ": ["
-                            + mHeaderValue + "]",
+                    "Invalid parameter format: expected = at "
+                            + mCurrentPosition
+                            + ": ["
+                            + mHeaderValue
+                            + "]",
                     mCurrentPosition);
         }
 
@@ -53,8 +56,11 @@ final class ContentTypeParametersParser {
         if (hasMore()) {
             if (currentChar() != ';') {
                 throw new ContentTypeParametersParserException(
-                        "Invalid parameter format: expected ; at " + mCurrentPosition + ": ["
-                                + mHeaderValue + "]",
+                        "Invalid parameter format: expected ; at "
+                                + mCurrentPosition
+                                + ": ["
+                                + mHeaderValue
+                                + "]",
                         mCurrentPosition);
             }
 
@@ -66,8 +72,12 @@ final class ContentTypeParametersParser {
     private String getNextQuotedString() throws ContentTypeParametersParserException {
         int start = mCurrentPosition;
         if (currentChar() != '"') {
-            throw new ContentTypeParametersParserException("Not a quoted string: expected \" at "
-                            + mCurrentPosition + ": [" + mHeaderValue + "]",
+            throw new ContentTypeParametersParserException(
+                    "Not a quoted string: expected \" at "
+                            + mCurrentPosition
+                            + ": ["
+                            + mHeaderValue
+                            + "]",
                     mCurrentPosition);
         }
         advance();

@@ -32,8 +32,10 @@ base::Value::Dict GenerateSiteSearchPrefEntry(const std::string& keyword) {
   entry.Set(DefaultSearchManager::kKeyword, keyword);
   entry.Set(DefaultSearchManager::kURL,
             std::string("http://") + keyword + ".com/{searchTerms}");
-  entry.Set(DefaultSearchManager::kCreatedByPolicy, true);
+  entry.Set(DefaultSearchManager::kCreatedByPolicy,
+            static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
   entry.Set(DefaultSearchManager::kEnforcedByPolicy, false);
+  entry.Set(DefaultSearchManager::kFeaturedByPolicy, false);
   entry.Set(DefaultSearchManager::kFaviconURL,
             std::string("http://") + keyword + ".com/favicon.ico");
   entry.Set(DefaultSearchManager::kSafeForAutoReplace, false);
@@ -68,7 +70,7 @@ class EnterpriseSiteSearchManagerTest : public testing::Test {
 
 TEST_F(EnterpriseSiteSearchManagerTest, EmptyList) {
   base::MockRepeatingCallback<void(
-      const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&)>
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
   EXPECT_CALL(callback, Run(IsEmpty())).Times(1);
 
@@ -84,7 +86,7 @@ TEST_F(EnterpriseSiteSearchManagerTest, NonEmptyList) {
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
 
   base::MockRepeatingCallback<void(
-      const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&)>
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
   EXPECT_CALL(
       callback,
@@ -104,7 +106,7 @@ TEST_F(EnterpriseSiteSearchManagerTest, NotCreatedByPolicy) {
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
 
   base::MockRepeatingCallback<void(
-      const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&)>
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
   EXPECT_CALL(callback, Run(_)).Times(0);
 

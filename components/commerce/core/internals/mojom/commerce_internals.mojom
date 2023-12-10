@@ -22,7 +22,6 @@ struct ShoppingListEligibleDetail {
   EligibleEntry is_signed_in;
   EligibleEntry is_syncing_bookmarks;
   EligibleEntry is_anonymized_url_data_collection_enabled;
-  EligibleEntry is_web_and_app_activity_enabled;
   EligibleEntry is_subject_to_parental_controls;
 };
 

@@ -123,7 +123,7 @@ TEST(AtomicFlagTest, SetOnDifferentSequenceDeathTest) {
   // ExpectSetFlagDeath.
   AtomicFlag flag;
 
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   Thread t("AtomicFlagTest.SetOnDifferentThreadDeathTest");
   ASSERT_TRUE(t.Start());
   EXPECT_TRUE(t.WaitUntilThreadStarted());

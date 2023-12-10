@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
@@ -12,7 +13,6 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptohome {
 namespace {
@@ -32,8 +32,7 @@ TEST_F(AuthFactorConversionsTest, FactorTypeProtoToChrome) {
   for (user_data_auth::AuthFactorType type = user_data_auth::AuthFactorType_MIN;
        type <= user_data_auth::AuthFactorType_MAX;
        type = static_cast<user_data_auth::AuthFactorType>(type + 1)) {
-    absl::optional<AuthFactorType> result =
-        SafeConvertFactorTypeFromProto(type);
+    std::optional<AuthFactorType> result = SafeConvertFactorTypeFromProto(type);
     SCOPED_TRACE("For user_data_auth::AuthFactorType " +
                  base::NumberToString(type));
     if (result.has_value()) {

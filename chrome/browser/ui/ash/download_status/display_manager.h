@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_ASH_DOWNLOAD_STATUS_DISPLAY_MANAGER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
+
+class Profile;
 
 namespace crosapi::mojom {
 class DownloadStatus;
@@ -26,7 +29,7 @@ class DisplayClient;
 // such as pausing the download, to `DownloadStatusUpdaterAsh` for handling.
 class DisplayManager {
  public:
-  DisplayManager();
+  explicit DisplayManager(Profile* profile);
   DisplayManager(const DisplayManager&) = delete;
   DisplayManager& operator=(const DisplayManager&) = delete;
   ~DisplayManager();
@@ -35,11 +38,13 @@ class DisplayManager {
   void Update(const crosapi::mojom::DownloadStatus& download_status);
 
  private:
+  // Removes the displayed download specified by `guid` from all clients. No op
+  // if the specified download is not displayed.
+  void Remove(const std::string& guid);
+
   // Responsible for displaying download updates.
   // All clients are ready when `DisplayManager` is created to ensure
   // consistency in the received display metadata among clients.
-  // TODO(http://b/279831939): Add clients for the holding space and download
-  // notifications.
   std::vector<std::unique_ptr<DisplayClient>> clients_;
 };
 

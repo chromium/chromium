@@ -41,9 +41,12 @@ class Environment {
 
     TestTimeouts::Initialize();
 
-    content::SetUpBlinkTestEnvironment();
+    blink_environment_.SetUp();
   }
   ~Environment() {}
+
+ private:
+  content::BlinkTestEnvironment blink_environment_;
 };
 
 }  // namespace

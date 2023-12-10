@@ -480,7 +480,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     // allow native code to run in the background page, we'll also need a
     // NativesEnabledScope for that context.
     DCHECK(v8_context == isolate->GetCurrentContext());
-    absl::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
+    std::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
     if (background_page &&
         background_page != script_context->GetRenderFrame() &&
         blink::WebFrame::ScriptCanAccess(isolate,

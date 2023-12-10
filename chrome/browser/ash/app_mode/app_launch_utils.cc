@@ -9,8 +9,8 @@
 #include "base/command_line.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -41,7 +41,7 @@ void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {
   launcher->Start(base::BindOnce(
       [](CrashRecoveryLauncher* launcher, const KioskAppId& kiosk_app_id,
          Profile* profile, bool success,
-         const absl::optional<std::string>& app_name) {
+         const std::optional<std::string>& app_name) {
         delete launcher;
         if (success) {
           CreateKioskSystemSession(kiosk_app_id, profile, app_name);
@@ -100,14 +100,15 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 
 void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                               Profile* profile,
-                              const absl::optional<std::string>& app_name) {
+                              const std::optional<std::string>& app_name) {
   switch (kiosk_app_id.type) {
     case KioskAppType::kWebApp:
       WebKioskAppManager::Get()->InitKioskSystemSession(profile, kiosk_app_id,
                                                         app_name);
       return;
     case KioskAppType::kChromeApp:
-      KioskAppManager::Get()->InitKioskSystemSession(profile, kiosk_app_id);
+      KioskChromeAppManager::Get()->InitKioskSystemSession(profile,
+                                                           kiosk_app_id);
       return;
     case KioskAppType::kArcApp:
       // Do not create a `KioskBrowserSession` for ARC kiosk

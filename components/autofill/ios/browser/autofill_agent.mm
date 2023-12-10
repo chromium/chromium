@@ -34,6 +34,7 @@
 #import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/core/common/autofill_tick_clock.h"
 #import "components/autofill/core/common/autofill_util.h"
@@ -49,6 +50,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -72,6 +74,7 @@ using autofill::FieldRendererId;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
+using autofill::FormUtilJavaScriptFeature;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
 using base::NumberToString;
 using base::SysNSStringToUTF16;
@@ -463,7 +466,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   if (suggestion.popupItemId == autofill::PopupItemId::kAddressEntry ||
       suggestion.popupItemId == autofill::PopupItemId::kCreditCardEntry ||
-      suggestion.popupItemId == autofill::PopupItemId::kCreateNewPlusAddress) {
+      suggestion.popupItemId == autofill::PopupItemId::kCreateNewPlusAddress ||
+      (base::FeatureList::IsEnabled(
+           autofill::features::kAutofillEnableVirtualCards) &&
+       suggestion.popupItemId ==
+           autofill::PopupItemId::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
@@ -474,14 +481,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
-        autofill_suggestion.payload = autofill::Suggestion::BackendId(
-            SysNSStringToUTF8(suggestion.backendIdentifier));
+        autofill_suggestion.payload =
+            autofill::Suggestion::BackendId(autofill::Suggestion::Guid(
+                SysNSStringToUTF8(suggestion.backendIdentifier)));
       }
 
-      // On iOS, only a single trigger source exists. See crbug.com/1448447.
-      _popupDelegate->DidAcceptSuggestion(
-          autofill_suggestion, 0,
-          autofill::AutofillSuggestionTriggerSource::kiOS);
+      _popupDelegate->DidAcceptSuggestion(autofill_suggestion, {0, 0});
     }
     return;
   }
@@ -667,14 +672,20 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // interested in is autofill::PopupItemId::kClearForm, used to show the
     // "clear form" button.
     NSString* value = nil;
+    NSString* minorValue = nil;
     NSString* displayDescription = nil;
     UIImage* icon = nil;
+
     if (popup_suggestion.popup_item_id ==
             autofill::PopupItemId::kAutocompleteEntry ||
         popup_suggestion.popup_item_id ==
             autofill::PopupItemId::kAddressEntry ||
         popup_suggestion.popup_item_id ==
-            autofill::PopupItemId::kCreditCardEntry) {
+            autofill::PopupItemId::kCreditCardEntry ||
+        (base::FeatureList::IsEnabled(
+             autofill::features::kAutofillEnableVirtualCards) &&
+         popup_suggestion.popup_item_id ==
+             autofill::PopupItemId::kVirtualCreditCardEntry)) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.popup_item_id ==
               autofill::PopupItemId::kAutocompleteEntry &&
@@ -685,6 +696,16 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       // displayDescription will contain a summary of the data to be filled in
       // the other elements.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+
+      if (base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableVirtualCards) &&
+          (!popup_suggestion.minor_text.value.empty())) {
+        // For Virtual Cards, the main_text is just "Virtual card" so we need to
+        // include the minor_text (which is the card name + last 4 digits ||
+        // card holder's name) as the minorValue.
+        minorValue = SysUTF16ToNSString(popup_suggestion.minor_text.value);
+      }
+
       if (!popup_suggestion.labels.empty()) {
         DCHECK_EQ(popup_suggestion.labels.size(), 1U);
         DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
@@ -695,31 +716,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       // Only show icon for credit card suggestions.
       if (delegate &&
           delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
-        // If available, the custom icon for the card is preferred over the
-        // generic network icon. The network icon may also be missing, in
-        // which case we do not set an icon at all.
-        if (!popup_suggestion.custom_icon.IsEmpty()) {
-          icon = popup_suggestion.custom_icon.ToUIImage();
-
-          // On iOS, the keyboard accessory wants smaller icons than the default
-          // 40x24 size, so we resize them to 32x20, if the provided icon is
-          // larger than that.
-          constexpr CGFloat kSuggestionIconWidth = 32;
-          if (icon && (icon.size.width > kSuggestionIconWidth)) {
-            // For a simple image resize, we can keep the same underlying image
-            // and only adjust the ratio.
-            CGFloat ratio = icon.size.width / kSuggestionIconWidth;
-            icon = [UIImage imageWithCGImage:[icon CGImage]
-                                       scale:icon.scale * ratio
-                                 orientation:icon.imageOrientation];
-          }
-        } else if (!popup_suggestion.icon.empty()) {
-          const int resourceID =
-              autofill::CreditCard::IconResourceId(popup_suggestion.icon);
-          icon = ui::ResourceBundle::GetSharedInstance()
-                     .GetNativeImageNamed(resourceID)
-                     .ToUIImage();
-        }
+        icon = [self createIcon:popup_suggestion];
       }
     } else if (popup_suggestion.popup_item_id ==
                autofill::PopupItemId::kClearForm) {
@@ -747,14 +744,15 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
     FormSuggestion* suggestion = [FormSuggestion
                suggestionWithValue:value
+                        minorValue:minorValue
                 displayDescription:displayDescription
                               icon:icon
                        popupItemId:popup_suggestion.popup_item_id
-                 backendIdentifier:
-                     SysUTF8ToNSString(
-                         popup_suggestion
-                             .GetPayload<autofill::Suggestion::BackendId>()
-                             .value())
+                 backendIdentifier:SysUTF8ToNSString(
+                                       popup_suggestion
+                                           .GetBackendId<
+                                               autofill::Suggestion::Guid>()
+                                           .value())
                     requiresReauth:NO
         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
@@ -884,6 +882,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (driver->is_processed())
     return;
   driver->set_processed(true);
+
+  FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
+      frame, base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillAcrossIframesIos));
 
   if (frame->IsMainFrame()) {
     _popupDelegate.reset();
@@ -1163,6 +1165,37 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   GetFormField(&field, forms[0], fieldIdentifier);
   autofillManager->OnTextFieldDidChange(
       forms[0], field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
+}
+
+// Helper method to create icons for payment cards.
+- (UIImage*)createIcon:(autofill::Suggestion)popup_suggestion {
+  // If available, the custom icon for the card is preferred over the
+  // generic network icon. The network icon may also be missing, in
+  // which case we do not set an icon at all.
+  if (!popup_suggestion.custom_icon.IsEmpty()) {
+    UIImage* icon = popup_suggestion.custom_icon.ToUIImage();
+
+    // On iOS, the keyboard accessory wants smaller icons than the default
+    // 40x24 size, so we resize them to 32x20, if the provided icon is
+    // larger than that.
+    constexpr CGFloat kSuggestionIconWidth = 32;
+    if (icon && (icon.size.width > kSuggestionIconWidth)) {
+      // For a simple image resize, we can keep the same underlying image
+      // and only adjust the ratio.
+      CGFloat ratio = icon.size.width / kSuggestionIconWidth;
+      return [UIImage imageWithCGImage:[icon CGImage]
+                                 scale:icon.scale * ratio
+                           orientation:icon.imageOrientation];
+    }
+    return icon;
+  } else if (popup_suggestion.icon != autofill::Suggestion::Icon::kNoIcon) {
+    const int resourceID =
+        autofill::CreditCard::IconResourceId(popup_suggestion.icon);
+    return ui::ResourceBundle::GetSharedInstance()
+        .GetNativeImageNamed(resourceID)
+        .ToUIImage();
+  }
+  return nil;
 }
 
 @end

@@ -12,7 +12,6 @@
 #include <set>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,7 +19,6 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -124,52 +122,6 @@ constexpr auto kProtoReason = enterprise_management::DevicePolicyRequest::TEST;
 
 MATCHER_P(MatchProto, expected, "matches protobuf") {
   return arg.SerializePartialAsString() == expected.SerializePartialAsString();
-}
-
-base::Value::Dict ConvertEncryptedRecordToValue(
-    const ::reporting::EncryptedRecord& record) {
-  base::Value::Dict record_request;
-  if (record.has_encrypted_wrapped_record()) {
-    base::Value::Dict encrypted_wrapped_record;
-    std::string base64_encode;
-    base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
-    record_request.Set("encryptedWrappedRecord", base64_encode);
-  }
-  if (record.has_encryption_info()) {
-    base::Value::Dict encryption_info;
-    if (record.encryption_info().has_encryption_key()) {
-      std::string base64_encode;
-      base::Base64Encode(record.encryption_info().encryption_key(),
-                         &base64_encode);
-      encryption_info.Set("encryptionKey", base64_encode);
-    }
-    if (record.encryption_info().has_public_key_id()) {
-      encryption_info.Set(
-          "publicKeyId",
-          base::NumberToString(record.encryption_info().public_key_id()));
-    }
-    record_request.Set("encryptionInfo", std::move(encryption_info));
-  }
-  if (record.has_sequence_information()) {
-    base::Value::Dict sequence_information;
-    if (record.sequence_information().has_sequencing_id()) {
-      sequence_information.Set(
-          "sequencingId",
-          base::NumberToString(record.sequence_information().sequencing_id()));
-    }
-    if (record.sequence_information().has_generation_id()) {
-      sequence_information.Set(
-          "generationId",
-          base::NumberToString(record.sequence_information().generation_id()));
-    }
-    if (record.sequence_information().has_priority()) {
-      sequence_information.Set("priority",
-                               record.sequence_information().priority());
-    }
-    record_request.Set("sequencingInformation",
-                       std::move(sequence_information));
-  }
-  return record_request;
 }
 
 // A mock class to allow us to set expectations on result callbacks.
@@ -565,18 +517,6 @@ class CloudPolicyClientTest : public testing::Test {
     ASSERT_TRUE(client_->GetPolicyFor(policy_type_, std::string()));
     EXPECT_THAT(*client_->GetPolicyFor(policy_type_, std::string()),
                 MatchProto(policy_response.policy_response().responses(0)));
-  }
-
-  void AttemptUploadEncryptedWaitUntilIdle(
-      const ::reporting::EncryptedRecord& record,
-      absl::optional<base::Value::Dict> context = absl::nullopt) {
-    CloudPolicyClient::ResponseCallback response_callback =
-        base::BindOnce(&MockResponseCallbackObserver::OnResponseReceived,
-                       base::Unretained(&response_callback_observer_));
-    client_->UploadEncryptedReport(ConvertEncryptedRecordToValue(record),
-                                   std::move(context),
-                                   std::move(response_callback));
-    base::RunLoop().RunUntilIdle();
   }
 
   void VerifyQueryParameter() {
@@ -2107,29 +2047,6 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   ASSERT_EQ(2u, payload_dict
                     .FindList(RealtimeReportingJobConfiguration::kEventListKey)
                     ->size());
-}
-
-TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
-  // Create record
-  ::reporting::EncryptedRecord record;
-  record.set_encrypted_wrapped_record("Enterprise");
-  auto* sequence_information = record.mutable_sequence_information();
-  sequence_information->set_sequencing_id(1701);
-  sequence_information->set_generation_id(12345678);
-  sequence_information->set_priority(::reporting::IMMEDIATE);
-
-  RegisterClient();
-
-  ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(response_callback_observer_, OnResponseReceived(HasValue()))
-      .Times(1);
-  AttemptUploadEncryptedWaitUntilIdle(record);
-
-  EXPECT_EQ(
-      job_type_,
-      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_ENCRYPTED_REPORT);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(client_->last_dm_status(), DM_STATUS_SUCCESS);
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReportNotRegistered) {

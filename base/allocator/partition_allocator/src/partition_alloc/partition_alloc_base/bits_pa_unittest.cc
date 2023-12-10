@@ -4,12 +4,12 @@
 
 // This file contains the unit tests for the bit utilities.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <limits>
 
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base::bits {
@@ -50,14 +50,14 @@ TEST(BitsTestPA, Log2Ceiling) {
 
 TEST(BitsTestPA, AlignUp) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0ul, AlignUp(0, 4));
-  EXPECT_EQ(4ul, AlignUp(1, 4));
-  EXPECT_EQ(4096ul, AlignUp(1, 4096));
-  EXPECT_EQ(4096ul, AlignUp(4096, 4096));
-  EXPECT_EQ(4096ul, AlignUp(4095, 4096));
-  EXPECT_EQ(8192ul, AlignUp(4097, 4096));
-  EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(0u, AlignUp(0u, 4u));
+  EXPECT_EQ(4u, AlignUp(1u, 4u));
+  EXPECT_EQ(4096u, AlignUp(1u, 4096u));
+  EXPECT_EQ(4096u, AlignUp(4096u, 4096u));
+  EXPECT_EQ(4096u, AlignUp(4095u, 4096u));
+  EXPECT_EQ(8192u, AlignUp(4097u, 4096u));
+  EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, size_t{32}));
+  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(size_t{1}, kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTestPA, AlignUpPointer) {
@@ -83,15 +83,15 @@ TEST(BitsTestPA, AlignUpPointer) {
 
 TEST(BitsTestPA, AlignDown) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0ul, AlignDown(0, 4));
-  EXPECT_EQ(0ul, AlignDown(1, 4));
-  EXPECT_EQ(0ul, AlignDown(1, 4096));
-  EXPECT_EQ(4096ul, AlignDown(4096, 4096));
-  EXPECT_EQ(0ul, AlignDown(4095, 4096));
-  EXPECT_EQ(4096ul, AlignDown(4097, 4096));
-  EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, 32));
-  EXPECT_EQ(0ul, AlignDown(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(0u, AlignDown(0u, 4u));
+  EXPECT_EQ(0u, AlignDown(1u, 4u));
+  EXPECT_EQ(0u, AlignDown(1u, 4096u));
+  EXPECT_EQ(4096u, AlignDown(4096u, 4096u));
+  EXPECT_EQ(0u, AlignDown(4095u, 4096u));
+  EXPECT_EQ(4096u, AlignDown(4097u, 4096u));
+  EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, size_t{32}));
+  EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, size_t{32}));
+  EXPECT_EQ(0ul, AlignDown(size_t{1}, kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTestPA, AlignDownPointer) {
@@ -115,133 +115,6 @@ TEST(BitsTestPA, AlignDownPointer) {
             AlignDown(reinterpret_cast<uint8_t*>(kUintPtrTMax), 32));
   EXPECT_EQ(reinterpret_cast<uint8_t*>(0),
             AlignDown(reinterpret_cast<uint8_t*>(1), kUintPtrTMax / 2 + 1));
-}
-
-TEST(BitsTestPA, CountLeadingZeroBits8) {
-  EXPECT_EQ(8, CountLeadingZeroBits(uint8_t{0}));
-  EXPECT_EQ(7, CountLeadingZeroBits(uint8_t{1}));
-  for (int shift = 0; shift <= 7; ++shift) {
-    EXPECT_EQ(7 - shift,
-              CountLeadingZeroBits(static_cast<uint8_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountLeadingZeroBits(uint8_t{0x0f}));
-}
-
-TEST(BitsTestPA, CountLeadingZeroBits16) {
-  EXPECT_EQ(16, CountLeadingZeroBits(uint16_t{0}));
-  EXPECT_EQ(15, CountLeadingZeroBits(uint16_t{1}));
-  for (int shift = 0; shift <= 15; ++shift) {
-    EXPECT_EQ(15 - shift,
-              CountLeadingZeroBits(static_cast<uint16_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountLeadingZeroBits(uint16_t{0x0f0f}));
-}
-
-TEST(BitsTestPA, CountLeadingZeroBits32) {
-  EXPECT_EQ(32, CountLeadingZeroBits(uint32_t{0}));
-  EXPECT_EQ(31, CountLeadingZeroBits(uint32_t{1}));
-  for (int shift = 0; shift <= 31; ++shift) {
-    EXPECT_EQ(31 - shift, CountLeadingZeroBits(uint32_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountLeadingZeroBits(uint32_t{0x0f0f0f0f}));
-}
-
-TEST(BitsTestPA, CountTrailingZeroBits8) {
-  EXPECT_EQ(8, CountTrailingZeroBits(uint8_t{0}));
-  EXPECT_EQ(7, CountTrailingZeroBits(uint8_t{128}));
-  for (int shift = 0; shift <= 7; ++shift) {
-    EXPECT_EQ(shift, CountTrailingZeroBits(static_cast<uint8_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountTrailingZeroBits(uint8_t{0xf0}));
-}
-
-TEST(BitsTestPA, CountTrailingZeroBits16) {
-  EXPECT_EQ(16, CountTrailingZeroBits(uint16_t{0}));
-  EXPECT_EQ(15, CountTrailingZeroBits(uint16_t{32768}));
-  for (int shift = 0; shift <= 15; ++shift) {
-    EXPECT_EQ(shift, CountTrailingZeroBits(static_cast<uint16_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountTrailingZeroBits(uint16_t{0xf0f0}));
-}
-
-TEST(BitsTestPA, CountTrailingZeroBits32) {
-  EXPECT_EQ(32, CountTrailingZeroBits(uint32_t{0}));
-  EXPECT_EQ(31, CountTrailingZeroBits(uint32_t{1} << 31));
-  for (int shift = 0; shift <= 31; ++shift) {
-    EXPECT_EQ(shift, CountTrailingZeroBits(uint32_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountTrailingZeroBits(uint32_t{0xf0f0f0f0}));
-}
-
-TEST(BitsTestPA, CountLeadingZeroBits64) {
-  EXPECT_EQ(64, CountLeadingZeroBits(uint64_t{0}));
-  EXPECT_EQ(63, CountLeadingZeroBits(uint64_t{1}));
-  for (int shift = 0; shift <= 63; ++shift) {
-    EXPECT_EQ(63 - shift, CountLeadingZeroBits(uint64_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountLeadingZeroBits(uint64_t{0x0f0f0f0f0f0f0f0f}));
-}
-
-TEST(BitsTestPA, CountTrailingZeroBits64) {
-  EXPECT_EQ(64, CountTrailingZeroBits(uint64_t{0}));
-  EXPECT_EQ(63, CountTrailingZeroBits(uint64_t{1} << 63));
-  for (int shift = 0; shift <= 31; ++shift) {
-    EXPECT_EQ(shift, CountTrailingZeroBits(uint64_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountTrailingZeroBits(uint64_t{0xf0f0f0f0f0f0f0f0}));
-}
-
-TEST(BitsTestPA, CountLeadingZeroBitsSizeT) {
-#if defined(ARCH_CPU_64_BITS)
-  EXPECT_EQ(64, CountLeadingZeroBits(size_t{0}));
-  EXPECT_EQ(63, CountLeadingZeroBits(size_t{1}));
-  EXPECT_EQ(32, CountLeadingZeroBits(size_t{1} << 31));
-  EXPECT_EQ(1, CountLeadingZeroBits(size_t{1} << 62));
-  EXPECT_EQ(0, CountLeadingZeroBits(size_t{1} << 63));
-#else
-  EXPECT_EQ(32, CountLeadingZeroBits(size_t{0}));
-  EXPECT_EQ(31, CountLeadingZeroBits(size_t{1}));
-  EXPECT_EQ(1, CountLeadingZeroBits(size_t{1} << 30));
-  EXPECT_EQ(0, CountLeadingZeroBits(size_t{1} << 31));
-#endif  // ARCH_CPU_64_BITS
-}
-
-TEST(BitsTestPA, CountTrailingZeroBitsSizeT) {
-#if defined(ARCH_CPU_64_BITS)
-  EXPECT_EQ(64, CountTrailingZeroBits(size_t{0}));
-  EXPECT_EQ(63, CountTrailingZeroBits(size_t{1} << 63));
-  EXPECT_EQ(31, CountTrailingZeroBits(size_t{1} << 31));
-  EXPECT_EQ(1, CountTrailingZeroBits(size_t{2}));
-  EXPECT_EQ(0, CountTrailingZeroBits(size_t{1}));
-#else
-  EXPECT_EQ(32, CountTrailingZeroBits(size_t{0}));
-  EXPECT_EQ(31, CountTrailingZeroBits(size_t{1} << 31));
-  EXPECT_EQ(1, CountTrailingZeroBits(size_t{2}));
-  EXPECT_EQ(0, CountTrailingZeroBits(size_t{1}));
-#endif  // ARCH_CPU_64_BITS
-}
-
-TEST(BitsTestPA, PowerOfTwo) {
-  EXPECT_FALSE(IsPowerOfTwo(-1));
-  EXPECT_FALSE(IsPowerOfTwo(0));
-  EXPECT_TRUE(IsPowerOfTwo(1));
-  EXPECT_TRUE(IsPowerOfTwo(2));
-  // Unsigned 64 bit cases.
-  for (uint32_t i = 2; i < 64; i++) {
-    const uint64_t val = uint64_t{1} << i;
-    EXPECT_FALSE(IsPowerOfTwo(val - 1));
-    EXPECT_TRUE(IsPowerOfTwo(val));
-    EXPECT_FALSE(IsPowerOfTwo(val + 1));
-  }
-  // Signed 64 bit cases.
-  for (uint32_t i = 2; i < 63; i++) {
-    const int64_t val = int64_t{1} << i;
-    EXPECT_FALSE(IsPowerOfTwo(val - 1));
-    EXPECT_TRUE(IsPowerOfTwo(val));
-    EXPECT_FALSE(IsPowerOfTwo(val + 1));
-  }
-  // Signed integers with only the last bit set are negative, not powers of two.
-  EXPECT_FALSE(IsPowerOfTwo(int64_t{1} << 63));
 }
 
 TEST(BitsTestPA, LeftMostBit) {

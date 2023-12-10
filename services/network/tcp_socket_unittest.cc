@@ -42,6 +42,7 @@
 #include "services/network/socket_factory.h"
 #include "services/network/tcp_connected_socket.h"
 #include "services/network/tcp_server_socket.h"
+#include "services/network/test/test_socket_broker_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -162,7 +163,7 @@ class TestServer {
         server_addr_(server_addr) {}
   ~TestServer() {}
 
-  void Start(uint32_t backlog) {
+  void Start(uint32_t backlog, bool should_fail_socket_creation = false) {
     int net_error = net::ERR_FAILED;
     base::RunLoop run_loop;
     auto options = mojom::TCPServerSocketOptions::New();
@@ -178,8 +179,22 @@ class TestServer {
               run_loop.Quit();
             }));
     run_loop.Run();
-    EXPECT_EQ(net::OK, net_error);
+    if (should_fail_socket_creation) {
+      EXPECT_EQ(net::ERR_CONNECTION_FAILED, net_error);
+    } else {
+      EXPECT_EQ(net::OK, net_error);
+    }
   }
+
+#if BUILDFLAG(IS_WIN)
+  void StartWithBroker(uint32_t backlog, bool should_fail_socket_creation) {
+    socket_broker_impl_.SetConnectionFailure(should_fail_socket_creation);
+    mojo::Receiver<mojom::SocketBroker> receiver(&socket_broker_impl_);
+    factory_.BindSocketBroker(receiver.BindNewPipeAndPassRemote());
+
+    Start(backlog, should_fail_socket_creation);
+  }
+#endif
 
   // Accepts one connection. Upon successful completion, |callback| will be
   // invoked.
@@ -259,6 +274,10 @@ class TestServer {
       std::move(read_callback_).Run();
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  TestSocketBrokerImpl socket_broker_impl_;
+#endif
 
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   SocketFactory factory_;
@@ -392,6 +411,18 @@ class TCPSocketTest : public testing::Test {
   TestSocketObserver test_observer_;
   mojo::UniqueReceiverSet<mojom::TCPServerSocket> tcp_server_socket_receiver_;
 };
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(TCPSocketTest, BrokerCreateTCPServerSocketSuccess) {
+  TestServer server;
+  server.StartWithBroker(1 /*backlog*/, false /*fail_server_socket_creation*/);
+}
+
+TEST_F(TCPSocketTest, BrokerCreateTCPServerSocketFailure) {
+  TestServer server;
+  server.StartWithBroker(1 /*backlog*/, true /*fail_server_socket_creation*/);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(TCPSocketTest, ReadAndWrite) {
   const struct TestData {

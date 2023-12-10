@@ -31,9 +31,9 @@
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Overrides the primary button title in signin promo when there are no
-// accounts. If unset/`nil` the default text is used.
-@property(nonatomic, copy) NSString* primaryButtonTitleNoAccountsModeOverride;
+// Overrides the default primary button title in signin promo. If unset/`nil`
+// the default text is used.
+@property(nonatomic, copy) NSString* primaryButtonTitleOverride;
 
 // Configure `signinPromoView` with the given `promoViewStyle` style.
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView

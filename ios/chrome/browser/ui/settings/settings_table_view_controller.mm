@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -42,8 +43,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/settings/model/sync/utils/sync_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -81,13 +80,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -96,6 +95,8 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
@@ -237,6 +238,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Passwords coordinator.
   PasswordsCoordinator* _passwordsCoordinator;
 
+  // Feature engagement tracker for the signin IPH.
+  feature_engagement::Tracker* _featureEngagementTracker;
+  // Presenter for the signin IPH.
+  BubbleViewControllerPresenter* _bubblePresenter;
+
   // Identity object and observer used for Account Item refresh.
   id<SystemIdentity> _identity;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
@@ -344,6 +350,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     _accountManagerServiceObserver.reset(
         new ChromeAccountManagerServiceObserverBridge(self,
                                                       _accountManagerService));
+    _featureEngagementTracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
 
     PrefService* prefService = _browserState->GetPrefs();
 
@@ -441,6 +449,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self maybeShowSigninIPH];
+}
+
 #pragma mark SettingsRootTableViewController
 
 - (void)loadModel {
@@ -495,12 +508,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
   // Feed is disabled in safe mode.
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
+  SceneState* sceneState = _browser->GetSceneState();
   BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
 
   if (!IsFeedAblationEnabled() && !isSafeMode &&
-      IsContentSuggestionsForSupervisedUserEnabled(_browserState->GetPrefs())) {
+      IsContentSuggestionsForSupervisedUserEnabled(_browserState->GetPrefs()) &&
+      !ShouldHideFeedWithSearchChoice(templateURLService)) {
     if ([_contentSuggestionPolicyEnabled value]) {
       [model addItem:self.feedSettingsItem
           toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -935,6 +950,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _safetyCheckItem.leadingIconTintColor = UIColor.whiteColor;
   _safetyCheckItem.leadingIconCornerRadius =
       kColorfulBackgroundSymbolCornerRadius;
+  _safetyCheckItem.accessibilityIdentifier = kSettingsSafetyCheckCellId;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
     [self updateSafetyCheckItemTrailingIcon];
@@ -1175,13 +1191,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if (_settingsAreDismissed)
     return cell;
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  if ([cell isKindOfClass:[TableViewDetailIconCell class]]) {
-    TableViewDetailIconCell* detailCell =
-        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
-    [detailCell setUserInteractionEnabled:YES];
-    detailCell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  }
 
   switch (itemType) {
     case SettingsItemTypeMemoryDebugging: {
@@ -1768,6 +1777,72 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
+- (void)maybeShowSigninIPH {
+  if (_settingsAreDismissed) {
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+  BOOL shouldShowSigninIPH =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+      [self shouldReplaceSyncSettingsWithAccountSettings];
+  if (!shouldShowSigninIPH) {
+    return;
+  }
+
+  UITableViewCell* accountCell = nil;
+  for (UITableViewCell* cell in [self.tableView visibleCells]) {
+    if ([cell isKindOfClass:[TableViewAccountCell class]]) {
+      accountCell = cell;
+      break;
+    }
+  }
+  if (!accountCell) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType dismissReason,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        [weakSelf signinIPHDismissed];
+      };
+  _bubblePresenter = [[BubbleViewControllerPresenter alloc]
+           initWithText:l10n_util::GetNSString(IDS_IOS_SETTING_IPH_SIGNIN)
+                  title:nil
+                  image:nil
+         arrowDirection:BubbleArrowDirectionUp
+              alignment:BubbleAlignmentCenter
+             bubbleType:BubbleViewTypeDefault
+      dismissalCallback:dismissalCallback];
+  CGPoint anchorPointInCell = CGPointMake(CGRectGetMidX(accountCell.bounds),
+                                          CGRectGetMaxY(accountCell.bounds));
+  CGPoint anchorPointInWindow = [self.view.window convertPoint:anchorPointInCell
+                                                      fromView:accountCell];
+
+  // The IPH must be presented if
+  // `_featureEngagementTracker->ShouldTriggerHelpUI()` returns true.
+  BOOL canShowSigninIPH =
+      [_bubblePresenter canPresentInView:self.view
+                             anchorPoint:anchorPointInWindow] &&
+      _featureEngagementTracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
+  if (canShowSigninIPH) {
+    [_bubblePresenter presentInViewController:self
+                                         view:self.view
+                                  anchorPoint:anchorPointInWindow];
+  } else {
+    _bubblePresenter = nil;
+  }
+}
+
+- (void)signinIPHDismissed {
+  _featureEngagementTracker->Dismissed(
+      feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
+  _bubblePresenter = nil;
+}
+
 // Updates the Sync item to display the right icon and status message in the
 // cell.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
@@ -2003,14 +2078,23 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)didFinishSignin:(BOOL)signedIn {
-  if (_settingsAreDismissed)
+  if (_settingsAreDismissed) {
     return;
+  }
 
   // The sign-in is done. The sign-in promo cell or account cell can be
   // reloaded.
   DCHECK(self.isSigninInProgress);
   self.isSigninInProgress = NO;
   [self reloadData];
+
+  // Post the task to show signin IPH so that the UI has had time to refresh
+  // after `reloadData`.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf maybeShowSigninIPH];
+      }));
 }
 
 #pragma mark SettingsControllerProtocol
@@ -2297,13 +2381,34 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _safetyCheckCoordinator = nil;
 }
 
-#pragma mark - SafetyCheckCoordinatorDelegate
+#pragma mark - PasswordsCoordinatorDelegate
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   DCHECK_EQ(_passwordsCoordinator, coordinator);
   [_passwordsCoordinator stop];
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
+}
+
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  // Pop everything up to the Settings page.
+  // When there is content presented, don't animate the dismissal of the view
+  // controllers in the navigation controller to prevent revealing passwords
+  // when the presented content is the one covered by the reauthentication UI.
+
+  UINavigationController* navigationController = self.navigationController;
+  UIViewController* topViewController = navigationController.topViewController;
+  UIViewController* presentedViewController =
+      topViewController.presentedViewController;
+
+  [navigationController popToViewController:self
+                                   animated:presentedViewController == nil];
+
+  [presentedViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 #pragma mark - NotificationsDelegate

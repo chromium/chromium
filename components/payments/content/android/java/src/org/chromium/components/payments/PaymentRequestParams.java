@@ -11,9 +11,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 
 import java.util.Map;
 
-/**
- * The parameters of PaymentRequest specified by the merchant.
- */
+/** The parameters of PaymentRequest specified by the merchant. */
 public interface PaymentRequestParams {
     /**
      * @return Whether or not the payment request is being aborted. Other methods should not get

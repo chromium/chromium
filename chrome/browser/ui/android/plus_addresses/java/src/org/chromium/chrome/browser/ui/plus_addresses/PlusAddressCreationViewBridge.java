@@ -16,9 +16,12 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** JNI wrapper for C++ PlusAddressCreationViewAndroid. */
 @JNINamespace("plus_addresses")
@@ -28,6 +31,7 @@ public class PlusAddressCreationViewBridge {
     private BottomSheetController mBottomSheetController;
     private LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
+    private final TabModelSelector mTabModelSelector;
     private CoordinatorFactory mCoordinatorFactory;
     @Nullable private PlusAddressCreationCoordinator mCoordinator;
 
@@ -36,12 +40,14 @@ public class PlusAddressCreationViewBridge {
             long nativePlusAddressCreationPromptAndroid,
             WindowAndroid window,
             TabModel tabModel,
+            TabModelSelector tabModelSelector,
             CoordinatorFactory coordinatorFactory) {
         mNativePlusAddressCreationPromptAndroid = nativePlusAddressCreationPromptAndroid;
         mActivity = window.getActivity().get();
         mBottomSheetController = BottomSheetControllerProvider.from(window);
         mLayoutStateProvider = LayoutManagerProvider.from(window);
         mTabModel = tabModel;
+        mTabModelSelector = tabModelSelector;
         mCoordinatorFactory = coordinatorFactory;
     }
 
@@ -52,22 +58,27 @@ public class PlusAddressCreationViewBridge {
                 BottomSheetController bottomSheetController,
                 LayoutStateProvider layoutStateProvider,
                 TabModel tabModel,
+                TabModelSelector tabModelSelector,
                 PlusAddressCreationViewBridge bridge,
                 String modalTitle,
                 String plusAddressDescription,
                 String proposedPlusAddressPlaceholder,
                 String plusAddressModalOkText,
-                String plusAddressModalCancelText);
+                String plusAddressModalCancelText,
+                GURL manageUrl);
     }
 
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static PlusAddressCreationViewBridge create(
             long nativePlusAddressCreationPromptAndroid, WindowAndroid window, TabModel tabModel) {
+        var tabModelSelector = TabModelSelectorSupplier.getValueOrNullFrom(window);
+        assert tabModelSelector != null : "No TabModelSelector available.";
         return new PlusAddressCreationViewBridge(
                 nativePlusAddressCreationPromptAndroid,
                 window,
                 tabModel,
+                tabModelSelector,
                 PlusAddressCreationCoordinator::new);
     }
 
@@ -77,7 +88,8 @@ public class PlusAddressCreationViewBridge {
             String plusAddressDescription,
             String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
-            String plusAddressModalCancelText) {
+            String plusAddressModalCancelText,
+            String manageUrl) {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             mCoordinator =
                     mCoordinatorFactory.create(
@@ -85,13 +97,36 @@ public class PlusAddressCreationViewBridge {
                             mBottomSheetController,
                             mLayoutStateProvider,
                             mTabModel,
+                            mTabModelSelector,
                             this,
                             modalTitle,
                             plusAddressDescription,
                             proposedPlusAddressPlaceholder,
                             plusAddressModalOkText,
-                            plusAddressModalCancelText);
+                            plusAddressModalCancelText,
+                            new GURL(manageUrl));
             mCoordinator.requestShowContent();
+        }
+    }
+
+    @CalledByNative
+    void updateProposedPlusAddress(String plusAddress) {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.updateProposedPlusAddress(plusAddress);
+        }
+    }
+
+    @CalledByNative
+    void finishConfirm() {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.finishConfirm();
+        }
+    }
+
+    @CalledByNative
+    void showError(String message) {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.showError(message);
         }
     }
 
@@ -105,10 +140,10 @@ public class PlusAddressCreationViewBridge {
         mNativePlusAddressCreationPromptAndroid = 0;
     }
 
-    public void onConfirmed() {
+    public void onConfirmRequested() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .onConfirmed(
+                    .onConfirmRequested(
                             mNativePlusAddressCreationPromptAndroid,
                             PlusAddressCreationViewBridge.this);
         }
@@ -139,10 +174,12 @@ public class PlusAddressCreationViewBridge {
 
     @NativeMethods
     interface Natives {
-        void onConfirmed(
+        void onConfirmRequested(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+
         void onCanceled(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+
         void promptDismissed(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
     }

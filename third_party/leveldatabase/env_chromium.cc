@@ -73,6 +73,11 @@ static const FilePath::CharType kLevelDBTestDirectoryPrefix[] =
 // able to recover data.
 static const char kDatabaseNameSuffixForRebuildDB[] = "__tmp_for_rebuild";
 
+DBFactoryMethod& GetDBFactoryOverride() {
+  static base::NoDestructor<DBFactoryMethod> instance;
+  return *instance;
+}
+
 class ChromiumFileLock : public FileLock {
  public:
   ChromiumFileLock(std::unique_ptr<storage::FilesystemProxy::FileLock> lock,
@@ -1369,6 +1374,10 @@ void DBTracker::DatabaseDestroyed(TrackedDBImpl* database,
 leveldb::Status OpenDB(const leveldb_env::Options& options,
                        const std::string& name,
                        std::unique_ptr<leveldb::DB>* dbptr) {
+  if (!GetDBFactoryOverride().is_null()) {
+    return GetDBFactoryOverride().Run(options, name, dbptr);
+  }
+
   // For UMA logging purposes we need the block cache to be created outside of
   // leveldb so that the size can be logged and it can be pruned.
   DCHECK(options.block_cache != nullptr);
@@ -1412,6 +1421,10 @@ leveldb::Status OpenDB(const leveldb_env::Options& options,
   if (s.ok())
     dbptr->reset(tracked_db);
   return s;
+}
+
+void SetDBFactoryForTesting(DBFactoryMethod factory) {
+  GetDBFactoryOverride() = factory;
 }
 
 leveldb::Status RewriteDB(const leveldb_env::Options& options,

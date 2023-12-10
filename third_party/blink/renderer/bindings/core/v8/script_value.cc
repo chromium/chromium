@@ -59,7 +59,7 @@ bool ScriptValue::ToString(String& result) const {
   v8::Local<v8::Value> string = V8Value();
   if (string.IsEmpty() || !string->IsString())
     return false;
-  result = ToCoreString(v8::Local<v8::String>::Cast(string));
+  result = ToCoreString(GetIsolate(), v8::Local<v8::String>::Cast(string));
   return true;
 }
 

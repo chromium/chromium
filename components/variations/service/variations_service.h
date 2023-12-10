@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/service/variations_field_trial_creator.h"
@@ -25,7 +26,6 @@
 #include "components/variations/variations_request_scheduler.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_seed_store.h"
-#include "components/version_info/version_info.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
 #include "url/gurl.h"
 
@@ -130,12 +130,12 @@ class VariationsService
   // value will not be updated on Chrome updates.
   // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example: us,
   // br, in.
-  std::string GetOverriddenPermanentCountry();
+  std::string GetOverriddenPermanentCountry() const;
 
   // Returns the permanent country code stored for this client.
   // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example: us,
   // br, in.
-  std::string GetStoredPermanentCountry();
+  std::string GetStoredPermanentCountry() const;
 
   // Forces an override of the stored permanent country. Returns true
   // if the variable has been updated. Return false if the override country is
@@ -369,6 +369,9 @@ class VariationsService
   // Used for instantiating entropy providers for variations seed simulation.
   // Weak pointer.
   raw_ptr<metrics::MetricsStateManager> state_manager_;
+
+  // Configurations related to the limited entropy synthetic trial.
+  LimitedEntropySyntheticTrial limited_entropy_synthetic_trial_;
 
   // Used to obtain policy-related preferences. Depending on the platform, will
   // either be Local State or Profile prefs.

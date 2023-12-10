@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
@@ -31,6 +32,8 @@ void ArcAppPerformanceTracingTestHelper::SetUp(Profile* profile) {
   DCHECK(IsArcAllowedForProfile(profile));
   profile_ = profile;
   wm_helper_ = std::make_unique<exo::WMHelper>();
+  *ArcAppPerformanceTracing::ticks_now_callback() = base::BindRepeating(
+      &ArcAppPerformanceTracingTestHelper::ticks_now, base::Unretained(this));
   // Make sure it is accessible in test.
   if (!GetTracing()) {
     ArcAppPerformanceTracing::GetForBrowserContextForTesting(profile_);
@@ -41,6 +44,7 @@ void ArcAppPerformanceTracingTestHelper::SetUp(Profile* profile) {
 void ArcAppPerformanceTracingTestHelper::TearDown() {
   DCHECK(profile_);
   exo::WMHelper::GetInstance()->RemoveActivationObserver(GetTracing());
+  ArcAppPerformanceTracing::reset_ticks_now_callback();
   wm_helper_.reset();
   profile_ = nullptr;
 }
@@ -57,23 +61,24 @@ ArcAppPerformanceTracingTestHelper::GetTracingSession() {
 
 void ArcAppPerformanceTracingTestHelper::FireTimerForTesting() {
   DCHECK(GetTracingSession());
-  DCHECK(GetTracingSession()->tracing_active());
+  DCHECK(GetTracingSession()->TracingActive());
   GetTracingSession()->FireTimerForTesting();
 }
 
 void ArcAppPerformanceTracingTestHelper::PlaySequence(
+    exo::Surface* surface,
     const std::vector<base::TimeDelta>& deltas) {
   DCHECK(GetTracingSession());
-  DCHECK(GetTracingSession()->tracing_active());
-  base::Time timestamp = base::Time::Now();
-  GetTracingSession()->OnCommitForTesting(timestamp);
+  DCHECK(GetTracingSession()->TracingActive());
+  Commit(surface, PresentType::kSuccessful);
   for (const base::TimeDelta& delta : deltas) {
-    timestamp += delta;
-    GetTracingSession()->OnCommitForTesting(timestamp);
+    ticks_now_ += delta;
+    Commit(surface, PresentType::kSuccessful);
   }
 }
 
-void ArcAppPerformanceTracingTestHelper::PlayDefaultSequence() {
+void ArcAppPerformanceTracingTestHelper::PlayDefaultSequence(
+    exo::Surface* surface) {
   const base::TimeDelta normal_interval = base::Seconds(1) / 60;
   const base::TimeDelta error1 = base::Microseconds(100);
   const base::TimeDelta error2 = base::Microseconds(200);
@@ -97,7 +102,25 @@ void ArcAppPerformanceTracingTestHelper::PlayDefaultSequence() {
       normal_interval + error2,
       normal_interval + error3,
   };
-  PlaySequence(sequence);
+  PlaySequence(surface, sequence);
+}
+
+void ArcAppPerformanceTracingTestHelper::Commit(exo::Surface* surface,
+                                                PresentType present) {
+  surface->Commit();
+
+  std::list<exo::Surface::FrameCallback> frame_callbacks;
+  std::list<exo::Surface::PresentationCallback> presentation_callbacks;
+  surface->AppendSurfaceHierarchyCallbacks(&frame_callbacks,
+                                           &presentation_callbacks);
+
+  // Null timestamp indicates a discarded present.
+  gfx::PresentationFeedback feedback(
+      present == PresentType::kSuccessful ? ticks_now_ : base::TimeTicks(),
+      base::TimeDelta() /* interval */, 0 /* flags */);
+  for (auto& cb : presentation_callbacks) {
+    cb.Run(feedback);
+  }
 }
 
 void ArcAppPerformanceTracingTestHelper::DisableAppSync() {
@@ -109,6 +132,11 @@ void ArcAppPerformanceTracingTestHelper::DisableAppSync() {
   selected_sync_types.Remove(syncer::UserSelectableOsType::kOsApps);
   sync_user_settings->SetSelectedOsTypes(
       /*sync_all_os_types=*/false, selected_sync_types);
+}
+
+void ArcAppPerformanceTracingTestHelper::AdvanceTickCount(
+    base::TimeDelta delta) {
+  ticks_now_ += delta;
 }
 
 }  // namespace arc

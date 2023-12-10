@@ -278,7 +278,7 @@ void ToolbarView::Init() {
   size_animation_.Reset(1);
 
   std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (download::IsDownloadBubbleEnabled(browser_->profile())) {
+  if (download::IsDownloadBubbleEnabled()) {
     download_button =
         std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }
@@ -624,7 +624,7 @@ void ToolbarView::ShowIntentPickerBubble(
     bool show_stay_in_chrome,
     bool show_remember_selection,
     IntentPickerBubbleView::BubbleType bubble_type,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
   views::Button* highlighted_button = nullptr;
   if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
@@ -976,17 +976,12 @@ void ToolbarView::InitLayout() {
   }
 
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    // Order 1 is reserved for transient buttons.
-    constexpr int kToolbarFlexOrderStart = 2;
+    constexpr int kToolbarFlexOrderStart = 1;
 
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
-        std::vector<ui::ElementIdentifier>{
-            kToolbarAvatarButtonElementId, kToolbarNewTabButtonElementId,
-            kToolbarForwardButtonElementId, kToolbarDownloadButtonElementId,
-            kToolbarMediaButtonElementId, kToolbarHomeButtonElementId,
-            kToolbarChromeLabsButtonElementId},
-        ToolbarController::GetDefaultElementInfoMap(), kToolbarFlexOrderStart,
+        ToolbarController::GetDefaultResponsiveElements(),
+        ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
         container_view_, overflow_button_);
 
     overflow_button_->set_create_menu_model_callback(

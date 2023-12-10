@@ -438,35 +438,6 @@ CHAR_LIMIT guidelines:
         Automatically sends usage statistics and crash reports to Google
       </message>
 
-      <!-- Metrics settings -->
-      <message name="IDS_PREFS_METRICS_SETTINGS" desc="Title for the page that allows the user to control how much usage data Chrome uploads. [CHAR_LIMIT=32]">
-        Usage data
-      </message>
-      <message name="IDS_MANAGE_METRICS_SETTINGS" desc="The text for a preferences row to open metrics settings.">
-        Manage usage data sharing
-      </message>
-      <message name="IDS_METRICS_SETTINGS_DESCRIPTION" desc="The text describing what the metrics settings page controls.">
-        Choose what you’re comfortable to share with Chrome. The metrics you share will be used to help improve Chrome’s features, performance, and stability.
-      </message>
-      <message name="IDS_METRICS_SETTINGS_EXTENDED_TITLE" desc="Title for the extended metrics option.">
-        Extended usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_EXTENDED_SUMMARY" desc="Description text for 'Extended usage data' option in Usage data settings that enables extended metrics collection. Other options are 'Basic usage data' and 'No usage data'.">
-        Basic data plus information about the websites you visit and apps you use
-      </message>
-      <message name="IDS_METRICS_SETTINGS_BASIC_TITLE" desc="Title for the basic metrics option.">
-        Basic usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_BASIC_SUMMARY" desc="Description text for 'Basic usage data' option in Usage data settings that enables basic metrics collection. Other options are 'Extended usage data' and 'No usage data'.">
-        How you interact with Chrome, settings you’ve selected, details of Chrome crashes
-      </message>
-      <message name="IDS_METRICS_SETTINGS_NONE_TITLE" desc="Title for no metrics option.">
-        No usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_NONE_SUMMARY" desc="Description text for 'No usage data' option in Usage data settings that disables metrics collection. Other options are 'Extended usage data' and 'Basic usage data'.">
-        No statistics or crash reports are sent to Google
-      </message>
-
       <!-- Search engine settings -->
       <message name="IDS_SEARCH_ENGINE_SETTINGS" desc="Title for Search Engine settings. [CHAR_LIMIT=32]">
         Search engine
@@ -1489,10 +1460,10 @@ Your Google account may have other forms of browsing history like searches and a
 
       <!-- Tracking protection -->
       <message name="IDS_TRACKING_PROTECTION_TITLE" desc="Tracking Protection preference item title.">
-        Tracking protection
+        Tracking Protection
       </message>
       <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="Tracking Protection preference item summary.">
-        Protection from trackers (third-party cookies, IP tracking, invasive scripts, and more)
+        Manage third-party cookies and tracking protections
       </message>
 
       <!-- Safety check -->
@@ -2835,9 +2806,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_DOWNLOAD_PAGE" desc="Download this page.">
         Download this page
       </message>
-      <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS" desc="Text appearing on an empty tab that indicates that downloaded files appear on this tab.">
-        Files that you download appear here
-      </message>
       <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS_EMPTY_STATE" desc="Text appearing on an empty tab that indicates that downloaded files appear on this tab.">
         You’ll find your downloads here
       </message>
@@ -3011,20 +2979,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Text with info about the data that users share with Google if they turn on the metric sharing option.">
         Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
       </message>
-      <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_1" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 50 characters. Do not exceed 75 characters.">
-        Sign in to get the most out of Chrome
-      </message>
-      <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_2" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 50 characters. Do not exceed 75 characters.">
-        Sign in for additional features
-      </message>
-      <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_3" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to get more useful features when they're signed in across multiple devices (like phones and computers). Try to limit translations to 50 characters. Do not exceed 75 characters.">
+      <message name="IDS_SIGNIN_FRE_SUBTITLE" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to get more useful features when they're signed in across multiple devices (like phones and computers). Try to limit translations to 50 characters. Do not exceed 75 characters.">
         Sign in to browse easier across devices
-      </message>
-      <message name="IDS_SIGNIN_FRE_TITLE_VARIATION_1" desc="Title shown on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 40 characters. Do not exceed 50 characters.">
-        Sign in to get the most out of Chrome
-      </message>
-      <message name="IDS_SIGNIN_FRE_TITLE_VARIATION_2" desc="Title shown on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account, so they can personalize and customize Chrome and remember their settings in their Google Account. Try to limit translations to 40 characters. Do not exceed 50 characters.">
-        Sign in to make Chrome your own
       </message>
       <message name="IDS_FRE_SIGNING_IN" desc="Text to show below a progress spinner in the signin FRE to notify the user that signing in is in progress.">
         Signing in\u2026
@@ -3123,6 +3079,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SIGNIN_ACCEPT_BUTTON" desc="Text for the confirmation button in the sign-in screen. By clicking this button users signs in and turns on Sync. [CHAR_LIMIT=20]">
         Yes, I'm in
+      </message>
+      <message name="IDS_SIGNIN_SYNC_DECLINE_BUTTON" desc="Text for the decline button in the sign-in and sync screen. By clicking this button the user refuses to sign in and turn on Sync. [CHAR_LIMIT=20]" meaning= "This text means that the user refuses to sign in and turn on sync by clicking on this button.">
+        No thanks
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_DIALOG_TITLE" desc="The title for the dialog that shows the list of accounts on the device and asks the user to select one of these accounts. [CHAR_LIMIT=27]">
         Choose an account
@@ -3725,9 +3684,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR_LIMIT=18]">
         Bookmarks
       </message>
-      <message name="IDS_BOOKMARKS_FOLDER_EMPTY" desc="Text explaining that the currently selected bookmarks folder is empty.">
-        Pages that you bookmark appear here
-      </message>
       <message name="IDS_NO_BOOKMARKS" desc="Text describing that there is no bookmarks in a bookmark folder.">
         No bookmarks
       </message>
@@ -3987,9 +3943,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_READING_LIST_FIND_IN_BOOKMARKS" desc="The text to inform the user to find the reading list in bookmarks UI.">
         Find your reading list in Bookmarks
-      </message>
-      <message name="IDS_READING_LIST_EMPTY_LIST_TITLE" desc="The text on reading list page when there are no reading list items informing user that reading list is supposed to appear on this surface.">
-        You’ll find your reading list here
       </message>
 
       <!-- Offline pages -->
@@ -4414,7 +4367,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Page insights Loading Indicator
       </message>
       <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
-        Your activity is saved in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph>.
+        Your activity in Page Insights is saved in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PAGE_INSIGHTS_HUB_MY_ACTIVITY_LOGO" desc="Logo of privacy notice for page insights hub">
 	Logo of privacy notice for page insights hub which redirects to my activity page.
@@ -5586,6 +5539,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- WebID Account Selection strings -->
+      <message name="IDS_ACCOUNT_SELECTION_ADD_ACCOUNT" desc="Title of the button that lets the user sign in to an additional account" translateable="false">
+        Add Account
+      </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_SIGNIN" desc="Header for sign in sheet. Sheet is shown to prompt user to sign in to a website using an account from an identity provider.">
         Sign in to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.com</ex></ph>
       </message>
@@ -5950,6 +5906,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <!-- Plus Address accessibility strings: TODO(crbug.com/1467623): Replace with final versions  -->
       <message name="IDS_PLUS_ADDRESS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the plus address bottom sheet is opened." is_accessibility_with_no_ui="true">
         Lorem Ipsum
+      </message>
+
+      <message name="IDS_READALOUD_VOICE_PREVIEW_MESSAGE" desc="String to be read aloud when a voice's preview button is clicked as a demonstration of how that voice sounds. It also explains how to select the voice by clicking the menu item.">
+        Here are the voices you can pick for reading out your web pages. If you like this voice and want me to keep using it just tap the voice name.
       </message>
     </messages>
   </release>

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -89,13 +90,32 @@ class CORE_EXPORT DisplayLockContext final
   void NotifyIsNotIntersectingViewport();
 
   // Lifecycle state functions.
-  bool ShouldStyleChildren() const;
+  ALWAYS_INLINE bool ShouldStyleChildren() const {
+    return !is_locked_ ||
+           forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
+           (IsActivatable(DisplayLockActivationReason::kAny) &&
+            ActivatableDisplayLocksForced()) ||
+           (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+            document_->ExistingAXObjectCache());
+  }
+
   void DidStyleSelf();
   void DidStyleChildren();
-  bool ShouldLayoutChildren() const;
+  ALWAYS_INLINE bool ShouldLayoutChildren() const {
+    return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
+           (IsActivatable(DisplayLockActivationReason::kAny) &&
+            ActivatableDisplayLocksForced()) ||
+           (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+            document_->ExistingAXObjectCache() &&
+            document_->GetStyleEngine().SkippedContainerRecalc());
+  }
   void DidLayoutChildren();
-  bool ShouldPrePaintChildren() const;
-  bool ShouldPaintChildren() const;
+  ALWAYS_INLINE bool ShouldPrePaintChildren() const {
+    return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
+           (IsActivatable(DisplayLockActivationReason::kAny) &&
+            ActivatableDisplayLocksForced());
+  }
+  ALWAYS_INLINE bool ShouldPaintChildren() const { return !is_locked_; }
 
   // Returns true if the last style recalc traversal was blocked at this
   // element.
@@ -107,7 +127,9 @@ class CORE_EXPORT DisplayLockContext final
   // from and activatable by a specified reason. Note that passing
   // kAny will return true if the lock is activatable for any
   // reason.
-  bool IsActivatable(DisplayLockActivationReason reason) const;
+  ALWAYS_INLINE bool IsActivatable(DisplayLockActivationReason reason) const {
+    return activatable_mask_ & static_cast<uint16_t>(reason);
+  }
 
   // Trigger commit because of activation from tab order, url fragment,
   // find-in-page, scrolling, etc.
@@ -259,6 +281,9 @@ class CORE_EXPORT DisplayLockContext final
 
   // Clear the activated flag.
   void ResetActivation();
+
+  // Returns true if activatable display locks are being currently forced.
+  bool ActivatableDisplayLocksForced() const;
 
   // The following functions propagate dirty bits from the locked element up to
   // the ancestors in order to be reached, and update dirty bits for the element

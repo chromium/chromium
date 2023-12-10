@@ -220,7 +220,7 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
     expected_framerate_ = framerate;
   }
 
-  const absl::optional<int>& get_expected_framerate() const {
+  const std::optional<int>& get_expected_framerate() const {
     return expected_framerate_;
   }
 
@@ -229,7 +229,7 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
 
   base::RunLoop run_loop_;
 
-  absl::optional<int> expected_framerate_;
+  std::optional<int> expected_framerate_;
 
   VideoStreamEventRouter video_stream_event_router_;
   NiceMock<MockVideoChannelStateObserver> observer_;

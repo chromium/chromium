@@ -5,12 +5,12 @@
 #ifndef ASH_COMPONENTS_ARC_SESSION_SERIAL_NUMBER_UTIL_H_
 #define ASH_COMPONENTS_ARC_SESSION_SERIAL_NUMBER_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -33,7 +33,7 @@ std::string GetOrCreateSerialNumber(PrefService* local_state,
 
 // Reads a salt from |salt_path| and returns it. Returns a non-null value when
 // the file read is successful or the file does not exist.
-absl::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path);
+std::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path);
 
 }  // namespace arc
 

@@ -33,8 +33,6 @@ schema:
     - https_latency
     type: string
   type: array
-supported_chrome_os_management:
-- google_cloud
 tags:
 - admin-sharing
 type: string-enum-list

@@ -12,19 +12,17 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Set;
 
-/**
- * Controls the behaviour of the History Sync privacy guide page.
- */
-public class HistorySyncFragment
-        extends PrivacyGuideBasePage implements CompoundButton.OnCheckedChangeListener {
+/** Controls the behaviour of the History Sync privacy guide page. */
+public class HistorySyncFragment extends PrivacyGuideBasePage
+        implements CompoundButton.OnCheckedChangeListener {
     private SyncService mSyncService;
     private boolean mInitialKeepEverythingSynced;
 
@@ -39,7 +37,7 @@ public class HistorySyncFragment
         mSyncService = SyncServiceFactory.getForProfile(getProfile());
         mInitialKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
 
-        SwitchCompat historySyncSwitch = view.findViewById(R.id.history_sync_switch);
+        MaterialSwitchWithText historySyncSwitch = view.findViewById(R.id.history_sync_switch);
         historySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled(getProfile()));
 
         historySyncSwitch.setOnCheckedChangeListener(this);

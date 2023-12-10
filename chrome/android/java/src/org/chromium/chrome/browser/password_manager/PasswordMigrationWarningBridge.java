@@ -27,7 +27,9 @@ import org.chromium.ui.base.WindowAndroid;
 /** The bridge that is used to show the password migration warning. */
 class PasswordMigrationWarningBridge {
     @CalledByNative
-    static void showWarning(WindowAndroid windowAndroid, Profile profile,
+    static void showWarning(
+            WindowAndroid windowAndroid,
+            Profile profile,
             @PasswordMigrationWarningTriggers int referrer) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
@@ -40,23 +42,32 @@ class PasswordMigrationWarningBridge {
     }
 
     @CalledByNative
-    static void showWarningWithActivity(Activity activity,
-            BottomSheetController bottomSheetController, Profile profile,
+    static void showWarningWithActivity(
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            Profile profile,
             @PasswordMigrationWarningTriggers int referrer) {
         showWarningInternal(activity, bottomSheetController, profile, referrer);
     }
 
-    private static void showWarningInternal(Context context,
-            BottomSheetController bottomSheetController, Profile profile,
+    private static void showWarningInternal(
+            Context context,
+            BottomSheetController bottomSheetController,
+            Profile profile,
             @PasswordMigrationWarningTriggers int referrer) {
         PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
-                new PasswordMigrationWarningCoordinator(context, profile, bottomSheetController,
-                        SyncConsentActivityLauncherImpl.get(), new SettingsLauncherImpl(),
-                        ManageSyncSettings.class, new ExportFlow(),
-                        (PasswordListObserver observer)
-                                -> PasswordManagerHandlerProvider.getInstance().addObserver(
-                                        observer),
-                        new PasswordStoreBridge(), referrer,
+                new PasswordMigrationWarningCoordinator(
+                        context,
+                        profile,
+                        bottomSheetController,
+                        SyncConsentActivityLauncherImpl.get(),
+                        new SettingsLauncherImpl(),
+                        ManageSyncSettings.class,
+                        new ExportFlow(),
+                        (PasswordListObserver observer) ->
+                                PasswordManagerHandlerProvider.getInstance().addObserver(observer),
+                        new PasswordStoreBridge(),
+                        referrer,
                         ChromePureJavaExceptionReporter::reportJavaException);
         passwordMigrationWarningCoordinator.showWarning();
     }

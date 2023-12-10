@@ -107,9 +107,14 @@ class ArcSession {
       base::OnceCallback<void(bool success, const std::string& failure_reason)>;
   virtual void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) = 0;
 
+  // Sets the default display resolution scale factor.
   virtual void SetDefaultDeviceScaleFactor(float scale_factor) = 0;
 
+  // Sets whether the device should use virtio-blk for /data user directory.
   virtual void SetUseVirtioBlkData(bool use_virtio_blk_data) = 0;
+
+  // Sets whether the user is signed into ARC or provisioned.
+  virtual void SetArcSignedIn(bool arc_signed_in) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

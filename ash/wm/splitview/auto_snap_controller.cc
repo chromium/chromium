@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
@@ -122,7 +123,7 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   if (auto* split_view_overview_session =
           RootWindowController::ForWindow(window)
               ->split_view_overview_session();
-      window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+      window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell() &&
       split_view_overview_session &&
       split_view_overview_session->window() != window) {
     if (!window_state->CanSnap()) {
@@ -159,7 +160,9 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   // If `window` is floated on top of 2 already snapped windows (this can
   // happen after floating a window, starting split view, and activating
   // an unfloated window from overview), don't snap.
-  if (window_state->IsFloated() && split_view_controller->BothSnapped()) {
+  if (window_state->IsFloated() &&
+      split_view_controller->state() ==
+          SplitViewController::State::kBothSnapped) {
     return false;
   }
 
@@ -218,7 +221,7 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
     return false;
   }
 
-  absl::optional<float> snap_ratio =
+  std::optional<float> snap_ratio =
       split_view_controller->ComputeSnapRatio(window);
 
   // If it's a user positionable window but can't be snapped, end split view
@@ -236,10 +239,9 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   // is active.
   split_view_controller->SnapWindow(
       window,
-      (split_view_controller->default_snap_position() ==
-       SplitViewController::SnapPosition::kPrimary)
-          ? SplitViewController::SnapPosition::kSecondary
-          : SplitViewController::SnapPosition::kPrimary,
+      (split_view_controller->default_snap_position() == SnapPosition::kPrimary)
+          ? SnapPosition::kSecondary
+          : SnapPosition::kPrimary,
       WindowSnapActionSource::kAutoSnapInSplitView,
       /*activate_window=*/false, *snap_ratio);
   return true;

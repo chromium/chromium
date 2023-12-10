@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -25,11 +25,11 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -54,26 +54,24 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    std::unique_ptr<Browser> browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get());
     FakeStartupInformation* startup_information =
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information];
     app_state_.mainBrowserState = browser_state_.get();
-    promos_manager_ = std::make_unique<MockPromosManager>();
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:browser_state_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-
+    std::unique_ptr<Browser> browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    promos_manager_ = std::make_unique<MockPromosManager>();
     dispatcher_ = [[CommandDispatcher alloc] init];
     agent_ = [[DefaultBrowserPromoSceneAgent alloc]
         initWithCommandDispatcher:dispatcher_];
     agent_.sceneState = scene_state_;
     agent_.promosManager = promos_manager_.get();
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void TearDown() override {

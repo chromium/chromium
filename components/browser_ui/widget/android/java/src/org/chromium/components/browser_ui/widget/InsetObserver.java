@@ -39,9 +39,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
     private final View mRootView;
 
-    /**
-     * Allows observing changes to the window insets from Android system UI.
-     */
+    /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
         /**
          * Triggered when the window insets have changed.
@@ -81,17 +79,19 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     public interface WindowInsetsAnimationListener {
         void onPrepare(@NonNull WindowInsetsAnimationCompat animation);
 
-        void onStart(@NonNull WindowInsetsAnimationCompat animation,
+        void onStart(
+                @NonNull WindowInsetsAnimationCompat animation,
                 @NonNull WindowInsetsAnimationCompat.BoundsCompat bounds);
 
-        void onProgress(@NonNull WindowInsetsCompat windowInsetsCompat,
+        void onProgress(
+                @NonNull WindowInsetsCompat windowInsetsCompat,
                 @NonNull List<WindowInsetsAnimationCompat> list);
 
         void onEnd(@NonNull WindowInsetsAnimationCompat animation);
     }
 
-    private static class KeyboardInsetObservableSupplier
-            extends ObservableSupplierImpl<Integer> implements WindowInsetObserver {
+    private static class KeyboardInsetObservableSupplier extends ObservableSupplierImpl<Integer>
+            implements WindowInsetObserver {
         @Override
         public void onKeyboardInsetChanged(int inset) {
             this.set(inset);
@@ -110,44 +110,51 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mObservers = new ObserverList<>();
         mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
         addObserver(mKeyboardInsetSupplier);
-        mWindowInsetsAnimationProxyCallback = new WindowInsetsAnimationCompat.Callback(
-                WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
-            @Override
-            public void onPrepare(@NonNull WindowInsetsAnimationCompat animation) {
-                for (WindowInsetsAnimationListener listener : mWindowInsetsAnimationListeners) {
-                    listener.onPrepare(animation);
-                }
-                super.onPrepare(animation);
-            }
+        mWindowInsetsAnimationProxyCallback =
+                new WindowInsetsAnimationCompat.Callback(
+                        WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
+                    @Override
+                    public void onPrepare(@NonNull WindowInsetsAnimationCompat animation) {
+                        for (WindowInsetsAnimationListener listener :
+                                mWindowInsetsAnimationListeners) {
+                            listener.onPrepare(animation);
+                        }
+                        super.onPrepare(animation);
+                    }
 
-            @NonNull
-            @Override
-            public BoundsCompat onStart(
-                    @NonNull WindowInsetsAnimationCompat animation, @NonNull BoundsCompat bounds) {
-                for (WindowInsetsAnimationListener listener : mWindowInsetsAnimationListeners) {
-                    listener.onStart(animation, bounds);
-                }
-                return super.onStart(animation, bounds);
-            }
+                    @NonNull
+                    @Override
+                    public BoundsCompat onStart(
+                            @NonNull WindowInsetsAnimationCompat animation,
+                            @NonNull BoundsCompat bounds) {
+                        for (WindowInsetsAnimationListener listener :
+                                mWindowInsetsAnimationListeners) {
+                            listener.onStart(animation, bounds);
+                        }
+                        return super.onStart(animation, bounds);
+                    }
 
-            @Override
-            public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
-                for (WindowInsetsAnimationListener listener : mWindowInsetsAnimationListeners) {
-                    listener.onEnd(animation);
-                }
-                super.onEnd(animation);
-            }
+                    @Override
+                    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+                        for (WindowInsetsAnimationListener listener :
+                                mWindowInsetsAnimationListeners) {
+                            listener.onEnd(animation);
+                        }
+                        super.onEnd(animation);
+                    }
 
-            @NonNull
-            @Override
-            public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat windowInsetsCompat,
-                    @NonNull List<WindowInsetsAnimationCompat> list) {
-                for (WindowInsetsAnimationListener listener : mWindowInsetsAnimationListeners) {
-                    listener.onProgress(windowInsetsCompat, list);
-                }
-                return windowInsetsCompat;
-            }
-        };
+                    @NonNull
+                    @Override
+                    public WindowInsetsCompat onProgress(
+                            @NonNull WindowInsetsCompat windowInsetsCompat,
+                            @NonNull List<WindowInsetsAnimationCompat> list) {
+                        for (WindowInsetsAnimationListener listener :
+                                mWindowInsetsAnimationListeners) {
+                            listener.onProgress(windowInsetsCompat, list);
+                        }
+                        return windowInsetsCompat;
+                    }
+                };
 
         ViewCompat.setWindowInsetsAnimationCallback(rootView, mWindowInsetsAnimationProxyCallback);
         ViewCompat.setOnApplyWindowInsetsListener(rootView, this);
@@ -186,16 +193,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mWindowInsetsAnimationListeners.remove(listener);
     }
 
-    /**
-     * Add an observer to be notified when the window insets have changed.
-     */
+    /** Add an observer to be notified when the window insets have changed. */
     public void addObserver(WindowInsetObserver observer) {
         mObservers.addObserver(observer);
     }
 
-    /**
-     * Remove an observer of window inset changes.
-     */
+    /** Remove an observer of window inset changes. */
     public void removeObserver(WindowInsetObserver observer) {
         mObservers.removeObserver(observer);
     }
@@ -206,15 +209,19 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     @NonNull
     @Override
-    public WindowInsetsCompat onApplyWindowInsets(@NonNull View view,
-        @NonNull WindowInsetsCompat insets) {
+    public WindowInsetsCompat onApplyWindowInsets(
+            @NonNull View view, @NonNull WindowInsetsCompat insets) {
         setCurrentSafeAreaFromInsets(insets);
         insets = forwardToInsetConsumers(insets);
         updateKeyboardInset();
-        onInsetChanged(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
-            insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
-        insets = WindowInsetsCompat.toWindowInsetsCompat(
-            view.onApplyWindowInsets(insets.toWindowInsets()));
+        onInsetChanged(
+                insets.getSystemWindowInsetLeft(),
+                insets.getSystemWindowInsetTop(),
+                insets.getSystemWindowInsetRight(),
+                insets.getSystemWindowInsetBottom());
+        insets =
+                WindowInsetsCompat.toWindowInsetsCompat(
+                        view.onApplyWindowInsets(insets.toWindowInsets()));
         return insets;
     }
 
@@ -227,7 +234,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * @param bottom The updated bottom inset.
      */
     protected void onInsetChanged(int left, int top, int right, int bottom) {
-        if (mWindowInsets.left == left && mWindowInsets.top == top && mWindowInsets.right == right
+        if (mWindowInsets.left == left
+                && mWindowInsets.top == top
+                && mWindowInsets.right == right
                 && mWindowInsets.bottom == bottom) {
             return;
         }
@@ -261,35 +270,37 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return insets;
     }
 
-        /**
-         * Get the safe area from the WindowInsets, store it and notify any observers.
-         * @param insets The WindowInsets containing the safe area.
-         */
-        private void setCurrentSafeAreaFromInsets(WindowInsetsCompat insets) {
-            DisplayCutoutCompat displayCutout = insets.getDisplayCutout();
+    /**
+     * Get the safe area from the WindowInsets, store it and notify any observers.
+     * @param insets The WindowInsets containing the safe area.
+     */
+    private void setCurrentSafeAreaFromInsets(WindowInsetsCompat insets) {
+        DisplayCutoutCompat displayCutout = insets.getDisplayCutout();
 
-            int left = 0;
-            int top = 0;
-            int right = 0;
-            int bottom = 0;
+        int left = 0;
+        int top = 0;
+        int right = 0;
+        int bottom = 0;
 
-            if (displayCutout != null) {
-                left = displayCutout.getSafeInsetLeft();
-                top = displayCutout.getSafeInsetTop();
-                right = displayCutout.getSafeInsetRight();
-                bottom = displayCutout.getSafeInsetBottom();
-            }
-
-            // If the safe area has not changed then we should stop now.
-            if (mCurrentSafeArea.left == left && mCurrentSafeArea.top == top
-                    && mCurrentSafeArea.right == right && mCurrentSafeArea.bottom == bottom) {
-                return;
-            }
-
-            mCurrentSafeArea.set(left, top, right, bottom);
-
-            for (WindowInsetObserver mObserver : mObservers) {
-                mObserver.onSafeAreaChanged(mCurrentSafeArea);
-            }
+        if (displayCutout != null) {
+            left = displayCutout.getSafeInsetLeft();
+            top = displayCutout.getSafeInsetTop();
+            right = displayCutout.getSafeInsetRight();
+            bottom = displayCutout.getSafeInsetBottom();
         }
+
+        // If the safe area has not changed then we should stop now.
+        if (mCurrentSafeArea.left == left
+                && mCurrentSafeArea.top == top
+                && mCurrentSafeArea.right == right
+                && mCurrentSafeArea.bottom == bottom) {
+            return;
+        }
+
+        mCurrentSafeArea.set(left, top, right, bottom);
+
+        for (WindowInsetObserver mObserver : mObservers) {
+            mObserver.onSafeAreaChanged(mCurrentSafeArea);
+        }
+    }
 }

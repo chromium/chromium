@@ -29,7 +29,8 @@ bool IpProtectionProxyListManagerImpl::IsProxyListAvailable() {
   return have_fetched_proxy_list_;
 }
 
-const std::vector<std::string>& IpProtectionProxyListManagerImpl::ProxyList() {
+const std::vector<std::vector<std::string>>&
+IpProtectionProxyListManagerImpl::ProxyList() {
   return proxy_list_;
 }
 
@@ -47,7 +48,7 @@ void IpProtectionProxyListManagerImpl::RefreshProxyList() {
 }
 
 void IpProtectionProxyListManagerImpl::OnGotProxyList(
-    const absl::optional<std::vector<std::string>>& proxy_list) {
+    const absl::optional<std::vector<std::vector<std::string>>>& proxy_list) {
   fetching_proxy_list_ = false;
 
   // If an error occurred fetching the proxy list, continue using the existing

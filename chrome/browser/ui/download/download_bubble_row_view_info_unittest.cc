@@ -46,13 +46,10 @@ using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 class DownloadBubbleRowViewInfoTest : public testing::Test,
                                       public DownloadBubbleRowViewInfoObserver {
  public:
-  DownloadBubbleRowViewInfoTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
-  }
+  DownloadBubbleRowViewInfoTest() = default;
 
   void SetUp() override {
-    if (!download::IsDownloadBubbleEnabled(profile())) {
+    if (!download::IsDownloadBubbleEnabled()) {
       GTEST_SKIP();
     }
     item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
@@ -128,7 +125,6 @@ class DownloadBubbleRowViewInfoTest : public testing::Test,
     }
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<NiceMock<download::MockDownloadItem>> item_;
@@ -244,7 +240,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo_Old) {
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   const struct DangerTypeTestCase {
     download::DownloadDangerType danger_type;
-    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::optional<DownloadCommands::Command> primary_button_command;
     bool has_subpage;
   } kDangerTypeTestCases[] = {
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -261,8 +257,8 @@ TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo_Old) {
        DownloadCommands::Command::DISCARD, true},
       {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
        DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING, absl::nullopt, true},
-      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING, absl::nullopt, true},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING, std::nullopt, true},
+      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING, std::nullopt, true},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
     SCOPED_TRACE(testing::Message()
@@ -283,19 +279,19 @@ TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo) {
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   const struct DangerTypeTestCase {
     download::DownloadDangerType danger_type;
-    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::optional<DownloadCommands::Command> primary_button_command;
   } kDangerTypeTestCases[] = {
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE, absl::nullopt},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, absl::nullopt},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST, absl::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE, std::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, std::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST, std::nullopt},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       absl::nullopt},
-      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED, absl::nullopt},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, absl::nullopt},
+       std::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED, std::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, std::nullopt},
       {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
        DownloadCommands::Command::DISCARD},
-      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING, absl::nullopt},
-      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING, absl::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING, std::nullopt},
+      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING, std::nullopt},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
     SCOPED_TRACE(testing::Message()
@@ -345,26 +341,26 @@ TEST_F(DownloadBubbleRowViewInfoTest, InterruptedBubbleUIInfo) {
     bool can_resume;
     // Test expectations
     raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
-    absl::optional<DownloadCommands::Command> expected_primary_button_command;
+    std::optional<DownloadCommands::Command> expected_primary_button_command;
   } kTestCases[] = {
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
        false,
        &views::kInfoIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
        false,
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
        false,
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {no_retry_interrupt_reasons, false, &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {retry_interrupt_reasons, false, &vector_icons::kFileDownloadOffIcon,
        DownloadCommands::Command::RETRY},
       {retry_interrupt_reasons, true, &vector_icons::kFileDownloadOffIcon,

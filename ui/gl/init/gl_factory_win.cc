@@ -56,7 +56,7 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
     case kGLImplementationDisabled:
       return nullptr;
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return nullptr;
   }
 }
@@ -80,21 +80,17 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
   }
 }
 
-scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
-    GLDisplay* display,
-    const gfx::Size& size,
-    GLSurfaceFormat format) {
+scoped_refptr<GLSurface> CreateOffscreenGLSurface(GLDisplay* display,
+                                                  const gfx::Size& size) {
   TRACE_EVENT0("gpu", "gl::init::CreateOffscreenGLSurface");
   switch (GetGLImplementation()) {
     case kGLImplementationEGLANGLE: {
       GLDisplayEGL* display_egl = display->GetAs<gl::GLDisplayEGL>();
       if (display_egl->IsEGLSurfacelessContextSupported() &&
           size.width() == 0 && size.height() == 0) {
-        return InitializeGLSurfaceWithFormat(
-            new SurfacelessEGL(display_egl, size), format);
+        return InitializeGLSurface(new SurfacelessEGL(display_egl, size));
       } else {
-        return InitializeGLSurfaceWithFormat(
-            new PbufferGLSurfaceEGL(display_egl, size), format);
+        return InitializeGLSurface(new PbufferGLSurfaceEGL(display_egl, size));
       }
     }
     case kGLImplementationMockGL:

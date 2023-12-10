@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -127,6 +128,7 @@ class ScopedStreamCreator {
 };
 
 TEST(UDPWritableStreamWrapperTest, Create) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(
@@ -137,6 +139,7 @@ TEST(UDPWritableStreamWrapperTest, Create) {
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(
@@ -167,6 +170,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(
@@ -200,6 +204,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(
@@ -233,6 +238,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(
@@ -266,6 +272,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(
@@ -317,6 +324,7 @@ TEST(UDPWritableStreamWrapperTest, WriteFailed) {
     }
   };
 
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>(

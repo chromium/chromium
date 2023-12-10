@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
-#include "components/media_router/common/providers/cast/channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/port_util.h"
@@ -23,6 +23,9 @@
 namespace media_router {
 
 namespace {
+
+using cast_channel::CastDeviceCapability;
+using cast_channel::CastDeviceCapabilitySet;
 
 constexpr char kSinkDictKey[] = "sink";
 constexpr char kSinkIdKey[] = "sink_id";
@@ -34,27 +37,20 @@ constexpr char kIpAddressKey[] = "ip_address";
 constexpr char kModelName[] = "model_name";
 constexpr char kDefaultAccessCodeModelName[] = "Chromecast Cast Moderator";
 
-uint8_t ConvertDeviceCapabilitiesToInt(
+CastDeviceCapabilitySet ConvertDeviceCapabilities(
     chrome_browser_media::proto::DeviceCapabilities proto) {
-  // Meaning of capacity value for each bit:
-  // NONE: 0,
-  // VIDEO_OUT: 1 << 0,
-  // VIDEO_IN: 1 << 1,
-  // AUDIO_OUT: 1 << 2,
-  // AUDIO_IN: 1 << 3,
-  // DEV_MODE: 1 << 4,
-  uint8_t bool_sum = 0;
+  CastDeviceCapabilitySet capabilities;
   if (proto.video_out())
-    bool_sum += 1 << 0;
+    capabilities.Put(CastDeviceCapability::kVideoOut);
   if (proto.video_in())
-    bool_sum += 1 << 1;
+    capabilities.Put(CastDeviceCapability::kVideoIn);
   if (proto.audio_out())
-    bool_sum += 1 << 2;
+    capabilities.Put(CastDeviceCapability::kAudioOut);
   if (proto.audio_in())
-    bool_sum += 1 << 3;
+    capabilities.Put(CastDeviceCapability::kAudioIn);
   if (proto.dev_mode())
-    bool_sum += 1 << 4;
-  return bool_sum;
+    capabilities.Put(CastDeviceCapability::kDevMode);
+  return capabilities;
 }
 
 absl::optional<net::IPAddress> GetIPAddress(NetworkInfo network_info) {
@@ -116,7 +112,7 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
         absl::nullopt, CreateCastMediaSinkResult::kMissingDeviceCapabilities);
   }
   extra_data.capabilities =
-      ConvertDeviceCapabilitiesToInt(discovery_device.device_capabilities());
+      ConvertDeviceCapabilities(discovery_device.device_capabilities());
   extra_data.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
   // Various pieces of Chrome make decisions about how to support casting based
   // on the device's model name, generally speaking treating anything that
@@ -143,7 +139,9 @@ base::Value::Dict CreateValueDictFromMediaSinkInternal(
   const CastSinkExtraData& extra_data = sink.cast_data();
 
   base::Value::Dict extra_data_dict;
-  extra_data_dict.Set(kCapabilitiesKey, extra_data.capabilities);
+  extra_data_dict.Set(
+      kCapabilitiesKey,
+      static_cast<int>(extra_data.capabilities.ToEnumBitmask()));
   extra_data_dict.Set(kPortKey, extra_data.ip_endpoint.port());
   extra_data_dict.Set(kIpAddressKey,
                       extra_data.ip_endpoint.address().ToString());
@@ -196,7 +194,8 @@ absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
 
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = net::IPEndPoint(ip_address, port.value());
-  extra_data.capabilities = capabilities.value();
+  extra_data.capabilities =
+      CastDeviceCapabilitySet::FromEnumBitmask(capabilities.value());
   extra_data.discovery_type = CastDiscoveryType::kAccessCodeRememberedDevice;
   const std::string* model_name = extra_data_dict->FindString(kModelName);
   extra_data.model_name =

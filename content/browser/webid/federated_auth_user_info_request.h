@@ -36,6 +36,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   static std::unique_ptr<FederatedAuthUserInfoRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
+      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
       blink::mojom::IdentityProviderConfigPtr provider);
@@ -49,13 +50,13 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   // on having a pointer to this object, hence cannot be passed in the
   // constructor. Once the callback is set, start fetching.
   void SetCallbackAndStart(
-      blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback,
-      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
+      blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback);
 
  private:
   FederatedAuthUserInfoRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
+      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
       blink::mojom::IdentityProviderConfigPtr provider);
@@ -85,6 +86,8 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   // Owned by |BrowserContext|
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
+  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
+      api_permission_delegate_ = nullptr;
   // Owned by |FederatedAuthRequestImpl|
   raw_ptr<FedCmMetrics> metrics_;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;

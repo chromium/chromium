@@ -24,8 +24,6 @@ class ScriptWrappableTaskState;
 
 namespace blink::scheduler {
 
-class TaskAttributionTrackerTest;
-
 // This class is used to keep track of tasks posted on the main thread and their
 // ancestry. It assigns an incerementing ID per task, and gets notified when a
 // task is posted, started or ended, and using that, it keeps track of which
@@ -34,18 +32,17 @@ class TaskAttributionTrackerTest;
 // current task.
 class MODULES_EXPORT TaskAttributionTrackerImpl
     : public TaskAttributionTracker {
-  friend class TaskAttributionTrackerTest;
-
  public:
   TaskAttributionTrackerImpl();
 
   TaskAttributionInfo* RunningTask(ScriptState*) const override;
 
-  AncestorStatus IsAncestor(ScriptState*, TaskAttributionId parent_id) override;
-  AncestorStatus HasAncestorInSet(
-      ScriptState*,
-      const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
-      const TaskAttributionInfo& task) override;
+  bool IsAncestor(const TaskAttributionInfo& task,
+                  TaskAttributionId ancestor_id) override;
+  void ForEachAncestor(
+      const TaskAttributionInfo& task,
+      base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
+          visitor) override;
 
   std::unique_ptr<TaskScope> CreateTaskScope(ScriptState* script_state,
                                              TaskAttributionInfo* parent_task,
@@ -60,10 +57,13 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   void TaskScopeCompleted(ScriptState*, TaskAttributionId);
 
-  void RegisterObserver(TaskAttributionTracker::Observer* observer) override {
-    if (!base::Contains(observers_, observer)) {
+  bool RegisterObserverIfNeeded(
+      TaskAttributionTracker::Observer* observer) override {
+    bool not_registered = !base::Contains(observers_, observer);
+    if (not_registered) {
       observers_.insert(observer);
     }
+    return not_registered;
   }
 
   void UnregisterObserver(TaskAttributionTracker::Observer* observer) override {
@@ -104,11 +104,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     absl::optional<TaskAttributionId> parent;
     absl::optional<TaskAttributionId> current;
   };
-
-  template <typename F>
-  AncestorStatus IsAncestorInternal(ScriptState*,
-                                    F callback,
-                                    const TaskAttributionInfo* task);
 
   // The TaskScope class maintains information about a task. The task's lifetime
   // match those of TaskScope, and the task is considered terminated when

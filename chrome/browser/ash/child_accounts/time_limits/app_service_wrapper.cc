@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -26,7 +27,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -168,7 +168,7 @@ std::string AppServiceWrapper::GetAppName(const AppId& app_id) const {
 void AppServiceWrapper::GetAppIcon(
     const AppId& app_id,
     int size_hint_in_dp,
-    base::OnceCallback<void(absl::optional<gfx::ImageSkia>)> on_icon_ready)
+    base::OnceCallback<void(std::optional<gfx::ImageSkia>)> on_icon_ready)
     const {
   const std::string app_service_id = AppServiceIdFromAppId(app_id, profile_);
   DCHECK(!app_service_id.empty());
@@ -178,11 +178,11 @@ void AppServiceWrapper::GetAppIcon(
       apps::IconType::kStandard, size_hint_in_dp,
       /* allow_placeholder_icon */ false,
       base::BindOnce(
-          [](base::OnceCallback<void(absl::optional<gfx::ImageSkia>)> callback,
+          [](base::OnceCallback<void(std::optional<gfx::ImageSkia>)> callback,
              apps::IconValuePtr icon_value) {
             if (!icon_value ||
                 icon_value->icon_type != apps::IconType::kStandard) {
-              std::move(callback).Run(absl::nullopt);
+              std::move(callback).Run(std::nullopt);
             } else {
               std::move(callback).Run(icon_value->uncompressed);
             }
@@ -201,7 +201,7 @@ bool AppServiceWrapper::IsAppInstalled(const std::string& app_id) {
 AppId AppServiceWrapper::AppIdFromAppServiceId(
     const std::string& app_service_id,
     apps::AppType app_type) const {
-  absl::optional<AppId> app_id;
+  std::optional<AppId> app_id;
   GetAppCache().ForOneApp(app_service_id,
                           [&app_id](const apps::AppUpdate& update) {
                             app_id = AppIdFromAppUpdate(update);

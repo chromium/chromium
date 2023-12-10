@@ -26,8 +26,12 @@ public interface FeedActionDelegate {
      * @param onPageLoaded Called when the page completes loading.
      * @param onVisitComplete Called when the user closes or navigates away from the page.
      */
-    void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
-            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete);
+    void openSuggestionUrl(
+            int disposition,
+            LoadUrlParams params,
+            boolean inGroup,
+            Runnable onPageLoaded,
+            Callback<VisitResult> onVisitComplete);
 
     /**
      * Opens a page.
@@ -42,14 +46,10 @@ public interface FeedActionDelegate {
      */
     default void downloadPage(String url) {}
 
-    /**
-     * Opens the NTP help page.
-     */
+    /** Opens the NTP help page. */
     default void openHelpPage() {}
 
-    /**
-     * Add an item to the reading list.
-     */
+    /** Add an item to the reading list. */
     default void addToReadingList(String title, String url) {}
 
     /**
@@ -62,14 +62,10 @@ public interface FeedActionDelegate {
     // Optional methods for handing events.
     //
 
-    /**
-     * Informs that content on the Feed has changed.
-     */
+    /** Informs that content on the Feed has changed. */
     default void onContentsChanged() {}
 
-    /**
-     * Informs that the stream was created.
-     */
+    /** Informs that the stream was created. */
     default void onStreamCreated() {}
 
     /**
@@ -84,6 +80,8 @@ public interface FeedActionDelegate {
      * @param mBottomSheetController bottomsheet controller attached to the activity.
      * @param mWindowAndroid window used by the feed.
      */
-    default void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
-            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {}
+    default void showSignInInterstitial(
+            @SigninAccessPoint int signinAccessPoint,
+            BottomSheetController mBottomSheetController,
+            WindowAndroid mWindowAndroid) {}
 }

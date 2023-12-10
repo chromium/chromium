@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <sstream>
 #include "base/feature_list.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,11 +12,18 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -23,9 +31,9 @@ constexpr int kBrowserContentAllowedMinimumWidth =
     BrowserViewLayout::kMainBrowserContentsMinimumWidth;
 }  // namespace
 
-class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
+class ToolbarControllerUiTest : public InteractiveBrowserTest {
  public:
-  ToolbarControllerInteractiveTest() {
+  ToolbarControllerUiTest() {
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
     scoped_feature_list_.InitWithFeatures({features::kResponsiveToolbar}, {});
   }
@@ -41,7 +49,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
         toolbar_controller_->toolbar_container_view_.get());
     overflow_button_ = toolbar_controller_->overflow_button_;
     dummy_button_size_ = overflow_button_->GetPreferredSize();
-    element_ids_ = toolbar_controller_->element_ids_;
+    responsive_elements_ = toolbar_controller_->responsive_elements_;
     element_flex_order_start_ = toolbar_controller_->element_flex_order_start_;
     MaybeAddDummyButtonsToToolbarView();
     overflow_threshold_width_ = GetOverflowThresholdWidth();
@@ -106,8 +114,11 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
     ASSERT_NE(element, nullptr);
 
     // This element must have been managed by controller.
-    EXPECT_TRUE(std::find(element_ids_.begin(), element_ids_.end(), id) !=
-                element_ids_.end());
+    EXPECT_TRUE(
+        std::find_if(responsive_elements_.begin(), responsive_elements_.end(),
+                     [id](ToolbarController::ResponsiveElementInfo element) {
+                       return element.overflow_identifier == id;
+                     }) != responsive_elements_.end());
 
     SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
     while (element->GetVisible()) {
@@ -119,28 +130,30 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   // This checks menu model, not the actual menu that pops up.
   // TODO(pengchaocai): Explore a way to check the actual menu appearing.
   auto CheckMenuMatchesOverflowedElements() {
-    return Steps(Check(base::BindLambdaForTesting([this]() {
+    return Steps(Check([this]() {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
-      std::vector<ui::ElementIdentifier> overflowed_elements =
-          GetOverflowedElements();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
-      EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
-      for (size_t i = 0; i < menu->GetItemCount(); ++i) {
-        if (menu->GetLabelAt(i).compare(toolbar_controller_->GetMenuText(
-                overflowed_elements[i])) != 0) {
-          return false;
+      const auto& responsive_elements =
+          toolbar_controller_->responsive_elements_;
+      for (size_t i = 0; i < responsive_elements.size(); ++i) {
+        if (toolbar_controller_->IsOverflowed(
+                responsive_elements[i].overflow_identifier)) {
+          if (toolbar_controller_->GetMenuText(responsive_elements[i]) !=
+              menu->GetLabelAt(menu->GetIndexOfCommandId(i).value())) {
+            return false;
+          }
         }
       }
       return true;
-    })));
+    }));
   }
 
   auto ActivateMenuItemWithElementId(ui::ElementIdentifier id) {
-    return Do(base::BindLambdaForTesting([=]() {
+    return Do([=]() {
       int command_id = -1;
-      for (size_t i = 0; i < element_ids_.size(); ++i) {
-        if (element_ids_[i] == id) {
+      for (size_t i = 0; i < responsive_elements_.size(); ++i) {
+        if (responsive_elements_[i].overflow_identifier == id) {
           command_id = i;
           break;
         }
@@ -149,11 +162,16 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
       auto index = menu->GetIndexOfCommandId(command_id);
       EXPECT_TRUE(index.has_value());
       menu->ActivatedAt(index.value());
-    }));
+    });
   }
 
   void SetBrowserWidth(int width) {
-    browser_view_->SetSize({width, browser_view_->size().height()});
+    int widget_width = browser_view_->GetWidget()->GetSize().width();
+    int browser_width = browser_view_->size().width();
+    browser_view_->GetWidget()->SetSize(
+        {width + widget_width - browser_width,
+         browser_view_->GetWidget()->GetSize().height()});
+    views::test::RunScheduledLayout(browser_view_);
   }
 
   const views::View* FindToolbarElementWithId(ui::ElementIdentifier id) const {
@@ -163,11 +181,13 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
 
   const views::View* overflow_button() const { return overflow_button_; }
   int element_flex_order_start() const { return element_flex_order_start_; }
-  const std::vector<ui::ElementIdentifier>& element_ids() const {
-    return element_ids_;
+  const std::vector<ToolbarController::ResponsiveElementInfo>&
+  responsive_elements() const {
+    return responsive_elements_;
   }
   int overflow_threshold_width() const { return overflow_threshold_width_; }
-  std::vector<ui::ElementIdentifier> GetOverflowedElements() {
+  std::vector<const ToolbarController::ResponsiveElementInfo*>
+  GetOverflowedElements() {
     return toolbar_controller_->GetOverflowedElements();
   }
   const ui::SimpleMenuModel* GetOverflowMenu() {
@@ -181,7 +201,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   raw_ptr<ToolbarController> toolbar_controller_;
   raw_ptr<views::View> toolbar_container_view_;
   raw_ptr<views::View> overflow_button_;
-  std::vector<ui::ElementIdentifier> element_ids_;
+  std::vector<ToolbarController::ResponsiveElementInfo> responsive_elements_;
   int element_flex_order_start_;
   gfx::Size dummy_button_size_;
 
@@ -189,18 +209,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   int overflow_threshold_width_;
 };
 
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest, FlexOrderCorrect) {
-  int order_start = element_flex_order_start();
-  for (ui::ElementIdentifier id : element_ids()) {
-    const views::View* toolbar_element = FindToolbarElementWithId(id);
-    if (toolbar_element) {
-      EXPECT_EQ(order_start++,
-                toolbar_element->GetProperty(views::kFlexBehaviorKey)->order());
-    }
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        StartBrowserWithThresholdWidth) {
   // Start browser with threshold width. Should not see overflow.
   SetBrowserWidth(overflow_threshold_width());
@@ -236,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
                    "ResponsiveToolbar.OverflowButtonHidden"));
 }
 
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        StartBrowserWithWidthSmallerThanThreshold) {
   // Start browser with a smaller width than threshold. Should see overflow.
   SetBrowserWidth(overflow_threshold_width() - 1);
@@ -259,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
   EXPECT_TRUE(overflow_button()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        StartBrowserWithWidthLargerThanThreshold) {
   // Start browser with a larger width than threshold. Should not see overflow.
   SetBrowserWidth(overflow_threshold_width() + 1);
@@ -282,19 +291,16 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
   EXPECT_FALSE(overflow_button()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
-                       MenuMatchesOverflowedElements) {
-  RunTestSequence(Do(base::BindLambdaForTesting([this]() {
-                    SetBrowserWidth(overflow_threshold_width() - 1);
-                  })),
-                  WaitForShow(kToolbarOverflowButtonElementId),
-                  PressButton(kToolbarOverflowButtonElementId),
-                  WaitForActivate(kToolbarOverflowButtonElementId),
-                  CheckMenuMatchesOverflowedElements());
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
+  RunTestSequence(
+      Do([this]() { SetBrowserWidth(overflow_threshold_width() - 1); }),
+      WaitForShow(kToolbarOverflowButtonElementId),
+      PressButton(kToolbarOverflowButtonElementId),
+      WaitForActivate(kToolbarOverflowButtonElementId),
+      CheckMenuMatchesOverflowedElements());
 }
 
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
-                       ActivateActionElementFromMenu) {
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
   const auto back_url = embedded_test_server()->GetURL("/back");
   const auto forward_url = embedded_test_server()->GetURL("/forward");
@@ -309,11 +315,10 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
       NavigateWebContents(kPrimaryTabPageElementId, forward_url),
       PressButton(kToolbarBackButtonElementId),
       WaitForWebContentsNavigation(kPrimaryTabPageElementId, back_url),
-      EnsurePresent(kToolbarForwardButtonElementId),
-      Do(base::BindLambdaForTesting([this]() {
+      EnsurePresent(kToolbarForwardButtonElementId), Do([this]() {
         AddDummyButtonsToToolbarTillElementOverflows(
             kToolbarForwardButtonElementId);
-      })),
+      }),
       WaitForHide(kToolbarForwardButtonElementId),
       PressButton(kToolbarOverflowButtonElementId),
       ActivateMenuItemWithElementId(kToolbarForwardButtonElementId),
@@ -325,4 +330,51 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
+}
+
+class ToolbarControllerIphUiTest : public ToolbarControllerUiTest {
+ public:
+  ToolbarControllerIphUiTest() {
+    iph_feature_list_.InitForDemo(
+        feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+  }
+  ~ToolbarControllerIphUiTest() override = default;
+
+  auto TryShowHelpBubble(user_education::FeaturePromoResult expected_result =
+                             user_education::FeaturePromoResult::Success()) {
+    std::ostringstream desc;
+    desc << "TryShowHelpBubble(" << expected_result << ")";
+    return CheckResult(
+        [this]() {
+          return browser()->window()->MaybeShowFeaturePromo(
+              feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+        },
+        expected_result, desc.str());
+  }
+
+  auto DismissHelpBubble() {
+    auto result = Steps(
+        PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
+        WaitForHide(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+    AddDescription(result, "DismissHelpBubble( %s )");
+    return result;
+  }
+
+  auto ResizeRelativeToOverflow(int diff) {
+    return Do(
+        [this, diff]() { SetBrowserWidth(overflow_threshold_width() + diff); });
+  }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolbarControllerIphUiTest, DoNotShowIphWhenOverflowed) {
+  RunTestSequence(
+      ObserveState(kFeatureEngagementInitializedState, browser()),
+      WaitForState(kFeatureEngagementInitializedState, true),
+      ResizeRelativeToOverflow(-1),
+      TryShowHelpBubble(user_education::FeaturePromoResult::kBlockedByUi),
+      ResizeRelativeToOverflow(1), TryShowHelpBubble(), DismissHelpBubble());
 }

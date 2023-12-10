@@ -106,7 +106,7 @@ CookieControlsIconView::CookieControlsIconView(
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetPaintLabelOverSolidBackground(true);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 
@@ -205,7 +205,8 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
     // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (!MaybeShowIPH() &&
-          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
+          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh &&
+          status_ == CookieControlsStatus::kEnabled) {
         auto label = GetLabelForStatus();
         if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
             status_ == CookieControlsStatus::kEnabled) {
@@ -240,7 +241,7 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
   }
 }
 
-absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
+std::optional<int> CookieControlsIconView::GetLabelForStatus() const {
   switch (status_) {
     case CookieControlsStatus::kDisabledForSite:
       ABSL_FALLTHROUGH_INTENDED;
@@ -254,7 +255,7 @@ absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
       }
     case CookieControlsStatus::kUninitialized:
       DLOG(ERROR) << "CookieControl status is not initialized";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

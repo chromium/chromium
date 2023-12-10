@@ -69,10 +69,12 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
                  WaitForShow(kBookmarkBarElementId));
   }
 
-  StepBuilder FinishTabstripAnimations() {
-    return std::move(WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                       tab_strip->StopAnimating(true);
-                     }).SetDescription("FinishTabstripAnimation"));
+  MultiStep FinishTabstripAnimations() {
+    return Steps(
+        WaitForShow(kTabStripElementId),
+        std::move(WithView(kTabStripElementId, [](TabStrip* tab_strip) {
+                    tab_strip->StopAnimating(true);
+                  }).SetDescription("FinishTabstripAnimation")));
   }
 
   MultiStep HoverTabAt(int index) {

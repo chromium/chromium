@@ -1,0 +1,23 @@
+#!/bin/bash -p
+
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -eu
+
+# Parameters:
+# $1 is the top-level package path
+# $2 is the target (installation) location
+# $3 is the target (installation) volume
+# $4 is the startup disk root
+
+if [ "$EUID" -ne 0 ]
+then readonly SYSTEM=""
+else readonly SYSTEM="--system"
+fi
+
+"${2}/@PRODUCT_FULLNAME@.app/Contents/MacOS/@PRODUCT_FULLNAME@" "--install" "$SYSTEM" "--enable-logging" "--vmodule=*/updater/*=2"
+
+# We don't need the .app in /tmp anymore.
+rm -rf "${2}/@PRODUCT_FULLNAME@.app"

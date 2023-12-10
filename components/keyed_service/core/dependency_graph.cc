@@ -8,9 +8,10 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 
@@ -48,9 +49,9 @@ void DependencyGraph::AddNode(DependencyNode* node) {
 }
 
 void DependencyGraph::RemoveNode(DependencyNode* node) {
-  base::Erase(all_nodes_, node);
+  std::erase(all_nodes_, node);
 
-  base::EraseIf(edges_, [node](const auto& edge) {
+  std::erase_if(edges_, [node](const auto& edge) {
     return edge.first == node || edge.second == node;
   });
 

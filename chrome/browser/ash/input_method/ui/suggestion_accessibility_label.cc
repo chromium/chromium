@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/ui/suggestion_accessibility_label.h"
 
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ui {
 namespace ime {
@@ -38,6 +39,9 @@ void SuggestionAccessibilityLabel::DoAnnouncement() {
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged,
                            /*send_native_event=*/true);
 }
+
+BEGIN_METADATA(SuggestionAccessibilityLabel)
+END_METADATA
 
 }  // namespace ime
 }  // namespace ui

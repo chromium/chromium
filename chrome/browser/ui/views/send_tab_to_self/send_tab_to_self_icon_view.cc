@@ -36,7 +36,7 @@ SendTabToSelfIconView::SendTabToSelfIconView(
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_ICON_SEND_TAB_TO_SELF));
   SetUpForInOutAnimation();
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SEND_TAB_TO_SELF));
 }
 
@@ -97,7 +97,7 @@ void SendTabToSelfIconView::UpdateImpl() {
       // Set label ahead of time to avoid announcing a useless alert (i.e.
       // "alert Send") to screenreaders.
       SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_ICON_SEND_TAB_TO_SELF));
-      AnimateIn(absl::nullopt);
+      AnimateIn(std::nullopt);
       initial_animation_state_ = AnimationState::kShowing;
       controller->SetInitialSendAnimationShown(true);
     }

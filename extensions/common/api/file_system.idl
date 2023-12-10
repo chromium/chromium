@@ -7,7 +7,6 @@
 // read and write to a user-selected location. For example, a text editor app
 // can use the API to read and write local documents. All failures are notified
 // via chrome.runtime.lastError.
-[modernised_enums]
 namespace fileSystem {
   dictionary AcceptOption {
     // This is the optional text description for this option. If not present,
@@ -122,7 +121,8 @@ namespace fileSystem {
     // under 'fileSystem'. If entry is a DirectoryEntry, this call will fail if
     // the application does not have the 'directory' permission under
     // 'fileSystem'.
-    [supportsPromises] static void getWritableEntry(
+    [doesNotSupportPromises="Custom hook sets lastError crbug.com/1504349"]
+    static void getWritableEntry(
         [instanceOf=Entry] object entry,
         EntryCallback callback);
 
@@ -132,11 +132,14 @@ namespace fileSystem {
         IsWritableCallback callback);
 
     // Ask the user to choose a file or directory.
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625,
+                             Custom hook sets lastError crbug.com/1504349"]
     static void chooseEntry(optional ChooseEntryOptions options,
                             EntriesCallback callback);
 
     // Returns the file entry with the given id if it can be restored. This call
     // will fail with a runtime error otherwise.
+    [doesNotSupportPromises="Custom hook sets lastError crbug.com/1504349"]
     static void restoreEntry(DOMString id,
                              EntryCallback callback);
 

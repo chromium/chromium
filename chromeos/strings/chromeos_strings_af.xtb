@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1003363546227723021">Wys foto's, die tyd, die weer, en media-inligting wanneer jou skerm onaktief is</translation>
 <translation id="1014750484722996375">Lessenaars</translation>
 <translation id="1018219910092211213">Kan nie DNS oplos nie</translation>
 <translation id="1018656279737460067">Gekanselleer</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwyder</translation>
+<translation id="1191518099344003522">APN is geaktiveer.</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1196959502276349371">Weergawe <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Speel/Laat wag</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">blaaiertuis</translation>
 <translation id="1526389707933164996">Sluimerskerm-animasie</translation>
 <translation id="152892567002884378">Volume harder</translation>
+<translation id="1539242642795599947">APN is verstek- en aanhegtipe.</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
 <translation id="1561927818299383735">agterligkleur</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">Installeer Chrome OS Flex</translation>
 <translation id="1856388568474281774">Afpyl</translation>
 <translation id="1858620243986915808">Heg skermskoot aan</translation>
+<translation id="1871413952174074704">APN kan nie meer as <ph name="CHAR_LIMIT" /> karakters hê nie</translation>
 <translation id="1871569928317311284">Skakel donkertema af</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Skakel donkermodus af</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2873483161362553159">Blaaiernavigasie</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
+<translation id="2875812231449496375">Skakel dit aan vir die beste resultate met hierdie muurpapier. Jy kan hierdie instelling enige tyd afskakel.</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="2880569433548999039">Wolkvloeisluimerskerm</translation>
 <translation id="2926057806159140518">Voer jou gebruikernaam en wagwoord in of skandeer jou QR-kode</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="357889014807611375">betaalde Wi-Fi</translation>
 <translation id="3583278742022654445">Swak seinsterkte. Probeer om nader aan die wi-fi-seinbron te kom.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> is die gebruikervriendelike naam vir <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Battery is vol</translation>
 <translation id="3600339377155080675">Skermweerspieëling</translation>
 <translation id="3602290021589620013">Voorskou</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> prente</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-sleutel is gedruk</translation>
 <translation id="4354430579665871434">sleutel</translation>
-<translation id="435692326371619097">Bestuur netwerk-APN-instellings. APN'e vestig ’n verbinding tussen ’n selnetwerk en die internet. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN is verstektipe.</translation>
 <translation id="437294888293595148">Stel alle kortpaaie terug</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">Versteek verslag</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Wys foto's, die tyd, die weer, en media-inligting wanneer jou skerm onaktief is.</translation>
 <translation id="5035083460461104704">Temakleur</translation>
 <translation id="5038292761217083259">sleutelbord veelkleurig</translation>
 <translation id="5039804452771397117">Laat toe</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Vol</translation>
 <translation id="5142961317498132443">Stawing</translation>
+<translation id="5145081769226915336">Skakel donkermodus outomaties aan?</translation>
 <translation id="5154917547274118687">Geheue</translation>
 <translation id="5160857336552977725">Meld by jou <ph name="DEVICE_TYPE" /> aan</translation>
 <translation id="5166918508782100047">Vinnige Antwoorde-instellings</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">volgende snit</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
+<translation id="5763838252932650682">Herbegin en dateer <ph name="APP_NAME" /> tans op</translation>
 <translation id="576835345334454681">Verhoog skermhelderheid</translation>
 <translation id="57838592816432529">Demp</translation>
 <translation id="5784136236926853061">Hoë HTTP-traagheid</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">Jy is nog nie gekoppel nie. As jou selfoondiensverskaffer ’n gepasmaakte APN aanbeveel, kan jy “+ Nuwe APN” kies om die APN-inligting in te voer.</translation>
 <translation id="5972388717451707488">Opdateringenjin</translation>
 <translation id="5984145644188835034">Verstekmuurpapier</translation>
+<translation id="6001235009374883388">APN is aanhegtipe.</translation>
 <translation id="6017514345406065928">Groen</translation>
 <translation id="6019566113895157499">Kortpadsleutels</translation>
 <translation id="6034694447310538551">Aktiveer outomatiese maandelikse terugstelling</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7180865173735832675">Pasmaak</translation>
 <translation id="7184043045742675738">Klik op enige sleutel om jou knoppie te pasmaak. Herposisioneer sleutel met muis of pylsleutels.</translation>
+<translation id="7212547870105584639">Bestuur netwerk-APN-instellings. APN’e vestig ’n verbinding tussen ’n selnetwerk en die internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fermware-opdaterings vir eksterne toestelle</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="725133483556299729">Kies e-posadres</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">Muurpapierversamelings</translation>
 <translation id="7297226631177386107">Kan nie deur brandmuur aan HTTPS-webwerwe koppel nie</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
+<translation id="7301262279595293068">Wag asseblief terwyl hierdie app opgedateer word</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Vra die kundiges in die Chromebook-hulpforum</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">Ligpienk</translation>
 <translation id="982713511914535780">Laat loop ontlaaitoets</translation>
 <translation id="987264212798334818">Algemeen</translation>
+<translation id="995062385528875723">Kan nie aksentletters, simbole of nie-Latynse alfabet gebruik nie</translation>
 </translationbundle>

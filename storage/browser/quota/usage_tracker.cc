@@ -107,7 +107,7 @@ void UsageTracker::GetBucketUsageWithBreakdown(
 
 void UsageTracker::UpdateBucketUsageCache(QuotaClientType client_type,
                                           const BucketLocator& bucket,
-                                          absl::optional<int64_t> delta) {
+                                          std::optional<int64_t> delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GetClient(client_type).UpdateBucketUsageCache(bucket, delta);

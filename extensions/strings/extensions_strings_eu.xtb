@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ezin izan da sortu ausazko RSA gako pribatua.</translation>
 <translation id="1445572445564823378">Luzapen hau <ph name="PRODUCT_NAME" /> moteltzen ari da. Hori desgaitzea gomendatzen dizugu <ph name="PRODUCT_NAME" />-ren errendimendua leheneratzeko..</translation>
 <translation id="1468038450257740950">WebGL ez da bateragarria.</translation>
+<translation id="1610570795592207282">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" css fitxategia.</translation>
 <translation id="1803557475693955505">Ezin izan da atzeko planoko orria ("<ph name="BACKGROUND_PAGE" />") kargatu.</translation>
 <translation id="2159915644201199628">Ezin izan da deskodetu irudia: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
-<translation id="3302709122321372472">Ezin izan da kargatu script-edukien "<ph name="RELATIVE_PATH" />" css txantiloia.</translation>
 <translation id="3369521687965833290">Ezin da despaketatu luzapena. Luzapena segurtasunez despaketatzeko, zure profilaren direktoriorako bide bat egon behar du, bideak unitate baten letrarekin hasi behar du eta ezin du elkargunerik, instalazio-punturik edo esteka sinbolikorik eduki. Ez duzu halako biderik profilean.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3561217442734750519">Gako pribatuak baliozko bide-izena izan behar du.</translation>
 <translation id="388442998277590542">Ezin izan da "<ph name="OPTIONS_PAGE" />" aukera-orria kargatu.</translation>
 <translation id="3984413272403535372">Errore bat gertatu da luzapena sinatzean.</translation>
-<translation id="39964277676607559">Ezin izan da kargatu edukiaren scriptaren "<ph name="RELATIVE_PATH" />" javascript bidea.</translation>
 <translation id="4115165561519362854"><ph name="EXTENSION_NAME" /> luzapenaren bertsioak gutxienez <ph name="EXTENSION_VERSION" /> izatea behar du makinaren administratzaileak. Ezin da gaitu eguneratzen ez den arte (bertsio horretara edo berriago batera).</translation>
 <translation id="4233778200880751280">Ezin izan da "<ph name="ABOUT_PAGE" />" orria kargatu.</translation>
 <translation id="471800408830181311">Ezin izan da gako pribatua eman.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Ezin izan da gako publikoa esportatu.</translation>
 <translation id="5026754133087629784">Web-ikuspegia: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Ezin da aurkitu bide absolutu bat paketatu nahi den direktoriorako.</translation>
+<translation id="5160071981665899014">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" javascript fitxategia.</translation>
 <translation id="5356315618422219272">Aplikazio-ikuspegia: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Ez dira onartzen formadun leihoak.</translation>
 <translation id="5456409301717116725">Luzapen honek "<ph name="KEY_PATH" />" karaktere-fitxategia du. Ziur aski ez duzu hori egin nahi.</translation>

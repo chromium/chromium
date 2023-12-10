@@ -27,9 +27,7 @@ import org.chromium.ui.display.DisplayAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Wrapper around Android's InputMethodManager
- */
+/** Wrapper around Android's InputMethodManager */
 public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper {
     private static final boolean DEBUG_LOGS = false;
     private static final String TAG = "IMM";
@@ -107,10 +105,12 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         int contextDisplayId = getDisplayId(context);
         int activityDisplayId = getDisplayId(activity);
         if (activityDisplayId != contextDisplayId) {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "Activity's display ID(%d) does not match context's display ID(%d). "
                             + "Using a workaround to show soft input on the correct display...",
-                    activityDisplayId, contextDisplayId);
+                    activityDisplayId,
+                    contextDisplayId);
             return false;
         }
         return true;
@@ -135,9 +135,10 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
             if (mDelegate != null && !mDelegate.hasInputConnection()) {
                 // Delay keyboard showing until input connection is established.
-                mPendingRunnableOnInputConnection = () -> {
-                    if (isActive(view)) showSoftInputInternal(view, flags, resultReceiver);
-                };
+                mPendingRunnableOnInputConnection =
+                        () -> {
+                            if (isActive(view)) showSoftInputInternal(view, flags, resultReceiver);
+                        };
                 return;
             }
             // If we already have InputConnection, then show soft input now.
@@ -185,8 +186,13 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     public void updateSelection(
             View view, int selStart, int selEnd, int candidatesStart, int candidatesEnd) {
         if (DEBUG_LOGS) {
-            Log.i(TAG, "updateSelection: SEL [%d, %d], COM [%d, %d]", selStart, selEnd,
-                    candidatesStart, candidatesEnd);
+            Log.i(
+                    TAG,
+                    "updateSelection: SEL [%d, %d], COM [%d, %d]",
+                    selStart,
+                    selEnd,
+                    candidatesStart,
+                    candidatesEnd);
         }
         InputMethodManager manager = getInputMethodManager();
         if (manager == null) return;

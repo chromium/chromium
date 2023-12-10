@@ -7,10 +7,15 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,6 +25,8 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/action_view_controller.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -98,31 +105,41 @@ bool Button::DefaultButtonControllerDelegate::InDrag() {
   return button()->InDrag();
 }
 
+Button::PressedCallback::PressedCallback(base::OnceClosure closure)
+    : callback_(std::move(closure)) {}
+
 Button::PressedCallback::PressedCallback(
     Button::PressedCallback::Callback callback)
     : callback_(std::move(callback)) {}
 
 Button::PressedCallback::PressedCallback(base::RepeatingClosure closure)
-    : callback_(
-          base::BindRepeating([](base::RepeatingClosure closure,
-                                 const ui::Event& event) { closure.Run(); },
-                              std::move(closure))) {}
-
-Button::PressedCallback::PressedCallback(const PressedCallback&) = default;
+    : callback_(std::move(closure)) {}
 
 Button::PressedCallback::PressedCallback(PressedCallback&&) = default;
-
-Button::PressedCallback& Button::PressedCallback::operator=(
-    const PressedCallback&) = default;
 
 Button::PressedCallback& Button::PressedCallback::operator=(PressedCallback&&) =
     default;
 
 Button::PressedCallback::~PressedCallback() = default;
 
+Button::PressedCallback::operator bool() const {
+  return absl::visit([](const auto& callback) { return !callback.is_null(); },
+                     callback_);
+}
+
+void Button::PressedCallback::Run(const ui::Event& event) {
+  return absl::visit(
+      base::Overloaded{
+          [](base::OnceClosure& closure) { std::move(closure).Run(); },
+          [](const base::RepeatingClosure& closure) { closure.Run(); },
+          [&](const Callback& callback) { callback.Run(event); },
+      },
+      callback_);
+}
+
 Button::ScopedAnchorHighlight::ScopedAnchorHighlight(
     base::WeakPtr<Button> button)
-    : button_(button) {}
+    : button_(std::move(button)) {}
 Button::ScopedAnchorHighlight::~ScopedAnchorHighlight() {
   if (button_) {
     button_->ReleaseAnchorHighlight();
@@ -232,6 +249,11 @@ void Button::SetState(ButtonState state) {
       // For PRESSED/DISABLED -> HOVERED, simply set the state to hovered (1).
       hover_animation_.Reset(1);
     }
+  }
+  // The hover animation affects the highlight state, make sure the highlight
+  // state is correct if there are supposed to be anchor highlights.
+  if (anchor_count_ > 0) {
+    SetHighlighted(true);
   }
 
   ButtonState old_state = state_;
@@ -639,6 +661,10 @@ void Button::OnBlur() {
   }
 }
 
+std::unique_ptr<ActionViewInterface> Button::GetActionViewInterface() {
+  return std::make_unique<ButtonActionViewInterface>(this);
+}
+
 void Button::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
@@ -775,6 +801,26 @@ void Button::ReleaseAnchorHighlight() {
   if (0 == --anchor_count_) {
     SetHighlighted(false);
   }
+}
+
+ButtonActionViewInterface::ButtonActionViewInterface(Button* action_view)
+    : BaseActionViewInterface(action_view), action_view_(action_view) {}
+
+void ButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  BaseActionViewInterface::ActionItemChangedImpl(action_item);
+  std::u16string tooltip_text = action_item->GetTooltipText();
+  if (!tooltip_text.empty()) {
+    action_view_->SetTooltipText(tooltip_text);
+  }
+}
+
+void ButtonActionViewInterface::LinkActionTriggerToView(
+    base::RepeatingClosure trigger_action_callback) {
+  if (!action_view_) {
+    return;
+  }
+  action_view_->SetCallback(trigger_action_callback);
 }
 
 BEGIN_METADATA(Button)

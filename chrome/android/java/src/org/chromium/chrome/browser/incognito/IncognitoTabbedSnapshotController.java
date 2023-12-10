@@ -23,8 +23,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
  * This is the controller that prevents incognito tabs from being visible in Android Recents
  * for {@link ChromeTabbedActivity}.
  */
-public class IncognitoTabbedSnapshotController
-        extends IncognitoSnapshotController implements TabModelSelectorObserver, DestroyObserver {
+public class IncognitoTabbedSnapshotController extends IncognitoSnapshotController
+        implements TabModelSelectorObserver, DestroyObserver {
     private final @NonNull TabModelSelector mTabModelSelector;
     private final @NonNull LayoutManagerChrome mLayoutManager;
     private final @NonNull LayoutStateObserver mLayoutStateObserver;
@@ -39,16 +39,22 @@ public class IncognitoTabbedSnapshotController
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} which would allow
      *         to register as {@link DestroyObserver}.
      */
-    public static void createIncognitoTabSnapshotController(@NonNull Activity activity,
-            @NonNull LayoutManagerChrome layoutManager, @NonNull TabModelSelector tabModelSelector,
+    public static void createIncognitoTabSnapshotController(
+            @NonNull Activity activity,
+            @NonNull LayoutManagerChrome layoutManager,
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         Supplier<Boolean> isOverviewModeSupplier =
                 () -> layoutManager.getActiveLayoutType() == LayoutType.TAB_SWITCHER;
         Supplier<Boolean> isShowingIncognitoSupplier =
                 getIsShowingIncognitoSupplier(tabModelSelector, isOverviewModeSupplier);
 
-        new IncognitoTabbedSnapshotController(activity, layoutManager, tabModelSelector,
-                activityLifecycleDispatcher, isShowingIncognitoSupplier);
+        new IncognitoTabbedSnapshotController(
+                activity,
+                layoutManager,
+                tabModelSelector,
+                activityLifecycleDispatcher,
+                isShowingIncognitoSupplier);
     }
 
     /**
@@ -80,8 +86,10 @@ public class IncognitoTabbedSnapshotController
      *         information if we are showing Incognito currently.
      */
     @VisibleForTesting
-    IncognitoTabbedSnapshotController(@NonNull Activity activity,
-            @NonNull LayoutManagerChrome layoutManager, @NonNull TabModelSelector tabModelSelector,
+    IncognitoTabbedSnapshotController(
+            @NonNull Activity activity,
+            @NonNull LayoutManagerChrome layoutManager,
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
         super(activity, isShowingIncognitoSupplier);
@@ -91,19 +99,21 @@ public class IncognitoTabbedSnapshotController
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
 
         mLayoutStateObserver =
-                new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
-                    @Override
-                    public void onStartedShowing(int layoutType) {
-                        assert layoutType == LayoutType.TAB_SWITCHER;
-                        updateIncognitoTabSnapshotState();
-                    }
+                new FilterLayoutStateObserver(
+                        LayoutType.TAB_SWITCHER,
+                        new LayoutStateObserver() {
+                            @Override
+                            public void onStartedShowing(int layoutType) {
+                                assert layoutType == LayoutType.TAB_SWITCHER;
+                                updateIncognitoTabSnapshotState();
+                            }
 
-                    @Override
-                    public void onStartedHiding(int layoutType) {
-                        assert layoutType == LayoutType.TAB_SWITCHER;
-                        updateIncognitoTabSnapshotState();
-                    }
-                });
+                            @Override
+                            public void onStartedHiding(int layoutType) {
+                                assert layoutType == LayoutType.TAB_SWITCHER;
+                                updateIncognitoTabSnapshotState();
+                            }
+                        });
 
         mLayoutManager.addObserver(mLayoutStateObserver);
         mTabModelSelector.addObserver(this);

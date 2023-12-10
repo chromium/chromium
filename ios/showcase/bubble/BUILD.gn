@@ -12,7 +12,8 @@ source_set("bubble") {
   deps = [
     ":constants",
     "//base",
-    "//ios/chrome/browser/ui/bubble",
+    "//ios/chrome/browser/ui/bubble:bubble_view",
+    "//ios/chrome/browser/ui/bubble:constants",
     "//ios/chrome/browser/ui/bubble/side_swipe_bubble",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",

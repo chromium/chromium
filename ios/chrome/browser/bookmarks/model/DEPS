@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/favicon",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
 ]

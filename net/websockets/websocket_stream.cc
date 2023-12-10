@@ -371,8 +371,8 @@ void Delegate::OnReceivedRedirect(URLRequest* request,
 void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
 
-  const bool is_http2 = request->response_info().connection_info ==
-                        HttpResponseInfo::CONNECTION_INFO_HTTP2;
+  const bool is_http2 =
+      request->response_info().connection_info == HttpConnectionInfo::kHTTP2;
 
   // All error codes, including OK and ABORTED, as with
   // Net.ErrorCodesForMainFrame4

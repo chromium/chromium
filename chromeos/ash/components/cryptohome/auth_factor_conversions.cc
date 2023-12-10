@@ -41,15 +41,15 @@ user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
   }
 }
 
-absl::optional<AuthFactorType> SafeConvertFactorTypeFromProto(
+std::optional<AuthFactorType> SafeConvertFactorTypeFromProto(
     user_data_auth::AuthFactorType type) {
   switch (type) {
     case user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED:
       LOG(WARNING) << "Unknown factor type should be handled separately";
-      return absl::nullopt;
+      return std::nullopt;
     case user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT:
       LOG(WARNING) << "Fingerprint factor type should never be returned";
-      return absl::nullopt;
+      return std::nullopt;
     case user_data_auth::AUTH_FACTOR_TYPE_PASSWORD:
       return AuthFactorType::kPassword;
     case user_data_auth::AUTH_FACTOR_TYPE_PIN:
@@ -65,7 +65,7 @@ absl::optional<AuthFactorType> SafeConvertFactorTypeFromProto(
           << "Unknown auth factor type " << static_cast<int>(type)
           << " Probably factor was added in cryptohome, but is not supported "
              "in chrome yet.";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

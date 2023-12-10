@@ -2,9 +2,6 @@
   {
     "namespace": "arrays",
     "description": "The arrays API.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "Enumeration",

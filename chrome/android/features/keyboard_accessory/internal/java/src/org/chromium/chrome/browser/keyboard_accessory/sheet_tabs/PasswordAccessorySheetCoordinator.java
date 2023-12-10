@@ -36,13 +36,21 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
      */
     public PasswordAccessorySheetCoordinator(
             Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
-        super(context.getString(R.string.password_list_title),
+        super(
+                context.getString(R.string.password_list_title),
                 IconProvider.getIcon(context, R.drawable.ic_vpn_key_grey),
                 context.getString(R.string.password_accessory_sheet_toggle),
-                R.layout.password_accessory_sheet, AccessoryTabType.PASSWORDS, scrollListener);
+                R.layout.password_accessory_sheet,
+                AccessoryTabType.PASSWORDS,
+                scrollListener);
         mContext = context;
-        mMediator = new PasswordAccessorySheetMediator(mModel, AccessoryTabType.PASSWORDS,
-                Type.PASSWORD_INFO, AccessoryAction.MANAGE_PASSWORDS, this::onToggleChanged);
+        mMediator =
+                new PasswordAccessorySheetMediator(
+                        mModel,
+                        AccessoryTabType.PASSWORDS,
+                        Type.PASSWORD_INFO,
+                        AccessoryAction.MANAGE_PASSWORDS,
+                        this::onToggleChanged);
     }
 
     @Override
@@ -58,8 +66,10 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     }
 
     private void onToggleChanged(boolean enabled) {
-        getTab().setIcon(IconProvider.getIcon(
-                mContext, enabled ? R.drawable.ic_vpn_key_grey : R.drawable.ic_vpn_key_off));
+        getTab().setIcon(
+                        IconProvider.getIcon(
+                                mContext,
+                                enabled ? R.drawable.ic_vpn_key_grey : R.drawable.ic_vpn_key_off));
     }
 
     /**
@@ -71,7 +81,9 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void> createAdapter(
             AccessorySheetTabItemsModel model) {
         return new RecyclerViewAdapter<>(
-                new SimpleRecyclerViewMcp<>(model, AccessorySheetDataPiece::getType,
+                new SimpleRecyclerViewMcp<>(
+                        model,
+                        AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
                 PasswordAccessorySheetViewBinder::create);
     }
@@ -83,9 +95,11 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
      * @return Returns an {@link PasswordAccessorySheetModernViewBinder} wired to a MCP.
      */
     static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void>
-    createModernAdapter(ListModel<AccessorySheetDataPiece> model) {
+            createModernAdapter(ListModel<AccessorySheetDataPiece> model) {
         return new RecyclerViewAdapter<>(
-                new SimpleRecyclerViewMcp<>(model, AccessorySheetDataPiece::getType,
+                new SimpleRecyclerViewMcp<>(
+                        model,
+                        AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
                 PasswordAccessorySheetModernViewBinder::create);
     }

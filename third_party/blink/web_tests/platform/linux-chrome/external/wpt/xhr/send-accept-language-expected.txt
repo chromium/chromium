@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Send "sensible" default value, whatever that means
+  assert_regexp_match: expected object "/Accept-Language:\s.+/" but got ""
+Harness: the test ran to completion.

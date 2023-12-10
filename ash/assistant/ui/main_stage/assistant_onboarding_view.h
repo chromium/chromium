@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -30,6 +31,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
       public AssistantControllerObserver,
       public AssistantSuggestionsModelObserver,
       public AssistantUiModelObserver {
+  METADATA_HEADER(AssistantOnboardingView, views::View)
+
  public:
   explicit AssistantOnboardingView(AssistantViewDelegate* delegate);
   AssistantOnboardingView(const AssistantOnboardingView&) = delete;
@@ -53,8 +56,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
  private:
   void InitLayout();

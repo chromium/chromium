@@ -56,12 +56,17 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class SyncErrorMessage implements SyncService.SyncStateChangedListener, UnownedUserData {
     @VisibleForTesting
-    @IntDef({MessageType.NOT_SHOWN, MessageType.AUTH_ERROR, MessageType.PASSPHRASE_REQUIRED,
-            MessageType.SYNC_SETUP_INCOMPLETE, MessageType.CLIENT_OUT_OF_DATE,
-            MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
-            MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
-            MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
-            MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS})
+    @IntDef({
+        MessageType.NOT_SHOWN,
+        MessageType.AUTH_ERROR,
+        MessageType.PASSPHRASE_REQUIRED,
+        MessageType.SYNC_SETUP_INCOMPLETE,
+        MessageType.CLIENT_OUT_OF_DATE,
+        MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
+        MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+        MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+        MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int NOT_SHOWN = -1;
@@ -111,8 +116,11 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
      * @param identityManager The {@link IdentityManager}.
      * @param syncService The {@link SyncService}.
      */
-    public static void maybeShowMessageUi(WindowAndroid windowAndroid,
-            IdentityManager identityManager, SyncService syncService, PrefService prefService) {
+    public static void maybeShowMessageUi(
+            WindowAndroid windowAndroid,
+            IdentityManager identityManager,
+            SyncService syncService,
+            PrefService prefService) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
             if (getMessageType(SyncSettingsUtils.getSyncError(syncService))
                     == MessageType.NOT_SHOWN) {
@@ -135,37 +143,48 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 // Show message next time when the previous message has disappeared.
                 return;
             }
-            SYNC_ERROR_MESSAGE_KEY.attachToHost(host,
-                    new SyncErrorMessage(dispatcher, windowAndroid.getActivity().get(),
-                            identityManager, syncService));
+            SYNC_ERROR_MESSAGE_KEY.attachToHost(
+                    host,
+                    new SyncErrorMessage(
+                            dispatcher,
+                            windowAndroid.getActivity().get(),
+                            identityManager,
+                            syncService));
         }
     }
 
-    private SyncErrorMessage(MessageDispatcher dispatcher, Activity activity,
-            IdentityManager identityManager, SyncService syncService) {
-        @SyncError
-        int error = SyncSettingsUtils.getSyncError(syncService);
-        String errorMessage = error == SyncError.SYNC_SETUP_INCOMPLETE
-                ? activity.getString(R.string.sync_settings_not_confirmed_title)
-                : SyncSettingsUtils.getSyncErrorHint(activity, error);
+    private SyncErrorMessage(
+            MessageDispatcher dispatcher,
+            Activity activity,
+            IdentityManager identityManager,
+            SyncService syncService) {
+        @SyncError int error = SyncSettingsUtils.getSyncError(syncService);
+        String errorMessage =
+                error == SyncError.SYNC_SETUP_INCOMPLETE
+                        ? activity.getString(R.string.sync_settings_not_confirmed_title)
+                        : SyncSettingsUtils.getSyncErrorHint(activity, error);
         // Use the same title with sync error card of sync settings.
         String title = SyncSettingsUtils.getSyncErrorCardTitle(activity, error);
         String primaryButtonText = getPrimaryButtonText(activity, error);
         Resources resources = activity.getResources();
-        mModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                 MessageIdentifier.SYNC_ERROR)
-                         .with(MessageBannerProperties.TITLE, title)
-                         .with(MessageBannerProperties.DESCRIPTION, errorMessage)
-                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText)
-                         .with(MessageBannerProperties.ICON,
-                                 ApiCompatibilityUtils.getDrawable(
-                                         resources, R.drawable.ic_sync_error_legacy_24dp))
-                         .with(MessageBannerProperties.ICON_TINT_COLOR,
-                                 activity.getColor(R.color.default_red))
-                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onAccepted)
-                         .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.SYNC_ERROR)
+                        .with(MessageBannerProperties.TITLE, title)
+                        .with(MessageBannerProperties.DESCRIPTION, errorMessage)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText)
+                        .with(
+                                MessageBannerProperties.ICON,
+                                ApiCompatibilityUtils.getDrawable(
+                                        resources, R.drawable.ic_sync_error_legacy_24dp))
+                        .with(
+                                MessageBannerProperties.ICON_TINT_COLOR,
+                                activity.getColor(R.color.default_red))
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onAccepted)
+                        .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed)
+                        .build();
         mMessageDispatcher =
                 sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
@@ -184,7 +203,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         if (mType != getMessageType(SyncSettingsUtils.getSyncError(mSyncService))) {
             mMessageDispatcher.dismissMessage(mModel, DismissReason.UNKNOWN);
             assert !SYNC_ERROR_MESSAGE_KEY.isAttachedToAnyHost(this)
-                : "Message UI should have been dismissed";
+                    : "Message UI should have been dismissed";
         }
     }
 
@@ -216,7 +235,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private void onDismissed(@DismissReason int reason) {
-        if (reason != DismissReason.TIMER && reason != DismissReason.GESTURE
+        if (reason != DismissReason.TIMER
+                && reason != DismissReason.GESTURE
                 && reason != DismissReason.PRIMARY_ACTION) {
             // If the user didn't explicitly accept/dismiss the message, and the display timeout
             // wasn't reached either, resetLastShownTime() so the message can be shown again. This
@@ -290,16 +310,18 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
+                        (intent) -> {
+                            IntentUtils.safeStartActivity(
+                                    getApplicationContext(),
                                     SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
                                             intent,
                                             TrustedVaultUserActionTriggerForUMA
                                                     .NEW_TAB_PAGE_INFOBAR));
                         },
-                        (exception)
-                                -> Log.w(TAG, "Error creating trusted vault key retrieval intent: ",
+                        (exception) ->
+                                Log.w(
+                                        TAG,
+                                        "Error creating trusted vault key retrieval intent: ",
                                         exception));
     }
 
@@ -311,23 +333,26 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         TrustedVaultClient.get()
                 .createRecoverabilityDegradedIntent(primaryAccountInfo)
                 .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
+                        (intent) -> {
+                            var action = TrustedVaultUserActionTriggerForUMA.NEW_TAB_PAGE_INFOBAR;
+                            var proxyIntent =
                                     SyncTrustedVaultProxyActivity
-                                            .createRecoverabilityDegradedProxyIntent(intent,
-                                                    TrustedVaultUserActionTriggerForUMA
-                                                            .NEW_TAB_PAGE_INFOBAR));
+                                            .createRecoverabilityDegradedProxyIntent(
+                                                    intent, action);
+                            IntentUtils.safeStartActivity(getApplicationContext(), proxyIntent);
                         },
-                        (exception)
-                                -> Log.w(TAG,
+                        (exception) ->
+                                Log.w(
+                                        TAG,
                                         "Error creating trusted vault recoverability intent: ",
                                         exception));
     }
 
     private static void openSyncSettings() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(getApplicationContext(), ManageSyncSettings.class,
+        settingsLauncher.launchSettingsActivity(
+                getApplicationContext(),
+                ManageSyncSettings.class,
                 ManageSyncSettings.createArguments(false));
     }
 
@@ -335,8 +360,9 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         final CoreAccountInfo primaryAccountInfo =
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
         assert primaryAccountInfo != null;
-        AccountManagerFacadeProvider.getInstance().updateCredentials(
-                CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
+        AccountManagerFacadeProvider.getInstance()
+                .updateCredentials(
+                        CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
     private CoreAccountInfo getSyncConsentedAccountInfo() {

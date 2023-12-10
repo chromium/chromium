@@ -4,12 +4,13 @@
 
 #include "services/network/ignore_errors_cert_verifier.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
@@ -52,15 +53,15 @@ static std::vector<std::string> MakeAllowlist() {
   net::CertificateList certs = net::CreateCertificateListFromFile(
       certs_dir, "x509_verify_results.chain.pem", X509Certificate::FORMAT_AUTO);
   std::string hash_base64;
-  base::StringPiece cert_spki;
+  std::string_view cert_spki;
   SHA256HashValue hash;
   net::asn1::ExtractSPKIFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(certs[1]->cert_buffer()),
       &cert_spki);
 
   crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-  base::Base64Encode(base::StringPiece(reinterpret_cast<const char*>(hash.data),
-                                       sizeof(hash.data)),
+  base::Base64Encode(std::string_view(reinterpret_cast<const char*>(hash.data),
+                                      sizeof(hash.data)),
                      &hash_base64);
   return {"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "foobar", hash_base64,
           "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="};

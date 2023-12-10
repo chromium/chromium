@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
+
+import {decorate} from '../../../common/js/cr_ui.js';
+
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 
@@ -42,27 +45,18 @@ export class FilesMenuItem extends MenuItem {
 
   /**
    * Decorates the element.
-   * @param {!Element} element Element to be decorated.
+   * @param {!HTMLElement} element Element to be decorated.
    * @return {!FilesMenuItem} Decorated element.
+   * @override
    */
   static decorate(element) {
-    // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
-    // 'Element'.
-    element.__proto__ = FilesMenuItem.prototype;
-    element = /** @type {!FilesMenuItem} */ (element);
-    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-    // 'Element'.
-    element.decorate();
-    // @ts-ignore: error TS2740: Type 'Element' is missing the following
-    // properties from type 'FilesMenuItem': animating_, hidden_, label_,
-    // iconStart_, and 140 more.
-    return element;
+    decorate(element, FilesMenuItem);
+    return /** @type {!FilesMenuItem} */ (element);
   }
+
   /**
    * @override
    */
-  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
-  // '@override' tag because it is not declared in the base class 'MenuItem'.
   decorate() {
     this.animating_ = false;
 
@@ -162,15 +156,9 @@ export class FilesMenuItem extends MenuItem {
    * @private
    */
   setMenuAsAnimating_(menu, value) {
-    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
-    // 'Menu'.
     menu.classList.toggle('animating', value);
 
-    // @ts-ignore: error TS2339: Property 'menuItems' does not exist on type
-    // 'Menu'.
     for (let i = 0; i < menu.menuItems.length; i++) {
-      // @ts-ignore: error TS2339: Property 'menuItems' does not exist on type
-      // 'Menu'.
       const menuItem = menu.menuItems[i];
       if (menuItem instanceof FilesMenuItem) {
         menuItem.setAnimating_(value);
@@ -178,8 +166,6 @@ export class FilesMenuItem extends MenuItem {
     }
 
     if (!value) {
-      // @ts-ignore: error TS2339: Property 'classList' does not exist on type
-      // 'Menu'.
       menu.classList.remove('toolbar-menu');
     }
   }
@@ -205,43 +191,37 @@ export class FilesMenuItem extends MenuItem {
 
   /**
    * @return {boolean}
+   * @override
    */
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'MenuItem'.
   get hidden() {
     if (this.hidden_ !== undefined) {
       return this.hidden_;
     }
 
-    // @ts-ignore: error TS2684: The 'this' context of type '(() => any) |
-    // undefined' is not assignable to method's 'this' of type '(this: this) =>
-    // any'.
+
     return Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')
-        .get.call(this);
+        ?.get?.call(this);
   }
 
   /**
    * Overrides hidden property to block the change of hidden property while
    * menu is animating.
    * @param {boolean} value
+   * @override
    */
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'MenuItem'.
   set hidden(value) {
     if (this.animating_) {
       this.hidden_ = value;
       return;
     }
 
-    // @ts-ignore: error TS2684: The 'this' context of type '((v: any) => void)
-    // | undefined' is not assignable to method's 'this' of type '(this: this,
-    // args_0: boolean) => void'.
     Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')
-        .set.call(this, value);
+        ?.set?.call(this, value);
   }
 
   /**
    * @return {string}
+   * @override
    */
   get label() {
     // @ts-ignore: error TS2531: Object is possibly 'null'.
@@ -250,6 +230,7 @@ export class FilesMenuItem extends MenuItem {
 
   /**
    * @param {string} value
+   * @override
    */
   set label(value) {
     // @ts-ignore: error TS2531: Object is possibly 'null'.

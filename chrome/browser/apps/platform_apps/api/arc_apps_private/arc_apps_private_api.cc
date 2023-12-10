@@ -102,7 +102,7 @@ ArcAppsPrivateLaunchAppFunction::ArcAppsPrivateLaunchAppFunction() = default;
 ArcAppsPrivateLaunchAppFunction::~ArcAppsPrivateLaunchAppFunction() = default;
 
 ExtensionFunction::ResponseAction ArcAppsPrivateLaunchAppFunction::Run() {
-  absl::optional<api::arc_apps_private::LaunchApp::Params> params(
+  std::optional<api::arc_apps_private::LaunchApp::Params> params(
       api::arc_apps_private::LaunchApp::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
   ArcAppListPrefs* prefs =

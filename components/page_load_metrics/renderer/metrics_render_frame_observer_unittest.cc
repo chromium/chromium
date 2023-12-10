@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -320,6 +321,62 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
 
   observer.DidChangePerformanceTiming();
   observer.GetMockTimer()->Fire();
+}
+
+using MetricsRenderFrameObserverUmaHistogramTest =
+    MetricsRenderFrameObserverTest;
+
+TEST_F(MetricsRenderFrameObserverUmaHistogramTest, UmaHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // Test the case where both timings are 0.
+  base::TimeDelta start_time_relative_to_reference = base::TimeDelta();
+  double nav_start_relative_to_reference = 0;
+  internal::RecordUmaForkPageLoadInternalSoftNavigationFromStartInvalidTiming(
+      start_time_relative_to_reference, nav_start_relative_to_reference);
+
+  histogram_tester.ExpectBucketCount(
+      internal::kPageLoadInternalSoftNavigationFromStartInvalidTiming,
+      internal::SoftNavigationFromStartInvalidTimingReasons::
+          kSoftNavStartTimeIsZeroAndEqNavStart,
+      1);
+
+  // Test the case where the start time is 0 and navigation start is non 0.
+  start_time_relative_to_reference = base::TimeDelta();
+  nav_start_relative_to_reference = 1.0;
+  internal::RecordUmaForkPageLoadInternalSoftNavigationFromStartInvalidTiming(
+      start_time_relative_to_reference, nav_start_relative_to_reference);
+
+  histogram_tester.ExpectBucketCount(
+      internal::kPageLoadInternalSoftNavigationFromStartInvalidTiming,
+      internal::SoftNavigationFromStartInvalidTimingReasons::
+          kSoftNavStartTimeIsZeroAndLtNavStart,
+      1);
+
+  // Test the case where both timings are non 0 and they are equal.
+  start_time_relative_to_reference = base::TimeDelta() + base::Seconds(1);
+  nav_start_relative_to_reference = 1.0;
+  internal::RecordUmaForkPageLoadInternalSoftNavigationFromStartInvalidTiming(
+      start_time_relative_to_reference, nav_start_relative_to_reference);
+
+  histogram_tester.ExpectBucketCount(
+      internal::kPageLoadInternalSoftNavigationFromStartInvalidTiming,
+      internal::SoftNavigationFromStartInvalidTimingReasons::
+          kSoftNavStartTimeIsNonZeroAndEqNavStart,
+      1);
+
+  // Test the case where both timings are non 0 and the start time is less than
+  // the navigation start.
+  start_time_relative_to_reference = base::TimeDelta() + base::Seconds(1);
+  nav_start_relative_to_reference = 2.0;
+  internal::RecordUmaForkPageLoadInternalSoftNavigationFromStartInvalidTiming(
+      start_time_relative_to_reference, nav_start_relative_to_reference);
+
+  histogram_tester.ExpectBucketCount(
+      internal::kPageLoadInternalSoftNavigationFromStartInvalidTiming,
+      internal::SoftNavigationFromStartInvalidTimingReasons::
+          kSoftNavStartTimeIsNonZeroAndLtNavStart,
+      1);
 }
 
 }  // namespace page_load_metrics

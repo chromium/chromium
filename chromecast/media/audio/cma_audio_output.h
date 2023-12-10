@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -37,7 +36,6 @@ class CmaAudioOutput {
                  MediaPipelineDeviceParams::MediaSyncType sync_type,
                  bool use_hw_av_sync,
                  int audio_track_session_id,
-                 chromecast::mojom::MultiroomInfoPtr multiroom_info,
                  CmaBackendFactory* cma_backend_factory,
                  CmaBackend::Decoder::Delegate* delegate);
   // Disallow copy and assign.
@@ -63,7 +61,6 @@ class CmaAudioOutput {
                   const std::string& application_session_id,
                   MediaPipelineDeviceParams::MediaSyncType sync_type,
                   int audio_track_session_id,
-                  chromecast::mojom::MultiroomInfoPtr multiroom_info,
                   CmaBackendFactory* cma_backend_factory);
 
   const ::media::AudioParameters audio_params_;

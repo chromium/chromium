@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -22,11 +23,15 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/webauthn/core/browser/test_passkey_model.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace password_manager {
 
@@ -78,6 +83,22 @@ PasswordForm GetTestBlocklistedAndroidCredentials(const char* signon_realm) {
   form.password_value.clear();
   return form;
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+const char kTestRpIdFacetURIAlpha1[] = "one.alpha.example.com";
+const char kTestRpIdFacetURIAlpha2[] = "two.alpha.example.com";
+const char kTestExtensionRpId[] = "chrome-extension://test-extension-id";
+
+sync_pb::WebauthnCredentialSpecifics GetTestPasskey(const char* rp_id) {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_rp_id(rp_id);
+  passkey.set_credential_id(base::RandBytesAsString(16));
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  return passkey;
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -447,6 +468,37 @@ TEST_F(AffiliationsPrefetcherTest, OnLoginsRetained) {
       ->OnLoginsRetained(nullptr, forms);
 }
 
+TEST_F(AffiliationsPrefetcherTest, TestDisablePrefetch) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestWebFacetURIAlpha1));
+  prefetcher()->RegisterPasswordStore(password_store());
+
+  ExpectKeepPrefetchForFacets({});
+  prefetcher()->DisablePrefetching();
+
+  // KeepPrefetchForFacets is no longer called even if calling
+  // DisablePrefetching() again.
+  EXPECT_CALL(*mock_affiliation_service(), KeepPrefetchForFacets).Times(0);
+  prefetcher()->DisablePrefetching();
+
+  RunUntilIdle();
+  FastForwardBy(kInitializationDelayOnStartup);
+}
+
+TEST_F(AffiliationsPrefetcherTest, TestDisablePrefetchWithLoginsChanges) {
+  prefetcher()->RegisterPasswordStore(password_store());
+
+  ExpectKeepPrefetchForFacets({});
+  prefetcher()->DisablePrefetching();
+
+  RunUntilIdle();
+  FastForwardBy(kInitializationDelayOnStartup);
+
+  EXPECT_CALL(*mock_affiliation_service(), Prefetch).Times(0);
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestWebFacetURIAlpha1));
+}
+
 class AffiliationsPrefetcherWithTwoStoresTest
     : public AffiliationsPrefetcherTest {
  protected:
@@ -583,5 +635,112 @@ TEST_F(AffiliationsPrefetcherWithTwoStoresTest,
   prefetcher()->RegisterPasswordStore(account_password_store());
   RunUntilIdle();
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+class AffiliationsPrefetcherWithPasskeysTest
+    : public AffiliationsPrefetcherTest {
+ protected:
+  webauthn::TestPasskeyModel* test_passkey_model() {
+    return test_passkey_model_.get();
+  }
+
+  void RunDeferredInitialization() {
+    RunUntilIdle();
+    ExpectCallToTrimUnusedCache();
+    prefetcher()->RegisterPasswordStore(password_store());
+    prefetcher()->RegisterPasskeyModel(test_passkey_model_.get());
+    FastForwardBy(kInitializationDelayOnStartup);
+  }
+
+ private:
+  std::unique_ptr<webauthn::TestPasskeyModel> test_passkey_model_ =
+      std::make_unique<webauthn::TestPasskeyModel>();
+};
+
+TEST_F(AffiliationsPrefetcherWithPasskeysTest, TestInitialPrefetch) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestWebFacetURIAlpha1));
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestRpIdFacetURIAlpha2));
+
+  std::vector<FacetURI> expected_facets;
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2));
+
+  // Expect prefetch for passwords and passkeys.
+  ExpectKeepPrefetchForFacets(expected_facets);
+
+  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
+}
+
+TEST_F(AffiliationsPrefetcherWithPasskeysTest,
+       TestPasskeyModelRegisteredLater) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestWebFacetURIAlpha1));
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestRpIdFacetURIAlpha2));
+
+  std::vector<FacetURI> expected_facets;
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
+
+  ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectCallToTrimUnusedCache();
+
+  prefetcher()->RegisterPasswordStore(password_store());
+  FastForwardBy(kInitializationDelayOnStartup);
+
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2));
+  ExpectCallToPrefetch(kTestWebFacetURIAlpha2);
+
+  prefetcher()->RegisterPasskeyModel(test_passkey_model());
+  RunUntilIdle();
+}
+
+TEST_F(AffiliationsPrefetcherWithPasskeysTest, TestNewPasskeyDownloaded) {
+  prefetcher()->RegisterPasskeyModel(test_passkey_model());
+  ExpectKeepPrefetchForFacets({});
+  ExpectCallToTrimUnusedCache();
+  FastForwardBy(kInitializationDelayOnStartup);
+
+  std::vector<FacetURI> expected_facets{
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)};
+  ExpectCallToPrefetch(kTestWebFacetURIAlpha1);
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestRpIdFacetURIAlpha1));
+}
+
+TEST_F(AffiliationsPrefetcherWithPasskeysTest, TestPasskeyDeleted) {
+  sync_pb::WebauthnCredentialSpecifics passkey =
+      GetTestPasskey(kTestRpIdFacetURIAlpha1);
+  test_passkey_model()->AddNewPasskeyForTesting(passkey);
+
+  std::vector<FacetURI> expected_facets{
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)};
+  ExpectKeepPrefetchForFacets(expected_facets);
+  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
+
+  ExpectCallToCancelPrefetch(kTestWebFacetURIAlpha1);
+  test_passkey_model()->DeletePasskey(passkey.credential_id());
+  RunUntilIdle();
+}
+
+TEST_F(AffiliationsPrefetcherWithPasskeysTest, TestInvalidFacetsIgnored) {
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestRpIdFacetURIAlpha1));
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestExtensionRpId));
+
+  std::vector<FacetURI> expected_facets{
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)};
+  ExpectKeepPrefetchForFacets(expected_facets);
+  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager

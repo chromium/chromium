@@ -64,7 +64,7 @@ struct FlatHashMapPolicy;
 //   `insert()`, provided that the map is provided a compatible heterogeneous
 //   hashing function and equality operator.
 // * Invalidates any references and pointers to elements within the table after
-//   `rehash()`.
+//   `rehash()` and when the table is moved.
 // * Contains a `capacity()` member function indicating the number of element
 //   slots (open, deleted, and empty) within the hash map.
 // * Returns `void` from the `erase(iterator)` overload.
@@ -579,9 +579,9 @@ struct FlatHashMapPolicy {
   }
 
   template <class Allocator>
-  static void transfer(Allocator* alloc, slot_type* new_slot,
+  static auto transfer(Allocator* alloc, slot_type* new_slot,
                        slot_type* old_slot) {
-    slot_policy::transfer(alloc, new_slot, old_slot);
+    return slot_policy::transfer(alloc, new_slot, old_slot);
   }
 
   template <class F, class... Args>

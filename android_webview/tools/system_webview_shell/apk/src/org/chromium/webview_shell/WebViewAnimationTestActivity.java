@@ -14,56 +14,55 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-/**
- * Activity to exercise transform animations on WebView.
- */
+/** Activity to exercise transform animations on WebView. */
 public class WebViewAnimationTestActivity extends Activity {
-    private static final String HTML = "<html>"
-            + "  <head>"
-            + "    <style type =\"text/css\">"
-            + "      .container {"
-            + "            display: grid;"
-            + "            grid-template-columns: 100px 100px 100px 100px 100px;"
-            + "            grid-template-rows: 100px 100px 100px 100px 100px;"
-            + "      }"
-            + "     .alt1 {"
-            + "       background-color: #aaffaa;"
-            + "     }"
-            + "     .alt2 {"
-            + "       background-color: #ff4545;"
-            + "     }"
-            + "    </style>"
-            + "  </head>"
-            + "  <body>"
-            + "   <div class=\"container\">"
-            + "     <div class=\"alt1\">00</div>"
-            + "     <div class=\"alt2\">01</div>"
-            + "     <div class=\"alt1\">02</div>"
-            + "     <div class=\"alt2\">03</div>"
-            + "     <div class=\"alt1\">04</div>"
-            + "     <div class=\"alt2\">05</div>"
-            + "     <div class=\"alt1\">06</div>"
-            + "     <div class=\"alt2\">07</div>"
-            + "     <div class=\"alt1\">08</div>"
-            + "     <div class=\"alt2\">09</div>"
-            + "     <div class=\"alt1\">10</div>"
-            + "     <div class=\"alt2\">11</div>"
-            + "     <div class=\"alt1\">12</div>"
-            + "     <div class=\"alt2\">13</div>"
-            + "     <div class=\"alt1\">14</div>"
-            + "     <div class=\"alt2\">15</div>"
-            + "     <div class=\"alt1\">16</div>"
-            + "     <div class=\"alt2\">17</div>"
-            + "     <div class=\"alt1\">18</div>"
-            + "     <div class=\"alt2\">19</div>"
-            + "     <div class=\"alt1\">20</div>"
-            + "     <div class=\"alt2\">21</div>"
-            + "     <div class=\"alt1\">22</div>"
-            + "     <div class=\"alt2\">23</div>"
-            + "     <div class=\"alt1\">24</div>"
-            + "   </div>"
-            + "  </body>"
-            + "</html>";
+    private static final String HTML =
+            "<html>"
+                    + "  <head>"
+                    + "    <style type =\"text/css\">"
+                    + "      .container {"
+                    + "            display: grid;"
+                    + "            grid-template-columns: 100px 100px 100px 100px 100px;"
+                    + "            grid-template-rows: 100px 100px 100px 100px 100px;"
+                    + "      }"
+                    + "     .alt1 {"
+                    + "       background-color: #aaffaa;"
+                    + "     }"
+                    + "     .alt2 {"
+                    + "       background-color: #ff4545;"
+                    + "     }"
+                    + "    </style>"
+                    + "  </head>"
+                    + "  <body>"
+                    + "   <div class=\"container\">"
+                    + "     <div class=\"alt1\">00</div>"
+                    + "     <div class=\"alt2\">01</div>"
+                    + "     <div class=\"alt1\">02</div>"
+                    + "     <div class=\"alt2\">03</div>"
+                    + "     <div class=\"alt1\">04</div>"
+                    + "     <div class=\"alt2\">05</div>"
+                    + "     <div class=\"alt1\">06</div>"
+                    + "     <div class=\"alt2\">07</div>"
+                    + "     <div class=\"alt1\">08</div>"
+                    + "     <div class=\"alt2\">09</div>"
+                    + "     <div class=\"alt1\">10</div>"
+                    + "     <div class=\"alt2\">11</div>"
+                    + "     <div class=\"alt1\">12</div>"
+                    + "     <div class=\"alt2\">13</div>"
+                    + "     <div class=\"alt1\">14</div>"
+                    + "     <div class=\"alt2\">15</div>"
+                    + "     <div class=\"alt1\">16</div>"
+                    + "     <div class=\"alt2\">17</div>"
+                    + "     <div class=\"alt1\">18</div>"
+                    + "     <div class=\"alt2\">19</div>"
+                    + "     <div class=\"alt1\">20</div>"
+                    + "     <div class=\"alt2\">21</div>"
+                    + "     <div class=\"alt1\">22</div>"
+                    + "     <div class=\"alt2\">23</div>"
+                    + "     <div class=\"alt1\">24</div>"
+                    + "   </div>"
+                    + "  </body>"
+                    + "</html>";
 
     private WebViewWithClipPath mWebView;
     private boolean mIsWindowHardwareAccelerated;
@@ -77,46 +76,53 @@ public class WebViewAnimationTestActivity extends Activity {
 
         mIsWindowHardwareAccelerated =
                 (getWindow().getAttributes().flags
-                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
-                != 0;
+                                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+                        != 0;
         mWebView.setBackgroundColor(0);
         mWebView.loadDataWithBaseURL("http://foo.bar", HTML, "text/html", null, "http://foo.bar");
-        OnClickListener onClickListner = (View v) -> {
-            int viewId = v.getId();
-            if (viewId == R.id.translate) {
-                runTranslate();
-            } else if (viewId == R.id.scale) {
-                runScale();
-            } else if (viewId == R.id.rotate) {
-                runRotate();
-            }
-        };
+        OnClickListener onClickListner =
+                (View v) -> {
+                    int viewId = v.getId();
+                    if (viewId == R.id.translate) {
+                        runTranslate();
+                    } else if (viewId == R.id.scale) {
+                        runScale();
+                    } else if (viewId == R.id.rotate) {
+                        runRotate();
+                    }
+                };
         findViewById(R.id.scale).setOnClickListener(onClickListner);
         findViewById(R.id.translate).setOnClickListener(onClickListner);
         findViewById(R.id.rotate).setOnClickListener(onClickListner);
         ((SeekBar) findViewById(R.id.view_alpha))
-                .setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar view, int progress, boolean fromUser) {
-                        if (view.getId() == R.id.view_alpha) {
-                            mWebView.setAlpha(progress / 100f);
-                        }
-                    }
+                .setOnSeekBarChangeListener(
+                        new OnSeekBarChangeListener() {
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar view, int progress, boolean fromUser) {
+                                if (view.getId() == R.id.view_alpha) {
+                                    mWebView.setAlpha(progress / 100f);
+                                }
+                            }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {}
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {}
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
-                });
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {}
+                        });
         CheckBox layerCheckBox = ((CheckBox) findViewById(R.id.use_layer));
         layerCheckBox.setOnCheckedChangeListener(
-                (CompoundButton arg0, boolean checked) -> { setWebViewLayer(checked); });
+                (CompoundButton arg0, boolean checked) -> {
+                    setWebViewLayer(checked);
+                });
         setWebViewLayer(layerCheckBox.isChecked());
 
         CheckBox stencilCheckBox = ((CheckBox) findViewById(R.id.use_stencil));
         stencilCheckBox.setOnCheckedChangeListener(
-                (CompoundButton arg0, boolean checked) -> { setUseExternalStencil(checked); });
+                (CompoundButton arg0, boolean checked) -> {
+                    setUseExternalStencil(checked);
+                });
         setUseExternalStencil(stencilCheckBox.isChecked());
     }
 
@@ -146,8 +152,10 @@ public class WebViewAnimationTestActivity extends Activity {
 
     private void setWebViewLayer(boolean isOnLayer) {
         if (isOnLayer) {
-            mWebView.setLayerType(mIsWindowHardwareAccelerated ? View.LAYER_TYPE_HARDWARE
-                                                               : View.LAYER_TYPE_SOFTWARE,
+            mWebView.setLayerType(
+                    mIsWindowHardwareAccelerated
+                            ? View.LAYER_TYPE_HARDWARE
+                            : View.LAYER_TYPE_SOFTWARE,
                     null);
         } else {
             mWebView.setLayerType(View.LAYER_TYPE_NONE, null);

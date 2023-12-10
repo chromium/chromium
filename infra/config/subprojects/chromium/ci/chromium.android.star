@@ -10,6 +10,7 @@ load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -62,6 +63,19 @@ ci.builder(
             config = "clang_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "clang",
+            "asan",
+            "debug_builder",
+            "reclient",
+            # TODO(1486663): Remove no_symbols when unit_tests binary size
+            # issue is resolved.
+            "no_symbols",
+            "strip_debug_info",
+        ],
     ),
     builderless = False,
     cores = None,
@@ -178,6 +192,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     free_space = builders.free_space.high,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -213,6 +234,15 @@ ci.builder(
             config = "main_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "arm64",
+            "webview_google",
+        ],
     ),
     # The 'All' version of this builder below provides the same build coverage
     # but cycles much faster due to beefier machine resources. So any regression
@@ -260,6 +290,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "arm64",
+            "webview_google",
+        ],
+    ),
     builderless = False,
     cores = None,
     tree_closing = True,
@@ -279,6 +318,16 @@ ci.builder(
 ci.builder(
     name = "Android x64 Builder (dbg)",
     builder_spec = builder_config.copy_from("ci/Android x64 Builder All Targets (dbg)"),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "webview_trichrome",
+            "webview_shell",
+        ],
+    ),
     builderless = False,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -316,6 +365,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "webview_trichrome",
+            "webview_shell",
+        ],
+    ),
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x86",
@@ -347,6 +406,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "x86",
+            "webview_shell",
+        ],
+    ),
     ssd = True,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
@@ -377,6 +445,19 @@ ci.builder(
             config = "main_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "webview_shell",
+        ],
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -441,6 +522,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cast_android",
+            "cast_receiver",
+            "clang",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
@@ -453,6 +544,15 @@ ci.builder(
 ci.builder(
     name = "Deterministic Android",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "strip_debug_info",
+        ],
+    ),
     cores = 32,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -467,6 +567,13 @@ ci.builder(
 ci.builder(
     name = "Deterministic Android (dbg)",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     cores = 16,
     ssd = True,
     tree_closing = True,
@@ -539,6 +646,18 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "10",
@@ -602,6 +721,17 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_google",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
@@ -629,6 +759,19 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
@@ -640,6 +783,17 @@ ci.builder(
 ci.builder(
     name = "android-binary-size-generator",
     executable = "recipe:binary_size_generator_tot",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "chrome_with_codecs",
+            "reclient",
+            "minimal_symbols",
+            "official_optimize",
+            "stable_channel",
+            "v8_release_branch",
+        ],
+    ),
     builderless = False,
     cores = 32,
     ssd = True,
@@ -676,6 +830,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "arm_no_neon",
+            "release_java",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
@@ -711,6 +875,18 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm_no_neon",
+            "strip_debug_info",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
@@ -741,6 +917,15 @@ ci.builder(
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "arm64",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm64",
@@ -769,6 +954,18 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+        ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -799,6 +996,19 @@ ci.builder(
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm_no_neon",
+            "clang",
+            "asan",
+            "strip_debug_info",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
@@ -827,6 +1037,16 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "arm64",
+            "cronet_android_mainline_clang",
+        ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -858,9 +1078,105 @@ ci.builder(
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "cronet_android_mainline_clang",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|arm64",
+        short_name = "rel",
+    ),
+    contact_team_email = "cronet-team@google.com",
+    notifies = ["cronet"],
+)
+
+# Compiles with Android Mainline Clang
+ci.builder(
+    name = "android-cronet-mainline-clang-riscv64-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "riscv64",
+            "cronet_android_mainline_clang",
+        ],
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|mainline_clang|riscv64",
+        short_name = "dbg",
+    ),
+    contact_team_email = "cronet-team@google.com",
+    notifies = ["cronet"],
+)
+
+# Compiles with Android Mainline Clang
+ci.builder(
+    name = "android-cronet-mainline-clang-riscv64-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "riscv64",
+            "strip_debug_info",
+            "cronet_android_mainline_clang",
+        ],
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|mainline_clang|riscv64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
@@ -893,6 +1209,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "x86",
+            "cronet_android_mainline_clang",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|x86",
@@ -923,6 +1249,19 @@ ci.builder(
         android_config = builder_config.android_config(config = "x86_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "cronet_android_mainline_clang",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|x86",
@@ -936,6 +1275,18 @@ ci.builder(
 ci.builder(
     name = "android-cronet-marshmallow-arm64-perf-rel",
     executable = "recipe:cronet",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+        ],
+    ),
     cores = None,
     os = os.ANDROID,
     cpu = None,
@@ -969,6 +1320,15 @@ ci.builder(
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "riscv64",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|riscv64",
@@ -997,6 +1357,18 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "riscv64",
+            "strip_debug_info",
+        ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1032,6 +1404,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "x86",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
@@ -1065,6 +1446,15 @@ ci.builder(
             config = "x64_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+        ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1447,6 +1837,18 @@ ci.builder(
         android_config = builder_config.android_config(config = "x86_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
@@ -1476,6 +1878,18 @@ ci.builder(
         android_config = builder_config.android_config(config = "x64_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "official_optimize",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+        ],
+    ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x64",
@@ -1503,6 +1917,19 @@ ci.builder(
             config = "x86_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -1572,6 +1999,17 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_monochrome",
+        ],
+    ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
@@ -1605,6 +2043,19 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
+    ),
     cores = 16,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
@@ -1637,6 +2088,19 @@ ci.builder(
             config = "x86_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "webview_shell",
+        ],
     ),
     # TODO(crbug.com/1137474): Add it back to sheriff once the builder is more
     # stable.
@@ -1673,6 +2137,20 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "no_secondary_abi",
+            "webview_shell",
+        ],
+    ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq|x64",
@@ -1706,6 +2184,20 @@ ci.builder(
             config = "x64_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "no_secondary_abi",
+            "webview_shell",
+        ],
     ),
     # TODO(crbug.com/1405331): Enable sheriff once tests are stable
     sheriff_rotations = args.ignore_default(None),

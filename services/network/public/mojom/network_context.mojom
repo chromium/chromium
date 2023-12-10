@@ -159,15 +159,6 @@ interface CustomProxyConfigClient {
   ClearBadProxiesCache();
 };
 
-[EnableIf=is_chromeos]
-struct AdditionalCertificates {
-  // List of all additional certificates.
-  array<X509Certificate> all_certificates;
-
-  // List of additional trust anchors.
-  array<X509Certificate> trust_anchors;
-};
-
 // Sent by TrustedURLLoaderHeaderClient to perform modifications for a request.
 interface TrustedHeaderClient {
   // Allows modifying request headers before the request is sent.
@@ -311,6 +302,15 @@ struct NetworkContextFilePaths {
   bool trigger_migration = false;
 };
 
+// Socket brokers used by the ClientSocketFactory for client sockets and
+// SocketFactory for server sockets.
+[EnableIf=is_win]
+struct SocketBrokerRemotes {
+  pending_remote<SocketBroker> client;
+  pending_remote<SocketBroker> server;
+};
+
+
 // Parameters for constructing a network context.
 struct NetworkContextParams {
   // The user agent string.
@@ -412,8 +412,8 @@ struct NetworkContextParams {
   pending_receiver<ProxyConfigClient>? proxy_config_client_receiver;
 
   // If |custom_proxy_config_client_receiver| is set, this context will listen
-  // for updates to the custom proxy config, and use it if applicable for
-  // requests which would otherwise be made direct.
+  // for updates to the custom proxy config, and use it if applicable for URL
+  // requests.
   // |initial_custom_proxy_config| is the initial config settings.
   CustomProxyConfig? initial_custom_proxy_config;
   pending_receiver<CustomProxyConfigClient>?
@@ -441,7 +441,7 @@ struct NetworkContextParams {
   // Broker used by the network service sandbox to create sockets in
   // the browser. Set when the sandbox is enabled on Windows.
   [EnableIf=is_win]
-  pending_remote<SocketBroker>? socket_broker;
+  SocketBrokerRemotes? socket_brokers;
 
   // A service to fetch blind-signed auth tokens for IP protection. If this
   // is not set, then no tokens are available.
@@ -479,11 +479,6 @@ struct NetworkContextParams {
 
   // Contains a pipe to a CertVerifierService.
   CertVerifierServiceRemoteParams cert_verifier_params;
-
-  // Initial additional certificates that will be used for certificate
-  // validation.
-  [EnableIf=is_chromeos]
-  AdditionalCertificates? initial_additional_certificates;
 
   // Parameters for constructing the cookie manager.
   CookieManagerParams? cookie_manager_params;
@@ -927,13 +922,14 @@ interface IpProtectionConfigGetter {
     (array<BlindSignedAuthToken>? bsa_tokens,
      mojo_base.mojom.Time? try_again_after);
 
-  // Get the list of IP Protection proxies. The list contains proxy hostnames,
-  // in order of preference. Callers should prefer the first proxy, falling
-  // back to later proxies in the list. All proxies are implicitly HTTPS.
+  // Get the list of IP Protection proxy chains. The list contains lists of
+  // proxy chain hostnames, in order of preference. Callers should prefer
+  // the first proxy, falling back to later proxies in the list. All proxies
+  // are implicitly HTTPS.
   //
   // This method will return an up-to-date list, possibly fetching that list
   // remotely before returning it.
-  GetProxyList() => (array<string>? proxy_list);
+  GetProxyList() => (array<array<string>>? proxy_list);
 };
 
 // Represents a distinct context for making network requests, with its own
@@ -978,7 +974,7 @@ interface NetworkContext {
   // document's frame)), or a request origin when |role| is
   // RestrictedCookieManagerRole::NETWORK (a network request).
   //
-  // |isolation_info| contains info for SameSite and SameParty cookie queries.
+  // |isolation_info| contains info for SameSite cookie queries.
   // Must be fully populated.
   //
   // If |role| == SCRIPT, this interface can be safely handed out to a process
@@ -1236,10 +1232,6 @@ interface NetworkContext {
 
   // If false, the referrer of requests is never populated.
   SetEnableReferrers(bool enable_referrers);
-
-  // Updates the additional trust anchors for certificate verification.
-  [EnableIf=is_chromeos]
-  UpdateAdditionalCertificates(AdditionalCertificates? additional_certificates);
 
   // Updates the CT policy to be used for requests. Only applies if the
   // NetworkContextParams set enforce_chrome_ct_policy to true.

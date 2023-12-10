@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,7 +27,7 @@ constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 // Get Kiosk dictionary value. It is replaced after each update.
 const base::Value::Dict& GetKioskDictionary() {
   return g_browser_process->local_state()->GetDict(
-      KioskAppManager::kKioskDictionaryName);
+      KioskChromeAppManager::kKioskDictionaryName);
 }
 
 }  // namespace
@@ -102,7 +102,7 @@ TEST_F(KioskAppLaunchErrorTest, SaveError) {
   KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error can be retrieved.
-  absl::optional<int> out_error = GetKioskDictionary().FindInt(kKeyLaunchError);
+  std::optional<int> out_error = GetKioskDictionary().FindInt(kKeyLaunchError);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(),
             static_cast<int>(KioskAppLaunchError::Error::kUserCancel));
@@ -122,7 +122,7 @@ TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   KioskAppLaunchError::SaveCryptohomeFailure(auth_failure);
 
   // The cryptohome failure can be retrieved.
-  absl::optional<int> out_error =
+  std::optional<int> out_error =
       GetKioskDictionary().FindInt(kKeyCryptohomeFailure);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(), auth_failure.reason());

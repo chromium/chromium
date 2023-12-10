@@ -23,8 +23,11 @@ class InterfaceRegistrar {
     static void createInterfaceRegistryForContext(long nativeHandle, NfcDelegate nfcDelegate) {
         // Note: The bindings code manages the lifetime of this object, so it
         // is not necessary to hold on to a reference to it explicitly.
-        InterfaceRegistry registry = InterfaceRegistry.create(
-                CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle());
+        InterfaceRegistry registry =
+                InterfaceRegistry.create(
+                        CoreImpl.getInstance()
+                                .acquireNativeHandle(nativeHandle)
+                                .toMessagePipeHandle());
         registry.addInterface(BatteryMonitor.MANAGER, new BatteryMonitorFactory());
         registry.addInterface(NfcProvider.MANAGER, new NfcProviderImpl.Factory(nfcDelegate));
         registry.addInterface(VibrationManager.MANAGER, new VibrationManagerImpl.Factory());

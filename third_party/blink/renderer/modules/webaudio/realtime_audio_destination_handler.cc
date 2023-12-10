@@ -405,6 +405,17 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
                   GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
+  // After the context is closed, `SetSinkDescriptor` request will be ignored
+  // because it will trigger the recreation of the platform destination. This in
+  // turn can activate the audio rendering thread.
+  AudioContext* context = static_cast<AudioContext*>(Context());
+  CHECK(context);
+  if (context->ContextState() == AudioContext::kClosed) {
+    std::move(callback).Run(
+        media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+    return;
+  }
+
   // Create a pending AudioDestination to replace the current one.
   scoped_refptr<AudioDestination> pending_platform_destination =
       AudioDestination::Create(

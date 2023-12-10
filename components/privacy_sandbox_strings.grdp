@@ -2185,6 +2185,9 @@
   <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_LABEL" desc="Onboarding notice secondary menu button text." formatter_data="android_java">
     Learn more
   </message>
+  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Onboarding notice secondary menu button content accessibility text." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Learn more about Tracking Protection
+  </message>
 
   <!-- Tracking Protection: Offboarding -->
   <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_TITLE" desc="Title of the tracking protection offboarding notice" formatter_data="android_java">
@@ -2201,6 +2204,9 @@
   </message>
   <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_LEARN_MORE_BUTTON_LABEL" desc="Tracking protection offboarding notice secondary menu button text." formatter_data="android_java">
     Learn more
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Tracking protection offboarding notice secondary menu button content accessibility text." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Learn more about Tracking Protection availability
   </message>
 
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_TITLE" desc="Title of the first explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
@@ -2249,7 +2255,7 @@
     }
   </message>
   <message name="IDS_TRACKING_PROTECTION_DELETE_SITE_LABEL" desc="Accessibility label on an exception for allowing third-party cookies to delete it." formatter_data="android_java">
-    Delete site
+    Delete site <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
   </message>
   <message name="IDS_TRACKING_PROTECTION_SETTINGS_ROLLBACK_NOTICE" desc="Notice text on the top of the 'Third-party cookies' settings page telling users that Tracking Protection is unavailable." formatter_data="android_java">
     Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {Accelerator, AcceleratorCategory, AcceleratorKeyState, Modifier, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationAllowed, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getNumpadKeyDisplay, getSortedModifiers, getSourceAndActionFromAcceleratorId, getUnidentifiedKeyDisplay, getURLForSearchResult, isCustomizationAllowed, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -242,6 +242,25 @@ suite('shortcutUtilsTest', function() {
     assertDeepEquals(result2, {source: 0, action: 33});
   });
 
+  test('getUnidentifiedKeyDisplay', async () => {
+    // If unidentified keys in unidentifiedKeyCodeToKey map, return the mapped
+    // value.
+    const key_event_1 = new KeyboardEvent('keydown', {
+      key: 'Unidentified',
+      keyCode: 239,
+      code: '',
+    });
+    assertEquals('ViewAllApps', getUnidentifiedKeyDisplay(key_event_1));
+
+    // For other unidentified keys, keydisplay is "Key {digit}".
+    const key_event_2 = new KeyboardEvent('keydown', {
+      key: 'Unidentified',
+      keyCode: 10,
+      code: 'Unidentified',
+    });
+    assertEquals('Key 10', getUnidentifiedKeyDisplay(key_event_2));
+  });
+
   test('areAcceleratorsEqual', async () => {
     const accelerator1: Accelerator = {
       keyCode: 65,  // A
@@ -263,5 +282,14 @@ suite('shortcutUtilsTest', function() {
 
     assertTrue(areAcceleratorsEqual(accelerator1, accelerator2));
     assertFalse(areAcceleratorsEqual(accelerator1, accelerator3));
+  });
+
+  test('getNumpadKeyDisplay', async () => {
+    assertEquals('numpad 0', getNumpadKeyDisplay('Numpad0'));
+    assertEquals('numpad 9', getNumpadKeyDisplay('Numpad9'));
+    assertEquals('numpad +', getNumpadKeyDisplay('NumpadAdd'));
+    assertEquals('numpad /', getNumpadKeyDisplay('NumpadDivide'));
+    assertEquals('numpad .', getNumpadKeyDisplay('NumpadDecimal'));
+    assertEquals('enter', getNumpadKeyDisplay('NumpadEnter'));
   });
 });

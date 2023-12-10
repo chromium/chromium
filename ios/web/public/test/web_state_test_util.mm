@@ -6,12 +6,12 @@
 
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
+#import "base/logging.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
@@ -21,10 +21,6 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "url/gurl.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -191,21 +187,6 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
         metadata_storage->mutable_active_page();
     page_storage->set_page_url(active_info.url.spec());
     page_storage->set_page_title(active_info.title);
-  }
-
-  // If the optimised session serialisation is not enabled, convert the
-  // protobuf message representation to the legacy Objective-C format.
-  // TODO(crbug.com/1383087): remove when the feature has launched.
-  if (!features::UseSessionSerializationOptimizations()) {
-    CRWSessionStorage* session_storage =
-        [[CRWSessionStorage alloc] initWithProto:storage];
-    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
-
-    std::unique_ptr<WebState> web_state = WebState::CreateWithStorageSession(
-        WebState::CreateParams(browser_state), session_storage);
-    DCHECK(!web_state->IsRealized());
-    return web_state;
   }
 
   proto::WebStateMetadataStorage metadata;

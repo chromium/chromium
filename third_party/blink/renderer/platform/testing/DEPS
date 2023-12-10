@@ -15,6 +15,7 @@ include_rules = [
     "+services/network/public",
     "+testing",
 
+    "+third_party/blink/renderer/platform/bindings",
     "+third_party/blink/renderer/platform/context_lifecycle_notifier.h",
     "+third_party/blink/renderer/platform/context_lifecycle_observer.h",
     "+third_party/blink/renderer/platform/exported",
@@ -49,6 +50,9 @@ include_rules = [
 specific_include_rules = {
     "blink_fuzzer_test_support\.cc": [
         "+content/public/test/blink_test_environment.h",
+    ],
+    "task_environment\.cc": [
+        "+third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h",
     ],
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",

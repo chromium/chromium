@@ -21,9 +21,7 @@ import android.widget.TextView;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageView;
 
-/**
- * Manages the Android View representing the QrCode share panel.
- */
+/** Manages the Android View representing the QrCode share panel. */
 class QrCodeShareView {
     private final Context mContext;
     private final View mView;
@@ -35,19 +33,22 @@ class QrCodeShareView {
     public QrCodeShareView(Context context, View.OnClickListener listener) {
         mContext = context;
 
-        mView = (View) LayoutInflater.from(context).inflate(
-                R.layout.qrcode_share_layout, null, false);
+        mView =
+                (View)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.qrcode_share_layout, null, false);
 
         Button downloadButton = (Button) mView.findViewById(R.id.download);
         downloadButton.setOnClickListener(listener);
         Button settingsButton = (Button) mView.findViewById(R.id.settings);
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openSettingsIntent = getAppInfoIntent(mContext.getPackageName());
-                ((Activity) mContext).startActivity(openSettingsIntent);
-            }
-        });
+        settingsButton.setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent openSettingsIntent = getAppInfoIntent(mContext.getPackageName());
+                        ((Activity) mContext).startActivity(openSettingsIntent);
+                    }
+                });
         updateView();
     }
 
@@ -127,9 +128,7 @@ class QrCodeShareView {
         }
     }
 
-    /**
-     * Returns an Intent to show the App Info page for the current app.
-     */
+    /** Returns an Intent to show the App Info page for the current app. */
     private Intent getAppInfoIntent(String packageName) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(new Uri.Builder().scheme("package").opaquePart(packageName).build());

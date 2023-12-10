@@ -27,8 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LibraryPrefetcher {
 
     private static final String TAG = "LibraryPrefetcher";
-    // One-way switch that becomes true once
-    // {@link asyncPrefetchLibrariesToMemory} has been called.
+    // One-way switch that becomes true once {@link asyncPrefetchLibrariesToMemory} has been called.
     private static final AtomicBoolean sPrefetchLibraryHasBeenCalled = new AtomicBoolean();
 
     /**
@@ -55,24 +54,33 @@ public class LibraryPrefetcher {
             return;
         }
 
-        PostTask.postTask(TaskTraits.USER_BLOCKING, () -> {
-            int percentage = LibraryPrefetcherJni.get().percentageOfResidentNativeLibraryCode();
-            try (TraceEvent e =
-                            TraceEvent.scoped("LibraryPrefetcher.asyncPrefetchLibrariesToMemory",
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING,
+                () -> {
+                    int percentage =
+                            LibraryPrefetcherJni.get().percentageOfResidentNativeLibraryCode();
+                    try (TraceEvent e =
+                            TraceEvent.scoped(
+                                    "LibraryPrefetcher.asyncPrefetchLibrariesToMemory",
                                     Integer.toString(percentage))) {
-                // Arbitrary percentage threshold. If most of the native library is already
-                // resident (likely with monochrome), don't bother creating a prefetch process.
-                boolean prefetch = coldStart && percentage < 90;
-                if (prefetch) LibraryPrefetcherJni.get().forkAndPrefetchNativeLibrary();
-                if (percentage != -1) {
-                    String histogram = "LibraryLoader.PercentageOfResidentCodeBeforePrefetch"
-                            + (coldStart ? ".ColdStartup" : ".WarmStartup");
-                    RecordHistogram.recordPercentageHistogram(histogram, percentage);
-                }
-            }
-            // Removes a dead flag, don't remove the removal code before M77 at least.
-            ContextUtils.getAppSharedPreferences().edit().remove("dont_prefetch_libraries").apply();
-        });
+                        // Arbitrary percentage threshold. If most of the native library is already
+                        // resident (likely with monochrome), don't bother creating a prefetch
+                        // process.
+                        boolean prefetch = coldStart && percentage < 90;
+                        if (prefetch) LibraryPrefetcherJni.get().forkAndPrefetchNativeLibrary();
+                        if (percentage != -1) {
+                            String histogram =
+                                    "LibraryLoader.PercentageOfResidentCodeBeforePrefetch"
+                                            + (coldStart ? ".ColdStartup" : ".WarmStartup");
+                            RecordHistogram.recordPercentageHistogram(histogram, percentage);
+                        }
+                    }
+                    // Removes a dead flag, don't remove the removal code before M77 at least.
+                    ContextUtils.getAppSharedPreferences()
+                            .edit()
+                            .remove("dont_prefetch_libraries")
+                            .apply();
+                });
     }
 
     @NativeMethods

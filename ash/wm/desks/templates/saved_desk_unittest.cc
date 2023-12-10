@@ -26,7 +26,6 @@
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -41,7 +40,6 @@
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
@@ -52,6 +50,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
@@ -72,6 +71,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -115,12 +115,6 @@ class SavedDeskTest : public OverviewTestBase,
                       std::move(restore_data));
   }
 
-  // Adds a captured desk entry to the desks model.
-  void AddEntry(std::unique_ptr<DeskTemplate> saved_desk) {
-    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
-                      std::move(saved_desk));
-  }
-
   // Creates an app_restore::RestoreData object with `num_windows.size()` apps,
   // where the ith app has `num_windows[i]` windows. The windows
   // activation index is its creation order.
@@ -142,7 +136,7 @@ class SavedDeskTest : public OverviewTestBase,
 
         app_restore::WindowInfo window_info;
         window_info.activation_index =
-            absl::make_optional<int32_t>(activation_index_counter++);
+            std::make_optional<int32_t>(activation_index_counter++);
 
         restore_data->ModifyWindowInfo(app_id, window_id, window_info);
       }
@@ -180,8 +174,7 @@ class SavedDeskTest : public OverviewTestBase,
     return nullptr;
   }
 
-  const CrOSNextDeskIconButton* GetLibraryButtonForRoot(
-      aura::Window* root_window) {
+  const DeskIconButton* GetLibraryButtonForRoot(aura::Window* root_window) {
     if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window)) {
       return desks_bar_view->library_button();
     }
@@ -196,22 +189,22 @@ class SavedDeskTest : public OverviewTestBase,
 
   SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
       aura::Window* root_window) {
-    const auto* overview_grid = GetOverviewGridForRoot(root_window);
-    DCHECK(overview_grid);
+    auto* overview_grid = GetOverviewGridForRoot(root_window);
+    CHECK(overview_grid);
     return overview_grid->GetSaveDeskAsTemplateButton();
   }
 
   SavedDeskSaveDeskButton* GetSaveDeskForLaterButtonForRoot(
       aura::Window* root_window) {
-    const auto* overview_grid = GetOverviewGridForRoot(root_window);
-    DCHECK(overview_grid);
+    auto* overview_grid = GetOverviewGridForRoot(root_window);
+    CHECK(overview_grid);
     return overview_grid->GetSaveDeskForLaterButton();
   }
 
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainerForRoot(
       aura::Window* root_window) {
-    const auto* overview_grid = GetOverviewGridForRoot(root_window);
-    DCHECK(overview_grid);
+    auto* overview_grid = GetOverviewGridForRoot(root_window);
+    CHECK(overview_grid);
     return overview_grid->GetSaveDeskButtonContainer();
   }
 
@@ -386,9 +379,7 @@ class SavedDeskTest : public OverviewTestBase,
   }
 
   void SetDisableAppIdCheckForSavedDesks(bool disabled) {
-    Shell::Get()
-        ->overview_controller()
-        ->set_disable_app_id_check_for_saved_desks(disabled);
+    OverviewController::Get()->disable_app_id_check_for_saved_desks_ = disabled;
   }
 
   SkBitmap GetBitmapWithInnerRoundedRect(gfx::Size size,
@@ -492,21 +483,19 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
           // expanded, or active.
           auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
           ASSERT_TRUE(desks_bar_view);
-          const CrOSNextDeskIconButton* library_button =
+          const DeskIconButton* library_button =
               desks_bar_view->library_button();
           ASSERT_TRUE(library_button);
-          EXPECT_EQ(zero_state_shown,
-                    library_button->GetVisible() &&
-                        library_button->state() ==
-                            CrOSNextDeskIconButton::State::kZero);
-          EXPECT_EQ(expanded_state_shown,
-                    library_button->GetVisible() &&
-                        library_button->state() ==
-                            CrOSNextDeskIconButton::State::kExpanded);
-          EXPECT_EQ(active_state_shown,
-                    library_button->GetVisible() &&
-                        library_button->state() ==
-                            CrOSNextDeskIconButton::State::kActive);
+          EXPECT_EQ(zero_state_shown, library_button->GetVisible() &&
+                                          library_button->state() ==
+                                              DeskIconButton::State::kZero);
+          EXPECT_EQ(
+              expanded_state_shown,
+              library_button->GetVisible() &&
+                  library_button->state() == DeskIconButton::State::kExpanded);
+          EXPECT_EQ(active_state_shown, library_button->GetVisible() &&
+                                            library_button->state() ==
+                                                DeskIconButton::State::kActive);
         }
       };
 
@@ -658,8 +647,7 @@ TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnSavedDeskGridShow) {
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
-  split_view_controller->SnapWindow(
-      test_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(test_window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
   views::Widget* cannot_snap_widget =
       GetCannotSnapWidget(unsnappable_overview_item);
@@ -1417,7 +1405,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   app_launch_info_1->urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
   app_restore::WindowInfo window_info_1;
-  window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
+  window_info_1.activation_index = std::make_optional<int32_t>(kWindowId1);
   restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info_1);
 
   // Add app launch info for the second browser instance.
@@ -1427,7 +1415,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   app_launch_info_2->urls = kTabs2;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
   app_restore::WindowInfo window_info_2;
-  window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
+  window_info_2.activation_index = std::make_optional<int32_t>(kWindowId2);
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
   AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
@@ -1477,7 +1465,7 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   app_launch_info->urls = kTabs;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info));
   app_restore::WindowInfo window_info;
-  window_info.activation_index = absl::make_optional<int32_t>(kWindowId);
+  window_info.activation_index = std::make_optional<int32_t>(kWindowId);
   restore_data->ModifyWindowInfo(kAppId, kWindowId, window_info);
 
   AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
@@ -1879,7 +1867,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = GetLibraryButtonForRoot(root);
   EXPECT_TRUE(library_button->GetVisible());
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kZero, library_button->state());
+  EXPECT_EQ(DeskIconButton::State::kZero, library_button->state());
   EXPECT_TRUE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 
@@ -1915,7 +1903,7 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = GetLibraryButtonForRoot(root_window);
   EXPECT_TRUE(library_button->GetVisible());
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, library_button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, library_button->state());
 
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
@@ -2011,7 +1999,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = desks_bar_view->library_button();
   ASSERT_TRUE(library_button->GetVisible());
-  ASSERT_EQ(library_button->state(), CrOSNextDeskIconButton::State::kActive);
+  ASSERT_EQ(library_button->state(), DeskIconButton::State::kActive);
 
   // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -2038,11 +2026,11 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
       DesksController::Get()->active_desk());
   LeftClickOn(mini_view->desk_action_view()->close_all_button());
   // The new desk button and the library button should be active state.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+  EXPECT_EQ(DeskIconButton::State::kExpanded,
             desks_bar_view->new_desk_button()->state());
   // `OpenOverviewAndShowSavedDeskGrid` clicks on the library button, so it
   // should be active.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive,
+  EXPECT_EQ(DeskIconButton::State::kActive,
             desks_bar_view->library_button()->state());
 
   // Delete the one and only template, we should remain in the desk library.
@@ -2053,7 +2041,7 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
                   ->IsVisible());
 
   // Test that the new desk button is expanded state.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+  EXPECT_EQ(DeskIconButton::State::kExpanded,
             desks_bar_view->new_desk_button()->state());
   EXPECT_FALSE(desks_bar_view->IsZeroState());
 }
@@ -2321,28 +2309,28 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   const ui::ColorId active_color_id = cros_tokens::kCrosSysTertiary;
 
-  const CrOSNextDeskIconButton* button = desks_bar_view->library_button();
+  const DeskIconButton* button = desks_bar_view->library_button();
   ASSERT_TRUE(button);
 
   // The library button starts of neither focused nor active.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded, button->state());
+  EXPECT_EQ(DeskIconButton::State::kExpanded, button->state());
   EXPECT_FALSE(button->GetFocusColorIdForTesting());
 
   // Tests that when we are viewing the saved desk grid, the button border is
   // active.
   LeftClickOn(button);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 
   // Tests that when focused, the library button border has a focused color.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
 
   // Shift focus away from the library button. The button border should be
   // active.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 }
 
@@ -2373,6 +2361,42 @@ TEST_F(SavedDeskTest, WindowActivatableAfterSaveAndDeleteTemplate) {
 
   // Check that the window is active.
   EXPECT_EQ(test_window.get(), window_util::GetActiveWindow());
+}
+
+// Tests that we can open the saved desk library if the current active window
+// prior to entering overview is one that activates on occlusion change.
+// Regression test for http://b/307963349.
+TEST_F(SavedDeskTest, ShowLibraryWithWindowActivatingOnOcclusion) {
+  // Need at least one entry to show the saved desk library.
+  AddEntry(base::Uuid::GenerateRandomV4(), "template name", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  // Create a test window that has similar properties to a browser window with
+  // the print preview showing. Its occlusion state is tracked, and when
+  // occlusion state changes, the window gets activated.
+  auto window = CreateToplevelTestWindow(gfx::Rect(400, 300));
+  window->TrackOcclusionState();
+  window->Show();
+
+  auto* window_delegate =
+      static_cast<aura::test::TestWindowDelegate*>(window->delegate());
+  window_delegate->set_on_occlusion_changed(
+      base::BindLambdaForTesting([&]() { wm::ActivateWindow(window.get()); }));
+
+  // Entering overview also pauses the occlusion tracker. Wait a bit for it to
+  // unpause other occlusion won't try to be recomputed when showing the
+  // library.
+  ToggleOverview();
+  base::RunLoop loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(200));
+  loop.Run();
+
+  // Show the saved desk library. We should stay in overview, and there should
+  // be no u-a-f.
+  ShowSavedDeskLibrary();
+  WaitForSavedDeskLibrary();
+  EXPECT_TRUE(InOverviewSession());
 }
 
 TEST_F(SavedDeskTest, TemplateNameBounds) {
@@ -3071,7 +3095,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   app_launch_info_1->urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
   app_restore::WindowInfo window_info_1;
-  window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
+  window_info_1.activation_index = std::make_optional<int32_t>(kWindowId1);
   restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info_1);
 
   // Add app launch info for the second browser instance.
@@ -3081,7 +3105,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   app_launch_info_2->urls = kTabs2;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
   app_restore::WindowInfo window_info_2;
-  window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
+  window_info_2.activation_index = std::make_optional<int32_t>(kWindowId2);
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
   auto desk_template = std::make_unique<DeskTemplate>(
@@ -3506,8 +3530,7 @@ TEST_F(SavedDeskTest, ButtonsEnabledForUnsupportedWindowAndSplitView) {
       SplitViewController::Get(root_window);
 
   // Snap the app window into the primary position in the split view.
-  split_view_controller->SnapWindow(
-      app_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(app_window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
 
   auto* save_as_template_button =
@@ -4658,4 +4681,32 @@ TEST_F(SavedDeskTest, SaveDeskFilterByAccountID) {
       QueryRestoreData(*GetAllEntries()[0], {}, win_2_id);
   EXPECT_FALSE(app_restore_data);
 }
+
+// Tests that if we tab while the saved desks library is fading out, there is no
+// crash. Regression test for http://b/302708219.
+TEST_F(SavedDeskTest, TabbingDuringExitAnimation) {
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Ensure we have a desk saved so we can go into the library.
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateType::kSaveAndRecall);
+
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+
+  // Enter the desks library.
+  ShowSavedDeskLibrary();
+  WaitForSavedDeskLibrary();
+
+  // Exit overview. This will fade out the saved desks library.
+  ToggleOverview();
+
+  // Try tab focus traversal while the animation is in progress. There should be
+  // no crash.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+}
+
 }  // namespace ash

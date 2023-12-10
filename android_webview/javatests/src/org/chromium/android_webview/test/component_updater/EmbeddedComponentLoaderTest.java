@@ -60,8 +60,7 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                     + "\n}";
 
     // Use AwActivityTestRule to start a browser process and init native library.
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public EmbeddedComponentLoaderTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

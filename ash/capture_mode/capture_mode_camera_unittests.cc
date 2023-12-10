@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -49,6 +48,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/window_state.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -4125,15 +4125,16 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          CaptureModeSource::kWindow));
 
 // -----------------------------------------------------------------------------
-// CameraPreviewWithQsRevampTest:
+// CameraPreviewWithNotificationTest:
 
-class CameraPreviewWithQsRevampTest : public CaptureModeCameraTest {
+class CameraPreviewWithNotificationTest : public CaptureModeCameraTest {
  public:
-  CameraPreviewWithQsRevampTest() : scoped_feature_list_(features::kQsRevamp) {}
-  CameraPreviewWithQsRevampTest(const CameraPreviewWithQsRevampTest&) = delete;
-  CameraPreviewWithQsRevampTest& operator=(
-      const CameraPreviewWithQsRevampTest&) = delete;
-  ~CameraPreviewWithQsRevampTest() override = default;
+  CameraPreviewWithNotificationTest() = default;
+  CameraPreviewWithNotificationTest(const CameraPreviewWithNotificationTest&) =
+      delete;
+  CameraPreviewWithNotificationTest& operator=(
+      const CameraPreviewWithNotificationTest&) = delete;
+  ~CameraPreviewWithNotificationTest() override = default;
 
   // CaptureModeCameraTest:
   void SetUp() override {
@@ -4144,12 +4145,9 @@ class CameraPreviewWithQsRevampTest : public CaptureModeCameraTest {
     test_api->AddNotification();
     ASSERT_TRUE(test_api->IsTrayShown());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CameraPreviewWithQsRevampTest,
+TEST_F(CameraPreviewWithNotificationTest,
        AvoidCollisionWithNotificationBubbleShownFirst) {
   NotificationCenterTray* notification_center_tray =
       GetPrimaryNotificationCenterTray();
@@ -4179,7 +4177,7 @@ TEST_F(CameraPreviewWithQsRevampTest,
             CameraPreviewSnapPosition::kBottomRight);
 }
 
-TEST_F(CameraPreviewWithQsRevampTest,
+TEST_F(CameraPreviewWithNotificationTest,
        AvoidCollisionWithCameraPreviewShownFirst) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
@@ -4697,14 +4695,11 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   EXPECT_EQ(camera_controller->available_cameras().size(), 1u);
 }
 
-class CaptureModePrivacyIndicatorsTest
-    : public CaptureModeCameraTest,
-      public testing::WithParamInterface<bool> {
+class CaptureModePrivacyIndicatorsTest : public CaptureModeCameraTest {
  public:
   CaptureModePrivacyIndicatorsTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPrivacyIndicators, true},
-         {features::kQsRevamp, IsQsRevampEnabled()}});
+        {{features::kPrivacyIndicators, true}});
   }
   CaptureModePrivacyIndicatorsTest(const CaptureModePrivacyIndicatorsTest&) =
       delete;
@@ -4728,29 +4723,17 @@ class CaptureModePrivacyIndicatorsTest
 
   PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
       const {
-    return features::IsQsRevampEnabled()
-               ? Shell::GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->notification_center_tray()
-                     ->privacy_indicators_view()
-               : Shell::GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->unified_system_tray()
-                     ->privacy_indicators_view();
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->privacy_indicators_view();
   }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() const { return true; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModePrivacyIndicatorsTest,
-                         testing::Bool());
-
-TEST_P(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
+TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -4798,7 +4781,7 @@ TEST_P(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
       capture_mode_privacy_notification_id));
 }
 
-TEST_P(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
+TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 

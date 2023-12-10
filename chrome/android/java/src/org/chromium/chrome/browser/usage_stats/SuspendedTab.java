@@ -57,8 +57,11 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
         assert tab.isInitialized();
         SuspendedTab suspendedTab = get(tab);
         if (suspendedTab == null) {
-            suspendedTab = tab.getUserDataHost().setUserData(
-                    USER_DATA_KEY, new SuspendedTab(tab, tabContentManagerSupplier));
+            suspendedTab =
+                    tab.getUserDataHost()
+                            .setUserData(
+                                    USER_DATA_KEY,
+                                    new SuspendedTab(tab, tabContentManagerSupplier));
         }
         return suspendedTab;
     }
@@ -114,10 +117,11 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
         if (tabContentManager != null) {
             // We have to wait for the view to layout to cache a new thumbnail for it; otherwise,
             // its width and height won't be available yet.
-            mView.post(() -> {
-                tabContentManager.removeTabThumbnail(mTab.getId());
-                tabContentManager.cacheTabThumbnail(mTab);
-            });
+            mView.post(
+                    () -> {
+                        tabContentManager.removeTabThumbnail(mTab.getId());
+                        tabContentManager.cacheTabThumbnail(mTab);
+                    });
         }
     }
 
@@ -179,21 +183,23 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
     private void setSettingsLinkClickListener() {
         Context context = mTab.getContext();
         View settingsLink = mView.findViewById(R.id.suspended_tab_settings_button);
-        settingsLink.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DIGITAL_WELLBEING_SITE_DETAILS_ACTION);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(EXTRA_FQDN_NAME, mFqdn);
-                intent.putExtra(Intent.EXTRA_PACKAGE_NAME,
-                        ContextUtils.getApplicationContext().getPackageName());
-                try {
-                    context.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    Log.e(TAG, "No activity found for site details intent", e);
-                }
-            }
-        });
+        settingsLink.setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(DIGITAL_WELLBEING_SITE_DETAILS_ACTION);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(EXTRA_FQDN_NAME, mFqdn);
+                        intent.putExtra(
+                                Intent.EXTRA_PACKAGE_NAME,
+                                ContextUtils.getApplicationContext().getPackageName());
+                        try {
+                            context.startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Log.e(TAG, "No activity found for site details intent", e);
+                        }
+                    }
+                });
     }
 
     private void removeViewIfPresent() {

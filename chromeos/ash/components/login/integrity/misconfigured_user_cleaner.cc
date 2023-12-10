@@ -32,7 +32,7 @@ MisconfiguredUserCleaner::~MisconfiguredUserCleaner() = default;
 
 void MisconfiguredUserCleaner::CleanMisconfiguredUser() {
   user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
-  absl::optional<AccountId> misconfigured_user =
+  std::optional<AccountId> misconfigured_user =
       integrity_manager.GetMisconfiguredUserAccountId();
 
   if (misconfigured_user.has_value()) {
@@ -52,7 +52,7 @@ void MisconfiguredUserCleaner::DoCleanup(
     user_manager::UserDirectoryIntegrityManager& integrity_manager,
     const AccountId& account_id) {
   auto is_enterprise_managed = session_controller_->IsEnterpriseManaged();
-  absl::optional<int> existing_users_count =
+  std::optional<int> existing_users_count =
       session_controller_->GetExistingUsersCount();
 
   if (!existing_users_count.has_value()) {

@@ -42,6 +42,13 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     base::RepeatingClosure open_link_closure,
     int context = CONTEXT_DIALOG_BODY_TEXT_SMALL);
 
+// Similar to method above but the Password Manager text isn't clickable.
+std::unique_ptr<views::Label> CreateGooglePasswordManagerLabel(
+    int text_message_id,
+    int link_message_id,
+    const std::u16string& email,
+    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL);
+
 // Returns a label that can be displayed as a footer for Password Manager
 // bubbles on Desktop or in other UI surfaces. `text_message_id` is the message
 // id of the whole text displayed in the footer which should have one place
@@ -93,5 +100,8 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
     std::u16string primary_account_email,
     ui::ImageModel primary_account_avatar,
     bool is_using_account_store);
+
+// Creates a view with PasswordManager icon and a `title` string.
+std::unique_ptr<views::View> CreateTitleView(const std::u16string& title);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
@@ -109,7 +110,7 @@ public class HistoricalTabSaverImplUnitTest {
         tempState.setVersion(1);
 
         MockTab tab = MockTab.createAndInitialize(0, mProfile);
-        tab.setWebContentsState(tempState);
+        TabTestUtils.setWebContentsState(tab, tempState);
 
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
@@ -142,7 +143,7 @@ public class HistoricalTabSaverImplUnitTest {
         tempState.setVersion(1);
 
         MockTab tab = MockTab.createAndInitialize(0, mProfile);
-        tab.setWebContentsState(tempState);
+        TabTestUtils.setWebContentsState(tab, tempState);
 
         mHistoricalTabSaver.createHistoricalBulkClosure(
                 Collections.singletonList(new HistoricalEntry(tab)));

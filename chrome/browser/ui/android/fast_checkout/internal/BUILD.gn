@@ -128,6 +128,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/fast_checkout:java",
     "//chrome/browser/ui/android/fast_checkout/internal:java_resources",
     "//chrome/test/android:chrome_java_test_support_common",
+    "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

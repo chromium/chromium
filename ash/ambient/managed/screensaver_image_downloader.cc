@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,9 +48,6 @@ constexpr net::NetworkTrafficAnnotationTag
           internal {
             contacts {
               email: "mpetrisor@google.com"
-            }
-            contacts {
-              email: "eariassoto@google.com"
             }
           }
           last_reviewed: "2023-03-30"
@@ -118,9 +116,8 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }
 
 std::string GetHashedFileNameForUrl(const std::string& url) {
-  const std::string hash = base::SHA1HashString(url);
-  const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
-  return encoded_hash + kCacheFileExt;
+  auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
+  return base::HexEncode(hash) + kCacheFileExt;
 }
 
 std::vector<std::string> GetImageUrlsToProcess(
@@ -302,7 +299,7 @@ void ScreensaverImageDownloader::ClearRequestQueue() {
   while (!buffer_queue.empty()) {
     FinishImageDownload(buffer_queue.front(),
                         ScreensaverImageDownloadResult::kCancelled,
-                        absl::nullopt);
+                        std::nullopt);
     buffer_queue.pop();
   }
 }
@@ -332,7 +329,7 @@ void ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted(
   if (!can_download_file) {
     FinishImageDownload(image_url,
                         ScreensaverImageDownloadResult::kFileSystemWriteError,
-                        absl::nullopt);
+                        std::nullopt);
     return;
   }
 
@@ -388,9 +385,8 @@ void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
     }
-    FinishImageDownload(image_url,
-                        ScreensaverImageDownloadResult::kNetworkError,
-                        absl::nullopt);
+    FinishImageDownload(
+        image_url, ScreensaverImageDownloadResult::kNetworkError, std::nullopt);
     return;
   }
 
@@ -409,7 +405,7 @@ void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
     DLOG(WARNING) << "Could not save the downloaded file to " << path;
     FinishImageDownload(image_url,
                         ScreensaverImageDownloadResult::kFileSaveError,
-                        absl::nullopt);
+                        std::nullopt);
     return;
   }
 
@@ -420,7 +416,7 @@ void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
 void ScreensaverImageDownloader::FinishImageDownload(
     const std::string& image_url,
     ScreensaverImageDownloadResult result,
-    absl::optional<base::FilePath> path) {
+    std::optional<base::FilePath> path) {
   RecordManagedScreensaverImageDownloadResult(result);
 
   if (result == ScreensaverImageDownloadResult::kSuccess) {

@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.feed.FeedServiceUtil;
 import org.chromium.chrome.browser.feed.TabGroupEnabledState;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 
-/**
- * Implements some utilities used for the feed service.
- */
+/** Implements some utilities used for the feed service. */
 public class FeedServiceUtilImpl implements FeedServiceUtil {
     @Override
     public @TabGroupEnabledState int getTabGroupEnabledState() {

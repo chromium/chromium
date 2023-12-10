@@ -15,7 +15,11 @@ namespace features {
 BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
 #endif
 
+// TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+// flag after FSA Persistent Permissions feature launch.
 BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
+
+BASE_DECLARE_FEATURE(kFileSystemAccessSymbolicLinkCheck);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FEATURES_H_

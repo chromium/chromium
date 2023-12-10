@@ -162,17 +162,17 @@ bool PowerPolicyController::GetPeakShiftDayConfigs(
     }
 
     const std::string* week_day_value = item_dict->FindString("day");
-    absl::optional<int> start_time_hour =
+    std::optional<int> start_time_hour =
         item_dict->FindIntByDottedPath("start_time.hour");
-    absl::optional<int> start_time_minute =
+    std::optional<int> start_time_minute =
         item_dict->FindIntByDottedPath("start_time.minute");
-    absl::optional<int> end_time_hour =
+    std::optional<int> end_time_hour =
         item_dict->FindIntByDottedPath("end_time.hour");
-    absl::optional<int> end_time_minute =
+    std::optional<int> end_time_minute =
         item_dict->FindIntByDottedPath("end_time.minute");
-    absl::optional<int> charge_start_time_hour =
+    std::optional<int> charge_start_time_hour =
         item_dict->FindIntByDottedPath("charge_start_time.hour");
-    absl::optional<int> charge_start_time_minute =
+    std::optional<int> charge_start_time_minute =
         item_dict->FindIntByDottedPath("charge_start_time.minute");
 
     power_manager::PowerManagementPolicy::WeekDay week_day_enum;
@@ -221,13 +221,13 @@ bool PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
     }
 
     const std::string* week_day_value = item_dict->FindString("day");
-    absl::optional<int> charge_start_time_hour =
+    std::optional<int> charge_start_time_hour =
         item_dict->FindIntByDottedPath("charge_start_time.hour");
-    absl::optional<int> charge_start_time_minute =
+    std::optional<int> charge_start_time_minute =
         item_dict->FindIntByDottedPath("charge_start_time.minute");
-    absl::optional<int> charge_end_time_hour =
+    std::optional<int> charge_end_time_hour =
         item_dict->FindIntByDottedPath("charge_end_time.hour");
-    absl::optional<int> charge_end_time_minute =
+    std::optional<int> charge_end_time_minute =
         item_dict->FindIntByDottedPath("charge_end_time.minute");
 
     power_manager::PowerManagementPolicy::WeekDay week_day_enum;

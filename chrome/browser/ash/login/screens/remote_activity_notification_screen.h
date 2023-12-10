@@ -25,6 +25,9 @@ class RemoteActivityNotificationScreen : public BaseScreen {
       const RemoteActivityNotificationScreen&) = delete;
   ~RemoteActivityNotificationScreen() override;
 
+ protected:
+  ScreenExitCallback exit_callback();
+
  private:
   // BaseScreen:
   void ShowImpl() override;

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1000498691615767391">የሚከፍቱትን አቃፊ ይምረጡ</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> ስለተመሰጠረ ሊቀዳ አልቻለም።</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ንጥሎችን በመሰረዝ ላይ...</translation>
 <translation id="1049926623896334335">የWord ሰነድ</translation>
 <translation id="1056775291175587022">ምንም አውታረ መረቦች የሉም</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">አቃፊን ለParallels ዴስክቶፕ አጋራ</translation>
 <translation id="1439919885608649279">አበቦች የያዘ ሰው</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> አስወጣ</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ፋይሎች የተመሰጠሩ በመሆናቸው ሊቀዱ አልቻሉም።</translation>
 <translation id="1471718551822868769">ስሎቫክኛ</translation>
 <translation id="1482884275703521657">ፊንላንድኛ</translation>
 <translation id="148466539719134488">ስዊስ</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">አይገኝም</translation>
 <translation id="3254434849914415189">ለ<ph name="FILE_TYPE" /> ፋይሎች ነባሪውን መተግበሪያ ይምረጡ፦</translation>
 <translation id="3255159654094949700">አረብኛ</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ፋይሎች የተመሰጠሩ በመሆናቸው ሊንቀሳቀሱ አይችሉም።</translation>
 <translation id="3264582393905923483">አውድ</translation>
 <translation id="3272909651715601089">«<ph name="PATH" />» መክፈት አልተቻለም</translation>
 <translation id="3280431534455935878">በማዘጋጀት ላይ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 አቃፊ ከ<ph name="VM_NAME" /> ጋር ተጋርቷል</translation>
 <translation id="3524311639100184459">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነፃ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">አቃፊ</translation>
+<translation id="3529424493985988200">ለዝርዝሮች አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="3548125359243647069">የተሳሳተ ፒን ከልክ በላይ ብዙ ጊዜ ገብቷል።</translation>
 <translation id="3549797760399244642">ወደ drive.google.com ይሂዱ...</translation>
 <translation id="3553048479571901246">ፋይሎችን በ<ph name="APP_NAME" /> ለመክፈት፣መጀመሪያ ወደ የመስኮቶች ፋይሎች አቃፊዉ ይቅዱዋቸው።</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ይህ ፋይል በሌላ ዴስክቶፕ ላይ ተከፍቷል። እሱን ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="6394388407447716302">ተነባቢ-ብቻ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> ስለተመሰጠረ ሊንቀሳቀስ አልቻለም።</translation>
 <translation id="642282551015776456">ይህ ስም የፋይል ወይም አቃፊ ስም ሆኖ ሊያገለግል አይችልም።</translation>
 <translation id="6423031066725912715">ቪዬትናምኛ በTCVN ቁልፍ ሰሌዳ</translation>
 <translation id="6430271654280079150">1 ቀሪ ሙከራ አለዎት።</translation>

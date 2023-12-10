@@ -23,7 +23,7 @@
 namespace base {
 
 MessagePumpEpoll::MessagePumpEpoll() {
-  epoll_.reset(epoll_create(/*ignored_but_must_be_positive=*/1));
+  epoll_.reset(epoll_create1(/*flags=*/0));
   PCHECK(epoll_.is_valid());
 
   wake_event_.reset(eventfd(0, EFD_NONBLOCK));
@@ -96,7 +96,7 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
     }
 
     // Process any immediately ready IO event, but don't wait for more yet.
-    const bool processed_events = WaitForEpollEvents(TimeDelta());
+    const bool processed_events = WaitForEpollEvents(TimeDelta(), delegate);
     if (run_state.should_quit) {
       break;
     }
@@ -119,7 +119,7 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       timeout = next_work_info.remaining_delay();
     }
     delegate->BeforeWait();
-    WaitForEpollEvents(timeout);
+    WaitForEpollEvents(timeout, delegate);
     if (run_state.should_quit) {
       break;
     }
@@ -195,7 +195,8 @@ void MessagePumpEpoll::UnregisterInterest(
   }
 }
 
-bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
+bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout,
+                                          Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // `timeout` has microsecond resolution, but timeouts accepted by epoll_wait()
@@ -216,6 +217,7 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
     return false;
   }
 
+  delegate->BeginNativeWorkBeforeDoWork();
   const base::span<epoll_event> ready_events(events,
                                              static_cast<size_t>(epoll_result));
   for (auto& e : ready_events) {

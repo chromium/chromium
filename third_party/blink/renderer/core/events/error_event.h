@@ -51,7 +51,9 @@ class CORE_EXPORT ErrorEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ErrorEvent* Create() { return MakeGarbageCollected<ErrorEvent>(); }
+  static ErrorEvent* Create(ScriptState* script_state) {
+    return MakeGarbageCollected<ErrorEvent>(script_state);
+  }
   static ErrorEvent* Create(const String& message,
                             std::unique_ptr<SourceLocation> location,
                             DOMWrapperWorld* world) {
@@ -76,7 +78,7 @@ class CORE_EXPORT ErrorEvent final : public Event {
   // Creates an error for a script whose errors are muted.
   static ErrorEvent* CreateSanitizedError(ScriptState* script_state);
 
-  ErrorEvent();
+  explicit ErrorEvent(ScriptState* script_state);
   ErrorEvent(const String& message,
              std::unique_ptr<SourceLocation>,
              ScriptValue error,

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Cast Android (dbg)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

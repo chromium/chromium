@@ -163,7 +163,7 @@ ArcDailyMetrics::ArcDailyMetrics(PrefService* pref_service)
 ArcDailyMetrics::~ArcDailyMetrics() = default;
 
 void ArcDailyMetrics::OnLowMemoryKillCounts(
-    absl::optional<vm_tools::concierge::ListVmsResponse> vms_list,
+    std::optional<vm_tools::concierge::ListVmsResponse> vms_list,
     int oom,
     int foreground,
     int perceptible,

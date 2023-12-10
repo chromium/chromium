@@ -21,12 +21,12 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
 class Hyphenation;
 class InlineBreakToken;
 class InlineItem;
 class LineBreakCandidateContext;
 class LineInfo;
-class NGColumnSpannerPath;
 class ResolvedTextLayoutAttributesIterator;
 class ShapingLineBreaker;
 
@@ -43,11 +43,11 @@ class CORE_EXPORT LineBreaker {
  public:
   LineBreaker(InlineNode,
               LineBreakerMode,
-              const NGConstraintSpace&,
+              const ConstraintSpace&,
               const LineLayoutOpportunity&,
               const LeadingFloats& leading_floats,
               const InlineBreakToken*,
-              const NGColumnSpannerPath*,
+              const ColumnSpannerPath*,
               ExclusionSpace*);
   ~LineBreaker();
 
@@ -68,6 +68,10 @@ class CORE_EXPORT LineBreaker {
   // `InlineNode::IsScoreLineBreakDisabled()`, but some conditions can change
   // withoiut `CollectInlines`. They are determined by this.
   bool ShouldDisableScoreLineBreak() const { return disable_score_line_break_; }
+  // True if there are items that `ParagraphLineBreaker` doesn't support.
+  bool ShouldDisableBisectLineBreak() const {
+    return disable_bisect_line_break_;
+  }
 
   void SetLineOpportunity(const LineLayoutOpportunity& line_opportunity);
   // Override the available width to compute line breaks. This is reset after
@@ -86,7 +90,7 @@ class CORE_EXPORT LineBreaker {
   // Compute InlineItemResult for an open tag item.
   // Returns true if this item has edge and may have non-zero inline size.
   static bool ComputeOpenTagResult(const InlineItem&,
-                                   const NGConstraintSpace&,
+                                   const ConstraintSpace&,
                                    bool is_in_svg_text,
                                    InlineItemResult*);
 
@@ -105,7 +109,7 @@ class CORE_EXPORT LineBreaker {
   }
 
   // Find break candidates in the `item_result` and append to `context`. See
-  // `NGLineBreakCandidate` and `NGLineBreakCandidateContext` for more details.
+  // `LineBreakCandidate` and `LineBreakCandidateContext` for more details.
   void AppendCandidates(const InlineItemResult& item_result,
                         const LineInfo& line_info,
                         LineBreakCandidateContext& context);
@@ -200,7 +204,7 @@ class CORE_EXPORT LineBreaker {
   void HandleBidiControlItem(const InlineItem&, LineInfo*);
   void HandleAtomicInline(const InlineItem&, LineInfo*);
   void HandleBlockInInline(const InlineItem&,
-                           const NGBlockBreakToken*,
+                           const BlockBreakToken*,
                            LineInfo*);
   void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
                                              InlineItemResult*);
@@ -213,10 +217,12 @@ class CORE_EXPORT LineBreaker {
   bool MayBeAtomicInline(wtf_size_t offset) const;
   const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
 
-  bool ShouldPushFloatAfterLine(NGUnpositionedFloat*, LineInfo*);
+  bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,
-                   const NGBlockBreakToken* float_break_token,
+                   const BlockBreakToken* float_break_token,
                    LineInfo*);
+  void UpdateLineOpportunity();
+  void RewindFloats(unsigned new_end, InlineItemResults& item_results);
 
   void HandleInitialLetter(const InlineItem&, LineInfo*);
   void HandleOutOfFlowPositioned(const InlineItem&, LineInfo*);
@@ -319,6 +325,7 @@ class CORE_EXPORT LineBreaker {
   bool disable_phrase_ = false;
 
   bool disable_score_line_break_ = false;
+  bool disable_bisect_line_break_ = false;
 
   // True when the line should be non-empty if |IsLastLine|..
   bool force_non_empty_if_last_line_ = false;
@@ -352,10 +359,10 @@ class CORE_EXPORT LineBreaker {
   // |InlineNode::TextContentForContentSize|.
   String text_content_;
 
-  const NGConstraintSpace& constraint_space_;
+  const ConstraintSpace& constraint_space_;
   ExclusionSpace* exclusion_space_;
   const InlineBreakToken* break_token_;
-  const NGColumnSpannerPath* column_spanner_path_;
+  const ColumnSpannerPath* column_spanner_path_;
   const ComputedStyle* current_style_ = nullptr;
 
   LazyLineBreakIterator break_iterator_;

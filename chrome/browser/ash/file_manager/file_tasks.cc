@@ -701,7 +701,7 @@ void RemoveDefaultTask(Profile* profile,
   }
 }
 
-absl::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
+std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
     const PrefService& pref_service,
     const std::string& mime_type,
     const std::string& suffix) {
@@ -724,7 +724,7 @@ absl::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
   const std::string* task_id = suffix_task_prefs.FindString(lower_suffix);
 
   if (!task_id || task_id->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VLOG(1) << "Found suffix default handler: " << *task_id;
@@ -744,7 +744,7 @@ std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor) {
                     task_descriptor.action_id);
 }
 
-absl::optional<TaskDescriptor> ParseTaskID(const std::string& task_id) {
+std::optional<TaskDescriptor> ParseTaskID(const std::string& task_id) {
   std::vector<std::string> result = base::SplitString(
       task_id, "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -757,12 +757,12 @@ absl::optional<TaskDescriptor> ParseTaskID(const std::string& task_id) {
   }
 
   if (result.size() != 3) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   TaskType task_type = StringToTaskType(result[1]);
   if (task_type == TASK_TYPE_UNKNOWN) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return TaskDescriptor(/*in_app_id=*/result[0], task_type,
@@ -1037,7 +1037,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
   for (const extensions::EntryInfo& entry : entries) {
     const base::FilePath& file_path = entry.path;
     const std::string& mime_type = entry.mime_type;
-    if (absl::optional<TaskDescriptor> default_task =
+    if (std::optional<TaskDescriptor> default_task =
             file_tasks::GetDefaultTaskFromPrefs(*profile->GetPrefs(), mime_type,
                                                 file_path.Extension())) {
       default_tasks.insert(*default_task);

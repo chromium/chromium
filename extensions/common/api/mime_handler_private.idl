@@ -45,7 +45,9 @@
 
   interface Functions {
     // Returns the StreamInfo for the stream for this context if there is one.
-    [nocompile] static void getStreamInfo(GetStreamDetailsCallback callback);
+    [nocompile, doesNotSupportPromises=
+        "Custom hook sets lastError crbug.com/1504349"]
+    static void getStreamInfo(GetStreamDetailsCallback callback);
 
     // Sets PDF plugin attributes in the stream for this context if there is
     // one.
@@ -54,7 +56,9 @@
 
     // Instructs the PluginDocument, if running in one, to show a dialog in
     // response to beforeunload events.
-    [nocompile] static void setShowBeforeUnloadDialog(
+    [nocompile, doesNotSupportPromises=
+        "Custom hook sets lastError crbug.com/1504349"]
+    static void setShowBeforeUnloadDialog(
         boolean showDialog,
         optional SetShowBeforeUnloadDialogCallback callback);
   };

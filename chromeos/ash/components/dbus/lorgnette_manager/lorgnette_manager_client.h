@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
 
   // Gets a list of scanners from the lorgnette manager.
   virtual void ListScanners(
+      const std::string& client_id,
       bool local_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>
           callback) = 0;
@@ -69,6 +70,19 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   virtual void CloseScanner(
       const lorgnette::CloseScannerRequest& request,
       chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse>
+          callback) = 0;
+
+  // Sets the options as described by |request| and returns the result using the
+  // provided |callback|.
+  virtual void SetOptions(
+      const lorgnette::SetOptionsRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback) = 0;
+
+  // Gets the config for the the scanner described by |request| and returns the
+  // result using the provided |callback|.
+  virtual void GetCurrentConfig(
+      const lorgnette::GetCurrentConfigRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
           callback) = 0;
 
   // Starts a scan using information in |request| and returns the result using

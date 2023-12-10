@@ -6,6 +6,7 @@
 #define ASH_WM_TABLET_MODE_TABLET_MODE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
@@ -21,14 +22,13 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/ui/base/tablet_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -139,7 +139,7 @@ class ASH_EXPORT TabletModeController
   // out of tablet mode.
   bool InTabletMode() const override;
   bool AreInternalInputDeviceEventsBlocked() const override;
-  bool ForceUiTabletModeState(absl::optional<bool> enabled) override;
+  bool ForceUiTabletModeState(std::optional<bool> enabled) override;
   void SetEnabledForTest(bool enabled) override;
 
   // ShellObserver:
@@ -271,7 +271,7 @@ class ASH_EXPORT TabletModeController
   void HandleHingeRotation(const AccelerometerUpdate& update);
 
   void OnGetSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   // Returns true if unstable lid angle can be used. The lid angle that falls in
   // the unstable zone ([0, 20) and (340, 360] degrees) is considered unstable
@@ -395,7 +395,7 @@ class ASH_EXPORT TabletModeController
   // As it's set in |OnECLidAngleDriverStatusChanged|, which is a callback by
   // AccelerometerReader, we make it optional to indicate a lack of value until
   // the accelerometer reader is initialized.
-  absl::optional<bool> is_ec_lid_angle_driver_supported_;
+  std::optional<bool> is_ec_lid_angle_driver_supported_;
 
   // Whether the lid angle can be detected by browser. If it's true, the device
   // is a convertible device (both screen acclerometer and keyboard acclerometer
@@ -477,8 +477,6 @@ class ASH_EXPORT TabletModeController
   gfx::Vector3dF base_smoothed_;
   gfx::Vector3dF lid_smoothed_;
 
-  chromeos::TabletState tablet_state_;
-
   // Calls RecordLidAngle() periodically.
   base::RepeatingTimer record_lid_angle_timer_;
 
@@ -508,7 +506,7 @@ class ASH_EXPORT TabletModeController
   std::unique_ptr<ScopedContainerHider> container_hider_;
 
   // Tracks and record transition smoothness.
-  absl::optional<ui::ThroughputTracker> transition_tracker_;
+  std::optional<ui::ThroughputTracker> transition_tracker_;
 
   base::CancelableOnceCallback<void(std::unique_ptr<ui::Layer>)>
       screenshot_taken_callback_;

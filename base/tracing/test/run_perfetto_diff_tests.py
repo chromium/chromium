@@ -26,7 +26,7 @@ def main():
   parser.add_argument('--test-dir', type=str, required=True)
   parser.add_argument(
       '--trace-processor-shell', type=str, required=True)
-  parser.add_argument("--name-filter", type=str, required=False)
+  parser.add_argument("--name-filter", default="", type=str, required=False)
   parser.add_argument("--script", type=str, required=True)
   args, _ = parser.parse_known_args()
 
@@ -39,12 +39,8 @@ def main():
     "--chrome-track-event-descriptor", args.chrome_track_event_descriptor,
     "--override-sql-module", os.path.abspath(args.chrome_stdlib),
     "--test-dir", args.test_dir,
-    # TODO(b/301093584): This test fails with Chrome's trace_processor_shell
-    # most likely due to Chromium using a different version of sqlite.
-    # This name filter will be removed when fixed.
     "--name-filter",
-    "(?=^((?!ChromeScrollJank:frame_times_metric).)*$)(?={})"
-      .format(args.name_filter),
+    args.name_filter,
     args.trace_processor_shell,
   ]
 
@@ -52,6 +48,7 @@ def main():
   completed_process = subprocess.run(cmd, capture_output=True)
 
   sys.stderr.buffer.write(completed_process.stderr)
+  sys.stdout.buffer.write(completed_process.stdout)
   return completed_process.returncode
 
 if __name__ == '__main__':

@@ -6,7 +6,6 @@
 
 #include "ash/constants/app_types.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/constants.h"
@@ -149,8 +148,9 @@ bool CanFloatWindow(aura::Window* window) {
     return false;
   }
 
-  return TabletState::Get()->InTabletMode() ? CanFloatWindowInTablet(window)
-                                            : CanFloatWindowInClamshell(window);
+  return display::Screen::GetScreen()->InTabletMode()
+             ? CanFloatWindowInTablet(window)
+             : CanFloatWindowInClamshell(window);
 }
 
 }  // namespace chromeos::wm

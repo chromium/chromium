@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -85,7 +85,7 @@ class FakeTabletMode : public ash::TabletMode {
     return in_tablet_mode;
   }
 
-  bool ForceUiTabletModeState(absl::optional<bool> enabled) override {
+  bool ForceUiTabletModeState(std::optional<bool> enabled) override {
     return false;
   }
 
@@ -152,7 +152,7 @@ class TestInputMethodManager : public im::MockInputMethodManager {
       im::InputMethodDescriptor descriptor(
           current_ime_id_, "", "", "", std::vector<std::string>(),
           false /* is_login_keyboard */, GURL(), GURL(),
-          /*handwriting_language=*/absl::nullopt);
+          /*handwriting_language=*/std::nullopt);
       return descriptor;
     }
 
@@ -193,7 +193,7 @@ class TestInputMethodManager : public im::MockInputMethodManager {
       for (const auto& id : enabled_input_method_ids_) {
         descriptors->push_back(
             im::InputMethodDescriptor(id, "", "", {}, {}, false, GURL(), GURL(),
-                                      /*handwriting_language=*/absl::nullopt));
+                                      /*handwriting_language=*/std::nullopt));
       }
     }
 

@@ -29,7 +29,7 @@ def blink_mac_builder(*, name, **kwargs):
     kwargs.setdefault("branch_selector", branches.selector.MAC_BRANCHES)
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", None)
-    kwargs.setdefault("os", os.MAC_ANY)
+    kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", True)
     return try_.builder(
         name = name,
@@ -56,6 +56,27 @@ try_.builder(
         retry_failed_shards = False,
     ),
     os = os.LINUX_DEFAULT,
+    main_list_view = "try",
+)
+
+# TODO(crbug.com/1474702): Once `chrome_wpt_tests` is on CQ/CI (`linux-rel` and
+# `Linux Tests`), remove `ci/linux-wpt-fyi-rel` and move its definition here.
+#
+# `linux-wpt-chromium-rel` (tests chrome) is distinct from `linux-blink-rel`
+# (tests content shell) to avoid coupling their build configurations.
+try_.builder(
+    name = "linux-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
+    mirrors = ["ci/linux-wpt-chromium-rel"],
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = True,
+    ),
+    gn_args = "ci/linux-wpt-chromium-rel",
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
 

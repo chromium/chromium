@@ -56,11 +56,11 @@ bool ProtocolHandlerRegistryFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* ProtocolHandlerRegistryFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProtocolHandlerRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   PrefService* prefs = user_prefs::UserPrefs::Get(context);
   DCHECK(prefs);
   return custom_handlers::ProtocolHandlerRegistry::Create(
-             prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>())
-      .release();
+      prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>());
 }

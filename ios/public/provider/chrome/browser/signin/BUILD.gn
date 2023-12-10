@@ -24,7 +24,7 @@ source_set("signin_error_api") {
 source_set("signin_identity_api") {
   sources = [ "signin_identity_api.h" ]
   deps = [ ":signin_sso_api" ]
-  public_deps = [ "//ios/chrome/browser/signin:system_identity_manager" ]
+  public_deps = [ "//ios/chrome/browser/signin/model:system_identity_manager" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -42,5 +42,5 @@ source_set("signin_sso_api") {
 
 source_set("trusted_vault_api") {
   sources = [ "trusted_vault_api.h" ]
-  deps = [ "//ios/chrome/browser/signin:trusted_vault" ]
+  deps = [ "//ios/chrome/browser/signin/model:trusted_vault" ]
 }

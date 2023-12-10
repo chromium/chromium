@@ -19,7 +19,8 @@ source_set("screen_ai") {
   deps = [
     "//components/services/screen_ai/proto",
     "//components/services/screen_ai/public/cpp:utilities",
-    "//components/services/screen_ai/public/mojom",
+    "//components/services/screen_ai/public/mojom:factory",
+    "//components/services/screen_ai/public/mojom:mojom",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
@@ -67,21 +68,16 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "proto/main_content_extractor_proto_convertor_unittest.cc",
+    "proto/visual_annotator_proto_convertor_unittest.cc",
     "screen_ai_ax_tree_serializer_unittest.cc",
     "screen_ai_service_impl_unittest.cc",
   ]
 
-  # TODO(https://crbug.com/1443341): Enable after the protobuf issue is fixed.
-  if (!is_win) {
-    sources += [
-      "proto/main_content_extractor_proto_convertor_unittest.cc",
-      "proto/visual_annotator_proto_convertor_unittest.cc",
-    ]
-  }
-
   data = [ "//components/test/data/screen_ai/" ]
   deps = [
     ":screen_ai",
+    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//components/services/screen_ai/proto",
     "//components/ukm:test_support",
@@ -89,10 +85,7 @@ source_set("unit_tests") {
     "//ui/accessibility:test_support",
   ]
 
-  if (!is_win) {
-    deps += [ "//base/test:proto_test_support" ]
-    data_deps = [ ":test_support_data" ]
-  }
+  data_deps = [ ":test_support_data" ]
 }
 
 source_set("test_support") {

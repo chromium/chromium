@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_model_observer.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -69,6 +71,8 @@ constexpr gfx::Vector2d kMenuOffset(0, 8);
 constexpr int kMenuShadowElevation = 12;
 
 class CheckboxMenuOptionGroup : public CheckboxGroup {
+  METADATA_HEADER(CheckboxMenuOptionGroup, CheckboxGroup)
+
  public:
   CheckboxMenuOptionGroup()
       : CheckboxGroup(kMaxMenuWidth,
@@ -83,8 +87,8 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
   Checkbox* AddButton(Checkbox::PressedCallback callback,
                       const std::u16string& label) override {
     auto* button = AddChildView(std::make_unique<Checkbox>(
-        group_width_ - inside_border_insets_.width(), callback, label,
-        kMenuItemInnerPadding, kCheckmarkLabelSpacing));
+        group_width_ - inside_border_insets_.width(), std::move(callback),
+        label, kMenuItemInnerPadding, kCheckmarkLabelSpacing));
     button->set_delegate(this);
     buttons_.push_back(button);
     return button;
@@ -95,6 +99,9 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
     node_data->SetNameExplicitlyEmpty();
   }
 };
+
+BEGIN_METADATA(CheckboxMenuOptionGroup)
+END_METADATA
 
 }  // namespace
 
@@ -132,8 +139,9 @@ class DropDownCheckbox::SelectionModel : public ui::ListSelectionModel,
 //------------------------------------------------------------------------------
 // DropDownCheckbox::MenuView:
 class DropDownCheckbox::MenuView : public views::View {
+  METADATA_HEADER(MenuView, views::View)
+
  public:
-  METADATA_HEADER(MenuView);
   explicit MenuView(DropDownCheckbox* drop_down_check_box)
       : drop_down_checkbox_(drop_down_check_box) {
     SetLayoutManager(std::make_unique<views::FillLayout>());

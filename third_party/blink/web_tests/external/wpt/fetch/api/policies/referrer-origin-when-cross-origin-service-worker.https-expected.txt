@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Fetch in service worker: referrer with origin-when-cross-origin policy
 [FAIL] Request's referrer is origin
   promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
 Harness: the test ran to completion.

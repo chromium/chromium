@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "page_load_metrics_observer_delegate.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -373,6 +374,7 @@ PageLoadTracker::PageLoadTracker(
       break;
     case internal::PageLoadTrackerPageType::kPreviewPrimaryPage:
       CHECK_NE(ukm::kInvalidSourceId, source_id_);
+      prerendering_state_ = PrerenderingState::kInPreview;
       InvokeAndPruneObservers(
           "PageLoadMetricsObserver::OnPreviewStart",
           base::BindRepeating(
@@ -448,7 +450,8 @@ void PageLoadTracker::PageHidden() {
     //
     // Here we check that the first background follows some event in foreground.
     if (!first_background_time_.has_value()) {
-      if (prerendering_state_ == PrerenderingState::kNoPrerendering) {
+      if (prerendering_state_ == PrerenderingState::kNoPrerendering ||
+          prerendering_state_ == PrerenderingState::kInPreview) {
         DCHECK_EQ(!started_in_foreground_, first_foreground_time_.has_value());
       } else {
         DCHECK(!first_foreground_time_.has_value());
@@ -488,7 +491,8 @@ void PageLoadTracker::PageShown() {
     // See comment about visibility state transitions in PageHidden.
     //
     // Here we check that the first foreground follows some event in background.
-    if (prerendering_state_ == PrerenderingState::kNoPrerendering) {
+    if (prerendering_state_ == PrerenderingState::kNoPrerendering ||
+        prerendering_state_ == PrerenderingState::kInPreview) {
       DCHECK_EQ(started_in_foreground_, first_background_time_.has_value());
     } else {
       DCHECK(first_background_time_.has_value());
@@ -637,6 +641,12 @@ void PageLoadTracker::DidActivatePrerenderedPage(
 
 void PageLoadTracker::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {
+  CHECK_EQ(prerendering_state_, PrerenderingState::kInPreview);
+  prerendering_state_ = PrerenderingState::kNoPrerendering;
+
+  // We don't keep `activation_time` as `activation_start_` because we measure
+  // preview mode performance as navigation originated rather than activation.
+
   for (const auto& observer : observers_) {
     observer->DidActivatePreviewedPage(activation_time);
   }
@@ -791,24 +801,28 @@ void PageLoadTracker::FrameSizeChanged(
   }
 }
 
-void PageLoadTracker::OnCookiesRead(const GURL& url,
-                                    const GURL& first_party_url,
-                                    bool blocked_by_policy,
-                                    bool is_ad_tagged) {
+void PageLoadTracker::OnCookiesRead(
+    const GURL& url,
+    const GURL& first_party_url,
+    bool blocked_by_policy,
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
   for (const auto& observer : observers_) {
     observer->OnCookiesRead(url, first_party_url, blocked_by_policy,
-                            is_ad_tagged);
+                            is_ad_tagged, cookie_setting_overrides);
   }
 }
 
-void PageLoadTracker::OnCookieChange(const GURL& url,
-                                     const GURL& first_party_url,
-                                     const net::CanonicalCookie& cookie,
-                                     bool blocked_by_policy,
-                                     bool is_ad_tagged) {
+void PageLoadTracker::OnCookieChange(
+    const GURL& url,
+    const GURL& first_party_url,
+    const net::CanonicalCookie& cookie,
+    bool blocked_by_policy,
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
   for (const auto& observer : observers_) {
     observer->OnCookieChange(url, first_party_url, cookie, blocked_by_policy,
-                             is_ad_tagged);
+                             is_ad_tagged, cookie_setting_overrides);
   }
 }
 
@@ -988,16 +1002,10 @@ void PageLoadTracker::OnTimingChanged() {
   const mojom::PageLoadTiming& new_timing = metrics_update_dispatcher_.timing();
 
   if (new_timing.activation_start &&
-      !last_dispatched_merged_page_timing_->activation_start) {
-    // Link Preview doesn't emit activation event yet and assertion of event
-    // orders fail.
-    //
-    // TODO(b:302999778): Reenable it.
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kLinkPreviewNavigation)) {
-      DCHECK(prerendering_state_ ==
+      !last_dispatched_merged_page_timing_->activation_start &&
+      prerendering_state_ != PrerenderingState::kNoPrerendering) {
+    CHECK_EQ(prerendering_state_,
              PrerenderingState::kActivatedNoActivationStart);
-    }
     prerendering_state_ = PrerenderingState::kActivated;
     activation_start_ = new_timing.activation_start;
   }
@@ -1134,7 +1142,7 @@ void PageLoadTracker::OnSoftNavigationChanged(
   // when a new soft nav comes in.
   if (new_soft_navigation_metrics.count > soft_navigation_metrics_->count) {
     metrics_update_dispatcher_
-        .ResetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+        .ResetSoftNavigationIntervalResponsivenessMetricsNormalization();
     metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
   }
 
@@ -1144,12 +1152,6 @@ void PageLoadTracker::OnSoftNavigationChanged(
 void PageLoadTracker::OnPrefetchLikely() {
   for (const auto& observer : observers_) {
     observer->OnPrefetchLikely();
-  }
-}
-
-void PageLoadTracker::DidActivatePortal(base::TimeTicks activation_time) {
-  for (const auto& observer : observers_) {
-    observer->DidActivatePortal(activation_time);
   }
 }
 
@@ -1325,16 +1327,16 @@ PageLoadTracker::GetSoftNavigationIntervalNormalizedCLSData() const {
       .soft_navigation_interval_normalized_layout_shift();
 }
 
-const NormalizedResponsivenessMetrics&
-PageLoadTracker::GetNormalizedResponsivenessMetrics() const {
-  return metrics_update_dispatcher_.normalized_responsiveness_metrics();
+const ResponsivenessMetricsNormalization&
+PageLoadTracker::GetResponsivenessMetricsNormalization() const {
+  return metrics_update_dispatcher_.responsiveness_metrics_normalization();
 }
 
-const NormalizedResponsivenessMetrics&
-PageLoadTracker::GetSoftNavigationIntervalNormalizedResponsivenessMetrics()
+const ResponsivenessMetricsNormalization&
+PageLoadTracker::GetSoftNavigationIntervalResponsivenessMetricsNormalization()
     const {
   return metrics_update_dispatcher_
-      .soft_navigation_interval_normalized_responsiveness_metrics();
+      .soft_navigation_interval_responsiveness_metrics_normalization();
 }
 
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {

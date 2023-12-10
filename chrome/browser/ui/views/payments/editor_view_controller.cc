@@ -457,7 +457,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
   }
 }
 
-void EditorViewController::SaveButtonPressed() {
+void EditorViewController::SaveButtonPressed(const ui::Event& event) {
   if (!ValidateModelAndSave())
     return;
   if (back_navigation_type_ == BackNavigationType::kOneStep) {

@@ -7,7 +7,6 @@
     "namespace": "requirements",
     "description": "Stub namepsace for the 'requirements' manifest key.",
     "compiler_options": {
-      "modernised_enums": true,
       "generate_error_messages": true
     },
     "types": [

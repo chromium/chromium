@@ -30,71 +30,85 @@ consoles.list_view(
 try_.builder(
     name = "linux-asan-dbg",
     mirrors = ["ci/ASAN Debug"],
+    gn_args = "ci/ASAN Debug",
 )
 
 try_.builder(
     name = "linux-asan-rel",
     mirrors = ["ci/ASAN Release"],
+    gn_args = "ci/ASAN Release",
 )
 
 try_.builder(
     name = "linux-asan-media-rel",
     mirrors = ["ci/ASAN Release Media"],
+    gn_args = "ci/ASAN Release Media",
 )
 
 try_.builder(
     name = "linux-asan-v8-arm-dbg",
     mirrors = ["ci/ASan Debug (32-bit x86 with V8-ARM)"],
+    gn_args = "ci/ASan Debug (32-bit x86 with V8-ARM)",
 )
 
 try_.builder(
     name = "linux-asan-v8-arm-rel",
     mirrors = ["ci/ASan Release (32-bit x86 with V8-ARM)"],
+    gn_args = "ci/ASan Release (32-bit x86 with V8-ARM)",
 )
 
 try_.builder(
     name = "linux-asan-media-v8-arm-rel",
     mirrors = ["ci/ASan Release Media (32-bit x86 with V8-ARM)"],
+    gn_args = "ci/ASan Release Media (32-bit x86 with V8-ARM)",
 )
 
 try_.builder(
     name = "linux-chromeos-asan-rel",
     mirrors = ["ci/ChromiumOS ASAN Release"],
+    gn_args = "ci/ChromiumOS ASAN Release",
 )
 
 try_.builder(
     name = "linux-msan-chained-origins-rel",
     mirrors = ["ci/MSAN Release (chained origins)"],
+    gn_args = "ci/MSAN Release (chained origins)",
 )
 
 try_.builder(
     name = "linux-msan-no-origins-rel",
     mirrors = ["ci/MSAN Release (no origins)"],
+    gn_args = "ci/MSAN Release (no origins)",
 )
 
 try_.builder(
     name = "linux-tsan-dbg",
     mirrors = ["ci/TSAN Debug"],
+    gn_args = "ci/TSAN Debug",
 )
 
 try_.builder(
     name = "linux-tsan-rel",
     mirrors = ["ci/TSAN Release"],
+    gn_args = "ci/TSAN Release",
 )
 
 try_.builder(
     name = "linux-ubsan-rel",
     mirrors = ["ci/UBSan Release"],
+    gn_args = "ci/UBSan Release",
 )
 
 try_.builder(
     name = "linux-ubsan-vptr-rel",
     mirrors = ["ci/UBSan vptr Release"],
+    gn_args = "ci/UBSan vptr Release",
 )
 
 try_.builder(
     name = "mac-asan-rel",
     mirrors = ["ci/Mac ASAN Release"],
+    gn_args = "ci/Mac ASAN Release",
     cores = None,
     os = os.MAC_DEFAULT,
 )
@@ -102,6 +116,7 @@ try_.builder(
 try_.builder(
     name = "mac-asan-media-rel",
     mirrors = ["ci/Mac ASAN Release Media"],
+    gn_args = "ci/Mac ASAN Release Media",
     cores = None,
     os = os.MAC_DEFAULT,
 )
@@ -109,11 +124,13 @@ try_.builder(
 try_.builder(
     name = "win-asan-rel",
     mirrors = ["ci/Win ASan Release"],
+    gn_args = "ci/Win ASan Release",
     os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
     name = "win-asan-media-rel",
     mirrors = ["ci/Win ASan Release Media"],
+    gn_args = "ci/Win ASan Release Media",
     os = os.WINDOWS_DEFAULT,
 )

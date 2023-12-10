@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DialogType} from '../dialog_type.js';
-import {addEntries, ENTRIES, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {addEntries, createNestedTestFolders, ENTRIES, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -144,6 +144,48 @@ testcase.trashMoveToTrash = async () => {
   // Wait for photos to be removed, and .Trash to be recreated.
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name=".Trash"]');
+};
+
+/**
+ * Selects a file and a folder at the same time then deletes both.
+ */
+testcase.trashMultipleEntries = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.photos], []);
+
+  // Select all (both the file and the folder).
+  const ctrlA = ['#file-list', 'a', true, false, false];
+  await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
+
+  // Delete both entries.
+  await remoteCall.clickTrashButton(appId);
+
+  // Wait for both entries to be removed.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
+};
+
+/**
+ * Selects a non-empty folder and deletes it.
+ */
+testcase.trashNonEmptyFolder = async () => {
+  // Build folder structure nested-folder0/nested-folder1.
+  const entries = createNestedTestFolders(2);
+
+  // Open files app to a Downloads folder containing nested-folder0.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Select the folder.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="nested-folder0"]');
+
+  // Delete the folder.
+  await remoteCall.clickTrashButton(appId);
+
+  // Wait for the folder to be removed.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="nested-folder0"]');
 };
 
 /**
@@ -1192,54 +1234,6 @@ testcase.trashAllActionsDisabledForBlankSpaceInTrashRoot = async () => {
   // Ensure Cut is disabled and not hidden.
   await remoteCall.waitForElement(
       appId, contextMenuSelector + ' [command="#cut"][disabled]:not([hidden])');
-};
-
-/**
- * Tests that the trash nudge is shown on the first trash but is not shown on
- * subsequent trashes.
- * NOTE: The nudge has an expiry period, this will override the expiry period.
- */
-testcase.trashNudgeShownOnFirstTrashOperation = async () => {
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-
-  // Disable the nudge expiry.
-  await remoteCall.disableNudgeExpiry(appId);
-
-  // Select hello.txt and send it to the Trash, this file should not be removed
-  // in between enabling and disabling the feature.
-  await remoteCall.waitUntilSelected(appId, 'hello.txt');
-  await remoteCall.clickTrashButton(appId);
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
-
-  // Verify the dot has been placed somewhere visible.
-  let nudgeDot = await remoteCall.waitForElementStyles(
-      appId, ['xf-nudge', '#dot'], ['left']);
-  chrome.test.assertTrue(nudgeDot.renderedLeft > 0);
-  chrome.test.assertTrue(nudgeDot.renderedTop > 0);
-
-  // The nudge is dismissed through keyboard and mouse events which are "faked"
-  // in the integration test harness. So send a blur event to the anchor to
-  // ensure the nudge gets removed instead.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.blurItemByLabel('Trash');
-  await repeatUntil(async () => {
-    const nudgeDot = await remoteCall.waitForElementStyles(
-        appId, ['xf-nudge', '#dot'], ['left']);
-    return nudgeDot.renderedLeft < 0;
-  });
-
-  // Select and trash the file "world.ogv".
-  await remoteCall.waitUntilSelected(appId, 'world.ogv');
-  await remoteCall.clickTrashButton(appId);
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="world.ogv"]');
-
-  // Ensure the nudge doesn't show up again after the first trash.
-  nudgeDot = await remoteCall.waitForElementStyles(
-      appId, ['xf-nudge', '#dot'], ['left']);
-  chrome.test.assertTrue(nudgeDot.renderedLeft < 0);
 };
 
 testcase.trashStaleTrashInfoFilesAreRemovedAfterOneHour = async () => {

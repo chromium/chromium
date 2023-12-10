@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1075622780330595106">ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1155815720264022949">ਕੀ ਪੁਰਾਣੀਆਂ ਟੈਬਾਂ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="1215127405478249895">ਟੈਬਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="125153950246128346">ਕਿਸੇ ਹੋਰ ਟੈਬ ਨੂੰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1499635324672558517">ਕੀ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="5076161749301278626">ਕੀ ਸਟੋਰ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ ਦੇਖਣੀਆਂ ਹਨ?</translation>
 <translation id="5082793167783849073">ਗਰੁੱਪ ਬਣਾ ਕੇ ਪੰਨਿਆਂ ਦੀ ਤੁਲਨਾ ਜਲਦੀ ਕਰੋ। ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਕਿਸੇ ਲਿੰਕ ਨੂੰ ਸਪੱਰਸ਼ ਕਰਕੇ ਰੱਖੋ।</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{ਤੁਹਾਡੇ ਕੋਲ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਹੈ ਜੋ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਵਰਤੀ}one{ਤੁਹਾਡੇ ਕੋਲ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਹੈ ਜੋ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਵਰਤੀ}other{ਤੁਹਾਡੇ ਕੋਲ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਹਨ ਜੋ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਵਰਤੀਆਂ}}</translation>
 <translation id="5339733443032484186">ਤੁਹਾਡੀ ਪਿਛਲੀ ਟੈਬ</translation>
 <translation id="5490235265819901748">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
+<translation id="5545379293264651575">ਸਮੀਖਿਆ ਕੀਤੇ ਬਿਨਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="5556417849629758491">ਸਟੋਰ ਦੀ ਜਾਣਕਾਰੀ ਦੇਖੋ, ਇਹ ਵਿਕਲਪ ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਦੇ ਨੇੜੇ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਗਰੁੱਪਬੱਧ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">ਟੈਬ ਨੂੰ ਸੱਜੇ ਲਿਜਾਓ</translation>
 <translation id="7966321538264951561">ਸੁਝਾਵਾਂ ਨੂੰ ਖਾਰਜ ਕਰੋ।</translation>
 <translation id="8029301326595421733">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
-<translation id="814503310257431685">ਸਭ ਦੇਖੋ</translation>
 <translation id="8205266828577616993">ਟੈਬ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਬੰਦ ਕਰੋ}other{ਚੁਣੀਆਂ ਹੋਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="8398929769197326728">ਨਵਾਂ ਫੋਲਡਰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

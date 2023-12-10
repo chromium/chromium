@@ -153,7 +153,7 @@ void StateStore::FlushForTesting(base::OnceClosure flushed_callback) {
   GetExtensionValue("fake_id", "fake_key",
                     base::BindOnce(
                         [](base::OnceClosure flushed_callback,
-                           absl::optional<base::Value> ignored) {
+                           std::optional<base::Value> ignored) {
                           std::move(flushed_callback).Run();
                         },
                         std::move(flushed_callback)));

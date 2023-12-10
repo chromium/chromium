@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include <cstdlib>
 #include <cstring>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/memory/page_size.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+#include <malloc/malloc.h>
 #endif
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && BUILDFLAG(USE_PARTITION_ALLOC)
@@ -37,7 +41,7 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
   // Once we update the Linux sysroot to be new enough, this warning will
   // start firing on Linux too. At that point, s/mallinfo/mallinfo2/ in this
   // file and remove the pragma here and and the end of this function.
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 33)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
@@ -79,7 +83,7 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
   EXPECT_LT(after_free.hblks, after_alloc.hblks);
   EXPECT_LT(after_free.hblkhd, after_alloc.hblkhd);
   EXPECT_LT(after_free.uordblks, after_alloc.uordblks);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 33)
 #pragma clang diagnostic pop
 #endif
 }
@@ -184,6 +188,21 @@ TEST(PartitionAllocAsMalloc, Alignment) {
                     PartitionAllocMalloc::AlignedAllocator()) %
                     alignof(partition_alloc::PartitionRoot));
 }
+
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Make sure that a sequence a "good sizes" grows fast enough. This is
+// implicitly required by CoreFoundation, and to match Apple's implementation.
+// Non-regression test for crbug.com/1501312
+TEST(PartitionAllocAsMalloc, GoodSize) {
+  size_t size = 1;
+  int iterations = 0;
+  while (size < 256 * 1024) {
+    iterations++;
+    size = malloc_good_size(size + 1);
+  }
+  EXPECT_LT(iterations, 100);
+}
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-This file contains definition of resources that will be translated for each
-locale.  The strings in this file are specific to iOS.
--->
-
 <grit base_dir="." latest_public_release="0" current_release="1"
       output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <!--
+  This file contains definition of resources that will be translated for each
+  locale.  The strings in this file are specific to iOS.
+  -->
   <outputs>
     <output filename="grit/ios_branded_strings.h" type="rc_header">
       <emit emit_type="prepend"></emit>
@@ -313,7 +312,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         Sign out of Chromium?
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
-        Chromium uses Face ID to ensure authorized access to your passwords.
+        Chromium keeps your sensitive data secure with Face ID.
       </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility [iOS only]">
         You can now use Chromium anytime you tap links in messages, documents, and other apps.
@@ -391,6 +390,18 @@ Things to consider:
       <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        Lock Incognito Tabs When You Close Chromium
       </message>
+      <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_TITLE" desc="Shortcut name to add bookmarks to Chromium [iOS only].">
+        Add Bookmarks to Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_DESCRIPTION" desc="Shortcut description to add a bookmark to Chromium [iOS only].">
+        Adds the inputted URLs to your bookmarks in Chromium.
+      </message>
+      <message name="IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_DESCRIPTION" desc="Shortcut description to add a reading list item to Chromium [iOS only].">
+        Adds the inputted URLs to your reading list in Chromium.
+      </message>
+      <message name="IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_TITLE" desc="Shortcut name to add a reading list item to Chrome [iOS only].">
+        Add Reading List Item to Chromium
+      </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chromium shares your location with sites you allow.
       </message>
@@ -456,7 +467,7 @@ Things to consider:
           If you hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>", Chromium will no longer auto-track your future packages and will delete all your past package tracking data.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE" desc="Text for the title string of the parcel tracking opt-in half-sheet screen.">
-        Track Detected Packages on Chromium
+        Let Chromium help you track your packages
       </message>
       <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PROMO_TITLE" desc="The text of the title for the post restore default browser promo.">
         Make Chromium Your Default Browser?
@@ -581,9 +592,6 @@ Things to consider:
       <message name="IDS_IOS_SHORT_PRODUCT_NAME" desc="The Chrome application short name.">
         Chromium
       </message>
-      <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_INFO" desc="The information text on the Signed In Accounts view. [iOS only] [200em]">
-        Chromium saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.
-      </message>
       <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN" desc="This string is on a sign-in page, after the user taps to sign in to a website with their Google Account. It offers to sign the user in to both the website and to Chromium with the account. It highlights the overarching user benefit of signing in to Chromium (access to data from other devices like bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [iOS only]">
         Sign in to this site and Chromium to get your bookmarks and more on all your devices.
       </message>
@@ -689,24 +697,6 @@ Things to consider:
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chromium can't check your passwords.
-      </message>
-      <message name="IDS_IOS_PASSWORD_CHECK_ERROR_NO_PASSWORDS" desc="Description text for when password check cannot be run because the user has no saved passwords">
-        No saved passwords. Chromium can check your passwords when you save them.
-      </message>
-      <message name="IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The user has no internet connection and can't check passwords.">
-        Chromium couldn't check your passwords. Try checking your internet connection.
-      </message>
-      <message name="IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The user is not signed in and can't check passwords.">
-        Chromium can check your passwords when you sign in with your Google Account.
-      </message>
-      <message name="IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The user has more passwords than allowed for check.">
-        Chromium couldn't check all passwords. Try again tomorrow.
-      </message>
-      <message name="IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE" desc="Text with link inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The user has more passwords than allowed for check but he can check in Google Account.">
-        Chromium couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK">BEGIN_LINK</ph>check passwords in your Google Account.<ph name="END_LINK">END_LINK</ph>
-      </message>
-      <message name="IDS_IOS_PASSWORD_CHECK_ERROR_OTHER" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="Password check failed due to specific reason (out of memory).">
-        Chromium couldn't check all passwords. Try again later.
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_ERROR_NO_PASSWORDS" desc="Description text for when password check cannot be run because the user has no saved passwords">
         No saved passwords. Chromium can check your passwords when you save them.

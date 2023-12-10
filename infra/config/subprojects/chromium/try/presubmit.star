@@ -127,7 +127,7 @@ presubmit_builder(
         "builder_config_directory": "infra/config/generated/builders",
     },
     tryjob = try_.job(
-        location_filters = ["infra/config/generated/builders/.*"],
+        location_filters = ["infra/config/generated/builders[^/]+/[^/]+/properties\\.json"],
     ),
 )
 
@@ -137,13 +137,11 @@ presubmit_builder(
     executable = "recipe:chromium/targets_config_verifier",
     properties = {
         "builder_config_directory": "infra/config/generated/builders",
+        "precommit_buckets": ["try"],
     },
-    # TODO(crbug.com/1420012) Once the recipe is working, actually add this to
-    # the CQ
-    # tryjob = try_.job(
-    #     location_filters = ["infra/config/generated/builders/tests/.*"],
-    # ),
-    tryjob = None,
+    tryjob = try_.job(
+        location_filters = ["infra/config/generated/builders/[^/]+/[^/]+/targets/.+\\.json"],
+    ),
 )
 
 presubmit_builder(

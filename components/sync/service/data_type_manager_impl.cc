@@ -372,6 +372,18 @@ void DataTypeManagerImpl::Restart() {
     }
   }
 
+  // Check for new data type errors. This can happen if the controller
+  // encountered an error while it was NOT_RUNNING or STOPPING.
+  DataTypeStatusTable::TypeErrorMap existing_errors;
+  for (const auto& [type, controller] : *controllers_) {
+    if (controller->state() == DataTypeController::FAILED) {
+      existing_errors[type] =
+          SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
+                    "Preexisting controller error on configuration", type);
+    }
+  }
+  data_type_status_table_.UpdateFailedDataTypes(existing_errors);
+
   // Check for new or resolved data type crypto errors.
   if (encryption_handler_->HasCryptoError()) {
     ModelTypeSet encrypted_types = encryption_handler_->GetEncryptedDataTypes();
@@ -538,7 +550,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
 
   if (configuration_types_queue_.empty()) {
     state_ = CONFIGURED;
-    NotifyDone(ConfigureResult(OK, preferred_types_));
+    NotifyDone({.status = OK, .requested_types = preferred_types_});
     return;
   }
 
@@ -675,8 +687,7 @@ void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   state_ = STOPPED;
 
   if (need_to_notify) {
-    ConfigureResult result(ABORTED, preferred_types_);
-    NotifyDone(result);
+    NotifyDone({.status = ABORTED, .requested_types = preferred_types_});
   }
 }
 

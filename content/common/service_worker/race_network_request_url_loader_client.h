@@ -237,6 +237,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   DataPipeInfo data_pipe_for_race_network_request_;
   DataPipeInfo data_pipe_for_fetch_handler_;
+  uint32_t data_pipe_buffer_size_;
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   bool redirected_ = false;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;

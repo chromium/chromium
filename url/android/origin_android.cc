@@ -62,12 +62,14 @@ static jlong JNI_Origin_CreateNative(
     jboolean is_opaque,
     jlong token_high_bits,
     jlong token_low_bits) {
-  const std::string& scheme = ConvertJavaStringToUTF8(env, java_scheme);
-  const std::string& host = ConvertJavaStringToUTF8(env, java_host);
+  const std::string& scheme =
+      base::android::ConvertJavaStringToUTF8(env, java_scheme);
+  const std::string& host =
+      base::android::ConvertJavaStringToUTF8(env, java_host);
 
   Origin origin;
   if (is_opaque) {
-    absl::optional<base::UnguessableToken> nonce_token =
+    std::optional<base::UnguessableToken> nonce_token =
         base::UnguessableToken::Deserialize(token_high_bits, token_low_bits);
     origin =
         CreateOpaqueOriginForAndroid(scheme, host, port, nonce_token.value());

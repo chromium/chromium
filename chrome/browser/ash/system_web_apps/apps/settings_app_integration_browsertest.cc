@@ -14,8 +14,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,12 +68,12 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, OmniboxNavigateToSettings) {
       ->InstallSystemAppsForTesting();
   GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    ui_test_utils::AllBrowserTabAddedWaiter waiter;
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         browser()->profile());
-    observer.Wait();
+    auto* web_contents = waiter.Wait();
+    ASSERT_TRUE(web_contents);
+    content::WaitForLoadStop(web_contents);
   }
   // browser() tab contents should be unaffected.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());

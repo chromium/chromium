@@ -137,15 +137,13 @@ class FuchsiaVideoDecoder::OutputMailbox {
       }
       shared_image_format.SetPrefersExternalSampler();
 
-      auto client_shared_image =
+      shared_image_ =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(
               shared_image_format, gmb->GetSize(), color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
               "FuchsiaVideoDecoder", gmb->CloneHandle());
-      CHECK(client_shared_image);
-      mailbox_ = client_shared_image->mailbox();
     } else {
-      mailbox_ =
+      shared_image_ =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(
               gmb.get(), nullptr, gfx::BufferPlane::DEFAULT, color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
@@ -161,10 +159,10 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
   ~OutputMailbox() {
     raster_context_provider_->SharedImageInterface()->DestroySharedImage(
-        release_sync_token_, mailbox_);
+        release_sync_token_, std::move(shared_image_));
   }
 
-  const gpu::Mailbox& mailbox() { return mailbox_; }
+  const gpu::Mailbox& mailbox() { return shared_image_->mailbox(); }
 
   const gfx::Size& size() { return size_; }
 
@@ -181,7 +179,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
     reuse_callback_ = std::move(reuse_callback);
 
     gpu::MailboxHolder mailboxes[VideoFrame::kMaxPlanes];
-    mailboxes[0].mailbox = mailbox_;
+    mailboxes[0].mailbox = shared_image_->mailbox();
 
     if (create_sync_token_.HasData()) {
       mailboxes[0].sync_token = create_sync_token_;
@@ -244,7 +242,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
   gfx::Size size_;
 
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
   gpu::SyncToken create_sync_token_;
   gpu::SyncToken release_sync_token_;

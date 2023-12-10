@@ -70,7 +70,7 @@ std::unique_ptr<message_center::Notification> CreateNotification() {
                                  NotificationCatalogName::kDoNotDisturb),
       optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {
+          base::BindRepeating([](std::optional<int> button_index) {
             if (!button_index.has_value())
               return;
             // The notification only has one button (the "Turn off" button), so

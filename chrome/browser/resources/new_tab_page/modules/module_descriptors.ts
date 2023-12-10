@@ -23,6 +23,7 @@ import {driveDescriptor as driveV2Descriptor} from './v2/drive/module.js';
 import {dummyV2Descriptor} from './v2/dummy/module.js';
 // </if>
 import {historyClustersDescriptor as historyClustersV2Descriptor} from './v2/history_clusters/module.js';
+import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
@@ -36,6 +37,8 @@ descriptors.push(feedDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? historyClustersV2Descriptor :
                                historyClustersDescriptor);
+
+descriptors.push(tabResumptionDescriptor);
 
 // <if expr="not is_official_build">
 if (modulesRedesignedEnabled) {

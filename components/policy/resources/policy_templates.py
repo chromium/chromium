@@ -35,7 +35,7 @@ def _SafeListDir(directory):
   # On macOS, Finder.app creates .DS_Store files when a user visit a
   # directory causing failure of the script laters on because there
   # are no such group as .DS_Store. Skip the file to prevent the error.
-  return filter(lambda name:(name != '.DS_Store'),os.listdir(directory))
+  return filter(lambda name:(name != '.DS_Store'),sorted(os.listdir(directory)))
 
 TEMPLATES_PATH =  os.path.join(
   os.path.dirname(__file__), 'templates')

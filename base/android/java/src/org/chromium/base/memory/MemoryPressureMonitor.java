@@ -90,7 +90,7 @@ public class MemoryPressureMonitor {
     private Supplier<Integer> mCurrentPressureSupplierForTesting;
     private MemoryPressureCallback mReportingCallbackForTesting;
 
-    private final Runnable mThrottlingIntervalTask = this ::onThrottlingIntervalFinished;
+    private final Runnable mThrottlingIntervalTask = this::onThrottlingIntervalFinished;
 
     // The only instance.
     public static final MemoryPressureMonitor INSTANCE =
@@ -101,29 +101,29 @@ public class MemoryPressureMonitor {
         mThrottlingIntervalMs = throttlingIntervalMs;
     }
 
-    /**
-     * Starts listening to ComponentCallbacks2.
-     */
+    /** Starts listening to ComponentCallbacks2. */
     public void registerComponentCallbacks() {
         ThreadUtils.assertOnUiThread();
 
-        ContextUtils.getApplicationContext().registerComponentCallbacks(new ComponentCallbacks2() {
-            @Override
-            public void onTrimMemory(int level) {
-                Integer pressure = memoryPressureFromTrimLevel(level);
-                if (pressure != null) {
-                    notifyPressure(pressure);
-                }
-            }
+        ContextUtils.getApplicationContext()
+                .registerComponentCallbacks(
+                        new ComponentCallbacks2() {
+                            @Override
+                            public void onTrimMemory(int level) {
+                                Integer pressure = memoryPressureFromTrimLevel(level);
+                                if (pressure != null) {
+                                    notifyPressure(pressure);
+                                }
+                            }
 
-            @Override
-            public void onLowMemory() {
-                notifyPressure(MemoryPressureLevel.CRITICAL);
-            }
+                            @Override
+                            public void onLowMemory() {
+                                notifyPressure(MemoryPressureLevel.CRITICAL);
+                            }
 
-            @Override
-            public void onConfigurationChanged(Configuration configuration) {}
-        });
+                            @Override
+                            public void onConfigurationChanged(Configuration configuration) {}
+                        });
     }
 
     /**
@@ -141,9 +141,7 @@ public class MemoryPressureMonitor {
         }
     }
 
-    /**
-     * Disables memory pressure polling.
-     */
+    /** Disables memory pressure polling. */
     public void disablePolling() {
         ThreadUtils.assertOnUiThread();
         if (!mPollingEnabled) return;
@@ -210,9 +208,10 @@ public class MemoryPressureMonitor {
     }
 
     private void reportCurrentPressure() {
-        Integer pressure = mCurrentPressureSupplierForTesting != null
-                ? mCurrentPressureSupplierForTesting.get()
-                : MemoryPressureMonitor.getCurrentMemoryPressure();
+        Integer pressure =
+                mCurrentPressureSupplierForTesting != null
+                        ? mCurrentPressureSupplierForTesting.get()
+                        : MemoryPressureMonitor.getCurrentMemoryPressure();
         if (pressure != null) {
             reportPressure(pressure);
         }
@@ -238,8 +237,8 @@ public class MemoryPressureMonitor {
      * Returns null if the pressure couldn't be determined.
      */
     private static @MemoryPressureLevel Integer getCurrentMemoryPressure() {
-        // We used to have a histogram here to measure the duration of each successful 
-        // ActivityManager.getMyMemoryState() call called 
+        // We used to have a histogram here to measure the duration of each successful
+        // ActivityManager.getMyMemoryState() call called
         // Android.MemoryPressureMonitor.GetMyMemoryState.Succeeded.Time. 50th percentile was 0.8ms.
         try {
             ActivityManager.RunningAppProcessInfo processInfo =

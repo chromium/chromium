@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -12,9 +13,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
-#import "ios/chrome/browser/metrics/constants.h"
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_refresher.h"
+#import "ios/chrome/browser/metrics/model/constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder.h"
@@ -234,6 +235,12 @@ using feed::FeedUserActionType;
       self.previousTimeInFeedForGoodVisitSession =
           std::max(self.discoverPreviousTimeInFeedGV,
                    self.followingPreviousTimeInFeedGV);
+    }
+
+    if (self.previousTimeInFeedForGoodVisitSession < 0 ||
+        self.discoverPreviousTimeInFeedGV < 0 ||
+        self.followingPreviousTimeInFeedGV < 0) {
+      base::debug::DumpWithoutCrashing();
     }
 
     // Checks if there is a timestamp in PrefService for when a user clicked
@@ -969,7 +976,7 @@ using feed::FeedUserActionType;
 
   // Do not save in newLastReportedArray dates > 28 days.
   for (NSUInteger i = 0; i < lastReportedArray.size(); ++i) {
-    absl::optional<base::Time> date = ValueToTime(lastReportedArray[i]);
+    std::optional<base::Time> date = ValueToTime(lastReportedArray[i]);
     if (!date.has_value()) {
       continue;
     }
@@ -1264,9 +1271,22 @@ using feed::FeedUserActionType;
   // Add the time spent since last recording.
   base::Time now = base::Time::Now();
   base::TimeDelta additionalTimeInFeed = now - self.feedBecameVisibleTime;
+
+  if (self.feedBecameVisibleTime.is_null()) {
+    base::debug::DumpWithoutCrashing();
+  }
+  if (additionalTimeInFeed.is_negative()) {
+    base::debug::DumpWithoutCrashing();
+  }
+  if (self.previousTimeInFeedForGoodVisitSession < 0) {
+    base::debug::DumpWithoutCrashing();
+  }
   self.previousTimeInFeedForGoodVisitSession =
       self.previousTimeInFeedForGoodVisitSession +
       additionalTimeInFeed.InSecondsF();
+  if (self.previousTimeInFeedForGoodVisitSession < 0) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   // Calculate for specific feed.
   switch (currentFeed) {

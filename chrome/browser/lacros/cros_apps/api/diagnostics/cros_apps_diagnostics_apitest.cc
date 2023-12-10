@@ -7,23 +7,42 @@
 #include "base/system/sys_info.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_mutable_registry.h"
 #include "chrome/browser/chromeos/cros_apps/api/test/cros_apps_apitest.h"
 #include "chrome/browser/chromeos/telemetry/fake_probe_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class CrosAppsDiagnosticsApiTest : public CrosAppsApiTest {
  public:
-  CrosAppsDiagnosticsApiTest() : CrosAppsApiTest() {
+  CrosAppsDiagnosticsApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kBlinkExtensionDiagnostics);
+  }
+
+  void SetUpOnMainThread() override {
+    CrosAppsApiTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    CrosAppsApiMutableRegistry::GetInstance(browser()->profile())
+        .AddOrReplaceForTesting(std::move(
+            CrosAppsApiInfo(
+                blink::mojom::RuntimeFeature::kBlinkExtensionDiagnostics,
+                &blink::RuntimeFeatureStateContext::
+                    SetBlinkExtensionDiagnosticsEnabled)
+                .AddAllowlistedOrigins({embedded_test_server()->GetOrigin()})));
+
+    ASSERT_TRUE(
+        NavigateToURL(browser()->tab_strip_model()->GetActiveWebContents(),
+                      embedded_test_server()->GetURL("/empty.html")));
   }
 
  protected:

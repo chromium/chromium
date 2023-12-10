@@ -291,9 +291,7 @@ public class CronetBufferedOutputStreamTest {
         assertThrows(IOException.class, mConnection::getResponseCode);
     }
 
-    /**
-     * Tests that if caller writes more than the content length provided, an exception should occur.
-     */
+    /** Tests that if caller writes more than the content length provided, an exception should occur. */
     @Test
     @SmallTest
     public void testWriteMoreThanContentLength() throws Exception {

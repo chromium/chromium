@@ -479,9 +479,9 @@ void FileSystemManagerImpl::ContinueReadMetadata(
 
   fs_op_runner->GetMetadata(
       url,
-      FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&FileSystemManagerImpl::DidGetMetadata, GetWeakPtr(),
                      std::move(callback)));
 }
@@ -974,9 +974,9 @@ void FileSystemManagerImpl::ContinueCreateSnapshotFile(
   if (backend->SupportsStreaming(url)) {
     fs_op_runner->GetMetadata(
         url,
-        FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-            FileSystemOperation::GET_METADATA_FIELD_SIZE |
-            FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+         storage::FileSystemOperation::GetMetadataField::kSize,
+         storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(&FileSystemManagerImpl::DidGetMetadataForStreaming,
                        GetWeakPtr(), std::move(callback)));
   } else {

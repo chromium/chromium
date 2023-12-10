@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
 
 #include "base/values.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -43,7 +43,7 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
   }
 
   base::Value ToValue() const;
-  static absl::optional<ConnectionEndpointMetadata> FromValue(
+  static std::optional<ConnectionEndpointMetadata> FromValue(
       const base::Value& value);
 
   // ALPN strings for protocols supported by the endpoint. Empty for default

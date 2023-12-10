@@ -74,7 +74,7 @@ SessionStorageManager::SessionValue::SessionValue(base::Value value,
 // Implementation of ValueChange.
 SessionStorageManager::ValueChange::ValueChange(
     std::string key,
-    absl::optional<base::Value> old_value,
+    std::optional<base::Value> old_value,
     base::Value* new_value)
     : key(key), old_value(std::move(old_value)), new_value(new_value) {}
 
@@ -161,9 +161,9 @@ bool SessionStorageManager::ExtensionStorage::Set(
 
     // Add the change to the changes list.
     ValueChange change(session_value.first,
-                       existent_value ? absl::optional<base::Value>(
+                       existent_value ? std::optional<base::Value>(
                                             std::move(existent_value->value))
-                                      : absl::nullopt,
+                                      : std::nullopt,
                        &session_value.second->value);
     changes.push_back(std::move(change));
 
@@ -183,7 +183,7 @@ void SessionStorageManager::ExtensionStorage::Remove(
 
     // Add the change to the changes list.
     ValueChange change(
-        key, absl::optional<base::Value>(std::move(value_it->second->value)),
+        key, std::optional<base::Value>(std::move(value_it->second->value)),
         nullptr);
     changes.push_back(std::move(change));
 
@@ -196,8 +196,8 @@ void SessionStorageManager::ExtensionStorage::Clear(
     std::vector<ValueChange>& changes) {
   for (auto& value : values_) {
     ValueChange change(
-        value.first,
-        absl::optional<base::Value>(std::move(value.second->value)), nullptr);
+        value.first, std::optional<base::Value>(std::move(value.second->value)),
+        nullptr);
     changes.push_back(std::move(change));
   }
   Clear();

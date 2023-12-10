@@ -6,24 +6,30 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_NODE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
 namespace blink {
 
-// Grid specific extensions to NGBlockNode.
-class CORE_EXPORT GridNode final : public NGBlockNode {
+// Grid specific extensions to BlockNode.
+class CORE_EXPORT GridNode final : public BlockNode {
  public:
-  explicit GridNode(LayoutBox* box) : NGBlockNode(box) {
+  explicit GridNode(LayoutBox* box) : BlockNode(box) {
     DCHECK(box);
     DCHECK(box->IsLayoutGrid());
   }
 
-  const GridPlacementData& CachedPlacementData() const;
+  const GridPlacementData& CachedPlacementData() const {
+    return To<LayoutGrid>(box_.Get())->CachedPlacementData();
+  }
+
+  const GridLineResolver& CachedLineResolver() const {
+    return CachedPlacementData().line_resolver;
+  }
 
   // If |oof_children| is provided, aggregate any out of flow children.
-  GridItems ConstructGridItems(const GridPlacementData& placement_data,
+  GridItems ConstructGridItems(const GridLineResolver& line_resolver,
                                HeapVector<Member<LayoutBox>>* oof_children,
                                bool* has_nested_subgrid = nullptr) const;
 
@@ -31,7 +37,7 @@ class CORE_EXPORT GridNode final : public NGBlockNode {
 
  private:
   GridItems ConstructGridItems(
-      const GridPlacementData& placement_data,
+      const GridLineResolver& line_resolver,
       const ComputedStyle& root_grid_style,
       const ComputedStyle& parent_grid_style,
       bool must_consider_grid_items_for_column_sizing,
@@ -42,7 +48,7 @@ class CORE_EXPORT GridNode final : public NGBlockNode {
 
 template <>
 struct DowncastTraits<GridNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) { return node.IsGrid(); }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsGrid(); }
 };
 
 }  // namespace blink

@@ -211,7 +211,7 @@ void PowerNotificationController::MaybeShowDualRoleNotification() {
   dual_role_notification_->Update();
 }
 
-absl::optional<bool>
+std::optional<bool>
 PowerNotificationController::HandleBatterySaverNotifications() {
   const PowerStatus& status = *PowerStatus::Get();
 
@@ -319,7 +319,7 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PowerNotificationController::UpdateNotificationState() {
@@ -337,15 +337,14 @@ bool PowerNotificationController::UpdateNotificationState() {
   // Battery Saver Notification doesn't have a time remaining text, so send
   // the notification + turn on battery saver right away.
   if (!status.IsBatteryPresent() ||
-      (!features::IsBatterySaverAvailable() &&
-       status.IsBatteryTimeBeingCalculated()) ||
+      (!IsBatterySaverAllowed() && status.IsBatteryTimeBeingCalculated()) ||
       on_AC_power) {
     notification_state_ = NOTIFICATION_NONE;
     return false;
   }
 
-  // Send different notifications if Battery Saver flag is enabled.
-  if (features::IsBatterySaverAvailable()) {
+  // Send different notifications if Battery Saver flag is allowed.
+  if (IsBatterySaverAllowed()) {
     const double rounded_battery_percent = status.GetRoundedBatteryPercent();
     const bool on_line_power = status.IsLinePowerConnected();
 
@@ -357,8 +356,8 @@ bool PowerNotificationController::UpdateNotificationState() {
     }
 
     // Check if we are supposed to send a battery saver notification.
-    absl::optional<bool> should_update = HandleBatterySaverNotifications();
-    return should_update != absl::nullopt
+    std::optional<bool> should_update = HandleBatterySaverNotifications();
+    return should_update != std::nullopt
                ? should_update.value()
                : UpdateNotificationStateForRemainingPercentageBatterySaver();
   }
@@ -369,7 +368,7 @@ bool PowerNotificationController::UpdateNotificationState() {
 }
 
 bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
-  const absl::optional<base::TimeDelta> remaining_time =
+  const std::optional<base::TimeDelta> remaining_time =
       PowerStatus::Get()->GetBatteryTimeToEmpty();
 
   // Check that powerd actually provided an estimate. It doesn't if the battery

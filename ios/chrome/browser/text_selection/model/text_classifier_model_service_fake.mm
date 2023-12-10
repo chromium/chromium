@@ -6,8 +6,8 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 

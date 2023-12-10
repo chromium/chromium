@@ -42,6 +42,9 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutUpdate {
   absl::optional<apps::IconKey> IconKey() const;
   bool IconKeyChanged() const;
 
+  absl::optional<bool> AllowRemoval() const;
+  bool AllowRemovalChanged() const;
+
   // Return true if this is a newly registered shortcut in
   // App Service. This could happen when new shortcut created
   // or the shortcut got published to the App Service on

@@ -33,14 +33,24 @@ public class KnownInterceptionDisclosureInfoBar extends ConfirmInfoBar {
      * @param description String to display below the "message" title.
      */
     @CalledByNative
-    private static ConfirmInfoBar create(int iconId, Bitmap iconBitmap, String message,
-            String linkText, String buttonOk, String description) {
+    private static ConfirmInfoBar create(
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String buttonOk,
+            String description) {
         return new KnownInterceptionDisclosureInfoBar(
                 iconId, 0, iconBitmap, message, linkText, buttonOk, description);
     }
 
-    private KnownInterceptionDisclosureInfoBar(int iconDrawableId, @ColorRes int iconTintId,
-            Bitmap iconBitmap, String message, String linkText, String primaryButtonText,
+    private KnownInterceptionDisclosureInfoBar(
+            int iconDrawableId,
+            @ColorRes int iconTintId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String primaryButtonText,
             String description) {
         super(iconDrawableId, iconTintId, iconBitmap, message, linkText, primaryButtonText, "");
         mDescription = description;

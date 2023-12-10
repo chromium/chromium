@@ -86,7 +86,7 @@ fetchSecretWithPairingSupported:(BOOL)pairingSupported
 
 - (void)handleExtensionMessageOfType:(NSString*)type message:(NSString*)message;
 
-- (void)setHostResolution:(CGSize)dipsResolution scale:(int)scale;
+- (void)setHostResolution:(CGSize)resolutionPixels scale:(int)scale;
 
 - (void)setVideoChannelEnabled:(BOOL)enabled;
 

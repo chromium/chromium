@@ -26,12 +26,13 @@ public class ParentAuthDelegateProvider {
     @AnyThread
     public static void setInstanceForTests(ParentAuthDelegate parentAuthDelegate) {
         // TODO(b/243916194): Change to the recommended alternative for deprecated method.
-        ThreadUtils.runOnUiThread(() -> { sTestingInstance = parentAuthDelegate; });
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    sTestingInstance = parentAuthDelegate;
+                });
     }
 
-    /**
-     * Returns singleton instance.
-     */
+    /** Returns singleton instance. */
     @MainThread
     public static ParentAuthDelegate getInstance() {
         ThreadUtils.assertOnUiThread();

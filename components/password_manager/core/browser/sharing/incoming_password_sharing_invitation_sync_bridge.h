@@ -6,13 +6,14 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_INCOMING_PASSWORD_SHARING_INVITATION_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class MetadataBatch;
@@ -49,10 +50,10 @@ class IncomingPasswordSharingInvitationSyncBridge
       const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -66,11 +67,11 @@ class IncomingPasswordSharingInvitationSyncBridge
 
  private:
   // Methods used as callbacks given to DataTypeStore.
-  void OnModelTypeStoreCreated(const absl::optional<syncer::ModelError>& error,
+  void OnModelTypeStoreCreated(const std::optional<syncer::ModelError>& error,
                                std::unique_ptr<syncer::ModelTypeStore> store);
-  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
+  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void OnCommitSyncMetadata(const absl::optional<syncer::ModelError>& error);
+  void OnCommitSyncMetadata(const std::optional<syncer::ModelError>& error);
 
   // Persists the changes to sync metadata store.
   void CommitSyncMetadata(

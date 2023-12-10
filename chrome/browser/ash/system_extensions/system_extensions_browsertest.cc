@@ -128,8 +128,8 @@ class TestInstallationEventsWaiter
   // been one yet.
   std::pair<SystemExtensionId, blink::ServiceWorkerStatusCode>
   WaitForServiceWorkerRegistered() {
-    absl::optional<SystemExtensionId> id;
-    absl::optional<blink::ServiceWorkerStatusCode> status_code;
+    std::optional<SystemExtensionId> id;
+    std::optional<blink::ServiceWorkerStatusCode> status_code;
 
     base::RunLoop run_loop;
     on_register_service_worker_.Post(
@@ -149,8 +149,8 @@ class TestInstallationEventsWaiter
   // Returns the result of a Service Worker unregistration. Waits if there
   // hasn't been one yet.
   std::pair<SystemExtensionId, bool> WaitForServiceWorkerUnregistered() {
-    absl::optional<SystemExtensionId> id;
-    absl::optional<bool> succeeded;
+    std::optional<SystemExtensionId> id;
+    std::optional<bool> succeeded;
 
     base::RunLoop run_loop;
     on_unregister_service_worker_.Post(
@@ -168,8 +168,8 @@ class TestInstallationEventsWaiter
   // Returns the result of a asset deletion operations. Waits if there
   // hasn't been one yet.
   std::pair<SystemExtensionId, bool> WaitForAssetsDeleted() {
-    absl::optional<SystemExtensionId> id;
-    absl::optional<bool> succeeded;
+    std::optional<SystemExtensionId> id;
+    std::optional<bool> succeeded;
 
     base::RunLoop run_loop;
     on_assets_deleted_.Post(
@@ -237,7 +237,7 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(registry.GetById(kTestSystemExtensionId));
 
     // Test we persisted the System Extension.
-    absl::optional<SystemExtensionPersistedInfo> persistence_info =
+    std::optional<SystemExtensionPersistedInfo> persistence_info =
         provider.persistent_storage().Get(kTestSystemExtensionId);
     ASSERT_TRUE(persistence_info);
     EXPECT_EQ(kTestSystemExtensionManifest,
@@ -275,7 +275,7 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
     EXPECT_FALSE(registry.GetById(kTestSystemExtensionId));
 
     // Tests that the System Extension is no longer in persistent storage.
-    absl::optional<SystemExtensionPersistedInfo> persistence_info =
+    std::optional<SystemExtensionPersistedInfo> persistence_info =
         provider.persistent_storage().Get(kTestSystemExtensionId);
     EXPECT_FALSE(persistence_info);
 

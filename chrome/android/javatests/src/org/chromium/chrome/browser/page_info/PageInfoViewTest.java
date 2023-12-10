@@ -76,7 +76,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -88,7 +87,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -122,7 +120,8 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
 @Batch(PER_CLASS)
-@DisableFeatures(ChromeFeatureList.RED_INTERSTITIAL_FACELIFT)
+// Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
+@DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
@@ -198,7 +197,8 @@ public class PageInfoViewTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(7)
+                    .setRevision(8)
+                    .setDescription("Red interstitial color, icon, and string facelift")
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_BUBBLES_PAGE_INFO)
                     .build();
 
@@ -514,7 +514,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testShowWithPermissionsAndCookieBlockingUserBypass() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -525,7 +524,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testShowWithPermissionsAndCookieBlockingTrackingProtection() throws IOException {
         enableTrackingProtection();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
@@ -630,34 +628,10 @@ public class PageInfoViewTest {
         onView(allOf(withText(containsString("Sound")), isDisplayed()));
     }
 
-    /** Tests the cookies page of the PageInfo UI. */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
-    public void testShowCookiesSubpageUserBypassOff() throws IOException {
-        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onView(withId(R.id.page_info_cookies_row)).perform(click());
-        onViewWaiting(
-                allOf(
-                        withText(containsString("Cookies and other site data are used")),
-                        isDisplayed()));
-        // Verify that the pref was recorded successfully.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertTrue(
-                            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                    .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
-                });
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Flag_Off");
-    }
-
     /** Tests the cookies page of the PageInfo UI with the Cookie Controls UI enabled. */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testShowCookiesSubpageUserBypassOn() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -684,7 +658,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
         enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -712,7 +685,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
         enableTrackingProtection();
         blockAll3PC();
@@ -787,7 +759,6 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the cookies page of the PageInfo UI with User Bypass enabled. */
     @Test
     @MediumTest
-    @EnableFeatures({PageInfoFeatures.USER_BYPASS_UI_NAME})
     public void testClearCookiesOnSubpageUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
@@ -815,7 +786,6 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the Tracking Protection page of the PageInfo UI. */
     @Test
     @MediumTest
-    @EnableFeatures({PageInfoFeatures.USER_BYPASS_UI_NAME})
     public void testClearCookiesOnSubpageTrackingProtection() throws Exception {
         enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -1067,7 +1037,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testShowAdPersonalizationInfo() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
@@ -1078,7 +1047,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1498268")
     public void testShowAdPersonalizationInfoSubPageV4() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));

@@ -54,7 +54,7 @@ void FileSuggestKeyedService::GetSuggestFileData(
     GetSuggestFileDataCallback callback) {
   // Always return null if `proto_` is not ready.
   if (!proto_.initialized()) {
-    std::move(callback).Run(/*suggestions=*/absl::nullopt);
+    std::move(callback).Run(/*suggestions=*/std::nullopt);
     return;
   }
 
@@ -161,7 +161,7 @@ bool FileSuggestKeyedService::IsReadyForTest() const {
 
 void FileSuggestKeyedService::FilterRemovedSuggestions(
     GetSuggestFileDataCallback callback,
-    const absl::optional<std::vector<FileSuggestData>>& suggestions) {
+    const std::optional<std::vector<FileSuggestData>>& suggestions) {
   DCHECK(IsProtoInitialized());
 
   // There are no candidate suggestions to filter. Therefore, return early.

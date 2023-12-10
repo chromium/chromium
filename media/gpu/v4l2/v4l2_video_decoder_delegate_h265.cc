@@ -55,6 +55,17 @@ scoped_refptr<H265Picture> V4L2VideoDecoderDelegateH265::CreateH265Picture() {
   return new V4L2H265Picture(dec_surface);
 }
 
+scoped_refptr<H265Picture>
+V4L2VideoDecoderDelegateH265::CreateH265PictureSecure(uint64_t secure_handle) {
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSecureSurface(secure_handle);
+  if (!dec_surface) {
+    return nullptr;
+  }
+
+  return new V4L2H265Picture(dec_surface);
+}
+
 std::vector<scoped_refptr<V4L2DecodeSurface>>
 V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
     struct v4l2_ctrl_hevc_decode_params* v4l2_decode_param,
@@ -475,6 +486,14 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
   // Add the 3-bytes NAL start code.
   // TODO: don't do it here, but have it passed from the parser?
   const size_t data_copy_size = size + 3;
+  if (dec_surface->secure_handle()) {
+    // The secure world already post-processed the secure buffer so that all of
+    // the slice NALUs w/ 3 byte start codes are the only contents.
+    return surface_handler_->SubmitSlice(dec_surface.get(), nullptr,
+                                         data_copy_size)
+               ? Status::kOk
+               : Status::kFail;
+  }
   std::unique_ptr<uint8_t[]> data_copy(new uint8_t[data_copy_size]);
   memset(data_copy.get(), 0, data_copy_size);
   data_copy[2] = 0x01;

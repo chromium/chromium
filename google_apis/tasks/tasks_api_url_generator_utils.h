@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 class GURL;
 
@@ -15,11 +15,11 @@ namespace google_apis::tasks {
 
 // Returns a URL to fetch all the authenticated user's task lists.
 // `max_results` - maximum number of task lists returned on one page.
-//                 Adds `maxResults` query parameter if not `absl::nullopt`.
+//                 Adds `maxResults` query parameter if not `std::nullopt`.
 // `page_token`  - token specifying the result page to return.
 //                 Adds `pageToken` query parameter if not empty.
 // https://developers.google.com/tasks/reference/rest/v1/tasklists/list
-GURL GetListTaskListsUrl(absl::optional<int> max_results,
+GURL GetListTaskListsUrl(std::optional<int> max_results,
                          const std::string& page_token);
 
 // Returns a URL to fetch all tasks in the specified task list.
@@ -27,13 +27,13 @@ GURL GetListTaskListsUrl(absl::optional<int> max_results,
 // `include_completed` - flag indicating whether completed tasks are returned
 //                       in the result.
 // `max_results`       - maximum number of tasks returned on one page. Adds
-//                       `maxResults` query parameter if not `absl::nullopt`.
+//                       `maxResults` query parameter if not `std::nullopt`.
 // `page_token`        - token specifying the result page to return. Adds
 //                       `pageToken` query parameter if not empty.
 // https://developers.google.com/tasks/reference/rest/v1/tasks/list
 GURL GetListTasksUrl(const std::string& task_list_id,
                      bool include_completed,
-                     absl::optional<int> max_results,
+                     std::optional<int> max_results,
                      const std::string& page_token);
 
 // Returns a URL to partially update the specified task.

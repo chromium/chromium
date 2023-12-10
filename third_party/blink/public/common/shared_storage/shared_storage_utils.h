@@ -7,7 +7,7 @@
 
 #include <cstdlib>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {

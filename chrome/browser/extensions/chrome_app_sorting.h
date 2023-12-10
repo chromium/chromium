@@ -140,8 +140,7 @@ class ChromeAppSorting : public AppSorting,
       const std::vector<std::string>& extension_or_app_ids);
 
   // Migrates the app launcher and page index values.
-  void MigrateAppIndex(
-      const extensions::ExtensionIdList& extension_ids);
+  void MigrateAppIndex(const ExtensionIdList& extension_ids);
 
   // Called to add a new mapping value for |extension_id| with a page ordinal
   // of |page_ordinal| and a app launch ordinal of |app_launch_ordinal|. This

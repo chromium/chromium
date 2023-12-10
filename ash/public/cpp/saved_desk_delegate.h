@@ -5,12 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_
 #define ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_restore {
 struct AppLaunchInfo;
@@ -75,7 +75,7 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   // identifier. I.e. NTP or incognito window. If `icon_identifier` is not a
   // special identifier, return `asbl::nullopt`. `color_provider` should be the
   // ui::ColorProvider corresponding to an incognito window or nullptr.
-  virtual absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
+  virtual std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& icon_identifier,
       const ui::ColorProvider* color_provider) const = 0;
 

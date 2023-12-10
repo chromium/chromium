@@ -1,0 +1,4 @@
+data_uri_navigation {
+    content_type: "text/html"
+    body: "<html><head><title>Page</title><body><p>Hello!</p></body></html>"
+}

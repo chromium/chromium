@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"This is to check " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"italic property" textSize:16.00 style:2 bundle:[display="", htmlTag=""]
+++++TextView text:" using i tag." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

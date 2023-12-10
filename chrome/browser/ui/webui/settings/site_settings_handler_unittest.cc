@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -124,7 +125,6 @@
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -404,14 +404,14 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value* event_data = data.arg2();
     ASSERT_TRUE(event_data->is_dict());
 
-    absl::optional<bool> enabled = event_data->GetDict().FindBool("enabled");
+    std::optional<bool> enabled = event_data->GetDict().FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     EXPECT_EQ(expected_enabled, *enabled);
 
     const base::Value::Dict* pref_data = event_data->GetDict().FindDict("pref");
     ASSERT_TRUE(pref_data);
 
-    absl::optional<bool> value = pref_data->FindBool("value");
+    std::optional<bool> value = pref_data->FindBool("value");
     ASSERT_TRUE(value.has_value());
     EXPECT_EQ(expected_value, *value);
   }
@@ -566,7 +566,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     // exceptions.
     const auto* description = exception.FindString(site_settings::kDescription);
     ASSERT_FALSE(description);
-    absl::optional<bool> incognito =
+    std::optional<bool> incognito =
         exception.FindBool(site_settings::kIncognito);
     ASSERT_FALSE(incognito.has_value());
 
@@ -616,7 +616,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_EQ(expected_embedding_exception.embedding_display_name,
               *embedding_display_name);
 
-    absl::optional<bool> incognito =
+    std::optional<bool> incognito =
         embedding_exception.FindBool(site_settings::kIncognito);
     ASSERT_TRUE(incognito.has_value());
     EXPECT_EQ(expected_embedding_exception.incognito, *incognito);
@@ -681,7 +681,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_EQ(content_settings::ContentSettingToString(expected_setting),
               *setting);
 
-    absl::optional<bool> incognito =
+    std::optional<bool> incognito =
         exception.FindBool(site_settings::kIncognito);
     ASSERT_TRUE(incognito.has_value());
     EXPECT_EQ(expected_incognito, *incognito);
@@ -726,7 +726,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value* result = data.arg3();
     ASSERT_TRUE(result->is_dict());
 
-    absl::optional<bool> valid = result->GetDict().FindBool("isValid");
+    std::optional<bool> valid = result->GetDict().FindBool("isValid");
     ASSERT_TRUE(valid.has_value());
     EXPECT_EQ(expected_validity, *valid);
 
@@ -971,13 +971,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void SetupDefaultFirstPartySets(MockPrivacySandboxService* mock_service) {
     EXPECT_CALL(*mock_service, GetFirstPartySetOwner(_))
         .WillRepeatedly(
-            [&](const GURL& url) -> absl::optional<net::SchemefulSite> {
+            [&](const GURL& url) -> std::optional<net::SchemefulSite> {
               auto first_party_sets = GetTestFirstPartySets();
               if (first_party_sets.count(net::SchemefulSite(url))) {
                 return first_party_sets[net::SchemefulSite(url)];
               }
 
-              return absl::nullopt;
+              return std::nullopt;
             });
   }
 
@@ -1047,9 +1047,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const ContentSettingsType kPermissionStorageAccess =
       ContentSettingsType::STORAGE_ACCESS;
 
-  // The number of listeners that are expected to fire when any content setting
-  // is changed.
-  const size_t kNumberContentSettingListeners = 2;
+  // The number of listeners that are expected to fire when notification content
+  // setting is changed.
+  const size_t kNumberNotificationsContentSettingListeners = 2;
+
+  // The number of listeners that are expected to fire when cookies content
+  // setting is changed.
+  const size_t kNumberCookiesContentSettingListeners = 1;
 
   // Browsing data model constants. Here, instead of in the anon namespace, to
   // avoid static GURL creation.
@@ -1767,7 +1771,7 @@ TEST_F(SiteSettingsHandlerTest, InstalledApps) {
   GURL start_url("http://abc.example.com/path");
   RegisterWebApp(
       profile(),
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+      MakeApp(web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url),
               apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
               apps::InstallReason::kSync));
 
@@ -2262,7 +2266,8 @@ TEST_F(SiteSettingsHandlerTest, SetCategoryPermissionForPattern) {
   set_args.Append(false);  // Incognito.
 
   handler()->HandleSetCategoryPermissionForPattern(set_args);
-  EXPECT_EQ(kNumberContentSettingListeners, web_ui()->call_data().size());
+  EXPECT_EQ(kNumberNotificationsContentSettingListeners,
+            web_ui()->call_data().size());
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -2285,7 +2290,8 @@ TEST_F(SiteSettingsHandlerTest, SetCategoryPermissionForPattern_WildCard) {
   set_args.Append(false);  // Incognito.
 
   handler()->HandleSetCategoryPermissionForPattern(set_args);
-  EXPECT_EQ(kNumberContentSettingListeners, web_ui()->call_data().size());
+  EXPECT_EQ(kNumberNotificationsContentSettingListeners,
+            web_ui()->call_data().size());
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -2442,7 +2448,8 @@ TEST_F(SiteSettingsHandlerTest, SetCategoryPermissionForPattern_SessionOnly) {
   set_args.Append(false);  // Incognito.
   handler()->HandleSetCategoryPermissionForPattern(set_args);
 
-  EXPECT_EQ(kNumberContentSettingListeners, web_ui()->call_data().size());
+  EXPECT_EQ(kNumberCookiesContentSettingListeners,
+            web_ui()->call_data().size());
 }
 
 TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
@@ -3678,6 +3685,8 @@ class PersistentPermissionsSiteSettingsHandlerTest
     // when Persistent Permissions is launched.
 
     // Enable Persisted Permissions.
+    // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+    // flag after FSA Persistent Permissions feature launch.
     feature_list_.InitAndEnableFeature(
         features::kFileSystemAccessPersistentPermissions);
   }
@@ -6116,100 +6125,6 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
           kExampleUnpartitionedEntry,
           kGoogleOnExampleEntry,
       });
-}
-
-TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
-  const auto kBlocked = [](int num) {
-    return l10n_util::GetPluralStringFUTF8(
-        IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK, num);
-  };
-  const auto kAllowed = [](int num) {
-    return l10n_util::GetPluralStringFUTF8(
-        IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW, num);
-  };
-  const std::string kBlockThirdParty = l10n_util::GetStringUTF8(
-      IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY);
-  const std::string kBlockThirdPartyIncognito = l10n_util::GetStringUTF8(
-      IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO);
-
-  // Enforce expected default profile setting.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kIncognitoOnly));
-  auto* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  content_settings->SetDefaultContentSetting(
-      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
-  web_ui()->ClearTrackedCalls();
-
-  // Validate get method works.
-  base::Value::List get_args;
-  get_args.Append(kCallbackId);
-  handler()->HandleGetCookieSettingDescription(get_args);
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
-  ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ(kBlockThirdPartyIncognito, data.arg3()->GetString());
-
-  // Multiple listeners will be called when prefs and content settings are
-  // changed in this test. Increment our expected call_data index accordingly.
-  int expected_call_index = 0;
-  const int kPrefListenerIndex = 1;
-  const int kContentSettingListenerIndex = 2;
-
-  // Check updates are working,
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  expected_call_index += kPrefListenerIndex;
-  ValidateCookieSettingUpdate(kBlockThirdParty, expected_call_index);
-
-  content_settings->SetDefaultContentSetting(
-      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_BLOCK);
-  expected_call_index += kContentSettingListenerIndex;
-  ValidateCookieSettingUpdate(kBlocked(0), expected_call_index);
-
-  // Check changes which do not affect the effective cookie setting.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kOff));
-  expected_call_index += kPrefListenerIndex;
-  ValidateCookieSettingUpdate(kBlocked(0), expected_call_index);
-
-  // Set to allow and check previous changes are respected.
-  content_settings->SetDefaultContentSetting(
-      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
-  expected_call_index += kContentSettingListenerIndex;
-  ValidateCookieSettingUpdate(kAllowed(0), expected_call_index);
-
-  // Confirm exceptions are counted correctly.
-  GURL url1("https://example.com");
-  GURL url2("http://example.com");
-  GURL url3("http://another.example.com");
-  content_settings->SetContentSettingDefaultScope(
-      url1, url1, ContentSettingsType::COOKIES,
-      ContentSetting::CONTENT_SETTING_BLOCK);
-  expected_call_index += kContentSettingListenerIndex;
-  ValidateCookieSettingUpdate(kAllowed(1), expected_call_index);
-
-  content_settings->SetContentSettingDefaultScope(
-      url2, url2, ContentSettingsType::COOKIES,
-      ContentSetting::CONTENT_SETTING_ALLOW);
-  expected_call_index += kContentSettingListenerIndex;
-  ValidateCookieSettingUpdate(kAllowed(1), expected_call_index);
-
-  content_settings->SetContentSettingDefaultScope(
-      url3, url3, ContentSettingsType::COOKIES,
-      ContentSetting::CONTENT_SETTING_SESSION_ONLY);
-  expected_call_index += kContentSettingListenerIndex;
-  ValidateCookieSettingUpdate(kAllowed(1), expected_call_index);
-
-  content_settings->SetDefaultContentSetting(
-      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_BLOCK);
-  expected_call_index += kContentSettingListenerIndex;
-  ValidateCookieSettingUpdate(kBlocked(2), expected_call_index);
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetFpsMembershipLabel) {

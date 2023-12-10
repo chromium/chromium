@@ -17,6 +17,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/test/scoped_screen_win.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/test/test_screen.h"
 #endif
 
 namespace content {
@@ -71,6 +73,8 @@ class FlingSchedulerTest : public testing::Test,
   }
 
   void TearDown() override {
+    fling_controller_.reset();
+    fling_scheduler_.reset();
     view_.release()->Destroy();  // 'delete this' is called internally.
     widget_host_->ShutdownAndDestroyWidget(false);
     widget_host_.reset();
@@ -80,25 +84,6 @@ class FlingSchedulerTest : public testing::Test,
     browser_context_.reset();
 
     base::RunLoop().RunUntilIdle();
-  }
-
-  std::unique_ptr<TestRenderWidgetHostView> CreateView() {
-    browser_context_ = std::make_unique<TestBrowserContext>();
-    process_host_ =
-        std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    process_host_->Init();
-    site_instance_group_ =
-        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
-            browser_context_.get(), process_host_.get()));
-    int32_t routing_id = process_host_->GetNextRoutingID();
-    delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
-    widget_host_ = TestRenderWidgetHost::Create(
-        /* frame_tree= */ nullptr, delegate_.get(),
-        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_,
-                                                 routing_id),
-        site_instance_group_->GetSafeRef(), routing_id, false);
-    delegate_->set_widget_host(widget_host_.get());
-    return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());
   }
 
   void SimulateFlingStart(const gfx::Vector2dF& velocity) {
@@ -131,13 +116,34 @@ class FlingSchedulerTest : public testing::Test,
     return gfx::Size(1920, 1080);
   }
 
-  std::unique_ptr<FlingController> fling_controller_;
-  std::unique_ptr<FakeFlingScheduler> fling_scheduler_;
+  FlingController* fling_controller() { return fling_controller_.get(); }
+  FakeFlingScheduler* fling_scheduler() { return fling_scheduler_.get(); }
 
  private:
+  std::unique_ptr<TestRenderWidgetHostView> CreateView() {
+    browser_context_ = std::make_unique<TestBrowserContext>();
+    process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context_.get());
+    process_host_->Init();
+    site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_host_.get()));
+    int32_t routing_id = process_host_->GetNextRoutingID();
+    delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
+    widget_host_ = TestRenderWidgetHost::Create(
+        /* frame_tree= */ nullptr, delegate_.get(),
+        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_,
+                                                 routing_id),
+        site_instance_group_->GetSafeRef(), routing_id, false);
+    delegate_->set_widget_host(widget_host_.get());
+    return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());
+  }
+
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
+  std::unique_ptr<FakeFlingScheduler> fling_scheduler_;
+  std::unique_ptr<FlingController> fling_controller_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<TestRenderWidgetHostView> view_;
@@ -145,35 +151,37 @@ class FlingSchedulerTest : public testing::Test,
 #if BUILDFLAG(IS_WIN)
   // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
+#elif BUILDFLAG(IS_CHROMEOS)
+  // This is necessary on ChromeOS as it needs to access tablet mode info.
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
 #endif
 };
 
 TEST_F(FlingSchedulerTest, ScheduleNextFlingProgress) {
   base::TimeTicks progress_time = base::TimeTicks::Now();
   SimulateFlingStart(gfx::Vector2dF(1000, 0));
-  EXPECT_TRUE(fling_scheduler_->fling_in_progress());
-  EXPECT_EQ(fling_controller_.get(),
-            fling_scheduler_->fling_controller().get());
-  EXPECT_EQ(fling_scheduler_->compositor(),
-            fling_scheduler_->observed_compositor());
+  EXPECT_TRUE(fling_scheduler()->fling_in_progress());
+  EXPECT_EQ(fling_controller(), fling_scheduler()->fling_controller().get());
+  EXPECT_EQ(fling_scheduler()->compositor(),
+            fling_scheduler()->observed_compositor());
 
   progress_time += base::Milliseconds(17);
-  fling_controller_->ProgressFling(progress_time);
-  EXPECT_TRUE(fling_scheduler_->fling_in_progress());
+  fling_controller()->ProgressFling(progress_time);
+  EXPECT_TRUE(fling_scheduler()->fling_in_progress());
 }
 
 TEST_F(FlingSchedulerTest, FlingCancelled) {
   SimulateFlingStart(gfx::Vector2dF(1000, 0));
-  EXPECT_TRUE(fling_scheduler_->fling_in_progress());
-  EXPECT_EQ(fling_controller_.get(),
-            fling_scheduler_->fling_controller().get());
-  EXPECT_EQ(fling_scheduler_->compositor(),
-            fling_scheduler_->observed_compositor());
+  EXPECT_TRUE(fling_scheduler()->fling_in_progress());
+  EXPECT_EQ(fling_controller(), fling_scheduler()->fling_controller().get());
+  EXPECT_EQ(fling_scheduler()->compositor(),
+            fling_scheduler()->observed_compositor());
 
   SimulateFlingCancel();
-  EXPECT_FALSE(fling_scheduler_->fling_in_progress());
-  EXPECT_EQ(nullptr, fling_scheduler_->fling_controller());
-  EXPECT_EQ(nullptr, fling_scheduler_->observed_compositor());
+  EXPECT_FALSE(fling_scheduler()->fling_in_progress());
+  EXPECT_EQ(nullptr, fling_scheduler()->fling_controller());
+  EXPECT_EQ(nullptr, fling_scheduler()->observed_compositor());
 }
 
 }  // namespace content

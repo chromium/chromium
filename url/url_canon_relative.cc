@@ -59,7 +59,7 @@ bool DoesBeginSlashWindowsDriveSpec(const CHAR* spec, int start_offset,
                                     int spec_len) {
   if (start_offset >= spec_len)
     return false;
-  return IsURLSlash(spec[start_offset]) &&
+  return IsSlashOrBackslash(spec[start_offset]) &&
          DoesBeginWindowsDriveSpec(spec, start_offset + 1, spec_len);
 }
 
@@ -350,7 +350,7 @@ bool DoResolveRelativePath(const char* base_url,
     }
 #endif  // WIN32
 
-    if (IsURLSlash(relative_url[path.begin])) {
+    if (IsSlashOrBackslash(relative_url[path.begin])) {
       // Easy case: the path is an absolute path on the server, so we can
       // just replace everything from the path on with the new versions.
       // Since the input should be canonical hierarchical URL, we should
@@ -426,8 +426,9 @@ bool DoResolveRelativeHost(const char* base_url,
   // Parse the relative URL, just like we would for anything following a
   // scheme.
   Parsed relative_parsed;  // Everything but the scheme is valid.
-  ParseAfterScheme(relative_url, relative_component.end(),
-                   relative_component.begin, &relative_parsed);
+  // TODO(crbug.com/1416006): Support non-special URLs.
+  ParseAfterSpecialScheme(relative_url, relative_component.end(),
+                          relative_component.begin, &relative_parsed);
 
   // Now we can just use the replacement function to replace all the necessary
   // parts of the old URL with the new one.

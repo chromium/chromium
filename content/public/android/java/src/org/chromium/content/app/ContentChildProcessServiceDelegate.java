@@ -57,15 +57,17 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     @Override
     public void onServiceBound(Intent intent) {
         LibraryLoader.getInstance().getMediator().takeLoadAddressFromBundle(intent.getExtras());
-        LibraryLoader.getInstance().setLibraryProcessType(
-                ChildProcessCreationParamsImpl.getLibraryProcessType(intent.getExtras()));
+        LibraryLoader.getInstance()
+                .setLibraryProcessType(
+                        ChildProcessCreationParamsImpl.getLibraryProcessType(intent.getExtras()));
     }
 
     @Override
     public void onConnectionSetup(Bundle connectionBundle, List<IBinder> clientInterfaces) {
-        mGpuCallback = clientInterfaces != null && !clientInterfaces.isEmpty()
-                ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
-                : null;
+        mGpuCallback =
+                clientInterfaces != null && !clientInterfaces.isEmpty()
+                        ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
+                        : null;
 
         mCpuCount = connectionBundle.getInt(ContentChildProcessConstants.EXTRA_CPU_COUNT);
         mCpuFeatures = connectionBundle.getLong(ContentChildProcessConstants.EXTRA_CPU_FEATURES);
@@ -101,8 +103,8 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         // Now that the library is loaded, get the FD map,
         // TODO(jcivelli): can this be done in onBeforeMain? We would have to mode onBeforeMain
         // so it's called before FDs are registered.
-        ContentChildProcessServiceDelegateJni.get().retrieveFileDescriptorsIdsToKeys(
-                ContentChildProcessServiceDelegate.this);
+        ContentChildProcessServiceDelegateJni.get()
+                .retrieveFileDescriptorsIdsToKeys(ContentChildProcessServiceDelegate.this);
     }
 
     @Override
@@ -121,12 +123,15 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @Override
     public void onBeforeMain() {
-        ContentChildProcessServiceDelegateJni.get().initChildProcess(
-                ContentChildProcessServiceDelegate.this, mCpuCount, mCpuFeatures);
-        ThreadUtils.getUiThreadHandler().post(() -> {
-            ContentChildProcessServiceDelegateJni.get().initMemoryPressureListener();
-            MemoryPressureUma.initializeForChildService();
-        });
+        ContentChildProcessServiceDelegateJni.get()
+                .initChildProcess(ContentChildProcessServiceDelegate.this, mCpuCount, mCpuFeatures);
+        ThreadUtils.getUiThreadHandler()
+                .post(
+                        () -> {
+                            ContentChildProcessServiceDelegateJni.get()
+                                    .initMemoryPressureListener();
+                            MemoryPressureUma.initializeForChildService();
+                        });
     }
 
     @Override

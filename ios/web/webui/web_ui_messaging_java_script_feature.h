@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_WEBUI_WEB_UI_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_WEBUI_WEB_UI_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -22,7 +24,7 @@ class WebUIMessagingJavaScriptFeature : public JavaScriptFeature {
   friend class base::NoDestructor<WebUIMessagingJavaScriptFeature>;
 
   // JavaScriptFeature overrides
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& script_message) override;
 

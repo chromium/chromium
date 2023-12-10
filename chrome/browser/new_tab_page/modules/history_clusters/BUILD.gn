@@ -10,7 +10,6 @@ mojom("mojo_bindings") {
     "history_clusters_layout_type.mojom",
   ]
   webui_module_path = "/"
-  use_typescript_sources = true
   public_deps = [
     "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",

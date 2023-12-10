@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   // StatisticsProvider implementation:
   void ScheduleOnMachineStatisticsLoaded(base::OnceClosure callback) override;
   void StartLoadingMachineStatistics(bool load_oem_manifest) override;
-  absl::optional<base::StringPiece> GetMachineStatistic(
+  std::optional<base::StringPiece> GetMachineStatistic(
       base::StringPiece name) override;
   FlagValue GetMachineFlag(base::StringPiece name) override;
   void Shutdown() override;

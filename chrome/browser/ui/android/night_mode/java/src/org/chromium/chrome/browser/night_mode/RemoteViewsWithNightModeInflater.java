@@ -35,8 +35,11 @@ public class RemoteViewsWithNightModeInflater {
      * @param isInSystemNightMode Whether night mode is enabled in system settings.
      * @return Inflated View or null in case of failure.
      */
-    public static @Nullable View inflate(RemoteViews remoteViews, @Nullable ViewGroup parent,
-            boolean isInLocalNightMode, boolean isInSystemNightMode) {
+    public static @Nullable View inflate(
+            RemoteViews remoteViews,
+            @Nullable ViewGroup parent,
+            boolean isInLocalNightMode,
+            boolean isInSystemNightMode) {
         if (isInLocalNightMode == isInSystemNightMode) {
             // RemoteViews#apply will use the resource configuration corresponding to system
             // settings.
@@ -97,8 +100,9 @@ public class RemoteViewsWithNightModeInflater {
         }
     }
 
-    private static Context getContextForResources(RemoteViews remoteViews,
-            boolean isInLocalNightMode) throws PackageManager.NameNotFoundException {
+    private static Context getContextForResources(
+            RemoteViews remoteViews, boolean isInLocalNightMode)
+            throws PackageManager.NameNotFoundException {
         Context appContext = ContextUtils.getApplicationContext();
         String remotePackage = remoteViews.getPackage();
         if (appContext.getPackageName().equals(remotePackage)) return appContext;
@@ -107,8 +111,9 @@ public class RemoteViewsWithNightModeInflater {
                 appContext.createPackageContext(remotePackage, Context.CONTEXT_RESTRICTED);
 
         // This line is what makes the difference with RemoteViews#apply.
-        Context contextWithEnforcedNightMode = NightModeUtils.wrapContextWithNightModeConfig(
-                remoteContext, 0 /*themeResId*/, isInLocalNightMode);
+        Context contextWithEnforcedNightMode =
+                NightModeUtils.wrapContextWithNightModeConfig(
+                        remoteContext, /* themeResId= */ 0, isInLocalNightMode);
 
         return contextWithEnforcedNightMode;
     }

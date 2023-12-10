@@ -26,6 +26,8 @@ class GPU_EXPORT VulkanPhysicalDeviceInfo {
 
   VkPhysicalDeviceProperties properties = {};
   VkPhysicalDeviceDriverProperties driver_properties = {};
+  uint64_t drm_device_id = 0;
+
   std::vector<VkExtensionProperties> extensions;
 
   VkPhysicalDeviceFeatures features = {};

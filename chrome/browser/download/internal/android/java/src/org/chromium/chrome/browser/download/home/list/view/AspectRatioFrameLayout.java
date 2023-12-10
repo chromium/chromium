@@ -112,9 +112,7 @@ public class AspectRatioFrameLayout extends FrameLayout {
         }
     }
 
-    /**
-     * A set of layout parameters for {@link AspectRatioFrameLayout}.
-     */
+    /** A set of layout parameters for {@link AspectRatioFrameLayout}. */
     public static class LayoutParams extends FrameLayout.LayoutParams {
         /** The aspect ratio to use and enforce. */
         public float aspectRatio;
@@ -130,10 +128,15 @@ public class AspectRatioFrameLayout extends FrameLayout {
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
 
-            TypedArray array = context.obtainStyledAttributes(
-                    attrs, R.styleable.AspectRatioFrameLayout_Layout);
-            aspectRatio = array.getFraction(
-                    R.styleable.AspectRatioFrameLayout_Layout_layout_aspectRatio, 1, 1, 0.f);
+            TypedArray array =
+                    context.obtainStyledAttributes(
+                            attrs, R.styleable.AspectRatioFrameLayout_Layout);
+            aspectRatio =
+                    array.getFraction(
+                            R.styleable.AspectRatioFrameLayout_Layout_layout_aspectRatio,
+                            1,
+                            1,
+                            0.f);
             array.recycle();
         }
 

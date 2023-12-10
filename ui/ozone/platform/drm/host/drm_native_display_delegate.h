@@ -46,12 +46,19 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
                     display::HDCPState state,
                     display::ContentProtectionMethod protection_method,
                     display::SetHDCPStateCallback callback) override;
+  void SetColorTemperatureAdjustment(
+      int64_t display_id,
+      const display::ColorTemperatureAdjustment& cta) override;
+  void SetColorCalibration(
+      int64_t display_id,
+      const display::ColorCalibration& calibration) override;
+  void SetGammaAdjustment(int64_t display_id,
+                          const display::GammaAdjustment& gamma) override;
   bool SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;
-  bool SetGammaCorrection(
-      int64_t display_id,
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
+  bool SetGammaCorrection(int64_t display_id,
+                          const display::GammaCurve& degamma,
+                          const display::GammaCurve& gamma) override;
   void SetPrivacyScreen(int64_t display_id,
                         bool enabled,
                         display::SetPrivacyScreenCallback callback) override;

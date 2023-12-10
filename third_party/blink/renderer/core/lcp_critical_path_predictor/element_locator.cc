@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -59,7 +60,7 @@ ElementLocator OfElement(const Element& element) {
   return locator;
 }
 
-String ToString(const ElementLocator& locator) {
+String ToStringForTesting(const ElementLocator& locator) {
   StringBuilder builder;
 
   for (const auto& c : locator.components()) {
@@ -106,6 +107,14 @@ HashSet<const StringImpl*>& ClosePElementSet() {
 // Do not modify this set outside TokenStreamMatcher::InitSets() to avoid race
 // conditions.
 HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
+  return set;
+}
+
+// A restricted of tags against which this TokenStreamMatcher will initiate
+// a match, when match_against_restricted_set flag is turned on, to reduce
+// performance hit.
+HashSet<const StringImpl*>& RestrictedTagSubset() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
   return set;
 }
@@ -172,10 +181,16 @@ void TokenStreamMatcher::InitSets() {
     set.insert(html_names::kTrackTag.LocalName().Impl());
     set.insert(html_names::kHrTag.LocalName().Impl());
   }
+  {
+    HashSet<const StringImpl*>& set = RestrictedTagSubset();
+    set.insert(html_names::kImgTag.LocalName().Impl());
+  }
 }
 
-TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators)
-    : locators_(locators) {}
+TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators,
+                                       bool enable_perf_optimizations)
+    : locators_(locators),
+      enable_perf_optimizations_(enable_perf_optimizations) {}
 
 TokenStreamMatcher::~TokenStreamMatcher() = default;
 namespace {
@@ -246,6 +261,11 @@ bool MatchLocator(const ElementLocator& locator,
 void TokenStreamMatcher::ObserveEndTag(const StringImpl* tag_name) {
   CHECK(!html_stack_.empty());
 
+  // Don't build stack if locators are empty.
+  if (enable_perf_optimizations_ && locators_.empty()) {
+    return;
+  }
+
   wtf_size_t i;
   for (i = html_stack_.size() - 1; i > 0; --i) {
     if (html_stack_[i].tag_name == tag_name) {
@@ -297,6 +317,11 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
     return false;
   }
 
+  // Don't build stack if locators are empty.
+  if (enable_perf_optimizations_ && locators_.empty()) {
+    return false;
+  }
+
   // We implement a subset of
   // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
 
@@ -314,12 +339,17 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
       .tag_name = tag_name,
       .id_attr = id_attr ? AtomicString(id_attr->Value()) : g_null_atom});
 
-  auto stack_span = base::make_span(html_stack_.begin(), html_stack_.end());
   bool matched = false;
-  for (const ElementLocator& locator : locators_) {
-    if (MatchLocator(locator, stack_span)) {
-      matched = true;
-      break;
+  // Invoke matching only if set to match all tags, or this is an IMG tag.
+  bool should_match_at_this_tag =
+      !enable_perf_optimizations_ || (RestrictedTagSubset().Contains(tag_name));
+  if (should_match_at_this_tag) {
+    auto stack_span = base::make_span(html_stack_.begin(), html_stack_.end());
+    for (const ElementLocator& locator : locators_) {
+      if (MatchLocator(locator, stack_span)) {
+        matched = true;
+        break;
+      }
     }
   }
 

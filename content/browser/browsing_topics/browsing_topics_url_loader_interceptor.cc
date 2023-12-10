@@ -17,9 +17,33 @@ namespace content {
 
 namespace {
 
-void RecordDocumentPresentUma(bool present) {
-  base::UmaHistogramBoolean(
-      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", present);
+// The topics header outcome for the fetch initial request or redirect.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BrowsingTopicsFetchRequestOrRedirectResult {
+  kSuccess = 0,
+  kDisallowedByContentClient = 1,
+  kNoInitiatorFrame = 2,
+  kFromFencedFrame = 3,
+  kFromNonPrimaryPage = 4,
+  kOpaqueCallerOrigin = 5,
+  kNonSecureCallerOrigin = 6,
+  kDisallowedByPermissionsPolicy = 7,
+
+  kMaxValue = kDisallowedByPermissionsPolicy,
+};
+
+void RecordFetchRequestResultUma(
+    BrowsingTopicsFetchRequestOrRedirectResult result,
+    bool is_redirect) {
+  if (is_redirect) {
+    base::UmaHistogramEnumeration(
+        "BrowsingTopics.Fetch.RedirectedUrlRequest.Result", result);
+  } else {
+    base::UmaHistogramEnumeration(
+        "BrowsingTopics.Fetch.InitialUrlRequest.Result", result);
+  }
 }
 
 }  // namespace
@@ -38,7 +62,7 @@ BrowsingTopicsURLLoaderInterceptor::~BrowsingTopicsURLLoaderInterceptor() =
 
 void BrowsingTopicsURLLoaderInterceptor::WillStartRequest(
     net::HttpRequestHeaders& headers) {
-  PopulateRequestOrRedirectHeaders(headers,
+  PopulateRequestOrRedirectHeaders(/*is_redirect=*/false, headers,
                                    /*removed_headers=*/nullptr);
 }
 
@@ -50,7 +74,8 @@ void BrowsingTopicsURLLoaderInterceptor::WillFollowRedirect(
     url_ = new_url.value();
   }
 
-  PopulateRequestOrRedirectHeaders(modified_headers, &removed_headers);
+  PopulateRequestOrRedirectHeaders(/*is_redirect=*/true, modified_headers,
+                                   &removed_headers);
 }
 
 void BrowsingTopicsURLLoaderInterceptor::OnReceiveRedirect(
@@ -67,6 +92,7 @@ void BrowsingTopicsURLLoaderInterceptor::OnReceiveResponse(
 }
 
 void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
+    bool is_redirect,
     net::HttpRequestHeaders& headers,
     std::vector<std::string>* removed_headers) {
   topics_eligible_ = false;
@@ -82,9 +108,10 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   RenderFrameHost* request_initiator_frame =
       document_.AsRenderFrameHostIfValid();
 
-  RecordDocumentPresentUma(request_initiator_frame);
-
   if (!request_initiator_frame) {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kNoInitiatorFrame,
+        is_redirect);
     return;
   }
 
@@ -92,10 +119,16 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   // function return false regardless, but adding this check to be more
   // explicit.
   if (request_initiator_frame->IsNestedWithinFencedFrame()) {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kFromFencedFrame,
+        is_redirect);
     return;
   }
 
   if (!request_initiator_frame->GetPage().IsPrimary()) {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kFromNonPrimaryPage,
+        is_redirect);
     return;
   }
 
@@ -104,11 +137,17 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   if (!static_cast<RenderFrameHostImpl*>(
            request_initiator_frame->GetMainFrame())
            ->IsOutermostMainFrame()) {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kFromNonPrimaryPage,
+        is_redirect);
     return;
   }
 
   url::Origin origin = url::Origin::Create(url_);
   if (origin.opaque()) {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kOpaqueCallerOrigin,
+        is_redirect);
     return;
   }
 
@@ -116,6 +155,9 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   // fetch initiator context must be secure. Does it imply that the requested
   // `origin` is always potentially trustworthy?
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kNonSecureCallerOrigin,
+        is_redirect);
     return;
   }
 
@@ -130,6 +172,9 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
           blink::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
           origin, *resource_request_)) {
+    RecordFetchRequestResultUma(BrowsingTopicsFetchRequestOrRedirectResult::
+                                    kDisallowedByPermissionsPolicy,
+                                is_redirect);
     return;
   }
 
@@ -146,6 +191,12 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
             request_initiator_frame->GetMainFrame());
     headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
                       DeriveTopicsHeaderValue(topics, num_versions_in_epochs));
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kSuccess, is_redirect);
+  } else {
+    RecordFetchRequestResultUma(
+        BrowsingTopicsFetchRequestOrRedirectResult::kDisallowedByContentClient,
+        is_redirect);
   }
 }
 

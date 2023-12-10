@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
+<translation id="1155815720264022949">Искате да затворите старите раздели?</translation>
 <translation id="1215127405478249895">Преглед на разделите</translation>
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Скриване на решетката на цял екран</translation>
 <translation id="5076161749301278626">Искате ли да видите отзивите за магазина?</translation>
 <translation id="5082793167783849073">Сравнявайте бързо страници, като създадете група. За да започнете, докоснете и задръжте дадена връзка.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> раздел, който не сте използвали наскоро}other{Имате <ph name="TABS_COUNT_MANY" /> раздела, които не сте използвали наскоро}}</translation>
 <translation id="5339733443032484186">Последният ви раздел</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
+<translation id="5545379293264651575">Затваряне без преглед</translation>
 <translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
 <translation id="5558362125926932819">Затваряне на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> раздела са групирани</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
 <translation id="8029301326595421733">Информацията за този магазин е отворена на пълната височина</translation>
-<translation id="814503310257431685">Преглед на всички</translation>
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

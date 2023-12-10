@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RunWith(AndroidJUnit4.class)
 public class MissingNativeLibraryTest {
-    @Rule public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
+    @Rule public CronetSmokeTestRule mRule = new CronetPlatformSmokeTestRule();
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     /** If the ".so" file is missing, instantiating the Cronet engine should throw an exception. */
@@ -55,10 +55,11 @@ public class MissingNativeLibraryTest {
         boolean foundNativeProvider = false;
         CronetProvider platformProvider = null;
         for (CronetProvider provider : availableProviders) {
-            assertThat(provider.isEnabled()).isTrue();
             if (provider.getName().equals(CronetProvider.PROVIDER_NAME_APP_PACKAGED)) {
+                assertThat(provider.isEnabled()).isTrue();
                 foundNativeProvider = true;
             } else if (provider.getName().equals(CronetProvider.PROVIDER_NAME_FALLBACK)) {
+                assertThat(provider.isEnabled()).isTrue();
                 platformProvider = provider;
             }
         }

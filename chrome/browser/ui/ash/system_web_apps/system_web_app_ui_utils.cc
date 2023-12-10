@@ -75,31 +75,31 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
 }  // namespace
 
-absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
+std::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
     const webapps::AppId& app_id) {
   auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetSystemAppTypeForAppId(app_id)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
-absl::optional<webapps::AppId> GetAppIdForSystemWebApp(
+std::optional<webapps::AppId> GetAppIdForSystemWebApp(
     Profile* profile,
     SystemWebAppType app_type) {
   auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetAppIdForSystemApp(app_type)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
-absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
+std::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
     SystemWebAppType app_type,
     int64_t display_id) {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
   if (!app_id)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
@@ -131,7 +131,7 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
     return;
   }
 
-  const absl::optional<webapps::AppId> app_id =
+  const std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile_for_launch, type);
   if (!app_id)
     return;
@@ -286,7 +286,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
                                  const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   if (!app_id)
     return nullptr;
@@ -333,11 +333,11 @@ bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type) {
          browser->app_controller()->system_app()->GetType() == type;
 }
 
-absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
-                                                             const GURL& url) {
+std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
+                                                            const GURL& url) {
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetCapturingSystemAppForURL(url)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {

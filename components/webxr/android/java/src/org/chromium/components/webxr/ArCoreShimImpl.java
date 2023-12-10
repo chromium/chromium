@@ -20,7 +20,7 @@ class ArCoreShimImpl implements ArCoreShim {
     @Override
     public @InstallStatus int requestInstall(Activity activity, boolean userRequestedInstall)
             throws UnavailableDeviceNotCompatibleException,
-                   UnavailableUserDeclinedInstallationException {
+                    UnavailableUserDeclinedInstallationException {
         try {
             ArCoreApk.InstallStatus installStatus =
                     ArCoreApk.getInstance().requestInstall(activity, userRequestedInstall);

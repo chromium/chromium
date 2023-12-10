@@ -357,9 +357,7 @@ public class VariationsSeedFetcherTest {
         assertEquals(curSeedInfo.getParsedVariationsSeed().getSerialNumber(), "savedSerialNumber");
     }
 
-    /**
-     * Test method for {@link VariationsSeedFetcher#downloadContent()} when IM-header is invalid.
-     */
+    /** Test method for {@link VariationsSeedFetcher#downloadContent()} when IM-header is invalid. */
     @Test
     public void testDownloadContent_invalidImHeader() throws IOException {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
@@ -557,9 +555,7 @@ public class VariationsSeedFetcherTest {
                         VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
     }
 
-    /**
-     * Test method for {@link VariationsSeedFetcher#fetchSeed()} with an exception when connecting
-     */
+    /** Test method for {@link VariationsSeedFetcher#fetchSeed()} with an exception when connecting */
     @Test
     public void testFetchSeed_IOException() throws IOException {
         doThrow(new IOException()).when(mConnection).connect();

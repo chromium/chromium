@@ -230,7 +230,7 @@ TEST(BluetoothTypeConverterTest, ConvertMojoSequenceAttributeToBlueZAttribute) {
     sequence_mojo->sequence.push_back(std::move(value_channel));
   }
   sequence_mojo->type_size = sequence_mojo->sequence.size();
-  sequence_mojo->value = absl::nullopt;
+  sequence_mojo->value = std::nullopt;
 
   auto sequence_blue_z =
       sequence_mojo.To<bluez::BluetoothServiceAttributeValueBlueZ>();
@@ -264,7 +264,7 @@ TEST(BluetoothTypeConverterTest,
   auto mojo = arc::mojom::BluetoothSdpAttribute::New();
   mojo->type = bluez::BluetoothServiceAttributeValueBlueZ::UINT;
   mojo->type_size = static_cast<uint32_t>(sizeof(uint32_t));
-  mojo->value = absl::nullopt;
+  mojo->value = std::nullopt;
 
   auto blue_z = mojo.To<bluez::BluetoothServiceAttributeValueBlueZ>();
 
@@ -280,7 +280,7 @@ TEST(BluetoothTypeConverterTest,
   auto mojo = arc::mojom::BluetoothSdpAttribute::New();
   mojo->type = bluez::BluetoothServiceAttributeValueBlueZ::SEQUENCE;
   mojo->type_size = 0;
-  mojo->value = absl::nullopt;
+  mojo->value = std::nullopt;
 
   auto blue_z = mojo.To<bluez::BluetoothServiceAttributeValueBlueZ>();
 

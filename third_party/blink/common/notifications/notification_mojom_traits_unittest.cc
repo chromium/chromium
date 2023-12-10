@@ -13,18 +13,12 @@
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace blink {
 
 namespace {
-
-SkBitmap CreateBitmap(int width, int height, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
 
 // Returns true if |lhs| and |rhs| have the same width and height and the
 // pixel at position (0, 0) is the same color in both.
@@ -214,13 +208,15 @@ TEST(NotificationStructTraitsTest, DataExceedsMaximumSize) {
 TEST(NotificationStructTraitsTest, NotificationResourcesRoundtrip) {
   NotificationResources resources;
 
-  resources.image = CreateBitmap(200, 100, SK_ColorMAGENTA);
-  resources.notification_icon = CreateBitmap(100, 50, SK_ColorGREEN);
-  resources.badge = CreateBitmap(20, 10, SK_ColorBLUE);
+  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
+  resources.notification_icon = gfx::test::CreateBitmap(100, 50, SK_ColorGREEN);
+  resources.badge = gfx::test::CreateBitmap(20, 10, SK_ColorBLUE);
 
   resources.action_icons.resize(2);
-  resources.action_icons[0] = CreateBitmap(10, 10, SK_ColorLTGRAY);
-  resources.action_icons[1] = CreateBitmap(11, 11, SK_ColorDKGRAY);
+  resources.action_icons[0] =
+      gfx::test::CreateBitmap(/*size=*/10, SK_ColorLTGRAY);
+  resources.action_icons[1] =
+      gfx::test::CreateBitmap(/*size=*/11, SK_ColorDKGRAY);
 
   NotificationResources roundtrip_resources;
 

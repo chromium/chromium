@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -17,7 +19,7 @@
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -31,7 +33,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -80,9 +81,9 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
 
   ~HatsServiceBrowserTestBase() override = default;
 
-  HatsService* GetHatsService() {
-    HatsService* service =
-        HatsServiceFactory::GetForProfile(browser()->profile(), true);
+  HatsServiceDesktop* GetHatsService() {
+    HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
+        HatsServiceFactory::GetForProfile(browser()->profile(), true));
     return service;
   }
 
@@ -95,7 +96,7 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
   }
 
  private:
-  absl::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
+  std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -218,20 +219,21 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, AlsoShowsSettingsSurvey) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SameMajorVersionNoShow) {
   SetMetricsConsent(true);
   base::HistogramTester histogram_tester;
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.last_major_version = version_info::GetVersion().components()[0];
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoReceivedSurveyInCurrentMilestone,
+      HatsServiceDesktop::ShouldShowSurveyReasons::
+          kNoReceivedSurveyInCurrentMilestone,
       1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, DifferentMajorVersionShow) {
   SetMetricsConsent(true);
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.last_major_version = 42;
   ASSERT_NE(42u, version_info::GetVersion().components()[0]);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
@@ -243,13 +245,13 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
                        SurveyStartedBeforeRequiredElapsedTimeNoShow) {
   SetMetricsConsent(true);
   base::HistogramTester histogram_tester;
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.last_survey_started_time = base::Time::Now();
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoLastSurveyTooRecent, 1);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoLastSurveyTooRecent, 1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 
@@ -257,14 +259,15 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
                        SurveyStartedBeforeElapsedTimeBetweenAnySurveys) {
   SetMetricsConsent(true);
   base::HistogramTester histogram_tester;
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.any_last_survey_started_time = base::Time::Now();
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent, 1);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
@@ -276,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoProfileTooNew, 1);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoProfileTooNew, 1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 
@@ -305,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
   SetMetricsConsent(true);
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.last_survey_check_time = base::Time::Now() - base::Hours(23);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
@@ -314,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedAfterADayToShow) {
   SetMetricsConsent(true);
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.last_survey_check_time = base::Time::Now() - base::Days(1);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
@@ -323,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedAfterADayToShow) {
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SurveyAlreadyFullNoShow) {
   SetMetricsConsent(true);
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   metadata.is_survey_full = true;
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
@@ -514,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SurveyCheckTimeRecorded) {
 
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
 
-  HatsService::SurveyMetadata metadata;
+  HatsServiceDesktop::SurveyMetadata metadata;
   GetHatsService()->GetSurveyMetadataForTesting(&metadata);
   EXPECT_TRUE(metadata.last_survey_check_time.has_value());
 }

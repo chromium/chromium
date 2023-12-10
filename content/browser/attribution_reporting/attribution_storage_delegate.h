@@ -20,8 +20,10 @@
 #include "content/common/content_export.h"
 
 namespace attribution_reporting {
+class EventLevelEpsilon;
 class EventReportWindows;
 class MaxEventLevelReports;
+class TriggerSpecs;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -136,13 +138,13 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       std::vector<network::TriggerVerification>& verifications) = 0;
 
   // Returns the rate used to determine whether to randomize the response to a
-  // source with the given source type and reporting windows, as implemented
-  // by`GetRandomizedResponse()`.Must be in the range [0, 1] and remain constant
+  // source with the given trigger specs, as implemented by
+  // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate for calls with identical inputs.
   virtual double GetRandomizedResponseRate(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      attribution_reporting::MaxEventLevelReports) const = 0;
+      const attribution_reporting::TriggerSpecs&,
+      attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon) const = 0;
 
   using GetRandomizedResponseResult =
       base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
@@ -152,8 +154,9 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // limit.
   virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
+      const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon,
       base::Time source_time) const = 0;
 
   int GetMaxAggregatableReportsPerSource() const;

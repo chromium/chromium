@@ -13,9 +13,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.url.GURL;
 
-/**
- * Bare minimal wrapper class of native content::DropData.
- */
+/** Bare minimal wrapper class of native content::DropData. */
 @JNINamespace("ui")
 public class DropDataAndroid {
     public final String text;
@@ -39,8 +37,12 @@ public class DropDataAndroid {
 
     @VisibleForTesting
     @CalledByNative
-    static DropDataAndroid create(String text, GURL gurl, byte[] imageContent,
-            String imageContentExtension, String imageFilename) {
+    static DropDataAndroid create(
+            String text,
+            GURL gurl,
+            byte[] imageContent,
+            String imageContentExtension,
+            String imageFilename) {
         return new DropDataAndroid(text, gurl, imageContent, imageContentExtension, imageFilename);
     }
 
@@ -56,7 +58,8 @@ public class DropDataAndroid {
 
     /** Return whether this data presents an image. */
     public boolean hasImage() {
-        return imageContent != null && !TextUtils.isEmpty(imageContentExtension)
+        return imageContent != null
+                && !TextUtils.isEmpty(imageContentExtension)
                 && !TextUtils.isEmpty(imageFilename);
     }
 

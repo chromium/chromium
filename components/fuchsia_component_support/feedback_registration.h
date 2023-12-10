@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_FEEDBACK_REGISTRATION_H_
 #define COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_FEEDBACK_REGISTRATION_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace fuchsia_component_support {
 

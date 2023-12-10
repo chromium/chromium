@@ -15,18 +15,25 @@ namespace password_manager::features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kAttachLogsToAutofillRaterExtensionReport);
-#endif
-
 BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_DECLARE_FEATURE(kButterOnDesktopFollowup);
+#endif
+
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kRemoveUPMUnenrollment);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid);
+BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
@@ -41,6 +48,11 @@ BASE_DECLARE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Have GPM passkeys trigger prefetching affiliation like passwords do.
+BASE_DECLARE_FEATURE(kPasskeysPrefetchAffiliations);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -48,7 +60,7 @@ BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);
 BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -66,11 +78,14 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
 
 BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
-// If |kUsernameFirstFlowWithIntermediateValues| is enabled, the size of LRU
+// If `kUsernameFirstFlowStoreSeveralValues` is enabled, the size of LRU
 // cache that stores all username candidates outside the form.
 extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore;
 
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
+// If `kUsernameFirstFlowWithIntermediateValues` is enabled, after this amount
+// of minutes single username will not be used in the save prompt.
+extern const base::FeatureParam<int> kSingleUsernameTimeToLive;
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
@@ -79,6 +94,14 @@ BASE_DECLARE_FEATURE(kUseGMSCoreForBrandingInfo);
 #endif
 
 // All features parameters in alphabetical order.
+
+#if BUILDFLAG(IS_ANDROID)
+// Minimum GMSCore version required to remove unenrollment. Setting version
+// lower than the default one will have no effect.
+inline constexpr base::FeatureParam<int>
+    kMinimumGMSCoreVersionToRemoveUnenrollment{
+        &kRemoveUPMUnenrollment, "min_gms_core_version", 225012000};
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // This enum supports enabling specific arms of the
@@ -122,6 +145,12 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>
         &kPasswordGenerationExperiment, "password_generation_variation",
         PasswordGenerationVariation::kTrustedAdvice,
         &kPasswordGenerationExperimentVariationOption};
+
+inline constexpr base::FeatureParam<std::string>
+    kPasswordGenerationExperimentSurveyTriggerId{
+        &kPasswordGenerationExperiment,
+        "PasswordGenerationExperimentSurveyTriggedId", /*default_value=*/""};
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager::features

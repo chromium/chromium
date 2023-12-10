@@ -15,9 +15,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Default implementation for {@link ChromeGoogleApiClient}.
- */
+/** Default implementation for {@link ChromeGoogleApiClient}. */
 public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
     private static final String TAG = "Icing";
 
@@ -32,8 +30,8 @@ public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
      * @param requireFirstPartyBuild true if the given client can only be used in a first-party
      *            build.
      */
-    public ChromeGoogleApiClientImpl(Context context, GoogleApiClient client,
-            boolean requireFirstPartyBuild) {
+    public ChromeGoogleApiClientImpl(
+            Context context, GoogleApiClient client, boolean requireFirstPartyBuild) {
         mApplicationContext = context.getApplicationContext();
         mClient = client;
         mExternalAuthUtils = ExternalAuthUtils.getInstance();

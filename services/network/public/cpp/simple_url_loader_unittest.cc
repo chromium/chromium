@@ -8,6 +8,7 @@
 
 #include <list>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -425,7 +425,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
 
   // SimpleURLLoaderStreamConsumer implementation:
 
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     EXPECT_FALSE(done_);
@@ -935,15 +935,14 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnRedirectCallback) {
       CreateHelperForURL(test_server_.GetURL(
           "/server-redirect?" + test_server_.GetURL("/echo").spec()));
 
-  SimpleLoaderTestHelper* unowned_test_helper = test_helper.get();
   base::RunLoop run_loop;
-  unowned_test_helper->simple_url_loader()->SetOnRedirectCallback(
-      base::BindRepeating(
-          [](std::unique_ptr<SimpleLoaderTestHelper> test_helper,
-             base::RunLoop* run_loop, const GURL& url_before_redirect,
-             const net::RedirectInfo& redirect_info,
-             const network::mojom::URLResponseHead& response_head,
-             std::vector<std::string>* to_be_removed_headers) {
+  test_helper->simple_url_loader()->SetOnRedirectCallback(
+      base::BindLambdaForTesting(
+          [&](const GURL& url_before_redirect,
+              const net::RedirectInfo& redirect_info,
+              const network::mojom::URLResponseHead& response_head,
+              std::vector<std::string>* to_be_removed_headers) {
+            CHECK(test_helper);
             test_helper.reset();
             // Access the parameters to trigger a memory error if they have been
             // deleted. (ASAN build should catch it)
@@ -951,12 +950,9 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnRedirectCallback) {
             EXPECT_TRUE(url_before_redirect.is_valid());
             EXPECT_FALSE(redirect_info.new_url.is_empty());
             EXPECT_NE(to_be_removed_headers, nullptr);
-
-            run_loop->Quit();
-          },
-          base::Passed(std::move(test_helper)), &run_loop));
-
-  unowned_test_helper->StartSimpleLoader(url_loader_factory_.get());
+            run_loop.Quit();
+          }));
+  test_helper->StartSimpleLoader(url_loader_factory_.get());
 
   run_loop.Run();
 }
@@ -3720,20 +3716,13 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnUploadProgressCallback) {
   test_helper->simple_url_loader()->AttachStringForUpload(long_string,
                                                           "text/plain");
 
-  SimpleLoaderTestHelper* unowned_test_helper = test_helper.get();
   base::RunLoop run_loop;
-  unowned_test_helper->simple_url_loader()->SetOnUploadProgressCallback(
-      base::BindRepeating(
-          [](std::unique_ptr<SimpleLoaderTestHelper> test_helper,
-             base::RepeatingClosure quit_closure, uint64_t current,
-             uint64_t total) {
-            test_helper.reset();
-            std::move(quit_closure).Run();
-          },
-          base::Passed(std::move(test_helper)), run_loop.QuitClosure()));
-
-  unowned_test_helper->StartSimpleLoader(url_loader_factory_.get());
-
+  test_helper->simple_url_loader()->SetOnUploadProgressCallback(
+      base::BindLambdaForTesting([&](uint64_t current, uint64_t total) {
+        test_helper.reset();
+        run_loop.Quit();
+      }));
+  test_helper->StartSimpleLoader(url_loader_factory_.get());
   run_loop.Run();
 }
 

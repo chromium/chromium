@@ -60,7 +60,7 @@ CSPCheckResult CSPContext::IsAllowedByCsp(
   return result;
 }
 
-bool CSPContext::SchemeShouldBypassCSP(const base::StringPiece& scheme) {
+bool CSPContext::SchemeShouldBypassCSP(const std::string_view& scheme) {
   // Blink uses its SchemeRegistry to check if a scheme should be bypassed.
   // It can't be used on the browser process. It is used for two things:
   // 1) Bypassing the "chrome-extension" scheme when chrome is built with the

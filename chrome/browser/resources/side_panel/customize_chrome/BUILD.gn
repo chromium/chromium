@@ -23,16 +23,18 @@ build_webui("build") {
     "categories.ts",
     "check_mark_wrapper.ts",
     "chrome_colors.ts",
-    "wallpaper_search/combobox/customize_chrome_combobox.ts",
     "hover_button.ts",
     "shortcuts.ts",
     "themes.ts",
     "theme_snapshot.ts",
+    "wallpaper_search/combobox/customize_chrome_combobox.ts",
     "wallpaper_search/wallpaper_search.ts",
+    "wallpaper_search/wallpaper_search_tile.ts",
   ]
 
   non_web_component_files = [
     "chrome_cart_proxy.ts",
+    "common.ts",
     "customize_chrome_api_proxy.ts",
     "wallpaper_search/wallpaper_search_proxy.ts",
     "window_proxy.ts",

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "shopping_list_ui_tab_helper.*": [
-    "+chrome/browser/ui/views",
-  ]
-}

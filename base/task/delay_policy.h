@@ -40,4 +40,4 @@ inline DelayPolicy MaybeOverrideDelayPolicy(DelayPolicy delay_policy,
 }  // namespace subtle
 }  // namespace base
 
-#endif  // BASE_TASK_SEQUENCED_TASK_RUNNER_H_
+#endif  // BASE_TASK_DELAY_POLICY_H_

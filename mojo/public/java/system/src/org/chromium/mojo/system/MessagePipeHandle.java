@@ -13,15 +13,11 @@ import java.util.List;
  */
 public interface MessagePipeHandle extends Handle {
 
-    /**
-     * Flags for the message pipe creation operation.
-     */
+    /** Flags for the message pipe creation operation. */
     public static class CreateFlags extends Flags<CreateFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final CreateFlags NONE = CreateFlags.none().immutable();
 
         /**
@@ -39,12 +35,9 @@ public interface MessagePipeHandle extends Handle {
         public static CreateFlags none() {
             return new CreateFlags(FLAG_NONE);
         }
-
     }
 
-    /**
-     * Used to specify creation parameters for a message pipe to |Core#createMessagePipe()|.
-     */
+    /** Used to specify creation parameters for a message pipe to |Core#createMessagePipe()|. */
     public static class CreateOptions {
         private CreateFlags mFlags = CreateFlags.NONE;
 
@@ -54,18 +47,13 @@ public interface MessagePipeHandle extends Handle {
         public CreateFlags getFlags() {
             return mFlags;
         }
-
     }
 
-    /**
-     * Flags for the write operations on MessagePipeHandle .
-     */
+    /** Flags for the write operations on MessagePipeHandle . */
     public static class WriteFlags extends Flags<WriteFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with no bit set.
-         */
+        /** Immutable flag with no bit set. */
         public static final WriteFlags NONE = WriteFlags.none().immutable();
 
         /**
@@ -85,15 +73,11 @@ public interface MessagePipeHandle extends Handle {
         }
     }
 
-    /**
-     * Flags for the read operations on MessagePipeHandle.
-     */
+    /** Flags for the read operations on MessagePipeHandle. */
     public static class ReadFlags extends Flags<ReadFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with no bit set.
-         */
+        /** Immutable flag with no bit set. */
         public static final ReadFlags NONE = ReadFlags.none().immutable();
 
         /**
@@ -111,24 +95,17 @@ public interface MessagePipeHandle extends Handle {
         public static ReadFlags none() {
             return new ReadFlags(FLAG_NONE);
         }
-
     }
 
-    /**
-     * Result of the |readMessage| method.
-     */
+    /** Result of the |readMessage| method. */
     public static class ReadMessageResult {
-        /**
-         * If a message was read, this contains the bytes of its data.
-         */
+        /** If a message was read, this contains the bytes of its data. */
         public byte[] mData;
-        /**
-         * If a message was read, this contains the raw handle values.
-         */
+
+        /** If a message was read, this contains the raw handle values. */
         public long[] mRawHandles;
-        /**
-         * If a message was read, the handles contained in the message, undefined otherwise.
-         */
+
+        /** If a message was read, the handles contained in the message, undefined otherwise. */
         public List<UntypedHandle> mHandles;
     }
 

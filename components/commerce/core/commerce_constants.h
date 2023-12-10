@@ -58,6 +58,18 @@ extern const char kUTMCampaignValueForDiscounts[];
 
 // Prefix of UTM labels, including the underscore.
 extern const char kUTMPrefix[];
+
+// Open graph keys.
+extern const char kOgImage[];
+extern const char kOgPriceAmount[];
+extern const char kOgPriceCurrency[];
+extern const char kOgProductLink[];
+extern const char kOgTitle[];
+extern const char kOgType[];
+
+// Specific open graph values we're interested in.
+extern const char kOgTypeOgProduct[];
+extern const char kOgTypeProductItem[];
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

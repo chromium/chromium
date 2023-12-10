@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/system/invitation.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -17,7 +19,6 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -103,7 +103,7 @@ class MAYBE_InvitationCppTest
         base::GetMultiProcessTestChildBaseCommandLine());
 
     base::LaunchOptions launch_options;
-    absl::optional<PlatformChannel> channel;
+    std::optional<PlatformChannel> channel;
     PlatformChannelEndpoint channel_endpoint;
     PlatformChannelServerEndpoint server_endpoint;
     switch (transport_type) {
@@ -229,7 +229,7 @@ class MAYBE_InvitationCppTest
   }
 
   static void WriteMessage(const ScopedMessagePipeHandle& pipe,
-                           base::StringPiece message) {
+                           std::string_view message) {
     CHECK_EQ(MOJO_RESULT_OK,
              WriteMessageRaw(pipe.get(), message.data(), message.size(),
                              nullptr, 0, MOJO_WRITE_MESSAGE_FLAG_NONE));

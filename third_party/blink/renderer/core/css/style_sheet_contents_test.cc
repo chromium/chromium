@@ -63,4 +63,19 @@ TEST(StyleSheetContentsTest, InsertFontFaceRule) {
   EXPECT_TRUE(style_sheet->HasFontFaceRule());
 }
 
+TEST(StyleSheetContentsTest,
+     HasFailedOrCanceledSubresources_StartingStyleCrash) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  style_sheet->ParseString("@starting-style {}");
+  EXPECT_EQ(1U, style_sheet->RuleCount());
+
+  // This test is a regression test for a CHECK failure for casting
+  // StyleRuleStartingStyle to StyleRuleGroup in
+  // HasFailedOrCanceledSubresources().
+  EXPECT_FALSE(style_sheet->HasFailedOrCanceledSubresources());
+}
+
 }  // namespace blink

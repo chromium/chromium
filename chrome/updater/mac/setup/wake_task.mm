@@ -6,6 +6,8 @@
 
 #include <Foundation/Foundation.h>
 
+#include <optional>
+
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
@@ -15,7 +17,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -39,10 +40,10 @@ NSString* MakeProgramArgumentWithValue(const char* argument,
   return base::SysUTF8ToNSString(base::StrCat({"--", argument, "=", value}));
 }
 
-absl::optional<base::FilePath> GetWakeTaskTarget(UpdaterScope scope) {
-  absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
+std::optional<base::FilePath> GetWakeTaskTarget(UpdaterScope scope) {
+  std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   if (!install_dir) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return install_dir->Append("Current").Append(GetExecutableRelativePath());
 }
@@ -50,7 +51,7 @@ absl::optional<base::FilePath> GetWakeTaskTarget(UpdaterScope scope) {
 }  // namespace
 
 NSDictionary* CreateWakeLaunchdPlist(UpdaterScope scope) {
-  absl::optional<base::FilePath> target = GetWakeTaskTarget(scope);
+  std::optional<base::FilePath> target = GetWakeTaskTarget(scope);
   if (!target) {
     return nil;
   }

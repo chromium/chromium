@@ -4,6 +4,18 @@
 
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -17,18 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
@@ -89,7 +90,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 widthPx,
                 ACTIVITY_SIDE_SHEET_POSITION_END,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
     }
 
     private PartialCustomTabSideSheetStrategy createLeftPcctSideSheetStrategy(
@@ -107,7 +108,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 widthPx,
                 position,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
     }
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
@@ -308,7 +309,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         mPCCTTestRule.configLandscapeMode();
-        createLeftPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+        createLeftPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
 
         mPCCTTestRule.verifyWindowFlagsSet();
         assertTabIsAtFullLandscapeHeight();
@@ -335,7 +336,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         2000,
                         ACTIVITY_SIDE_SHEET_POSITION_END,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
 
@@ -352,7 +353,8 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_handle_height));
         mPCCTTestRule.configLandscapeMode();
         var strategy =
-                createLeftPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                createLeftPcctSideSheetStrategy(
+                        2000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
 
@@ -383,7 +385,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         mPCCTTestRule.configLandscapeMode();
-        createLeftPcctSideSheetStrategy(3000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+        createLeftPcctSideSheetStrategy(3000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
 
         mPCCTTestRule.verifyWindowFlagsSet();
         assertTabIsAtFullLandscapeHeight();
@@ -417,7 +419,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         2000,
                         ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         mPCCTTestRule.verifyWindowFlagsSet();
@@ -447,7 +449,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         2000,
                         ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         mPCCTTestRule.verifyWindowFlagsSet();
@@ -474,7 +476,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         2000,
                         ACTIVITY_SIDE_SHEET_POSITION_END,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         mPCCTTestRule.verifyWindowFlagsSet();
@@ -504,7 +506,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         1000,
                         ACTIVITY_SIDE_SHEET_POSITION_END,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -568,7 +570,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         800,
                         ACTIVITY_SIDE_SHEET_POSITION_END,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -724,7 +726,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         700,
                         ACTIVITY_SIDE_SHEET_POSITION_END,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         assertNotEquals("Corner not rounded", 0, mPCCTTestRule.mLayoutParams.topMargin);

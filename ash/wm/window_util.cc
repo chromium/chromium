@@ -12,7 +12,6 @@
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -31,7 +30,6 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -40,6 +38,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -345,7 +344,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   // 3. If the window is not the mru window in snap group i.e. the corresponding
   // overview item representation for the snap group has been created.
   auto should_exclude_in_clamshell = [&]() -> bool {
-    if (IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    if (IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
       if (auto* split_view_overview_session =
               RootWindowController::ForWindow(window)
                   ->split_view_overview_session();
@@ -369,7 +368,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
     return true;
   }
 
-  return Shell::Get()->tablet_mode_controller()->InTabletMode()
+  return display::Screen::GetScreen()->InTabletMode()
              ? (window == split_view_controller->GetDefaultSnappedWindow())
              : should_exclude_in_clamshell();
 }
@@ -501,15 +500,18 @@ aura::Window* GetFloatedWindowForActiveDesk() {
 bool ShouldMinimizeTopWindowOnBack() {
   Shell* shell = Shell::Get();
   // We never want to minimize the main app window in the Kiosk session.
-  if (shell->session_controller()->IsRunningInAppMode())
+  if (shell->session_controller()->IsRunningInAppMode()) {
     return false;
+  }
 
-  if (!shell->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   aura::Window* window = GetTopWindow();
-  if (!window)
+  if (!window) {
     return false;
+  }
 
   // Do not minimize the window if it is in overview. This can avoid unnecessary
   // window minimize animation.
@@ -653,17 +655,15 @@ bool ShouldRoundThumbnailWindow(views::View* backdrop_view,
   return !backdrop_bounds_in_screen.Contains(thumbnail_bounds_in_screen);
 }
 
-bool IsFasterSplitScreenOrSnapGroupArm1Enabled() {
-  if (Shell::Get()->IsInTabletMode()) {
-    // FasterSplitScreen is not supported in tablet mode.
-    return false;
-  }
-  if (features::IsFasterSplitScreenSetupEnabled()) {
-    return true;
-  }
-  auto* snap_group_controller = SnapGroupController::Get();
-  return snap_group_controller &&
-         snap_group_controller->IsArm1AutomaticallyLockEnabled();
+float GetSnapRatioForWindow(aura::Window* window) {
+  WindowState* window_state = WindowState::Get(window);
+  return window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
+}
+
+bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell() {
+  return !Shell::Get()->IsInTabletMode() &&
+         (features::IsFasterSplitScreenSetupEnabled() ||
+          SnapGroupController::Get());
 }
 
 void MaybeStartSplitViewOverview(aura::Window* window,

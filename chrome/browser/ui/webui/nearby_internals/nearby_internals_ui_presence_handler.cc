@@ -58,7 +58,7 @@ std::string PresenceActionToString(
 // Converts |presence_device| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
 base::Value::Dict PresenceDeviceToDictionary(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   base::Value::Dict dictionary;
   dictionary.Set(kDeviceNameKey, presence_device.GetName());
@@ -214,21 +214,21 @@ void NearbyInternalsPresenceHandler::
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   FireWebUIListener("presence-device-found",
                     PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   FireWebUIListener("presence-device-changed",
                     PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceLost(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   FireWebUIListener("presence-device-lost",
                     PresenceDeviceToDictionary(presence_device));

@@ -17,7 +17,8 @@
 
 // Called by SigninPromoView when the user taps the primary button with one
 // or more identities on the device.
-- (void)signinPromoViewDidTapSigninWithDefaultAccount:(SigninPromoView*)view;
+- (void)signinPromoViewDidTapPrimaryButtonWithDefaultAccount:
+    (SigninPromoView*)view;
 
 // Called by SigninPromoView when the user taps the secondary button with one
 // or more identities on the device.

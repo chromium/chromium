@@ -26,10 +26,11 @@ namespace blink {
 static constexpr size_t kMaximumStringLength = 2 * 1024;
 
 bool PaymentsValidators::IsValidCurrencyCodeFormat(
+    v8::Isolate* isolate,
     const String& code,
     String* optional_error_message) {
   auto* regexp = MakeGarbageCollected<ScriptRegexp>(
-      "^[A-Z]{3}$", kTextCaseUnicodeInsensitive);
+      isolate, "^[A-Z]{3}$", kTextCaseUnicodeInsensitive);
   if (regexp->Match(code) == 0)
     return true;
 
@@ -42,11 +43,12 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
   return false;
 }
 
-bool PaymentsValidators::IsValidAmountFormat(const String& amount,
+bool PaymentsValidators::IsValidAmountFormat(v8::Isolate* isolate,
+                                             const String& amount,
                                              const String& item_name,
                                              String* optional_error_message) {
-  auto* regexp = MakeGarbageCollected<ScriptRegexp>("^-?[0-9]+(\\.[0-9]+)?$",
-                                                    kTextCaseSensitive);
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>(
+      isolate, "^-?[0-9]+(\\.[0-9]+)?$", kTextCaseSensitive);
   if (regexp->Match(amount) == 0)
     return true;
 
@@ -59,10 +61,11 @@ bool PaymentsValidators::IsValidAmountFormat(const String& amount,
 }
 
 bool PaymentsValidators::IsValidCountryCodeFormat(
+    v8::Isolate* isolate,
     const String& code,
     String* optional_error_message) {
-  auto* regexp =
-      MakeGarbageCollected<ScriptRegexp>("^[A-Z]{2}$", kTextCaseSensitive);
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>(isolate, "^[A-Z]{2}$",
+                                                    kTextCaseSensitive);
   if (regexp->Match(code) == 0)
     return true;
 
@@ -75,9 +78,11 @@ bool PaymentsValidators::IsValidCountryCodeFormat(
 }
 
 bool PaymentsValidators::IsValidShippingAddress(
+    v8::Isolate* isolate,
     const payments::mojom::blink::PaymentAddressPtr& address,
     String* optional_error_message) {
-  return IsValidCountryCodeFormat(address->country, optional_error_message);
+  return IsValidCountryCodeFormat(isolate, address->country,
+                                  optional_error_message);
 }
 
 bool PaymentsValidators::IsValidErrorMsgFormat(const String& error,
@@ -149,13 +154,14 @@ bool PaymentsValidators::IsValidPaymentValidationErrorsFormat(
                                      optional_error_message));
 }
 
-bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
+bool PaymentsValidators::IsValidMethodFormat(v8::Isolate* isolate,
+                                             const String& identifier) {
   KURL url(NullURL(), identifier);
   if (!url.IsValid()) {
     // Syntax for a valid standardized PMI:
     // https://www.w3.org/TR/payment-method-id/#dfn-syntax-of-a-standardized-payment-method-identifier
     auto* regexp = MakeGarbageCollected<ScriptRegexp>(
-        "^[a-z]+[0-9a-z]*(-[a-z]+[0-9a-z]*)*$", kTextCaseSensitive);
+        isolate, "^[a-z]+[0-9a-z]*(-[a-z]+[0-9a-z]*)*$", kTextCaseSensitive);
     return regexp->Match(identifier) == 0;
   }
 
@@ -184,7 +190,7 @@ void PaymentsValidators::ValidateAndStringifyObject(
     return;
   }
 
-  output = ToBlinkString<String>(value, kDoNotExternalize);
+  output = ToBlinkString<String>(isolate, value, kDoNotExternalize);
 
   // Implementation defined constant controlling the allowed JSON length.
   static constexpr size_t kMaxJSONStringLength = 1024 * 1024;

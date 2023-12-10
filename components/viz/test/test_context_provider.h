@@ -82,9 +82,21 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gfx::GpuMemoryBufferHandle buffer_handle) override;
+
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,
@@ -135,9 +147,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const gpu::Mailbox& mailbox) override;
 
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> MapSharedImage(
-      const gpu::Mailbox& mailbox) override;
-
   size_t shared_image_count() const { return shared_images_.size(); }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
   const gpu::SyncToken& MostRecentGeneratedToken() const {
@@ -160,8 +169,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   gpu::SyncToken most_recent_destroy_token_;
   base::flat_set<gpu::Mailbox> shared_images_;
 
-  base::flat_map<gpu::Mailbox, std::unique_ptr<gfx::GpuMemoryBuffer>>
-      mailbox_to_gmb_map_;
   gpu::SharedImageCapabilities shared_image_capabilities_;
 };
 

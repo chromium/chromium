@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -59,6 +60,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -273,6 +275,7 @@ public class DownloadTest {
     @Test
     @LargeTest
     @Feature({"Downloads"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testHttpGetDownload() throws Exception {
         loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
@@ -301,6 +304,7 @@ public class DownloadTest {
     @Test
     @LargeTest
     @Feature({"Downloads"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @Policies.Add({@Policies.Item(key = "PromptForDownloadLocation", string = "false")})
     public void testCloseEmptyDownloadTab() throws Exception {
         loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));

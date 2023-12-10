@@ -28,7 +28,7 @@ class ProcessHostedContentTypesAggregatorTest : public GraphTestHarness {
 
   bool IsHosting(const TestNodeWrapper<ProcessNodeImpl>& process_node,
                  ContentType content_type) {
-    return process_node->hosted_content_types().Has(content_type);
+    return process_node->GetHostedContentTypes().Has(content_type);
   }
 };
 
@@ -86,11 +86,11 @@ TEST_F(ProcessHostedContentTypesAggregatorTest,
 
 TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->is_visible());
+  EXPECT_FALSE(page_node->IsVisible());
 
   // Create a main frame in a first process.
   auto process_node_1 = CreateNode<ProcessNodeImpl>();
-  EXPECT_TRUE(process_node_1->hosted_content_types().Empty());
+  EXPECT_TRUE(process_node_1->GetHostedContentTypes().Empty());
   auto main_frame_node =
       CreateFrameNodeAutoId(process_node_1.get(), page_node.get());
 
@@ -103,7 +103,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
 
   // Create a child frame node in another process.
   auto process_node_2 = CreateNode<ProcessNodeImpl>();
-  EXPECT_TRUE(process_node_2->hosted_content_types().Empty());
+  EXPECT_TRUE(process_node_2->GetHostedContentTypes().Empty());
   auto child_frame_node = CreateFrameNodeAutoId(
       process_node_2.get(), page_node.get(), main_frame_node.get());
 

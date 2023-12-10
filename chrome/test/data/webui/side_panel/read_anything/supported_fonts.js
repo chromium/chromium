@@ -35,11 +35,11 @@
     assertEquals(buttons.length, expected);
   };
 
-  assertFontForLanguageCode('en', 7);
-  assertFontForLanguageCode('es', 7);
+  assertFontForLanguageCode('en', 8);
+  assertFontForLanguageCode('es', 8);
   assertFontForLanguageCode('zz', 2);
   assertFontForLanguageCode('hi', 3);
-  assertFontForLanguageCode('tr', 6);
+  assertFontForLanguageCode('tr', 7);
 
   return result;
 })();

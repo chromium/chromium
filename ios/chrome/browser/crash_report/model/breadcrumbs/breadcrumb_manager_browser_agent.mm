@@ -10,12 +10,12 @@
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirm_dialog_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_prompt_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/app_launcher_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -72,14 +72,14 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       if (!status.active_web_state_change()) {
         return;
       }
-      absl::optional<int> old_tab_id =
+      std::optional<int> old_tab_id =
           status.old_active_web_state
-              ? absl::optional<int>(GetTabId(status.old_active_web_state))
-              : absl::nullopt;
-      absl::optional<int> new_tab_id =
+              ? std::optional<int>(GetTabId(status.old_active_web_state))
+              : std::nullopt;
+      std::optional<int> new_tab_id =
           status.new_active_web_state
-              ? absl::optional<int>(GetTabId(status.new_active_web_state))
-              : absl::nullopt;
+              ? std::optional<int>(GetTabId(status.new_active_web_state))
+              : std::nullopt;
       LogActiveTabChanged(old_tab_id, new_tab_id,
                           web_state_list->active_index());
       break;

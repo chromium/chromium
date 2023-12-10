@@ -1,53 +1,24 @@
 This is a testharness.js-based test.
-[PASS] Test that logical border-*-radius properties are supported.
-[PASS] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-[PASS] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-[PASS] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-[PASS] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
 [FAIL] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', border-bottom-right-radius expected "1px" but got "3px"
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '.
 [FAIL] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: 'border-start-start-radius' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', border-end-end-radius expected "1px" but got "3px"
 [FAIL] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
   assert_equals: 'border-start-start-radius', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', border-end-end-radius expected "1px" but got "3px"
-[PASS] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-[PASS] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
 [FAIL] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', border-top-right-radius expected "1px" but got "2px"
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '.
 [FAIL] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: 'border-start-start-radius' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', border-top-left-radius expected "1px" but got "5px"
 [FAIL] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
   assert_equals: 'border-start-start-radius', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', border-top-left-radius expected "1px" but got "5px"
-[PASS] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-[PASS] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
 [FAIL] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', border-bottom-left-radius expected "1px" but got "3px"
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '.
 [FAIL] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: 'border-start-start-radius' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', border-top-left-radius expected "1px" but got "5px"
 [FAIL] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
   assert_equals: 'border-start-start-radius', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', border-top-left-radius expected "1px" but got "5px"
-[PASS] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-[PASS] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
 [FAIL] Test that logical border-*-radius properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
   assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', border-top-left-radius expected "1px" but got "2px"
-[PASS] Test that border-*-radius shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '.
 [FAIL] Test that border-*-radius properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
   assert_equals: 'border-start-start-radius' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', border-top-left-radius expected "5px" but got "1px"
 [FAIL] Test that border-*-radius properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.

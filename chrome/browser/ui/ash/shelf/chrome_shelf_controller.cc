@@ -491,8 +491,10 @@ bool ChromeShelfController::IsOpen(const ash::ShelfID& id) const {
 void ChromeShelfController::LaunchApp(const ash::ShelfID& id,
                                       ash::ShelfLaunchSource source,
                                       int event_flags,
-                                      int64_t display_id) {
-  shelf_controller_helper_->LaunchApp(id, source, event_flags, display_id);
+                                      int64_t display_id,
+                                      bool new_window) {
+  shelf_controller_helper_->LaunchApp(id, source, event_flags, display_id,
+                                      new_window);
 }
 
 void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,
@@ -1192,7 +1194,8 @@ void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {
 void ChromeShelfController::OnAppImageUpdated(
     const std::string& app_id,
     const gfx::ImageSkia& image,
-    const absl::optional<gfx::ImageSkia>& badge_image) {
+    bool is_placeholder_icon,
+    const std::optional<gfx::ImageSkia>& badge_image) {
   TRACE_EVENT0("ui", "ChromeShelfController::OnAppImageUpdated");
   bool is_standard_icon = true;
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
@@ -1204,7 +1207,7 @@ void ChromeShelfController::OnAppImageUpdated(
   }
 
   if (is_standard_icon) {
-    UpdateAppImage(app_id, badge_image, image);
+    UpdateAppImage(app_id, badge_image, is_placeholder_icon, image);
     return;
   }
 
@@ -1225,12 +1228,14 @@ void ChromeShelfController::OnAppImageUpdated(
   standard_icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateStandardImageOnWorkerThread, copy),
       base::BindOnce(&ChromeShelfController::UpdateAppImage,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, badge_image));
+                     weak_ptr_factory_.GetWeakPtr(), app_id, badge_image,
+                     is_placeholder_icon));
 }
 
 void ChromeShelfController::UpdateAppImage(
     const std::string& app_id,
-    const absl::optional<gfx::ImageSkia>& badge_image,
+    const std::optional<gfx::ImageSkia>& badge_image,
+    bool is_placeholder_icon,
     const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "ChromeShelfController::UpdateAppImage");
   // TODO: need to get this working for shortcuts.
@@ -1243,6 +1248,7 @@ void ChromeShelfController::UpdateAppImage(
     }
     item.image = image;
     item.badge_image = badge_image.value_or(gfx::ImageSkia());
+    item.has_placeholder_icon = is_placeholder_icon;
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     item.notification_badge_color =
         ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(app_id,

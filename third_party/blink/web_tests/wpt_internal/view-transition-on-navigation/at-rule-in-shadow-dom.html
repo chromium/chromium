@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View Transitions: @view-transitions not applied from shadow tree.</title>
+<title>View Transitions: @view-transition not applied from shadow tree.</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -13,8 +13,8 @@ if (!is_new_page) {
     const host = document.querySelector("#host");
     const shadow = host.attachShadow({ mode: "open" });
     const style = document.createElement("style");
-    style.textContent = `@view-transitions {
-      navigation-trigger: cross-document-same-origin;
+    style.textContent = `@view-transition {
+      navigation: auto;
     }`;
     shadow.appendChild(style);
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -26,8 +26,8 @@ if (!is_new_page) {
   // be effective by the time the <body> element is parsed and only elements in
   // <body> can be a shadow root.
   const style = document.createElement("style");
-  style.textContent = `@view-transitions {
-    navigation-trigger: cross-document-same-origin;
+  style.textContent = `@view-transition {
+    navigation: auto;
   }`;
   document.head.appendChild(style);
   promise_test(() => {

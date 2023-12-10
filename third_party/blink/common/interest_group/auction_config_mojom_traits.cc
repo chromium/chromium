@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -180,6 +182,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadRequiredSellerCapabilities(
           &out->required_seller_capabilities) ||
       !data.ReadRequestedSize(&out->requested_size) ||
+      !data.ReadAllSlotsRequestedSizes(&out->all_slots_requested_sizes) ||
       !data.ReadAuctionNonce(&out->auction_nonce) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
@@ -221,6 +224,27 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     // auctions.
     // Component auctions may not have their own nested component auctions.
     if (!component_auction.non_shared_params.component_auctions.empty()) {
+      return false;
+    }
+  }
+
+  if (out->all_slots_requested_sizes) {
+    // `all_slots_requested_sizes` must not be empty
+    if (out->all_slots_requested_sizes->empty()) {
+      return false;
+    }
+
+    base::flat_set<blink::AdSize> ad_sizes(
+        out->all_slots_requested_sizes->begin(),
+        out->all_slots_requested_sizes->end());
+    // Each entry in `all_slots_requested_sizes` must be distinct.
+    if (out->all_slots_requested_sizes->size() != ad_sizes.size()) {
+      return false;
+    }
+
+    // If `all_slots_requested_sizes` is set, `requested_size` must be in it.
+    if (out->requested_size &&
+        !base::Contains(ad_sizes, *out->requested_size)) {
       return false;
     }
   }
@@ -292,7 +316,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   }
   for (const auto& component_auction :
        out->non_shared_params.component_auctions) {
-    if (!component_auction.decision_logic_url) {
+    // We need at least 1 of server response and decision logic url.
+    if (!component_auction.server_response &&
+        !component_auction.decision_logic_url) {
       return false;
     }
   }

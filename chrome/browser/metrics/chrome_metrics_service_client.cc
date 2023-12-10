@@ -74,7 +74,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/metrics/component_metrics_provider.h"
 #include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
@@ -98,6 +98,8 @@
 #include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
+#include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #include "components/metrics/ui/form_factor_metrics_provider.h"
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/url_constants.h"
@@ -159,6 +161,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/keyboard_backlight_color_metrics_provider.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_metrics_provider.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/wallpaper_metrics_provider.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
@@ -167,11 +170,10 @@
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
+#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
-#include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
-#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
@@ -197,10 +199,6 @@
 #include "components/metrics/content/accessibility_metrics_provider.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/metrics/upgrade_metrics_provider.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/metrics/power/power_metrics_provider_mac.h"
 #endif
@@ -209,11 +207,9 @@
 #include "chrome/browser/metrics/bluetooth_metrics_provider.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))||BUILDFLAG(IS_ANDROID))
+#endif
 
 namespace {
 
@@ -603,11 +599,7 @@ ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
 
 metrics::structured::StructuredMetricsService*
 ChromeMetricsServiceClient::GetStructuredMetricsService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return structured_metrics_service_.get();
-#else
-  return nullptr;
-#endif
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(
@@ -731,12 +723,17 @@ void ChromeMetricsServiceClient::Initialize() {
 
   observers_active_ = RegisterObservers();
 
+// TODO(b/309122738): Implement Structured Metrics Service for Windows, Linux,
+// and Mac.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_system_profile_provider_ =
       std::make_unique<ChromeOSSystemProfileProvider>();
+
   structured_metrics_service_ =
       std::make_unique<metrics::structured::StructuredMetricsService>(
-          cros_system_profile_provider_.get(), this, local_state);
+          this, local_state,
+          std::make_unique<metrics::structured::AshStructuredMetricsRecorder>(
+              cros_system_profile_provider_.get()));
 #endif
 
   RegisterMetricsServiceProviders();
@@ -901,10 +898,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<FamilyLinkUserMetricsProvider>());
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics_service_->RegisterMetricsProvider(
@@ -977,6 +974,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<PersonalizationAppThemeMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ash::settings::OsSettingsMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<WallpaperMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1002,11 +1001,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<CertificateReportingMetricsProvider>());
 #endif
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<UpgradeMetricsProvider>());
-#endif  //! BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
   metrics_service_->RegisterMetricsProvider(

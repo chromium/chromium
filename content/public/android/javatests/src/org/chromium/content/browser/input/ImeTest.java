@@ -103,24 +103,6 @@ public class ImeTest {
         mRule.assertWaitForKeyboardStatus(false);
     }
 
-    @Test
-    @MediumTest
-    @Feature({"TextInput", "Main"})
-    public void testDoesNotHang_getTextAfterKeyboardHides() throws Throwable {
-        mRule.setComposingText("hello", 1);
-        mRule.waitAndVerifyUpdateSelection(0, 5, 5, 0, 5);
-
-        mRule.performGo(mRule.getTestCallBackHelperContainer());
-
-        // This may time out if we do not get the information on time.
-        // TODO(changwan): find a way to remove the loop.
-        for (int i = 0; i < 100; ++i) {
-            mRule.getTextBeforeCursor(10, 0);
-        }
-
-        mRule.assertWaitForKeyboardStatus(false);
-    }
-
     // crbug.com/643519
     @Test
     @SmallTest

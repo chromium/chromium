@@ -4,7 +4,8 @@
 
 #include "chrome/browser/pdf/pdf_extension_util.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -17,6 +18,7 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/zoom/page_zoom_constants.h"
+#include "pdf/pdf_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -53,6 +55,10 @@ void AddCommonStrings(base::Value::Dict* dict) {
   dict->Set("chromeRefresh2023Attribute",
             features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
+  dict->Set("pdfOopifEnabled",
+            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+                ? "pdfOopifEnabled"
+                : "");
 }
 
 // Adds strings that are used only by the stand-alone PDF Viewer.
@@ -166,7 +172,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
-  base::Erase(edit_string, '&');
+  std::erase(edit_string, '&');
   dict->Set("editButton", edit_string);
 #endif
 

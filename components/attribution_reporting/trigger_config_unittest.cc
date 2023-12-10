@@ -4,8 +4,12 @@
 
 #include "components/attribution_reporting/trigger_config.h"
 
+#include <stdint.h>
+
+#include <limits>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -14,8 +18,10 @@
 #include "base/values.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "components/attribution_reporting/summary_window_operator.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,72 +32,60 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
+using ::attribution_reporting::mojom::SummaryWindowOperator;
 using ::attribution_reporting::mojom::TriggerDataMatching;
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Key;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-TEST(TriggerConfigTest, Parse) {
+TEST(TriggerDataMatchingTest, Parse) {
   const struct {
     const char* desc;
     const char* json;
-    ::testing::Matcher<base::expected<TriggerConfig, SourceRegistrationError>>
+    ::testing::Matcher<
+        base::expected<TriggerDataMatching, SourceRegistrationError>>
         disabled_matches;
-    ::testing::Matcher<base::expected<TriggerConfig, SourceRegistrationError>>
+    ::testing::Matcher<
+        base::expected<TriggerDataMatching, SourceRegistrationError>>
         enabled_matches;
   } kTestCases[] = {
       {
           .desc = "missing",
           .json = R"json({})json",
-          .disabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
-          .enabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
+          .disabled_matches = ValueIs(TriggerDataMatching::kModulus),
+          .enabled_matches = ValueIs(TriggerDataMatching::kModulus),
       },
       {
           .desc = "wrong_type",
           .json = R"json({"trigger_data_matching":1})json",
-          .disabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
+          .disabled_matches = ValueIs(TriggerDataMatching::kModulus),
           .enabled_matches =
               ErrorIs(SourceRegistrationError::kTriggerDataMatchingWrongType),
       },
       {
           .desc = "invalid_value",
           .json = R"json({"trigger_data_matching":"MODULUS"})json",
-          .disabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
+          .disabled_matches = ValueIs(TriggerDataMatching::kModulus),
           .enabled_matches = ErrorIs(
               SourceRegistrationError::kTriggerDataMatchingUnknownValue),
       },
       {
           .desc = "valid_modulus",
           .json = R"json({"trigger_data_matching":"modulus"})json",
-          .disabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
-          .enabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
+          .disabled_matches = ValueIs(TriggerDataMatching::kModulus),
+          .enabled_matches = ValueIs(TriggerDataMatching::kModulus),
       },
       {
           .desc = "valid_exact",
           .json = R"json({"trigger_data_matching":"exact"})json",
-          .disabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kModulus)),
-          .enabled_matches =
-              ValueIs(Property(&TriggerConfig::trigger_data_matching,
-                               TriggerDataMatching::kExact)),
+          .disabled_matches = ValueIs(TriggerDataMatching::kModulus),
+          .enabled_matches = ValueIs(TriggerDataMatching::kExact),
       },
   };
 
@@ -102,7 +96,7 @@ TEST(TriggerConfigTest, Parse) {
 
     {
       SCOPED_TRACE("disabled");
-      EXPECT_THAT(TriggerConfig::Parse(dict), test_case.disabled_matches);
+      EXPECT_THAT(ParseTriggerDataMatching(dict), test_case.disabled_matches);
     }
 
     {
@@ -111,25 +105,22 @@ TEST(TriggerConfigTest, Parse) {
       base::test::ScopedFeatureList scoped_feature_list(
           features::kAttributionReportingTriggerConfig);
 
-      EXPECT_THAT(TriggerConfig::Parse(dict), test_case.enabled_matches);
+      EXPECT_THAT(ParseTriggerDataMatching(dict), test_case.enabled_matches);
     }
   }
 }
 
-TEST(TriggerConfigTest, Serialize) {
+TEST(TriggerDataMatchingTest, Serialize) {
   const struct {
     TriggerDataMatching trigger_data_matching;
-    base::Value::Dict disabled_expected;
-    base::Value::Dict enabled_expected;
+    base::Value::Dict expected;
   } kTestCases[] = {
       {
           TriggerDataMatching::kModulus,
-          base::Value::Dict(),
           base::Value::Dict().Set("trigger_data_matching", "modulus"),
       },
       {
           TriggerDataMatching::kExact,
-          base::Value::Dict(),
           base::Value::Dict().Set("trigger_data_matching", "exact"),
       },
   };
@@ -137,24 +128,9 @@ TEST(TriggerConfigTest, Serialize) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.trigger_data_matching);
 
-    {
-      SCOPED_TRACE("disabled");
-
-      base::Value::Dict dict;
-      TriggerConfig(test_case.trigger_data_matching).Serialize(dict);
-      EXPECT_EQ(dict, test_case.disabled_expected);
-    }
-
-    {
-      SCOPED_TRACE("enabled");
-
-      base::test::ScopedFeatureList scoped_feature_list(
-          features::kAttributionReportingTriggerConfig);
-
-      base::Value::Dict dict;
-      TriggerConfig(test_case.trigger_data_matching).Serialize(dict);
-      EXPECT_EQ(dict, test_case.enabled_expected);
-    }
+    base::Value::Dict dict;
+    Serialize(dict, test_case.trigger_data_matching);
+    EXPECT_EQ(dict, test_case.expected);
   }
 }
 
@@ -523,6 +499,255 @@ TEST(TriggerSpecsTest, Iterator) {
   EXPECT_THAT(*it, Pair(4294967295, kSpecList[1]));
 
   EXPECT_TRUE(++it == kSpecs.end());
+}
+
+TEST(TriggerSpecsTest, Find) {
+  {
+    const TriggerSpecs kSpecs;
+
+    EXPECT_FALSE(kSpecs.find(/*trigger_data=*/1, TriggerDataMatching::kExact));
+    EXPECT_FALSE(
+        kSpecs.find(/*trigger_data=*/1, TriggerDataMatching::kModulus));
+  }
+
+  const std::vector<TriggerSpec> kSpecList = {
+      TriggerSpec(*EventReportWindows::Create(
+          /*start_time=*/base::Seconds(0),
+          /*end_times=*/{base::Seconds(3601)})),
+      TriggerSpec(*EventReportWindows::Create(
+          /*start_time=*/base::Seconds(1),
+          /*end_times=*/{base::Seconds(4601)})),
+  };
+
+  const auto kSpecs = TriggerSpecs::CreateForTesting(
+      /*trigger_data_indices=*/
+      {
+          {/*trigger_data=*/1, /*index=*/0},
+          {/*trigger_data=*/3, /*index=*/1},
+          {/*trigger_data=*/4, /*index=*/1},
+          {/*trigger_data=*/5, /*index=*/0},
+      },
+      kSpecList);
+
+  const struct {
+    TriggerDataMatching trigger_data_matching;
+    uint64_t trigger_data;
+    ::testing::Matcher<TriggerSpecs::const_iterator> matches;
+  } kTestCases[] = {
+      {TriggerDataMatching::kExact, 0, kSpecs.end()},
+      {TriggerDataMatching::kExact, 1, Optional(Pair(1, kSpecList[0]))},
+      {TriggerDataMatching::kExact, 2, kSpecs.end()},
+      {TriggerDataMatching::kExact, 3, Optional(Pair(3, kSpecList[1]))},
+      {TriggerDataMatching::kExact, 4, Optional(Pair(4, kSpecList[1]))},
+      {TriggerDataMatching::kExact, 5, Optional(Pair(5, kSpecList[0]))},
+      {TriggerDataMatching::kExact, 6, kSpecs.end()},
+      {TriggerDataMatching::kExact, std::numeric_limits<uint64_t>::max(),
+       kSpecs.end()},
+
+      {TriggerDataMatching::kModulus, 0, Optional(Pair(1, kSpecList[0]))},
+      {TriggerDataMatching::kModulus, 1, Optional(Pair(3, kSpecList[1]))},
+      {TriggerDataMatching::kModulus, 2, Optional(Pair(4, kSpecList[1]))},
+      {TriggerDataMatching::kModulus, 3, Optional(Pair(5, kSpecList[0]))},
+      {TriggerDataMatching::kModulus, 4, Optional(Pair(1, kSpecList[0]))},
+      {TriggerDataMatching::kModulus, 5, Optional(Pair(3, kSpecList[1]))},
+      {TriggerDataMatching::kModulus, 6, Optional(Pair(4, kSpecList[1]))},
+      // uint64 max % 4 == 3; trigger data 5 is at index 3
+      {TriggerDataMatching::kModulus, std::numeric_limits<uint64_t>::max(),
+       Optional(Pair(5, kSpecList[0]))},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.trigger_data_matching);
+    SCOPED_TRACE(test_case.trigger_data);
+
+    EXPECT_THAT(
+        kSpecs.find(test_case.trigger_data, test_case.trigger_data_matching),
+        test_case.matches);
+  }
+}
+
+// Technically redundant with `TriggerSpecsTest.Find`, but included to
+// demonstrate the expected behavior for real-world trigger specs, of which
+// `TriggerSpecs::Default()` can return a subset.
+TEST(TriggerSpecsTest, Find_ModulusContiguous) {
+  const std::vector<TriggerSpec> kSpecList = {
+      TriggerSpec(*EventReportWindows::Create(
+          /*start_time=*/base::Seconds(0),
+          /*end_times=*/{base::Seconds(3601)})),
+      TriggerSpec(*EventReportWindows::Create(
+          /*start_time=*/base::Seconds(1),
+          /*end_times=*/{base::Seconds(4601)})),
+  };
+
+  const auto kSpecs = TriggerSpecs::CreateForTesting(
+      /*trigger_data_indices=*/
+      {
+          {/*trigger_data=*/0, /*index=*/1},
+          {/*trigger_data=*/1, /*index=*/0},
+          {/*trigger_data=*/2, /*index=*/1},
+      },
+      kSpecList);
+
+  const struct {
+    uint64_t trigger_data;
+    ::testing::Matcher<TriggerSpecs::const_iterator> matches;
+  } kTestCases[] = {
+      {0, Optional(Pair(0, kSpecList[1]))},
+      {1, Optional(Pair(1, kSpecList[0]))},
+      {2, Optional(Pair(2, kSpecList[1]))},
+      {3, Optional(Pair(0, kSpecList[1]))},
+      {4, Optional(Pair(1, kSpecList[0]))},
+      {5, Optional(Pair(2, kSpecList[1]))},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.trigger_data);
+
+    EXPECT_THAT(
+        kSpecs.find(test_case.trigger_data, TriggerDataMatching::kModulus),
+        test_case.matches);
+  }
+}
+
+TEST(SummaryWindowOperatorTest, Parse) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<SummaryWindowOperator, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          .desc = "missing",
+          .json = R"json({})json",
+          .matches = ValueIs(SummaryWindowOperator::kCount),
+      },
+      {
+          .desc = "wrong_type",
+          .json = R"json({"summary_window_operator": 1})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryWindowOperatorWrongType),
+      },
+      {
+          .desc = "invalid_value",
+          .json = R"json({"summary_window_operator": "COUNT"})json",
+          .matches = ErrorIs(
+              SourceRegistrationError::kSummaryWindowOperatorUnknownValue),
+      },
+      {
+          .desc = "valid_count",
+          .json = R"json({"summary_window_operator": "count"})json",
+          .matches = ValueIs(SummaryWindowOperator::kCount),
+      },
+      {
+          .desc = "valid_value_sum",
+          .json = R"json({"summary_window_operator": "value_sum"})json",
+          .matches = ValueIs(SummaryWindowOperator::kValueSum),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+
+    EXPECT_THAT(ParseSummaryWindowOperator(dict), test_case.matches);
+  }
+}
+
+TEST(SummaryBucketsTest, Parse) {
+  const struct {
+    const char* desc;
+    const char* json;
+    MaxEventLevelReports max_event_level_reports = MaxEventLevelReports::Max();
+    ::testing::Matcher<base::expected<SummaryBuckets, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          .desc = "missing",
+          .json = R"json({})json",
+          .max_event_level_reports = MaxEventLevelReports(5),
+          .matches = ValueIs(
+              Property(&SummaryBuckets::starts, ElementsAre(1, 2, 3, 4, 5))),
+      },
+      {
+          .desc = "wrong_type",
+          .json = R"json({"summary_buckets": 1})json",
+          .matches = ErrorIs(SourceRegistrationError::kSummaryBucketsWrongType),
+      },
+      {
+          .desc = "empty",
+          .json = R"json({"summary_buckets": []})json",
+          .matches = ErrorIs(SourceRegistrationError::kSummaryBucketsEmpty),
+      },
+      {
+          .desc = "too_long",
+          .json = R"json({"summary_buckets": [1, 2, 3, 4]})json",
+          .max_event_level_reports = MaxEventLevelReports(3),
+          .matches = ErrorIs(SourceRegistrationError::kSummaryBucketsTooLong),
+      },
+      {
+          .desc = "value_wrong_type",
+          .json = R"json({"summary_buckets": [0.1]})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueWrongType),
+      },
+      {
+          .desc = "value_out_of_range",
+          .json = R"json({"summary_buckets": [-1]})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsValueOutOfRange),
+      },
+      {
+          .desc = "value_zero",
+          .json = R"json({"summary_buckets": [0]})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsNonIncreasing),
+      },
+      {
+          .desc = "non_increasing",
+          .json = R"json({"summary_buckets": [1, 3, 5, 2]})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsNonIncreasing),
+      },
+      {
+          .desc = "duplicate",
+          .json = R"json({"summary_buckets": [1, 3, 3]})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryBucketsNonIncreasing),
+      },
+      {
+          .desc = "valid",
+          .json = R"json({"summary_buckets": [1, 3, 5]})json",
+          .max_event_level_reports = MaxEventLevelReports(3),
+          .matches =
+              ValueIs(Property(&SummaryBuckets::starts, ElementsAre(1, 3, 5))),
+      },
+      {
+          .desc = "valid_max_uint32",
+          .json = R"json({"summary_buckets": [4294967295]})json",
+          .matches = ValueIs(
+              Property(&SummaryBuckets::starts, ElementsAre(4294967295))),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+
+    EXPECT_THAT(SummaryBuckets::Parse(dict, test_case.max_event_level_reports),
+                test_case.matches);
+  }
+}
+
+TEST(SummaryBucketsTest, Serialize) {
+  base::Value::Dict dict;
+  SummaryBuckets({1, 3, 4294967295}).Serialize(dict);
+
+  EXPECT_THAT(dict, base::test::IsJson(R"json({
+    "summary_buckets": [1, 3, 4294967295]
+  })json"));
 }
 
 }  // namespace

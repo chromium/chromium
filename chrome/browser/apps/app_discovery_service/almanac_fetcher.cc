@@ -122,7 +122,7 @@ void AlmanacFetcher::GetIcon(const std::string& icon_id,
 }
 
 void AlmanacFetcher::OnAppsUpdate(
-    absl::optional<proto::LauncherAppResponse> response) {
+    std::optional<proto::LauncherAppResponse> response) {
   if (!response.has_value()) {
     return;
   }
@@ -157,7 +157,7 @@ void AlmanacFetcher::OnGetDeviceInfo(DeviceInfo device_info) {
 }
 
 void AlmanacFetcher::OnServerResponse(
-    absl::optional<proto::LauncherAppResponse> response) {
+    std::optional<proto::LauncherAppResponse> response) {
   if (response.has_value()) {
     proto_file_manager_->WriteProtoToFile(
         *response, base::BindOnce(&AlmanacFetcher::OnFileWritten,

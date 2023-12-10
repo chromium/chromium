@@ -87,7 +87,7 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
 
   // views::WebDialogView that owns this delegate.
   raw_ptr<views::WebDialogView> web_dialog_view_;

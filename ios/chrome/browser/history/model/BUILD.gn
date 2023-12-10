@@ -1,0 +1,100 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "domain_diversity_reporter_factory.h",
+    "domain_diversity_reporter_factory.mm",
+    "history_backend_client_impl.cc",
+    "history_backend_client_impl.h",
+    "history_client_impl.cc",
+    "history_client_impl.h",
+    "history_service_factory.cc",
+    "history_service_factory.h",
+    "top_sites_factory.cc",
+    "top_sites_factory.h",
+    "web_history_service_factory.cc",
+    "web_history_service_factory.h",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/browser_sync",
+    "//components/dom_distiller/core",
+    "//components/history/core/browser",
+    "//components/history/core/common",
+    "//components/history/ios/browser",
+    "//components/history/metrics",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync",
+    "//components/version_info",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common",
+    "//ios/components/webui:url_constants",
+    "//ios/web",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "history_utils.cc",
+    "history_utils.h",
+  ]
+  deps = [
+    "//components/dom_distiller/core",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/components/webui:url_constants",
+    "//url",
+  ]
+}
+
+source_set("tab_helper") {
+  sources = [
+    "history_tab_helper.h",
+    "history_tab_helper.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/strings",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//ios/chrome/browser/complex_tasks/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/translate/model",
+    "//ios/web",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "history_tab_helper_unittest.mm" ]
+  deps = [
+    ":model",
+    ":tab_helper",
+    "//base",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/web",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

@@ -4,9 +4,6 @@
 
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
 
-#include "base/atomic_sequence_num.h"
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +18,6 @@
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/public/common/content_features.h"
-#include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
@@ -32,6 +28,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -41,9 +38,6 @@
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
-#include "third_party/blink/public/platform/web_http_body.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "ui/base/page_transition_types.h"
 
 namespace content {
 
@@ -59,14 +53,21 @@ static std::string MojoEnumToString(T mojo_enum) {
   return oss.str();
 }
 
-network::mojom::URLResponseHeadPtr RewriteServiceWorkerTime(
+network::mojom::URLResponseHeadPtr RewriteResponseHead(
     base::TimeTicks service_worker_start_time,
     base::TimeTicks service_worker_ready_time,
+    absl::optional<network::mojom::ServiceWorkerRouterInfo>
+        service_worker_router_info,
     network::mojom::URLResponseHeadPtr response_head) {
   response_head->load_timing.service_worker_start_time =
       service_worker_start_time;
   response_head->load_timing.service_worker_ready_time =
       service_worker_ready_time;
+  if (service_worker_router_info) {
+    response_head->service_worker_router_info =
+        network::mojom::ServiceWorkerRouterInfo::New(
+            *std::move(service_worker_router_info));
+  }
   return response_head;
 }
 
@@ -362,24 +363,29 @@ void ServiceWorkerSubresourceLoader::StartRequest(
 void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
   // Evaluate the registered routing info first, because this result may bypass
   // ServiceWorker start process.
-  const std::vector<blink::ServiceWorkerRouterSource> sources =
-      MaybeEvaluateRouterConditions();
+  const auto eval_result = MaybeEvaluateRouterConditions();
   enum RaceNetworkRequestMode {
     kDefault,
     kForced,
     kSkipped
   } race_network_request_mode = kDefault;
-  if (!sources.empty()) {  // matched the rule.
+  if (eval_result) {  // matched the rule.
+    auto router_info = network::mojom::ServiceWorkerRouterInfo::New();
+    router_info->rule_id_matched = eval_result->id;
+    response_head_->service_worker_router_info = std::move(router_info);
+
+    const auto& sources = eval_result->sources;
     // TODO(crbug.com/1371756): support other sources in the full form.
     // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
     switch (sources[0].type) {
       case blink::ServiceWorkerRouterSource::Type::kNetwork:
         // Network fallback is requested.
-        fallback_factory_->CreateLoaderAndStart(
-            url_loader_receiver_.Unbind(), request_id_, options_,
-            resource_request_, url_loader_client_.Unbind(),
-            traffic_annotation_);
-        delete this;
+        {
+          auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
+          timing->dispatch_event_time = base::TimeTicks::Now();
+          timing->respond_with_settled_time = base::TimeTicks::Now();
+          OnFallback(absl::nullopt, std::move(timing));
+        }
         return;
       case blink::ServiceWorkerRouterSource::Type::kRace:
         race_network_request_mode = kForced;
@@ -694,12 +700,16 @@ void ServiceWorkerSubresourceLoader::OnFallback(
 
   // Hand over to the network loader.
   mojo::PendingRemote<network::mojom::URLLoaderClient> client;
+  absl::optional<network::mojom::ServiceWorkerRouterInfo> router_info;
+  if (response_head_->service_worker_router_info) {
+    router_info = *response_head_->service_worker_router_info;
+  }
   auto client_impl = std::make_unique<HeaderRewritingURLLoaderClient>(
       std::move(url_loader_client_),
-      base::BindRepeating(
-          &RewriteServiceWorkerTime,
-          response_head_->load_timing.service_worker_start_time,
-          response_head_->load_timing.service_worker_ready_time));
+      base::BindRepeating(&RewriteResponseHead,
+                          response_head_->load_timing.service_worker_start_time,
+                          response_head_->load_timing.service_worker_ready_time,
+                          router_info));
   mojo::MakeSelfOwnedReceiver(std::move(client_impl),
                               client.InitWithNewPipeAndPassReceiver());
 
@@ -1254,24 +1264,26 @@ bool ServiceWorkerSubresourceLoader::IsMainResourceLoader() {
   return false;
 }
 
-std::vector<blink::ServiceWorkerRouterSource>
+absl::optional<ServiceWorkerRouterEvaluator::Result>
 ServiceWorkerSubresourceLoader::MaybeEvaluateRouterConditions() const {
   auto* router_evaluator = controller_connector_->router_evaluator();
   if (!router_evaluator) {
-    std::vector<blink::ServiceWorkerRouterSource> sources;
-    return sources;
+    return {};
   }
   CHECK(router_evaluator->IsValid());
   // Avoid calling GetRecentRunningStatus() if there is no rules that
   // need running status.
   // Getting recent running status sends IPC to the browser process,
   // and affection to performance is concerned.
+  absl::optional<ServiceWorkerRouterEvaluator::Result> result;
   if (router_evaluator->need_running_status()) {
-    return router_evaluator->Evaluate(
+    result = router_evaluator->Evaluate(
         resource_request_, controller_connector_->GetRecentRunningStatus());
   } else {
-    return router_evaluator->EvaluateWithoutRunningStatus(resource_request_);
+    result = router_evaluator->EvaluateWithoutRunningStatus(resource_request_);
   }
+
+  return result;
 }
 
 // ServiceWorkerSubresourceLoaderFactory ------------------------------------

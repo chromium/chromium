@@ -11,13 +11,9 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A utility class to provide functionalities around clear browsing data {@link TimePeriod}.
- */
+/** A utility class to provide functionalities around clear browsing data {@link TimePeriod}. */
 public class TimePeriodUtils {
-    /**
-     * An option to be shown in the time period spiner.
-     */
+    /** An option to be shown in the time period spiner. */
     public static class TimePeriodSpinnerOption {
         private @TimePeriod int mTimePeriod;
         private String mTitle;
@@ -51,24 +47,30 @@ public class TimePeriodUtils {
      */
     public static TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions(@NonNull Context context) {
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
-        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
-                getTimePeriodString(context, TimePeriod.LAST_15_MINUTES)));
-        options.add(new TimePeriodSpinnerOption(
-                TimePeriod.LAST_HOUR, getTimePeriodString(context, TimePeriod.LAST_HOUR)));
-        options.add(new TimePeriodSpinnerOption(
-                TimePeriod.LAST_DAY, getTimePeriodString(context, TimePeriod.LAST_DAY)));
-        options.add(new TimePeriodSpinnerOption(
-                TimePeriod.LAST_WEEK, getTimePeriodString(context, TimePeriod.LAST_WEEK)));
-        options.add(new TimePeriodSpinnerOption(
-                TimePeriod.FOUR_WEEKS, getTimePeriodString(context, TimePeriod.FOUR_WEEKS)));
-        options.add(new TimePeriodSpinnerOption(
-                TimePeriod.ALL_TIME, getTimePeriodString(context, TimePeriod.ALL_TIME)));
+        options.add(
+                new TimePeriodSpinnerOption(
+                        TimePeriod.LAST_15_MINUTES,
+                        getTimePeriodString(context, TimePeriod.LAST_15_MINUTES)));
+        options.add(
+                new TimePeriodSpinnerOption(
+                        TimePeriod.LAST_HOUR, getTimePeriodString(context, TimePeriod.LAST_HOUR)));
+        options.add(
+                new TimePeriodSpinnerOption(
+                        TimePeriod.LAST_DAY, getTimePeriodString(context, TimePeriod.LAST_DAY)));
+        options.add(
+                new TimePeriodSpinnerOption(
+                        TimePeriod.LAST_WEEK, getTimePeriodString(context, TimePeriod.LAST_WEEK)));
+        options.add(
+                new TimePeriodSpinnerOption(
+                        TimePeriod.FOUR_WEEKS,
+                        getTimePeriodString(context, TimePeriod.FOUR_WEEKS)));
+        options.add(
+                new TimePeriodSpinnerOption(
+                        TimePeriod.ALL_TIME, getTimePeriodString(context, TimePeriod.ALL_TIME)));
         return options.toArray(new TimePeriodSpinnerOption[0]);
     }
 
-    /**
-     * Returns the string associated with the time period.
-     */
+    /** Returns the string associated with the time period. */
     public static String getTimePeriodString(@NonNull Context context, @TimePeriod int timePeriod) {
         switch (timePeriod) {
             case TimePeriod.LAST_15_MINUTES:

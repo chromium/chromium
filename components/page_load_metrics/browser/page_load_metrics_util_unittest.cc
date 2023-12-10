@@ -305,6 +305,7 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
 
     switch (test_case.prerendering_state) {
       case PrerenderingState::kNoPrerendering:
+      case PrerenderingState::kInPreview:
         DCHECK_NE(test_case.visibility_at_start_or_activation_,
                   PageVisibility::kNotInitialized);
         delegate.started_in_foreground_ =

@@ -4,15 +4,17 @@
 
 #include "ash/system/tray/tray_item_view.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/status_area_animation_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -50,7 +52,7 @@ void RecordAnimationSmoothness(const std::string& histogram_name,
 
 void SetupThroughputTrackerForAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker,
+    std::optional<ui::ThroughputTracker>& tracker,
     const char* histogram_name) {
   // Return if `tracker` is already running; `widget` may not exist in tests.
   if (tracker || !widget)
@@ -70,6 +72,9 @@ void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kStaticText;
   node_data->SetNameChecked(custom_accessible_name_);
 }
+
+BEGIN_METADATA(IconizedLabel)
+END_METADATA
 
 TrayItemView::TrayItemView(Shelf* shelf)
     : views::AnimationDelegateViews(this), shelf_(shelf) {
@@ -185,12 +190,10 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
     // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
     // once the hide animation is over to ensure that all tray items are given a
-    // chance to properly update their visibilities. Only applicable when the
-    // QS revamp is enabled.
-    if (features::IsQsRevampEnabled() && !target_visible_ &&
-        shelf_->status_area_widget()
-            ->animation_controller()
-            ->is_hide_animation_scheduled()) {
+    // chance to properly update their visibilities.
+    if (!target_visible_ && shelf_->status_area_widget()
+                                ->animation_controller()
+                                ->is_hide_animation_scheduled()) {
       return;
     }
     animation_->SetSlideDuration(base::TimeDelta());
@@ -356,5 +359,8 @@ double TrayItemView::GetItemScaleProgressFromAnimationProgress(
   return (animation_value - kAnimatingOutEndValue) *
          (1 / (1 - kAnimatingOutEndValue));
 }
+
+BEGIN_METADATA(TrayItemView)
+END_METADATA
 
 }  // namespace ash

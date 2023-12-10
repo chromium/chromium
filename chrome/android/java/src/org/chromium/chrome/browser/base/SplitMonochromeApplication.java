@@ -57,9 +57,15 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
         // and are external, and will fail to bind otherwise.
         boolean bindToCaller = false;
         boolean ignoreVisibilityForImportance = false;
-        ChildProcessCreationParams.set(packageName, null /* privilegedServicesName */, packageName,
-                null /* sandboxedServicesName */, true /* isExternalService */,
-                LibraryProcessType.PROCESS_CHILD, bindToCaller, ignoreVisibilityForImportance);
+        ChildProcessCreationParams.set(
+                packageName,
+                /* privilegedServicesName= */ null,
+                packageName,
+                /* sandboxedServicesName= */ null,
+                /* isExternalService= */ true,
+                LibraryProcessType.PROCESS_CHILD,
+                bindToCaller,
+                ignoreVisibilityForImportance);
     }
 
     @Override

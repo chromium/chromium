@@ -44,6 +44,21 @@ chromium-metrics-reviews@google.com.
       label="Failure: taxonomy version not supported in the Chrome binary"/>
 </enum>
 
+<enum name="BrowsingTopicsFetchRequestOrRedirectResult">
+  <int value="0" label="Success."/>
+  <int value="1"
+      label="Failure: Disallowed by content client (incognito, user opt-out,
+             etc.)."/>
+  <int value="2" label="Failure: Initiator frame doesn't exist."/>
+  <int value="3" label="Failure: From fenced frame."/>
+  <int value="4"
+      label="Failure: From non-primary page (other than fenced frame)."/>
+  <int value="5" label="Failure: Opaque caller origin."/>
+  <int value="6"
+      label="Failure: Non-secure caller origin (other than opaque origin)."/>
+  <int value="7" label="Failure: Disallowed by permissions policy."/>
+</enum>
+
 <enum name="BrowsingTopicsOverrideListFileLoadResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

@@ -26,10 +26,10 @@ namespace {
 const char kMessagesPackageName[] = "com.google.android.apps.messaging";
 const SkColor kMessagesOverrideColor = gfx::kGoogleBlue600;
 
-absl::optional<SkColor> getMonochromeIconColor(const proto::Notification& proto,
-                                               const gfx::Image& icon) {
+std::optional<SkColor> getMonochromeIconColor(const proto::Notification& proto,
+                                              const gfx::Image& icon) {
   if (icon.IsEmpty() || !proto.origin_app().has_monochrome_icon_color()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (proto.origin_app().package_name() == kMessagesPackageName) {
@@ -135,26 +135,26 @@ Notification CreateInternalNotification(const proto::Notification& proto,
       break;
   }
 
-  absl::optional<std::u16string> title = absl::nullopt;
+  std::optional<std::u16string> title = std::nullopt;
   if (!proto.title().empty())
     title = base::UTF8ToUTF16(proto.title());
 
-  absl::optional<std::u16string> text_content = absl::nullopt;
+  std::optional<std::u16string> text_content = std::nullopt;
   if (!proto.text_content().empty())
     text_content = base::UTF8ToUTF16(proto.text_content());
 
-  absl::optional<gfx::Image> opt_shared_image = absl::nullopt;
+  std::optional<gfx::Image> opt_shared_image = std::nullopt;
   if (!shared_image.IsEmpty())
     opt_shared_image = shared_image;
 
-  absl::optional<gfx::Image> opt_contact_image = absl::nullopt;
+  std::optional<gfx::Image> opt_contact_image = std::nullopt;
   if (!contact_image.IsEmpty())
     opt_contact_image = contact_image;
 
   bool icon_is_monochrome = IsMonochromeIconEnabled(proto);
-  absl::optional<SkColor> icon_color =
+  std::optional<SkColor> icon_color =
       icon_is_monochrome ? getMonochromeIconColor(proto, monochrome_icon)
-                         : absl::nullopt;
+                         : std::nullopt;
 
   return Notification(
       proto.id(),

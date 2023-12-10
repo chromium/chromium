@@ -49,6 +49,9 @@
   <message name="IDS_ERRORPAGES_SUGGESTION_RELOAD_REPOST_SUMMARY" desc="When a page fails to load, sometimes we suggest reloading a page.  In the case that reloading the page requires resubmitting data to a website, this is displayed in a list.">
     Press the reload button to resubmit the data needed to load the page.
   </message>
+  <message name="IDS_ERRORPAGES_SUGGESTION_RELOAD_PRIVATE_NETWORK_ACCESS" desc="When a page fails to load because of private network access checks, we suggest reloading a page to allow the request.">
+    Press the reload button to allow the connection to devices or servers on your private network.
+  </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER" desc="When a page fails to load, sometimes we suggest checking the network connections.  This is a header above some details.">
     Check your Internet connection
   </message>
@@ -271,6 +274,10 @@
 
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_SECURITY" desc="Summary in the error page when the request has been blocked because of some security configuration of the site.">
     This content is blocked. Contact the site owner to fix the issue.
+  </message>
+
+  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS" desc="Summary in the error page when the request has been blocked by private network access checks.">
+    The connection is blocked because it was initiated by a public page to connect to devices or servers on your private network. Reload this page to allow the connection.
   </message>
 
   <message name="IDS_ERRORPAGES_HTTP_POST_WARNING" desc="The error message displayed when the user navigates back or forward to a page which would resubmit post data. They can hit reload to send POST data again and load the page.">

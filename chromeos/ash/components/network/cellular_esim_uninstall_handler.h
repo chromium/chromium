@@ -128,15 +128,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   // for stale eSIM service removal requests. These requests skip directly to
   // Shill configuration removal.
   struct UninstallRequest {
-    UninstallRequest(const absl::optional<std::string>& iccid,
-                     const absl::optional<dbus::ObjectPath>& esim_profile_path,
-                     const absl::optional<dbus::ObjectPath>& euicc_path,
+    UninstallRequest(const std::optional<std::string>& iccid,
+                     const std::optional<dbus::ObjectPath>& esim_profile_path,
+                     const std::optional<dbus::ObjectPath>& euicc_path,
                      bool reset_euicc,
                      UninstallRequestCallback callback);
     ~UninstallRequest();
-    absl::optional<std::string> iccid;
-    absl::optional<dbus::ObjectPath> esim_profile_path;
-    absl::optional<dbus::ObjectPath> euicc_path;
+    std::optional<std::string> iccid;
+    std::optional<dbus::ObjectPath> esim_profile_path;
+    std::optional<dbus::ObjectPath> euicc_path;
     bool reset_euicc;
     base::flat_set<std::string> removed_service_paths;
     UninstallRequestCallback callback;
@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void OnRemoveServiceFailure(const std::string& error_name);
   void OnNetworkListWaitTimeout();
 
-  absl::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();
+  std::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();
   NetworkStateHandler::NetworkStateList GetESimCellularNetworks() const;
   const NetworkState* GetNextResetServiceToRemove() const;
   base::flat_set<std::string> GetAllIccidsOnEuicc(

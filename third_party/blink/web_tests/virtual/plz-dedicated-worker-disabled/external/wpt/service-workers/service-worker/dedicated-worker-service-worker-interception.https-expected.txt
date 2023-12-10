@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Top-level module loading should be intercepted by a service worker.
+  assert_equals: expected "LOADED_FROM_SERVICE_WORKER" but got "LOADED_FROM_NETWORK"
+[FAIL] Static import should be intercepted by a service worker.
+  assert_equals: expected "LOADED_FROM_SERVICE_WORKER" but got "LOADED_FROM_NETWORK"
+[FAIL] Dynamic import should be intercepted by a service worker.
+  assert_equals: expected "LOADED_FROM_SERVICE_WORKER" but got "LOADED_FROM_NETWORK"
+Harness: the test ran to completion.
+

@@ -38,35 +38,38 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // If the type of `data_dst` is kCrostini, kPluginVm or kArc, it will show a
   // toast instead of a bubble.
   void NotifyBlockedAction(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override;
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override;
 
   // Warns the user that this paste action is not recommended and runs
   // `reporting_cb` if the action is proceeded. If the type of `data_dst` is
   // kCrostini, kPluginVm or kArc, it will show a toast instead of a bubble.
-  void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst,
-                   base::RepeatingCallback<void()> reporting_cb);
+  void WarnOnPaste(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                   base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                   base::OnceClosure reporting_cb);
 
   // Warns the user that this paste action in Blink is not recommended.
-  void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
-                        const ui::DataTransferEndpoint* const data_dst,
-                        content::WebContents* web_contents,
-                        base::OnceCallback<void(bool)> paste_cb);
+  void WarnOnBlinkPaste(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> paste_cb);
 
   // Returns true if the user approved to paste the clipboard data to this
   // `data_dst` before.
-  bool DidUserApproveDst(const ui::DataTransferEndpoint* const data_dst);
+  bool DidUserApproveDst(
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst);
 
   // Returns true if the user cancelled pasting the clipboard data to this
   // `data_dst` before.
-  bool DidUserCancelDst(const ui::DataTransferEndpoint* const data_dst);
+  bool DidUserCancelDst(
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst);
 
  protected:
   // Exposed for tests to override.
   void ProceedPressed(std::unique_ptr<ui::ClipboardData> data,
                       const ui::DataTransferEndpoint& data_dst,
-                      base::RepeatingCallback<void()> reporting_cb,
+                      base::OnceClosure reporting_cb,
                       views::Widget* widget);
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst,
                            views::Widget* widget);

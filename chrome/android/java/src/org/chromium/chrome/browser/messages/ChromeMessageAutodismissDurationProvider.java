@@ -30,24 +30,31 @@ public class ChromeMessageAutodismissDurationProvider
 
     private long mAutodismissDurationMs;
     private long mAutodismissDurationWithA11yMs;
-    public ChromeMessageAutodismissDurationProvider() {
-        mAutodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE, "autodismiss_duration_ms",
-                10 * (int) DateUtils.SECOND_IN_MILLIS);
 
-        mAutodismissDurationWithA11yMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
-                "autodismiss_duration_with_a11y_ms", 30 * (int) DateUtils.SECOND_IN_MILLIS);
+    public ChromeMessageAutodismissDurationProvider() {
+        mAutodismissDurationMs =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                        "autodismiss_duration_ms",
+                        10 * (int) DateUtils.SECOND_IN_MILLIS);
+
+        mAutodismissDurationWithA11yMs =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                        "autodismiss_duration_with_a11y_ms",
+                        30 * (int) DateUtils.SECOND_IN_MILLIS);
     }
 
     @Override
     public long get(@MessageIdentifier int messageIdentifier, long customDuration) {
         long nonA11yDuration = Math.max(mAutodismissDurationMs, customDuration);
-        long finchControlledDuration = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
-                FEATURE_SPECIFIC_FINCH_CONTROLLED_DURATION_PREFIX
-                        + MessagesMetrics.messageIdentifierToHistogramSuffix(messageIdentifier),
-                -1);
+        long finchControlledDuration =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                        FEATURE_SPECIFIC_FINCH_CONTROLLED_DURATION_PREFIX
+                                + MessagesMetrics.messageIdentifierToHistogramSuffix(
+                                        messageIdentifier),
+                        -1);
         if (finchControlledDuration > 0) {
             nonA11yDuration = Math.max(finchControlledDuration, nonA11yDuration);
         }
@@ -56,8 +63,9 @@ public class ChromeMessageAutodismissDurationProvider
         // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
         return !AccessibilityState.isPerformGesturesEnabled()
                 ? nonA11yDuration
-                : (long) AccessibilityState.getRecommendedTimeoutMillis(
-                        (int) mAutodismissDurationWithA11yMs, (int) nonA11yDuration);
+                : (long)
+                        AccessibilityState.getRecommendedTimeoutMillis(
+                                (int) mAutodismissDurationWithA11yMs, (int) nonA11yDuration);
     }
 
     public void setDefaultAutodismissDurationMsForTesting(long duration) {

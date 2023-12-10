@@ -3,13 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """sha256_file.py takes one or more files, computes a SHA-256 hash over it,
-and writes a .h/.cc file pair containing variables with the digest bytes.
+and writes a .cc file containing variables with the digest bytes.
 
 Usage:
     sha256_file.py path/to/hashes file1.txt file2.pak
 
-Which will create path/to/hashes.h and path/to/hashes.cc with two variable
-declarations, one for each of the specified input file's hash.
+Which will create path/to/hashes.cc with a constant for each of the specified
+input file's hash. Corresponding header file should be committed in codebase to
+avoid unnecessary build serilization.
 """
 
 import hashlib
@@ -25,21 +26,14 @@ def main(argv):
 
     output_path_prefix = argv[1]
 
-    h_guard = output_path_prefix.upper().replace('/', '_') + '_H_'
-    h_contents = '#ifndef {guard}\n#define {guard}\n\n'.format(guard=h_guard)
     cc_contents = '#include "{}.h"\n\n'.format(
-        os.path.basename(output_path_prefix))
+        # Drop (<toolchain>/)gen/ prefix.
+        output_path_prefix.split('gen/', 1)[1])
     for (name, value) in _hash_files(argv[2:]):
         name = 'kSha256_' + os.path.basename(name).replace('.', '_')
-        h_contents += 'extern const std::array<uint8_t, 32> {};\n\n'.format(
-            name)
         cc_contents += 'const std::array<uint8_t, 32> {} = {{'.format(name)
         cc_contents += ', '.join(map(hex, value))
         cc_contents += '};\n\n'
-    h_contents += '#endif  // {}'.format(h_guard)
-
-    with open(output_path_prefix + '.h', 'w') as f:
-        f.write(FILE_TEMPLATE.format(contents=h_contents))
 
     with open(output_path_prefix + '.cc', 'w') as f:
         f.write(FILE_TEMPLATE.format(contents=cc_contents))

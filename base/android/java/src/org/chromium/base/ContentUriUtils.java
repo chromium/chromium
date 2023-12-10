@@ -23,9 +23,7 @@ import org.jni_zero.CalledByNative;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * This class provides methods to access content URI schemes.
- */
+/** This class provides methods to access content URI schemes. */
 public abstract class ContentUriUtils {
     private static final String TAG = "ContentUriUtils";
     private static FileProviderUtil sFileProviderUtil;
@@ -227,8 +225,11 @@ public abstract class ContentUriUtils {
         Uri uri = Uri.parse(uriString);
 
         try {
-            String displayName = getDisplayName(uri, ContextUtils.getApplicationContext(),
-                    MediaStore.MediaColumns.DISPLAY_NAME);
+            String displayName =
+                    getDisplayName(
+                            uri,
+                            ContextUtils.getApplicationContext(),
+                            MediaStore.MediaColumns.DISPLAY_NAME);
             return TextUtils.isEmpty(displayName) ? null : displayName;
         } catch (Exception e) {
             // There are a few Exceptions we can hit here (e.g. SecurityException), but we don't

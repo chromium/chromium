@@ -374,15 +374,6 @@
       name: "plaintext",
       interfaceName: "HTMLElement",
     },
-    {
-      name: "portal",
-      interfaceName: "HTMLPortalElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/portal",
-      runtimeEnabled: "Portals",
-      // Portals could be enabled in some documents but not others (due to
-      // origin trials), so we need custom type helpers.
-      noTypeHelpers: true,
-    },
     "pre",
     {
       name: "progress",

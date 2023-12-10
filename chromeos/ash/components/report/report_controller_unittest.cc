@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -33,6 +34,53 @@ namespace psm_rlwe = private_membership::rlwe;
 using pc_preserved_file_test =
     private_computing::PrivateComputingClientRegressionTestData;
 namespace ash::report::device_metrics {
+
+TEST(ReportControllerTest, UnknownDeviceMode) {
+  ASSERT_EQ(MARKET_SEGMENT_UNKNOWN, ReportController::GetMarketSegment(
+                                        policy::DeviceMode::DEVICE_MODE_PENDING,
+                                        policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, ConsumerDeviceMode) {
+  ASSERT_EQ(MARKET_SEGMENT_CONSUMER,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_CONSUMER,
+                policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, DemoEnterpriseDeviceMode) {
+  ASSERT_EQ(
+      MARKET_SEGMENT_ENTERPRISE_DEMO,
+      ReportController::GetMarketSegment(policy::DeviceMode::DEVICE_MODE_DEMO,
+                                         policy::MarketSegment::ENTERPRISE));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeEnterpriseSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_ENTERPRISE,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::ENTERPRISE));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeEducationSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_EDUCATION,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::EDUCATION));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeUnknownSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, UnknownDeviceModeAndSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_UNKNOWN, ReportController::GetMarketSegment(
+                                        policy::DeviceMode::DEVICE_MODE_NOT_SET,
+                                        policy::MarketSegment::UNKNOWN));
+}
 
 class ReportControllerTestBase : public testing::Test {
  public:
@@ -121,6 +169,31 @@ class ReportControllerTestBase : public testing::Test {
 
   SystemClockClient::TestInterface* GetSystemClockTestInterface() {
     return SystemClockClient::Get()->GetTestInterface();
+  }
+
+  void ResetLocalStateForTesting() {
+    const base::Time unix_epoch = base::Time::UnixEpoch();
+    GetLocalState()->SetTime(
+        prefs::kDeviceActiveLastKnown1DayActivePingTimestamp, unix_epoch);
+    GetLocalState()->SetTime(
+        prefs::kDeviceActiveLastKnown28DayActivePingTimestamp, unix_epoch);
+    GetLocalState()->SetTime(
+        prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp, unix_epoch);
+    GetLocalState()->SetTime(
+        prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp, unix_epoch);
+    GetLocalState()->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                                0);
+    GetLocalState()->SetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, false);
+    GetLocalState()->SetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, false);
+    GetLocalState()->SetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
+  }
+
+  void ForwardClock(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+    task_environment_.RunUntilIdle();
   }
 
   void SetWifiNetworkState(std::string network_state) {
@@ -218,7 +291,6 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
       version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
   };
 
   void SetUp() override {
@@ -234,21 +306,24 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
     GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
         private_computing::SaveStatusResponse());
 
-    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
     // Stub successful request payloads when created by the PSM client.
-    StubPsmClientManagerDelegate* psm_client_delegate =
-        new StubPsmClientManagerDelegate();
-    SimulateOprfRequest(psm_client_delegate,
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
                         psm_rlwe::PrivateMembershipRlweOprfRequest());
-    SimulateQueryRequest(psm_client_delegate,
+    SimulateQueryRequest(psm_client_delegate.get(),
                          psm_rlwe::PrivateMembershipRlweQueryRequest());
-    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
-        std::make_unique<PsmClientManager>(
-            base::WrapUnique(psm_client_delegate)));
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
   }
@@ -260,9 +335,9 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
     ReportControllerTestBase::TearDown();
   }
 
- protected:
   ReportController* GetReportController() { return report_controller_.get(); }
 
+ protected:
   // Returns a single negative membership response.
   psm_rlwe::RlweMembershipResponses GetMembershipResponses() {
     psm_rlwe::RlweMembershipResponses membership_responses;
@@ -556,8 +631,7 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
-      version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
+      version_info::Channel::STABLE /* chromeos_channel */
   };
 
   void SetUp() override {
@@ -577,21 +651,24 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
         test.save_response());
 
-    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
     // Stub successful request payloads when created by the PSM client.
-    StubPsmClientManagerDelegate* psm_client_delegate =
-        new StubPsmClientManagerDelegate();
-    SimulateOprfRequest(psm_client_delegate,
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
                         psm_rlwe::PrivateMembershipRlweOprfRequest());
-    SimulateQueryRequest(psm_client_delegate,
+    SimulateQueryRequest(psm_client_delegate.get(),
                          psm_rlwe::PrivateMembershipRlweQueryRequest());
-    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
-        std::make_unique<PsmClientManager>(
-            base::WrapUnique(psm_client_delegate)));
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
   }
@@ -652,6 +729,127 @@ TEST_F(ReportControllerPreservedFileReadWriteSuccessTest, PreservedFileRead) {
   EXPECT_EQ(GetLocalState()->GetBoolean(
                 prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2),
             true);
+}
+
+class ReportControllerDeviceRecoveryTest : public ReportControllerTestBase {
+ public:
+  static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
+      version_info::Channel::STABLE /* chromeos_channel */,
+  };
+
+  void SetUp() override {
+    ReportControllerTestBase::SetUp();
+
+    // Default network to being synchronized and available.
+    GetSystemClockTestInterface()->SetServiceIsAvailable(true);
+    GetSystemClockTestInterface()->SetNetworkSynchronized(true);
+
+    // Default preserved file DBus operations to retrieve successfully.
+    pc_preserved_file_test::TestCase test = utils::GetPreservedFileTestCase(
+        GetPreservedFileTestData(),
+        pc_preserved_file_test::TestName::
+            PrivateComputingClientRegressionTestData_TestName_GET_SUCCESS_UNIX_EPOCH_PING_DATE_SAVE_SUCCESS);
+    GetPrivateComputingTestInterface()->SetGetLastPingDatesStatusResponse(
+        test.get_response());
+    GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
+        test.save_response());
+
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
+    // Stub successful request payloads when created by the PSM client.
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
+                        psm_rlwe::PrivateMembershipRlweOprfRequest());
+    SimulateQueryRequest(psm_client_delegate.get(),
+                         psm_rlwe::PrivateMembershipRlweQueryRequest());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
+
+    report_controller_ = std::make_unique<ReportController>(
+        kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
+        base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
+
+    task_environment_.RunUntilIdle();
+  }
+
+  void TearDown() override {
+    report_controller_.reset();
+
+    // Shutdown dependency clients after |report_controller_| is destroyed.
+    ReportControllerTestBase::TearDown();
+  }
+
+ protected:
+  ReportController* GetReportController() { return report_controller_.get(); }
+
+  // Returns a single negative membership response.
+  psm_rlwe::RlweMembershipResponses GetMembershipResponses() {
+    psm_rlwe::RlweMembershipResponses membership_responses;
+
+    psm_rlwe::RlweMembershipResponses::MembershipResponseEntry* entry =
+        membership_responses.add_membership_responses();
+    private_membership::MembershipResponse* membership_response =
+        entry->mutable_membership_response();
+    membership_response->set_is_member(false);
+
+    return membership_responses;
+  }
+
+ private:
+  std::unique_ptr<ReportController> report_controller_;
+};
+
+TEST_F(ReportControllerDeviceRecoveryTest,
+       ValidateCheckMembershipFlowOnRecovery) {
+  // Start reporting sequence.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
+
+  // First mock network requests for 1DA use case.
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for 28DA use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for Cohort use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for Observation use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  EXPECT_FALSE(GetReportController()->IsDeviceReportingForTesting());
+
+  // Reset local state so that when reporting flow begins again, the device will
+  // attempt check membership.
+  ResetLocalStateForTesting();
+
+  // Updating time 1 hour ahead will trigger timer to execute reporting flow.
+  ForwardClock(base::Minutes(60));
+
+  EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
+
+  // First mock network requests for 1DA use case.
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for 28DA use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for Cohort use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for Observation use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  EXPECT_FALSE(GetReportController()->IsDeviceReportingForTesting());
 }
 
 }  // namespace ash::report::device_metrics

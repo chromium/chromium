@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {dom, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dom} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {invokePolymerMethod} from '../../display_manager.js';
-// clang-format on
 
 /**
  * @fileoverview
@@ -188,16 +186,6 @@ export const MultiStepBehavior = {
   },
 
 };
-
-/**
- * TODO(b/24294625): Replace with an interface.
- * @typedef {{
- *   setUIStep: function(string),
- *   onBeforeShow: function(),
- *   onBeforeHide: function(),
- * }}
- */
-MultiStepBehavior.Proto;
 
 /** @interface */
 export class MultiStepBehaviorInterface {

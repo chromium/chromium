@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "components/winhttp/scoped_hinternet.h"
 #include "url/gurl.h"
@@ -133,7 +133,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   int port_ = 0;
   std::string path_for_request_;
 
-  base::WStringPiece verb_;
+  std::wstring_view verb_;
   std::string request_data_;
   // The value of Content-Type header, e.g. "application/json".
   std::string content_type_;

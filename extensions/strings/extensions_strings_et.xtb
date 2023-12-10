@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Oih! RSA juhusliku privaatvõtme genereerimine ebaõnnestus.</translation>
 <translation id="1445572445564823378">Laiendus aeglustab rakendust <ph name="PRODUCT_NAME" />. Peaksite selle keelama, et taastada rakenduse <ph name="PRODUCT_NAME" /> toimivus.</translation>
 <translation id="1468038450257740950">WebGL-i ei toetata.</translation>
+<translation id="1610570795592207282">CSS-i „<ph name="RELATIVE_PATH" />“ ei saanud skripti jaoks laadida.</translation>
 <translation id="1803557475693955505">Tagaplaanilehte <ph name="BACKGROUND_PAGE" /> ei õnnestunud laadida.</translation>
 <translation id="2159915644201199628">Ei saanud pilti dekodeerida: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Lokaliseerimist kasutatakse, kuid parameetrit default_locale ei olnud manifestis määratud.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_ID" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx-faili asendamine ebaõnnestus. Kontrollige, kas fail on kasutusel.</translation>
 <translation id="3163201441334626963">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Sisuskripti jaoks ei õnnestunud laadida üksust css <ph name="RELATIVE_PATH" />.</translation>
 <translation id="3369521687965833290">Laiendust ei saanud lahti pakkida. Laienduse turvaliseks lahtipakkimiseks peab olema tee teie profiili kataloogi, mis algab ketast tähistava tähega ja milles ei ole sõlme, paigalduspunkti või symlinki. Sellist teed teie profiilil ei ole.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">Toode <ph name="PRODUCT_NAME" /> teenusepakkujalt <ph name="VENDOR_ID" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privaatvõtme sisendi väärtus peab olema kehtiv tee.</translation>
 <translation id="388442998277590542">Valikute lehte <ph name="OPTIONS_PAGE" /> ei õnnestunud laadida.</translation>
 <translation id="3984413272403535372">Laienduse allkirjastamisel ilmnes viga.</translation>
-<translation id="39964277676607559">Sisuskripti jaoks ei õnnestunud laadida JavaScripti <ph name="RELATIVE_PATH" />.</translation>
 <translation id="4115165561519362854">Seadme administraator nõuab, et kasutaksite laienduse <ph name="EXTENSION_NAME" /> puhul vähemalt versiooni <ph name="EXTENSION_VERSION" />. Laiendust ei saa lubada enne, kui see on värskendatud sellele versioonile (või uuemale versioonile).</translation>
 <translation id="4233778200880751280">Teabelehte „<ph name="ABOUT_PAGE" />” ei õnnestunud laadida.</translation>
 <translation id="471800408830181311">Privaatvõtit ei õnnestunud väljastada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Avalikku võtit ei õnnestunud eksportida.</translation>
 <translation id="5026754133087629784">Veebivaade: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Ei leia pakitava kataloogi absoluutteed.</translation>
+<translation id="5160071981665899014">JavaScripti „<ph name="RELATIVE_PATH" />“ ei saanud skripti jaoks laadida.</translation>
 <translation id="5356315618422219272">Rakendusvaade: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Sellise kujuga aknaid ei toetata.</translation>
 <translation id="5456409301717116725">Laiendus hõlmab võtmefaili „<ph name="KEY_PATH" />”. See toiming ei ole soovitatav.</translation>

@@ -854,6 +854,27 @@
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
       },
       {
+        "args": [
+          "--test-type=integration"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
+      },
+      {
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1248,6 +1269,28 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "merge": {
@@ -2116,7 +2159,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -2184,7 +2227,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {

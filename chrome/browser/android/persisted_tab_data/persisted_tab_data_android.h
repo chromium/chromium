@@ -35,7 +35,7 @@ class PersistedTabDataAndroid
   // ...
   // - Restore PersistedTabData from disk (if possible). If not there ...
   // - Re-acquire PersistedTabData using the supplier
-  static void From(TabAndroid* tab_android,
+  static void From(base::WeakPtr<TabAndroid> tab_android,
                    const void* user_data_key,
                    SupplierCallback supplier_callback,
                    FromCallback from_callback);

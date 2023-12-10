@@ -9,9 +9,7 @@ import android.graphics.Bitmap;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * Items for the list view in the feed management activity.
- */
+/** Items for the list view in the feed management activity. */
 public class FollowManagementItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;
     public static final int EMPTY_ITEM_TYPE = 1;
@@ -36,6 +34,14 @@ public class FollowManagementItemProperties {
     public static final WritableObjectPropertyKey<Bitmap> FAVICON_KEY =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE_KEY, URL_KEY, STATUS_KEY, ON_CLICK_KEY,
-            SUBSCRIBED_KEY, CHECKBOX_ENABLED_KEY, ID_KEY, FAVICON_KEY};
+    public static final PropertyKey[] ALL_KEYS = {
+        TITLE_KEY,
+        URL_KEY,
+        STATUS_KEY,
+        ON_CLICK_KEY,
+        SUBSCRIBED_KEY,
+        CHECKBOX_ENABLED_KEY,
+        ID_KEY,
+        FAVICON_KEY
+    };
 }

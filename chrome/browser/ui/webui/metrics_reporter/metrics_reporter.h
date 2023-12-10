@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_METRICS_REPORTER_METRICS_REPORTER_H_
 #define CHROME_BROWSER_UI_WEBUI_METRICS_REPORTER_METRICS_REPORTER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -12,7 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 
 class MetricsReporterClient;
@@ -53,7 +53,7 @@ class MetricsReporter : public metrics_reporter::mojom::PageMetricsHost {
   friend MetricsReporterTest;
 
   void MeasureInternal(const std::string& start_mark,
-                       absl::optional<std::string> end_mark,
+                       std::optional<std::string> end_mark,
                        MeasureCallback callback);
 
   std::map<std::string, base::TimeTicks> marks_;

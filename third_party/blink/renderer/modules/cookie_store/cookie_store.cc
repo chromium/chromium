@@ -167,7 +167,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
           path.Utf8(), base::Time() /*creation*/, expires,
           base::Time() /*last_access*/, true /*secure*/, false /*http_only*/,
           same_site, net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
-          /*same_party=*/false, cookie_partition_key, &status_out);
+          cookie_partition_key, &status_out);
 
   // TODO(crbug.com/1310444): Improve serialization validation comments and
   // associate them with ExceptionState codes.

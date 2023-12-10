@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -34,11 +36,21 @@ namespace {
 // Maximum number of sessions we're going to display on the NTP
 const size_t kMaxSessionsToShow = 10;
 
-// Helper method to create mojom session objects from Session objects.
-absl::optional<history::mojom::TabPtr> SessionTabToMojom(
-    const ::sessions::SessionTab& tab) {
+std::u16string FormatRelativeTime(const base::Time& time) {
+  // Return a time like "1 hour ago", "2 days ago", etc.
+  base::Time now = base::Time::Now();
+  // TimeFormat does not support negative TimeDelta values, so then we use 0.
+  return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                ui::TimeFormat::LENGTH_SHORT,
+                                now < time ? base::TimeDelta() : now - time);
+}
+
+// Helper method to create mojom tab objects from SessionTab objects.
+history::mojom::TabPtr SessionTabToMojom(const ::sessions::SessionTab& tab,
+                                         const std::string& session_tag,
+                                         const std::string& session_name) {
   if (tab.navigations.empty()) {
-    return absl::nullopt;
+    return nullptr;
   }
 
   int selected_index = std::min(tab.current_navigation_index,
@@ -47,63 +59,60 @@ absl::optional<history::mojom::TabPtr> SessionTabToMojom(
       tab.navigations.at(selected_index);
   GURL tab_url = current_navigation.virtual_url();
   if (!tab_url.is_valid() || tab_url.spec() == chrome::kChromeUINewTabURL) {
-    return absl::nullopt;
+    return nullptr;
   }
 
   auto tab_mojom = history::mojom::Tab::New();
+  tab_mojom->session_tag = session_tag;
+  tab_mojom->session_name = session_name;
   base::Value::Dict dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, current_navigation.title(),
                                     tab_url);
   tab_mojom->url = GURL(*dictionary.FindString("url"));
   tab_mojom->title = *dictionary.FindString("title");
 
-  tab_mojom->timestamp = tab.timestamp;
-  // Seen also: http://crbug.com/154865.
-  // Renamed to window id to match definitions in
-  // chrome/browser/resources/history/externs.ts.
-  tab_mojom->window_id = tab.tab_id.id();
+  tab_mojom->relative_time =
+      base::UTF16ToUTF8(FormatRelativeTime(tab.timestamp));
+
   return tab_mojom;
 }
 
-// Helper for initializing a boilerplate SessionWindow Mojom object.
-history::mojom::WindowPtr BuildWindowMojom(base::Time modification_time,
-                                           SessionID window_id) {
-  auto window_mojom = history::mojom::Window::New();
-  window_mojom->timestamp = modification_time;
+// Helper method to append mojom tab objects from SessionWindow objects.
+void SessionWindowToMojom(std::vector<history::mojom::TabPtr>& tabs_mojom,
+                          const ::sessions::SessionWindow& window,
+                          const std::string& session_tag,
+                          const std::string& session_name) {
+  if (window.tabs.empty()) {
+    return;
+  }
 
-  window_mojom->session_id = window_id.id();
-  return window_mojom;
+  for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
+    tabs_mojom.push_back(
+        SessionTabToMojom(*tab.get(), session_tag, session_name));
+  }
 }
 
-// Helper method to create mojom window objects from SessionWindow objects.
-absl::optional<history::mojom::WindowPtr> SessionWindowToMojom(
-    const ::sessions::SessionWindow& window) {
-  if (window.tabs.empty()) {
-    return absl::nullopt;
-  }
+// Helper method to create a list of mojom tab objects from Session objects.
+std::vector<history::mojom::TabPtr> SessionToMojom(
+    const sync_sessions::SyncedSession* session) {
+  std::vector<history::mojom::TabPtr> tabs_mojom;
+  const std::string& session_tag = session->GetSessionTag();
+  const std::string& session_name = session->GetSessionName();
 
-  std::vector<absl::optional<history::mojom::TabPtr>> tabs_mojom;
-  auto window_mojom = BuildWindowMojom(window.timestamp, window.window_id);
-  for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
-    auto tab_mojom = SessionTabToMojom(*tab.get());
-    if (tab_mojom) {
-      window_mojom->tabs.push_back(std::move(*tab_mojom));
-    }
+  // Order tabs by visual order within window.
+  for (const auto& window_pair : session->windows) {
+    SessionWindowToMojom(tabs_mojom, window_pair.second->wrapped_window,
+                         session_tag, session_name);
   }
-  if (window_mojom->tabs.empty()) {
-    return absl::nullopt;
-  }
-
-  return window_mojom;
+  return tabs_mojom;
 }
 }  // namespace
 
 TabResumptionPageHandler::TabResumptionPageHandler(
     mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
         pending_page_handler,
-    Profile* profile,
     content::WebContents* web_contents)
-    : profile_(profile),
+    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
@@ -113,8 +122,28 @@ TabResumptionPageHandler::TabResumptionPageHandler(
 TabResumptionPageHandler::~TabResumptionPageHandler() = default;
 
 void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
-  auto sessions_mojom = GetForeignSessions();
-  std::move(callback).Run(std::move(sessions_mojom));
+  const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpTabResumptionModule,
+      ntp_features::kNtpTabResumptionModuleDataParam);
+
+  if (!fake_data_param.empty()) {
+    std::vector<history::mojom::TabPtr> tabs_mojom;
+    const int kSampleSessionsCount = 3;
+    for (int i = 0; i < kSampleSessionsCount; i++) {
+      auto session_tabs_mojom = SessionToMojom(
+          SampleSession("Test Name",
+                        ("Test Tag " + base::NumberToString(i)).c_str(), 3, 1)
+              .get());
+      for (auto& tab_mojom : session_tabs_mojom) {
+        tabs_mojom.push_back(std::move(tab_mojom));
+      }
+    }
+    std::move(callback).Run(std::move(tabs_mojom));
+    return;
+  }
+
+  auto tabs_mojom = GetForeignTabs();
+  std::move(callback).Run(std::move(tabs_mojom));
 }
 
 // static
@@ -125,12 +154,11 @@ TabResumptionPageHandler::GetOpenTabsUIDelegate() {
   return service ? service->GetOpenTabsUIDelegate() : nullptr;
 }
 
-std::vector<history::mojom::SessionPtr>
-TabResumptionPageHandler::GetForeignSessions() {
+std::vector<history::mojom::TabPtr> TabResumptionPageHandler::GetForeignTabs() {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
   std::vector<const sync_sessions::SyncedSession*> sessions;
 
-  std::vector<history::mojom::SessionPtr> sessions_mojom;
+  std::vector<history::mojom::TabPtr> tabs_mojom;
   if (open_tabs && open_tabs->GetAllForeignSessions(&sessions)) {
     // Use a pref to keep track of sessions that were collapsed by the user.
     // To prevent the pref from accumulating stale sessions, clear it each time
@@ -143,33 +171,17 @@ TabResumptionPageHandler::GetForeignSessions() {
 
     // Note: we don't own the SyncedSessions themselves.
     for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {
-      const sync_sessions::SyncedSession* session = sessions[i];
+      const sync_sessions::SyncedSession* session(sessions[i]);
+      auto session_tabs_mojom = SessionToMojom(session);
       const std::string& session_tag = session->GetSessionTag();
-      auto session_mojom = history::mojom::Session::New();
-      session_mojom->tag = session_tag;
-      session_mojom->name = session->GetSessionName();
-      base::Time now = base::Time::Now();
-      base::Time time = session->GetModifiedTime();
-      session_mojom->modified_time =
-          now < time ? base::TimeDelta() : now - time;
-      session_mojom->timestamp = session->GetModifiedTime();
-
       bool is_collapsed = collapsed_sessions.Find(session_tag);
-      session_mojom->collapsed = is_collapsed;
       if (is_collapsed) {
         current_collapsed_sessions.Set(session_tag, true);
       }
-
-      // Order tabs by visual order within window.
-      for (const auto& window_pair : session->windows) {
-        auto window = SessionWindowToMojom(window_pair.second->wrapped_window);
-        if (window) {
-          session_mojom->windows.push_back(std::move(*window));
-        }
+      for (auto& tab_mojom : session_tabs_mojom) {
+        tabs_mojom.push_back(std::move(tab_mojom));
       }
-
-      sessions_mojom.push_back(std::move(session_mojom));
     }
   }
-  return sessions_mojom;
+  return tabs_mojom;
 }

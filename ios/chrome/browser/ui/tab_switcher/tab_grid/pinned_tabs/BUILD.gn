@@ -15,7 +15,7 @@ source_set("pinned_tabs") {
     "//components/favicon/ios:ios",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/drag_and_drop/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",

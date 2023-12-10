@@ -27,7 +27,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "search_with_mediator_egtest.mm" ]
   deps = [
-    "//ios/chrome/browser/metrics:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/search_engines/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/browser_container:eg_test_support+eg2",

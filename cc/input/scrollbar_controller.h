@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "cc/input/scrollbar.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // High level documentation:
 // https://source.chromium.org/chromium/chromium/src/+/main:cc/input/README.md
@@ -322,15 +322,15 @@ class CC_EXPORT ScrollbarController {
   gfx::PointF last_known_pointer_position_;
 
   // Set only while interacting with the scrollbar (eg: drag, click etc).
-  absl::optional<CapturedScrollbarMetadata> captured_scrollbar_metadata_;
+  std::optional<CapturedScrollbarMetadata> captured_scrollbar_metadata_;
 
   // Holds information pertaining to autoscrolling. This member is empty if and
   // only if an autoscroll is *not* in progress or scheduled
-  absl::optional<AutoScrollState> autoscroll_state_;
+  std::optional<AutoScrollState> autoscroll_state_;
 
   // Holds information pertaining to thumb drags. Useful while making decisions
   // about thumb anchoring/snapping.
-  absl::optional<DragState> drag_state_;
+  std::optional<DragState> drag_state_;
 
   // Used to track if a GSU was processed for the current frame or not. Without
   // this, thumb drag will appear jittery. The reason this happens is because

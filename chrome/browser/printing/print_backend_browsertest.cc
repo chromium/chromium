@@ -400,9 +400,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
    public:
     std::unique_ptr<PrintingContext> CreatePrintingContext(
         PrintingContext::Delegate* delegate,
-        bool skip_system_calls) override {
+        PrintingContext::ProcessBehavior process_behavior) override {
       auto context =
-          std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
+          std::make_unique<TestPrintingContext>(delegate, process_behavior);
 
       auto settings = std::make_unique<PrintSettings>();
       settings->set_copies(kPrintSettingsCopies);
@@ -675,6 +675,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   PrintSettings print_settings;
   print_settings.set_device_name(kDefaultPrinterName16);
   print_settings.set_dpi(kPrintSettingsOverrideDpi);
+  print_settings.set_copies(kPrintSettingsCopies);
 
   mojom::PrintSettingsResultPtr settings =
       UpdatePrintSettingsAndWait(context_id, print_settings);

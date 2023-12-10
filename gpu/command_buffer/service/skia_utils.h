@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SKIA_UTILS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SKIA_UTILS_H_
 
+#include <optional>
 #include "base/functional/callback_forward.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
@@ -12,7 +13,6 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -108,12 +108,12 @@ GPU_GLES2_EXPORT void DeleteSkSurface(SharedContextState* context_state,
 GPU_GLES2_EXPORT GrVkImageInfo
 CreateGrVkImageInfo(VulkanImage* image, const gfx::ColorSpace& color_space);
 
-GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
-    VkPhysicalDevice physical_device,
-    VkImageTiling tiling,
-    VkFormat format,
-    const gfx::ColorSpace& color_space,
-    const absl::optional<VulkanYCbCrInfo>& ycbcr_info);
+GPU_GLES2_EXPORT GrVkYcbcrConversionInfo
+CreateGrVkYcbcrConversionInfo(VkPhysicalDevice physical_device,
+                              VkImageTiling tiling,
+                              VkFormat format,
+                              const gfx::ColorSpace& color_space,
+                              const std::optional<VulkanYCbCrInfo>& ycbcr_info);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 // Helper that returns true when Vulkan memory usage is high enough

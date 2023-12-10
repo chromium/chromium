@@ -57,10 +57,10 @@ SelectedKeywordView::SelectedKeywordView(
   // make more sense to only set `FocusBehavior` when this view will be shown.
   // For now, Eliminate the paint check failure.
   if (GetAccessibleName().empty()) {
-    SetAccessibilityProperties(/*role*/ absl::nullopt,
+    SetAccessibilityProperties(/*role*/ std::nullopt,
                                /*name*/ std::u16string(),
-                               /*description*/ absl::nullopt,
-                               /*role_description*/ absl::nullopt,
+                               /*description*/ std::nullopt,
+                               /*role_description*/ std::nullopt,
                                ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 }

@@ -511,6 +511,8 @@ class CC_EXPORT PictureLayerTiling {
   gfx::Rect EnclosingLayerRectFromContentsRect(
       const gfx::Rect& contents_rect) const;
 
+  void SetTilingSize(const gfx::Size& tiling_size);
+
   // Given properties.
   const gfx::AxisTransform2d raster_transform_;
   const raw_ptr<PictureLayerTilingClient> client_;

@@ -46,6 +46,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
@@ -193,20 +194,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     // To use virtualized contexts we need on screen surface format match the
     // offscreen.
     auto surface_format = default_surface->GetFormat();
-
-    switch (init_params.attribs.color_space) {
-      case COLOR_SPACE_UNSPECIFIED:
-        surface_format.SetColorSpace(
-            gl::GLSurfaceFormat::COLOR_SPACE_UNSPECIFIED);
-        break;
-      case COLOR_SPACE_SRGB:
-        surface_format.SetColorSpace(gl::GLSurfaceFormat::COLOR_SPACE_SRGB);
-        break;
-      case COLOR_SPACE_DISPLAY_P3:
-        surface_format.SetColorSpace(
-            gl::GLSurfaceFormat::COLOR_SPACE_DISPLAY_P3);
-        break;
-    }
     surface_ = ImageTransportSurface::CreateNativeGLSurface(
         display, weak_ptr_factory_.GetWeakPtr(), init_params.surface_handle,
         surface_format);
@@ -215,9 +202,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       LOG(ERROR) << "ContextResult::kSurfaceFailure: Failed to create surface.";
       return gpu::ContextResult::kSurfaceFailure;
     }
-    if (init_params.attribs.enable_swap_timestamps_if_supported &&
-        surface_->SupportsSwapTimestamps())
-      surface_->SetEnableSwapTimestamps();
+    if (!features::UseGpuVsync()) {
+      surface_->SetVSyncEnabled(false);
+    }
   } else
 #endif
   {
@@ -261,7 +248,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     if (!context) {
       context = gl::init::CreateGLContext(
           share_group_.get(), surface_.get(),
-          GenerateGLContextAttribs(init_params.attribs, context_group_.get()));
+          GenerateGLContextAttribsForDecoder(init_params.attribs,
+                                             context_group_.get()));
       if (!context) {
         // TODO(piman): This might not be fatal, we could recurse into
         // CreateGLContext to get more info, tho it should be exceedingly
@@ -288,8 +276,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     context = base::MakeRefCounted<GLContextVirtual>(
         share_group_.get(), context.get(), gles2_decoder_->AsWeakPtr());
     if (!context->Initialize(surface_.get(),
-                             GenerateGLContextAttribs(init_params.attribs,
-                                                      context_group_.get()))) {
+                             GenerateGLContextAttribsForDecoder(
+                                 init_params.attribs, context_group_.get()))) {
       // The real context created above for the default offscreen surface
       // might not be compatible with this surface.
       context = nullptr;
@@ -303,7 +291,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   } else {
     context = gl::init::CreateGLContext(
         share_group_.get(), surface_.get(),
-        GenerateGLContextAttribs(init_params.attribs, context_group_.get()));
+        GenerateGLContextAttribsForDecoder(init_params.attribs,
+                                           context_group_.get()));
     if (!context) {
       // TODO(piman): This might not be fatal, we could recurse into
       // CreateGLContext to get more info, tho it should be exceedingly
@@ -417,10 +406,6 @@ const GpuPreferences& GLES2CommandBufferStub::GetGpuPreferences() const {
 
 viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
   return viz::GpuVSyncCallback();
-}
-
-base::TimeDelta GLES2CommandBufferStub::GetGpuBlockedTimeSinceLastSwap() {
-  return channel_->scheduler()->TakeTotalBlockingTime();
 }
 
 MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {

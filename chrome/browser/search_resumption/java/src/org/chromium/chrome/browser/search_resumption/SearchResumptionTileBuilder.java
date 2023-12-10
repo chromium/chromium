@@ -23,9 +23,7 @@ public class SearchResumptionTileBuilder {
 
     private OnSuggestionClickCallback mCallback;
 
-    /**
-     *  The callback when a {@link SearchResumptionTileView} is clicked.
-     */
+    /** The callback when a {@link SearchResumptionTileView} is clicked. */
     interface OnSuggestionClickCallback {
         void onSuggestionClick(GURL gurl);
     }
@@ -43,9 +41,7 @@ public class SearchResumptionTileBuilder {
                 && suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST;
     }
 
-    /**
-     * Returns Whether the given suggestion is a qualified suggestion.
-     */
+    /** Returns Whether the given suggestion is a qualified suggestion. */
     static boolean isSuggestionValid(String text) {
         return !TextUtils.isEmpty(text);
     }
@@ -114,17 +110,13 @@ public class SearchResumptionTileBuilder {
         }
     }
 
-    /**
-     * Builds a {@link SearchResumptionTileView} based on the given suggestion.
-     */
+    /** Builds a {@link SearchResumptionTileView} based on the given suggestion. */
     SearchResumptionTileView buildTileView(
             AutocompleteMatch suggestion, SearchResumptionTileContainerView parent) {
         return buildTileView(suggestion.getDisplayText(), suggestion.getUrl(), parent);
     }
 
-    /**
-     * Builds a {@link SearchResumptionTileView} based on the given suggestion.
-     */
+    /** Builds a {@link SearchResumptionTileView} based on the given suggestion. */
     SearchResumptionTileView buildTileView(
             String text, GURL url, SearchResumptionTileContainerView parent) {
         SearchResumptionTileView tileView = parent.buildTileView();

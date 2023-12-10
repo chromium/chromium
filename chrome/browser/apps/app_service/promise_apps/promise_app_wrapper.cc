@@ -4,11 +4,11 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -20,8 +20,8 @@ GURL IconWrapper::GetUrl() const {
   return GURL(icon_proto_.url());
 }
 
-absl::optional<int> IconWrapper::GetWidthInPixels() const {
-  absl::optional<int> width;
+std::optional<int> IconWrapper::GetWidthInPixels() const {
+  std::optional<int> width;
   if (icon_proto_.has_width_in_pixels()) {
     width = icon_proto_.width_in_pixels();
   }
@@ -46,12 +46,12 @@ PromiseAppWrapper& PromiseAppWrapper::operator=(const PromiseAppWrapper&) =
     default;
 PromiseAppWrapper::~PromiseAppWrapper() = default;
 
-absl::optional<PackageId> PromiseAppWrapper::GetPackageId() const {
+std::optional<PackageId> PromiseAppWrapper::GetPackageId() const {
   return package_id_;
 }
 
-absl::optional<std::string> PromiseAppWrapper::GetName() const {
-  absl::optional<std::string> name;
+std::optional<std::string> PromiseAppWrapper::GetName() const {
+  std::optional<std::string> name;
   if (promise_app_proto_.has_name()) {
     name = promise_app_proto_.name();
   }

@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/common/storage_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
 class GURL;

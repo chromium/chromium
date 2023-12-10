@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
@@ -165,7 +164,7 @@ public class PersistedTabDataTest {
     @UiThreadTest
     @Test
     public void testOnTabClose() throws TimeoutException {
-        TabImpl tab = MockTab.createAndInitialize(1, mProfile);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         tab.getUserDataHost()
                 .setUserData(ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);

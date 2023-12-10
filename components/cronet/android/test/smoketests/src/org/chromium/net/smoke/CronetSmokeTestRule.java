@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
-import android.content.Context;
-
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
@@ -20,19 +18,11 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.UrlResponseInfo;
 
-/**
- * Base test class. This class should not import any classes from the org.chromium.base package.
- */
-public class CronetSmokeTestRule implements TestRule {
-    /**
-     * The key in the string resource file that specifies {@link TestSupport} that should
-     * be instantiated.
-     */
-    private static final String SUPPORT_IMPL_RES_KEY = "TestSupportImplClass";
-
+/** Base test class. This class should not import any classes from the org.chromium.base package. */
+public abstract class CronetSmokeTestRule implements TestRule {
     public ExperimentalCronetEngine.Builder mCronetEngineBuilder;
     public CronetEngine mCronetEngine;
-    public TestSupport mTestSupport;
+    private TestSupport mTestSupport = initTestSupport();
 
     @Override
     public Statement apply(final Statement base, Description desc) {
@@ -104,20 +94,6 @@ public class CronetSmokeTestRule implements TestRule {
                 .isEqualTo("org.chromium.net.impl.CronetUrlRequestContext");
     }
 
-    /**
-     * Instantiates a concrete implementation of {@link TestSupport} interface.
-     * The name of the implementation class is determined dynamically by reading
-     * the value of |TestSupportImplClass| from the Android string resource file.
-     *
-     * @throws Exception if the class cannot be instantiated.
-     */
-    @SuppressWarnings("DiscouragedApi")
-    private void initTestSupport() throws Exception {
-        Context ctx = ApplicationProvider.getApplicationContext();
-        String packageName = ctx.getPackageName();
-        int resId = ctx.getResources().getIdentifier(SUPPORT_IMPL_RES_KEY, "string", packageName);
-        String className = ctx.getResources().getString(resId);
-        Class<? extends TestSupport> cl = Class.forName(className).asSubclass(TestSupport.class);
-        mTestSupport = cl.newInstance();
-    }
+    /** Instantiates a concrete implementation of {@link TestSupport} interface. */
+    protected abstract TestSupport initTestSupport();
 }

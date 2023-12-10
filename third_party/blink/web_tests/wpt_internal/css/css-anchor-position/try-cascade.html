@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<title>CSS Anchor Positioning Test: @try and cascade interaction</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  .cb {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background: lightpink;
+    display: inline-block;
+  }
+  .abs {
+    position: absolute;
+    background: darkcyan;
+    left: 0px;
+    top: 0px;
+    width: 25px;
+    height: 25px;
+    position-fallback: --pf;
+  }
+  @position-fallback --pf {
+    @try {
+      left: 50px;
+      top: 50px;
+    }
+  }
+</style>
+
+<!-- Basic @try rule -->
+<div class=cb>
+  <div id=abs_try class=abs></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(abs_try.offsetLeft, 50);
+    assert_equals(abs_try.offsetTop, 50);
+  }, '@try rule applies');
+</script>
+
+<!-- Inline style -->
+<div class=cb>
+  <div id=abs_inline class=abs style="left:20px"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(abs_inline.offsetLeft, 50);
+    assert_equals(abs_inline.offsetTop, 50);
+  }, '@try rule wins over inline style');
+</script>
+
+<!-- !important -->
+<style>
+  #abs_important {
+    left: 10px !important;
+  }
+</style>
+<div class=cb>
+  <div id=abs_important class=abs></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(abs_important.offsetLeft, 10);
+    assert_equals(abs_important.offsetTop, 50);
+  }, '@try rule does not win over !important');
+</script>
+
+<!-- Animations -->
+<style>
+  @keyframes anim {
+    from { top: 20px; }
+    to { top: 20px; }
+  }
+  #abs_animation {
+    animation: anim 1000s steps(2, start) paused;
+  }
+</style>
+<div class=cb>
+  <div id=abs_animation class=abs></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(abs_animation.offsetLeft, 50);
+    assert_equals(abs_animation.offsetTop, 20);
+  }, '@try rule does not win over animations');
+</script>
+
+<!-- Transitions -->
+<style>
+  #abs_transition.move {
+    top: 10px !important;
+    transition: top 1000s steps(2, start);
+</style>
+<div class=cb>
+  <div id=abs_transition class=abs></div>
+</div>
+<script>
+  test(() => {
+    abs_transition.offsetTop;
+    abs_transition.classList.add('move');
+    assert_equals(abs_transition.offsetLeft, 50);
+    assert_equals(abs_transition.offsetTop, 30);
+  }, '@try rule does not win over transitions');
+</script>

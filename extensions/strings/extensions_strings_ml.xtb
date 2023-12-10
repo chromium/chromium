@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">അയ്യോ! ക്രമരഹിത RSA സ്വകാര്യ കീ ജനറേറ്റ് ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു. </translation>
 <translation id="1445572445564823378">ഈ വിപുലീകരണം <ph name="PRODUCT_NAME" />-നെ മന്ദഗതിയിലാക്കുന്നു. <ph name="PRODUCT_NAME" />-ന്റെ പ്രകടനം പുനഃസ്ഥാപിക്കുന്നതിനായി നിങ്ങൾ അതിനെ പ്രവർത്തനരഹിതമാക്കണം.</translation>
 <translation id="1468038450257740950">WebGL പിന്തുണയ്‌ക്കുന്നില്ല.</translation>
+<translation id="1610570795592207282">സ്ക്രിപ്‌റ്റിനായി css '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="1803557475693955505">പശ്ചാത്തല പേജ് '<ph name="BACKGROUND_PAGE" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="2159915644201199628">ചിത്രം ഡീകോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">പ്രാദേശികവൽക്കരണം ഉപയോഗിച്ചു, പക്ഷെ മാനിഫെസ്‌റ്റിൽ സ്ഥിര-ഭാഷ വ്യക്തമാക്കിയിട്ടില്ല.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള അജ്ഞാത ഉൽപ്പന്നം <ph name="PRODUCT_ID" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ഫയലിന് പകരം ചേർക്കുന്നത് പരാജയപ്പെട്ടു. ഈ ഫയൽ ഉപയോഗത്തിലാണോ എന്ന് പരിശോധിക്കുക.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള അജ്ഞാത ഉൽപ്പന്നം <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">ഉള്ളടക്ക സ്ക്രിപ്‌റ്റിന് css '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="3369521687965833290">വിപുലീകരണം അണ്‍പാക്ക് ചെയ്യാന്‍ കഴിയുന്നില്ല.  ഒരു വിപുലീകരണം സുരക്ഷിതമായി അണ്‍പാക്ക് ചെയ്യുന്നതിന്, ഡ്രൈവ് പ്രതീകം ഉപയോഗിച്ച് ആരംഭിക്കുന്ന നിങ്ങളുടെ പ്രൊഫൈൽ ഡയറക്ടറിയിലേക്കുള്ള പാത്ത് ഉണ്ടായിരിക്കണം മാത്രമല്ല ജംഗ്ഷന്‍, മൌണ്ട് പോയിന്‍റ് അല്ലെങ്കില്‍ സിം‌ലിങ്ക് എന്നിവ അടങ്ങിയിരിക്കരുത്.  നിങ്ങളുടെ പ്രൊഫൈലിനായി അത്തരം പാത്തൊന്നും നിലവിലുണ്ടായിരിക്കരുത്.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള <ph name="PRODUCT_NAME" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">സ്വകാര്യ കീയ്‌ക്കായുള്ള ഇന്‍‌പുട്ട് മൂല്യം സാധുവായ പാതയായിരിക്കണം.</translation>
 <translation id="388442998277590542">ഓപ്ഷനുകളുടെ പേജ് '<ph name="OPTIONS_PAGE" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="3984413272403535372">വിപുലീകരണം സൈന്‍‌ ചെയ്യുന്നസമയത്ത് പിശക്.</translation>
-<translation id="39964277676607559">ഉള്ളടക്ക സ്ക്രിപ്റ്റിനായി javascript '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="4115165561519362854"><ph name="EXTENSION_VERSION" /> എന്നതിന്റെ ഏറ്റവും കുറഞ്ഞ പതിപ്പിനായി ഈ യന്ത്രത്തിന്റെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് <ph name="EXTENSION_NAME" /> എന്നതാവശ്യമാണ്. അത് ആ പതിപ്പിലേക്ക് (അല്ലെങ്കിൽ അതിനും മുകളിലേക്ക്) അപ്‌ഡേറ്റ് ചെയ്യുന്നതുവരെ പ്രവർത്തനക്ഷമമാക്കാനാവില്ല.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' എന്ന ആമുഖം പേജ് ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="471800408830181311">സ്വകാര്യ കീ ഔട്ട്‌പുട്ട് ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">പൊതു കീ കയറ്റുമതി ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു.</translation>
 <translation id="5026754133087629784">വെബ് കാഴ്‌ച: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">പായ്‌ക്കിലേക്കുള്ള ഡയറക്‌ടറിയുടെ കൃത്യമായ പാത കണ്ടെത്താനാകുന്നില്ല.</translation>
+<translation id="5160071981665899014">സ്ക്രിപ്റ്റിനായി javascript '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="5356315618422219272">ആപ്പ് കാഴ്‌‌ച: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">രൂപപ്പെടുത്തിയ വിൻഡോകൾ പിന്തുണയ്ക്കുന്നില്ല.</translation>
 <translation id="5456409301717116725">ഈ വിപുലീകരണത്തിൽ '<ph name="KEY_PATH" />' എന്ന കീ ഫയൽ ഉൾപ്പെടുന്നു. മിക്കവാറും നിങ്ങൾ ഇത് ചെയ്യാൻ താൽപ്പര്യപ്പെട്ടേക്കില്ല.</translation>

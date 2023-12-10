@@ -63,8 +63,8 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
 
   // In edit mode, those method return the current value entered by the user.
   // Return nullopt if the correposnding fields are in the reading mode.
-  absl::optional<std::u16string> GetUserEnteredUsernameValue() const;
-  absl::optional<std::u16string> GetUserEnteredPasswordNoteValue() const;
+  std::optional<std::u16string> GetUserEnteredUsernameValue() const;
+  std::optional<std::u16string> GetUserEnteredPasswordNoteValue() const;
 
  private:
   void SwitchToEditUsernameMode();

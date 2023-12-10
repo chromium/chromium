@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">צריך לקצר את הטקסט ל-<ph name="MAX_CHARACTERS" /> תווים או פחות (כרגע: <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="2247351761944213033">שבוע <ph name="WEEKNUMBER" />‏, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">רצועה <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
 <translation id="2393030564806080191">הערך ההקסדצימלי של הצבע</translation>
 <translation id="2398813069815436052">תיבת הדו-שיח נפתחה.</translation>
 <translation id="245932805758469625">מספר השניות שנותרו עד לסיום הסרטון</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">צריך להאריך את הטקסט הזה ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע הוא באורך <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="383465348367842624">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">יציאה ממסך מלא</translation>
+<translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4103419683916926126">אלפיות שנייה</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
 <translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">פרטים</translation>
+<translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">הפעלה במצב תמונה בתוך תמונה</translation>
 <translation id="4748357248530471599">מעבר מתצוגה באזור המגרעת של המסך למסך מלא</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">הורדת מדיה</translation>
 <translation id="698788488269350478">מורחב.</translation>
 <translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע יש תו אחד).</translation>
+<translation id="7080893216867146095">שיתוף המיקום מותר</translation>
 <translation id="709897737746224366">יש להתאים את הפורמט המבוקש.</translation>
 <translation id="7102274145889307184">המיקום הנוכחי</translation>
 <translation id="7263440858009898357">יש לבחור פריט מהרשימה.</translation>

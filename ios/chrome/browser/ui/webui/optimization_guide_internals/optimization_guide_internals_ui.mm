@@ -9,8 +9,8 @@
 #import "components/optimization_guide/core/prediction_manager.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -92,4 +92,11 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
       downloaded_models_info =
           prediction_manager->GetDownloadedModelsInfoForWebUI();
   std::move(callback).Run(std::move(downloaded_models_info));
+}
+
+void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
+    RequestLoggedModelQualityClientIdsCallback callback) {
+  // The features are not enabled on ios. There will be no client ids.
+  std::move(callback).Run({});
+  return;
 }

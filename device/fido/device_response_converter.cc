@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -33,7 +34,7 @@ namespace {
 
 constexpr size_t kResponseCodeLength = 1;
 
-ProtocolVersion ConvertStringToProtocolVersion(base::StringPiece version) {
+ProtocolVersion ConvertStringToProtocolVersion(std::string_view version) {
   if (version == kCtap2Version || version == kCtap2_1Version)
     return ProtocolVersion::kCtap2;
   if (version == kU2fVersion)
@@ -43,7 +44,7 @@ ProtocolVersion ConvertStringToProtocolVersion(base::StringPiece version) {
 }
 
 absl::optional<Ctap2Version> ConvertStringToCtap2Version(
-    base::StringPiece version) {
+    std::string_view version) {
   if (version == kCtap2Version)
     return Ctap2Version::kCtap2_0;
   if (version == kCtap2_1Version)
@@ -155,12 +156,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
         return absl::nullopt;
       }
       const std::string& extension_name = map_it.first.GetString();
-      if (extension_name == kExtensionDevicePublicKey) {
-        if (!map_it.second.is_bytestring()) {
-          return absl::nullopt;
-        }
-        response.device_public_key_signature = map_it.second.GetBytestring();
-      } else if (extension_name == kExtensionPRF) {
+      if (extension_name == kExtensionPRF) {
         if (!map_it.second.is_map()) {
           return absl::nullopt;
         }
@@ -286,12 +282,7 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
         return absl::nullopt;
       }
       const std::string& extension_name = map_it.first.GetString();
-      if (extension_name == kExtensionDevicePublicKey) {
-        if (!map_it.second.is_bytestring()) {
-          return absl::nullopt;
-        }
-        response.device_public_key_signature = map_it.second.GetBytestring();
-      } else if (extension_name == kExtensionPRF) {
+      if (extension_name == kExtensionPRF) {
         if (!map_it.second.is_map()) {
           return absl::nullopt;
         }
@@ -382,7 +373,7 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
   base::flat_set<ProtocolVersion> protocol_versions;
   base::flat_set<Ctap2Version> ctap2_versions;
-  base::flat_set<base::StringPiece> advertised_protocols;
+  base::flat_set<std::string_view> advertised_protocols;
   for (const auto& version : it->second.GetArray()) {
     if (!version.is_string())
       return absl::nullopt;
@@ -448,8 +439,6 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_min_pin_length_extension = true;
       } else if (extension_str == kExtensionHmacSecret) {
         options.supports_hmac_secret = true;
-      } else if (extension_str == kExtensionDevicePublicKey) {
-        options.supports_device_public_key = true;
       } else if (extension_str == kExtensionPRF) {
         options.supports_prf = true;
       } else if (extension_str == kExtensionLargeBlob) {
@@ -828,8 +817,7 @@ static absl::optional<std::string> FixInvalidUTF8String(
   size_t longest_valid_prefix_len = 0;
 
   for (size_t i = 0; i < utf8_bytes.size(); i++) {
-    state =
-        validator.AddBytes(reinterpret_cast<const char*>(&utf8_bytes[i]), 1);
+    state = validator.AddBytes(utf8_bytes.subspan(i, 1));
     switch (state) {
       case base::StreamingUtf8Validator::VALID_ENDPOINT:
         longest_valid_prefix_len = i + 1;

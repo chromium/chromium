@@ -53,20 +53,17 @@ void CopyToActiveInterpolationsMap(
         target.insert(property, MakeGarbageCollected<ActiveInterpolations>());
     ActiveInterpolations* active_interpolations = entry.stored_value->value;
 
-    // Assuming stacked effects are enabled, interpolations that depend on
-    // underlying values (e.g. have a non-replace composite mode) should be
-    // added onto the 'stack' of active interpolations. However any 'replace'
-    // effect erases everything that came before it, so we must clear the stack
-    // when that happens.
-    const bool allow_stacked_effects =
-        RuntimeEnabledFeatures::WebAnimationsAPIEnabled() ||
-        !property.IsCSSProperty() || property.IsPresentationAttribute();
+    // Interpolations that depend on underlying values (e.g. have a non-replace
+    // composite mode) should be added onto the 'stack' of active
+    // interpolations. However any 'replace' effect erases everything that came
+    // before it, so we must clear the stack when that happens.
     const bool effect_depends_on_underlying_value =
         interpolation->IsInvalidatableInterpolation() &&
         To<InvalidatableInterpolation>(*interpolation.Get())
             .DependsOnUnderlyingValue();
-    if (!allow_stacked_effects || !effect_depends_on_underlying_value)
+    if (!effect_depends_on_underlying_value) {
       active_interpolations->clear();
+    }
     active_interpolations->push_back(interpolation);
   }
 }

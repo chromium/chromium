@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace blink {
@@ -82,7 +83,9 @@ class WebAutofillClient {
   // Called when the user interacts with the page after a load.
   virtual void UserGestureObserved() {}
 
-  virtual void DidAddOrRemoveFormRelatedElementsDynamically() {}
+  virtual void DidChangeFormRelatedElementDynamically(
+      const WebElement&,
+      WebFormRelatedChangeType) {}
   virtual void AjaxSucceeded() {}
   // Called when |element| is in autofilled state and the value has been changed
   // by JavaScript. |old_value| contains the value before being changed.

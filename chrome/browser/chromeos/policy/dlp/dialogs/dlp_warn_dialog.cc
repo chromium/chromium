@@ -40,9 +40,6 @@ constexpr int kBodyFontSize = 14;
 // The line height of the text.
 constexpr int kBodyLineHeight = 20;
 
-// The line height of the confidential content title label.
-constexpr int kConfidentialContentLineHeight = 20;
-
 // The spacing between the elements in a box layout.
 constexpr int kBetweenChildSpacing = 16;
 
@@ -213,10 +210,11 @@ void DlpWarnDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
   AddRowIcon(icon, row);
 
   views::Label* title_label = AddRowTitle(title, row);
+  title_label->SetMultiLine(false);
+  title_label->SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   title_label->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                          kBodyFontSize,
                                          gfx::Font::Weight::NORMAL));
-  title_label->SetLineHeight(kConfidentialContentLineHeight);
 }
 
 BEGIN_METADATA(DlpWarnDialog, PolicyDialogBase)

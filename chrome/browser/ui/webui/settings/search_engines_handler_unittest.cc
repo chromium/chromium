@@ -21,6 +21,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
@@ -31,7 +32,7 @@ namespace {
 TemplateURL* AddSearchEngine(TemplateURLService* template_url_service,
                              const std::string& name,
                              int prepopulated_id,
-                             absl::optional<std::string> url) {
+                             std::optional<std::string> url) {
   TemplateURLData default_search_engine;
   default_search_engine.SetShortName(base::UTF8ToUTF16(name));
   default_search_engine.prepopulate_id = prepopulated_id;
@@ -66,7 +67,7 @@ class SearchEnginesHandlerTestBase : public testing::Test {
         TemplateURLServiceFactory::GetForProfile(profile());
     TemplateURL* default_engine =
         AddSearchEngine(template_url_service, "foo.com", /*prepopulated_id=*/0,
-                        /*url=*/absl::nullopt);
+                        /*url=*/std::nullopt);
     AddSearchEngine(template_url_service, "bing",
                     TemplateURLPrepopulateData::bing.id,
                     TemplateURLPrepopulateData::bing.search_url);
@@ -140,7 +141,7 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
       TemplateURLServiceFactory::GetForProfile(profile());
   TemplateURL* template_url =
       AddSearchEngine(template_url_service, "bar.com", /*prepopulated_id=*/0,
-                      /*url=*/absl::nullopt);
+                      /*url=*/std::nullopt);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
@@ -166,10 +167,6 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", first_call_args);
 
   histogram_tester().ExpectUniqueSample(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
-
-  histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING,
       WithSearchEnginesChoiceEnabled() ? 1 : 0);
@@ -180,10 +177,6 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   second_call_args.Append(
       static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", second_call_args);
-
-  histogram_tester().ExpectBucketCount(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      search_engines::ChoiceMadeLocation::kSearchSettings, 1);
 
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
@@ -223,6 +216,9 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
 
   EXPECT_FALSE(pref_service->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_FALSE(pref_service->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+
   base::Value::List args;
   // Search engine model id.
   args.Append(1);
@@ -234,10 +230,9 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
               base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
               /*abs_error=*/2);
-
-  histogram_tester().ExpectUniqueSample(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
+  EXPECT_EQ(pref_service->GetString(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+            version_info::GetVersionNumber());
 }
 
 TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,

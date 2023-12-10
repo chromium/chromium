@@ -71,7 +71,7 @@ class HTMLSelectListElementTest : public PageTestBase {
 };
 
 // Tests that HtmlSelectListElement::SetAutofillValue() doesn't change the
-// `user_has_edited_the_field_` attribute of the field.
+// `interacted_state_` attribute of the field.
 TEST_F(HTMLSelectListElementTest, SetAutofillValuePreservesEditedState) {
   SetHtmlInnerHTML(
       "<!DOCTYPE HTML><selectlist id='sel'>"
@@ -80,11 +80,11 @@ TEST_F(HTMLSelectListElementTest, SetAutofillValuePreservesEditedState) {
   HTMLSelectListElement* select_list =
       To<HTMLSelectListElement>(GetElementById("sel"));
 
-  select_list->SetUserHasEditedTheField(false);
+  select_list->ClearUserHasEditedTheField();
   select_list->SetAutofillValue("222", WebAutofillState::kAutofilled);
   EXPECT_EQ(select_list->UserHasEditedTheField(), false);
 
-  select_list->SetUserHasEditedTheField(true);
+  select_list->SetUserHasEditedTheField();
   select_list->SetAutofillValue("111", WebAutofillState::kAutofilled);
   EXPECT_EQ(select_list->UserHasEditedTheField(), true);
 }

@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,12 +32,16 @@ import org.chromium.ui.widget.RectProvider;
  * and {@link AnchoredPopupWindow}.
  */
 public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMenuDelegate {
-    @Nullable
-    private AnchoredPopupWindow mPopupWindow;
+    @Nullable private AnchoredPopupWindow mPopupWindow;
 
     @Override
-    public void show(Context context, View rootView, MVCListAdapter.ModelList items,
-            ItemClickListener clickListener, int x, int y) {
+    public void show(
+            Context context,
+            View rootView,
+            MVCListAdapter.ModelList items,
+            ItemClickListener clickListener,
+            int x,
+            int y) {
         assert mPopupWindow == null : "Dismiss previous popup window before calling show()";
 
         Rect dropdownRect = new Rect(x, y, x + 1, y + 1);
@@ -44,12 +49,19 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                 BrowserUiListMenuUtils.getBasicListMenu(context, items, clickListener::onItemClick);
 
         mPopupWindow =
-                new AnchoredPopupWindow(context, rootView, new ColorDrawable(Color.TRANSPARENT),
-                        menu.getContentView(), new RectProvider(dropdownRect), null);
+                new AnchoredPopupWindow(
+                        context,
+                        rootView,
+                        new ColorDrawable(Color.TRANSPARENT),
+                        menu.getContentView(),
+                        new RectProvider(dropdownRect),
+                        null);
         AnchoredPopupWindow.LayoutObserver layoutObserver =
-                (positionBelow, x2, y2, width, height, anchorRect)
-                -> mPopupWindow.setAnimationStyle(positionBelow ? R.style.StartIconMenuAnim
-                                                                : R.style.StartIconMenuAnimBottom);
+                (positionBelow, x2, y2, width, height, anchorRect) ->
+                        mPopupWindow.setAnimationStyle(
+                                positionBelow
+                                        ? R.style.StartIconMenuAnim
+                                        : R.style.StartIconMenuAnimBottom);
         mPopupWindow.setLayoutObserver(layoutObserver);
         mPopupWindow.setVerticalOverlapAnchor(true);
         mPopupWindow.setHorizontalOverlapAnchor(true);
@@ -113,13 +125,28 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
 
     @Override
     public ListItem getDivider() {
-        return BasicListMenu.buildMenuDivider();
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS)
+                        .with(
+                                ListSectionDividerProperties.LEFT_PADDING_DIMEN_ID,
+                                R.dimen.list_menu_item_horizontal_padding)
+                        .with(
+                                ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
+                                R.dimen.list_menu_item_horizontal_padding);
+        return new ListItem(ListMenuItemType.DIVIDER, builder.build());
     }
 
     @Override
-    public ListItem getMenuItem(String title, @Nullable String contentDescription, int groupId,
-            int id, @Nullable Drawable startIcon, boolean isIconTintable, boolean groupContainsIcon,
-            boolean enabled, @Nullable View.OnClickListener clickListener,
+    public ListItem getMenuItem(
+            String title,
+            @Nullable String contentDescription,
+            int groupId,
+            int id,
+            @Nullable Drawable startIcon,
+            boolean isIconTintable,
+            boolean groupContainsIcon,
+            boolean enabled,
+            @Nullable View.OnClickListener clickListener,
             @Nullable Intent intent) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)

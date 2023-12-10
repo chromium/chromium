@@ -9,8 +9,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -30,9 +30,9 @@ class LayoutInlineTest : public RenderingTest {
     }
     const LayoutBox& box = To<LayoutBox>(object);
     DCHECK_EQ(box.PhysicalFragmentCount(), 1u);
-    const NGPhysicalBoxFragment& fragment = *box.GetPhysicalFragment(0);
-    return NGBoxFragmentPainter(fragment).HitTestAllPhases(result, location,
-                                                           offset);
+    const PhysicalBoxFragment& fragment = *box.GetPhysicalFragment(0);
+    return BoxFragmentPainter(fragment).HitTestAllPhases(result, location,
+                                                         offset);
   }
 };
 
@@ -465,7 +465,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveContinuations) {
   )HTML");
 
   auto rects = GetLayoutObjectByElementId("target")->OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
 
   EXPECT_THAT(
       rects, UnorderedElementsAre(PhysicalRect(0, 0, 100, 20),   // 'SPAN0'
@@ -501,7 +501,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveInlinesVerticalRL) {
   auto* target = GetLayoutObjectByElementId("target");
   auto rects =
       target->OutlineRects(nullptr, target->FirstFragment().PaintOffset(),
-                           NGOutlineType::kIncludeBlockVisualOverflow);
+                           OutlineType::kIncludeBlockInkOverflow);
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(180, 0, 20, 120),     // 'INLINE'
                          PhysicalRect(160, 0, 20, 80),      // 'TEXT'
@@ -536,7 +536,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveContinuationsVerticalRL) {
   auto* target = GetLayoutObjectByElementId("target");
   auto rects =
       target->OutlineRects(nullptr, target->FirstFragment().PaintOffset(),
-                           NGOutlineType::kIncludeBlockVisualOverflow);
+                           OutlineType::kIncludeBlockInkOverflow);
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(180, 0, 20, 100),   // 'SPAN0'
                          PhysicalRect(140, 0, 40, 400),   // div DIV1
@@ -569,7 +569,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveInlines) {
   )HTML");
 
   auto rects = GetLayoutObjectByElementId("target")->OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
 
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(0, 0, 120, 20),     // 'INLINE'

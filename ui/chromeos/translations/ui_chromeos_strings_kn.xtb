@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1000498691615767391">ತೆರೆಯಲು ಫೋಲ್ಡರ್‌ವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="1014208178561091457">ಅದು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ <ph name="FILE_NAME" /> ಅನ್ನು ಕಾಪಿ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1049926623896334335">Word ಡಾಕ್ಯುಮೆಂಟ್</translation>
 <translation id="1056775291175587022">ನೆಟ್ವರ್ಕ್ ಇಲ್ಲ</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop ಮೂಲಕ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1439919885608649279">ಹೂವುಗಳನ್ನು ಹಿಡಿದುಕೊಂಡಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ಎಜೆಕ್ಟ್</translation>
+<translation id="146691674290220697">ಅವುಗಳು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ <ph name="NUMBER_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು ಕಾಪಿ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="1471718551822868769">ಸ್ಲೋವೇಕ್</translation>
 <translation id="1482884275703521657">ಫಿನ್ನಿಷ್</translation>
 <translation id="148466539719134488">ಸ್ವಿಸ್</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ಫೈಲ್‌ಗಳಿಗಾಗಿ ಡಿಫಾಲ್ಟ್ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಆರಿಸಿ:</translation>
 <translation id="3255159654094949700">ಅರೇಬಿಕ್</translation>
+<translation id="326396468955264502">ಅವುಗಳು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ <ph name="NUMBER_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3264582393905923483">ಸಂದರ್ಭ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3280431534455935878">ತಯಾರಿ ನಡೆಸಲಾಗುತ್ತಿದೆ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> ಜೊತೆಗೆ 1 ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="3524311639100184459">ಎಚ್ಚರಿಕೆ: ಈ ಫೈಲ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ ಹಾಗೂ ಡಿಸ್ಕ್ ಸ್ಥಳವನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅವುಗಳನ್ನು ಅಳಿಸಬಹುದು.  <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ಫೋಲ್ಡರ್</translation>
+<translation id="3529424493985988200">ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="3548125359243647069">ತಪ್ಪಾದ ಪಿನ್ ಅನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿಲಾಗಿದೆ.</translation>
 <translation id="3549797760399244642">drive.google.com ಗೆ ಹೋಗಿ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ಬಳಸಿಕೊಂಡು ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು, ಅವುಗಳನ್ನು ಮೊದಲು Windows ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ಗೆ ನಕಲಿಸಿ.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ಈ ಫೈಲ್‍ ಬೇರೆಯ ಡೆಸ್ಕ್‌ಟಾಪ್‍‍ನಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ. ಅದನ್ನು ವೀಕ್ಷಿಸಲು <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ಗೆ ಸರಿಸಿ.</translation>
 <translation id="6394388407447716302">ಓದಲು ಮಾತ್ರ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ಐಟಂಗಳು</translation>
+<translation id="6407769893376380348">ಅದು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ <ph name="FILE_NAME" /> ಅನ್ನು ಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="642282551015776456">ಈ ಹೆಸರನ್ನು ಫೋಲ್ಡರ್‌ನ ಫೈಲ್‌ನಂತೆ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6423031066725912715">TCVN ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ವಿಯೆಟ್ನಾಮೀಸ್</translation>
 <translation id="6430271654280079150">ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>

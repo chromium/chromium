@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Hata! Rastgele RSA özel anahtarı oluşturulamadı.</translation>
 <translation id="1445572445564823378">Bu uzantı <ph name="PRODUCT_NAME" /> uygulamasını yavaşlatıyor. <ph name="PRODUCT_NAME" /> uygulamasının performansını eski haline getirmek için bu uzantıyı devre dışı bırakmalısınız.</translation>
 <translation id="1468038450257740950">WebGL desteklenmez.</translation>
+<translation id="1610570795592207282">Komut dosyası için "<ph name="RELATIVE_PATH" />" CSS'si yüklenemedi.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arka plan sayfası yüklenemedi.</translation>
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Yerelleştirme kullanıldı, ancak bildiride default_locale belirtilmedi.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx dosyası değiştirilemedi. Dosyanın kullanımda olup olmadığını kontrol edin.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
-<translation id="3302709122321372472">İçerik komut dosyasına ilişkin css '<ph name="RELATIVE_PATH" />' yüklenemedi.</translation>
 <translation id="3369521687965833290">Uzantının paketi açılamıyor. Bir uzantının paketini güvenli bir şekilde açabilmek için profil dizininize, sürücü harfi ile başlayan ve bağlantı, bağlantı noktası veya sembolik bağlantı içermeyen bir yol olmalıdır. Profiliniz için böyle bir yol bulunmuyor.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> kimliğine sahip üretici firma tarafından sağlanan <ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Özel anahtara ilişkin giriş değeri geçerli bir yol olmalıdır.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' seçenekler sayfası yüklenemedi.</translation>
 <translation id="3984413272403535372">Uzantı imzalanırken hata oluştu.</translation>
-<translation id="39964277676607559">İçerik komut dosyasına ilişkin '<ph name="RELATIVE_PATH" />' javascript'i yüklenemedi.</translation>
 <translation id="4115165561519362854">Bu makinenin yöneticisi, <ph name="EXTENSION_NAME" /> uzantısının en azından <ph name="EXTENSION_VERSION" /> sürümünde olmasını gerektiriyor. Bu sürüme (veya sonraki sürümlere) güncelleninceye kadar uzantı etkinleştirilemez.</translation>
 <translation id="4233778200880751280">Hakkında sayfası ("<ph name="ABOUT_PAGE" />") yüklenemedi.</translation>
 <translation id="471800408830181311">Özel anahtar oluşturulamadı.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Ortak anahtar dışa aktarılamadı.</translation>
 <translation id="5026754133087629784">Web görünümü: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Paket dizininin tam yolu bulunamadı.</translation>
+<translation id="5160071981665899014">Komut dosyası için "<ph name="RELATIVE_PATH" />" JavaScript'i yüklenemedi.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Şekillendirilmiş pencereler desteklenmez.</translation>
 <translation id="5456409301717116725">Bu uzantıda '<ph name="KEY_PATH" />' anahtar dosyası var. Muhtemelen istediğiniz bu değil.</translation>

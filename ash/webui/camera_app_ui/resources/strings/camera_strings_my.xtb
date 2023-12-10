@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ရန်</translation>
 <translation id="1113173431709655881">ကင်မရာမုဒ်</translation>
 <translation id="1153190633558910465">အကွက်ပိတ်ရန်</translation>
-<translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ပြီးပြီ</translation>
 <translation id="1258009455399840361">၉၀ ဒီဂရီ နာရီလက်တံအတိုင်း လှည့်ရန်</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> စာမျက်နှာကို တည်းဖြတ်ရန်</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ဗီဒီယိုကို စီမံဆောင်ရွက်နေ...</translation>
 <translation id="3789724198583203151">၉၀ ဒီဂရီ နာရီလက်တံပြောင်းပြန် လှည့်ရန်</translation>
 <translation id="3810838688059735925">ဗီဒီယို</translation>
-<translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
 <translation id="4060608699153044055">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်၍မရပါ။ စတင်မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ရိုက်ကူးမှု ခဏရပ်ရန်</translation>
 <translation id="4121305183798804752">စာရွက်စာတမ်းကို တွေ့ထားသည်</translation>
 <translation id="414641094616694804">ဤကင်မရာတွင် ပုံရိပ်ပြတ်သားကိန်းကို မပြောင်းနိုင်ပါ</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
-<translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
 <translation id="428234092390943511">စာမျက်နှာ ပုံသေး</translation>
 <translation id="4349714250734879769">Chrome ၏ စကေး ဖရိမ်များ</translation>
 <translation id="4383571725254449280">စွမ်းဆောင်ရည် မှတ်တမ်းများကို ပုံနှိပ်ရန်</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">ပုံမှန်ဗီဒီယို ရိုက်ကူးရန်</translation>
 <translation id="7748344063862150053">မှတ်တမ်း၏ ညာဘက်ထောင့်ထိပ်</translation>
 <translation id="7933675232020478311">ညာဘက် အောက်ခြေ ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
-<translation id="7983668134180549431">စာသား တွေ့ရှိသည်။</translation>
 <translation id="8079255378695216066">မှတ်တမ်းတင်ခြင်း မစတင်နိုင်ပါ</translation>
 <translation id="8120146556401698679">ရွှေ့ကြည့်ရန် စောင်းရန် ဇူးမ်ဆွဲရန်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">စတင်ရိုက်ကူး၍ မရပါ</translation>
 <translation id="8880167521484863515">၄x၃</translation>
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
+<translation id="8926890870105777777">“<ph name="WIFINAME" />” ကွန်ရက်သို့ ချိတ်ဆက်ရန်</translation>
 <translation id="9045010116236796332">မှတ်တမ်းဖိုင်၏ ဘေးအစွန်းအားလုံးကို ဘောင်အတွင်းထားပါ</translation>
 <translation id="9045155556724273246">၁၀ စက္ကန့်</translation>
 <translation id="906331135292332864">ပုံကို စီမံဆောင်ရွက်နေသည်...</translation>

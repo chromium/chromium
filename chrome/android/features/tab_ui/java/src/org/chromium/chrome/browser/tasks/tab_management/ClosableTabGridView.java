@@ -31,9 +31,14 @@ import java.lang.ref.WeakReference;
 public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
     private static final long RESTORE_ANIMATION_DURATION_MS = 50;
     private static final float ZOOM_IN_SCALE = 0.8f;
-    @IntDef({AnimationStatus.SELECTED_CARD_ZOOM_IN, AnimationStatus.SELECTED_CARD_ZOOM_OUT,
-            AnimationStatus.HOVERED_CARD_ZOOM_IN, AnimationStatus.HOVERED_CARD_ZOOM_OUT,
-            AnimationStatus.CARD_RESTORE})
+
+    @IntDef({
+        AnimationStatus.SELECTED_CARD_ZOOM_IN,
+        AnimationStatus.SELECTED_CARD_ZOOM_OUT,
+        AnimationStatus.HOVERED_CARD_ZOOM_IN,
+        AnimationStatus.HOVERED_CARD_ZOOM_OUT,
+        AnimationStatus.CARD_RESTORE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimationStatus {
         int CARD_RESTORE = 0;
@@ -62,8 +67,10 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
             int closeButtonSize =
                     (int) getResources().getDimension(R.dimen.tab_grid_close_button_size);
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.btn_close);
-            sCloseButtonBitmapWeakRef = new WeakReference<>(
-                    Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true));
+            sCloseButtonBitmapWeakRef =
+                    new WeakReference<>(
+                            Bitmap.createScaledBitmap(
+                                    bitmap, closeButtonSize, closeButtonSize, true));
             bitmap.recycle();
         }
         actionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
@@ -78,13 +85,17 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
 
         final View backgroundView = fastFindViewById(R.id.background_view);
         final View contentView = fastFindViewById(R.id.content_view);
-        boolean isZoomIn = status == AnimationStatus.SELECTED_CARD_ZOOM_IN
-                || status == AnimationStatus.HOVERED_CARD_ZOOM_IN;
-        boolean isHovered = status == AnimationStatus.HOVERED_CARD_ZOOM_IN
-                || status == AnimationStatus.HOVERED_CARD_ZOOM_OUT;
+        boolean isZoomIn =
+                status == AnimationStatus.SELECTED_CARD_ZOOM_IN
+                        || status == AnimationStatus.HOVERED_CARD_ZOOM_IN;
+        boolean isHovered =
+                status == AnimationStatus.HOVERED_CARD_ZOOM_IN
+                        || status == AnimationStatus.HOVERED_CARD_ZOOM_OUT;
         boolean isRestore = status == AnimationStatus.CARD_RESTORE;
-        long duration = isRestore ? RESTORE_ANIMATION_DURATION_MS
-                                  : TabListRecyclerView.BASE_ANIMATION_DURATION_MS;
+        long duration =
+                isRestore
+                        ? RESTORE_ANIMATION_DURATION_MS
+                        : TabListRecyclerView.BASE_ANIMATION_DURATION_MS;
         float scale = isZoomIn ? ZOOM_IN_SCALE : 1f;
         View animateView = isHovered ? contentView : this;
 
@@ -93,15 +104,16 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
         }
 
         AnimatorSet scaleAnimator = new AnimatorSet();
-        scaleAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (!isZoomIn) {
-                    backgroundView.setVisibility(View.GONE);
-                }
-                mIsAnimating = false;
-            }
-        });
+        scaleAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!isZoomIn) {
+                            backgroundView.setVisibility(View.GONE);
+                        }
+                        mIsAnimating = false;
+                    }
+                });
 
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(animateView, View.SCALE_X, scale);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(animateView, View.SCALE_Y, scale);

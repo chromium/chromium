@@ -146,6 +146,15 @@ class FileSystemEntryURLLoader
       net_error = net::ERR_INVALID_URL;
     }
 
+    if (request.request_initiator &&
+        file_access::ScopedFileAccessDelegate::HasInstance()) {
+      file_access_ =
+          file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback(
+              file_access::ScopedFileAccessDelegate::Get()
+                  ->CreateFileAccessCallback(
+                      request.request_initiator->GetURL()));
+    }
+
     io_task_runner->PostTask(
         FROM_HERE, base::BindOnce(&FileSystemEntryURLLoader::StartOnIOThread,
                                   AsWeakPtr(), request, net_error,
@@ -191,15 +200,6 @@ class FileSystemEntryURLLoader
         &FileSystemEntryURLLoader::OnMojoDisconnect, base::Unretained(this)));
 
     client_.Bind(std::move(client_remote));
-
-    if (request.request_initiator &&
-        file_access::ScopedFileAccessDelegate::HasInstance()) {
-      file_access_ =
-          file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback(
-              file_access::ScopedFileAccessDelegate::Get()
-                  ->CreateFileAccessCallback(
-                      request.request_initiator->GetURL()));
-    }
 
     // If checks which were performed on the UI thread failed, don't proceed
     // any further and error out.
@@ -345,8 +345,8 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     DCHECK(entry_url.is_valid());
     params_.file_system_context->operation_runner()->GetMetadata(
         entry_url,
-        FileSystemOperation::GET_METADATA_FIELD_SIZE |
-            FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+        {storage::FileSystemOperation::GetMetadataField::kSize,
+         storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(&FileSystemDirectoryURLLoader::DidGetMetadata,
                        base::AsWeakPtr(this), index));
   }
@@ -463,8 +463,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
     }
     params_.file_system_context->operation_runner()->GetMetadata(
         url_,
-        FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-            FileSystemOperation::GET_METADATA_FIELD_SIZE,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+         storage::FileSystemOperation::GetMetadataField::kSize},
         base::BindOnce(&FileSystemFileURLLoader::DidGetMetadata,
                        base::AsWeakPtr(this)));
   }

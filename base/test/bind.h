@@ -17,63 +17,68 @@ class Location;
 
 namespace internal {
 
-template <typename Callable,
-          typename Signature = decltype(&Callable::operator())>
-struct HasConstCallOperatorImpl : std::false_type {};
+// Implementation of `BindLambdaForTesting()`, which checks preconditions before
+// handing off to `Bind{Once,Repeating}()`.
+template <typename Lambda,
+          typename = ExtractCallableRunType<std::decay_t<Lambda>>>
+struct BindLambdaForTestingHelper;
 
-template <typename Callable, typename R, typename... Args>
-struct HasConstCallOperatorImpl<Callable, R (Callable::*)(Args...) const>
-    : std::true_type {};
+template <typename Lambda, typename R, typename... Args>
+struct BindLambdaForTestingHelper<Lambda, R(Args...)> {
+ private:
+  using F = std::decay_t<Lambda>;
 
-template <typename Callable>
-constexpr bool HasConstCallOperator =
-    HasConstCallOperatorImpl<std::decay_t<Callable>>::value;
+  template <typename = decltype(&F::operator())>
+  static constexpr bool kHasConstCallOperator = false;
+  template <>
+  static constexpr bool kHasConstCallOperator<R (F::*)(Args...) const> = true;
 
-template <typename F, typename Signature>
-struct BindLambdaHelper;
+  // For context on this "templated struct with a lambda that asserts" pattern,
+  // see comments in MakeBindStateTypeImpl.
+  template <bool v = std::is_rvalue_reference_v<Lambda&&> &&
+                     !std::is_const_v<std::remove_reference_t<Lambda>>>
+  struct IsNonConstRvalueRef {
+    static constexpr bool value = [] {
+      static_assert(
+          v,
+          "BindLambdaForTesting() requires non-const rvalue for mutable lambda "
+          "binding, i.e. base::BindLambdaForTesting(std::move(lambda)).");
+      return v;
+    }();
+  };
 
-template <typename F, typename R, typename... Args>
-struct BindLambdaHelper<F, R(Args...)> {
-  static R Run(const std::decay_t<F>& f, Args... args) {
+  static R Run(const F& f, Args... args) {
     return f(std::forward<Args>(args)...);
   }
 
-  static R RunOnce(std::decay_t<F>&& f, Args... args) {
+  static R RunOnce(F&& f, Args... args) {
     return f(std::forward<Args>(args)...);
+  }
+
+ public:
+  static auto BindLambdaForTesting(Lambda&& lambda) {
+    if constexpr (kHasConstCallOperator<>) {
+      // If WTF::BindRepeating is available, and a callback argument is in WTF,
+      // then this call is ambiguous without the full namespace path.
+      return ::base::BindRepeating(&Run, std::forward<Lambda>(lambda));
+    } else if constexpr (IsNonConstRvalueRef<>::value) {
+      // Since a mutable lambda potentially can invalidate its state after being
+      // run once, this method returns a `OnceCallback` instead of a
+      // `RepeatingCallback`.
+      return BindOnce(&RunOnce, std::move(lambda));
+    }
   }
 };
 
 }  // namespace internal
 
-// A variant of BindRepeating() that can bind capturing lambdas for testing.
-// This doesn't support extra arguments binding as the lambda itself can do.
-template <typename Lambda,
-          std::enable_if_t<internal::HasConstCallOperator<Lambda>>* = nullptr>
-decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
-  using Signature = internal::ExtractCallableRunType<std::decay_t<Lambda>>;
-  // If WTF::BindRepeating is available, and a callback argument is in WTF, then
-  // this call is ambiguous without the full namespace path.
-  return ::base::BindRepeating(
-      &internal::BindLambdaHelper<Lambda, Signature>::Run,
-      std::forward<Lambda>(lambda));
-}
-
-// A variant of BindOnce() that can bind mutable capturing lambdas for
+// A variant of `Bind{Once,Repeating}()` that can bind capturing lambdas for
 // testing. This doesn't support extra arguments binding as the lambda itself
-// can do. Since a mutable lambda potentially can invalidate its state after
-// being run once, this method returns a OnceCallback instead of a
-// RepeatingCallback.
-template <typename Lambda,
-          std::enable_if_t<!internal::HasConstCallOperator<Lambda>>* = nullptr>
-decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
-  static_assert(
-      std::is_rvalue_reference<Lambda&&>() &&
-          !std::is_const<std::remove_reference_t<Lambda>>(),
-      "BindLambdaForTesting requires non-const rvalue for mutable lambda "
-      "binding. I.e.: base::BindLambdaForTesting(std::move(lambda)).");
-  using Signature = internal::ExtractCallableRunType<std::decay_t<Lambda>>;
-  return BindOnce(&internal::BindLambdaHelper<Lambda, Signature>::RunOnce,
-                  std::move(lambda));
+// can do.
+template <typename Lambda>
+auto BindLambdaForTesting(Lambda&& lambda) {
+  return internal::BindLambdaForTestingHelper<Lambda>::BindLambdaForTesting(
+      std::forward<Lambda>(lambda));
 }
 
 // Returns a closure that fails on destruction if it hasn't been run.

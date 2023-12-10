@@ -5,7 +5,9 @@
 package org.chromium.ui.dragdrop;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -18,7 +20,6 @@ import android.content.Intent;
 import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.VectorDrawable;
-import android.os.Build.VERSION_CODES;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
@@ -26,7 +27,7 @@ import android.view.View.DragShadowBuilder;
 import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 
-import androidx.test.core.app.ApplicationProvider;
+import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,12 +37,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowContentResolver;
 
-import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -54,6 +54,7 @@ import org.chromium.url.JUnitTestGURLs;
 public class DragAndDropDelegateImplUnitTest {
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
     private static final int WINDOW_WIDTH = 1000;
+
     private static final int WINDOW_HEIGHT = 600;
     private static final float DRAG_START_X_DP = 1.0f;
     private static final float DRAG_START_Y_DP = 1.0f;
@@ -61,45 +62,36 @@ public class DragAndDropDelegateImplUnitTest {
 
     @Mock private DragAndDropPermissions mDragAndDropPermissions;
     @Mock private DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
+    @Spy private View mContainerView;
 
-    /** Helper shadow class to make sure #startDragAndDrop is accepted by Android. */
-    @Implements(ApiHelperForN.class)
-    static class ShadowApiHelperForN {
-        static DragShadowBuilder sLastDragShadowBuilder;
-
-        @Implementation
-        public static boolean startDragAndDrop(
-                View view,
-                ClipData data,
-                DragShadowBuilder shadowBuilder,
-                Object myLocalState,
-                int flags) {
-            sLastDragShadowBuilder = shadowBuilder;
-            return true;
-        }
-    }
-
-    private Context mContext;
     private DragAndDropDelegateImpl mDragAndDropDelegateImpl;
-    private View mContainerView;
     private DropDataProviderImpl mDropDataProviderImpl;
+    private @Nullable DragShadowBuilder mLastDragShadowBuilder;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
-        mContext = ApplicationProvider.getApplicationContext();
+        Context context = ContextUtils.getApplicationContext();
         mDropDataProviderImpl = new DropDataProviderImpl();
         mDragAndDropDelegateImpl = new DragAndDropDelegateImpl();
         DropDataContentProvider provider = new DropDataContentProvider();
         ProviderInfo providerInfo = new ProviderInfo();
         providerInfo.authority = DropDataProviderImpl.FULL_AUTH_URI.getAuthority();
-        provider.attachInfo(mContext, providerInfo);
+        provider.attachInfo(context, providerInfo);
         provider.setDropDataProviderImpl(mDropDataProviderImpl);
 
         ShadowContentResolver.registerProviderInternal(
                 DropDataProviderImpl.FULL_AUTH_URI.getAuthority(), provider);
-        mContainerView = new View(mContext);
+        mContainerView = Mockito.spy(new View(context));
+        doAnswer(
+                        invocationOnMock -> {
+                            mLastDragShadowBuilder = invocationOnMock.getArgument(1);
+                            return true;
+                        })
+                .when(mContainerView)
+                .startDragAndDrop(
+                        any(ClipData.class), any(DragShadowBuilder.class), any(), anyInt());
         View rootView = mContainerView.getRootView();
         rootView.measure(
                 MeasureSpec.makeMeasureSpec(WINDOW_WIDTH, MeasureSpec.EXACTLY),
@@ -111,7 +103,6 @@ public class DragAndDropDelegateImplUnitTest {
     public void tearDown() {
         mDropDataProviderImpl.onDragEnd(false);
         UmaRecorderHolder.resetForTesting();
-        ShadowApiHelperForN.sLastDragShadowBuilder = null;
         AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
         AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
     }
@@ -157,7 +148,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowContentResolver.class, ShadowApiHelperForN.class})
+    @Config(shadows = ShadowContentResolver.class)
     public void testStartDragAndDrop_Image() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
@@ -172,8 +163,7 @@ public class DragAndDropDelegateImplUnitTest {
                 /* dragObjRectHeight= */ 200);
         Assert.assertFalse(
                 "The DragShadowBuilder should not be AnimatedImageDragShadowBuilder.",
-                ShadowApiHelperForN.sLastDragShadowBuilder
-                        instanceof AnimatedImageDragShadowBuilder);
+                mLastDragShadowBuilder instanceof AnimatedImageDragShadowBuilder);
         // width = scaledShadowSize + padding * 2 = 100 * 0.6 + 1 * 2 = 62
         Assert.assertEquals(
                 "Drag shadow width not match. Should do resize for image and add 1dp border.",
@@ -199,7 +189,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowContentResolver.class, ShadowApiHelperForN.class})
+    @Config(shadows = ShadowContentResolver.class)
     public void testStartDragAndDrop_Image_WithAnimation() {
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
                 mockDragAndDropBrowserDelegate(false, true, null, null));
@@ -216,8 +206,7 @@ public class DragAndDropDelegateImplUnitTest {
                 /* dragObjRectHeight= */ 200);
         Assert.assertTrue(
                 "The DragShadowBuilder should be AnimatedImageDragShadowBuilder.",
-                ShadowApiHelperForN.sLastDragShadowBuilder
-                        instanceof AnimatedImageDragShadowBuilder);
+                mLastDragShadowBuilder instanceof AnimatedImageDragShadowBuilder);
         // width = scaledShadowSize + padding * 2 = 100 * 0.6 + 1 * 2 = 62
         Assert.assertEquals(
                 "Drag shadow width not match. Should do resize for image and add 1dp border.",
@@ -284,7 +273,6 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowApiHelperForN.class})
     public void testStartDragAndDrop_NotSupportedForA11y() {
         final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
         final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
@@ -346,14 +334,13 @@ public class DragAndDropDelegateImplUnitTest {
     public void testStartDragAndDrop_WithDragShadowBuilder() {
         final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
         DragShadowBuilder mockBuilder = mock(DragShadowBuilder.class);
-        Assert.assertFalse(
-                "Drag and drop should not start.",
+        Assert.assertTrue(
+                "Drag and drop should start.",
                 mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, mockBuilder, dropData));
         Assert.assertTrue("Drag should be started.", mDragAndDropDelegateImpl.isDragStarted());
     }
 
     @Test
-    @Config(shadows = {ShadowApiHelperForN.class})
     public void testDragImage_ShadowPlaceholder() {
         final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
@@ -367,9 +354,8 @@ public class DragAndDropDelegateImplUnitTest {
                 /* dragObjRectWidth= */ 100,
                 /* dragObjRectHeight= */ 200);
 
-        Assert.assertNotNull(
-                "sLastDragShadowBuilder is null.", ShadowApiHelperForN.sLastDragShadowBuilder);
-        View shadowView = ShadowApiHelperForN.sLastDragShadowBuilder.getView();
+        Assert.assertNotNull("LastDragShadowBuilder is null.", mLastDragShadowBuilder);
+        View shadowView = mLastDragShadowBuilder.getView();
         Assert.assertTrue(
                 "DrawShadowBuilder should host an ImageView.", shadowView instanceof ImageView);
         Assert.assertTrue(
@@ -496,8 +482,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.O)
-    public void testClipData_ImageWithUrl_PostO() {
+    public void testClipData_ImageWithUrl() {
         final DropDataAndroid dropData =
                 DropDataAndroid.create(
                         "",

@@ -6,7 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_PSEUDO_ELEMENT_BASE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 class ViewTransitionStyleTracker;
@@ -27,6 +30,13 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
 
  protected:
   Member<const ViewTransitionStyleTracker> style_tracker_;
+};
+
+template <>
+struct DowncastTraits<ViewTransitionPseudoElementBase> {
+  static bool AllowFrom(const Node& node) {
+    return IsTransitionPseudoElement(node.GetPseudoId());
+  }
 };
 
 }  // namespace blink

@@ -35,8 +35,7 @@ constexpr int kLayoutExampleLeftPadding = 8;
 constexpr gfx::Size kLayoutExampleDefaultChildSize(180, 90);
 
 class LayoutPanel : public View {
- public:
-  METADATA_HEADER(LayoutPanel);
+  METADATA_HEADER(LayoutPanel, View)
 
  protected:
   void OnThemeChanged() override {
@@ -46,7 +45,7 @@ class LayoutPanel : public View {
   }
 };
 
-BEGIN_METADATA(LayoutPanel, View)
+BEGIN_METADATA(LayoutPanel)
 END_METADATA
 
 // This View holds two other views which consists of a view on the left onto
@@ -56,15 +55,16 @@ END_METADATA
 // will ensure the left view takes 75% and the right view fills the remaining
 // 25%.
 class FullPanel : public View {
+  METADATA_HEADER(FullPanel, View)
+
  public:
-  METADATA_HEADER(FullPanel);
   FullPanel() = default;
   FullPanel(const FullPanel&) = delete;
   FullPanel& operator=(const FullPanel&) = delete;
   ~FullPanel() override = default;
 };
 
-BEGIN_METADATA(FullPanel, View)
+BEGIN_METADATA(FullPanel)
 END_METADATA
 
 std::unique_ptr<Textfield> CreateCommonTextfield(

@@ -29,10 +29,14 @@ content::NavigationEntry* GetNavigationEntryForResource(
 
 content::WebContents* GetWebContentsForResource(
     const UnsafeResource& resource) {
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      resource.render_process_id, resource.render_frame_id);
-  if (rfh) {
-    return content::WebContents::FromRenderFrameHost(rfh);
+  if (resource.render_frame_token) {
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromFrameToken(
+        content::GlobalRenderFrameHostToken(
+            resource.render_process_id,
+            blink::LocalFrameToken(resource.render_frame_token.value())));
+    if (rfh) {
+      return content::WebContents::FromRenderFrameHost(rfh);
+    }
   }
   return content::WebContents::FromFrameTreeNodeId(resource.frame_tree_node_id);
 }

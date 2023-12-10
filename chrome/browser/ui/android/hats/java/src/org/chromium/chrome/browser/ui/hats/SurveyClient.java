@@ -10,9 +10,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.Map;
 
-/**
- * SurveyClient created in charged to show survey.
- */
+/** SurveyClient created in charged to show survey. */
 public interface SurveyClient {
     /**
      * Show survey in the given activity.
@@ -31,6 +29,9 @@ public interface SurveyClient {
      * @param surveyPsdStringValues PSD string values matching the order of {@link
      *                              SurveyConfig#mPsdStringDataFields}.
      */
-    void showSurvey(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
-            Map<String, Boolean> surveyPsdBitValues, Map<String, String> surveyPsdStringValues);
+    void showSurvey(
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Map<String, Boolean> surveyPsdBitValues,
+            Map<String, String> surveyPsdStringValues);
 }

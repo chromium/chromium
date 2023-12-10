@@ -9,7 +9,7 @@ source_set("follow") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/follow:enums",
+    "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/net:crurl",
   ]
 }
@@ -20,9 +20,9 @@ source_set("follow_iph") {
     "follow_iph_coordinator.mm",
   ]
   deps = [
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
-    "//ios/chrome/browser/follow:tab_helper",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
@@ -38,11 +38,11 @@ source_set("first_follow") {
   deps = [
     ":first_follow_ui",
     ":follow",
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/follow:enums",
-    "//ios/chrome/browser/follow:service",
+    "//ios/chrome/browser/follow/model:enums",
+    "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -63,7 +63,7 @@ source_set("first_follow_ui") {
     ":follow",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",

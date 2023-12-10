@@ -14,6 +14,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/test.pb.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,13 +4,9 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
-/**
- * Interface for platform dependent captioning bridges.
- */
+/** Interface for platform dependent captioning bridges. */
 public interface SystemCaptioningBridge {
-    /**
-     * Interface for listening to changed from SystemCaptioningBridge.
-     */
+    /** Interface for listening to changed from SystemCaptioningBridge. */
     public interface SystemCaptioningBridgeListener {
         /**
          * Called when system captioning settings change.

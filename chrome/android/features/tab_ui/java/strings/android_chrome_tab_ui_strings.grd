@@ -370,9 +370,6 @@
       <message name="IDS_TAB_SWITCHER_CAROUSEL_TITLE" desc="Title of the Tabs carousel section on the single pane start surface.">
           Continue browsing
       </message>
-      <message name="IDS_TAB_SWITCHER_CAROUSEL_VIEW_ALL" desc="Title of the text view button in the Tabs carousel section on the single pane start surface. Click it to view all the existing Tabs.">
-          View all
-      </message>
 
       <!-- Single Tab module strings -->
       <message name="IDS_SINGLE_TAB_MODULE_TITLE" desc="Title of the single Tab module on the magic space of the start surface or NTP home surface.">

@@ -14,7 +14,6 @@ include_rules = [
   "+ui/display/types/display_constants.h",
   "+ui/gfx",
   "+ui/gl",
-  "+ui/ozone/buildflags.h",
 ]
 
 specific_include_rules = {

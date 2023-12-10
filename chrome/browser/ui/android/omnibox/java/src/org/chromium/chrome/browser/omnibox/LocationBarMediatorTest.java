@@ -121,12 +121,12 @@ public class LocationBarMediatorTest {
         static boolean sIsNtp;
 
         @Implementation
-        public static boolean isNTPUrl(GURL url) {
+        public static boolean isNtpUrl(GURL url) {
             return sIsNtp;
         }
 
         @Implementation
-        public static boolean isNTPUrl(String url) {
+        public static boolean isNtpUrl(String url) {
             return sIsNtp;
         }
     }
@@ -186,8 +186,8 @@ public class LocationBarMediatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ObjectAnimator mUrlAnimator;
     @Mock private View mRootView;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
 
-    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock private LensController mLensController;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -213,6 +213,8 @@ public class LocationBarMediatorTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mUrlBarData = UrlBarData.create(null, "text", 0, 0, "text");
+        doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
+        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(mTabModelSelector).when(mTabModelSelectorSupplier).get();
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
@@ -221,7 +223,6 @@ public class LocationBarMediatorTest {
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         mJniMocker.mock(PreloadPagesSettingsBridgeJni.TEST_HOOKS, mPreloadPagesSettingsJni);
-        SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -241,7 +242,6 @@ public class LocationBarMediatorTest {
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ false,
-                        mSearchEngineLogoUtils,
                         mLensController,
                         tab -> true,
                         mOmniboxUma,
@@ -264,7 +264,6 @@ public class LocationBarMediatorTest {
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ true,
-                        mSearchEngineLogoUtils,
                         mLensController,
                         tab -> true,
                         (tab, transition, isNtp) -> {},
@@ -833,7 +832,6 @@ public class LocationBarMediatorTest {
                         mOverrideBackKeyBehaviorDelegate,
                         mWindowAndroid,
                         /* isTablet= */ false,
-                        mSearchEngineLogoUtils,
                         mLensController,
                         tab -> true,
                         mOmniboxUma,
@@ -1172,7 +1170,7 @@ public class LocationBarMediatorTest {
                         anyBoolean());
         doReturn(true).when(mTab).isNativePage();
         ShadowUrlUtilities.sIsNtp = true;
-        assertTrue(UrlUtilities.isNTPUrl(mTab.getUrl()));
+        assertTrue(UrlUtilities.isNtpUrl(mTab.getUrl()));
         doReturn(false).when(mTab).isIncognito();
         // Test navigating using omnibox.
         mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
@@ -1188,7 +1186,7 @@ public class LocationBarMediatorTest {
         // This will run the function recordNavigationOnNtp with isNtp equal to false
         // making it unable to record the histogram.
         ShadowUrlUtilities.sIsNtp = false;
-        assertFalse(UrlUtilities.isNTPUrl(mTab.getUrl()));
+        assertFalse(UrlUtilities.isNtpUrl(mTab.getUrl()));
         // Test navigating using omnibox.
         mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);

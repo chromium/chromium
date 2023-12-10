@@ -27,6 +27,11 @@ const base::TimeDelta GetDefaultReportUploadFrequency() {
                         kDefaultReportUploadFrequencyForTesting);
 }
 
+const base::TimeDelta GetDefaultKioskHeartbeatUploadFrequency() {
+  return GetDefaultRate(kDefaultKioskHeartbeatUploadFrequency,
+                        kDefaultKioskHeartbeatUploadFrequencyForTesting);
+}
+
 const base::TimeDelta GetDefaultCollectionRate(base::TimeDelta default_rate) {
   return GetDefaultRate(default_rate, kDefaultCollectionRateForTesting);
 }

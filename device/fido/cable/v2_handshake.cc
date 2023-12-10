@@ -8,15 +8,14 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <type_traits>
 
 #include "base/base64url.h"
-#include "base/bits.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "components/cbor/reader.h"
@@ -171,8 +170,8 @@ GURL GetContactURL(KnownDomainID tunnel_server,
                    base::span<const uint8_t> contact_id) {
   std::string contact_id_base64;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(contact_id.data()),
-                        contact_id.size()),
+      std::string_view(reinterpret_cast<const char*>(contact_id.data()),
+                       contact_id.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &contact_id_base64);
   GURL ret(std::string("wss://") + tunnelserver::DecodeDomain(tunnel_server) +
            "/cable/contact/" + contact_id_base64);
@@ -485,7 +484,7 @@ std::string BytesToDigits(base::span<const uint8_t> in) {
   return ret;
 }
 
-absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in) {
+absl::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
   std::vector<uint8_t> ret;
   ret.reserve(((in.size() + kChunkDigits - 1) / kChunkDigits) * kChunkSize);
 
@@ -736,7 +735,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   // of kPaddingGranularity.
   constexpr size_t kPaddingGranularity = 32;
   static_assert(kPaddingGranularity < 256, "padding too large");
-  static_assert(base::bits::IsPowerOfTwo(kPaddingGranularity),
+  static_assert(std::has_single_bit(kPaddingGranularity),
                 "padding must be a power of two");
 
   // Padding consists of a some number of zero bytes appended to the message

@@ -5,9 +5,10 @@
 #ifndef ASH_WM_GESTURES_WM_GESTURE_HANDLER_H_
 #define ASH_WM_GESTURES_WM_GESTURE_HANDLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ScrollEvent;
@@ -85,7 +86,7 @@ class ASH_EXPORT WmGestureHandler {
                                 float scroll_y);
 
   // Contains the data during a scroll session. Empty is no scroll is underway.
-  absl::optional<ScrollData> scroll_data_;
+  std::optional<ScrollData> scroll_data_;
 };
 
 }  // namespace ash

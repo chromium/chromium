@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/values.h"
@@ -15,7 +17,6 @@
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol CRWWebViewHandlerDelegate;
 @protocol MiniMapCommands;
@@ -87,13 +88,13 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   // against the text extracted.
   void ApplyDeferredProcessing(
       int seq_id,
-      absl::optional<std::vector<web::TextAnnotation>> deferred);
+      std::optional<std::vector<web::TextAnnotation>> deferred);
 
-  // Triggers the parcel tracking UI display if the given list of annotations
-  // contains at least one parcel number and the user is eligible for the
-  // prompt. Removes parcels from `annotations_list`.
-  void ProcessParcelTrackingNumbers(
-      std::vector<web::TextAnnotation>& annotations_list);
+  // Records the measurement detection, and triggers the parcel tracking UI
+  // display if the given list of annotations contains at least one parcel
+  // number and the user is eligible for the prompt. Removes parcels from
+  // `annotations_list`.
+  void ProcessAnnotations(std::vector<web::TextAnnotation>& annotations_list);
 
   // Triggers the parcel tracking UI display for the given parcel
   // list `parcels`.

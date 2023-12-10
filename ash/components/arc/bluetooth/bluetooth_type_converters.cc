@@ -288,7 +288,7 @@ TypeConverter<floss::BtSdpHeaderOverlay, bluez::BluetoothServiceRecordBlueZ>::
              static_cast<uint16_t>(uuid_as_bytes[3])) != UUID_PROTOCOL_RFCOMM) {
           continue;
         }
-        absl::optional<int> channel_number =
+        std::optional<int> channel_number =
             protocol_record_sequence[1].value().GetIfInt();
         if (!channel_number) {
           continue;
@@ -301,7 +301,7 @@ TypeConverter<floss::BtSdpHeaderOverlay, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_GOEP_L2CAP_PSM)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_GOEP_L2CAP_PSM);
-    absl::optional<int> l2cap_psm = attribute.value().GetIfInt();
+    std::optional<int> l2cap_psm = attribute.value().GetIfInt();
     if (l2cap_psm) {
       record_overlay.l2cap_psm = l2cap_psm.value();
     }
@@ -314,15 +314,15 @@ namespace {
 
 // Following Core Specification V 5.3 | Vol 3, Part B
 // Section 5.1.11 BluetoothProfileDescriptorList attribute
-absl::optional<int> GetProfileVersionFromBlueZRecord(
+std::optional<int> GetProfileVersionFromBlueZRecord(
     const bluez::BluetoothServiceRecordBlueZ& bluez_record,
     const uint16_t profile_uuid) {
   if (!bluez_record.IsAttributePresented(ATTR_ID_BT_PROFILE_DESC_LIST)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!bluez_record.GetAttributeValue(ATTR_ID_BT_PROFILE_DESC_LIST)
            .is_sequence()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto profile_list =
       bluez_record.GetAttributeValue(ATTR_ID_BT_PROFILE_DESC_LIST).sequence();
@@ -347,7 +347,7 @@ absl::optional<int> GetProfileVersionFromBlueZRecord(
     }
     return profile_descriptor[1].value().GetIfInt();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bluez::BluetoothServiceAttributeValueBlueZ MakeDescListForBlueZRecord(
@@ -366,10 +366,10 @@ bluez::BluetoothServiceAttributeValueBlueZ MakeDescListForBlueZRecord(
       std::make_unique<bluez::BluetoothServiceAttributeValueBlueZ::Sequence>();
   sequence->emplace_back(bluez::BluetoothServiceAttributeValueBlueZ(
       bluez::BluetoothServiceAttributeValueBlueZ::UUID, full_uuid.size(),
-      absl::optional<base::Value>(full_uuid)));
+      std::optional<base::Value>(full_uuid)));
   sequence->emplace_back(bluez::BluetoothServiceAttributeValueBlueZ(
       bluez::BluetoothServiceAttributeValueBlueZ::UINT, sizeof(version),
-      absl::optional<base::Value>(version)));
+      std::optional<base::Value>(version)));
   desc_list->emplace_back(
       bluez::BluetoothServiceAttributeValueBlueZ(std::move(sequence)));
   return bluez::BluetoothServiceAttributeValueBlueZ(std::move(desc_list));
@@ -393,7 +393,7 @@ TypeConverter<floss::BtSdpMasRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_MAS_INSTANCE_ID)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_MAS_INSTANCE_ID);
-    absl::optional<int> mas_instance_id = attribute.value().GetIfInt();
+    std::optional<int> mas_instance_id = attribute.value().GetIfInt();
     if (mas_instance_id) {
       mas_record.mas_instance_id = mas_instance_id.value();
     }
@@ -402,7 +402,7 @@ TypeConverter<floss::BtSdpMasRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_SUPPORTED_MSG_TYPE)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_SUPPORTED_MSG_TYPE);
-    absl::optional<int> supported_message_types = attribute.value().GetIfInt();
+    std::optional<int> supported_message_types = attribute.value().GetIfInt();
     if (supported_message_types) {
       mas_record.supported_message_types = supported_message_types.value();
     }
@@ -411,13 +411,13 @@ TypeConverter<floss::BtSdpMasRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_MAP_SUPPORTED_FEATURES)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_MAP_SUPPORTED_FEATURES);
-    absl::optional<int> supported_features = attribute.value().GetIfInt();
+    std::optional<int> supported_features = attribute.value().GetIfInt();
     if (supported_features) {
       mas_record.supported_features = supported_features.value();
     }
   }
 
-  const absl::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
+  const std::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
       bluez_record, UUID_SERVCLASS_MAP_PROFILE);
   if (profile_version.has_value()) {
     mas_record.hdr.profile_version = *profile_version;
@@ -440,13 +440,13 @@ TypeConverter<floss::BtSdpMnsRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_MAP_SUPPORTED_FEATURES)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_MAP_SUPPORTED_FEATURES);
-    absl::optional<int> supported_features = attribute.value().GetIfInt();
+    std::optional<int> supported_features = attribute.value().GetIfInt();
     if (supported_features) {
       mns_record.supported_features = supported_features.value();
     }
   }
 
-  const absl::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
+  const std::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
       bluez_record, UUID_SERVCLASS_MAP_PROFILE);
   if (profile_version.has_value()) {
     mns_record.hdr.profile_version = *profile_version;
@@ -471,7 +471,7 @@ TypeConverter<floss::BtSdpPseRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_SUPPORTED_REPOSITORIES)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_SUPPORTED_REPOSITORIES);
-    absl::optional<int> supported_repositories = attribute.value().GetIfInt();
+    std::optional<int> supported_repositories = attribute.value().GetIfInt();
     if (supported_repositories) {
       pse_record.supported_repositories = supported_repositories.value();
     }
@@ -480,13 +480,13 @@ TypeConverter<floss::BtSdpPseRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_SUPPORTED_FEATURES)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_SUPPORTED_FEATURES);
-    absl::optional<int> supported_features = attribute.value().GetIfInt();
+    std::optional<int> supported_features = attribute.value().GetIfInt();
     if (supported_features) {
       pse_record.supported_features = supported_features.value();
     }
   }
 
-  const absl::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
+  const std::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
       bluez_record, UUID_SERVCLASS_PHONE_ACCESS);
   if (profile_version.has_value()) {
     pse_record.hdr.profile_version = *profile_version;
@@ -505,7 +505,7 @@ TypeConverter<floss::BtSdpPceRecord, bluez::BluetoothServiceRecordBlueZ>::
                     bluez::BluetoothServiceRecordBlueZ>::Convert(bluez_record);
   pce_record.hdr.sdp_type = floss::BtSdpType::kPbapPce;
 
-  const absl::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
+  const std::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
       bluez_record, UUID_SERVCLASS_PHONE_ACCESS);
   if (profile_version.has_value()) {
     pce_record.hdr.profile_version = *profile_version;
@@ -524,7 +524,7 @@ TypeConverter<floss::BtSdpOpsRecord, bluez::BluetoothServiceRecordBlueZ>::
                     bluez::BluetoothServiceRecordBlueZ>::Convert(bluez_record);
   ops_record.hdr.sdp_type = floss::BtSdpType::kOppServer;
 
-  const absl::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
+  const std::optional<int> profile_version = GetProfileVersionFromBlueZRecord(
       bluez_record, UUID_SERVCLASS_OBEX_OBJECT_PUSH);
   if (profile_version.has_value()) {
     ops_record.hdr.profile_version = *profile_version;
@@ -546,7 +546,7 @@ TypeConverter<floss::BtSdpSapRecord, bluez::BluetoothServiceRecordBlueZ>::
                     bluez::BluetoothServiceRecordBlueZ>::Convert(bluez_record);
   sap_record.hdr.sdp_type = floss::BtSdpType::kSapServer;
 
-  const absl::optional<int> profile_version =
+  const std::optional<int> profile_version =
       GetProfileVersionFromBlueZRecord(bluez_record, UUID_SERVCLASS_SAP);
   if (profile_version.has_value()) {
     sap_record.hdr.profile_version = *profile_version;
@@ -574,7 +574,7 @@ TypeConverter<floss::BtSdpDipRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_SPECIFICATION_ID)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_SPECIFICATION_ID);
-    absl::optional<int> spec_id = attribute.value().GetIfInt();
+    std::optional<int> spec_id = attribute.value().GetIfInt();
     if (spec_id) {
       dip_record.spec_id = spec_id.value();
     }
@@ -583,7 +583,7 @@ TypeConverter<floss::BtSdpDipRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_VENDOR_ID)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_VENDOR_ID);
-    absl::optional<int> vendor = attribute.value().GetIfInt();
+    std::optional<int> vendor = attribute.value().GetIfInt();
     if (vendor) {
       dip_record.vendor = vendor.value();
     }
@@ -592,7 +592,7 @@ TypeConverter<floss::BtSdpDipRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_VENDOR_ID_SOURCE)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_VENDOR_ID_SOURCE);
-    absl::optional<int> vendor_id_source = attribute.value().GetIfInt();
+    std::optional<int> vendor_id_source = attribute.value().GetIfInt();
     if (vendor_id_source) {
       dip_record.vendor_id_source = vendor_id_source.value();
     }
@@ -601,7 +601,7 @@ TypeConverter<floss::BtSdpDipRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_PRODUCT_ID)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_PRODUCT_ID);
-    absl::optional<int> product = attribute.value().GetIfInt();
+    std::optional<int> product = attribute.value().GetIfInt();
     if (product) {
       dip_record.product = product.value();
     }
@@ -610,7 +610,7 @@ TypeConverter<floss::BtSdpDipRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_PRODUCT_VERSION)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_PRODUCT_VERSION);
-    absl::optional<int> version = attribute.value().GetIfInt();
+    std::optional<int> version = attribute.value().GetIfInt();
     if (version) {
       dip_record.version = version.value();
     }
@@ -619,7 +619,7 @@ TypeConverter<floss::BtSdpDipRecord, bluez::BluetoothServiceRecordBlueZ>::
   if (bluez_record.IsAttributePresented(ATTR_ID_PRIMARY_RECORD)) {
     const bluez::BluetoothServiceAttributeValueBlueZ attribute =
         bluez_record.GetAttributeValue(ATTR_ID_PRIMARY_RECORD);
-    absl::optional<bool> primary_record = attribute.value().GetIfBool();
+    std::optional<bool> primary_record = attribute.value().GetIfBool();
     if (primary_record) {
       dip_record.primary_record = primary_record.value();
     }
@@ -637,7 +637,7 @@ TypeConverter<floss::BtSdpRecord, bluez::BluetoothServiceRecordBlueZ>::Convert(
         floss::BtSdpHeaderOverlay,
         bluez::BluetoothServiceRecordBlueZ>::Convert(bluez_record);
   }
-  absl::optional<int> service_id =
+  std::optional<int> service_id =
       bluez_record.GetAttributeValue(ATTR_ID_SERVICE_ID).value().GetIfInt();
   if (!service_id.has_value()) {
     return floss::BtSdpRecord();
@@ -687,14 +687,14 @@ TypeConverter<bluez::BluetoothServiceRecordBlueZ, floss::BtSdpHeaderOverlay>::
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::STRING,
           record.service_name_length,
-          absl::optional<base::Value>(record.service_name)));
+          std::optional<base::Value>(record.service_name)));
 
   auto seq =
       std::make_unique<bluez::BluetoothServiceAttributeValueBlueZ::Sequence>();
   seq->emplace_back(bluez::BluetoothServiceAttributeValueBlueZ(
       bluez::BluetoothServiceAttributeValueBlueZ::UUID,
       record.uuid.canonical_value().length(),
-      absl::optional<base::Value>(record.uuid.canonical_value())));
+      std::optional<base::Value>(record.uuid.canonical_value())));
   bluez_record.AddRecordEntry(
       ATTR_ID_SERVICE_CLASS_ID_LIST,
       bluez::BluetoothServiceAttributeValueBlueZ(std::move(seq)));
@@ -713,7 +713,7 @@ TypeConverter<bluez::BluetoothServiceRecordBlueZ, floss::BtSdpHeaderOverlay>::
         bluez::BluetoothServiceAttributeValueBlueZ(
             bluez::BluetoothServiceAttributeValueBlueZ::UINT,
             sizeof(record.l2cap_psm),
-            absl::optional<base::Value>(record.l2cap_psm)));
+            std::optional<base::Value>(record.l2cap_psm)));
 
     bluez_record.AddRecordEntry(
         ATTR_ID_PROTOCOL_DESC_LIST,
@@ -744,7 +744,7 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.mas_instance_id),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.mas_instance_id))));
 
   bluez_record.AddRecordEntry(
@@ -752,7 +752,7 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.supported_message_types),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.supported_message_types))));
 
   bluez_record.AddRecordEntry(
@@ -760,7 +760,7 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.supported_features),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.supported_features))));
 
   return bluez_record;
@@ -785,7 +785,7 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.supported_features),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.supported_features))));
 
   return bluez_record;
@@ -810,7 +810,7 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.supported_repositories),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.supported_repositories))));
 
   bluez_record.AddRecordEntry(
@@ -818,7 +818,7 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.supported_features),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.supported_features))));
 
   return bluez_record;
@@ -891,21 +891,21 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.spec_id),
-          absl::optional<base::Value>(static_cast<int>(record.spec_id))));
+          std::optional<base::Value>(static_cast<int>(record.spec_id))));
 
   bluez_record.AddRecordEntry(
       ATTR_ID_VENDOR_ID,
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.vendor),
-          absl::optional<base::Value>(static_cast<int>(record.vendor))));
+          std::optional<base::Value>(static_cast<int>(record.vendor))));
 
   bluez_record.AddRecordEntry(
       ATTR_ID_VENDOR_ID_SOURCE,
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.vendor_id_source),
-          absl::optional<base::Value>(
+          std::optional<base::Value>(
               static_cast<int>(record.vendor_id_source))));
 
   bluez_record.AddRecordEntry(
@@ -913,21 +913,21 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.product),
-          absl::optional<base::Value>(static_cast<int>(record.product))));
+          std::optional<base::Value>(static_cast<int>(record.product))));
 
   bluez_record.AddRecordEntry(
       ATTR_ID_PRODUCT_VERSION,
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::UINT,
           sizeof(record.version),
-          absl::optional<base::Value>(static_cast<int>(record.version))));
+          std::optional<base::Value>(static_cast<int>(record.version))));
 
   bluez_record.AddRecordEntry(
       ATTR_ID_PRIMARY_RECORD,
       bluez::BluetoothServiceAttributeValueBlueZ(
           bluez::BluetoothServiceAttributeValueBlueZ::BOOL,
           sizeof(record.primary_record),
-          absl::optional<base::Value>(record.primary_record)));
+          std::optional<base::Value>(record.primary_record)));
 
   return bluez_record;
 }

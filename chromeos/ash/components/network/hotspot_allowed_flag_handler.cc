@@ -26,15 +26,23 @@ void HotspotAllowedFlagHandler::Init() {
   ShillManagerClient::Get()->SetProperty(
       shill::kTetheringAllowedProperty,
       base::Value(ash::features::IsHotspotEnabled()), base::DoNothing(),
-      base::BindOnce(&HotspotAllowedFlagHandler::OnSetHotspotAllowedFlagFailure,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&HotspotAllowedFlagHandler::OnSetManagerPropertyFailure,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     shill::kTetheringAllowedProperty));
+  ShillManagerClient::Get()->SetProperty(
+      shill::kExperimentalTetheringFunctionality,
+      base::Value(ash::features::IsTetheringExperimentalFunctionalityEnabled()),
+      base::DoNothing(),
+      base::BindOnce(&HotspotAllowedFlagHandler::OnSetManagerPropertyFailure,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     shill::kExperimentalTetheringFunctionality));
 }
 
-void HotspotAllowedFlagHandler::OnSetHotspotAllowedFlagFailure(
+void HotspotAllowedFlagHandler::OnSetManagerPropertyFailure(
+    const std::string& property_name,
     const std::string& error_name,
     const std::string& error_message) {
-  NET_LOG(ERROR) << "Error setting Shill manager properties: "
-                 << shill::kTetheringAllowedProperty
+  NET_LOG(ERROR) << "Error setting Shill manager properties: " << property_name
                  << ", error: " << error_name << ", message: " << error_message;
 }
 
@@ -48,8 +56,9 @@ void HotspotAllowedFlagHandler::OnPropertyChanged(const std::string& key,
   ShillManagerClient::Get()->SetProperty(
       shill::kTetheringAllowedProperty,
       base::Value(ash::features::IsHotspotEnabled()), base::DoNothing(),
-      base::BindOnce(&HotspotAllowedFlagHandler::OnSetHotspotAllowedFlagFailure,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&HotspotAllowedFlagHandler::OnSetManagerPropertyFailure,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     shill::kTetheringAllowedProperty));
 }
 
 }  //  namespace ash

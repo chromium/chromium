@@ -6,9 +6,7 @@ package org.chromium.content_public.browser;
 
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
-/**
- * Provides dimension/coordinate information of the view rendered by content layer.
- */
+/** Provides dimension/coordinate information of the view rendered by content layer. */
 public interface RenderCoordinates {
     /**
      * @return {@link Coord} instance associated with the given {@link WebContents}.

@@ -46,8 +46,7 @@ public class ToggleTabStackButtonCoordinator {
 
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
-    @VisibleForTesting
-    boolean mIphBeingShown;
+    @VisibleForTesting boolean mIphBeingShown;
 
     /**
      * @param context The Android context used for various view operations.
@@ -60,9 +59,12 @@ public class ToggleTabStackButtonCoordinator {
      * @param setNewTabButtonHighlightCallback Delegate to highlight the new tab button.
      * @param activityTabSupplier Supplier of the activity tab.
      */
-    public ToggleTabStackButtonCoordinator(Context context,
-            ToggleTabStackButton toggleTabStackButton, UserEducationHelper userEducationHelper,
-            BooleanSupplier isIncognitoSupplier, OneshotSupplier<Boolean> promoShownOneshotSupplier,
+    public ToggleTabStackButtonCoordinator(
+            Context context,
+            ToggleTabStackButton toggleTabStackButton,
+            UserEducationHelper userEducationHelper,
+            BooleanSupplier isIncognitoSupplier,
+            OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             Callback<Boolean> setNewTabButtonHighlightCallback,
             ObservableSupplier<Tab> activityTabSupplier) {
@@ -75,12 +77,16 @@ public class ToggleTabStackButtonCoordinator {
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
-        mPageLoadObserver = new CurrentTabObserver(activityTabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                handlePageLoadFinished();
-            }
-        }, /*swapCallback=*/null);
+        mPageLoadObserver =
+                new CurrentTabObserver(
+                        activityTabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onPageLoadFinished(Tab tab, GURL url) {
+                                handlePageLoadFinished();
+                            }
+                        },
+                        /* swapCallback= */ null);
     }
 
     /** Cleans up callbacks and observers. */
@@ -101,25 +107,26 @@ public class ToggleTabStackButtonCoordinator {
         assert mLayoutStateProvider == null : "the mLayoutStateProvider should set at most once.";
 
         mLayoutStateProvider = layoutStateProvider;
-        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
-            private boolean mHighlightedNewTabPageButton;
+        mLayoutStateObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    private boolean mHighlightedNewTabPageButton;
 
-            @Override
-            public void onStartedShowing(@LayoutType int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER && mIphBeingShown) {
-                    mSetNewTabButtonHighlightCallback.onResult(true);
-                    mHighlightedNewTabPageButton = true;
-                }
-            }
+                    @Override
+                    public void onStartedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER && mIphBeingShown) {
+                            mSetNewTabButtonHighlightCallback.onResult(true);
+                            mHighlightedNewTabPageButton = true;
+                        }
+                    }
 
-            @Override
-            public void onStartedHiding(@LayoutType int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER && mHighlightedNewTabPageButton) {
-                    mSetNewTabButtonHighlightCallback.onResult(false);
-                    mHighlightedNewTabPageButton = false;
-                }
-            }
-        };
+                    @Override
+                    public void onStartedHiding(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER && mHighlightedNewTabPageButton) {
+                            mSetNewTabButtonHighlightCallback.onResult(false);
+                            mHighlightedNewTabPageButton = false;
+                        }
+                    }
+                };
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
@@ -131,15 +138,17 @@ public class ToggleTabStackButtonCoordinator {
 
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(mContext.getResources(),
-                FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE, R.string.iph_tab_switcher_text,
-                R.string.iph_tab_switcher_accessibility_text)
-                                                    .setAnchorView(mToggleTabStackButton)
-                                                    .setOnShowCallback(this::handleShowCallback)
-                                                    .setOnDismissCallback(
-                                                            this::handleDismissCallback)
-                                                    .setHighlightParams(params)
-                                                    .build());
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+                                R.string.iph_tab_switcher_text,
+                                R.string.iph_tab_switcher_accessibility_text)
+                        .setAnchorView(mToggleTabStackButton)
+                        .setOnShowCallback(this::handleShowCallback)
+                        .setOnDismissCallback(this::handleDismissCallback)
+                        .setHighlightParams(params)
+                        .build());
     }
 
     private void handleShowCallback() {

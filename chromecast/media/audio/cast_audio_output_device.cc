@@ -256,7 +256,8 @@ class CastAudioOutputDevice::Internal
       size_t io_buffer_size =
           audio_output_service::OutputSocket::kAudioMessageHeaderSize +
           filled_bytes;
-      auto io_buffer = base::MakeRefCounted<net::IOBuffer>(io_buffer_size);
+      auto io_buffer =
+          base::MakeRefCounted<net::IOBufferWithSize>(io_buffer_size);
       audio_bus_->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
           frames_filled,
           reinterpret_cast<int16_t*>(

@@ -22,9 +22,9 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -84,17 +84,21 @@ sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
 
 PasswordSharingInvitationData CreateUnencryptedInvitationData() {
   PasswordSharingInvitationData password_invitation_data;
-  PasswordSharingInvitationData::PasswordData* password_data =
-      password_invitation_data.mutable_password_data();
+  PasswordSharingInvitationData::PasswordGroupData* password_group_data =
+      password_invitation_data.mutable_password_group_data();
 
-  password_data->set_password_value(kPasswordValue);
-  password_data->set_signon_realm(kSignonRealm);
-  password_data->set_origin(kOrigin);
-  password_data->set_username_element(kUsernameElement);
-  password_data->set_username_value(kUsernameValue);
-  password_data->set_password_element(kPasswordElement);
-  password_data->set_display_name(kPasswordDisplayName);
-  password_data->set_avatar_url(kPasswordAvatarUrl);
+  password_group_data->set_username_value(kUsernameValue);
+  password_group_data->set_password_value(kPasswordValue);
+
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      element_data = password_group_data->add_element_data();
+
+  element_data->set_signon_realm(kSignonRealm);
+  element_data->set_origin(kOrigin);
+  element_data->set_username_element(kUsernameElement);
+  element_data->set_password_element(kPasswordElement);
+  element_data->set_display_name(kPasswordDisplayName);
+  element_data->set_avatar_url(kPasswordAvatarUrl);
 
   return password_invitation_data;
 }
@@ -232,7 +236,7 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
         /*enabled_features=*/
         {password_manager::features::kPasswordManagerEnableReceiverService,
          syncer::kSharingOfferKeyPairBootstrap},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{switches::kUnoDesktop});
   }
 
   sync_pb::CrossUserSharingPublicKey GetPublicKeyFromServer() const {
@@ -310,9 +314,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   EXPECT_EQ(base::UTF16ToUTF8(password_form.password_value), kPasswordValue);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.display_name),
             kPasswordDisplayName);
-  // TODO(crbug.com/1468523): check the remaining fields including sender
-  // profile image.
-  // EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
+  EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_email), kSenderEmail);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_name), kSenderDisplayName);
   EXPECT_EQ(password_form.sender_profile_image_url,
@@ -337,6 +339,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
 }
 
+// ChromeOS does not support signing out of a primary account, which these test
+// relies on to initialize Nigori.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldHandleIncomingInvitationsAtInitialSync) {
   // First, setup sync to initialize Nigori node with a public key to be able to
@@ -345,9 +350,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
 
   // Then stop sync service, inject an invitation to the server, and re-enable
   // sync again.
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
   InjectInvitationToServer();
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // Wait the invitation to be processed and the password stored.
   ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
@@ -377,10 +382,10 @@ IN_PROC_BROWSER_TEST_F(
   // Then stop sync service, inject an invitation and a different password
   // (but having the same client tag to cause a collision) to the server, and
   // re-enable sync again.
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
   InjectTestPasswordToFakeServer();
   InjectInvitationToServer();
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // Wait the password to be stored.
   ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
@@ -410,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(
           kCredentialsExistWithDifferentPassword,
       /*expected_bucket_count=*/1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The unconsented primary account isn't supported on ChromeOS.
 // TODO(crbug.com/1348950): enable on Android once transport mode for Passwords

@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/input/input_router_impl.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_drag_gesture.h"
 #include "content/browser/renderer_host/input/touch_action_filter.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -24,6 +23,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/input/synthetic_smooth_drag_gesture.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -77,7 +77,7 @@ class TestRenderWidgetHostObserver : public RenderWidgetHostObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<RenderWidgetHost> widget_host_;
+  raw_ptr<RenderWidgetHost> widget_host_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -150,8 +150,9 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
   void OnInputEventAck(blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent& event) override {
-    if (blink::WebInputEvent::IsTouchEventType(event.GetType()))
+    if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
       acked_touch_event_type_ = event.GetType();
+    }
   }
 
   EventTypeVector GetAndResetDispatchedEventTypes() {
@@ -173,10 +174,7 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
 class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
  public:
   RenderWidgetHostTouchEmulatorBrowserTest()
-      : view_(nullptr),
-        host_(nullptr),
-        router_(nullptr),
-        last_simulated_event_time_(ui::EventTimeForNow()),
+      : last_simulated_event_time_(ui::EventTimeForNow()),
         simulated_event_time_delta_(base::Milliseconds(100)) {}
 
   void SetUpOnMainThread() override {
@@ -185,13 +183,6 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(
         shell(), GURL("data:text/html,<!doctype html>"
                       "<body style='background-color: red;'></body>")));
-
-    view_ = static_cast<RenderWidgetHostViewBase*>(
-        shell()->web_contents()->GetRenderWidgetHostView());
-    host_ = static_cast<RenderWidgetHostImpl*>(view_->GetRenderWidgetHost());
-    router_ = static_cast<WebContentsImpl*>(shell()->web_contents())
-                  ->GetInputEventRouter();
-    ASSERT_TRUE(router_);
   }
 
   base::TimeTicks GetNextSimulatedEventTime() {
@@ -206,10 +197,15 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
                                 bool pressed) {
     blink::WebMouseEvent event =
         blink::SyntheticWebMouseEventBuilder::Build(type, x, y, modifiers);
-    if (pressed)
+    if (pressed) {
       event.button = blink::WebMouseEvent::Button::kLeft;
+    }
     event.SetTimeStamp(GetNextSimulatedEventTime());
-    router_->RouteMouseEvent(view_, &event, ui::LatencyInfo());
+    RenderWidgetHostInputEventRouter* router =
+        static_cast<WebContentsImpl*>(shell()->web_contents())
+            ->GetInputEventRouter();
+    ASSERT_TRUE(router);
+    router->RouteMouseEvent(view(), &event, ui::LatencyInfo());
   }
 
   void WaitForAckWith(blink::WebInputEvent::Type type) {
@@ -217,14 +213,16 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
     watcher.GetAckStateWaitIfNecessary();
   }
 
-  RenderWidgetHostImpl* host() { return host_; }
-  RenderWidgetHostViewBase* view() { return view_; }
+  RenderWidgetHostImpl* host() {
+    return static_cast<RenderWidgetHostImpl*>(view()->GetRenderWidgetHost());
+  }
+
+  RenderWidgetHostViewBase* view() {
+    return static_cast<RenderWidgetHostViewBase*>(
+        shell()->web_contents()->GetRenderWidgetHostView());
+  }
 
  private:
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> view_;
-  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> host_;
-  raw_ptr<RenderWidgetHostInputEventRouter, DanglingUntriaged> router_;
-
   base::TimeTicks last_simulated_event_time_;
   const base::TimeDelta simulated_event_time_delta_;
 };
@@ -523,8 +521,9 @@ class DocumentLoadObserver : WebContentsObserver {
   DocumentLoadObserver& operator=(const DocumentLoadObserver&) = delete;
 
   void Wait() {
-    if (loaded_)
+    if (loaded_) {
       return;
+    }
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
@@ -532,8 +531,9 @@ class DocumentLoadObserver : WebContentsObserver {
  private:
   void DidFinishLoad(RenderFrameHost* rfh, const GURL& url) override {
     loaded_ |= (url == document_origin_);
-    if (loaded_ && run_loop_)
+    if (loaded_ && run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   bool loaded_ = false;
@@ -665,7 +665,8 @@ class ShowPopupInterceptor
   ShowPopupInterceptor(WebContentsImpl* web_contents,
                        RenderFrameHostImpl* frame_host,
                        const gfx::Rect& overriden_bounds)
-      : overriden_bounds_(overriden_bounds), frame_host_(frame_host) {
+      : overriden_bounds_(overriden_bounds),
+        frame_host_(frame_host->GetWeakPtr()) {
     frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
         &ShowPopupInterceptor::DidCreatePopupWidget, base::Unretained(this)));
   }
@@ -713,7 +714,7 @@ class ShowPopupInterceptor
   gfx::Rect overriden_bounds_;
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
-  raw_ptr<RenderFrameHostImpl> frame_host_;
+  base::WeakPtr<RenderFrameHostImpl> frame_host_;
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -727,7 +728,7 @@ class ShowPopupMenuInterceptor
   explicit ShowPopupMenuInterceptor(RenderFrameHostImpl* render_frame_host,
                                     const gfx::Rect& overriden_bounds)
       : overriden_bounds_(overriden_bounds),
-        render_frame_host_(render_frame_host),
+        render_frame_host_(render_frame_host->GetWeakPtr()),
         swapped_impl_(
             render_frame_host_->local_frame_host_receiver_for_testing(),
             this) {}
@@ -735,7 +736,7 @@ class ShowPopupMenuInterceptor
   ~ShowPopupMenuInterceptor() override = default;
 
   LocalFrameHost* GetForwardingInterface() override {
-    return render_frame_host_;
+    return render_frame_host_.get();
   }
 
   void Wait() { run_loop_.Run(); }
@@ -749,6 +750,7 @@ class ShowPopupMenuInterceptor
       std::vector<blink::mojom::MenuItemPtr> menu_items,
       bool right_aligned,
       bool allow_multiple_selection) override {
+    CHECK(GetForwardingInterface());
     GetForwardingInterface()->ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, item_height,
         font_size, selected_item, std::move(menu_items), right_aligned,
@@ -771,7 +773,7 @@ class ShowPopupMenuInterceptor
   base::RunLoop run_loop_;
   bool is_cancelled_{false};
   gfx::Rect overriden_bounds_;
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::test::ScopedSwapImplForTesting<
       mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
       swapped_impl_;

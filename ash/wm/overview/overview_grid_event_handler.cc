@@ -98,7 +98,7 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
   // The following events are for scrolling the overview scroll layout, which is
   // tablet only.
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -148,7 +148,7 @@ void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
     return;
   }
 
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     aura::Window* window = static_cast<views::View*>(event->target())
                                ->GetWidget()
                                ->GetNativeWindow();

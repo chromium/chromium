@@ -76,3 +76,6 @@ void ReadLaterSidePanelWebView::UpdateActiveURL(
 void ReadLaterSidePanelWebView::UpdateActiveURLToActiveTab() {
   UpdateActiveURL(browser_->tab_strip_model()->GetActiveWebContents());
 }
+
+BEGIN_METADATA(ReadLaterSidePanelWebView)
+END_METADATA

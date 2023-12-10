@@ -108,10 +108,26 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
     return;
   }
 
-  // Check if the web contents found is in a PWA.
-  if (web_contents->GetDelegate()->ShouldUseInstancedSystemMediaControls()) {
-    // TODO(stahon): Not yet implemented, but we should consider handling
-    // initialization of browser system media controls here
+  // Check if the web contents found is in a dPWA.
+  bool is_web_contents_for_web_app =
+      web_contents->GetDelegate()->ShouldUseInstancedSystemMediaControls() ||
+      always_assume_web_app_for_testing_;
+  if (!is_web_contents_for_web_app) {
+    // TODO(crbug.com/1502981) this is the only place we have the request_id for
+    // the browser's controls, but logically doesn't make a ton of sense to do
+    // browser handling in here. This bug tracks investigating moving it
+    // somewhere else.
+
+    MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
+        BrowserMainLoop::GetInstance()->media_keys_listener_manager();
+    DCHECK(media_keys_listener_manager_impl);
+    media_keys_listener_manager_impl->SetBrowserActiveMediaRequestId(
+        request_id);
+
+    // notify test observers we added the browser.
+    if (test_observer_) {
+      test_observer_->OnBrowserAdded();
+    }
 
     return;
   }
@@ -126,14 +142,10 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   if (!existing_controls) {
     window = GetHWNDFromWebContents(web_contents);
 
-    // TODO(stahon): Update SystemMediaControls::Create to take HWND window
-    // parameter. For now, just check for validity to get around unused
-    // warning.
-    CHECK(window != -1);
     std::unique_ptr<system_media_controls::SystemMediaControls>
         system_media_controls =
             system_media_controls::SystemMediaControls::Create(
-                media::AudioManager::GetGlobalAppName());
+                media::AudioManager::GetGlobalAppName(), window);
 
     if (!system_media_controls) {
       DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained, "
@@ -147,15 +159,16 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
         BrowserMainLoop::GetInstance()->media_keys_listener_manager());
 
     controls_map_.emplace(
-        request_id, std::make_unique<WebAppSystemMediaControls>(
-                        request_id, std::move(system_media_controls),
-                        // TODO(stahon) Update SystemMediaControlsNotifier to
-                        // require RequestID parameter
-                        std::make_unique<SystemMediaControlsNotifier>(
-                            system_media_controls.get()),
-                        // TODO(stahon) Update ActiveMediaSessionController to
-                        // require RequestId parameter
-                        std::make_unique<ActiveMediaSessionController>()));
+        request_id,
+        std::make_unique<WebAppSystemMediaControls>(
+            request_id, std::move(system_media_controls),
+            std::make_unique<SystemMediaControlsNotifier>(
+                system_media_controls.get(), request_id),
+            std::make_unique<ActiveMediaSessionController>(request_id)));
+
+    if (test_observer_) {
+      test_observer_->OnWebAppAdded(request_id);
+    }
   } else {
     // If the requestID already exists in the map, we still need to rebind
     // the notifier and controller as they have been invalidated.
@@ -163,14 +176,10 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
     // which causes onFocusGained to fire but the notifier and controller
     // cannot be reused afterwards.
     existing_controls->SetNotifier(
-        // TODO(stahon) Update SystemMediaControlsNotifier to require
-        // RequestID parameter
         std::make_unique<SystemMediaControlsNotifier>(
-            existing_controls->GetSystemMediaControls()));
-    // TODO(stahon) Update ActiveMediaSessionController to require
-    // RequestId parameter
+            existing_controls->GetSystemMediaControls(), request_id));
     existing_controls->SetController(
-        std::make_unique<ActiveMediaSessionController>());
+        std::make_unique<ActiveMediaSessionController>(request_id));
   }
 }
 

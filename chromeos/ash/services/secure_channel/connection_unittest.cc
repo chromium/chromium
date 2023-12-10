@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/connection.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -16,7 +18,6 @@
 #include "chromeos/ash/services/secure_channel/wire_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -113,20 +114,20 @@ class CryptAuthConnectionTest : public testing::Test {
   CryptAuthConnectionTest() = default;
   ~CryptAuthConnectionTest() override = default;
 
-  absl::optional<int32_t> GetRssi(Connection* connection) {
+  std::optional<int32_t> GetRssi(Connection* connection) {
     connection->GetConnectionRssi(base::BindOnce(
         &CryptAuthConnectionTest::OnConnectionRssi, base::Unretained(this)));
 
-    absl::optional<int32_t> rssi = rssi_;
+    std::optional<int32_t> rssi = rssi_;
     rssi_.reset();
 
     return rssi;
   }
 
  private:
-  void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
+  void OnConnectionRssi(std::optional<int32_t> rssi) { rssi_ = rssi; }
 
-  absl::optional<int32_t> rssi_;
+  std::optional<int32_t> rssi_;
 };
 
 TEST_F(CryptAuthConnectionTest, IsConnected) {
@@ -315,7 +316,7 @@ TEST_F(CryptAuthConnectionTest,
 TEST_F(CryptAuthConnectionTest, GetConnectionRssi) {
   NiceMock<MockConnection> connection;
   connection.SetStatus(Connection::Status::CONNECTED);
-  EXPECT_EQ(absl::nullopt, GetRssi(&connection));
+  EXPECT_EQ(std::nullopt, GetRssi(&connection));
 }
 
 }  // namespace ash::secure_channel

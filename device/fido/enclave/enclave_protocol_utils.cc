@@ -11,19 +11,25 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "crypto/random.h"
+#include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
+#include "device/fido/p256_public_key.h"
+#include "device/fido/public_key.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/value_response_conversions.h"
@@ -31,6 +37,15 @@
 namespace device::enclave {
 
 namespace {
+
+// AAGUID value for GPM.
+constexpr std::array<uint8_t, 16> kAaguid = {0xea, 0x9b, 0x8d, 0x66, 0x4d, 0x01,
+                                             0x1d, 0x21, 0x3c, 0xe4, 0xb6, 0xb4,
+                                             0x8c, 0xb5, 0x75, 0xd4};
+
+// These need to match the expected sizes in PasskeySyncBridge.
+const size_t kSyncIdSize = 16;
+const size_t kCredentialIdSize = 16;
 
 // JSON keys for front-end service HTTP request bodies.
 const char kCommandRequestCommandKey[] = "command";
@@ -41,15 +56,22 @@ const char kCommandDeviceIdKey[] = "device_id";
 const char kCommandSigKey[] = "sig";
 const char kCommandAuthLevelKey[] = "auth_level";
 
+// JSON keys for request fields used for both GetAssertion and MakeCredential.
+const char kRequestCommandKey[] = "cmd";
+const char kRequestDataKey[] = "request";
+const char kRequestClientDataJSONKey[] = "client_data_json";
+
 // JSON keys for GetAssertion request fields.
-const char kGetAssertionRequestCommandKey[] = "cmd";
-const char kGetAssertionRequestDataKey[] = "request";
-const char kGetAssertionRequestProtobufKey[] = "protobuf";
-const char kGetAssertionRequestClientDataJSONKey[] = "client_data_json";
 const char kGetAssertionRequestUvKey[] = "uv";
+const char kGetAssertionRequestProtobufKey[] = "protobuf";
 
 // JSON keys for GetAssertion response fields.
 const char kGetAssertionResponseKey[] = "response";
+
+// JSON keys for MakeCredential response fields.
+const char kMakeCredentialResponseEncryptedKey[] = "encrypted";
+const char kMakeCredentialResponsePubKeyKey[] = "pubKey";
+const char kMakeCredentialResponseVersionKey[] = "version";
 
 // JSON keys for successful responses and error codes.
 const char kCommandResponseElementSuccessKey[] = "ok";
@@ -57,6 +79,7 @@ const char kCommandResponseElementErrorKey[] = "err";
 
 // Specific command names recognizable by the enclave processor.
 const char kGetAssertionCommandName[] = "passkeys/assert";
+const char kMakeCredentialCommandName[] = "passkeys/create";
 
 // JSON value keys (obsolete, but still referenced by the out-of-date service
 // implementation).
@@ -96,7 +119,7 @@ cbor::Value toCbor(const base::Value& json) {
   }
 }
 
-base::Value toJson(const cbor::Value& cbor_value) {
+base::Value CborValueToBaseValue(const cbor::Value& cbor_value) {
   switch (cbor_value.type()) {
     case cbor::Value::Type::UNSIGNED:
     case cbor::Value::Type::NEGATIVE: {
@@ -104,11 +127,7 @@ base::Value toJson(const cbor::Value& cbor_value) {
       return base::Value(int_value);
     }
     case cbor::Value::Type::BYTE_STRING: {
-      std::string encoded_bytestring;
-      base::Base64UrlEncode(cbor_value.GetBytestring(),
-                            base::Base64UrlEncodePolicy::OMIT_PADDING,
-                            &encoded_bytestring);
-      return base::Value(encoded_bytestring);
+      return base::Value(cbor_value.GetBytestring());
     }
     case cbor::Value::Type::STRING:
       return base::Value(cbor_value.GetString());
@@ -117,7 +136,7 @@ base::Value toJson(const cbor::Value& cbor_value) {
     case cbor::Value::Type::ARRAY: {
       base::Value list(base::Value::Type::LIST);
       for (const auto& element : cbor_value.GetArray()) {
-        list.GetList().Append(toJson(element));
+        list.GetList().Append(CborValueToBaseValue(element));
       }
       return list;
     }
@@ -127,7 +146,8 @@ base::Value toJson(const cbor::Value& cbor_value) {
         if (!element.first.is_string()) {
           continue;
         }
-        dict.GetDict().Set(element.first.GetString(), toJson(element.second));
+        dict.GetDict().Set(element.first.GetString(),
+                           CborValueToBaseValue(element.second));
       }
       return dict;
     }
@@ -148,11 +168,10 @@ bool ParseCommandListEntry(const cbor::Value& entry,
     return false;
   }
 
-  const auto& tag_it =
-      entry.GetMap().find(cbor::Value(kGetAssertionRequestCommandKey));
+  const auto& tag_it = entry.GetMap().find(cbor::Value(kRequestCommandKey));
   if (tag_it == entry.GetMap().end() || !tag_it->second.is_string()) {
     FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kGetAssertionRequestCommandKey});
+        {"Invalid command list entry field: ", kRequestCommandKey});
     return false;
   }
   if (tag_it->second.GetString() != std::string("navigator.credentials.get")) {
@@ -160,14 +179,13 @@ bool ParseCommandListEntry(const cbor::Value& entry,
     return false;
   }
 
-  const auto& data_it =
-      entry.GetMap().find(cbor::Value(kGetAssertionRequestDataKey));
+  const auto& data_it = entry.GetMap().find(cbor::Value(kRequestDataKey));
   if (data_it == entry.GetMap().end()) {
     FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kGetAssertionRequestDataKey});
+        {"Invalid command list entry field: ", kRequestDataKey});
     return false;
   }
-  *out_request = toJson(data_it->second);
+  *out_request = CborValueToBaseValue(data_it->second);
 
   const auto& entity_it =
       entry.GetMap().find(cbor::Value(kGetAssertionRequestProtobufKey));
@@ -223,7 +241,8 @@ ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
     return {absl::nullopt, "Command response was not a valid CBOR array."};
   }
 
-  base::Value response_element = toJson(response_value->GetArray()[0]);
+  base::Value response_element =
+      CborValueToBaseValue(response_value->GetArray()[0]);
 
   if (!response_element.is_dict()) {
     return {absl::nullopt, "Command response element is not a map."};
@@ -263,17 +282,131 @@ ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
   return {std::move(response), std::string()};
 }
 
+std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
+           absl::optional<sync_pb::WebauthnCredentialSpecifics>,
+           std::string>
+ParseMakeCredentialResponse(const std::vector<uint8_t>& response_cbor,
+                            const CtapMakeCredentialRequest& request) {
+  absl::optional<cbor::Value> response_value =
+      cbor::Reader::Read(response_cbor);
+  if (!response_value || !response_value->is_array() ||
+      response_value->GetArray().empty()) {
+    return {absl::nullopt, absl::nullopt,
+            "Command response was not a valid CBOR array."};
+  }
+
+  // TODO(https://crbug.com/1459620): This conversion isn't needed, since the
+  // response fields can be parsed directly from CBOR. This needs a more
+  // substantive cleanup including making the response formats from the service
+  // more consistent.
+  base::Value response_element =
+      CborValueToBaseValue(response_value->GetArray()[0]);
+
+  if (!response_element.is_dict()) {
+    return {absl::nullopt, absl::nullopt,
+            "Command response element is not a map."};
+  }
+
+  if (const std::string* error = response_element.GetDict().FindString(
+          kCommandResponseElementErrorKey)) {
+    return {absl::nullopt, absl::nullopt,
+            base::StrCat({"Error received from enclave: ", *error})};
+  }
+
+  base::Value::Dict* success_response =
+      response_element.GetDict().FindDict(kCommandResponseElementSuccessKey);
+  if (!success_response) {
+    return {
+        absl::nullopt, absl::nullopt,
+        "Command response did not contain a successful response or an error."};
+  }
+
+  absl::optional<int> version_field =
+      success_response->FindInt(kMakeCredentialResponseVersionKey);
+  if (!version_field) {
+    return {absl::nullopt, absl::nullopt,
+            "MakeCredential response did not contain a version."};
+  }
+
+  const std::vector<uint8_t>* pubkey_field =
+      success_response->FindBlob(kMakeCredentialResponsePubKeyKey);
+  if (!pubkey_field) {
+    return {absl::nullopt, absl::nullopt,
+            "MakeCredential response did not contain a public key."};
+  }
+
+  const std::vector<uint8_t>* encrypted_field =
+      success_response->FindBlob(kMakeCredentialResponseEncryptedKey);
+  if (!encrypted_field) {
+    return {absl::nullopt, absl::nullopt,
+            "MakeCredential response did not contain an encrypted passkey."};
+  }
+
+  std::vector<uint8_t> credential_id(kCredentialIdSize);
+  crypto::RandBytes(credential_id);
+
+  std::vector<uint8_t> sync_id(kSyncIdSize);
+  crypto::RandBytes(sync_id);
+
+  sync_pb::WebauthnCredentialSpecifics entity;
+
+  entity.set_sync_id(std::string(sync_id.begin(), sync_id.end()));
+  entity.set_credential_id(
+      std::string(credential_id.begin(), credential_id.end()));
+  entity.set_rp_id(request.rp.id);
+  entity.set_user_id(
+      std::string(request.user.id.begin(), request.user.id.end()));
+  entity.set_creation_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  entity.set_user_name(request.user.name ? *request.user.name : std::string());
+  entity.set_user_display_name(
+      request.user.display_name ? *request.user.display_name : std::string());
+  entity.set_key_version(*version_field);
+  entity.set_encrypted(
+      std::string(encrypted_field->begin(), encrypted_field->end()));
+
+  auto public_key = P256PublicKey::ParseX962Uncompressed(
+      static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), *pubkey_field);
+
+  std::array<uint8_t, 2> encoded_credential_id_length = {
+      0, static_cast<uint8_t>(credential_id.size())};
+  AttestedCredentialData credential_data(kAaguid, encoded_credential_id_length,
+                                         std::move(credential_id),
+                                         std::move(public_key));
+
+  // TODO(https://crbug.com/1459620): Assume UV for now, but this will be
+  // dependent on whether UV actually occurred, when that implementation is
+  // complete.
+  uint8_t flags =
+      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
+      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification) |
+      static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
+  AuthenticatorData authenticator_data(
+      fido_parsing_utils::CreateSHA256Hash(request.rp.id), flags,
+      std::array<uint8_t, 4>({0, 0, 0, 0}), std::move(credential_data));
+  AttestationObject attestation_object(
+      std::move(authenticator_data),
+      std::make_unique<NoneAttestationStatement>());
+
+  AuthenticatorMakeCredentialResponse response(FidoTransportProtocol::kInternal,
+                                               std::move(attestation_object));
+  response.is_resident_key = true;
+  response.transports.emplace();
+  response.transports->insert(FidoTransportProtocol::kInternal);
+  response.transports->insert(FidoTransportProtocol::kHybrid);
+
+  return {std::move(response), std::move(entity), std::string()};
+}
+
 cbor::Value BuildGetAssertionCommand(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
-    std::string client_data_json,
-    std::string rp_id) {
+    std::string client_data_json) {
   cbor::Value::MapValue entry_map;
 
-  entry_map.emplace(cbor::Value(kGetAssertionRequestCommandKey),
+  entry_map.emplace(cbor::Value(kRequestCommandKey),
                     cbor::Value(kGetAssertionCommandName));
-  entry_map.emplace(cbor::Value(kGetAssertionRequestDataKey),
-                    toCbor(*request->value));
+  entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
 
   int passkey_byte_size = passkey.ByteSize();
   std::vector<uint8_t> serialized_passkey;
@@ -282,10 +415,20 @@ cbor::Value BuildGetAssertionCommand(
   entry_map.emplace(cbor::Value(kGetAssertionRequestProtobufKey),
                     cbor::Value(serialized_passkey));
 
-  entry_map.emplace(cbor::Value(kGetAssertionRequestClientDataJSONKey),
+  entry_map.emplace(cbor::Value(kRequestClientDataJSONKey),
                     cbor::Value(client_data_json));
 
   entry_map.emplace(cbor::Value(kGetAssertionRequestUvKey), cbor::Value(true));
+
+  return cbor::Value(entry_map);
+}
+
+cbor::Value BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request) {
+  cbor::Value::MapValue entry_map;
+
+  entry_map.emplace(cbor::Value(kRequestCommandKey),
+                    cbor::Value(kMakeCredentialCommandName));
+  entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
 
   return cbor::Value(entry_map);
 }

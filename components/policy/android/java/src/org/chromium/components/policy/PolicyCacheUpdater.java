@@ -21,7 +21,8 @@ public class PolicyCacheUpdater {
     //  2) Policy is deprecated and overridden by its replacement.
     //  3) Any fatal error set by ConfigurationPolicyHandler.
     static List<Pair<String, PolicyCache.Type>> sPolicies =
-            Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer),
+            Arrays.asList(
+                    Pair.create("BrowserSignin", PolicyCache.Type.Integer),
                     Pair.create("CloudManagementEnrollmentToken", PolicyCache.Type.String),
                     Pair.create("ChromeVariations", PolicyCache.Type.Integer),
                     Pair.create("SafeSitesFilterBehavior", PolicyCache.Type.Integer),

@@ -6,14 +6,13 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, Router, routes, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -87,18 +86,11 @@ suite('SiteSettingsPage', function() {
         page.$.advancedContentList, `#${ContentSettingsTypes.ANTI_ABUSE}`));
   });
 
-  // TODO(crbug.com/1378703): Remove the test once PrivacySandboxSettings4
-  // has been rolled out.
-  test('CookiesLinkRowLabel', function() {
-    const labelExpected =
-        loadTimeData.getString('thirdPartyCookiesLinkRowLabel');
-    const labelActual =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!.label;
-    assertEquals(labelExpected, labelActual);
-  });
-
   test('CookiesLinkRowSublabel', async function() {
+    // This test verifies the pre-3PCD label.
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
     setupPage();
     const cookiesLinkRow =
         page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
@@ -262,63 +254,6 @@ suite('SiteSettingsPage', function() {
         'prefs.safety_hub.unused_site_permissions_revocation.enabled.value')));
   });
 
-});
-
-// TODO(crbug/1378703): Remove after crbug/1378703 launched.
-suite('PrivacySandboxSettings4Disabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
-
-  const testLabels: string[] = ['test label 1', 'test label 2'];
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxSettings4: false,
-    });
-  });
-
-  setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  test('SiteDataLinkRow', function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
-    flush();
-
-    assertFalse(isChildVisible(
-        page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
-  });
-
-  test('CookiesLinkRowLabel', function() {
-    const labelExpected = loadTimeData.getString('siteSettingsCookies');
-    const labelActual =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!.label;
-    assertEquals(labelExpected, labelActual);
-  });
-
-  test('CookiesLinkRowSublabel', async function() {
-    await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
-    flush();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
-    assertEquals(testLabels[0], cookiesLinkRow.subLabel);
-
-    webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
-    assertEquals(testLabels[1], cookiesLinkRow.subLabel);
-  });
 });
 
 const unusedSitePermissionMockData = [{

@@ -1,0 +1,26 @@
+{
+  "phases": {
+    "builtin": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_siso": true
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_remoteexec": true
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -45,6 +46,8 @@ class SearchResultPageView;
 // between them.
 class ASH_EXPORT ContentsView : public views::View,
                                 public PaginationModelObserver {
+  METADATA_HEADER(ContentsView, views::View)
+
  public:
   // Used to SetActiveState without animations.
   class ScopedSetActiveStateAnimationDisabler {
@@ -165,7 +168,6 @@ class ASH_EXPORT ContentsView : public views::View,
 
   // Overridden from views::View:
   void Layout() override;
-  const char* GetClassName() const override;
 
   // Overridden from PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;

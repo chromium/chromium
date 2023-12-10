@@ -11,7 +11,7 @@ source_set("parcel_tracking") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/parcel_tracking:infobar_delegate",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/ui/symbols",

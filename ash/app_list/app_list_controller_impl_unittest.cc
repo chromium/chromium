@@ -57,6 +57,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -74,7 +75,7 @@ void PressHomeButton() {
 }
 
 bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 AppListModel* GetAppListModel() {
@@ -107,7 +108,7 @@ PagedAppsGridView* GetAppsGridView() {
 void ShowAppListNow(AppListViewState state) {
   Shell::Get()->app_list_controller()->fullscreen_presenter()->Show(
       state, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      base::TimeTicks::Now(), /*show_source*/ absl::nullopt);
+      base::TimeTicks::Now(), /*show_source*/ std::nullopt);
 }
 
 void DismissAppListNow() {
@@ -1172,11 +1173,12 @@ TEST_P(AppListControllerImplKioskTest,
   auto* controller = Shell::Get()->app_list_controller();
   EnableTabletMode();
 
-  controller->OnTabletModeStarted();
+  controller->OnDisplayTabletStateChanged(display::TabletState::kInTabletMode);
   EXPECT_FALSE(controller->IsVisible());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  controller->OnTabletModeEnded();
+  controller->OnDisplayTabletStateChanged(
+      display::TabletState::kInClamshellMode);
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
   EXPECT_FALSE(controller->IsVisible());
@@ -1229,7 +1231,7 @@ TEST_P(AppListControllerWithAssistantTest,
   ToggleAssistantUiWithAccelerator();
   auto* app_list_controller = Shell::Get()->app_list_controller();
   EXPECT_TRUE(app_list_controller->IsVisible());
-  EXPECT_TRUE(AssistantUiController::Get()->HasShownOnboarding());
+  EXPECT_FALSE(AssistantUiController::Get()->HasShownOnboarding());
   EXPECT_EQ(AssistantVisibility::kVisible, GetAssistantVisibility());
 
   assistant_test_api_->input_text_field()->SetText(u"xyz");

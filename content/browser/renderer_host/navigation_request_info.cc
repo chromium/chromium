@@ -37,7 +37,8 @@ NavigationRequestInfo::NavigationRequestInfo(
         prefetch_serving_page_metrics_container,
     bool allow_cookies_from_browser,
     int64_t navigation_id,
-    bool shared_storage_writable_eligible)
+    bool shared_storage_writable_eligible,
+    bool is_ad_tagged)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
       sandbox_flags(sandbox_flags),
@@ -63,7 +64,8 @@ NavigationRequestInfo::NavigationRequestInfo(
           std::move(prefetch_serving_page_metrics_container)),
       allow_cookies_from_browser(allow_cookies_from_browser),
       navigation_id(navigation_id),
-      shared_storage_writable_eligible(shared_storage_writable_eligible) {}
+      shared_storage_writable_eligible(shared_storage_writable_eligible),
+      is_ad_tagged(is_ad_tagged) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}
 

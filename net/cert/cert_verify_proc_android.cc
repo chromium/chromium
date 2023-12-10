@@ -352,17 +352,12 @@ CertVerifyProcAndroid::CertVerifyProcAndroid(
 
 CertVerifyProcAndroid::~CertVerifyProcAndroid() = default;
 
-bool CertVerifyProcAndroid::SupportsAdditionalTrustAnchors() const {
-  return false;
-}
-
 int CertVerifyProcAndroid::VerifyInternal(
     X509Certificate* cert,
     const std::string& hostname,
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
   std::vector<std::string> cert_bytes;

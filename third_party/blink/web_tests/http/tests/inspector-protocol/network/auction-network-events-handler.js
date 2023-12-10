@@ -9,14 +9,15 @@
 
   await dp.Emulation.setUserAgentOverride({ userAgent: 'Vending Machine', acceptLanguage: 'ar' });
 
-  let finishedRequests = 0;
+  let finishedLoadingRequests = 0;
+  let finishedReceivingExtraInfo = 0;
   let resolveAllRequestsCompleted = null;
   const allRequestsCompleted = new Promise((resolve) => {
     resolveAllRequestsCompleted = resolve;
   });
 
   function checkIfAllRequestsCompleted() {
-    if (finishedRequests > 4) {
+    if (finishedLoadingRequests > 4 && finishedReceivingExtraInfo > 4) {
       resolveAllRequestsCompleted(true);
     }
   }
@@ -58,12 +59,15 @@
   dp.Network.onResponseReceivedExtraInfo(async event => {
     const requestId = event.params.requestId;
     requestsById[requestId].responseExtraInfoReceived = true;
+    finishedReceivingExtraInfo++;
+    checkIfAllRequestsCompleted();
+
   });
 
   dp.Network.onLoadingFinished(async event => {
     const requestId = event.params.requestId;
     requestsById[requestId].finished = true;
-    finishedRequests++;
+    finishedLoadingRequests++;
     checkIfAllRequestsCompleted();
   });
 

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 
-#import "ios/chrome/browser/ntp/home/features.h"
-
 CGFloat ReturnToRecentTabHeight() {
   return kReturnToRecentTabSize.height;
 }
@@ -17,3 +15,5 @@ NSString* const kContentSuggestionsWhatsNewIdentifier =
 
 NSString* const kQuerySuggestionViewA11yIdentifierPrefix =
     @"QuerySuggestionViewA11yIdentifierPrefix";
+
+const CGFloat kMagicStackImageContainerWidth = 50;

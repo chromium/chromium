@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-[PASS] non-parsable URL
 [FAIL] unsupported_scheme
   Failed to construct 'SharedWorker': Script at 'unsupported:' cannot be accessed from origin 'http://web-platform.test:8001'.
-[PASS] data_url
 [FAIL] javascript_url
   Failed to construct 'SharedWorker': Script at 'javascript:""' cannot be accessed from origin 'http://web-platform.test:8001'.
 [FAIL] about_blank

@@ -226,7 +226,7 @@ bool StructTraits<
   out->is_ad_tagged = data.is_ad_tagged();
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
-  out->target_address_space = data.required_ip_address_space();
+  out->required_ip_address_space = data.required_ip_address_space();
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadCreatedLocation(&out->created_location)) {
     return false;

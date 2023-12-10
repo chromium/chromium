@@ -21,6 +21,7 @@
 
 namespace content {
 
+class BrowserContext;
 class PrefetchService;
 
 // An isolated network context used for prefetches. The purpose of using a
@@ -29,7 +30,6 @@ class PrefetchService;
 class CONTENT_EXPORT PrefetchNetworkContext {
  public:
   PrefetchNetworkContext(
-      PrefetchService* prefetch_service,
       bool use_isolated_network_context,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referring_origin,
@@ -40,13 +40,11 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   const PrefetchNetworkContext operator=(const PrefetchNetworkContext&) =
       delete;
 
-  // Get a reference to |network_context_|.
-  network::mojom::NetworkContext* GetNetworkContext() const;
-
   // Get a reference to |url_loader_factory_|. If it is null, then
   // |network_context_| is bound and configured, and a new
   // |SharedURLLoaderFactory| is created.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory();
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory(
+      PrefetchService* service);
 
   // Get a reference to |cookie_manager_|. If it is null, then it is bound to
   // the cookie manager of |network_context_|.
@@ -59,6 +57,7 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // Binds |pending_receiver| to a URL loader factory associated with
   // the given |network_context|.
   void CreateNewURLLoaderFactory(
+      BrowserContext* browser_context,
       network::mojom::NetworkContext* network_context,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       absl::optional<net::IsolationInfo> isolation_info);
@@ -66,9 +65,7 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // Bind |network_context_| to a new network context and configure it to use
   // the prefetch proxy. Also set up |url_loader_factory_| as a new URL loader
   // factory for |network_context_|.
-  void CreateIsolatedURLLoaderFactory();
-
-  raw_ptr<PrefetchService> prefetch_service_;
+  void CreateIsolatedURLLoaderFactory(PrefetchService* service);
 
   // Whether an isolated network context or the default network context should
   // be used.

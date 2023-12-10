@@ -38,6 +38,9 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
   bool ClearPrimaryAccount(
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) override;
+  bool RemovePrimaryAccountButKeepTokens(
+      signin_metrics::ProfileSignout source_metric,
+      signin_metrics::SignoutDelete delete_metric) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:

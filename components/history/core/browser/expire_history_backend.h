@@ -118,6 +118,7 @@ class ExpireHistoryBackend {
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, ExpireSegmentData);
   FRIEND_TEST_ALL_PREFIXES(ExpireHistoryTest, DeleteFaviconsIfPossible);
   FRIEND_TEST_ALL_PREFIXES(ExpireHistoryTest, ExpireSomeOldHistory);
   FRIEND_TEST_ALL_PREFIXES(ExpireHistoryTest, ExpiringVisitsReader);
@@ -249,12 +250,15 @@ class ExpireHistoryBackend {
   void DoExpireIteration();
 
   // Tries to expire the oldest `max_visits` visits from history that are older
-  // than `time_threshold`. The return value indicates if we think there might
-  // be more history to expire with the current time threshold (it does not
-  // indicate success or failure).
+  // than `end_time`. The return value indicates if we think there might be more
+  // history to expire with the current time threshold (it does not indicate
+  // success or failure).
   bool ExpireSomeOldHistory(base::Time end_time,
                              const ExpiringVisitsReader* reader,
                              int max_visits);
+
+  // Expire segment data older than `end_time`.
+  void ExpireOldSegmentData(base::Time end_time);
 
   // Tries to detect possible bad history or inconsistencies in the database
   // and deletes items. For example, URLs with no visits.

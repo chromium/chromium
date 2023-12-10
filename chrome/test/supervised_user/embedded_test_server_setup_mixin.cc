@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"

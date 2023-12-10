@@ -172,7 +172,7 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSamlPolicyNotSet) {
   const base::Time now = base::DefaultClock::GetInstance()->Now();
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetLastOnlineSignin(saml_login_account1_id_, now);
-  known_user.SetOfflineSigninLimit(saml_login_account1_id_, absl::nullopt);
+  known_user.SetOfflineSigninLimit(saml_login_account1_id_, std::nullopt);
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddSamlUser(saml_login_account1_id_);
@@ -309,11 +309,11 @@ TEST_F(UserOnlineSigninNotifierTest, GaiaOnlineAuthGaiaPolicyNotSet) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // No `LastOnlineSignin` value, case where devices didn't store that value in
   // the first Gaia login.
-  known_user.SetOfflineSigninLimit(gaia_login_account1_id_, absl::nullopt);
+  known_user.SetOfflineSigninLimit(gaia_login_account1_id_, std::nullopt);
 
   // Case where the user has already stored last online signin.
   known_user.SetLastOnlineSignin(gaia_login_account2_id_, now);
-  known_user.SetOfflineSigninLimit(gaia_login_account2_id_, absl::nullopt);
+  known_user.SetOfflineSigninLimit(gaia_login_account2_id_, std::nullopt);
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddUser(gaia_login_account1_id_);

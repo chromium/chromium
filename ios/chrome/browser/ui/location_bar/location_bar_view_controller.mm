@@ -381,23 +381,20 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
               requestElementsInRect:(CGRect)rect
                          completion:
                              (void (^)(NSArray<UIScribbleElementIdentifier>*
-                                           elements))completion
-    API_AVAILABLE(ios(14.0)) {
+                                           elements))completion {
   completion(@[ kScribbleOmniboxElementId ]);
 }
 
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
                    isElementFocused:
-                       (UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                       (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleOmniboxElementId);
   return self.delegate.omniboxScribbleForwardingTarget.isFirstResponder;
 }
 
 - (CGRect)
     indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                frameForElement:(UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleOmniboxElementId);
 
   // Imitate the entire location bar being scribblable.
@@ -410,7 +407,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                      referencePoint:(CGPoint)focusReferencePoint
                          completion:
                              (void (^)(UIResponder<UITextInput>* focusedInput))
-                                 completion API_AVAILABLE(ios(14.0)) {
+                                 completion {
   if (!self.delegate.omniboxScribbleForwardingTarget.isFirstResponder) {
     [self.delegate locationBarRequestScribbleTargetFocus];
   }
@@ -563,7 +560,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     [menuElements addObjectsFromArray:suggestedActions];
   }
 
-  absl::optional<std::set<ClipboardContentType>> clipboard_content_types =
+  std::optional<std::set<ClipboardContentType>> clipboard_content_types =
       ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
   if (clipboard_content_types.has_value()) {
@@ -739,7 +736,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogCopyPasteInOmniboxForDefaultBrowserPromo();
   [self.delegate locationBarVisitCopyLinkTapped];
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
-      base::BindOnce(^(absl::optional<GURL> optionalURL) {
+      base::BindOnce(^(std::optional<GURL> optionalURL) {
         if (!optionalURL) {
           return;
         }
@@ -757,7 +754,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogCopyPasteInOmniboxForDefaultBrowserPromo();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(absl::optional<std::u16string> optionalText) {
+      base::BindOnce(^(std::optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

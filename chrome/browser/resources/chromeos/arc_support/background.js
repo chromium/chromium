@@ -48,40 +48,6 @@ const OUTER_WIDTH = 768;
  */
 const OUTER_HEIGHT = 640;
 
-/**
- * Contains list of possible combination for languages and country codes. If
- * match is found then navigate to final document directly.
- */
-const PLAYSTORE_TOS_LOCALIZATIONS = [
-  'id_id',     'bs_ba',     'ca_es',     'cs_cz',     'da_dk',     'de_be',
-  'de_de',     'de_li',     'de_lu',     'de_at',     'de_ch',     'et_ee',
-  'en_as',     'en_ag',     'en_au',     'en_bs',     'en_bh',     'en_bz',
-  'en_bw',     'en_kh',     'en_cm',     'en_ca',     'en_cy',     'en_eg',
-  'en_fj',     'en_gu',     'en_is',     'en_in',     'en_ie',     'en_il',
-  'en_it',     'en_jo',     'en_kw',     'en_lb',     'en_mh',     'en_mu',
-  'en_na',     'en_np',     'en_nz',     'en_mp',     'en_om',     'en_pw',
-  'en_pg',     'en_ph',     'en_qa',     'en_rw',     'en_sa',     'en_sg',
-  'en_za',     'en_lk',     'en_ch',     'en_tz',     'en_tt',     'en_vi',
-  'en_ug',     'en_ae',     'en_uk',     'en_us',     'en_zm',     'en_zw',
-  'es_es',     'es_us',     'es_gu',     'es_as',     'es-419_ar', 'es-419_bo',
-  'es-419_cl', 'es-419_co', 'es-419_cr', 'es-419_cu', 'es-419_ec', 'es-419_sv',
-  'es-419_us', 'es-419_gt', 'es-419_hn', 'es-419_mx', 'es-419_ni', 'es-419_pa',
-  'es-419_py', 'es-419_pe', 'es-419_pr', 'es-419_do', 'es-419_uy', 'es-419_ve',
-  'fr_be',     'fr_bj',     'fr_bf',     'fr_kh',     'fr_cm',     'fr_ca',
-  'fr_ci',     'fr_fr',     'fr_ga',     'fr_lu',     'fr_ml',     'fr_mu',
-  'fr_ne',     'fr_sn',     'fr_ch',     'fr_tg',     'hl_in',     'hr_hr',
-  'it_it',     'it_it',     'lv_lv',     'lt_lt',     'hu_hu',     'mt_mt',
-  'nl_aw',     'nl_be',     'nl_nl',     'no_no',     'pl_pl',     'pt-BR_br',
-  'pt-PT_ao',  'pt-PT_cv',  'pt-PT_gw',  'pt-PT_mz',  'pt-PT_pt',  'ro_md',
-  'ro_ro',     'sq_al',     'sk_sk',     'sl_si',     'fi_fi',     'sv_se',
-  'vi_vn',     'tr_cy',     'tr_tr',     'el_gr',     'el_cy',     'be_by',
-  'bg_bg',     'mk_mk',     'ru_az',     'ru_am',     'ru_by',     'ru_ba',
-  'ru_kz',     'ru_kg',     'ru_ru',     'ru_tj',     'ru_tm',     'ru_uz',
-  'sr_rs',     'uk_ua',     'hy_am',     'ar_jo',     'ar_ae',     'ar_bh',
-  'ar_kw',     'ar_sa',     'ar_om',     'ar_qa',     'ar_lb',     'ar_eg',
-  'hi_in',     'th_th',     'th_la',     'ko_kr',     'zh-CN_cn',  'zh-TW_tw',
-  'zh-TW_hk',  'ja_jp',
-];
 
 /**
  * Sends a native message to ArcSupportHost.
@@ -475,39 +441,11 @@ class TermsOfServicePage {
         this.termsView_.src = defaultLocation;
       }
     } else {
-      // Try fast load first if we know location.
-      this.fastLocation_ = this.getFastLocation_();
-      if (this.fastLocation_) {
-        this.termsView_.src = 'https://play.google.com/intl/' +
-            this.fastLocation_ + '/about/play-terms/';
-      } else {
-        this.termsView_.src = defaultLocation;
-      }
+      // startTermsViewLoading used to have load time optimization logic
+      // (b/62540008), but this logic was removed because ToS webpage
+      // load time had improved.
+      this.termsView_.src = defaultLocation;
     }
-  }
-
-  /**
-   * Checks the combination of the current language and country code and tries
-   * to resolve known terms location. This location is used to load terms
-   * directly in required language and zone. This prevents extra navigation to
-   * default terms page to determine this target location.
-   * Returns undefined in case the fast location cannot be found.
-   */
-  getFastLocation_() {
-    const matchByLangZone = locale + '_' + this.countryCode;
-    if (PLAYSTORE_TOS_LOCALIZATIONS.indexOf(matchByLangZone) >= 0) {
-      return matchByLangZone;
-    }
-
-    const langSegments = locale.split('-');
-    if (langSegments.length == 2) {
-      const matchByShortLangZone = langSegments[0] + '_' + this.countryCode;
-      if (PLAYSTORE_TOS_LOCALIZATIONS.indexOf(matchByShortLangZone) >= 0) {
-        return matchByShortLangZone;
-      }
-    }
-
-    return undefined;
   }
 
   /** Returns user choices and page configuration for processing. */

@@ -31,6 +31,8 @@ import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
 import {WebViewLoader} from '../../components/web_view_loader.js';
 
+import {getTemplate} from './guest_tos.html.js';
+
 
 // Enum that describes the current state of the Guest ToS screen
 const GuestTosScreenState = {
@@ -80,7 +82,7 @@ class GuestTos extends GuestTosScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

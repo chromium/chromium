@@ -10,7 +10,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"

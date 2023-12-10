@@ -6,9 +6,7 @@ package org.chromium.components.minidump_uploader;
 
 import androidx.annotation.VisibleForTesting;
 
-/**
- * Constants for minidump uploader tests.
- */
+/** Constants for minidump uploader tests. */
 @VisibleForTesting
 public class MinidumpUploaderTestConstants {
     public static final String BOUNDARY = "TESTBOUNDARY";

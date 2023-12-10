@@ -5,8 +5,8 @@
 
 import base64
 import collections
-import datetime
 from datetime import timedelta
+import itertools
 import os
 import posixpath
 import re
@@ -14,7 +14,6 @@ from typing import Dict, List, Set, Tuple, Union
 import urllib.request
 
 from flake_suppressor_common import common_typing as ct
-from flake_suppressor_common import tag_utils
 
 from typ import expectations_parser
 
@@ -194,7 +193,9 @@ class ExpectationProcessor():
       include_all_tags: bool, build_fail_total_number_threshold: int,
       build_fail_consecutive_day_threshold: int) -> None:
     """Iterates over |result_map|, selects tests that hit all
-       build-fail*-thresholds and adds expectations for their results.
+       build-fail*-thresholds and adds expectations for their results. Same
+       test in all builders that caused build fail must be over all threshold
+       requirement.
 
     Args:
       result_map: Aggregated query results from results.AggregateResults to
@@ -219,20 +220,27 @@ class ExpectationProcessor():
       if self.IsSuiteUnsupported(suite):
         continue
       for test, tag_map in test_map.items():
+        # Same test in all builders that caused build fail must be over all
+        # threshold requirement.
+        all_results = list(itertools.chain(*tag_map.values()))
+        if (not OverFailedBuildThreshold(all_results,
+                                         build_fail_total_number_threshold)
+            or not OverFailedBuildByDayThreshold(
+                all_results, build_fail_consecutive_day_threshold)):
+          continue
         for typ_tags, result_tuple_list in tag_map.items():
           status = set()
-          for test_result in tag_map[typ_tags]:
+          for test_result in result_tuple_list:
+            # Should always add a pass to all flaky web tests in
+            # TestsExpectation that have passed runs.
+            status.add('Pass')
             if test_result.status == ct.ResultStatus.CRASH:
               status.add('Crash')
             elif test_result.status == ct.ResultStatus.FAIL:
               status.add('Failure')
             elif test_result.status == ct.ResultStatus.ABORT:
               status.add('Timeout')
-          # Failed tests result must be over all threshold requirement.
-          if (status and OverFailedBuildThreshold(
-              result_tuple_list, build_fail_total_number_threshold)
-              and OverFailedBuildByDayThreshold(
-                  result_tuple_list, build_fail_consecutive_day_threshold)):
+          if status:
             status_list = list(status)
             status_list.sort()
             self.ModifyFileForResult(suite, test, typ_tags, '',

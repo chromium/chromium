@@ -122,7 +122,6 @@ constexpr base::TimeDelta kFadeOutAnimationDuration = base::Milliseconds(100);
 //
 // The duration of the folder item view fade out animation.
 constexpr base::TimeDelta kFolderItemFadeOutDuration = base::Milliseconds(100);
-constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(1000);
 
 // The duraction of the folder item view fade in animation.
 constexpr base::TimeDelta kFolderItemFadeInDuration = base::Milliseconds(300);
@@ -465,9 +464,11 @@ void AppsGridView::EndDragCallback(
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
   output_drag_op = ui::mojom::DragOperation::kMove;
-  drag_image_layer_ = std::move(drag_image_layer_owner);
 
-  EndDrag(/*cancel=*/false);
+  if (drag_item_) {
+    drag_image_layer_ = std::move(drag_image_layer_owner);
+    EndDrag(/*cancel=*/false);
+  }
 }
 
 void AppsGridView::CancelDragWithNoDropAnimation() {
@@ -1530,10 +1531,10 @@ AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
   return GetItemViewAt(model_index);
 }
 
-absl::optional<int> AppsGridView::TilesPerPage(int page) const {
-  const absl::optional<int> max_rows = GetMaxRowsInPage(page);
+std::optional<int> AppsGridView::TilesPerPage(int page) const {
+  const std::optional<int> max_rows = GetMaxRowsInPage(page);
   if (!max_rows.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *max_rows * cols();
 }
@@ -1869,7 +1870,9 @@ void AppsGridView::AnimateDragIconToTargetPosition(
       // Get icon bounds in the drag view coordinates.
       drag_icon_drop_bounds = AppListItemView::GetIconBoundsForTargetViewBounds(
           app_list_config_, drag_view_ideal_bounds,
-          app_list_config_->grid_icon_size(), 1.0f);
+          drag_item->is_folder() ? app_list_config_->folder_icon_size()
+                                 : app_list_config_->grid_icon_size(),
+          1.0f);
 
       break;
     }
@@ -2113,7 +2116,7 @@ gfx::Rect AppsGridView::GetTargetIconRectInFolder(
   const gfx::Rect icon_ideal_bounds =
       folder_item_view->GetIconBoundsForTargetViewBounds(
           app_list_config_, view_ideal_bounds,
-          folder_item_view->GetIconImage().size(), /*icon_scale=*/1.0f);
+          folder_item_view->GetDragImage().size(), /*icon_scale=*/1.0f);
   AppListFolderItem* folder_item = folder_item_view->item()->AsFolderItem();
   return folder_item->GetTargetIconRectInFolderForItem(
       *app_list_config_, drag_item, icon_ideal_bounds);
@@ -2489,8 +2492,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
   }
 
   grid_animation_status_ = AppListGridAnimationStatus::kReorderFadeIn;
-  const absl::optional<VisibleItemIndexRange> range =
-      GetVisibleItemIndexRange();
+  const std::optional<VisibleItemIndexRange> range = GetVisibleItemIndexRange();
 
   views::AnimationBuilder animation_builder;
 
@@ -2553,7 +2555,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
     // existing time duration.
     SlideViewIntoPositionWithSequenceBlock(
         animated_view, offset,
-        /*time_delta=*/absl::nullopt, gfx::Tween::ACCEL_5_70_DECEL_90,
+        /*time_delta=*/std::nullopt, gfx::Tween::ACCEL_5_70_DECEL_90,
         &animation_builder.GetCurrentSequence());
   }
 
@@ -2567,8 +2569,7 @@ void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
     Layout();
   }
 
-  const absl::optional<VisibleItemIndexRange> range =
-      GetVisibleItemIndexRange();
+  const std::optional<VisibleItemIndexRange> range = GetVisibleItemIndexRange();
 
   // Safety check, unlikely in production.
   if (!range) {
@@ -2613,7 +2614,7 @@ void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
 
     // Slide each icon into position.
     SlideViewIntoPositionWithSequenceBlock(
-        icon, vertical_offset, /*time_delta=*/absl::nullopt,
+        icon, vertical_offset, /*time_delta=*/std::nullopt,
         gfx::Tween::ACCEL_LIN_DECEL_100_3,
         &animation_builder.GetCurrentSequence());
   }
@@ -2722,10 +2723,10 @@ void AppsGridView::StartDragAndDropHostDrag() {
   // circle.
   const gfx::Size shadow_size = is_folder
                                     ? app_list_config_->icon_visible_size()
-                                    : drag_view_->GetIconImage().size();
+                                    : drag_view_->GetDragImage().size();
   drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
-      drag_view_->GetIconImage(), location_in_screen,
+      drag_view_->GetDragImage(), gfx::ImageSkia(), location_in_screen,
       location_in_screen - icon_location_in_screen,
       is_folder ? kDragAndDropProxyScale : 1.0f, is_folder, shadow_size);
   drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
@@ -2885,7 +2886,7 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
     return;
   }
   const size_t start = GetIndexInViewModel(start_index);
-  const absl::optional<int> tiles_per_page = TilesPerPage(start_index.page);
+  const std::optional<int> tiles_per_page = TilesPerPage(start_index.page);
   const size_t end = tiles_per_page ? std::min(view_model_.view_size(),
                                                start + *tiles_per_page)
                                     : view_model_.view_size();
@@ -2957,35 +2958,20 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   // Attempt to animate the transition from a promise app into an actual app
   const std::string package_name =
       view->item()->GetMetadata()->promise_package_id;
-  PendingAppsLayersMap::iterator found =
-      pending_promise_apps_removals_.find(package_name);
+  auto found = pending_promise_apps_removals_.find(package_name);
 
   if (item->GetMetadata()->app_status == AppStatus::kReady &&
       found != pending_promise_apps_removals_.end()) {
-    AnimateTransitionForPromiseApps(
-        view, found->second->root(),
-        base::BindOnce(&AppsGridView::FinishAnimationForPromiseApps,
-                       weak_factory_.GetWeakPtr(), package_name));
+    view->AnimateInFromPromiseApp(
+        found->second,
+        base::BindRepeating(&AppsGridView::FinishAnimationForPromiseApps,
+                            weak_factory_.GetWeakPtr(), package_name));
   }
-}
-
-void AppsGridView::AnimateTransitionForPromiseApps(AppListItemView* view,
-                                                   ui::Layer* promise_app_layer,
-                                                   base::OnceClosure callback) {
-  view->EnsureLayer();
-  view->layer()->SetOpacity(0.0f);
-
-  views::AnimationBuilder animation;
-  animation.OnEnded(std::move(callback));
-  animation.Once()
-      .SetDuration(kSwapPromiseIconDuration)
-      .SetOpacity(view->layer(), 1.0f, gfx::Tween::FAST_OUT_LINEAR_IN)
-      .SetOpacity(promise_app_layer, 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
 }
 
 void AppsGridView::FinishAnimationForPromiseApps(
     const std::string& pending_app_id) {
-  PendingAppsLayersMap::iterator pending_app_found =
+  PendingAppsMap::iterator pending_app_found =
       pending_promise_apps_removals_.find(pending_app_id);
 
   // Discard the pending promise app layer.
@@ -2993,6 +2979,8 @@ void AppsGridView::FinishAnimationForPromiseApps(
     auto pending_app_scope(std::move(pending_app_found->second));
     pending_promise_apps_removals_.erase(pending_app_found);
   }
+
+  DestroyLayerItemsIfNotNeeded();
 }
 
 void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
@@ -3056,11 +3044,11 @@ void AppsGridView::MaybeDuplicatePromiseAppForRemoval(
     }
   }
 
-  // PromiseApps don't get animation for removal if an app lready existst in the
-  // grid.
+  // PromiseApps don't get animation for removal if an app already existst in
+  // the grid.
   if (!existing_app_in_grid) {
-    AddPendingLayerOwnerForPromiseApp(
-        item->id(), promise_app_view->RequestDuplicateLayer());
+    AddPendingPromiseAppRemoval(item->id(),
+                                promise_app_view->icon_image_model());
   }
 }
 
@@ -3103,23 +3091,16 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   }
 }
 
-ui::LayerTreeOwner* AppsGridView::AddPendingLayerOwnerForPromiseApp(
+void AppsGridView::AddPendingPromiseAppRemoval(
     const std::string& id,
-    std::unique_ptr<ui::LayerTreeOwner> layer_owner) {
-  if (!layer_owner) {
-    return nullptr;
-  }
-
-  PendingAppsLayersMap::iterator found =
-      pending_promise_apps_removals_.find(id);
+    const ui::ImageModel& default_image) {
+  auto found = pending_promise_apps_removals_.find(id);
   if (found != pending_promise_apps_removals_.end()) {
     NOTREACHED();
-    return nullptr;
+    return;
   }
 
-  pending_promise_apps_removals_[id] = std::move(layer_owner);
-
-  return pending_promise_apps_removals_[id].get();
+  pending_promise_apps_removals_.emplace(id, default_image);
 }
 
 void AppsGridView::OnAppListModelStatusChanged() {
@@ -3146,7 +3127,7 @@ void AppsGridView::DestroyLayerItemsIfNotNeeded() {
 bool AppsGridView::ItemViewsRequireLayers() const {
   // Layers required for app list item move animations during drag (to make room
   // for the current placeholder).
-  if (drag_item_ || drag_icon_proxy_) {
+  if (drag_item_ || drag_icon_proxy_ || drag_image_layer_) {
     return true;
   }
 
@@ -3193,7 +3174,7 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   DCHECK_GT(total_tile_size.height(), 0);
   const int ideal_row =
       (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height();
-  const absl::optional<int> tiles_per_page = TilesPerPage(current_page);
+  const std::optional<int> tiles_per_page = TilesPerPage(current_page);
   const int row = tiles_per_page
                       ? std::clamp(ideal_row, 0, *tiles_per_page / cols_ - 1)
                       : std::max(ideal_row, 0);
@@ -3373,8 +3354,7 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
   }
 
   if (target_index.page > folder_index.page) {
-    const absl::optional<int> folder_page_size =
-        TilesPerPage(folder_index.page);
+    const std::optional<int> folder_page_size = TilesPerPage(folder_index.page);
     // Target index page being at least 1 indicates paged apps grid, so number
     // of tiles per page should be bounded.
     DCHECK(folder_page_size);
@@ -3433,7 +3413,7 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 }
 
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
-  const absl::optional<int> tiles_per_page = TilesPerPage(index.page);
+  const std::optional<int> tiles_per_page = TilesPerPage(index.page);
   const int extra_valid_slots = HasExtraSlotForReorderPlaceholder() ? 1 : 0;
   return index.page >= 0 && index.page < GetTotalPages() && index.slot >= 0 &&
          (!tiles_per_page || index.slot < *tiles_per_page) &&
@@ -3463,7 +3443,7 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
   size_t item_count = view_model_.view_size();
   int current_page = 0;
   while (current_page < GetTotalPages() - 1) {
-    absl::optional<int> tiles_per_page = TilesPerPage(current_page);
+    std::optional<int> tiles_per_page = TilesPerPage(current_page);
     // `current_page` not being the last page implies a paged apps grid view,
     // as the grid has more than one page. For paged apps grid view,
     // `TilesPerPage()` should be defined.

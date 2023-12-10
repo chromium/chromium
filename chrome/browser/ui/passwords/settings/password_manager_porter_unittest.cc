@@ -298,7 +298,7 @@ TEST_F(PasswordManagerPorterTest, PasswordExport) {
               SetDestination(temp_file_path()));
 
   porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter().Export(web_contents());
+  porter().Export(web_contents()->GetWeakPtr());
 }
 
 TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
@@ -312,7 +312,7 @@ TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
   EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
 
   porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter().Export(web_contents());
+  porter().Export(web_contents()->GetWeakPtr());
 }
 
 TEST_F(PasswordManagerPorterTest, CancelExport) {
@@ -324,7 +324,7 @@ TEST_F(PasswordManagerPorterTest, CancelExport) {
   EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
 
   porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter().Export(web_contents());
+  porter().Export(web_contents()->GetWeakPtr());
   porter().CancelExport();
 }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <optional>
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
@@ -31,7 +32,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/types/display_constants.h"
@@ -100,7 +100,7 @@ int64_t GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
 
 void OnStaleArcVmStopped(
     EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
-    absl::optional<vm_tools::concierge::StopVmResponse> response) {
+    std::optional<vm_tools::concierge::StopVmResponse> response) {
   // Successful response is returned even when the VM is not running. See
   // Service::StopVm() in platform2/vm_tools/concierge/service.cc.
   if (!response.has_value() || !response->success()) {
@@ -338,48 +338,48 @@ bool IsArcOptInVerificationDisabled() {
       ash::switches::kDisableArcOptInVerification);
 }
 
-absl::optional<int> GetWindowTaskId(const aura::Window* window) {
+std::optional<int> GetWindowTaskId(const aura::Window* window) {
   if (!window) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string* window_app_id = exo::GetShellApplicationId(window);
   if (!window_app_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetTaskIdFromWindowAppId(*window_app_id);
 }
 
-absl::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
+std::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
   int task_id;
   if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) !=
       1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return task_id;
 }
 
-absl::optional<int> GetWindowSessionId(const aura::Window* window) {
+std::optional<int> GetWindowSessionId(const aura::Window* window) {
   if (!window) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string* window_app_id = exo::GetShellApplicationId(window);
   if (!window_app_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetSessionIdFromWindowAppId(*window_app_id);
 }
 
-absl::optional<int> GetSessionIdFromWindowAppId(
+std::optional<int> GetSessionIdFromWindowAppId(
     const std::string& window_app_id) {
   int session_id;
   if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.session.%d",
                   &session_id) != 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return session_id;
 }
 
-absl::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
+std::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
   auto result = GetWindowTaskId(window);
   if (result) {
     return result;

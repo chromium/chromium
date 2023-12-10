@@ -13,18 +13,48 @@
 
 #include "base/test/bind.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
+#include "components/android_autofill/browser/mock_form_data_android_bridge.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
 
+using ::autofill::test::DeepEqualsFormData;
+using ::testing::_;
+using ::testing::Pointwise;
 using ::testing::SizeIs;
+
+constexpr SessionId kSampleSessionId(123);
+
+MATCHER(SimilarFieldAs, "") {
+  // `std::get<0>(arg)` is a `std::unique_ptr<FormFieldDataAndroid>`, while
+  // `std::get<1>(arg)` is a `FormFieldData`.
+  return std::get<0>(arg) && std::get<0>(arg)->SimilarFieldAs(std::get<1>(arg));
+}
+
+// Registers a testing factory for `FormDataAndroidBridge` that creates
+// a mocked bridge and always writes the pointer of the last created bridge
+// into `last_bridge` if `last_bridge` is not null.
+void EnableFormTestingFactoryAndSaveLastBridge(
+    MockFormDataAndroidBridge** last_bridge) {
+  AndroidAutofillBridgeFactory::GetInstance().SetFormDataAndroidTestingFactory(
+      base::BindLambdaForTesting(
+          [last_bridge]() -> std::unique_ptr<FormDataAndroidBridge> {
+            auto bridge = std::make_unique<MockFormDataAndroidBridge>();
+            if (last_bridge) {
+              *last_bridge = bridge.get();
+            }
+            return bridge;
+          }));
+}
 
 // Registers a testing factory for `FormFieldDataAndroidBridge` that creates
 // a mocked bridge and appends the pointers of the bridges to `bridges`, if it
@@ -43,6 +73,7 @@ void EnableFieldTestingFactoryAndSaveBridges(
 }
 
 FormFieldData CreateTestField(std::u16string name = u"SomeName") {
+  static uint64_t renderer_id = 1;
   FormFieldData f;
   f.name = std::move(name);
   f.name_attribute = f.name;
@@ -51,6 +82,7 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.check_status = FormFieldData::CheckStatus::kChecked;
   f.role = FormFieldData::RoleAttribute::kOther;
   f.is_focusable = true;
+  f.unique_renderer_id = FieldRendererId(renderer_id++);
   return f;
 }
 
@@ -71,7 +103,7 @@ FormData CreateTestForm() {
 // Tests that `FormDataAndroid` creates a copy of its argument.
 TEST(FormDataAndroidTest, Form) {
   FormData form = CreateTestForm();
-  FormDataAndroid form_android(form);
+  FormDataAndroid form_android(form, kSampleSessionId);
 
   EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
 
@@ -88,7 +120,7 @@ TEST(FormDataAndroidTest, Form) {
 // are unlikely to have been superficial dynamic changes by Javascript on the
 // website.
 TEST(FormDataAndroidTest, SimilarFormAs) {
-  FormDataAndroid af(CreateTestForm());
+  FormDataAndroid af(CreateTestForm(), kSampleSessionId);
   FormData f = CreateTestForm();
 
   // If forms are the same, they are similar.
@@ -138,7 +170,7 @@ TEST(FormDataAndroidTest, SimilarFormAs) {
 TEST(FormDataAndroidTest, SimilarFormAs_Fields) {
   FormData f = CreateTestForm();
   f.fields = {CreateTestField()};
-  FormDataAndroid af(f);
+  FormDataAndroid af(f, kSampleSessionId);
 
   EXPECT_TRUE(af.SimilarFormAs(f));
 
@@ -160,7 +192,7 @@ TEST(FormDataAndroidTest, SimilarFormAs_Fields) {
 TEST(FormDataAndroidTest, GetFieldIndex) {
   FormData f = CreateTestForm();
   f.fields = {CreateTestField(u"name1"), CreateTestField(u"name2")};
-  FormDataAndroid af(f);
+  FormDataAndroid af(f, kSampleSessionId);
 
   size_t index = 100;
   EXPECT_TRUE(af.GetFieldIndex(f.fields[1], &index));
@@ -176,7 +208,7 @@ TEST(FormDataAndroidTest, GetFieldIndex) {
 TEST(FormDataAndroidTest, GetSimilarFieldIndex) {
   FormData f = CreateTestForm();
   f.fields = {CreateTestField(u"name1"), CreateTestField(u"name2")};
-  FormDataAndroid af(f);
+  FormDataAndroid af(f, kSampleSessionId);
 
   size_t index = 100;
   // Value is not part of a field similarity check, so this field is similar to
@@ -199,7 +231,7 @@ TEST(FormDataAndroidTest, OnFormFieldDidChange) {
 
   FormData form = CreateTestForm();
   form.fields = {CreateTestField(), CreateTestField()};
-  FormDataAndroid form_android(form);
+  FormDataAndroid form_android(form, kSampleSessionId);
 
   ASSERT_THAT(bridges, SizeIs(2));
   ASSERT_TRUE(bridges[0]);
@@ -219,7 +251,7 @@ TEST(FormDataAndroidTest, UpdateFieldTypes) {
 
   FormData form = CreateTestForm();
   form.fields = {CreateTestField(), CreateTestField()};
-  FormDataAndroid form_android(form);
+  FormDataAndroid form_android(form, kSampleSessionId);
 
   ASSERT_THAT(bridges, SizeIs(2));
   ASSERT_TRUE(bridges[0]);
@@ -228,6 +260,31 @@ TEST(FormDataAndroidTest, UpdateFieldTypes) {
   EXPECT_CALL(*bridges[0], UpdateFieldTypes);
   EXPECT_CALL(*bridges[1], UpdateFieldTypes);
   form_android.UpdateFieldTypes(FormStructure(form));
+}
+
+// Tests that the calls to update field types are propagated to the fields.
+TEST(FormDataAndroidTest, UpdateFieldTypes_ChangedForm) {
+  std::vector<MockFormFieldDataAndroidBridge*> bridges;
+  EnableFieldTestingFactoryAndSaveBridges(&bridges);
+
+  FormData form = CreateTestForm();
+  form.fields = {CreateTestField(), CreateTestField()};
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.field_count(), 2u);
+
+  form.fields.push_back(CreateTestField());
+  std::swap(form.fields.front(), form.fields.back());
+  FormDataAndroid form_android(form, kSampleSessionId);
+
+  ASSERT_THAT(bridges, SizeIs(3));
+  ASSERT_TRUE(bridges[0]);
+  ASSERT_TRUE(bridges[1]);
+  ASSERT_TRUE(bridges[2]);
+
+  EXPECT_CALL(*bridges[0], UpdateFieldTypes).Times(0);
+  EXPECT_CALL(*bridges[1], UpdateFieldTypes);
+  EXPECT_CALL(*bridges[2], UpdateFieldTypes);
+  form_android.UpdateFieldTypes(form_structure);
 }
 
 // Tests that calling `UpdateFieldVisibilities` propagates the visibility to the
@@ -243,7 +300,7 @@ TEST(FormDataAndroidTest, UpdateFieldVisibilities) {
   EXPECT_FALSE(form.fields[0].IsFocusable());
   EXPECT_FALSE(form.fields[1].IsFocusable());
   EXPECT_TRUE(form.fields[2].IsFocusable());
-  FormDataAndroid form_android(form);
+  FormDataAndroid form_android(form, kSampleSessionId);
 
   ASSERT_THAT(bridges, SizeIs(3));
   ASSERT_TRUE(bridges[0]);
@@ -264,6 +321,20 @@ TEST(FormDataAndroidTest, UpdateFieldVisibilities) {
   form_android.UpdateFieldVisibilities(form);
 
   EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
+}
+
+// Tests that `GetJavaPeer` passes the correct `FormData`, `SessionId` and
+// `FormFieldDataAndroid` parameters to the Java bridge.
+TEST(FormDataAndroidTest, GetJavaPeer) {
+  MockFormDataAndroidBridge* bridge = nullptr;
+  EnableFormTestingFactoryAndSaveLastBridge(&bridge);
+
+  FormData form = CreateTestForm();
+  FormDataAndroid af(form, kSampleSessionId);
+  EXPECT_CALL(*bridge,
+              GetOrCreateJavaPeer(DeepEqualsFormData(form), kSampleSessionId,
+                                  Pointwise(SimilarFieldAs(), form.fields)));
+  af.GetJavaPeer();
 }
 
 }  // namespace autofill

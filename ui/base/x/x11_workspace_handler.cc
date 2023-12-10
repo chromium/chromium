@@ -6,8 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -29,9 +29,10 @@ x11::Future<x11::GetPropertyReply> GetWorkspace() {
 X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
     : x_root_window_(ui::GetX11RootWindow()), delegate_(delegate) {
   DCHECK(delegate_);
-  x11::Connection::Get()->AddEventObserver(this);
+  auto* connection = x11::Connection::Get();
+  connection->AddEventObserver(this);
 
-  x_root_window_events_ = std::make_unique<x11::XScopedEventSelector>(
+  x_root_window_events_ = connection->ScopedSelectEvent(
       x_root_window_, x11::EventMask::PropertyChange);
 }
 

@@ -14,7 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -46,7 +46,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
 
-    auto* helper = commerce::ShoppingListUiTabHelper::FromWebContents(
+    auto* helper = commerce::CommerceUiTabHelper::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
 
     helper->SetShoppingServiceForTesting(mock_shopping_service_);
@@ -92,11 +92,11 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
       info.product_cluster_id.emplace(12345L);
       mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
       mock_shopping_service_->SetIsSubscribedCallbackValue(false);
-      MockShoppingListUiTabHelper::CreateForWebContents(
+      MockCommerceUiTabHelper::CreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
-      MockShoppingListUiTabHelper* mock_tab_helper =
-          static_cast<MockShoppingListUiTabHelper*>(
-              MockShoppingListUiTabHelper::FromWebContents(
+      MockCommerceUiTabHelper* mock_tab_helper =
+          static_cast<MockCommerceUiTabHelper*>(
+              MockCommerceUiTabHelper::FromWebContents(
                   browser()->tab_strip_model()->GetActiveWebContents()));
       EXPECT_CALL(*mock_tab_helper, GetProductImage);
       ON_CALL(*mock_tab_helper, GetProductImage)

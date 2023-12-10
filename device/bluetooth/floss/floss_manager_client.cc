@@ -181,7 +181,7 @@ bool FlossManagerClient::IsCompatibleFlossApi() {
 }
 
 void FlossManagerClient::OnSetAdapterEnabled(DBusResult<Void> response) {
-  // Only handle error cases since non-error called in OnHciEnabledChange
+  // Only handle error cases since non-error called in OnHciEnabledChanged
   if (adapter_enabled_callback_ && !response.has_value()) {
     adapter_enabled_callback_->Run(
         base::unexpected(Error(kErrorNoResponse, "")));
@@ -237,6 +237,7 @@ void FlossManagerClient::RemoveManager() {
   // Make copy of old adapters and clear existing ones.
   auto previous_adapters = std::move(adapter_to_enabled_);
   adapter_to_enabled_.clear();
+  adapter_present_pending_.clear();
 
   // All old adapters need to be sent a `present = false` notification.
   for (auto& [adapter, enabled] : previous_adapters) {
@@ -346,6 +347,7 @@ void FlossManagerClient::HandleGetAvailableAdapters(
 
   // Clear existing adapters.
   adapter_to_enabled_.clear();
+  adapter_present_pending_.clear();
   for (auto v : adapters.value()) {
     adapter_to_enabled_.insert({v.adapter, v.enabled});
   }
@@ -386,22 +388,81 @@ void FlossManagerClient::HandleRegisterCallback(DBusResult<Void> result) {
   }
 }
 
-void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
-  for (auto& observer : observers_) {
-    observer.AdapterPresent(adapter, present);
+void FlossManagerClient::HandleGetAdapterEnabledAfterPresent(
+    int32_t adapter,
+    DBusResult<bool> response) {
+  if (!base::Contains(adapter_present_pending_, adapter)) {
+    // We may have cleared the pending list in OnHciEnabledChanged.
+    return;
+  }
+  adapter_present_pending_.erase(adapter);
+
+  if (!response.has_value()) {
+    LOG(ERROR) << "Floss manager GetAdapterEnabled returned error: "
+               << response.error();
+    // Default to disabled if the call failed.
+    adapter_to_enabled_[adapter] = false;
+  } else {
+    adapter_to_enabled_[adapter] = response.value();
   }
 
-  // Update the cached list of available adapters.
-  auto iter = adapter_to_enabled_.find(adapter);
-  if (present && iter == adapter_to_enabled_.end()) {
-    adapter_to_enabled_.insert({adapter, false});
-  } else if (!present && iter != adapter_to_enabled_.end()) {
-    adapter_to_enabled_.erase(iter);
+  // Don't need to send out AdapterEnabledChanged as BluetoothAdapterFloss
+  // should query the state proactively.
+  for (auto& observer : observers_) {
+    // Always true because this function is only called when present is true.
+    observer.AdapterPresent(adapter, true);
+  }
+}
+
+void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
+  auto was_present = base::Contains(adapter_to_enabled_, adapter);
+  // Newly present
+  if (!was_present && present) {
+    if (!base::Contains(adapter_present_pending_, adapter)) {
+      // Defer the AdapterPresent event until we know the actual state.
+      adapter_present_pending_.insert(adapter);
+      CallManagerMethod<bool>(
+          base::BindOnce(
+              &FlossManagerClient::HandleGetAdapterEnabledAfterPresent,
+              weak_ptr_factory_.GetWeakPtr(), adapter),
+          manager::kGetAdapterEnabled, adapter);
+    } else {
+      LOG(WARNING) << "Unexpected OnHciDeviceChanged: adapter " << adapter
+                   << " already pending";
+    }
+  }
+  // Adapter disappeared
+  else if (was_present && !present) {
+    adapter_to_enabled_.erase(adapter);
+    for (auto& observer : observers_) {
+      observer.AdapterPresent(adapter, present);
+    }
+  }
+  // Adapter disappeared while pending, only need to clean up pending list
+  else if (!was_present && !present) {
+    auto res = adapter_present_pending_.erase(adapter);
+    if (res == 0) {
+      LOG(WARNING) << "Unexpected OnHciDeviceChanged: adapter " << adapter
+                   << " present=" << present << " but not pending";
+    }
+  }
+  // Already present
+  else if (was_present && present) {
+    LOG(WARNING) << "Unexpected OnHciDeviceChanged: adapter " << adapter
+                 << " already present";
   }
 }
 
 void FlossManagerClient::OnHciEnabledChanged(int32_t adapter, bool enabled) {
   adapter_to_enabled_[adapter] = enabled;
+
+  if (base::Contains(adapter_present_pending_, adapter)) {
+    // We haven't notified the presence for this adapter. Notify now.
+    adapter_present_pending_.erase(adapter);
+    for (auto& observer : observers_) {
+      observer.AdapterPresent(adapter, true);
+    }
+  }
 
   for (auto& observer : observers_) {
     observer.AdapterEnabledChanged(adapter, enabled);

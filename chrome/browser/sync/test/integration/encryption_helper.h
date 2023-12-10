@@ -118,7 +118,7 @@ class TrustedVaultKeysChangedStateChecker
 
  private:
   const raw_ptr<syncer::SyncServiceImpl> service_;
-  bool keys_changed_;
+  bool keys_changed_ = false;
 };
 
 // Used to wait until IsTrustedVaultRecoverabilityDegraded() returns the desired

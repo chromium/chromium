@@ -54,8 +54,12 @@ import java.util.LinkedList;
          *                          is tapped.
          * @param linkOpener The link opener.
          */
-        Description(String text, String learnMoreLinkText, String learnMoreLinkUrl,
-                @VirtualCardEnrollmentLinkType int learnMoreLinkType, LinkOpener linkOpener) {
+        Description(
+                String text,
+                String learnMoreLinkText,
+                String learnMoreLinkUrl,
+                @VirtualCardEnrollmentLinkType int learnMoreLinkType,
+                LinkOpener linkOpener) {
             mText = text;
             mLearnMoreLinkText = learnMoreLinkText;
             mLearnMoreLinkUrl = learnMoreLinkUrl;
@@ -81,8 +85,10 @@ import java.util.LinkedList;
          * @param lines The legal message lines.
          * @param linkType the type of link to record in metrics when link is tapped.
          */
-        LegalMessages(LinkedList<LegalMessageLine> lines,
-                @VirtualCardEnrollmentLinkType int linkType, LinkOpener linkOpener) {
+        LegalMessages(
+                LinkedList<LegalMessageLine> lines,
+                @VirtualCardEnrollmentLinkType int linkType,
+                LinkOpener linkOpener) {
             mLines = lines;
             mLinkType = linkType;
             mLinkOpener = linkOpener;
@@ -149,9 +155,18 @@ import java.util.LinkedList;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT, DESCRIPTION,
-            CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION, ISSUER_ICON, CARD_LABEL, CARD_DESCRIPTION,
-            GOOGLE_LEGAL_MESSAGES, ISSUER_LEGAL_MESSAGES, ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL};
+    static final PropertyKey[] ALL_KEYS = {
+        MESSAGE_TEXT,
+        DESCRIPTION,
+        CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
+        ISSUER_ICON,
+        CARD_LABEL,
+        CARD_DESCRIPTION,
+        GOOGLE_LEGAL_MESSAGES,
+        ISSUER_LEGAL_MESSAGES,
+        ACCEPT_BUTTON_LABEL,
+        CANCEL_BUTTON_LABEL
+    };
 
     /** Do not instantiate. */
     private AutofillVcnEnrollBottomSheetProperties() {}

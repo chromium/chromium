@@ -159,7 +159,8 @@ void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
 
   // Fill io_buffer with request to write.
   in_flight_->io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
-      base::MakeRefCounted<net::IOBuffer>(request.size()), request.size());
+      base::MakeRefCounted<net::IOBufferWithSize>(request.size()),
+      request.size());
   base::ranges::copy(request, in_flight_->io_buffer->data());
 
   ConnectIfNeeded();
@@ -220,7 +221,7 @@ void ThreadSafeHelper::OnWrite(int result) {
   // Prime io_buffer for reading.
   in_flight_->response = std::make_unique<std::vector<uint8_t>>();
   in_flight_->io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
-      base::MakeRefCounted<net::IOBuffer>(kHttpMaxBufferSize),
+      base::MakeRefCounted<net::IOBufferWithSize>(kHttpMaxBufferSize),
       kHttpMaxBufferSize);
 
   // Start reading response from CUPS.

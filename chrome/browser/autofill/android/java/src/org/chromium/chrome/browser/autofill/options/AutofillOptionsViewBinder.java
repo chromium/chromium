@@ -26,17 +26,24 @@ class AutofillOptionsViewBinder {
     public static void bind(PropertyModel model, AutofillOptionsFragment view, PropertyKey key) {
         if (key == THIRD_PARTY_AUTOFILL_ENABLED) {
             @RadioButtonGroupThirdPartyPreference.ThirdPartyOption
-            int currentOption = model.get(THIRD_PARTY_AUTOFILL_ENABLED)
-                    ? RadioButtonGroupThirdPartyPreference.ThirdPartyOption.USE_OTHER_PROVIDER
-                    : RadioButtonGroupThirdPartyPreference.ThirdPartyOption.DEFAULT;
+            int currentOption =
+                    model.get(THIRD_PARTY_AUTOFILL_ENABLED)
+                            ? RadioButtonGroupThirdPartyPreference.ThirdPartyOption
+                                    .USE_OTHER_PROVIDER
+                            : RadioButtonGroupThirdPartyPreference.ThirdPartyOption.DEFAULT;
             view.getThirdPartyFillingOption().setSelectedOption(currentOption);
         } else if (key == ON_THIRD_PARTY_TOGGLE_CHANGED) {
-            view.getThirdPartyFillingOption().setOnPreferenceChangeListener((unused, newValue) -> {
-                boolean optedIntoOtherProviders = (int) newValue
-                        == RadioButtonGroupThirdPartyPreference.ThirdPartyOption.USE_OTHER_PROVIDER;
-                model.get(ON_THIRD_PARTY_TOGGLE_CHANGED).onResult(optedIntoOtherProviders);
-                return true;
-            });
+            view.getThirdPartyFillingOption()
+                    .setOnPreferenceChangeListener(
+                            (unused, newValue) -> {
+                                boolean optedIntoOtherProviders =
+                                        (int) newValue
+                                                == RadioButtonGroupThirdPartyPreference
+                                                        .ThirdPartyOption.USE_OTHER_PROVIDER;
+                                model.get(ON_THIRD_PARTY_TOGGLE_CHANGED)
+                                        .onResult(optedIntoOtherProviders);
+                                return true;
+                            });
         } else {
             assert false : "Unhandled property: " + key;
         }

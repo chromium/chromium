@@ -49,9 +49,11 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   // before or after the model has started/loaded.
   void SimulateModelError(const ModelError& error);
 
-  // The number of times OnSyncStopping() was called with CLEAR_METADATA, and
-  // ClearMetadataWhileStopped() was called.
-  int clear_metadata_call_count() const;
+  // The number of times sync metadata was cleared, via either
+  // OnSyncStopping(CLEAR_METADATA) or ClearMetadataIfStopped() while sync
+  // was actually stopped.
+  // TODO(crbug.com/1504481): Replace this with something like "HasMetadata".
+  int clear_metadata_count() const;
 
   // ModelTypeControllerDelegate overrides
   void OnSyncStarting(const DataTypeActivationRequest& request,
@@ -62,7 +64,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
 
   base::WeakPtr<ModelTypeControllerDelegate> GetWeakPtr();
 
@@ -71,7 +73,8 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
 
   const ModelType type_;
   bool manual_model_start_enabled_ = false;
-  int clear_metadata_call_count_ = 0;
+  bool sync_started_ = false;
+  int clear_metadata_count_ = 0;
   DataTypeActivationResponse activation_response_;
   absl::optional<ModelError> model_error_;
   StartCallback start_callback_;

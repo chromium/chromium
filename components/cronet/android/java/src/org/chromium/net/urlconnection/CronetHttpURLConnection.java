@@ -92,27 +92,21 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         }
     }
 
-    /**
-     * Returns the response message returned by the remote HTTP server.
-     */
+    /** Returns the response message returned by the remote HTTP server. */
     @Override
     public String getResponseMessage() throws IOException {
         getResponse();
         return mResponseInfo.getHttpStatusText();
     }
 
-    /**
-     * Returns the response code returned by the remote HTTP server.
-     */
+    /** Returns the response code returned by the remote HTTP server. */
     @Override
     public int getResponseCode() throws IOException {
         getResponse();
         return mResponseInfo.getHttpStatusCode();
     }
 
-    /**
-     * Returns an unmodifiable map of the response-header fields and values.
-     */
+    /** Returns an unmodifiable map of the response-header fields and values. */
     @Override
     public Map<String, List<String>> getHeaderFields() {
         try {
@@ -210,8 +204,9 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             } else {
                 long fixedStreamingModeContentLength = getStreamingModeContentLength();
                 if (fixedStreamingModeContentLength != -1) {
-                    mOutputStream = new CronetFixedModeOutputStream(
-                            this, fixedStreamingModeContentLength, mMessageLoop);
+                    mOutputStream =
+                            new CronetFixedModeOutputStream(
+                                    this, fixedStreamingModeContentLength, mMessageLoop);
                     // Start the request now since all headers can be sent.
                     startRequest();
                 } else {
@@ -248,16 +243,15 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         return contentLength;
     }
 
-    /**
-     * Starts the request if {@code connected} is false.
-     */
+    /** Starts the request if {@code connected} is false. */
     private void startRequest() throws IOException {
         if (connected) {
             return;
         }
         final ExperimentalUrlRequest.Builder requestBuilder =
-                (ExperimentalUrlRequest.Builder) mCronetEngine.newUrlRequestBuilder(
-                        getURL().toString(), new CronetUrlRequestCallback(), mMessageLoop);
+                (ExperimentalUrlRequest.Builder)
+                        mCronetEngine.newUrlRequestBuilder(
+                                getURL().toString(), new CronetUrlRequestCallback(), mMessageLoop);
         if (doOutput) {
             if (method.equals("GET")) {
                 method = "POST";
@@ -266,7 +260,8 @@ public class CronetHttpURLConnection extends HttpURLConnection {
                 requestBuilder.setUploadDataProvider(
                         mOutputStream.getUploadDataProvider(), mMessageLoop);
                 if (getRequestProperty(CONTENT_LENGTH) == null && !isChunkedUpload()) {
-                    addRequestProperty(CONTENT_LENGTH,
+                    addRequestProperty(
+                            CONTENT_LENGTH,
                             Long.toString(mOutputStream.getUploadDataProvider().getLength()));
                 }
                 // Tells mOutputStream that startRequest() has been called, so
@@ -279,8 +274,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             }
             // Default Content-Type to application/x-www-form-urlencoded
             if (getRequestProperty("Content-Type") == null) {
-                addRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
+                addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             }
         }
         for (Pair<String, String> requestHeader : mRequestHeaders) {
@@ -354,24 +348,19 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         return null;
     }
 
-    /**
-     * Adds the given property to the request header.
-     */
+    /** Adds the given property to the request header. */
     @Override
     public final void addRequestProperty(String key, String value) {
         setRequestPropertyInternal(key, value, false);
     }
 
-    /**
-     * Sets the value of the specified request header field.
-     */
+    /** Sets the value of the specified request header field. */
     @Override
     public final void setRequestProperty(String key, String value) {
         setRequestPropertyInternal(key, value, true);
     }
 
-    private final void setRequestPropertyInternal(String key, String value,
-            boolean overwrite) {
+    private final void setRequestPropertyInternal(String key, String value, boolean overwrite) {
         if (connected) {
             throw new IllegalStateException(
                     "Cannot modify request property after connection is made.");
@@ -384,8 +373,9 @@ public class CronetHttpURLConnection extends HttpURLConnection {
                 // Cronet does not support adding multiple headers
                 // of the same key, see crbug.com/432719 for more details.
                 throw new UnsupportedOperationException(
-                        "Cannot add multiple headers of the same key, " + key
-                        + ". crbug.com/432719.");
+                        "Cannot add multiple headers of the same key, "
+                                + key
+                                + ". crbug.com/432719.");
             }
         }
         // Adds the new header at the end of mRequestHeaders.
@@ -402,13 +392,12 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             throw new IllegalStateException(
                     "Cannot access request headers after connection is set.");
         }
-        Map<String, List<String>> map = new TreeMap<String, List<String>>(
-                String.CASE_INSENSITIVE_ORDER);
+        Map<String, List<String>> map =
+                new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
         for (Pair<String, String> entry : mRequestHeaders) {
             if (map.containsKey(entry.first)) {
                 // This should not happen due to setRequestPropertyInternal.
-                throw new IllegalStateException(
-                    "Should not have multiple values.");
+                throw new IllegalStateException("Should not have multiple values.");
             } else {
                 List<String> values = new ArrayList<String>();
                 values.add(entry.second);
@@ -431,9 +420,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         return null;
     }
 
-    /**
-     * Returns whether this connection uses a proxy server.
-     */
+    /** Returns whether this connection uses a proxy server. */
     @Override
     public boolean usingProxy() {
         // TODO(xunjieli): implement this.
@@ -574,8 +561,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         @Override
         public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException exception) {
             if (exception == null) {
-                throw new IllegalStateException(
-                        "Exception cannot be null in onFailed.");
+                throw new IllegalStateException("Exception cannot be null in onFailed.");
             }
             mResponseInfo = info;
             setResponseDataCompleted(exception);
@@ -606,9 +592,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         }
     }
 
-    /**
-     * Blocks until the respone headers are received.
-     */
+    /** Blocks until the response headers are received. */
     private void getResponse() throws IOException {
         // Check to see if enough data has been received.
         if (mOutputStream != null) {
@@ -636,14 +620,11 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         if (mException != null) {
             throw mException;
         } else if (mResponseInfo == null) {
-            throw new NullPointerException(
-                    "Response info is null when there is no exception.");
+            throw new NullPointerException("Response info is null when there is no exception.");
         }
     }
 
-    /**
-     * Helper method to return the response header field at position pos.
-     */
+    /** Helper method to return the response header field at position pos. */
     private Map.Entry<String, String> getHeaderFieldEntry(int pos) {
         try {
             getResponse();

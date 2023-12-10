@@ -47,4 +47,11 @@ DlpFilesControllerLacros::MapFilePathToPolicyComponent(
   return {};
 }
 
+void DlpFilesControllerLacros::ShowDlpBlockedFiles(
+    absl::optional<uint64_t> task_id,
+    std::vector<base::FilePath> blocked_files,
+    dlp::FileAction action) {
+  // TODO(b/314907867): Show blocked files in Lacros.
+}
+
 }  // namespace policy

@@ -109,7 +109,7 @@ void MockQuotaManagerProxy::NotifyBucketAccessed(const BucketLocator& bucket,
 void MockQuotaManagerProxy::NotifyBucketModified(
     QuotaClientType client_id,
     const BucketLocator& bucket,
-    absl::optional<int64_t> delta,
+    std::optional<int64_t> delta,
     base::Time modification_time,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {

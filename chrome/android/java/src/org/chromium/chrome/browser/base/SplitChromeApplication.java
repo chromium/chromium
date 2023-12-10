@@ -59,10 +59,12 @@ public class SplitChromeApplication extends SplitCompatApplication {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 DexFixer.setHasIsolatedSplits(true);
             }
-            setImplSupplier(() -> {
-                Context chromeContext = createChromeContext(this);
-                return (Impl) BundleUtils.newInstance(chromeContext, mChromeApplicationClassName);
-            });
+            setImplSupplier(
+                    () -> {
+                        Context chromeContext = createChromeContext(this);
+                        return (Impl)
+                                BundleUtils.newInstance(chromeContext, mChromeApplicationClassName);
+                    });
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
         }
@@ -79,7 +81,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
             synchronized (BundleUtils.getSplitContextLock()) {
                 context = super.createContextForSplit(name);
             }
-            RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.ContextCreateTime." + name,
+            RecordHistogram.recordTimesHistogram(
+                    "Android.IsolatedSplits.ContextCreateTime." + name,
                     SystemClock.uptimeMillis() - startTime);
             return context;
         }
@@ -94,51 +97,59 @@ public class SplitChromeApplication extends SplitCompatApplication {
         // If the chrome module is not enabled or isolated splits are not supported (e.g. in Android
         // N), the onComplete function will run immediately so it must handle the case where the
         // base context of the application has not been set yet.
-        sSplitPreloader.preload(CHROME_SPLIT_NAME, new SplitPreloader.OnComplete() {
-            @Override
-            public void runImmediatelyInBackgroundThread(Context chromeContext) {
-                // A new thread is started here because we do not want to delay returning the chrome
-                // Context, since that slows down startup. This thread must be a HandlerThread
-                // because AsyncInitializationActivity (a base class of ChromeTabbedActivity)
-                // creates a Handler, so needs to have a Looper prepared.
-                HandlerThread thread = new HandlerThread("ActivityPreload");
-                thread.start();
-                new Handler(thread.getLooper()).post(() -> {
-                    try {
-                        // Create a throwaway instance of ChromeTabbedActivity. This will warm up
-                        // the chrome ClassLoader, and perform loading of classes used early in
-                        // startup in the background.
-                        chromeContext.getClassLoader()
-                                .loadClass(
-                                        "org.chromium.chrome.browser.ChromeTabbedActivity$Preload")
-                                .newInstance();
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException(e);
+        sSplitPreloader.preload(
+                CHROME_SPLIT_NAME,
+                new SplitPreloader.OnComplete() {
+                    @Override
+                    public void runImmediatelyInBackgroundThread(Context chromeContext) {
+                        // A new thread is started here because we do not want to delay returning
+                        // the chrome Context, since that slows down startup. This thread must be
+                        // a HandlerThread because AsyncInitializationActivity (a base class of
+                        // ChromeTabbedActivity) creates a Handler, so needs to have a Looper
+                        // prepared.
+                        HandlerThread thread = new HandlerThread("ActivityPreload");
+                        thread.start();
+                        new Handler(thread.getLooper())
+                                .post(
+                                        () -> {
+                                            try {
+                                                // Create a throwaway instance of
+                                                // ChromeTabbedActivity. This will warm up
+                                                // the chrome ClassLoader, and perform loading of
+                                                // classes used early in startup in the
+                                                // background.
+                                                chromeContext
+                                                        .getClassLoader()
+                                                        .loadClass(
+                                                                "org.chromium.chrome.browser.ChromeTabbedActivity$Preload")
+                                                        .newInstance();
+                                            } catch (ReflectiveOperationException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                            thread.quit();
+                                        });
                     }
-                    thread.quit();
-                });
-            }
 
-            @Override
-            public void runInUiThread(Context chromeContext) {
-                // If the chrome module is not enabled or isolated splits are not supported,
-                // chromeContext will have the same ClassLoader as the base context, so no need to
-                // replace the ClassLoaders here.
-                if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
-                    // Replace the application Context's ClassLoader with the chrome ClassLoader,
-                    // because the application ClassLoader is expected to be able to access all
-                    // chrome classes.
-                    BundleUtils.replaceClassLoader(
-                            SplitChromeApplication.this, chromeContext.getClassLoader());
-                    JNIUtils.setClassLoader(chromeContext.getClassLoader());
-                    // Resources holds a reference to a ClassLoader. Make our Application's
-                    // getResources() return a reference to the Chrome split's resources since there
-                    // are a spots where ContextUtils.getApplicationContext() is used to retrieve
-                    // resources (https://crbug.com/1287000).
-                    mResources = chromeContext.getResources();
-                }
-            }
-        });
+                    @Override
+                    public void runInUiThread(Context chromeContext) {
+                        // If the chrome module is not enabled or isolated splits are not supported,
+                        // chromeContext will have the same ClassLoader as the base context, so no
+                        // need to replace the ClassLoaders here.
+                        if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
+                            // Replace the application Context's ClassLoader with the chrome
+                            // ClassLoader, because the application ClassLoader is expected to be
+                            // able to access all chrome classes.
+                            BundleUtils.replaceClassLoader(
+                                    SplitChromeApplication.this, chromeContext.getClassLoader());
+                            JNIUtils.setClassLoader(chromeContext.getClassLoader());
+                            // Resources holds a reference to a ClassLoader. Make our Application's
+                            // getResources() return a reference to the Chrome split's resources
+                            // since there are a spots where ContextUtils.getApplicationContext()
+                            // is used to retrieve resources (https://crbug.com/1287000).
+                            mResources = chromeContext.getResources();
+                        }
+                    }
+                });
     }
 
     @Override

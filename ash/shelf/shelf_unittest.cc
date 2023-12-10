@@ -27,6 +27,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -88,6 +91,26 @@ TEST_F(ShelfTest, StatusReflection) {
   // Remove it.
   shelf_model()->RemoveItemAt(index);
   ASSERT_EQ(--button_count, test_api()->GetButtonCount());
+}
+
+TEST_F(ShelfTest, AppIconInkDropBaseColor) {
+  // Initially we have the app list.
+  size_t button_count = test_api()->GetButtonCount();
+
+  // Add a running app.
+  ShelfItem item;
+  item.id = ShelfID("foo");
+  item.type = TYPE_APP;
+  item.status = STATUS_RUNNING;
+  int index = shelf_model()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
+
+  ASSERT_EQ(++button_count, test_api()->GetButtonCount());
+  ShelfAppButton* button = test_api()->GetButton(index);
+  EXPECT_EQ(button->GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysRippleNeutralOnSubtle),
+            views::InkDrop::Get(button)->GetBaseColor());
+  EXPECT_EQ(1.0f, views::InkDrop::Get(button)->GetVisibleOpacity());
 }
 
 // Confirm that using the menu will clear the hover attribute. To avoid another

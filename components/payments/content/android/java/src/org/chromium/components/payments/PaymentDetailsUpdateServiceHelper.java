@@ -26,18 +26,16 @@ import java.util.Arrays;
 public class PaymentDetailsUpdateServiceHelper {
     private static final String TAG = "PaymentDetailsUpdate";
 
-    @Nullable
-    private IPaymentDetailsUpdateServiceCallback mCallback;
-    @Nullable
-    private PaymentRequestUpdateEventListener mListener;
-    @Nullable
-    private PackageInfo mInvokedAppPackageInfo;
-    @Nullable
-    private PackageManagerDelegate mPackageManagerDelegate;
+    @Nullable private IPaymentDetailsUpdateServiceCallback mCallback;
+    @Nullable private PaymentRequestUpdateEventListener mListener;
+    @Nullable private PackageInfo mInvokedAppPackageInfo;
+    @Nullable private PackageManagerDelegate mPackageManagerDelegate;
 
     // Singleton instance.
     private static PaymentDetailsUpdateServiceHelper sInstance;
-    private PaymentDetailsUpdateServiceHelper(){};
+
+    private PaymentDetailsUpdateServiceHelper() {}
+    ;
 
     /**
      * Returns the singleton instance, lazily creating one if needed.
@@ -59,8 +57,10 @@ public class PaymentDetailsUpdateServiceHelper {
      * @param listener The listener for payment method, shipping address, and shipping option
      *         changes.
      */
-    public void initialize(PackageManagerDelegate packageManagerDelegate,
-            String invokedAppPackageName, PaymentRequestUpdateEventListener listener) {
+    public void initialize(
+            PackageManagerDelegate packageManagerDelegate,
+            String invokedAppPackageName,
+            PaymentRequestUpdateEventListener listener) {
         ThreadUtils.assertOnUiThread();
         assert mListener == null;
         mListener = listener;
@@ -89,9 +89,12 @@ public class PaymentDetailsUpdateServiceHelper {
             return;
         }
 
-        String stringifiedDetails = paymentHandlerMethodData.getString(
-                PaymentHandlerMethodData.EXTRA_STRINGIFIED_DETAILS, /*defaultValue=*/"{}");
-        if (isWaitingForPaymentDetailsUpdate() || mListener == null
+        String stringifiedDetails =
+                paymentHandlerMethodData.getString(
+                        PaymentHandlerMethodData.EXTRA_STRINGIFIED_DETAILS,
+                        /* defaultValue= */ "{}");
+        if (isWaitingForPaymentDetailsUpdate()
+                || mListener == null
                 || !mListener.changePaymentMethodFromInvokedApp(methodName, stringifiedDetails)) {
             runCallbackWithError(ErrorStrings.INVALID_STATE, callback);
             return;
@@ -112,7 +115,8 @@ public class PaymentDetailsUpdateServiceHelper {
             return;
         }
 
-        if (isWaitingForPaymentDetailsUpdate() || mListener == null
+        if (isWaitingForPaymentDetailsUpdate()
+                || mListener == null
                 || !mListener.changeShippingOptionFromInvokedApp(shippingOptionId)) {
             runCallbackWithError(ErrorStrings.INVALID_STATE, callback);
             return;
@@ -139,7 +143,8 @@ public class PaymentDetailsUpdateServiceHelper {
             return;
         }
 
-        if (isWaitingForPaymentDetailsUpdate() || mListener == null
+        if (isWaitingForPaymentDetailsUpdate()
+                || mListener == null
                 || !mListener.changeShippingAddressFromInvokedApp(
                         PaymentAddressTypeConverter.convertAddressToMojoPaymentAddress(address))) {
             runCallbackWithError(ErrorStrings.INVALID_STATE, callback);
@@ -148,9 +153,7 @@ public class PaymentDetailsUpdateServiceHelper {
         mCallback = callback;
     }
 
-    /**
-     * Resets the singleton instance.
-     */
+    /** Resets the singleton instance. */
     public void reset() {
         ThreadUtils.assertOnUiThread();
         sInstance = null;
@@ -213,7 +216,8 @@ public class PaymentDetailsUpdateServiceHelper {
         }
         PackageInfo callerPackageInfo =
                 mPackageManagerDelegate.getPackageInfoWithSignatures(callerUid);
-        if (mInvokedAppPackageInfo == null || callerPackageInfo == null
+        if (mInvokedAppPackageInfo == null
+                || callerPackageInfo == null
                 || !mInvokedAppPackageInfo.packageName.equals(callerPackageInfo.packageName)) {
             Log.e(TAG, ErrorStrings.UNATHORIZED_SERVICE_REQUEST);
             return false;

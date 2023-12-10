@@ -95,29 +95,27 @@ void CastWebService::CreateWebView(
 
 void CastWebService::FlushDomLocalStorage() {
   browser_context_->ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* storage_partition) {
-        DVLOG(1) << "Starting DOM localStorage flush.";
-        storage_partition->Flush();
-      }));
+      &content::StoragePartition::Flush);
 }
 
 void CastWebService::ClearLocalStorage(ClearLocalStorageCallback callback) {
+  // TODO(https://crbug.com/1504422): Only the first StoragePartition gets a
+  // non-null `callback`; the subsequent ones all get a null callback, so this
+  // only ends up waiting for the first storage partition beofre invoking the
+  // reply callback.
   browser_context_->ForEachLoadedStoragePartition(
-      base::BindRepeating(
-          [](base::OnceClosure cb, content::StoragePartition* partition) {
-            auto cookie_delete_filter =
-                network::mojom::CookieDeletionFilter::New();
-            cookie_delete_filter->session_control =
-                network::mojom::CookieDeletionSessionControl::IGNORE_CONTROL;
-            partition->ClearData(
-                remove_data_mask,
-                content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-                /*filter_builder=*/nullptr,
-                content::StoragePartition::StorageKeyPolicyMatcherFunction(),
-                std::move(cookie_delete_filter), /*perform_cleanup=*/true,
-                base::Time::Min(), base::Time::Max(), std::move(cb));
-          },
-          base::Passed(std::move(callback))));
+      [&](content::StoragePartition* partition) {
+        auto cookie_delete_filter = network::mojom::CookieDeletionFilter::New();
+        cookie_delete_filter->session_control =
+            network::mojom::CookieDeletionSessionControl::IGNORE_CONTROL;
+        partition->ClearData(
+            remove_data_mask,
+            content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+            /*filter_builder=*/nullptr,
+            content::StoragePartition::StorageKeyPolicyMatcherFunction(),
+            std::move(cookie_delete_filter), /*perform_cleanup=*/true,
+            base::Time::Min(), base::Time::Max(), std::move(callback));
+      });
 }
 
 bool CastWebService::IsCastWebUIOrigin(const url::Origin& origin) {

@@ -5,7 +5,10 @@
 #include "components/permissions/object_permission_context_base.h"
 
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/features.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -23,11 +26,14 @@ const char* kRequiredKey2 = "key-2";
 
 class TestObjectPermissionContext : public ObjectPermissionContextBase {
  public:
-  // This class uses the USB content settings type for testing purposes only.
-  explicit TestObjectPermissionContext(content::BrowserContext* browser_context)
+  // This class uses the File System Access content settings type for testing
+  // purposes only.
+  explicit TestObjectPermissionContext(ContentSettingsType guard_type,
+                                       ContentSettingsType data_type,
+                                       content::BrowserContext* browser_context)
       : ObjectPermissionContextBase(
-            ContentSettingsType::USB_GUARD,
-            ContentSettingsType::USB_CHOOSER_DATA,
+            guard_type,
+            data_type,
             PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
   ~TestObjectPermissionContext() override = default;
 
@@ -55,7 +61,13 @@ class ObjectPermissionContextBaseTest : public testing::Test {
         url2_("https://chromium.org"),
         origin1_(url::Origin::Create(url1_)),
         origin2_(url::Origin::Create(url2_)),
-        context_(browser_context()) {
+        context_(ContentSettingsType::USB_GUARD,
+                 ContentSettingsType::USB_CHOOSER_DATA,
+                 browser_context()),
+        file_system_access_context_(
+            ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+            ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+            browser_context()) {
     object1_.Set(kRequiredKey1, "value1");
     object1_.Set(kRequiredKey2, "value2");
     object2_.Set(kRequiredKey1, "value3");
@@ -79,6 +91,7 @@ class ObjectPermissionContextBaseTest : public testing::Test {
   base::Value::Dict object1_;
   base::Value::Dict object2_;
   TestObjectPermissionContext context_;
+  TestObjectPermissionContext file_system_access_context_;
 };
 
 TEST_F(ObjectPermissionContextBaseTest, GrantAndRevokeObjectPermissions) {
@@ -191,6 +204,28 @@ TEST_F(ObjectPermissionContextBaseTest,
   EXPECT_EQ(1u, objects.size());
   EXPECT_EQ(object2_, objects[0]->value);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ObjectPermissionContextBaseTest, GrantObjectPermission_SetsConstraints) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kRecordChooserPermissionLastVisitedTimestamps}, {});
+
+  base::Time now = base::Time::Now();
+  file_system_access_context_.GrantObjectPermission(origin1_, object1_.Clone());
+
+  auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
+  content_settings::SettingInfo info;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    hcsm->GetWebsiteSetting(
+        origin1_.GetURL(), GURL(),
+        ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, &info);
+    auto timestamp = info.metadata.last_visited();
+    // The last_visited should lie between today and a week ago.
+    return timestamp >= (now - base::Days(7)) && timestamp <= now;
+  })) << "Timeout waiting for saving grant object";
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ObjectPermissionContextBaseTest, GetOriginsWithGrants) {
   MockPermissionObserver mock_observer;

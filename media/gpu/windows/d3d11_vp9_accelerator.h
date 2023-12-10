@@ -38,9 +38,6 @@ class D3D11VP9Accelerator : public D3DAccelerator,
 
   bool NeedsCompressedHeaderParsed() const override;
 
-  bool GetFrameContext(scoped_refptr<VP9Picture> picture,
-                       Vp9FrameContext* frame_context) override;
-
  private:
   // Helper methods for SubmitDecode
   bool BeginFrame(const D3D11VP9Picture& pic);

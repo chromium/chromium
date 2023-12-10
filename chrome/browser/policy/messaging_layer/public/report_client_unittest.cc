@@ -36,6 +36,7 @@
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/test_storage_module.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -66,7 +67,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
                                    signature_verification_public_key_);
       // Create decryption module.
       auto decryptor_result = test::Decryptor::Create();
-      ASSERT_TRUE(decryptor_result.has_value()) << decryptor_result.error();
+      ASSERT_OK(decryptor_result) << decryptor_result.error();
       decryptor_ = std::move(decryptor_result.value());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
@@ -198,41 +199,44 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     std::string public_key;
     base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
                        &public_key);
-    encryption_settings.Set("publicKey", public_key);
-    encryption_settings.Set("publicKeyId",
+    encryption_settings.Set(json_keys::kPublicKey, public_key);
+    encryption_settings.Set(json_keys::kPublicKeyId,
                             signed_encryption_key_.public_key_id());
     std::string public_key_signature;
     base::Base64Encode(signed_encryption_key_.signature(),
                        &public_key_signature);
-    encryption_settings.Set("publicKeySignature", public_key_signature);
+    encryption_settings.Set(json_keys::kPublicKeySignature,
+                            public_key_signature);
     base::Value::Dict response;
-    response.Set("encryptionSettings", std::move(encryption_settings));
+    response.Set(json_keys::kEncryptionSettings,
+                 std::move(encryption_settings));
     return response;
   }
 
   void VerifyDataUpload(base::Value::Dict payload) {
-    base::Value::List* const records = payload.FindList("encryptedRecord");
+    base::Value::List* const records =
+        payload.FindList(json_keys::kEncryptedRecordList);
     ASSERT_THAT(records, Ne(nullptr));
     ASSERT_THAT(*records, SizeIs(1));
     const base::Value::Dict& record = (*records)[0].GetDict();
     if (is_encryption_enabled()) {
       const base::Value::Dict* const encryption_info =
-          record.FindDict("encryptionInfo");
+          record.FindDict(json_keys::kEncryptionInfo);
       ASSERT_THAT(encryption_info, Ne(nullptr));
       const std::string* const encryption_key =
-          encryption_info->FindString("encryptionKey");
+          encryption_info->FindString(json_keys::kEncryptionKey);
       ASSERT_THAT(encryption_key, Ne(nullptr));
       const std::string* const public_key_id =
-          encryption_info->FindString("publicKeyId");
+          encryption_info->FindString(json_keys::kPublicKeyId);
       ASSERT_THAT(public_key_id, Ne(nullptr));
       int64_t key_id;
       ASSERT_TRUE(base::StringToInt64(*public_key_id, &key_id));
       EXPECT_THAT(key_id, Eq(signed_encryption_key_.public_key_id()));
     } else {
-      ASSERT_FALSE(record.contains("encryptionInfo"));
+      ASSERT_FALSE(record.contains(json_keys::kEncryptionInfo));
     }
     const base::Value::Dict* const seq_info =
-        record.FindDict("sequenceInformation");
+        record.FindDict(json_keys::kSequenceInformation);
     ASSERT_THAT(seq_info, Ne(nullptr));
   }
 

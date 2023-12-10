@@ -28,8 +28,7 @@ import java.util.Set;
  * This class enforces that it is only used on the launcher thread other than during init.
  */
 public class ChildProcessConnectionMetrics {
-    @VisibleForTesting
-    private static final long INITIAL_EMISSION_DELAY_MS = 60 * 1000; // 1 min.
+    @VisibleForTesting private static final long INITIAL_EMISSION_DELAY_MS = 60 * 1000; // 1 min.
     private static final long REGULAR_EMISSION_DELAY_MS = 5 * 60 * 1000; // 5 min.
 
     private static ChildProcessConnectionMetrics sInstance;
@@ -44,10 +43,11 @@ public class ChildProcessConnectionMetrics {
 
     @VisibleForTesting
     ChildProcessConnectionMetrics() {
-        mEmitMetricsRunnable = () -> {
-            emitMetrics();
-            postEmitMetrics(REGULAR_EMISSION_DELAY_MS);
-        };
+        mEmitMetricsRunnable =
+                () -> {
+                    emitMetrics();
+                    postEmitMetrics(REGULAR_EMISSION_DELAY_MS);
+                };
     }
 
     public static ChildProcessConnectionMetrics getInstance() {
@@ -94,34 +94,41 @@ public class ChildProcessConnectionMetrics {
 
     private void cancelEmitting() {
         assert ThreadUtils.runningOnUiThread();
-        LauncherThread.post(() -> { LauncherThread.removeCallbacks(mEmitMetricsRunnable); });
+        LauncherThread.post(
+                () -> {
+                    LauncherThread.removeCallbacks(mEmitMetricsRunnable);
+                });
     }
 
     private void registerActivityStateListenerAndStartEmitting() {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            assert ThreadUtils.runningOnUiThread();
-            mApplicationInForegroundOnUiThread = ApplicationStatus.getStateForApplication()
-                            == ApplicationState.HAS_RUNNING_ACTIVITIES
-                    || ApplicationStatus.getStateForApplication()
-                            == ApplicationState.HAS_PAUSED_ACTIVITIES;
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    assert ThreadUtils.runningOnUiThread();
+                    mApplicationInForegroundOnUiThread =
+                            ApplicationStatus.getStateForApplication()
+                                            == ApplicationState.HAS_RUNNING_ACTIVITIES
+                                    || ApplicationStatus.getStateForApplication()
+                                            == ApplicationState.HAS_PAUSED_ACTIVITIES;
 
-            ApplicationStatus.registerApplicationStateListener(newState -> {
-                switch (newState) {
-                    case ApplicationState.UNKNOWN:
-                        break;
-                    case ApplicationState.HAS_RUNNING_ACTIVITIES:
-                    case ApplicationState.HAS_PAUSED_ACTIVITIES:
-                        if (!mApplicationInForegroundOnUiThread) onForegrounded();
-                        break;
-                    default:
-                        if (mApplicationInForegroundOnUiThread) onBackgrounded();
-                        break;
-                }
-            });
-            if (mApplicationInForegroundOnUiThread) {
-                startEmitting();
-            }
-        });
+                    ApplicationStatus.registerApplicationStateListener(
+                            newState -> {
+                                switch (newState) {
+                                    case ApplicationState.UNKNOWN:
+                                        break;
+                                    case ApplicationState.HAS_RUNNING_ACTIVITIES:
+                                    case ApplicationState.HAS_PAUSED_ACTIVITIES:
+                                        if (!mApplicationInForegroundOnUiThread) onForegrounded();
+                                        break;
+                                    default:
+                                        if (mApplicationInForegroundOnUiThread) onBackgrounded();
+                                        break;
+                                }
+                            });
+                    if (mApplicationInForegroundOnUiThread) {
+                        startEmitting();
+                    }
+                });
     }
 
     private void onForegrounded() {
@@ -184,7 +191,9 @@ public class ChildProcessConnectionMetrics {
             }
         }
 
-        assert strongBindingCount + visibleBindingCount + notPerceptibleBindingCount
+        assert strongBindingCount
+                        + visibleBindingCount
+                        + notPerceptibleBindingCount
                         + waivedBindingCount
                 == mConnections.size();
         final int totalConnections = mConnections.size();

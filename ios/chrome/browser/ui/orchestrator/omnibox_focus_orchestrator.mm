@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
@@ -103,14 +103,26 @@
 
   if (animated) {
     // Prepare for animation.
-    [self.locationBarAnimatee offsetTextFieldToMatchSteadyView];
+    BOOL shouldCrossfadeEditAndSteadyViews =
+        _trigger != OmniboxFocusTrigger::kUnpinnedLargeFakebox;
+    if (shouldCrossfadeEditAndSteadyViews) {
+      [self.locationBarAnimatee offsetTextFieldToMatchSteadyView];
+      [self.locationBarAnimatee setEditViewFaded:YES];
+    } else {
+      // If focus trigger is the unpinned fakebox, the edit view will appear
+      // in-place (without animation) and the steady view will not slide and
+      // fade out - it will be hidden from the start.
+      [self.locationBarAnimatee resetTextFieldOffsetAndOffsetSteadyViewToMatch];
+      [self.locationBarAnimatee setEditViewFaded:NO];
+      [self.locationBarAnimatee setSteadyViewFaded:YES];
+    }
+
     // Hide badge view before the transform regardless of current displayed
     // state to prevent it from being visible outside of the location bar as the
     // steadView moves outside to the leading side of the location bar.
     [self.locationBarAnimatee hideSteadyViewBadgeView];
     // Make edit view transparent, but not hidden.
     [self.locationBarAnimatee setEditViewHidden:NO];
-    [self.locationBarAnimatee setEditViewFaded:YES];
     [self.editViewAnimatee setLeadingIconScale:0];
     [self.editViewAnimatee setClearButtonFaded:YES];
 
@@ -119,29 +131,31 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          [self.locationBarAnimatee
-                  resetTextFieldOffsetAndOffsetSteadyViewToMatch];
+          if (shouldCrossfadeEditAndSteadyViews) {
+            [self.locationBarAnimatee
+                    resetTextFieldOffsetAndOffsetSteadyViewToMatch];
 
-          // Fading the views happens with a different timing for a better
-          // visual effect. The steady view looks like an ordinary label, and it
-          // fades before the animation is complete. The edit view will be in
-          // pre-edit state, so it looks like selected text. Since the selection
-          // is blue, it looks overwhelming if faded in at the same time as the
-          // steady view. So it fades in faster and later into the animation to
-          // look better.
-          [UIView addKeyframeWithRelativeStartTime:0.1
-                                  relativeDuration:0.8
-                                        animations:^{
-                                          [self.locationBarAnimatee
-                                              setSteadyViewFaded:YES];
-                                        }];
+            // Fading the views happens with a different timing for a better
+            // visual effect. The steady view looks like an ordinary label, and
+            // it fades before the animation is complete. The edit view will be
+            // in pre-edit state, so it looks like selected text. Since the
+            // selection is blue, it looks overwhelming if faded in at the same
+            // time as the steady view. So it fades in faster and later into the
+            // animation to look better.
+            [UIView addKeyframeWithRelativeStartTime:0.1
+                                    relativeDuration:0.8
+                                          animations:^{
+                                            [self.locationBarAnimatee
+                                                setSteadyViewFaded:YES];
+                                          }];
 
-          [UIView addKeyframeWithRelativeStartTime:0.4
-                                  relativeDuration:0.6
-                                        animations:^{
-                                          [self.locationBarAnimatee
-                                              setEditViewFaded:NO];
-                                        }];
+            [UIView addKeyframeWithRelativeStartTime:0.4
+                                    relativeDuration:0.6
+                                          animations:^{
+                                            [self.locationBarAnimatee
+                                                setEditViewFaded:NO];
+                                          }];
+          }
 
           // Scale the leading icon in with a slight bounce / spring.
           [UIView addKeyframeWithRelativeStartTime:0

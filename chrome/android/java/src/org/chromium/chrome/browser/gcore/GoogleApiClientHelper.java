@@ -67,8 +67,7 @@ import org.chromium.base.ThreadUtils;
  * }
  * </pre>
  */
-public class GoogleApiClientHelper
-        implements OnConnectionFailedListener, ConnectionCallbacks {
+public class GoogleApiClientHelper implements OnConnectionFailedListener, ConnectionCallbacks {
     private static final String TAG = "GCore";
 
     private int mResolutionAttempts;
@@ -179,14 +178,15 @@ public class GoogleApiClientHelper
     void scheduleDisconnection() {
         cancelPendingDisconnection();
 
-        mPendingDisconnect = new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "Disconnect delay expired.");
-                mPendingDisconnect = null;
-                disconnect();
-            }
-        };
+        mPendingDisconnect =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "Disconnect delay expired.");
+                        mPendingDisconnect = null;
+                        disconnect();
+                    }
+                };
 
         mHandler.postDelayed(mPendingDisconnect, mDisconnectionDelayMs);
     }
@@ -210,22 +210,30 @@ public class GoogleApiClientHelper
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         if (!isErrorRecoverableByRetrying(result.getErrorCode())) {
-            Log.d(TAG, "Not retrying managed client connection. Unrecoverable error: %d",
+            Log.d(
+                    TAG,
+                    "Not retrying managed client connection. Unrecoverable error: %d",
                     result.getErrorCode());
             return;
         }
 
         if (mResolutionAttempts < ConnectedTask.RETRY_NUMBER_LIMIT) {
-            Log.d(TAG, "Retrying managed client connection. attempt %d/%d - errorCode: %d",
-                    mResolutionAttempts, ConnectedTask.RETRY_NUMBER_LIMIT, result.getErrorCode());
+            Log.d(
+                    TAG,
+                    "Retrying managed client connection. attempt %d/%d - errorCode: %d",
+                    mResolutionAttempts,
+                    ConnectedTask.RETRY_NUMBER_LIMIT,
+                    result.getErrorCode());
             mResolutionAttempts += 1;
 
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mClient.connect();
-                }
-            }, ConnectedTask.CONNECTION_RETRY_TIME_MS);
+            mHandler.postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mClient.connect();
+                        }
+                    },
+                    ConnectedTask.CONNECTION_RETRY_TIME_MS);
         }
     }
 

@@ -124,6 +124,11 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
 
   if (should_notify_initialized) {
     DCHECK_NE(apps::AppType::kUnknown, app_type);
+
+    for (auto& obs : observers_) {
+      obs.OnAppsInitialized(deltas, app_type);
+    }
+
     if (!IsAppTypeInitialized(app_type)) {
       in_progress_initialized_app_types_.insert(app_type);
     }

@@ -383,7 +383,7 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatShownForMultipleMonitors) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   tablet_mode_controller->SetEnabledForTest(true);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   ShowToast("DUMMY", ToastData::kInfiniteDuration);
 
@@ -409,7 +409,7 @@ TEST_P(ToastManagerImplTest, ShutdownWithExtendedHotseat) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
@@ -466,7 +466,7 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   tablet_mode_controller->SetEnabledForTest(true);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
@@ -504,7 +504,7 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatExtendedOnAnotherMonitor) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   tablet_mode_controller->SetEnabledForTest(true);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   // Create two windows, one on each display. The window creation order should
   // result in the window on the primary display being active.

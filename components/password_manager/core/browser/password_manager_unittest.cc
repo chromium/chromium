@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -48,8 +49,8 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -67,12 +68,15 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/os_crypt_mocker.h"
+#endif
 
 using ServerPrediction = autofill::AutofillType::ServerPrediction;
 using autofill::FieldGlobalId;
@@ -267,7 +271,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   mutable FakeNetworkContext network_context_;
   testing::NiceMock<MockStoreResultFilter> filter_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
-  absl::optional<std::vector<PasskeyCredential>> passkeys_;
+  std::optional<std::vector<PasskeyCredential>> passkeys_;
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -438,6 +442,11 @@ class PasswordManagerTest : public testing::Test {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     prefs_->registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+#endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    OSCryptMocker::SetUp();
+    prefs_->registry()->RegisterIntegerPref(
+        password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
 #endif
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(prefs_.get()));
 
@@ -3273,8 +3282,8 @@ namespace {
 
 // A convenience helper for type conversions.
 template <typename T>
-absl::optional<int64_t> MetricValue(T value) {
-  return absl::optional<int64_t>(static_cast<int64_t>(value));
+std::optional<int64_t> MetricValue(T value) {
+  return std::optional<int64_t>(static_cast<int64_t>(value));
 }
 
 struct MissingFormManagerTestCase {
@@ -3289,8 +3298,8 @@ struct MissingFormManagerTestCase {
   // A list of forms to be processed for saving, one at a time.
   std::vector<FormData> processed_form_data;
   // The expected value of the PageWithPassword::kFormManagerAvailableName
-  // metric, or absl::nullopt if no value should be logged.
-  absl::optional<int64_t> expected_metric_value;
+  // metric, or std::nullopt if no value should be logged.
+  std::optional<int64_t> expected_metric_value;
 };
 
 }  // namespace
@@ -3359,7 +3368,7 @@ TEST_F(PasswordManagerTest, ReportMissingFormManager) {
           .save_signal = MissingFormManagerTestCase::Signal::None,
           .parsed_forms_data = {},
           .processed_form_data = {},
-          .expected_metric_value = absl::nullopt,
+          .expected_metric_value = std::nullopt,
       },
       {
           .description = "Not enabled, no report.",
@@ -3367,7 +3376,7 @@ TEST_F(PasswordManagerTest, ReportMissingFormManager) {
           .save_signal = MissingFormManagerTestCase::Signal::Automatic,
           .parsed_forms_data = {form_data},
           .processed_form_data = {form_data},
-          .expected_metric_value = absl::nullopt,
+          .expected_metric_value = std::nullopt,
       },
   };
 
@@ -4287,8 +4296,9 @@ TEST_F(PasswordManagerTest,
       /*is_likely_otp=*/false);
 
   // Make single username form stale by fast forwarding time.
-  task_environment_.FastForwardBy(kPossibleUsernameExtendedExpirationTimeout +
-                                  base::Seconds(5));
+  task_environment_.FastForwardBy(
+      base::Minutes(features::kSingleUsernameTimeToLive.Get()) +
+      base::Seconds(5));
   EXPECT_TRUE(manager()->possible_usernames().begin()->second.IsStale());
 
   // Simulate that a password form which contains no username, but other text
@@ -4448,6 +4458,45 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(saved_form.signon_realm,
                                ElementsAre(FormMatches(saved_form)))));
+}
+
+// Tests that LRU cache entries storing username candidates outside of the
+// password form are not cleared up after user keystroke.
+TEST_F(PasswordManagerTest, UsernameFirstFlowKeepServerPredictions) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(test_form_url_))
+      .WillRepeatedly(Return(true));
+
+  // Simulate the user typed in a username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  std::u16string username = u"newusername@gmail.com";
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  // Received server prediction.
+  manager()->ProcessAutofillPredictions(
+      &driver_, username_form.form_data,
+      CreateServerPredictions(username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}},
+                              /*is_override=*/false));
+
+  // User modifies the string further.
+  username = u"newusername+spam@gmail.com";
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  // Check that server predictions are written to the candidate and kept.
+  ASSERT_FALSE(manager()->possible_usernames().empty());
+  EXPECT_TRUE(manager()
+                  ->possible_usernames()
+                  .begin()
+                  ->second.HasSingleUsernameServerPrediction());
 }
 
 // Tests that Password Manager's behavior on usernames outside of the password
@@ -5366,8 +5415,8 @@ class PasswordManagerWithOtpVariationsTest
     : public PasswordManagerTest,
       public testing::WithParamInterface<std::tuple<
           /*saved_form.username=*/std::u16string,
-          /*saved_form.password=*/absl::optional<std::u16string>,
-          /*another_saved_form.password_value=*/absl::optional<std::u16string>,
+          /*saved_form.password=*/std::optional<std::u16string>,
+          /*another_saved_form.password_value=*/std::optional<std::u16string>,
           /*one_time_code_form.username_value=*/std::u16string,
           PredictionSource>> {
  protected:
@@ -5388,8 +5437,8 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
-  absl::optional<PasswordForm> saved_form;
-  absl::optional<PasswordForm> another_saved_form;
+  std::optional<PasswordForm> saved_form;
+  std::optional<PasswordForm> another_saved_form;
   // No saved password means no saved credential.
   if (saved_form_password.has_value()) {
     saved_form = PasswordForm();
@@ -5410,7 +5459,7 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
           another_saved_form_password.value();
       store_->AddLogin(another_saved_form.value());
     } else {
-      another_saved_form = absl::nullopt;
+      another_saved_form = std::nullopt;
     }
   }
 
@@ -5541,8 +5590,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PasswordManagerWithOtpVariationsTest,
     testing::Combine(testing::Values(u"", u"username"),
-                     testing::Values(u"password", absl::nullopt),
-                     testing::Values(u"another_password", absl::nullopt),
+                     testing::Values(u"password", std::nullopt),
+                     testing::Values(u"another_password", std::nullopt),
                      testing::Values(u"", u"username", u"+1 650 000 000"),
                      testing::Values(PredictionSource::ID_ATTRIBUTE,
                                      PredictionSource::NAME_ATTRIBUTE,

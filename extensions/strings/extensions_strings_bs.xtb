@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ups! Generiranje nasumičnog RSA privatnog ključa nije uspjelo.</translation>
 <translation id="1445572445564823378">Ova ekstenzija usporava aplikaciju <ph name="PRODUCT_NAME" />. Trebate je onemogućiti kako biste vratili performanse aplikacije <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Sistem ne podržava WebGL</translation>
+<translation id="1610570795592207282">Učitavanje CSS-a "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu s pozadinama "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Dekodiranje slike nije uspjelo: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Korištena je lokalizacija, ali u deklaraciji nije naveden default_locale.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamjena crx fajla nije uspjela. Provjerite je li fajl upotrebi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Učitavanje css fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo.</translation>
 <translation id="3369521687965833290">Nije moguće otpakirati ekstenziju.  Za sigurno otpakivanje ekstenzije, mora postojati putanja do direktorija vašeg profila koja počinje slovom diska i koja ne sadrži spoj, tačku aktiviranja ili simbolični link.  Za vaš profil ne postoji takva putanja.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrijednost za privatni ključ mora biti važeća putanja.</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu s opcijama "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja ekstenzije.</translation>
-<translation id="39964277676607559">Učitavanje javascripte '<ph name="RELATIVE_PATH" />' za skriptu sadržaja nije uspjelo.</translation>
 <translation id="4115165561519362854">Administrator ove mašine zahtijeva da verzija ekstenzije <ph name="EXTENSION_NAME" /> bude minimalno <ph name="EXTENSION_VERSION" />. Ona ne može biti omogućena dok se ne ažurira na tu verziju (ili noviju).</translation>
 <translation id="4233778200880751280">Nije moguće učitati stranicu s informacijama "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Isporuka privatnog ključa nije uspjela.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspio.</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorija za pakiranje.</translation>
+<translation id="5160071981665899014">Učitavanje JavaScripta "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Oblikovanje prozora nije podržano.</translation>
 <translation id="5456409301717116725">Ova ekstenzija uključuje fajl s ključem "<ph name="KEY_PATH" />". Vjerovatno to ne želite učiniti.</translation>

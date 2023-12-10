@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/discover_feed/feed_constants.h"
+#include "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
 // Commands related to the new tab page.
 @protocol NewTabPageCommands

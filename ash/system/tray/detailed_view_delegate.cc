@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/detailed_view_delegate.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -50,11 +49,9 @@ gfx::Insets DetailedViewDelegate::GetScrollViewMargin() const {
 // unique pointers.
 views::Button* DetailedViewDelegate::CreateBackButton(
     views::Button::PressedCallback callback) {
-  return new IconButton(
-      std::move(callback),
-      features::IsQsRevampEnabled() ? IconButton::Type::kMedium
-                                    : IconButton::Type::kMediumFloating,
-      &kQuickSettingsLeftArrowIcon, IDS_ASH_STATUS_TRAY_PREVIOUS_MENU);
+  return new IconButton(std::move(callback), IconButton::Type::kMedium,
+                        &kQuickSettingsLeftArrowIcon,
+                        IDS_ASH_STATUS_TRAY_PREVIOUS_MENU);
 }
 
 views::Button* DetailedViewDelegate::CreateInfoButton(

@@ -34,13 +34,13 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
   bool ValidateValues(
       const PayloadProto& policy_payload,
       std::vector<ValueValidationIssue>* out_validation_issues) const override {
-    absl::optional<std::string> onc_string =
+    std::optional<std::string> onc_string =
         GetONCStringFromPayload(policy_payload);
 
     if (!onc_string.has_value())
       return true;
 
-    absl::optional<base::Value::Dict> root_dict =
+    std::optional<base::Value::Dict> root_dict =
         chromeos::onc::ReadDictionaryFromJson(onc_string.value());
     if (!root_dict.has_value()) {
       out_validation_issues->push_back({policy_name_,
@@ -74,7 +74,7 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
   }
 
  protected:
-  virtual absl::optional<std::string> GetONCStringFromPayload(
+  virtual std::optional<std::string> GetONCStringFromPayload(
       const PayloadProto& policy_payload) const = 0;
 
  private:

@@ -5,10 +5,11 @@
 #ifndef ASH_COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
 #define ASH_COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
 
+#include <optional>
+
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -41,13 +42,13 @@ class StabilityMetricsManager {
   void ResetMetrics();
 
   // Returns current persisted value (if exists) for Arc.State UMA histogram.
-  absl::optional<bool> GetArcEnabledState();
+  std::optional<bool> GetArcEnabledState();
 
   // Sets value for Arc.State UMA histogram.
   void SetArcEnabledState(bool enabled);
 
   // Returns current persisted value (if exists) for Arc.State UMA histogram.
-  absl::optional<NativeBridgeType> GetArcNativeBridgeType();
+  std::optional<NativeBridgeType> GetArcNativeBridgeType();
 
   // Sets value for Arc.NativeBridgeType UMA histogram.
   void SetArcNativeBridgeType(NativeBridgeType native_bridge_type);

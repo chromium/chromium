@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/commander/simple_command_source.h"
 
+#include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
@@ -84,7 +84,7 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
     if (!chrome::IsCommandEnabled(browser, command_spec.id))
       continue;
     std::u16string title = command_spec.title;
-    base::Erase(title, '&');
+    std::erase(title, '&');
     double score = finder.Find(title, &ranges);
     if (score == 0)
       continue;

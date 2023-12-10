@@ -11,9 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
 
-/**
- * Helper class to decode and sample down bitmap resources.
- */
+/** Helper class to decode and sample down bitmap resources. */
 @JNINamespace("gfx")
 public class BitmapHelper {
     private static final String TAG = "BitmapHelper";

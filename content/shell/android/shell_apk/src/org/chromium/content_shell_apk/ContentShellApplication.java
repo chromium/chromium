@@ -29,9 +29,11 @@ public class ContentShellApplication extends Application {
         boolean isBrowserProcess = !ContextUtils.getProcessName().contains(":");
         ContextUtils.initApplicationContext(this);
         ResourceBundle.setNoAvailableLocalePaks();
-        LibraryLoader.getInstance().setLibraryProcessType(isBrowserProcess
-                        ? LibraryProcessType.PROCESS_BROWSER
-                        : LibraryProcessType.PROCESS_CHILD);
+        LibraryLoader.getInstance()
+                .setLibraryProcessType(
+                        isBrowserProcess
+                                ? LibraryProcessType.PROCESS_BROWSER
+                                : LibraryProcessType.PROCESS_CHILD);
         if (isBrowserProcess) {
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             ApplicationStatus.initialize(this);

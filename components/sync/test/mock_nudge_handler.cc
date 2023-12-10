@@ -6,8 +6,7 @@
 
 namespace syncer {
 
-MockNudgeHandler::MockNudgeHandler()
-    : num_initial_nudges_(0), num_commit_nudges_(0) {}
+MockNudgeHandler::MockNudgeHandler() = default;
 
 MockNudgeHandler::~MockNudgeHandler() = default;
 

@@ -128,8 +128,11 @@ TEST(WebAuthenticationJSONConversionTest,
       blink::mojom::RemoteDesktopClientOverride::New(
           url::Origin::Create(GURL(kOrigin)),
           /*same_origin_with_ancestors=*/true),
-      // TODO(crbug.com/1356340): support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+      blink::mojom::SupplementalPubKeysRequest::New(
+          /*device_scope_requested=*/true,
+          /*provider_scope_requested=*/true,
+          device::AttestationConveyancePreference::kDirect,
+          std::vector<std::string>({"a", "b", "c"})));
 
   base::Value value = ToValue(options);
   std::string json;
@@ -137,7 +140,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -169,8 +172,11 @@ TEST(WebAuthenticationJSONConversionTest,
           blink::mojom::RemoteDesktopClientOverride::New(
               url::Origin::Create(GURL(kOrigin)),
               /*same_origin_with_ancestors=*/true),
-          // TODO: support devicePubKey in JSON when it's stable.
-          /*device_public_key=*/nullptr));
+          blink::mojom::SupplementalPubKeysRequest::New(
+              /*device_scope_requested=*/true,
+              /*provider_scope_requested=*/true,
+              device::AttestationConveyancePreference::kDirect,
+              std::vector<std::string>({"a", "b", "c"}))));
 
   base::Value value = ToValue(options);
   std::string json;
@@ -178,7 +184,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"rpId":"example.test","userVerification":"required"})");
+      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"rpId":"example.test","userVerification":"required"})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -247,6 +253,9 @@ TEST(WebAuthenticationJSONConversionTest,
         "first": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "second": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE"
       }
+    },
+    "supplementalPubKeys": {
+      "signatures": ["ABCD", "EFGH"]
     }
   },
   "id": "dGVzdCBpZA",
@@ -302,8 +311,9 @@ TEST(WebAuthenticationJSONConversionTest,
       /*echo_cred_props=*/true, /*has_cred_props_rk=*/true,
       /*cred_props_rk=*/true, /*echo_large_blob=*/true,
       /*supports_large_blob=*/true,
-      // TODO: support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+      /*supplemental_pub_keys=*/
+      blink::mojom::SupplementalPubKeysResponse::New(
+          std::vector<std::vector<uint8_t>>({{0, 16, 131}, {16, 81, 135}})));
 
   EXPECT_EQ(response->info, expected->info);
   EXPECT_EQ(response->authenticator_attachment,
@@ -531,6 +541,9 @@ TEST(WebAuthenticationJSONConversionTest,
         "first": "mZ0wKXvFA3ule4G8-CezRxvoP4Bn9vuLZD0Ka80JTH0",
         "second": "zfLUaH8wtbWPmGOYySfBjNehFIvhUZQduKXlOH6c9EI"
       }
+    },
+    "supplementalPubKeys": {
+      "signatures": ["ABCD", "EFGH"]
     }
   },
   "id": "dGVzdCBpZA",
@@ -576,8 +589,10 @@ TEST(WebAuthenticationJSONConversionTest,
           /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
           /*large_blob_written=*/true,
           /*get_cred_blob=*/kCredBlob,
-          // TODO: support devicePubKey in JSON when it's stable.
-          /*device_public_key=*/nullptr));
+          /*supplemental_pub_keys=*/
+          blink::mojom::SupplementalPubKeysResponse::New(
+              std::vector<std::vector<uint8_t>>(
+                  {{0, 16, 131}, {16, 81, 135}}))));
   static const uint8_t expected_prf_first[32] = {
       0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,
       0xbc, 0xf8, 0x27, 0xb3, 0x47, 0x1b, 0xe8, 0x3f, 0x80, 0x67, 0xf6,
@@ -616,6 +631,8 @@ TEST(WebAuthenticationJSONConversionTest,
             expected->extensions->large_blob_written);
   EXPECT_EQ(response->extensions->get_cred_blob,
             expected->extensions->get_cred_blob);
+  EXPECT_EQ(response->extensions->supplemental_pub_keys,
+            expected->extensions->supplemental_pub_keys);
   // Produce a failure even if the list above is missing any fields. But this
   // will not print any meaningful error. `prf_values` has to be cleared
   // because a pointer comparison will be performed for it.

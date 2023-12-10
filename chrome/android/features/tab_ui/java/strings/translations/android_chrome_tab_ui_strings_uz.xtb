@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
+<translation id="1155815720264022949">Eski varaqlar yopilsinmi?</translation>
 <translation id="1215127405478249895">Varaqlarni koʻrish</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
 <translation id="1499635324672558517">Barcha Inkognito varaqlar yopilsinmi?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
 <translation id="5082793167783849073">Sahifalarni guruhlab, tezkor solishtiring. Boshlash uchun havolani uzoq bosib turing.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Sizda yaqinda ishlatilmagan <ph name="TABS_COUNT_ONE" /> ta varaq bor}other{Sizda yaqinda ishlatilmagan <ph name="TABS_COUNT_MANY" /> ta varaq bor}}</translation>
 <translation id="5339733443032484186">Oxirgi varaq</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
+<translation id="5545379293264651575">Tekshirmasdan yopish</translation>
 <translation id="5556417849629758491">Doʻkon axboroti ekranning yuqori qismida chiqadi</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yopish</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ta varaq guruhlandi</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Varaqni oʻngga siljitish</translation>
 <translation id="7966321538264951561">Bildirgilarni yopish</translation>
 <translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
-<translation id="814503310257431685">Hammasi</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni yopish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni yopish}}</translation>
 <translation id="8398929769197326728">Yangi jild - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

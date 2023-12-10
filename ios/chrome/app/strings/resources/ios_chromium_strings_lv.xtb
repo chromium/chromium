@@ -87,6 +87,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="4195557071150719219">Skatīt pārlūkā Chromium nesen atvērtās cilnes</translation>
 <translation id="4408912345039114853">Chromium drošības pārbaudes veikšana</translation>
 <translation id="4432744876818348753">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chromium.</translation>
+<translation id="4498832288620833153">Ievadītie URL tiek pievienoti jūsu lasīšanas sarakstam pārlūkā Chromium.</translation>
 <translation id="452436063477828504">Parūpējieties, lai vienmēr varētu izmantot Google kontā saglabātos Chromium datus</translation>
 <translation id="4555020257205549924">Ja šī funkcija ir ieslēgta, Chromium piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Tiek atvērta maksājumu veidu iestatījumu lapa pārlūkā Chromium.</translation>
@@ -107,6 +108,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="5048795749726991615">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chromium automātiskajai aizpildei.</translation>
 <translation id="5076601183701536878">Notīrīt pārlūkošanas datus pārlūkā Chromium</translation>
 <translation id="5131565040785979529">Jūsu organizācija (<ph name="DOMAIN" />) pārvalda kontu, kurā esat pierakstījies, un to, kā tiek izmantots pārlūks Chromium.</translation>
+<translation id="5146749061471423558">Grāmatzīmju pievienošana pārlūkā Chromium</translation>
 <translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>
 <translation id="5213683223491576284">Pārlūkā Chromium tiek atvērts paroļu pārvaldnieks.</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
@@ -114,6 +116,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 
         Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
+<translation id="5311557153294205270">Ievadītie URL tiek pievienoti jūsu grāmatzīmēm pārlūkā Chromium.</translation>
 <translation id="5396916991083608703">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
 <translation id="5453478652154926037">Pārlūkā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
@@ -165,7 +168,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="6911341667534646387">Turpiniet izmantot Google kontā saglabātos Chromium datus</translation>
 <translation id="7006920032187763988">Paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPad planšetdatora lietotnēs.</translation>
 <translation id="7018284295775193585">Nevar atjaunināt pārlūku Chromium.</translation>
-<translation id="7025471822960602362">Izsekot noteiktajām pakām pārlūkā Chromium</translation>
 <translation id="7045244423563602563">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="7055269218854630176">Jūsu organizācija <ph name="DOMAIN" /> pārvalda kontu, kurā pašlaik pierakstāties, un pārlūka Chromium lietošanas iespējas. Administrators var iestatīt vai ierobežot noteiktas funkcijas.</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
@@ -195,6 +197,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7928628054454574139">Tiks atvērts pārlūks Chromium ikreiz, kad pieskarsieties saitēm citās lietotnēs.</translation>
 <translation id="7931842119211730154">Bloķēt inkognito cilnes, kad pārlūks Chromium tiek aizvērts</translation>
 <translation id="7934404985878918282">Skatīt Chromium lasīšanas sarakstu</translation>
+<translation id="7971753607796745700">Pievienot lasīšanas saraksta vienumu pārlūkam Chromium</translation>
 <translation id="7980860476903281594">Chromium kopīgo jūsu atrašanās vietu ar vietnēm, kam atļaujat saņemt šo informāciju.</translation>
 <translation id="7995166854192397899">Ieteikumu pamatā ir pārlūkošanas darbības citās ierīcēs. Lai saņemtu ieteikumus, visās savās ierīcēs pierakstieties pārlūkā Chromium.</translation>
 <translation id="800195749539500647">Izmantojiet pārlūku Chromium pilnvērtīgi</translation>

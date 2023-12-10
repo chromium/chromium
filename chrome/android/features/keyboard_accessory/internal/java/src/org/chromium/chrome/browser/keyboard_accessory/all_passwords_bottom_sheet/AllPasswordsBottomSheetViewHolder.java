@@ -22,7 +22,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 class AllPasswordsBottomSheetViewHolder extends RecyclerView.ViewHolder {
     private final ViewBinder<PropertyModel, View, PropertyKey> mViewBinder;
 
-    AllPasswordsBottomSheetViewHolder(ViewGroup parent, @LayoutRes int layout,
+    AllPasswordsBottomSheetViewHolder(
+            ViewGroup parent,
+            @LayoutRes int layout,
             ViewBinder<PropertyModel, View, PropertyKey> viewBinder) {
         super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
         mViewBinder = viewBinder;

@@ -1,14 +1,12 @@
 This is a testharness.js-based test.
-Found 55 tests; 2 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] e.style['mask'] = "none" should set the property value
+Found 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) luminance" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['mask'] = "url(\"https://web-platform.test/\")" should set the property value
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) 1px 2px" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") 1px 2px / contain" should set the property value
+[FAIL] e.style['mask'] = "url(\\"https://web-platform.test/\\") 1px 2px / contain" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "repeat-y" should set the property value
   assert_not_equals: property should be set got disallowed value ""
@@ -18,7 +16,7 @@ Found 55 tests; 2 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "content-box" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") fill-box" should set the property value
+[FAIL] e.style['mask'] = "url(\\"https://web-platform.test/\\") fill-box" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) stroke-box" should set the property value
   assert_not_equals: property should be set got disallowed value ""
@@ -26,17 +24,17 @@ Found 55 tests; 2 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "no-clip" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") add" should set the property value
+[FAIL] e.style['mask'] = "url(\\"https://web-platform.test/\\") add" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "subtract" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") intersect" should set the property value
+[FAIL] e.style['mask'] = "url(\\"https://web-platform.test/\\") intersect" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) exclude" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "alpha" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") alpha" should set the property value
+[FAIL] e.style['mask'] = "url(\\"https://web-platform.test/\\") alpha" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "border-box border-box" should set the property value
   assert_not_equals: property should be set got disallowed value ""

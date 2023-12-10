@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/values.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
@@ -91,7 +92,7 @@ class ExtensionAction {
 
   // If tab |tab_id| has a set title, return it.  Otherwise, return
   // the default title.
-  std::string GetTitle(int tab_id) const { return GetValue(&title_, tab_id); }
+  std::string GetTitle(int tab_id) const { return GetValue(title_, tab_id); }
 
   // Icons are a bit different because the default value can be set to either a
   // bitmap or a path. However, conceptually, there is only one default icon.
@@ -130,7 +131,7 @@ class ExtensionAction {
   // Get the badge text that has been set using SetBadgeText for a tab, or the
   // default if no badge text was set.
   std::string GetExplicitlySetBadgeText(int tab_id) const {
-    return GetValue(&badge_text_, tab_id);
+    return GetValue(badge_text_, tab_id);
   }
 
   // Set this action's badge text color on a specific tab.
@@ -140,7 +141,7 @@ class ExtensionAction {
   // Get the text color for a tab, or the default color if no text color
   // was set.
   SkColor GetBadgeTextColor(int tab_id) const {
-    return GetValue(&badge_text_color_, tab_id);
+    return GetValue(badge_text_color_, tab_id);
   }
 
   // Set this action's badge background color on a specific tab.
@@ -150,7 +151,7 @@ class ExtensionAction {
   // Get the badge background color for a tab, or the default if no color
   // was set.
   SkColor GetBadgeBackgroundColor(int tab_id) const {
-    return GetValue(&badge_background_color_, tab_id);
+    return GetValue(badge_background_color_, tab_id);
   }
 
   // Set this ExtensionAction's DNR matched action count on a specific tab.
@@ -160,7 +161,7 @@ class ExtensionAction {
   // Get this ExtensionAction's DNR matched action count on a specific tab.
   // Returns -1 if no entry is found.
   int GetDNRActionCount(int tab_id) const {
-    return GetValue(&dnr_action_count_, tab_id);
+    return GetValue(dnr_action_count_, tab_id);
   }
   // Clear this ExtensionAction's DNR matched action count for all tabs.
   void ClearDNRActionCountForAllTabs() { dnr_action_count_.clear(); }
@@ -252,21 +253,11 @@ class ExtensionAction {
     (*map)[tab_id] = val;
   }
 
-  template <class Map>
-  static const typename Map::mapped_type* FindOrNull(
-      const Map* map,
-      const typename Map::key_type& key) {
-    typename Map::const_iterator iter = map->find(key);
-    if (iter == map->end())
-      return NULL;
-    return &iter->second;
-  }
-
   template <class T>
-  T GetValue(const std::map<int, T>* map, int tab_id) const {
-    if (const T* tab_value = FindOrNull(map, tab_id)) {
+  T GetValue(const std::map<int, T>& map, int tab_id) const {
+    if (const T* tab_value = base::FindOrNull(map, tab_id)) {
       return *tab_value;
-    } else if (const T* default_value = FindOrNull(map, kDefaultTabId)) {
+    } else if (const T* default_value = base::FindOrNull(map, kDefaultTabId)) {
       return *default_value;
     } else {
       return ValueTraits<T>::CreateEmpty();

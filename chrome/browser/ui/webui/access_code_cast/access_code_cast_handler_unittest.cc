@@ -369,7 +369,7 @@ TEST_F(AccessCodeCastHandlerTest, OnSinkAddedResult) {
   EXPECT_CALL(mock_callback_failure,
               Run(AddSinkResultCode::CHANNEL_OPEN_ERROR));
   handler()->OnSinkAddedResult(AddSinkResultCode::CHANNEL_OPEN_ERROR,
-                               absl::nullopt);
+                               std::nullopt);
   EXPECT_FALSE(handler()->sink_id_.has_value());
 
   MockAddSinkCallback mock_callback_ok;
@@ -579,7 +579,7 @@ TEST_F(AccessCodeCastHandlerTest, ProfileSyncSuccess) {
           [](const std::string& access_code,
              AccessCodeCastSinkService::AddSinkResultCallback callback) {
             std::move(callback).Run(AddSinkResultCode::UNKNOWN_ERROR,
-                                    absl::nullopt);
+                                    std::nullopt);
           });
   EXPECT_CALL(*access_service(), DiscoverSink(_, _)).Times(1);
   handler()->AddSink(

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -89,6 +91,10 @@ class PermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kFileSystemAccessPersistentPermissions};
 };
 
 // Tests that by default PageInfo has no visible permission.
@@ -117,11 +123,35 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       // Set id to the first children of `kPermissionsElementId` -
       // permissions view in PageInfo.
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       // Verify the row label is Camera
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
+                       FileSystemPermissionsTest) {
+  // Set File System permission to Allow so that it becomes visible in PageInfo.
+  SetPermission(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+                CONTENT_SETTING_ALLOW);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo.
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0),
+      // Verify the row label is File System.
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowTitleForTesting,
+                        l10n_util::GetStringUTF16(
+                            IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE)));
 }
 
 // The test requests Notifications permission, clicks Allow on a permission
@@ -146,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)));
@@ -172,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));

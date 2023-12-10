@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
@@ -9,6 +11,7 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -43,7 +46,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 using ax::mojom::AssistiveTechnologyType;
 
@@ -270,6 +276,27 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   std::string next_utterance_error_ = "";
 };
 
+class TestEventHandler : public ui::EventHandler {
+ public:
+  explicit TestEventHandler(base::RepeatingClosure callback)
+      : callback_(callback) {
+    Shell::Get()->AddPostTargetHandler(this);
+  }
+  ~TestEventHandler() override { Shell::Get()->RemovePostTargetHandler(this); }
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    // Make a copy of the event, so it's valid outside this function context.
+    key_events.push_back(std::make_unique<ui::KeyEvent>(event));
+    callback_.Run();
+  }
+
+  std::vector<std::unique_ptr<ui::KeyEvent>> key_events;
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
 }  // namespace
 
 // Tests for the AccessibilityServiceClientTest using a fake service
@@ -316,6 +343,10 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   AccessibilityServiceClient* Client() {
     AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
     return accessibility_manager->accessibility_service_client_.get();
+  }
+
+  UserInputImpl* UserInputClient() {
+    return Client()->user_input_client_.get();
   }
 
   bool ServiceHasATEnabled(AssistiveTechnologyType type) {
@@ -1350,6 +1381,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
       base::BindLambdaForTesting(
           [&start_waiter](ax::mojom::SpeechRecognitionStartInfoPtr info) {
             EXPECT_EQ(ax::mojom::SpeechRecognitionType::kNetwork, info->type);
+            ASSERT_FALSE(info->observer_or_error->is_error());
             start_waiter.Quit();
           }));
   start_waiter.Run();
@@ -1359,7 +1391,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   fake_service_->RequestSpeechRecognitionStop(
       std::move(stop_options),
-      base::BindLambdaForTesting([&stop_waiter]() { stop_waiter.Quit(); }));
+      base::BindLambdaForTesting(
+          [&stop_waiter](const std::optional<std::string>& error) {
+            ASSERT_FALSE(error.has_value());
+            stop_waiter.Quit();
+          }));
   stop_waiter.Run();
 }
 
@@ -1390,6 +1426,133 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                 }));
       }));
   loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticKeyEventForShortcutOrNavigation) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto key_press_event = ax::mojom::SyntheticKeyEvent::New();
+  key_press_event->type = ui::mojom::EventType::KEY_PRESSED;
+  key_press_event->key_data = ui::mojom::KeyData::New();
+  key_press_event->key_data->key_code = ui::VKEY_P;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key events.
+  key_press_event->key_data->dom_code = 0;
+  key_press_event->key_data->dom_key = 0;
+  key_press_event->key_data->is_char = false;
+
+  auto key_release_event = ax::mojom::SyntheticKeyEvent::New();
+  key_release_event->type = ui::mojom::EventType::KEY_RELEASED;
+  key_release_event->key_data = ui::mojom::KeyData::New();
+  key_release_event->key_data->key_code = ui::VKEY_P;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key
+  // events.
+  key_release_event->key_data->dom_code = 0;
+  key_release_event->key_data->dom_key = 0;
+  key_release_event->key_data->is_char = false;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(
+      base::BindLambdaForTesting([&test_event_handler, &waiter]() {
+        if (test_event_handler.key_events.size() != 2) {
+          return;
+        }
+
+        ui::KeyEvent* press_event = test_event_handler.key_events[0].get();
+        EXPECT_EQ(press_event->type(), ui::ET_KEY_PRESSED);
+        EXPECT_EQ(press_event->code(), ui::DomCode::US_P);
+        EXPECT_FALSE(press_event->IsAltDown());
+        EXPECT_FALSE(press_event->IsCommandDown());
+        EXPECT_FALSE(press_event->IsControlDown());
+        EXPECT_FALSE(press_event->IsShiftDown());
+
+        ui::KeyEvent* release_event = test_event_handler.key_events[1].get();
+        EXPECT_EQ(release_event->type(), ui::ET_KEY_RELEASED);
+        EXPECT_EQ(release_event->code(), ui::DomCode::US_P);
+        EXPECT_FALSE(release_event->IsAltDown());
+        EXPECT_FALSE(release_event->IsCommandDown());
+        EXPECT_FALSE(release_event->IsControlDown());
+        EXPECT_FALSE(release_event->IsShiftDown());
+
+        waiter.Quit();
+      }));
+
+  // Send a press.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_press_event));
+  // Send a release.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_release_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityServiceClientTest,
+    SendSyntheticKeyEventForShortcutOrNavigationWithModifiers) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto key_press_event = ax::mojom::SyntheticKeyEvent::New();
+  key_press_event->type = ui::mojom::EventType::KEY_PRESSED;
+  key_press_event->key_data = ui::mojom::KeyData::New();
+  key_press_event->key_data->key_code = ui::VKEY_S;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key events.
+  key_press_event->key_data->dom_code = 0;
+  key_press_event->key_data->dom_key = 0;
+  key_press_event->key_data->is_char = false;
+  key_press_event->flags =
+      ui::mojom::kEventFlagAltDown | ui::mojom::kEventFlagControlDown |
+      ui::mojom::kEventFlagCommandDown | ui::mojom::kEventFlagShiftDown;
+
+  auto key_release_event = ax::mojom::SyntheticKeyEvent::New();
+  key_release_event->type = ui::mojom::EventType::KEY_RELEASED;
+  key_release_event->key_data = ui::mojom::KeyData::New();
+  key_release_event->key_data->key_code = ui::VKEY_S;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key
+  // events.
+  key_release_event->key_data->dom_code = 0;
+  key_release_event->key_data->dom_key = 0;
+  key_release_event->key_data->is_char = false;
+  key_release_event->flags =
+      ui::mojom::kEventFlagAltDown | ui::mojom::kEventFlagControlDown |
+      ui::mojom::kEventFlagCommandDown | ui::mojom::kEventFlagShiftDown;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(
+      base::BindLambdaForTesting([&test_event_handler, &waiter]() {
+        if (test_event_handler.key_events.size() != 2) {
+          return;
+        }
+
+        ui::KeyEvent* press_event = test_event_handler.key_events[0].get();
+        EXPECT_EQ(press_event->type(), ui::ET_KEY_PRESSED);
+        EXPECT_EQ(press_event->code(), ui::DomCode::US_S);
+        EXPECT_TRUE(press_event->IsAltDown());
+        EXPECT_TRUE(press_event->IsCommandDown());
+        EXPECT_TRUE(press_event->IsControlDown());
+        EXPECT_TRUE(press_event->IsShiftDown());
+
+        ui::KeyEvent* release_event = test_event_handler.key_events[1].get();
+        EXPECT_EQ(release_event->type(), ui::ET_KEY_RELEASED);
+        EXPECT_EQ(release_event->code(), ui::DomCode::US_S);
+        EXPECT_TRUE(release_event->IsAltDown());
+        EXPECT_TRUE(release_event->IsCommandDown());
+        EXPECT_TRUE(release_event->IsControlDown());
+        EXPECT_TRUE(release_event->IsShiftDown());
+
+        waiter.Quit();
+      }));
+
+  // Send a press.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_press_event));
+  // Send a release.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_release_event));
+  waiter.Run();
 }
 
 }  // namespace ash

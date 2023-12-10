@@ -6,7 +6,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/cocoa/system_hotkey_map.h"
 
@@ -22,8 +21,7 @@ content::SystemHotkeyMap LoadSystemHotkeyMap() {
       [NSDictionary dictionaryWithContentsOfURL:hotkey_plist_url error:nil];
 
   content::SystemHotkeyMap map;
-  bool success = map.ParseDictionary(dictionary);
-  UMA_HISTOGRAM_BOOLEAN("OSX.SystemHotkeyMap.LoadSuccess", success);
+  map.ParseDictionary(dictionary);
   return map;
 }
 

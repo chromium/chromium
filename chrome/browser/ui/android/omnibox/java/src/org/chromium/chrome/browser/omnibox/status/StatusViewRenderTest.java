@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -28,11 +29,14 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -60,8 +64,11 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
 
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
@@ -71,8 +78,11 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(
+                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+                mChromeAutocompleteSchemeClassifierJni);
 
-        doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
+        doReturn(true).when(mIncognitoProfile).isOffTheRecord();
 
         runOnUiThreadBlocking(
                 () -> {
@@ -96,10 +106,8 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                                     mStatusView.getContext(),
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
-                                    window -> null,
-                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                    mSearchEngineLogoUtils);
-                    mLocationBarModel.setTab(null, /* incognito= */ false);
+                                    ToolbarUnitTestUtils.OFFLINE_STATUS);
+                    mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(
                             mStatusModel, mStatusView, new StatusViewBinder());
@@ -110,13 +118,18 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                 });
     }
 
+    @After
+    public void tearDown() throws Exception {
+        runOnUiThreadBlocking(() -> mLocationBarModel.destroy());
+    }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoWithIcon() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mLocationBarModel.setTab(null, /* incognito= */ true);
+                    mLocationBarModel.setTab(null, mIncognitoProfile);
                     mStatusView.setIncognitoBadgeVisibility(true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
@@ -131,7 +144,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     public void testStatusViewIncognitoNoIcon() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mLocationBarModel.setTab(null, /* incognito= */ true);
+                    mLocationBarModel.setTab(null, mIncognitoProfile);
                     mStatusView.setIncognitoBadgeVisibility(true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
                 });

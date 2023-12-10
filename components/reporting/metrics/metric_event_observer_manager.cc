@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -88,6 +89,8 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
   metric_data.set_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   metric_report_queue_->Enqueue(std::move(metric_data));
+  base::UmaHistogramEnumeration(kEventMetricEnqueuedMetricsName, event_type,
+                                MetricEventType_MAX);
 
   if (collector_pool_) {
     std::vector<CollectorBase*> telemetry_collectors =

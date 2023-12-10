@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 
-/**
- * Handles the visibility update of the activity tab.
- */
+/** Handles the visibility update of the activity tab. */
 public class AccessibilityVisibilityHandler
         implements DestroyObserver, TabObscuringHandler.Observer {
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
@@ -18,30 +16,33 @@ public class AccessibilityVisibilityHandler
     private TabImpl mTab;
     private boolean mIsWebContentObscured;
 
-    public AccessibilityVisibilityHandler(ActivityLifecycleDispatcher lifecycleDispatcher,
-            ActivityTabProvider activityTabProvider, TabObscuringHandler tabObscuringHandler) {
-        mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
-            @Override
-            public void onObservingDifferentTab(Tab tab, boolean hint) {
-                if (mTab == tab) return;
-                if (mTab != null) {
-                    updateObscured(false, false);
-                }
-                mTab = (TabImpl) tab;
-                if (mTab != null) {
-                    updateObscured(mTabObscuringHandler.isTabContentObscured(),
-                            mTabObscuringHandler.isToolbarObscured());
-                }
-            }
+    public AccessibilityVisibilityHandler(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            ActivityTabProvider activityTabProvider,
+            TabObscuringHandler tabObscuringHandler) {
+        mActivityTabObserver =
+                new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
+                    @Override
+                    public void onObservingDifferentTab(Tab tab, boolean hint) {
+                        if (mTab == tab) return;
+                        if (mTab != null) {
+                            updateObscured(false, false);
+                        }
+                        mTab = (TabImpl) tab;
+                        if (mTab != null) {
+                            updateObscured(
+                                    mTabObscuringHandler.isTabContentObscured(),
+                                    mTabObscuringHandler.isToolbarObscured());
+                        }
+                    }
 
-            @Override
-            public void onContentChanged(Tab tab) {
-                updateObscured(mTabObscuringHandler.isTabContentObscured(),
-                        mTabObscuringHandler.isToolbarObscured());
-            }
-
-
-        };
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        updateObscured(
+                                mTabObscuringHandler.isTabContentObscured(),
+                                mTabObscuringHandler.isToolbarObscured());
+                    }
+                };
         mTabObscuringHandler = tabObscuringHandler;
         mTabObscuringHandler.addObserver(this);
         lifecycleDispatcher.register(this);

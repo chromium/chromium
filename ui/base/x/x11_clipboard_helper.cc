@@ -20,9 +20,9 @@
 #include "ui/base/x/selection_requestor.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -64,9 +64,6 @@ SelectionChangeObserver::SelectionChangeObserver()
     : clipboard_atom_(x11::GetAtom(kClipboard)) {
   auto* connection = x11::Connection::Get();
   auto& xfixes = connection->xfixes();
-  // Let the server know the client version.  No need to sync since we don't
-  // care what version is running on the server.
-  xfixes.QueryVersion({x11::XFixes::major_version, x11::XFixes::minor_version});
   if (!xfixes.present()) {
     return;
   }
@@ -89,12 +86,9 @@ SelectionChangeObserver* SelectionChangeObserver::Get() {
 
 void SelectionChangeObserver::OnEvent(const x11::Event& xev) {
   if (auto* ev = xev.As<x11::XFixes::SelectionNotifyEvent>()) {
-    DCHECK(ev->selection == x11::Atom::PRIMARY ||
-           ev->selection == clipboard_atom_)
-        << "Unexpected selection atom: "
-        << static_cast<uint32_t>(ev->selection);
-
-    if (callback_) {
+    if ((ev->selection == x11::Atom::PRIMARY ||
+         ev->selection == clipboard_atom_) &&
+        callback_) {
       callback_.Run(ev->selection == x11::Atom::PRIMARY
                         ? ClipboardBuffer::kSelection
                         : ClipboardBuffer::kCopyPaste);
@@ -150,8 +144,8 @@ XClipboardHelper::XClipboardHelper(
 
   connection_->SetStringProperty(x_window_, x11::Atom::WM_NAME,
                                  x11::Atom::STRING, "Chromium clipboard");
-  x_window_events_ = std::make_unique<x11::XScopedEventSelector>(
-      x_window_, x11::EventMask::PropertyChange);
+  x_window_events_ =
+      connection_->ScopedSelectEvent(x_window_, x11::EventMask::PropertyChange);
   connection_->AddEventObserver(this);
 
   SelectionChangeObserver::Get()->set_callback(

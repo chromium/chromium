@@ -42,24 +42,6 @@ ash_generated_grit("camera_app_resources") {
   deps = [ "//ash/webui/camera_app_ui:build_grd" ]
 }
 
-# Resources used by chrome://os-feedback
-ash_generated_grit("os_feedback_resources") {
-  os_feedback_gen_dir = "$root_gen_dir/ash/webui/os_feedback_ui/resources"
-  source = "$os_feedback_gen_dir/ash_os_feedback_resources.grd"
-  deps = [
-    "//ash/webui/os_feedback_ui/resources:build_grd",
-    "//ash/webui/os_feedback_ui/resources:web_components",
-  ]
-}
-
-# Resources used by chrome-untrusted://os-feedback
-ash_generated_grit("os_feedback_untrusted_resources") {
-  os_feedback_gen_dir =
-      "$root_gen_dir/ash/webui/os_feedback_ui/untrusted_resources"
-  source = "$os_feedback_gen_dir/ash_os_feedback_untrusted_resources.grd"
-  deps = [ "//ash/webui/os_feedback_ui/untrusted_resources:build_grd" ]
-}
-
 ash_generated_grit("shortcut_customization_app_resources") {
   shortcut_customization_app_gen_dir =
       "$root_gen_dir/ash/webui/shortcut_customization_ui/resources"

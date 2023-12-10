@@ -55,8 +55,8 @@ class ModelTypeControllerDelegate {
   // histograms.
   virtual void RecordMemoryUsageAndCountsHistograms() = 0;
 
-  // Clear metadata given the model is stopped.
-  virtual void ClearMetadataWhileStopped() = 0;
+  // Clear metadata if the model is stopped.
+  virtual void ClearMetadataIfStopped() = 0;
 };
 
 }  // namespace syncer

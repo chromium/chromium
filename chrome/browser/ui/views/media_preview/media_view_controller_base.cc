@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "ui/views/background.h"
@@ -19,19 +20,24 @@ MediaViewControllerBase::MediaViewControllerBase(
     MediaView& base_view,
     bool needs_borders,
     ui::ComboboxModel* model,
-    base::RepeatingClosure on_selection_changed,
+    SourceChangeCallback source_change_callback,
     const std::u16string& combobox_accessible_name,
     const std::u16string& no_device_connected_label_text)
     : base_view_(base_view),
+      live_feed_container_(raw_ref<MediaView>::from_ptr(
+          base_view_->AddChildView(std::make_unique<MediaView>()))),
       no_device_connected_label_(raw_ref<views::Label>::from_ptr(
           base_view_->AddChildView(std::make_unique<views::Label>()))),
       device_selector_combobox_(raw_ref<views::Combobox>::from_ptr(
           base_view_->AddChildView(std::make_unique<views::Combobox>(model)))),
-      combobox_selection_change_callback_(std::move(on_selection_changed)) {
-  CHECK(combobox_selection_change_callback_);
+      source_change_callback_(std::move(source_change_callback)) {
+  CHECK(source_change_callback_);
+
+  auto* provider = ChromeLayoutProvider::Get();
+  base_view_->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   if (needs_borders) {
-    auto* provider = ChromeLayoutProvider::Get();
     const int kRoundedRadius = provider->GetCornerRadiusMetric(
         views::ShapeContextTokens::kOmniboxExpandedRadius);
     const int kBorderThickness =
@@ -43,47 +49,36 @@ MediaViewControllerBase::MediaViewControllerBase(
         ui::kColorMenuBackground, kRoundedRadius));
   }
 
+  live_feed_container_->SetVisible(false);
+
   no_device_connected_label_->SetText(no_device_connected_label_text);
   no_device_connected_label_->SetTextContext(
       views::style::CONTEXT_DIALOG_BODY_TEXT);
   no_device_connected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   device_selector_combobox_->SetAccessibleName(combobox_accessible_name);
+  device_selector_combobox_->SetSizeToLargestLabel(false);
   device_selector_combobox_->SetEnabled(false);
-  device_selector_combobox_->SetCallback(combobox_selection_change_callback_);
+
+  // Unretained is safe, because `this` outlives `device_selector_combobox_`.
+  device_selector_combobox_->SetCallback(base::BindRepeating(
+      &MediaViewControllerBase::OnComboboxSelection, base::Unretained(this)));
 }
 
 MediaViewControllerBase::~MediaViewControllerBase() {
   device_selector_combobox_->SetCallback({});
 }
 
-MediaView& MediaViewControllerBase::GetLiveFeedContainer() {
-  return *base_view_;
-}
-
 void MediaViewControllerBase::AdjustComboboxEnabledState(bool has_devices) {
+  live_feed_container_->SetVisible(has_devices);
   no_device_connected_label_->SetVisible(!has_devices);
   device_selector_combobox_->SetEnabled(has_devices);
-
   if (has_devices) {
-    combobox_selection_change_callback_.Run();
-  } else {
-    active_device_id_.clear();
+    OnComboboxSelection();
   }
-
   base_view_->RefreshSize();
 }
 
-absl::optional<size_t> MediaViewControllerBase::GetComboboxSelectedIndex()
-    const {
-  return device_selector_combobox_->GetSelectedIndex();
-}
-
-bool MediaViewControllerBase::UpdateActiveDeviceId(
-    const std::string& device_id) {
-  if (active_device_id_ == device_id) {
-    return false;
-  }
-  active_device_id_ = device_id;
-  return true;
+void MediaViewControllerBase::OnComboboxSelection() {
+  source_change_callback_.Run(device_selector_combobox_->GetSelectedIndex());
 }

@@ -149,12 +149,12 @@ StoragePartition* BrowserContext::GetStoragePartitionForUrl(
 }
 
 void BrowserContext::ForEachLoadedStoragePartition(
-    StoragePartitionCallback callback) {
+    base::FunctionRef<void(StoragePartition*)> fn) {
   StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
   if (!partition_map)
     return;
 
-  partition_map->ForEach(std::move(callback));
+  partition_map->ForEach(fn);
 }
 
 size_t BrowserContext::GetLoadedStoragePartitionCount() {

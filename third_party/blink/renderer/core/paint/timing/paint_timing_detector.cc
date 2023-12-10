@@ -106,31 +106,33 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   // Get the layout dimensions and screen DPR
   uint32_t layout_width = image_element->LayoutBoxWidth();
   uint32_t layout_height = image_element->LayoutBoxHeight();
-  float_t document_dpr = document.DevicePixelRatio();
+  float document_dpr = document.DevicePixelRatio();
 
   // Get the size attribute calculated width, if any
   absl::optional<float> sizes_width = image_element->GetResourceWidth();
   // Report offset in pixels between intrinsic and layout dimensions
-  const float_t kDPRCap = 2.0;
-  float_t capped_dpr = std::min(document_dpr, kDPRCap);
-  uint64_t fetched_pixels = base::saturated_cast<uint64_t>(
-      intrinsic_dimensions.width() * intrinsic_dimensions.height());
+  const float kDPRCap = 2.0;
+  float capped_dpr = std::min(document_dpr, kDPRCap);
+  uint64_t fetched_pixels = intrinsic_dimensions.Area64();
   uint64_t needed_pixels = base::saturated_cast<uint64_t>(
-      layout_width * layout_height * document_dpr * document_dpr);
+      (layout_width * document_dpr) * (layout_height * document_dpr));
   uint64_t capped_pixels = base::saturated_cast<uint64_t>(
-      layout_width * layout_height * capped_dpr * capped_dpr);
-  int64_t overfetched_pixels = fetched_pixels - needed_pixels;
-  int64_t overfetched_capped_pixels = fetched_pixels - capped_pixels;
+      (layout_width * capped_dpr) * (layout_height * capped_dpr));
 
+  bool has_overfetched_pixels = fetched_pixels > needed_pixels;
   base::UmaHistogramBoolean("Renderer.Images.HasOverfetchedPixels",
-                            (overfetched_pixels > 0));
-  if (overfetched_pixels > 0) {
+                            has_overfetched_pixels);
+  if (has_overfetched_pixels) {
+    uint64_t overfetched_pixels = fetched_pixels - needed_pixels;
     base::UmaHistogramCounts10M("Renderer.Images.OverfetchedPixels",
                                 base::saturated_cast<int>(overfetched_pixels));
   }
+
+  bool has_overfetched_capped_pixels = fetched_pixels > capped_pixels;
   base::UmaHistogramBoolean("Renderer.Images.HasOverfetchedCappedPixels",
-                            (overfetched_capped_pixels > 0));
-  if (overfetched_capped_pixels > 0) {
+                            has_overfetched_capped_pixels);
+  if (has_overfetched_capped_pixels) {
+    uint64_t overfetched_capped_pixels = fetched_pixels - capped_pixels;
     base::UmaHistogramCounts10M(
         "Renderer.Images.OverfetchedCappedPixels",
         base::saturated_cast<int>(overfetched_capped_pixels));
@@ -213,8 +215,13 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
     return false;
   }
 
+  PaintTimingDetector& paint_timing_detector =
+      frame_view->GetPaintTimingDetector();
+  if (paint_timing_detector.IsUnrelatedSoftNavigationPaint(node)) {
+    return false;
+  }
   ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+      paint_timing_detector.GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
@@ -247,13 +254,19 @@ bool PaintTimingDetector::NotifyImagePaint(
   if (!frame_view) {
     return false;
   }
+  PaintTimingDetector& paint_timing_detector =
+      frame_view->GetPaintTimingDetector();
   ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+      paint_timing_detector.GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
 
   Node* image_node = object.GetNode();
+  if (image_node &&
+      paint_timing_detector.IsUnrelatedSoftNavigationPaint(*image_node)) {
+    return false;
+  }
   HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
   bool is_loaded_after_mouseover =
       element && element->IsChangedShortlyAfterMouseover();
@@ -680,6 +693,11 @@ void PaintTimingDetector::ReportIgnoredContent() {
   if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
     image_paint_timing_detector_->ReportLargestIgnoredImage();
   }
+}
+
+bool PaintTimingDetector::IsUnrelatedSoftNavigationPaint(const Node& node) {
+  return (WasLCPRestarted() &&
+          !(IsSoftNavigationDetected() || node.IsModifiedBySoftNavigation()));
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*

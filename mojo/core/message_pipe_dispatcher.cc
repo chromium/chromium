@@ -202,7 +202,7 @@ MojoResult MessagePipeDispatcher::ReadMessage(
 }
 
 MojoResult MessagePipeDispatcher::SetQuota(MojoQuotaType type, uint64_t limit) {
-  absl::optional<uint64_t> new_ack_request_interval;
+  std::optional<uint64_t> new_ack_request_interval;
   {
     base::AutoLock lock(signal_lock_);
     switch (type) {

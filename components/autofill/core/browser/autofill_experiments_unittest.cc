@@ -16,6 +16,7 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,25 +148,92 @@ TEST_F(AutofillExperimentsTest,
       1);
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_SyncDoesNotHaveAutofillProfileActiveType) {
+// Tests that for syncing users, credit card upload is offered only when
+// kAutofill (address autofill + autocomplete) is among the UserSelectableTypes.
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillSelected) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill,
                  syncer::UserSelectableType::kPayments});
-  sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+}
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillDisabled) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPayments});
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
       autofill_metrics::CardUploadEnabled::
-          kSyncServiceMissingAutofillProfileActiveType,
+          kSyncServiceMissingAutofillSelectedType,
       1);
+}
+
+// Tests that for transport mode users, when CONTACT_INFO is available, credit
+// card upload is offered only when kAutofill (address autofill + autocomplete)
+// is among the UserSelectableTypes.
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
+  base::test::ScopedFeatureList feature{
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
+}
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPayments});
+  EXPECT_FALSE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled",
       autofill_metrics::CardUploadEnabled::
-          kSyncServiceMissingAutofillProfileActiveType,
+          kSyncServiceMissingAutofillSelectedType,
       1);
+}
+
+// Tests that for transport mode users, when CONTACT_INFO is unavailable, credit
+// card upload is offered independently of the kAutofill (address autofill +
+// autocomplete) UserSelectableType.
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithoutAddresses_AutofillSelected) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
+}
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithoutAddresses_AutofillDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -216,160 +284,14 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
   sync_service_.SetHasSyncConsent(false);
 
   EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "john.smith@gmail.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+      "john.smith@gmail.com", AutofillMetrics::PaymentsSigninState::
+                                  kSignedInAndWalletSyncTransportEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled.SignedInAndWalletSyncTransportEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
-}
-
-TEST_F(
-    AutofillExperimentsTest,
-    IsCardUploadEnabled_TransportSyncDoesNotHaveAutofillProfileActiveDataType) {
-  // When we don't have Sync consent, Sync will start in Transport-only mode
-  // (if allowed).
-  sync_service_.SetHasSyncConsent(false);
-
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill,
-                 syncer::UserSelectableType::kPayments});
-  sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
-
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
-}
-
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_UserEmailWithGoogleDomain_IsAllowed) {
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "john.smith@gmail.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "googler@google.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "old.school@googlemail.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "code.committer@chromium.org",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
-}
-
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_UserEmailWithSupportedAdditionalDomain_IsAllowed) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillUpstreamAllowAdditionalEmailDomains);
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "cool.user@hotmail.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "cool.british.user@hotmail.co.uk",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "telecom.user@verizon.net",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "youve.got.mail@aol.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
-}
-
-TEST_F(
-    AutofillExperimentsTest,
-    IsCardUploadEnabled_UserEmailWithSupportedAdditionalDomain_NotAllowedIfFlagOff) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          features::kAutofillUpstreamAllowAdditionalEmailDomains,
-          features::kAutofillUpstreamAllowAllEmailDomains});
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "cool.user@hotmail.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "cool.british.user@hotmail.co.uk",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "telecom.user@verizon.net",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "youve.got.mail@aol.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
-}
-
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_UserEmailWithOtherDomain_IsAllowed) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillUpstreamAllowAllEmailDomains);
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "grad.student@university.edu",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "some.ceo@bigcorporation.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "fake.googler@google.net",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "fake.committer@chromium.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
-}
-
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_UserEmailWithOtherDomain_NotAllowedIfFlagOff) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::
-                                kAutofillUpstreamAllowAdditionalEmailDomains},
-      /*disabled_features=*/{features::kAutofillUpstreamAllowAllEmailDomains});
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "grad.student@university.edu",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "some.ceo@bigcorporation.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "fake.googler@google.net",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "fake.committer@chromium.com",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
 }
 
 TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {

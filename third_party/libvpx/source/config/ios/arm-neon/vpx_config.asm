@@ -20,6 +20,7 @@
 .equ HAVE_NEON ,  1
 .equ HAVE_NEON_DOTPROD ,  0
 .equ HAVE_NEON_I8MM ,  0
+.equ HAVE_SVE ,  0
 .equ HAVE_MIPS32 ,  0
 .equ HAVE_DSPR2 ,  0
 .equ HAVE_MSA ,  0

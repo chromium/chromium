@@ -24,9 +24,7 @@ import java.io.FileReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Exposes system related information about the current device.
- */
+/** Exposes system related information about the current device. */
 @JNINamespace("base::android")
 public class SysUtils {
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
@@ -44,7 +42,7 @@ public class SysUtils {
 
     private static Boolean sHighEndDiskDevice;
 
-    private SysUtils() { }
+    private SysUtils() {}
 
     /**
      * Return the amount of physical memory on this device in kilobytes.
@@ -73,7 +71,7 @@ public class SysUtils {
                 BufferedReader reader = new BufferedReader(fileReader);
                 try {
                     String line;
-                    for (;;) {
+                    for (; ; ) {
                         line = reader.readLine();
                         if (line == null) {
                             Log.w(TAG, "/proc/meminfo lacks a MemTotal entry?");
@@ -136,8 +134,9 @@ public class SysUtils {
     @CalledByNative
     public static boolean isCurrentlyLowMemory() {
         ActivityManager am =
-                (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE);
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
         try {
             am.getMemoryInfo(info);

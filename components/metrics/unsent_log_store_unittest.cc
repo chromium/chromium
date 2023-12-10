@@ -558,7 +558,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithUserId) {
   const uint64_t user_id = 12345L;
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  LogMetadata log_metadata(absl::nullopt, user_id);
+  LogMetadata log_metadata(absl::nullopt, user_id, absl::nullopt);
   unsent_log_store.StoreLog(foo_text, log_metadata,
                             MetricsLogsEventManager::CreateReason::kUnknown);
   unsent_log_store.StageNextLog();
@@ -583,7 +583,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithLargeUserId) {
   const uint64_t large_user_id = std::numeric_limits<uint64_t>::max();
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  LogMetadata log_metadata(absl::nullopt, large_user_id);
+  LogMetadata log_metadata(absl::nullopt, large_user_id, absl::nullopt);
   unsent_log_store.StoreLog(foo_text, log_metadata,
                             MetricsLogsEventManager::CreateReason::kUnknown);
   unsent_log_store.StageNextLog();
@@ -601,6 +601,34 @@ TEST_F(UnsentLogStoreTest, StoreLogWithLargeUserId) {
   // Ensure that the user_id was parsed correctly.
   read_unsent_log_store.StageNextLog();
   EXPECT_EQ(large_user_id, read_unsent_log_store.staged_log_user_id().value());
+}
+
+TEST_F(UnsentLogStoreTest, StoreLogWithOnlyAppKMLogSource) {
+  const char foo_text[] = "foo";
+  const UkmLogSourceType log_source_type = UkmLogSourceType::APPKM_ONLY;
+
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+  LogMetadata log_metadata(absl::nullopt, absl::nullopt, log_source_type);
+  unsent_log_store.StoreLog(foo_text, log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+  unsent_log_store.StageNextLog();
+
+  EXPECT_EQ(Compress(foo_text), unsent_log_store.staged_log());
+  EXPECT_EQ(unsent_log_store.staged_log_metadata().log_source_type.value(),
+            log_source_type);
+
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  // Reads persisted logs from new log store.
+  TestUnsentLogStore read_unsent_log_store(&prefs_, kLogByteLimit);
+  read_unsent_log_store.LoadPersistedUnsentLogs();
+  EXPECT_EQ(1U, read_unsent_log_store.size());
+
+  // Ensure that the log source type was updated correctly in log metadata.
+  read_unsent_log_store.StageNextLog();
+  EXPECT_EQ(
+      log_source_type,
+      read_unsent_log_store.staged_log_metadata().log_source_type.value());
 }
 
 TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
@@ -628,7 +656,7 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   const char kNoSampleLog[] = "no sample log";
 
   LogMetadata log_metadata_with_oversize_sample(kOversizeLogSampleCount,
-                                                absl::nullopt);
+                                                absl::nullopt, absl::nullopt);
   unsent_log_store.StoreLog(oversize_log, log_metadata_with_oversize_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 
@@ -636,12 +664,14 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   unsent_log_store.StoreLog(kNoSampleLog, log_metadata_with_no_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 
-  LogMetadata log_metadata_foo_sample(kFooSampleCount, absl::nullopt);
+  LogMetadata log_metadata_foo_sample(kFooSampleCount, absl::nullopt,
+                                      absl::nullopt);
   unsent_log_store.StoreLog(kFooText, log_metadata_foo_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 
   // The foobar_log will be staged first.
-  LogMetadata log_metadata_foo_bar_sample(kFooBarSampleCount, absl::nullopt);
+  LogMetadata log_metadata_foo_bar_sample(kFooBarSampleCount, absl::nullopt,
+                                          absl::nullopt);
   unsent_log_store.StoreLog(foobar_log, log_metadata_foo_bar_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 

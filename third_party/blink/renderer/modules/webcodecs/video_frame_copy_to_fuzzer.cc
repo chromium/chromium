@@ -58,7 +58,7 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::VideoFrameCopyToCase& proto) {
   video_frame->allocationSize(options, IGNORE_EXCEPTION_FOR_TESTING);
 
   AllowSharedBufferSource* destination =
-      MakeAllowSharedBufferSource(proto.copy_to().destination());
+      MakeAllowSharedBufferSource(proto.copy_to().destination()).source;
   DCHECK(destination);
 
   // The returned promise will be fulfilled synchronously since the source frame

@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"

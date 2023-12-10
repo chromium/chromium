@@ -82,7 +82,7 @@
 // Test loading a page with a bad SSL certificate during session restore, to
 // avoid regressing https://crbug.com/1050808.
 - (void)testBadSSLInSessionRestore {
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SSL_V2_HEADING)];
 }

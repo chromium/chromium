@@ -275,10 +275,11 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(
-      &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
-      compositor->frame_sink_id(), std::move(display_dependency),
-      std::move(output_surface), std::move(overlay_processor),
-      std::move(scheduler), compositor->task_runner()));
+      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
+      renderer_settings_, &debug_settings_, compositor->frame_sink_id(),
+      std::move(display_dependency), std::move(output_surface),
+      std::move(overlay_processor), std::move(scheduler),
+      compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
   // Note that we are careful not to destroy a prior |data->begin_frame_source|
@@ -298,27 +299,26 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
 scoped_refptr<viz::ContextProvider>
 InProcessContextFactory::SharedMainThreadContextProvider() {
-  if (shared_main_thread_contexts_ &&
-      shared_main_thread_contexts_->ContextGL()->GetGraphicsResetStatusKHR() ==
-          GL_NO_ERROR)
-    return shared_main_thread_contexts_;
-
-  shared_main_thread_contexts_ =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
-
-  auto result = shared_main_thread_contexts_->BindToCurrentSequence();
-  if (result != gpu::ContextResult::kSuccess)
-    shared_main_thread_contexts_.reset();
-
-  return shared_main_thread_contexts_;
+  return nullptr;
 }
 
 scoped_refptr<viz::RasterContextProvider>
 InProcessContextFactory::SharedMainThreadRasterContextProvider() {
-  SharedMainThreadContextProvider();
-  DCHECK(!shared_main_thread_contexts_ ||
-         shared_main_thread_contexts_->RasterInterface());
+  if (shared_main_thread_contexts_ &&
+      shared_main_thread_contexts_->RasterInterface()
+              ->GetGraphicsResetStatusKHR() == GL_NO_ERROR) {
+    return shared_main_thread_contexts_;
+  }
+
+  shared_main_thread_contexts_ =
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+
+  auto result = shared_main_thread_contexts_->BindToCurrentSequence();
+  if (result != gpu::ContextResult::kSuccess) {
+    shared_main_thread_contexts_.reset();
+  }
+
   return shared_main_thread_contexts_;
 }
 

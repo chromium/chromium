@@ -41,19 +41,19 @@ bool IsAllInfoFetched(const AccountInfo& info) {
 // static
 std::string LocaleSwitchScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::LOCALE_FETCH_FAILED:
+    case Result::kLocaleFetchFailed:
       return "LocaleFetchFailed";
-    case Result::LOCALE_FETCH_TIMEOUT:
+    case Result::kLocaleFetchTimeout:
       return "LocaleFetchTimeout";
-    case Result::NO_SWITCH_NEEDED:
+    case Result::kNoSwitchNeeded:
       return "NoSwitchNeeded";
-    case Result::SWITCH_FAILED:
+    case Result::kSwitchFailed:
       return "SwitchFailed";
-    case Result::SWITCH_SUCCEDED:
+    case Result::kSwitchSucceded:
       return "SwitchSucceded";
-    case Result::SWITCH_DELEGATED:
+    case Result::kSwitchDelegated:
       return "SwitchDelegated";
-    case Result::NOT_APPLICABLE:
+    case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -68,7 +68,7 @@ LocaleSwitchScreen::~LocaleSwitchScreen() = default;
 
 bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
   if (wizard_context.skip_post_login_screens_for_tests) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
 
@@ -79,7 +79,7 @@ bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
     VLOG(1) << "Skipping GAIA language sync because user chose specific"
             << " locale on the Welcome Screen.";
     local_state->ClearPref(prefs::kOobeLocaleChangedOnWelcomeScreen);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
 
@@ -93,7 +93,7 @@ bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
     return false;
   }
 
-  exit_callback_.Run(Result::NOT_APPLICABLE);
+  exit_callback_.Run(Result::kNotApplicable);
   return true;
 }
 
@@ -114,7 +114,7 @@ void LocaleSwitchScreen::ShowImpl() {
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager_) {
     NOTREACHED();
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return;
   }
 
@@ -125,7 +125,7 @@ void LocaleSwitchScreen::ShowImpl() {
 
   if (identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           primary_account_id) != GoogleServiceAuthError::AuthErrorNone()) {
-    exit_callback_.Run(Result::LOCALE_FETCH_FAILED);
+    exit_callback_.Run(Result::kLocaleFetchFailed);
     return;
   }
 
@@ -158,7 +158,7 @@ void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(
   if (error == GoogleServiceAuthError::AuthErrorNone())
     return;
   ResetState();
-  exit_callback_.Run(Result::LOCALE_FETCH_FAILED);
+  exit_callback_.Run(Result::kLocaleFetchFailed);
 }
 
 void LocaleSwitchScreen::OnExtendedAccountInfoUpdated(
@@ -184,7 +184,7 @@ void LocaleSwitchScreen::SwitchLocale(std::string locale) {
   language::ConvertToActualUILocale(&locale);
 
   if (locale.empty() || locale == g_browser_process->GetApplicationLocale()) {
-    exit_callback_.Run(Result::NO_SWITCH_NEEDED);
+    exit_callback_.Run(Result::kNoSwitchNeeded);
     return;
   }
 
@@ -209,7 +209,7 @@ void LocaleSwitchScreen::SwitchLocale(std::string locale) {
         weak_factory_.GetWeakPtr()));
     LocaleSwitchNotification::Show(profile, std::move(locale),
                                    std::move(callback));
-    exit_callback_.Run(Result::SWITCH_DELEGATED);
+    exit_callback_.Run(Result::kSwitchDelegated);
     return;
   }
 
@@ -229,12 +229,12 @@ void LocaleSwitchScreen::SwitchLocale(std::string locale) {
 void LocaleSwitchScreen::OnLanguageChangedCallback(
     const locale_util::LanguageSwitchResult& result) {
   if (!result.success) {
-    exit_callback_.Run(Result::SWITCH_FAILED);
+    exit_callback_.Run(Result::kSwitchFailed);
     return;
   }
 
   view_->UpdateStrings();
-  exit_callback_.Run(Result::SWITCH_SUCCEDED);
+  exit_callback_.Run(Result::kSwitchSucceded);
 }
 
 void LocaleSwitchScreen::OnLanguageChangedNotificationCallback(
@@ -263,7 +263,7 @@ void LocaleSwitchScreen::OnTimeout() {
     // If it happens during the tests - something is wrong with the test
     // configuration. Thus making it debug log.
     DLOG(ERROR) << "Timeout of the locale fetch";
-    exit_callback_.Run(Result::LOCALE_FETCH_TIMEOUT);
+    exit_callback_.Run(Result::kLocaleFetchTimeout);
   }
 }
 

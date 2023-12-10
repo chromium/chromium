@@ -44,12 +44,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.privacy_sandbox.v4.AdMeasurementFragmentV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeRestrictedV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -180,7 +174,7 @@ public final class PrivacySandboxDialogTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialog =
-                            new PrivacySandboxDialogConsentEEAV4(
+                            new PrivacySandboxDialogConsentEEA(
                                     sActivityTestRule.getActivity(),
                                     mSettingsLauncher,
                                     /* animate= */ false);
@@ -196,7 +190,7 @@ public final class PrivacySandboxDialogTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialog =
-                            new PrivacySandboxDialogNoticeEEAV4(
+                            new PrivacySandboxDialogNoticeEEA(
                                     sActivityTestRule.getActivity(), mSettingsLauncher);
                     mDialog.show();
                 });
@@ -210,7 +204,7 @@ public final class PrivacySandboxDialogTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialog =
-                            new PrivacySandboxDialogNoticeROWV4(
+                            new PrivacySandboxDialogNoticeROW(
                                     sActivityTestRule.getActivity(), mSettingsLauncher);
                     mDialog.show();
                 });
@@ -224,7 +218,7 @@ public final class PrivacySandboxDialogTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialog =
-                            new PrivacySandboxDialogNoticeRestrictedV4(
+                            new PrivacySandboxDialogNoticeRestricted(
                                     sActivityTestRule.getActivity(), mSettingsLauncher);
                     mDialog.show();
                 });
@@ -393,7 +387,7 @@ public final class PrivacySandboxDialogTest {
         Mockito.verify(mSettingsLauncher)
                 .launchSettingsActivity(
                         any(Context.class),
-                        eq(PrivacySandboxSettingsFragmentV4.class),
+                        eq(PrivacySandboxSettingsFragment.class),
                         any(Bundle.class));
     }
 
@@ -443,7 +437,7 @@ public final class PrivacySandboxDialogTest {
         Mockito.verify(mSettingsLauncher)
                 .launchSettingsActivity(
                         any(Context.class),
-                        eq(PrivacySandboxSettingsFragmentV4.class),
+                        eq(PrivacySandboxSettingsFragment.class),
                         any(Bundle.class));
     }
 
@@ -475,6 +469,6 @@ public final class PrivacySandboxDialogTest {
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(any(Context.class), eq(AdMeasurementFragmentV4.class));
+                .launchSettingsActivity(any(Context.class), eq(AdMeasurementFragment.class));
     }
 }

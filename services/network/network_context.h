@@ -90,6 +90,7 @@ class UnguessableToken;
 
 namespace net {
 class CertVerifier;
+class CookieCryptoDelegate;
 class HostPortPair;
 class IsolationInfo;
 class NetworkAnonymizationKey;
@@ -316,10 +317,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                             mojom::NetworkConditionsPtr conditions) override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void UpdateAdditionalCertificates(
-      mojom::AdditionalCertificatesPtr additional_certificates) override;
-#endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void SetCTPolicy(mojom::CTPolicyPtr ct_policy) override;
   void MaybeEnqueueSCTReport(
@@ -970,6 +967,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // The ohttp_handler_ needs to be destroyed before cookie_manager_, since it
   // depends on it indirectly through this context.
   ObliviousHttpRequestHandler ohttp_handler_;
+
+  // Contains the instance of crypto delegate for this network context, if
+  // cookie encryption is enabled, and the 'default' delegate from
+  // components/cookie_config is not being used.
+  std::unique_ptr<net::CookieCryptoDelegate> crypto_delegate_;
 
   // Whether all external consumers are expected to provide a non-empty
   // NetworkAnonymizationKey with all requests. When set, enabled a variety of

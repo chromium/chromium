@@ -69,12 +69,12 @@ static gfx::RectF ToNormalizedRect(const gfx::RectF& absolute_rect,
   if (!container)
     return gfx::RectF();
 
-  // We want to normalize by the max layout overflow size instead of only the
-  // visible bounding box.  Quads and their enclosing bounding boxes need to be
-  // used in order to keep results transform-friendly.
+  // We want to normalize by the max scrollable overflow size instead of only
+  // the visible bounding box.  Quads and their enclosing bounding boxes need to
+  // be used in order to keep results transform-friendly.
   auto converter = container->CreateWritingModeConverter();
   LogicalRect logical_overflow_rect =
-      converter.ToLogical(container->PhysicalLayoutOverflowRect());
+      converter.ToLogical(container->ScrollableOverflowRect());
   logical_overflow_rect.ShiftBlockStartEdgeTo(LayoutUnit());
   logical_overflow_rect.ShiftInlineStartEdgeTo(LayoutUnit());
   PhysicalRect overflow_rect = converter.ToPhysical(logical_overflow_rect);

@@ -284,18 +284,6 @@ bool IsImprovedKeyboardShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }
 
-// Whether to deprecate the Alt-Based event rewrites that map to the
-// Page Up/Down, Home/End, Insert/Delete keys. This feature was a
-// part of kImprovedKeyboardShortcuts, but it is being postponed until
-// the new shortcut customization app ships.
-// TODO(crbug.com/1179893): Remove after the customization app ships.
-BASE_FEATURE(kDeprecateAltBasedSixPack,
-             "DeprecateAltBasedSixPack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsDeprecateAltBasedSixPackEnabled() {
-  return base::FeatureList::IsEnabled(kDeprecateAltBasedSixPack);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Whether to enable new touch text editing features such as extra touch
@@ -632,6 +620,12 @@ BASE_FEATURE(kMacClipboardWriteImageWithPng,
 BASE_FEATURE(kCr2023MacFontSmoothing,
              "Cr2023MacFontSmoothing",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kUseGammaContrastRegistrySettings,
+             "UseGammaContrastRegistrySettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features

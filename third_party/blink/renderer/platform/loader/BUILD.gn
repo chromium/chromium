@@ -112,6 +112,8 @@ blink_platform_sources("loader") {
     "fetch/script_cached_metadata_handler.h",
     "fetch/script_fetch_options.cc",
     "fetch/script_fetch_options.h",
+    "fetch/service_worker_router_info.cc",
+    "fetch/service_worker_router_info.h",
     "fetch/shared_buffer_bytes_consumer.cc",
     "fetch/shared_buffer_bytes_consumer.h",
     "fetch/stale_revalidation_resource_client.cc",

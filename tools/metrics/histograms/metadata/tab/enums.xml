@@ -1,0 +1,207 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanOverlap">
+  <int value="0" label="No overlap"/>
+  <int value="1" label="Overlapped"/>
+</enum>
+
+<enum name="ExternalLauncherOption">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Open"/>
+</enum>
+
+<enum name="FileStorageRequestType">
+  <int value="0" label="Save Request"/>
+  <int value="1" label="Restore Request"/>
+  <int value="2" label="Delete Request"/>
+</enum>
+
+<enum name="FoundBuyableProductAnnotation">
+  <summary>
+    Whether a buyable product annotation was found in the response from an
+    endpoint which provides page metadata in ShoppingPersistedTabData.
+  </summary>
+  <int value="0" label="NotFound"/>
+  <int value="1" label="Found"/>
+</enum>
+
+<enum name="HistoricalSaverCloseType">
+  <int value="0" label="Tab"/>
+  <int value="1" label="Group"/>
+  <int value="2" label="Bulk"/>
+</enum>
+
+<enum name="IOSAllOpenTabsAge">
+  <int value="0" label="Less than 1 day"/>
+  <int value="1" label="1-3 days"/>
+  <int value="2" label="3-7 days"/>
+  <int value="3" label="7-14 days"/>
+  <int value="4" label="14-30 days"/>
+  <int value="5" label="More than 30 days"/>
+</enum>
+
+<enum name="NewTabType">
+  <int value="0" label="New tab button"/>
+  <int value="1" label="Regular menu option"/>
+  <int value="2" label="Tab strip menu option"/>
+  <int value="3" label="New tab button in toolbar for touch"/>
+  <int value="4" label="New tab button in the WebUI tab strip"/>
+</enum>
+
+<enum name="PullDownGestureAction">
+  <summary>The type of action performed on the overscroll UI.</summary>
+  <int value="0" label="NewTab">The user selected the new tab action.</int>
+  <int value="1" label="Refresh">The user selected the refresh action.</int>
+  <int value="2" label="CloseTab">The user selected the close tab action.</int>
+  <int value="3" label="Canceled">
+    The user canceled the action by scrolling back up.
+  </int>
+</enum>
+
+<enum name="RestoreTabStateException">
+  <int value="0" label="File not found"/>
+  <int value="1" label="Closed by interrupt exception"/>
+  <int value="2" label="IO exception"/>
+</enum>
+
+<enum name="SadTabEvent">
+  <int value="0" label="Displayed"/>
+  <int value="1" label="Button clicked"/>
+  <int value="2" label="Learn more clicked"/>
+</enum>
+
+<enum name="TabActivationTypes">
+  <int value="0" label="Activate a tab"/>
+  <int value="1" label="Activate the context menu of a tab"/>
+</enum>
+
+<enum name="TabBackgroundLoadStatus">
+  <int value="0" label="Loaded on creation and shown"/>
+  <int value="1" label="Loaded on creation and lost"/>
+  <int value="2" label="Not loaded on creation"/>
+</enum>
+
+<enum name="TabManagerTabRankerResult">
+  <int value="0" label="Success">Tab score was calculated successfully.</int>
+  <int value="1" label="Preprocessor initialization failed">
+    The ExamplePreprocessorConfig could not be loaded or parsed.
+  </int>
+  <int value="2" label="Preprocessor other error">
+    The ExamplePreprocessor returned an error other than, or in addition to, the
+    kNoFeatureIndexFound error.
+  </int>
+</enum>
+
+<enum name="TabOrganizationTriggerOutcome">
+  <int value="0" label="Accepted">User clicked through the nudge UI.</int>
+  <int value="1" label="Dismissed">User explicitly dismissed the nudge UI.</int>
+  <int value="2" label="Timed out">
+    The timeout elapsed without user interaction.
+  </int>
+</enum>
+
+<enum name="TabRestoreMethod">
+  <int value="0" label="TabState"/>
+  <int value="1" label="CriticalPersistedTabData"/>
+  <int value="2" label="Create new Tab"/>
+  <int value="3" label="Failed to restore"/>
+  <int value="4" label="Skipped (NTP)"/>
+  <int value="5" label="Skipped (Empty URL)"/>
+</enum>
+
+<enum name="TabScreenshotAction">
+  <int value="0" label="User took no actions">
+    User made a screenshot, but did not take any actions with it before
+    navigating away or closing the tab.
+  </int>
+  <int value="1" label="Opened sharing">
+    User took a screenshot then tried to share.
+  </int>
+  <int value="2" label="Download IPH provided">
+    User was provided in product help for Downloads after taking a screenshot.
+  </int>
+</enum>
+
+<enum name="TabSearchCloseActions">
+  <int value="0" label="User did not close via Tab Search UI">
+    The UI was dismissed via interactions outside what is offered by the Tab
+    Search UI.
+  </int>
+  <int value="1" label="User switched to an open tab">
+    The Tab Search UI was dismissed as a result of the user opting to switch to
+    a currently open tab.
+  </int>
+</enum>
+
+<enum name="TabSearchOpenActions">
+  <int value="0" label="User opened the Tab Search UI via a mouse click"/>
+  <int value="1" label="User opened the Tab Search UI via keyboard navigation"/>
+  <int value="2" label="User opened the Tab Search UI via keyboard shortcut"/>
+  <int value="3" label="User opened the Tab Search UI via touch gesture"/>
+</enum>
+
+<enum name="TabSearchRecentlyClosedItemOpenAction">
+  <int value="0"
+      label="Opened a recently closed item from an unfiltered item list"/>
+  <int value="1"
+      label="Opened a recently closed item from a filtered item list"/>
+</enum>
+
+<enum name="TabSearchRecentlyClosedToggleActions">
+  <int value="0" label="Expand the recently closed items section"/>
+  <int value="1" label="Collapse the recently closed items section"/>
+</enum>
+
+<enum name="TabSearchTabSwitchAction">
+  <int value="0" label="Switch to tab from unfiltered tab list"/>
+  <int value="1" label="Switch to tab from filtered search tab list"/>
+</enum>
+
+<enum name="TabStatus">
+  <int value="0" label="Memory resident"/>
+  <int value="1" label="Evicted and reloaded"/>
+  <int value="2" label="Reloaded due to cold start"/>
+  <int value="3" label="Partially evicted"/>
+  <int value="4" label="Reloaded due to backgrounding"/>
+  <int value="5" label="Reloaded due to incognito"/>
+  <int value="6" label="Reloaded due to cold start (fg tab on start)"/>
+  <int value="7" label="Reloaded due to cold start (bg tab on switch)"/>
+  <int value="8" label="Lazy load for 'Open in new tab'"/>
+  <int value="9" label="Stopped due to page loading when backgrounding"/>
+  <int value="10" label="Evicted due to page loading when backgrounding"/>
+  <int value="11" label="Evicted due to OS terminating the renderer."/>
+</enum>
+
+<enum name="TabStripFailureContext">
+  <int value="0" label="New tab failed to open"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

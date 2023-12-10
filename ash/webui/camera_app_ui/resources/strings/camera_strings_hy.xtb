@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Ջնջել էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="1113173431709655881">Տեսախցիկի ռեժիմ</translation>
 <translation id="1153190633558910465">Ցանցն անջատված է</translation>
-<translation id="1175958423215084756">Հայտնաբերվել է հղում։ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Էջը <ph name="PAGE_NUMBER" />-ը ջնջվեց</translation>
 <translation id="1258009455399840361">Պտտել 90 աստիճան ժամացույցի սլաքի ուղղությամբ</translation>
 <translation id="1417314334557041815">Փոփոխել էջ <ph name="INDEX" />-ը</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Տեսանյութը մշակվում է…</translation>
 <translation id="3789724198583203151">Պտտել 90 աստիճան ժամացույցի սլաքի հակառակ ուղղությամբ</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>
-<translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="4060608699153044055">Դուք չեք կարող տեսագրել, քանի որ սարքում բավարար տարածք չկա։ Տեսագրումը սկսելու համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ՄՊ</translation>
 <translation id="4118525110028899586">Դադարեցնել տեսագրումը</translation>
 <translation id="4121305183798804752">Փաստաթուղթը ջնջված է</translation>
 <translation id="414641094616694804">Այս տեսախցիկի լուծաչափը հնարավոր չէ փոխել</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
-<translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
 <translation id="428234092390943511">Էջի մանրապատկեր</translation>
 <translation id="4349714250734879769">Մասշտաբավորել շրջանակները Chrome-ի միջոցով</translation>
 <translation id="4383571725254449280">Տպման վիճակագրության մատյաններ</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Տեսագրել սովորական տեսանյութ</translation>
 <translation id="7748344063862150053">Փաստաթղթի վերևի աջ անկյուն</translation>
 <translation id="7933675232020478311">Տեղափոխվում է ներքև ու աջ</translation>
-<translation id="7983668134180549431">Հայտնաբերվել է տեքստ։</translation>
 <translation id="8079255378695216066">Հնարավոր չէ սկսել տեսագրումը</translation>
 <translation id="8120146556401698679">Տեղաշարժում/թեքում/մասշտաբավորում</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Չհաջողվեց սկսել տեսագրումը</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Խոշորացնել</translation>
+<translation id="8926890870105777777">Միանալ «<ph name="WIFINAME" />» ցանցին</translation>
 <translation id="9045010116236796332">Փաստաթուղթը դրեք շրջանակի մեջ</translation>
 <translation id="9045155556724273246">10 վայրկյան</translation>
 <translation id="906331135292332864">Պատկերը մշակվում է...</translation>

@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 
+#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -28,9 +28,9 @@ struct GridItemPlacementData {
   bool has_descendant_that_depends_on_percentage_block_size;
 };
 
-struct GridBreakTokenData final : NGBlockBreakTokenData {
+struct GridBreakTokenData final : BlockBreakTokenData {
   GridBreakTokenData(
-      const NGBlockBreakTokenData* break_token_data,
+      const BlockBreakTokenData* break_token_data,
       GridSizingTree&& grid_sizing_tree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit consumed_grid_block_size,
@@ -38,7 +38,7 @@ struct GridBreakTokenData final : NGBlockBreakTokenData {
       const Vector<LayoutUnit>& row_offset_adjustments,
       const Vector<EBreakBetween>& row_break_between,
       const HeapVector<Member<LayoutBox>>& oof_children)
-      : NGBlockBreakTokenData(kGridBreakTokenData, break_token_data),
+      : BlockBreakTokenData(kGridBreakTokenData, break_token_data),
         grid_sizing_tree(std::move(grid_sizing_tree)),
         intrinsic_block_size(intrinsic_block_size),
         consumed_grid_block_size(consumed_grid_block_size),
@@ -50,13 +50,13 @@ struct GridBreakTokenData final : NGBlockBreakTokenData {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(grid_sizing_tree);
     visitor->Trace(oof_children);
-    NGBlockBreakTokenData::Trace(visitor);
+    BlockBreakTokenData::Trace(visitor);
   }
 
   GridSizingTree grid_sizing_tree;
   LayoutUnit intrinsic_block_size;
 
-  // This is similar to |NGBlockBreakTokenData::consumed_block_size|, however
+  // This is similar to |BlockBreakTokenData::consumed_block_size|, however
   // it isn't used for determining the final block-size of the fragment and
   // won't include any block-end padding (this prevents saturation bugs).
   LayoutUnit consumed_grid_block_size;
@@ -69,7 +69,7 @@ struct GridBreakTokenData final : NGBlockBreakTokenData {
 
 template <>
 struct DowncastTraits<GridBreakTokenData> {
-  static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
+  static bool AllowFrom(const BlockBreakTokenData& token_data) {
     return token_data.IsGridType();
   }
 };

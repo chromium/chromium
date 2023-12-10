@@ -205,7 +205,7 @@ class TrackpadInternalSurfaceView : public views::View {
 
   // Contains the data during a scroll session. Empty when no scroll is
   // underway.
-  absl::optional<ScrollData> scroll_data_;
+  std::optional<ScrollData> scroll_data_;
 
   int fingers_ = kDefaultFingers;
 };

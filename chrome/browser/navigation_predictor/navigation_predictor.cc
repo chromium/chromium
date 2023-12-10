@@ -226,10 +226,12 @@ void NavigationPredictor::ReportNewAnchorElements(
     replacements.ClearRef();
     document_url = element->source_url.ReplaceComponents(replacements);
     GURL target_url = element->target_url.ReplaceComponents(replacements);
-    if (target_url != document_url &&
-        predicted_urls_.find(target_url) == predicted_urls_.end()) {
-      predicted_urls_.insert(target_url);
-      new_predictions.push_back(target_url);
+    if (target_url != document_url) {
+      auto [it, inserted] =
+          predicted_urls_.insert(base::FastHash(target_url.spec()));
+      if (inserted) {
+        new_predictions.push_back(std::move(target_url));
+      }
     }
 
     anchors_.emplace(std::piecewise_construct, std::forward_as_tuple(anchor_id),
@@ -388,6 +390,20 @@ void NavigationPredictor::SetTaskRunnerForTesting(
   ml_model_execution_timer_.SetTaskRunner(task_runner);
   clock_ = clock;
   navigation_start_ = NowTicks();
+}
+
+// static
+bool NavigationPredictor::disable_renderer_metric_sending_delay_for_testing_ =
+    false;
+
+// static
+void NavigationPredictor::DisableRendererMetricSendingDelayForTesting() {
+  disable_renderer_metric_sending_delay_for_testing_ = true;
+}
+
+void NavigationPredictor::ShouldSkipUpdateDelays(
+    ShouldSkipUpdateDelaysCallback callback) {
+  std::move(callback).Run(disable_renderer_metric_sending_delay_for_testing_);
 }
 
 void NavigationPredictor::ReportAnchorElementClick(

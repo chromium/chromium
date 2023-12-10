@@ -3,8 +3,6 @@ This is a testharness.js-based test.
   assert_false: Main page has cross origin access to the popup? expected false got true
 [FAIL] Same-site popup with coop unsafe-none
   assert_false: Main page has cross origin access to the popup? expected false got true
-[PASS] Same-site popup with coop same-origin
-[PASS] Same-site popup with coop same-origin-allow-popups
 [FAIL] Same-site popup with coop restrict-properties
   assert_false: Main page has cross origin access to the popup? expected false got true
 Harness: the test ran to completion.

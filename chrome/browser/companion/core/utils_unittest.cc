@@ -38,11 +38,10 @@ TEST_F(CompanionCoreUtilsTest,
 TEST_F(CompanionCoreUtilsTest,
        HomepageURLForCompanionWithParams_kSidePanelCompanion2) {
   base::test::ScopedFeatureList scoped_list;
-
-  base::FieldTrialParams params;
-  params.insert({"companion-homepage-url", "https://foo.com/bar"});
-  scoped_list.InitAndEnableFeatureWithParameters(
-      features::internal::kSidePanelCompanion2, params);
+  scoped_list.InitWithFeaturesAndParameters(
+      {{features::internal::kSidePanelCompanion2,
+        {{"companion-homepage-url", "https://foo.com/bar"}}}},
+      {{features::internal::kSidePanelCompanion}});
 
   EXPECT_EQ("https://foo.com/bar", GetHomepageURLForCompanion());
 }

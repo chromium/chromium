@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
+#include "partition_alloc/address_pool_manager.h"
 
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_space_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/alignment.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_space_stats.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/thread_isolation/alignment.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>

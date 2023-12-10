@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/browser/portal/portal.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -30,7 +29,6 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_display_feature.h"
-#include "content/test/portal/portal_created_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -88,38 +86,6 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
               actual_frame_sink_id_.sink_id());
   }
 
-  Portal* CreatePortalToUrl(WebContentsImpl* host_contents,
-                            GURL portal_url,
-                            int number_of_navigations) {
-    EXPECT_GE(number_of_navigations, 1);
-    RenderFrameHostImpl* main_frame = host_contents->GetPrimaryMainFrame();
-
-    // Create portal and wait for navigation.
-    PortalCreatedObserver portal_created_observer(main_frame);
-    TestNavigationObserver navigation_observer(nullptr, number_of_navigations);
-    navigation_observer.set_wait_event(
-        TestNavigationObserver::WaitEvent::kNavigationFinished);
-    navigation_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecJs(
-        main_frame, JsReplace("{"
-                              "  let portal = document.createElement('portal');"
-                              "  portal.src = $1;"
-                              "  portal.setAttribute('id', 'portal');"
-                              "  document.body.appendChild(portal);"
-                              "}",
-                              portal_url)));
-    Portal* portal = portal_created_observer.WaitUntilPortalCreated();
-    navigation_observer.StopWatchingNewWebContents();
-
-    WebContentsImpl* portal_contents = portal->GetPortalContents();
-    EXPECT_TRUE(portal_contents);
-
-    navigation_observer.WaitForNavigationFinished();
-    EXPECT_TRUE(WaitForLoadStop(portal_contents));
-
-    return portal;
-  }
-
   void GiveItSomeTime() {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -132,7 +98,6 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{blink::features::kPortals};
   viz::FrameSinkId expected_frame_sink_id_;
 };
 
@@ -184,10 +149,17 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // resizes the top level widget.
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
+  DISABLED_VisualPropertiesPropagation_VisibleViewportSize
+#else
+#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
+  VisualPropertiesPropagation_VisibleViewportSize
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       VisualPropertiesPropagation_VisibleViewportSize) {
+                       MAYBE_VisualPropertiesPropagation_VisibleViewportSize) {
   GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
+      "a.com", "/cross_site_iframe_factory.html?a(b,c,about:blank)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -195,11 +167,13 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   RenderWidgetHostView* root_view =
       root->current_frame_host()->GetRenderWidgetHost()->GetView();
 
-  // We wait for the main frame and the two subframes.
-  int number_of_navigations = 3;
-  Portal* portal =
-      CreatePortalToUrl(web_contents, main_url, number_of_navigations);
-  WebContentsImpl* nested_contents = portal->GetPortalContents();
+  // We attach an inner WebContents which contains b.com and c.com subframes,
+  // too.
+  auto* nested_contents = static_cast<WebContentsImpl*>(
+      CreateAndAttachInnerContents(root->child_at(2)->current_frame_host()));
+  EXPECT_TRUE(NavigateToURL(
+      nested_contents, embedded_test_server()->GetURL(
+                           "a.com", "/cross_site_iframe_factory.html?a(b,c)")));
   FrameTreeNode* nested_root = nested_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostView* nested_root_view =
       nested_root->current_frame_host()->GetRenderWidgetHost()->GetView();
@@ -314,11 +288,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     const gfx::Size resize_to(nested_initial_size.width() - 10,
                               nested_initial_size.height() - 10);
 
-    EXPECT_TRUE(ExecJs(
-        root->current_frame_host(),
-        JsReplace("document.getElementById('portal').style.width = '$1px';"
-                  "document.getElementById('portal').style.height = '$2px';",
-                  resize_to.width(), resize_to.height())));
+    EXPECT_TRUE(
+        ExecJs(root->current_frame_host(),
+               JsReplace("document.getElementById('child-2').width = '$1px';"
+                         "document.getElementById('child-2').height = '$2px';",
+                         resize_to.width(), resize_to.height())));
 
     // Wait to see both RenderWidgets receive the message.
     while (true) {

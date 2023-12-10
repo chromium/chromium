@@ -5,9 +5,8 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, PaperTooltipElement, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, PaperTooltipElement, PrivacyHubSensorSubpageUserAction, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,14 +14,17 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeMediaDevices} from '../fake_media_devices.js';
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
+import {createApp, createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 type App = appPermissionHandlerMojom.App;
 
 suite('<settings-privacy-hub-microphone-subpage>', () => {
   let fakeHandler: FakeAppPermissionHandler;
+  let metrics: FakeMetricsPrivate;
   let privacyHubMicrophoneSubpage: SettingsPrivacyHubMicrophoneSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
   let mediaDevices: FakeMediaDevices;
@@ -30,6 +32,8 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
   setup(() => {
     fakeHandler = new FakeAppPermissionHandler();
     setAppPermissionProviderForTesting(fakeHandler);
+
+    metrics = createFakeMetricsPrivate();
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
@@ -89,7 +93,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         '#microphoneListSection'));
   }
 
-  function getNoMicrophoneText(): HTMLDivElement|null {
+  function getNoMicrophoneTextElement(): HTMLDivElement|null {
     return privacyHubMicrophoneSubpage.shadowRoot!.querySelector(
         '#noMicrophoneText');
   }
@@ -135,7 +139,9 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
                 .value);
         assertEquals(
             privacyHubMicrophoneSubpage.i18n('deviceOff'), getOnOffText());
-        assertEquals('Blocked for all', getOnOffSubtext());
+        assertEquals(
+            privacyHubMicrophoneSubpage.i18n('blockedForAllText'),
+            getOnOffSubtext());
         assertFalse(isMicrophoneListSectionVisible());
       });
 
@@ -154,15 +160,53 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
       assertEquals(
           microphoneToggle.checked,
           privacyHubMicrophoneSubpage.prefs.ash.user.microphone_allowed.value);
+      assertEquals(
+          i + 1,
+          metrics.countMetricValue(
+              'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+              PrivacyHubSensorSubpageUserAction.SYSTEM_ACCESS_CHANGED));
     }
   });
 
+  function isMicrophoneRowActionable(): boolean {
+    const actionableAttribute =
+        privacyHubMicrophoneSubpage.shadowRoot!
+            .querySelector('#accessStatusRow')!.getAttribute('actionable');
+    return actionableAttribute === '';
+  }
+
+  test(
+      'Clicking toggle is no-op when accessStatusRow is not actionable',
+      async () => {
+        const microphoneToggle = getMicrophoneCrToggle();
+        assertTrue(microphoneToggle.checked);
+
+        assertFalse(isMicrophoneRowActionable());
+        microphoneToggle.click();
+        assertTrue(microphoneToggle.checked);
+
+        // Add a microphone to make accessStatusRow actionable.
+        mediaDevices.addDevice('audioinput', 'Fake Microphone');
+        await flushTasks();
+        assertTrue(isMicrophoneRowActionable());
+        microphoneToggle.click();
+        assertFalse(microphoneToggle.checked);
+
+        // Activate microphone hardware toggle to make the accessStatusRow not
+        // actionable.
+        webUIListenerCallback('microphone-hardware-toggle-changed', true);
+        flush();
+        assertFalse(isMicrophoneRowActionable());
+        microphoneToggle.click();
+        assertFalse(microphoneToggle.checked);
+      });
+
   test('No microphone connected by default', () => {
     assertNull(getMicrophoneList());
-    assertTrue(!!getNoMicrophoneText());
+    assertTrue(!!getNoMicrophoneTextElement());
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('noMicrophoneConnectedText'),
-        getNoMicrophoneText()!.textContent!.trim());
+        getNoMicrophoneTextElement()!.textContent!.trim());
   });
 
   test(
@@ -181,7 +225,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
         assertFalse(getMicrophoneCrToggle()!.disabled);
         assertTrue(getMicrophoneTooltip()!.hidden);
-        assertNull(getNoMicrophoneText());
+        assertNull(getNoMicrophoneTextElement());
       });
 
   test(
@@ -315,15 +359,6 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         getNoAppHasAccessTextSection()!.textContent!.trim());
   });
 
-  function createApp(
-      id: string, name: string, permissionType: PermissionType,
-      permissionValue: TriState): App {
-    const app: App = {id, name, permissions: {}};
-    app.permissions[permissionType] = createTriStatePermission(
-        permissionType, permissionValue, /*is_managed=*/ false);
-    return app;
-  }
-
   function initializeObserver(): Promise<void> {
     return fakeHandler.whenCalled('addObserver');
   }
@@ -423,5 +458,21 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
     assertTrue(getManagePermissionsInChromeRow().hidden);
     assertFalse(getNoWebsiteHasAccessTextRow().hidden);
+  });
+
+  test('Website section metric recorded when clicked', () => {
+    assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED));
+
+    getManagePermissionsInChromeRow().click();
+
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED));
   });
 });

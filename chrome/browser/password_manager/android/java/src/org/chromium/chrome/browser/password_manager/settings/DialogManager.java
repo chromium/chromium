@@ -26,8 +26,7 @@ public final class DialogManager {
      * Contains the reference to a {@link android.app.DialogFragment} between the call to {@link
      * show} and dismissing the dialog.
      */
-    @Nullable
-    private DialogFragment mDialogFragment;
+    @Nullable private DialogFragment mDialogFragment;
 
     /**
      * The least amout of time for which {@link mDialogFragment} should stay visible to avoid
@@ -48,12 +47,10 @@ public final class DialogManager {
      * Used to gate hiding of a dialog on two actions: one automatic delayed signal and one manual
      * call to {@link hide}. This is not null between the calls to {@link show} and {@link hide}.
      */
-    @Nullable
-    private SingleThreadBarrierClosure mBarrierClosure;
+    @Nullable private SingleThreadBarrierClosure mBarrierClosure;
 
     /** Callback to run after the dialog was hidden. Can be null if no hiding was requested.*/
-    @Nullable
-    private Runnable mCallback;
+    @Nullable private Runnable mCallback;
 
     private boolean mShowingRequested;
 
@@ -63,8 +60,10 @@ public final class DialogManager {
     public @interface HideActions {
         /** The dialog has not been shown, so it is not being hidden. */
         int NO_OP = 0;
+
         /** {@link #mBarrierClosure} was signalled so the dialog is hidden now. */
         int HIDDEN_IMMEDIATELY = 1;
+
         /** The hiding is being delayed until {@link #mBarrierClosure} is signalled further. */
         int HIDING_DELAYED = 2;
     }
@@ -75,8 +74,7 @@ public final class DialogManager {
     }
 
     /** The callback called everytime {@link #hide} is executed. */
-    @Nullable
-    private final ActionsConsumer mActionsConsumer;
+    @Nullable private final ActionsConsumer mActionsConsumer;
 
     /**
      * Constructs a DialogManager, optionally with a callback to report which action was taken on
@@ -97,12 +95,14 @@ public final class DialogManager {
      */
     public void showWithDelay(DialogFragment dialog, FragmentManager fragmentManager, int delay) {
         mShowingRequested = true;
-        new TimedCallbackDelayer(delay).delay(() -> {
-            // hide() might have been called during the delay.
-            if (mShowingRequested) {
-                show(dialog, fragmentManager);
-            }
-        });
+        new TimedCallbackDelayer(delay)
+                .delay(
+                        () -> {
+                            // hide() might have been called during the delay.
+                            if (mShowingRequested) {
+                                show(dialog, fragmentManager);
+                            }
+                        });
     }
 
     /**
@@ -129,8 +129,7 @@ public final class DialogManager {
      */
     public void hide(Runnable callback) {
         if (mActionsConsumer != null) {
-            @HideActions
-            final int action;
+            @HideActions final int action;
             if (mBarrierClosure == null) {
                 action = HideActions.NO_OP;
             } else if (mBarrierClosure.isReady()) {

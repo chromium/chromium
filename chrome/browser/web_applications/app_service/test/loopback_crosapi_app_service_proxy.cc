@@ -111,6 +111,13 @@ void LoopbackCrosapiAppServiceProxy::UninstallSilently(
   NOTIMPLEMENTED();
 }
 
+void LoopbackCrosapiAppServiceProxy::InstallApp(
+    crosapi::mojom::InstallAppParamsPtr params,
+    InstallAppCallback callback) {
+  // Implement this if needed.
+  NOTIMPLEMENTED();
+}
+
 void LoopbackCrosapiAppServiceProxy::OnApps(std::vector<apps::AppPtr> deltas) {
   PostTask(base::BindOnce(&LoopbackCrosapiAppServiceProxy::OnAppsInternal,
                           weak_ptr_factory_.GetWeakPtr(), std::move(deltas)));

@@ -23,6 +23,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -42,9 +43,6 @@ namespace {
 constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
 
-constexpr auto kIphMarginDip = gfx::Insets::TLBR(0, 24, 2, 24);
-constexpr auto kIphMarginTabletModeDip = gfx::Insets::TLBR(12, 16, 2, 16);
-
 bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
   if (assistant::features::IsAssistantLearnMoreEnabled()) {
     return !in_tablet_mode;
@@ -54,11 +52,6 @@ bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
 
 bool ShouldShowIph() {
   return assistant::features::IsAssistantLearnMoreEnabled();
-}
-
-int GetMarginWidth(bool in_tablet_mode) {
-  return in_tablet_mode ? kIphMarginTabletModeDip.width()
-                        : kIphMarginDip.width();
 }
 
 }  // namespace
@@ -93,13 +86,9 @@ void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {
 
 void AssistantZeroStateView::OnBoundsChanged(const gfx::Rect& prev_bounds) {
   if (prev_bounds.size() != bounds().size()) {
-    // Update `learn_more_toast_` preferred size to layout the title label.
-    // The actual height may change based on the text in the toast.
-    const int kIphMaxHeightDip = 64;
-    const auto kIphPreferredSizeDip =
-        gfx::Size(bounds().width() - GetMarginWidth(delegate_->IsTabletMode()),
-                  kIphMaxHeightDip);
-    iph_view_->SetPreferredSize(kIphPreferredSizeDip);
+    int height = iph_view_->GetPreferredSize().height();
+    auto preferred_size = gfx::Size(bounds().width(), height);
+    iph_view_->SetPreferredSize(preferred_size);
   }
 }
 
@@ -113,8 +102,8 @@ void AssistantZeroStateView::OnAssistantControllerDestroying() {
 void AssistantZeroStateView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (new_visibility == AssistantVisibility::kClosed)
     UpdateLayout();
 }
@@ -157,11 +146,9 @@ void AssistantZeroStateView::InitLayout() {
 
   // Launcher search IPH view:
   iph_view_ = AddChildView(std::make_unique<LauncherSearchIphView>(
-      /*delegate=*/this, /*is_in_tablet_mode=*/delegate_->IsTabletMode()));
+      /*delegate=*/this, delegate_->IsTabletMode(),
+      /*scoped_iph_session=*/nullptr, /*show_assistant_chip=*/false));
   iph_view_->SetID(AssistantViewID::kLauncherSearchIph);
-  iph_view_->SetProperty(views::kMarginsKey, delegate_->IsTabletMode()
-                                                 ? kIphMarginTabletModeDip
-                                                 : kIphMarginDip);
 }
 
 void AssistantZeroStateView::UpdateLayout() {
@@ -184,5 +171,8 @@ void AssistantZeroStateView::RunLauncherSearchQuery(
 void AssistantZeroStateView::OpenAssistantPage() {
   NOTREACHED_NORETURN();
 }
+
+BEGIN_METADATA(AssistantZeroStateView)
+END_METADATA
 
 }  // namespace ash

@@ -504,14 +504,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
                                  resource_width, resource_height);
 
   if (properties_->IsSubframeDeprioritizationEnabled()) {
-    if (properties_->IsOutermostMainFrame()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "LowPriorityIframes.MainFrameRequestPriority", priority,
-          static_cast<int>(ResourceLoadPriority::kHighest) + 1);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "LowPriorityIframes.IframeRequestPriority", priority,
-          static_cast<int>(ResourceLoadPriority::kHighest) + 1);
+    if (!properties_->IsOutermostMainFrame()) {
       // When enabled, the priority of all resources in subframe is dropped.
       // Non-delayable resources are assigned a priority of kLow, and the rest
       // of them are assigned a priority of kLowest. This ensures that if the
@@ -679,6 +672,19 @@ Resource* ResourceFetcher::CachedResource(const KURL& resource_url) const {
   if (it == cached_resources_map_.end())
     return nullptr;
   return it->value.Get();
+}
+
+bool ResourceFetcher::ResourceHasBeenEmulatedLoadStartedForInspector(
+    const KURL& resource_url) const {
+  if (resource_url.IsEmpty()) {
+    return false;
+  }
+  KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(resource_url);
+  const auto it = emulated_load_started_for_inspector_resources_map_.find(url);
+  if (it == emulated_load_started_for_inspector_resources_map_.end()) {
+    return false;
+  }
+  return true;
 }
 
 const HeapHashSet<Member<Resource>>
@@ -2356,14 +2362,24 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
     ResourcePriority resource_priority = priorities.first;
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
         ResourceType::kImage, resource->GetResourceRequest(),
-        resource_priority.visibility);
+        resource_priority.visibility, FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kNotSpeculative,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false, absl::nullopt, absl::nullopt,
+        resource_priority.is_lcp_resource);
 
     ResourcePriority resource_priority_excluding_image_loader =
         priorities.second;
     ResourceLoadPriority computed_load_priority_excluding_image_loader =
         ComputeLoadPriority(
             ResourceType::kImage, resource->GetResourceRequest(),
-            resource_priority_excluding_image_loader.visibility);
+            resource_priority_excluding_image_loader.visibility,
+            FetchParameters::DeferOption::kNoDefer,
+            FetchParameters::SpeculativePreloadType::kNotSpeculative,
+            RenderBlockingBehavior::kNonBlocking,
+            mojom::blink::ScriptType::kClassic, false, absl::nullopt,
+            absl::nullopt,
+            resource_priority_excluding_image_loader.is_lcp_resource);
 
     // When enabled, `priority` is used, which considers the resource priority
     // via ImageLoader, i.e. ImageResourceContent
@@ -2463,9 +2479,23 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   if (CachedResource(url)) {
     return;
   }
+
+  if (ResourceHasBeenEmulatedLoadStartedForInspector(url)) {
+    return;
+  }
+
   if (resource->ErrorOccurred()) {
     // We should ideally replay the error steps, but we cannot.
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kEmulateLoadStartedForInspectorOncePerResource)) {
+    // Update the emulated load started for inspector resources map with the
+    // resource so that future emulations of the same resource won't happen.
+    String resource_url = MemoryCache::RemoveFragmentIdentifierIfNeeded(url);
+    emulated_load_started_for_inspector_resources_map_.Set(resource_url,
+                                                           resource);
   }
 
   ResourceRequest resource_request(url);
@@ -2767,6 +2797,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(loaders_);
   visitor->Trace(non_blocking_loaders_);
   visitor->Trace(cached_resources_map_);
+  visitor->Trace(emulated_load_started_for_inspector_resources_map_);
   visitor->Trace(image_resources_);
   visitor->Trace(not_loaded_image_resources_);
   visitor->Trace(preloads_);

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Second fetch returns same response
+Harness: the test ran to completion.
+

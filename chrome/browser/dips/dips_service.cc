@@ -25,7 +25,6 @@
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
@@ -182,10 +181,7 @@ DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
-      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))),
-      tracking_protection_settings_(
-          TrackingProtectionSettingsFactory::GetForProfile(
-              Profile::FromBrowserContext(context))) {
+      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   absl::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
@@ -221,11 +217,6 @@ DIPSService::DIPSService(content::BrowserContext* context)
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(context))) {
     dips_browser_signin_detector_.emplace(this, identity_manager);
-  }
-
-  if (tracking_protection_settings_) {
-    tracking_protection_settings_observation_.Observe(
-        tracking_protection_settings_.get());
   }
 }
 
@@ -441,9 +432,8 @@ void DIPSService::HandleRedirect(
     const DIPSRedirectChainInfo& chain,
     RecordBounceCallback record_bounce,
     base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
-  const std::string site = GetSiteForDIPS(redirect.url);
-  bool initial_site_same = (site == chain.initial_site);
-  bool final_site_same = (site == chain.final_site);
+  bool initial_site_same = (redirect.site == chain.initial_site);
+  bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index, chain.length);
 
   if (base::FeatureList::IsEnabled(kDipsUkm)) {
@@ -622,41 +612,4 @@ void DIPSService::AddObserver(Observer* observer) {
 
 void DIPSService::RemoveObserver(const Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void DIPSService::OnTrackingProtection3pcdChanged() {
-  if (!tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get()
-           .is_positive()) {
-    return;
-  }
-
-  if (!tracking_protection_settings_ ||
-      !tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    return;
-  }
-
-  storage_.AsyncCall(&DIPSStorage::ReadRecentPopupsWithInteraction)
-      .WithArgs(tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get())
-      .Then(base::BindOnce(&DIPSService::BackfillPopupHeuristicGrants,
-                           weak_factory_.GetWeakPtr()));
-}
-
-void DIPSService::BackfillPopupHeuristicGrants(
-    std::vector<PopupWithTime> recent_popups) {
-  for (const auto& popup : recent_popups) {
-    base::TimeDelta grant_duration =
-        tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get() -
-        (base::Time::Now() - popup.last_popup_time);
-    if (!grant_duration.is_positive()) {
-      continue;
-    }
-
-    // Create cookie access grants scoped to the schemeless pattern, since the
-    // scheme is not available.
-    GURL popup_url = GURL(base::StrCat({"http://", popup.popup_site}));
-    GURL opener_url = GURL(base::StrCat({"http://", popup.opener_site}));
-    cookie_settings_->SetTemporaryCookieGrantForHeuristic(
-        popup_url, opener_url, grant_duration,
-        /*use_schemeless_patterns=*/true);
-  }
 }

@@ -1,27 +1,4 @@
 This is a wdspec test.
-[PASS] test_null_parameter_value
-[PASS] test_null_response_value
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   assert 200 == 404
-[PASS] test_cookie_unsupported_scheme[about]
-[PASS] test_cookie_unsupported_scheme[blob]
-[PASS] test_cookie_unsupported_scheme[data]
-[PASS] test_cookie_unsupported_scheme[file]
-[PASS] test_cookie_unsupported_scheme[ftp]
-[PASS] test_cookie_unsupported_scheme[javascript]
-[PASS] test_cookie_unsupported_scheme[websocket]
-[PASS] test_cookie_unsupported_scheme[secure websocket]
-[PASS] test_add_domain_cookie
-[PASS] test_add_cookie_for_ip
-[PASS] test_add_non_session_cookie
-[PASS] test_add_session_cookie
-[PASS] test_add_session_cookie_with_leading_dot_character_in_domain
-[PASS] test_add_cookie_with_valid_samesite_flag[None]
-[PASS] test_add_cookie_with_valid_samesite_flag[Lax]
-[PASS] test_add_cookie_with_valid_samesite_flag[Strict]
-[PASS] test_add_cookie_with_invalid_samesite_flag
-[PASS] test_add_cookie_with_invalid_samesite_type[False]
-[PASS] test_add_cookie_with_invalid_samesite_type[12]
-[PASS] test_add_cookie_with_invalid_samesite_type[same_site2]
 Harness: the test ran to completion.

@@ -86,6 +86,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER},
     {"certificateProvisioningRefresh",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_REFRESH},
+    {"certificateProvisioningReset",
+     IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_RESET},
     {"certificateProvisioningDetails",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS},
     {"certificateProvisioningAdvancedSectionTitle",

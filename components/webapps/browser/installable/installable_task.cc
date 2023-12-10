@@ -50,7 +50,7 @@ void InstallableTask::RunCallback() {
         page_data_->primary_icon_purpose() ==
             blink::mojom::ManifestImageResource_Purpose::MASKABLE,
         page_data_->screenshots(),
-        valid_manifest_,
+        installability_check_passed,
     };
     std::move(callback_).Run(data);
   }
@@ -157,19 +157,16 @@ void InstallableTask::CheckEligibility() {
 void InstallableTask::CheckInstallability() {
   auto new_errors = evaluator_->CheckInstallability();
   if (new_errors.has_value()) {
-    for (auto error : new_errors.value()) {
-      if (error == MANIFEST_EMPTY &&
-          std::any_of(errors_.begin(), errors_.end(), [](int x) {
-            return x == NO_MANIFEST || x == MANIFEST_EMPTY;
-          })) {
-        // Skip if |errors_| already contains an empty manifest related error.
+    for (auto new_error : new_errors.value()) {
+      if (std::find(errors_.begin(), errors_.end(), new_error) !=
+          errors_.end()) {
+        // Don't add duplicated errors.
         continue;
       }
-      errors_.push_back(error);
+      errors_.push_back(new_error);
     }
   }
-  valid_manifest_ = new_errors.has_value() && new_errors->empty();
-
+  installability_check_passed = new_errors.has_value() && new_errors->empty();
   IncrementStateAndWorkOnNextTask();
 }
 

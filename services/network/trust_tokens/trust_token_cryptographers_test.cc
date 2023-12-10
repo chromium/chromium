@@ -4,9 +4,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
@@ -33,12 +33,12 @@ const mojom::TrustTokenProtocolVersion kProtocolVersion =
 // led to the test running for 2.5 sec on a debug build.
 constexpr size_t kNumTokensToRequest = 3;
 
-base::StringPiece as_string(base::span<const uint8_t> bytes) {
-  return base::StringPiece(reinterpret_cast<const char*>(bytes.data()),
-                           bytes.size());
+std::string_view as_string(base::span<const uint8_t> bytes) {
+  return std::string_view(reinterpret_cast<const char*>(bytes.data()),
+                          bytes.size());
 }
 
-base::StringPiece as_string(const std::vector<uint8_t>& bytes) {
+std::string_view as_string(const std::vector<uint8_t>& bytes) {
   return as_string(base::make_span(bytes));
 }
 

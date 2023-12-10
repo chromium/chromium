@@ -1,190 +1,116 @@
 This is a testharness.js-based test.
-Found 160 tests; 134 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Sanitizer.sanitize() should throw an error.
-[PASS] Sanitizer.sanitize(null).
-[PASS] Sanitizer.sanitze(DocumentFragment)
-[PASS] Sanitizer.sanitze(Document)
-[PASS] SanitizerAPI with config: string, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: html fragment, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: broken html, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: empty object, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: number, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: zeros, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: arithmetic, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: empty string, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: undefined, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: document, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: html without close tag, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: scripts for default configs, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: script not as root, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: script deeper in the tree, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: onclick scripts, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: plaintext, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: xmp, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: invalid config_input, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: empty dropElements list, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document function for <body>
-[PASS] SanitizerAPI with config: default behavior for custom elements, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allow custom elements, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allow custom elements with allow elements, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: disallow custom elements, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allow custom elements with drop list contains ["custom-element"], sanitize from document function for <body>
-[PASS] SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: dropElements list ["test-element", "i"]}, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: dropElements list ["dl", "p"]}, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allowElements list ["p"], sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allowElements list has no influence to dropElements, sanitize from document function for <body>
-[FAIL] SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: empty dropAttributes list with id attribute, sanitize from document function for <body>
-[FAIL] SanitizerAPI with config: dropAttributes list {"id": ["*"]} with id attribute, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attribute, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: Template element, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLAnchorElement, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLAreaElement with javascript protocal, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLAreaElement with javascript protocal start with space, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLAreaElement, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLFormElement with javascript action, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLFormElement with javascript action start with space, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLFormElement, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLInputElement with javascript formaction, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLInputElement with javascript formaction start with space, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLInputElement, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLButtonElement with javascript formaction, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTMLButtonElement, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: malformed HTML, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTML with comments; comments not allowed, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTML with comments; allowComments, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTML with comments; !allowComments, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTML with comments deeper in the tree, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTML with comments deeper in the tree, allowComments, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: HTML with comments deeper in the tree, !allowComments, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces., sanitize from document function for <body>
-[PASS] SanitizerAPI with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested., sanitize from document function for <body>
-[PASS] SanitizerAPI with config: dropElements list ["I", "DL"]}, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: dropElements list ["i", "dl"]}, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: dropElements list ["i", "dl"]} with uppercase HTML, sanitize from document function for <body>
-[FAIL] SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with id attribute, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with ID attribute, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes list {"id": ["*"]} with ID attribute, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: dropElements with unknown elements and without allowUnknownMarkup, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: blockElements with unknown elements and without allowUnknownMarkup, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allowElements with unknown elements and without allowUnknownMarkup, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: dropElements with unknown elements and with allowUnknownMarkup, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: blockElements with unknown elements and with allowUnknownMarkup, sanitize from document function for <body>
-[PASS] SanitizerAPI with config: allowElements with unknown elements and with allowUnknownMarkup, sanitize from document function for <body>
-[FAIL] SanitizerAPI with config: allowAttributes unknown attributes and without allowUnknownMarkup, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes unknown attributes and with allowUnknownMarkup, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes unknown attributes and without allowUnknownMarkup, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes unknown attributes and with allowUnknownMarkup, sanitize from document function for <body>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: string, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: html fragment, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: broken html, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: empty object, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: number, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: zeros, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: arithmetic, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: empty string, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: undefined, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: document, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: html without close tag, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: scripts for default configs, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: script not as root, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: script deeper in the tree, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: onclick scripts, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: plaintext, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: xmp, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: invalid config_input, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: empty dropElements list, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: default behavior for custom elements, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allow custom elements, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allow custom elements with allow elements, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: disallow custom elements, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allow custom elements with drop list contains ["custom-element"], sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: dropElements list ["test-element", "i"]}, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: dropElements list ["dl", "p"]}, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allowElements list ["p"], sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allowElements list has no influence to dropElements, sanitize from document fragment function for <template>
-[FAIL] SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: empty dropAttributes list with id attribute, sanitize from document fragment function for <template>
-[FAIL] SanitizerAPI with config: dropAttributes list {"id": ["*"]} with id attribute, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attribute, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: Template element, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLAnchorElement, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLAreaElement with javascript protocal, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLAreaElement with javascript protocal start with space, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLAreaElement, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLFormElement with javascript action, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLFormElement with javascript action start with space, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLFormElement, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLInputElement with javascript formaction, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLInputElement with javascript formaction start with space, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLInputElement, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLButtonElement with javascript formaction, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTMLButtonElement, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: malformed HTML, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTML with comments; comments not allowed, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTML with comments; allowComments, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTML with comments; !allowComments, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTML with comments deeper in the tree, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTML with comments deeper in the tree, allowComments, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: HTML with comments deeper in the tree, !allowComments, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces., sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested., sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: dropElements list ["I", "DL"]}, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: dropElements list ["i", "dl"]}, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: dropElements list ["i", "dl"]} with uppercase HTML, sanitize from document fragment function for <template>
-[FAIL] SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with id attribute, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with ID attribute, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes list {"id": ["*"]} with ID attribute, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI with config: dropElements with unknown elements and without allowUnknownMarkup, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: blockElements with unknown elements and without allowUnknownMarkup, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allowElements with unknown elements and without allowUnknownMarkup, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: dropElements with unknown elements and with allowUnknownMarkup, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: blockElements with unknown elements and with allowUnknownMarkup, sanitize from document fragment function for <template>
-[PASS] SanitizerAPI with config: allowElements with unknown elements and with allowUnknownMarkup, sanitize from document fragment function for <template>
-[FAIL] SanitizerAPI with config: allowAttributes unknown attributes and without allowUnknownMarkup, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: allowAttributes unknown attributes and with allowUnknownMarkup, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes unknown attributes and without allowUnknownMarkup, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI with config: dropAttributes unknown attributes and with allowUnknownMarkup, sanitize from document fragment function for <template>
-  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SanitizerAPI with config: test html without close tag with removeElements list ['div'], sanitize from document function for <body>
+  assert_equals: expected "<p>bla</p>" but got "<div>test</div><p>bla</p>"
+[FAIL] SanitizerAPI with config: allow custom elements, sanitize from document function for <body>
+  assert_equals: expected "testbla" but got "bla"
+[FAIL] SanitizerAPI with config: allow custom elements with allow elements, sanitize from document function for <body>
+  assert_equals: expected "<custom-element>test</custom-element>bla" but got "bla"
+[FAIL] SanitizerAPI with config: removeElements list ["test-element", "i"]}, sanitize from document function for <body>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: removeElements list ["dl", "p"]}, sanitize from document function for <body>
+  assert_equals: expected "<div>balabala<i>i</i></div>" but got "<div>balabala<i>i</i><p>t</p></div>"
+[FAIL] SanitizerAPI with config: elements list ["p"], sanitize from document function for <body>
+  assert_equals: expected "testptt<p>div</p>" but got "<div>test<div>p</div>tt<p>div</p></div>"
+[FAIL] SanitizerAPI with config: elements list has no influence to removeElements, sanitize from document function for <body>
+  assert_equals: expected "bla" but got "<div>test</div><p>bla</p>"
+[FAIL] SanitizerAPI with config: removeAttributes list ["id"] with id attribute, sanitize from document function for <body>
+  assert_equals: expected "<p>Click.</p>" but got "<p id=\\"test\\">Click.</p>"
+[FAIL] SanitizerAPI with config: elements list with <p> attributes: ["title"] and div attributes: ["id"] lists, sanitize from document function for <body>
+  assert_equals: expected "<p title=\\"p\\">P</p><div id=\\"div\\">DIV</div>" but got "<p id=\\"p\\" title=\\"p\\">P</p><div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <p> removeAttributes: ["title"]  and div removeAttributes: ["id"] lists, sanitize from document function for <body>
+  assert_equals: expected "<p id=\\"p\\">P</p><div title=\\"div\\">DIV</div>" but got "<p id=\\"p\\" title=\\"p\\">P</p><div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> attributes: ["id"] and removeAttributes: ["id"] lists, sanitize from document function for <body>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> attributes: ["id", "title"] does not override empty attributes: [] list, sanitize from document function for <body>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> attributes: ["id", "title"] does not override removeAttributes: ["id", "title"] list, sanitize from document function for <body>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> removeAttributes: ["id", "title"] is effective even with attributes: ["id", "title"] list, sanitize from document function for <body>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: attributes list has no influence to removeAttributes list, sanitize from document function for <body>
+  assert_equals: expected "<p>Click.</p>" but got "<p style=\\"color: black\\">Click.</p>"
+[FAIL] SanitizerAPI with config: Template element, sanitize from document function for <body>
+  assert_equals: expected "<template><div>hello</div></template>" but got ""
+[FAIL] SanitizerAPI with config: HTML with comments; comments, sanitize from document function for <body>
+  assert_equals: expected "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>" but got "<p>Some text</p><p>Some more text</p>"
+[FAIL] SanitizerAPI with config: HTML with comments deeper in the tree, comments, sanitize from document function for <body>
+  assert_equals: expected "<p>comment<!-- hello -->in<!-- </p> -->text</p>" but got "<p>commentintext</p>"
+[FAIL] SanitizerAPI with config: removeElements list ["i", "dl"]}, sanitize from document function for <body>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<dl>test</dl></div>"
+[FAIL] SanitizerAPI with config: removeElements list ["i", "dl"]} with uppercase HTML, sanitize from document function for <body>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<dl>test</dl></div>"
+[FAIL] SanitizerAPI with config: removeAttributes list ["id"] with ID attribute, sanitize from document function for <body>
+  assert_equals: expected "<p>Click.</p>" but got "<p id=\\"test\\">Click.</p>"
+[FAIL] SanitizerAPI with config: removeElements with unknown elements and without unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: replaceWithChildrenElements with unknown elements and without unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "<div>balabalatest</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: elements with unknown elements and without unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "testptt<p>div</p>" but got "<div>test<div>p</div>tt<p>div</p></div>"
+[FAIL] SanitizerAPI with config: removeElements with unknown elements and with unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: replaceWithChildrenElements with unknown elements and with unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "<div>balabalatest</div>t" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: elements with unknown elements and with unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "testptt<p>div</p><test>test</test>" but got "<div>test<div>p</div>tt<p>div</p></div>"
+[FAIL] SanitizerAPI with config: attributes: unknown attributes and with unknownMarkup, sanitize from document function for <body>
+  assert_equals: expected "<div hello=\\"1\\" world=\\"2\\"><b hello=\\"3\\" world=\\"4\\"></b></div>" but got "<div><b></b></div>"
+[FAIL] SanitizerAPI with config: test html without close tag with removeElements list ['div'], sanitize from document fragment function for <template>
+  assert_equals: expected "<p>bla</p>" but got "<div>test</div><p>bla</p>"
+[FAIL] SanitizerAPI with config: allow custom elements, sanitize from document fragment function for <template>
+  assert_equals: expected "testbla" but got "bla"
+[FAIL] SanitizerAPI with config: allow custom elements with allow elements, sanitize from document fragment function for <template>
+  assert_equals: expected "<custom-element>test</custom-element>bla" but got "bla"
+[FAIL] SanitizerAPI with config: removeElements list ["test-element", "i"]}, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: removeElements list ["dl", "p"]}, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabala<i>i</i></div>" but got "<div>balabala<i>i</i><p>t</p></div>"
+[FAIL] SanitizerAPI with config: elements list ["p"], sanitize from document fragment function for <template>
+  assert_equals: expected "testptt<p>div</p>" but got "<div>test<div>p</div>tt<p>div</p></div>"
+[FAIL] SanitizerAPI with config: elements list has no influence to removeElements, sanitize from document fragment function for <template>
+  assert_equals: expected "bla" but got "<div>test</div><p>bla</p>"
+[FAIL] SanitizerAPI with config: removeAttributes list ["id"] with id attribute, sanitize from document fragment function for <template>
+  assert_equals: expected "<p>Click.</p>" but got "<p id=\\"test\\">Click.</p>"
+[FAIL] SanitizerAPI with config: elements list with <p> attributes: ["title"] and div attributes: ["id"] lists, sanitize from document fragment function for <template>
+  assert_equals: expected "<p title=\\"p\\">P</p><div id=\\"div\\">DIV</div>" but got "<p id=\\"p\\" title=\\"p\\">P</p><div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <p> removeAttributes: ["title"]  and div removeAttributes: ["id"] lists, sanitize from document fragment function for <template>
+  assert_equals: expected "<p id=\\"p\\">P</p><div title=\\"div\\">DIV</div>" but got "<p id=\\"p\\" title=\\"p\\">P</p><div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> attributes: ["id"] and removeAttributes: ["id"] lists, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> attributes: ["id", "title"] does not override empty attributes: [] list, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> attributes: ["id", "title"] does not override removeAttributes: ["id", "title"] list, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: elements list with <div> removeAttributes: ["id", "title"] is effective even with attributes: ["id", "title"] list, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>DIV</div>" but got "<div id=\\"div\\" title=\\"div\\">DIV</div>"
+[FAIL] SanitizerAPI with config: attributes list has no influence to removeAttributes list, sanitize from document fragment function for <template>
+  assert_equals: expected "<p>Click.</p>" but got "<p style=\\"color: black\\">Click.</p>"
+[FAIL] SanitizerAPI with config: Template element, sanitize from document fragment function for <template>
+  assert_equals: expected "<template><div>hello</div></template>" but got ""
+[FAIL] SanitizerAPI with config: HTML with comments; comments, sanitize from document fragment function for <template>
+  assert_equals: expected "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>" but got "<p>Some text</p><p>Some more text</p>"
+[FAIL] SanitizerAPI with config: HTML with comments deeper in the tree, comments, sanitize from document fragment function for <template>
+  assert_equals: expected "<p>comment<!-- hello -->in<!-- </p> -->text</p>" but got "<p>commentintext</p>"
+[FAIL] SanitizerAPI with config: removeElements list ["i", "dl"]}, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<dl>test</dl></div>"
+[FAIL] SanitizerAPI with config: removeElements list ["i", "dl"]} with uppercase HTML, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<dl>test</dl></div>"
+[FAIL] SanitizerAPI with config: removeAttributes list ["id"] with ID attribute, sanitize from document fragment function for <template>
+  assert_equals: expected "<p>Click.</p>" but got "<p id=\\"test\\">Click.</p>"
+[FAIL] SanitizerAPI with config: removeElements with unknown elements and without unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: replaceWithChildrenElements with unknown elements and without unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabalatest</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: elements with unknown elements and without unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "testptt<p>div</p>" but got "<div>test<div>p</div>tt<p>div</p></div>"
+[FAIL] SanitizerAPI with config: removeElements with unknown elements and with unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabala</div>" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: replaceWithChildrenElements with unknown elements and with unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "<div>balabalatest</div>t" but got "<div>balabala<i>test</i></div>"
+[FAIL] SanitizerAPI with config: elements with unknown elements and with unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "testptt<p>div</p><test>test</test>" but got "<div>test<div>p</div>tt<p>div</p></div>"
+[FAIL] SanitizerAPI with config: attributes: unknown attributes and with unknownMarkup, sanitize from document fragment function for <template>
+  assert_equals: expected "<div hello=\\"1\\" world=\\"2\\"><b hello=\\"3\\" world=\\"4\\"></b></div>" but got "<div><b></b></div>"
 Harness: the test ran to completion.
 

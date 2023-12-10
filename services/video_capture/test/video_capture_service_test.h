@@ -6,6 +6,7 @@
 #define SERVICES_VIDEO_CAPTURE_TEST_VIDEO_CAPTURE_SERVICE_TEST_H_
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -57,6 +58,7 @@ class VideoCaptureServiceTest : public testing::Test {
   base::MockCallback<mojom::VideoSourceProvider::GetSourceInfosCallback>
       device_info_receiver_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   media::VideoCaptureParams requestable_settings_;
 };
 

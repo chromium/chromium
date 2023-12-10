@@ -16,8 +16,7 @@ import org.chromium.url.GURL;
 public class ProcessedValue {
     static final String TAG = "ProcessedValue";
 
-    @ProcessedValueType
-    public int type = ProcessedValueType.UNKNOWN;
+    @ProcessedValueType public int type = ProcessedValueType.UNKNOWN;
     public boolean booleanValue;
     public int intValue;
     public float floatValue;

@@ -31,6 +31,10 @@ namespace fileManagerPrivateInternal {
     double modifiedTimestamp;
     fileManagerPrivate.FileCategory category;
   };
+  dictionary CrostiniSharedPathResponse {
+    EntryDescription[] entries;
+    boolean firstForSession;
+  };
 
   callback SimpleCallback = void();
   callback ResolveIsolatedEntriesCallback = void(EntryDescription[] entries);
@@ -57,11 +61,11 @@ namespace fileManagerPrivateInternal {
   callback GetDirectorySizeCallback = void(double size);
   callback GetRecentFilesCallback = void(EntryDescription[] entries);
   callback GetCrostiniSharedPathsCallback =
-      void(EntryDescription[] entries, boolean firstForSession);
+      void(CrostiniSharedPathResponse response);
   callback GetLinuxPackageInfoCallback =
       void(fileManagerPrivate.LinuxPackageInfo linux_package_info);
   callback InstallLinuxPackageCallback =
-      void(fileManagerPrivate.InstallLinuxPackageResponse response);
+      void(fileManagerPrivate.InstallLinuxPackageStatus status);
   callback GetThumbnailCallback = void(DOMString ThumbnailDataUrl);
   callback BooleanCallback = void(boolean result);
   callback GetVolumeRootCallback = void(EntryDescription rootDir);
@@ -164,7 +168,7 @@ namespace fileManagerPrivateInternal {
     [supportsPromises] static void getLinuxPackageInfo(
         DOMString url,
         GetLinuxPackageInfoCallback callback);
-    static void installLinuxPackage(
+    [supportsPromises] static void installLinuxPackage(
         DOMString url,
         InstallLinuxPackageCallback callback);
     static void importCrostiniImage(DOMString url);

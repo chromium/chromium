@@ -31,6 +31,7 @@
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -286,7 +287,8 @@ SharedImageFactory::SharedImageFactory(
     // TODO(sunnyps): Should we get the device from SharedContextState instead?
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         shared_context_state_->GetD3D11Device(),
-        shared_image_manager_->dxgi_shared_handle_manager());
+        shared_image_manager_->dxgi_shared_handle_manager(),
+        shared_context_state_->GetGLFormatCaps());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }
@@ -444,11 +446,11 @@ bool SharedImageFactory::IsNativeBufferSupported(gfx::BufferFormat format,
   if (!supported_gmb_configurations_inited_) {
     supported_gmb_configurations_inited_ = true;
     if (WillGetGmbConfigFromGpu()) {
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
       for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
         supported_gmb_configurations_.emplace(config);
       }
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
     } else {
       supported_gmb_configurations_ =
           gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
@@ -877,6 +879,8 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       is_angle_metal || is_skia_graphite;
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
+  shared_image_caps.disable_webgpu_shared_images =
+      workarounds_.disable_webgpu_shared_images;
 
 #if BUILDFLAG(IS_WIN)
   shared_image_caps.shared_image_d3d =
@@ -887,6 +891,10 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
 #endif  // BUILDFLAG(IS_WIN)
 
   return shared_image_caps;
+}
+
+bool SharedImageFactory::HasSharedImage(const Mailbox& mailbox) const {
+  return shared_images_.contains(mailbox);
 }
 
 void SharedImageFactory::SetGpuExtraInfo(

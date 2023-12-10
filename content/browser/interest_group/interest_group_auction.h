@@ -171,6 +171,33 @@ class CONTENT_EXPORT InterestGroupAuction
   };
 
   struct CONTENT_EXPORT BidState {
+    // Used as a key to group Private Aggregation API requests from worklets in
+    // a map. The `reporting_origin` and `aggregation_coordinator_origin` are
+    // passed into the Private Aggregation API.
+    struct PrivateAggregationPhaseKey {
+      PrivateAggregationPhaseKey(
+          url::Origin reporting_origin,
+          PrivateAggregationPhase phase,
+          absl::optional<url::Origin> aggregation_coordinator_origin);
+      PrivateAggregationPhaseKey(const PrivateAggregationPhaseKey& other);
+      PrivateAggregationPhaseKey& operator=(
+          const PrivateAggregationPhaseKey& other);
+      PrivateAggregationPhaseKey(PrivateAggregationPhaseKey&& other);
+      PrivateAggregationPhaseKey& operator=(PrivateAggregationPhaseKey&& other);
+      ~PrivateAggregationPhaseKey();
+
+      bool operator<(const PrivateAggregationPhaseKey& other) const {
+        return std::tie(reporting_origin, phase,
+                        aggregation_coordinator_origin) <
+               std::tie(other.reporting_origin, other.phase,
+                        other.aggregation_coordinator_origin);
+      }
+
+      url::Origin reporting_origin;
+      PrivateAggregationPhase phase;
+      absl::optional<url::Origin> aggregation_coordinator_origin;
+    };
+
     explicit BidState(const SingleStorageInterestGroup&& bidder);
     ~BidState();
 
@@ -298,13 +325,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // Requests made to Private aggregation API in generateBid() and scoreAd().
     // Keyed by reporting origin of the associated requests, i.e., buyer origin
-    // for generateBid() and seller origin for scoreAd(), plus an enum that
-    // determines exactly which phase of the auction made that request.
-    //
-    // TODO(qingxinwu): Consider only saving the requests without saving Origin,
-    // since copying Origin is expensive.
-    std::map<std::pair<url::Origin, PrivateAggregationPhase>,
-             PrivateAggregationRequests>
+    // for generateBid() and seller origin for scoreAd(), an enum that
+    // determines exactly which phase of the auction made that request, and an
+    // optional aggregation coordinator origin.
+    std::map<PrivateAggregationPhaseKey, PrivateAggregationRequests>
         private_aggregation_requests;
 
     // Requests made to Private aggregation API in generateBid() for the
@@ -500,11 +524,14 @@ class CONTENT_EXPORT InterestGroupAuction
       base::OnceClosure on_seller_receiver_callback,
       AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
 
-  // Starts an auction based on a server response.
-  void StartFromServerResponse(
-      mojo_base::BigBuffer response,
-      AdAuctionPageData* ad_auction_page_data,
-      AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
+  // Handles the server response for an auction.
+  void HandleServerResponse(mojo_base::BigBuffer response,
+                            AdAuctionPageData* ad_auction_page_data);
+
+  // Handles a server response in a component auction.
+  void HandleComponentServerResponse(uint32_t pos,
+                                     mojo_base::BigBuffer response,
+                                     AdAuctionPageData* ad_auction_page_data);
 
   // Creates an InterestGroupAuctionReporter, after the auction has completed.
   // Takes ownership of the `auction_config`, so that the reporter can outlive
@@ -623,11 +650,13 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Retrieves all requests with reserved event type to the Private Aggregation
   // API returned by GenerateBid() and ScoreAd(). The return value is keyed by
-  // reporting origin of the associated requests. May only be called by external
-  // consumers after an auction has failed (on success, used internally to pass
-  // them to the InterestGroupAuctionReporter). May only be called once, since
-  // it takes ownership of stored reporting URLs.
-  std::map<url::Origin, PrivateAggregationRequests>
+  // reporting origin and aggregation coordinator origin of the associated
+  // requests. May only be called by external consumers after an auction has
+  // failed (on success, used internally to pass them to the
+  // InterestGroupAuctionReporter). May only be called once, since it takes
+  // ownership of stored reporting URLs.
+  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
+           PrivateAggregationRequests>
   TakeReservedPrivateAggregationRequests();
 
   // Retrieves all requests with non-reserved event type to the Private
@@ -721,6 +750,17 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig& config,
       const url::Origin& buyer);
 
+  // Creates a query param that should be appended to the trusted bidding
+  // signals fetch based on the specified TrustedBiddingSignalsSlotSizeMode.
+  // Returns an empty string if no such query param should be appended, either
+  // based on the auction/InterestGroup configuration or due to the the
+  // associated feature not being enabled. Public so that
+  // InterestGroupAuctionReporter can use it.
+  static std::string CreateTrustedBiddingSignalsSlotSizeParam(
+      const blink::AuctionConfig& config,
+      blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+          trusted_bidding_signals_slot_size_mode);
+
   // Gets the buyer per-buyer-signals in `config` for buyer. Public so that
   // InterestGroupAuctionReporter can use it.
   static absl::optional<std::string> GetPerBuyerSignals(
@@ -736,7 +776,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // that InterestGroupAuctionReporter can use it.
   static absl::optional<std::string>
   GetDirectFromSellerAuctionSignalsHeaderAdSlot(
-      const HeaderDirectFromSellerSignals& signals);
+      const HeaderDirectFromSellerSignals::Result& signals);
 
   // Gets the buyer DirectFromSellerSignals per-buyer-signals in `config` for
   // buyer. Public so that InterestGroupAuctionReporter can use it.
@@ -748,7 +788,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // for `owner`. Public so that InterestGroupAuctionReporter can use it.
   static absl::optional<std::string>
   GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
-      const HeaderDirectFromSellerSignals& signals,
+      const HeaderDirectFromSellerSignals::Result& signals,
       const url::Origin& owner);
 
   // Gets DirectFromSellerSignals seller-signals. Public so that
@@ -760,7 +800,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // InterestGroupAuctionReporter can use it.
   static absl::optional<std::string>
   GetDirectFromSellerSellerSignalsHeaderAdSlot(
-      const HeaderDirectFromSellerSignals& signals);
+      const HeaderDirectFromSellerSignals::Result& signals);
 
   // Replaces `${}` placeholders in a debug report URL's query string for post
   // auction signals if exist. Only replaces unescaped placeholder ${}, but
@@ -866,6 +906,7 @@ class CONTENT_EXPORT InterestGroupAuction
   bool MayHaveAdditionalBids() const {
     return config_->expects_additional_bids ||
            !encoded_signed_additional_bids_.empty() ||
+           currently_decoding_additional_bids_ ||
            !bid_states_for_additional_bids_.empty();
   }
 
@@ -913,7 +954,8 @@ class CONTENT_EXPORT InterestGroupAuction
   bool IsBiddingAndScoringPhaseComplete() const {
     CHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
     return num_scoring_dependencies_ == 0 && bids_being_scored_ == 0 &&
-           unscored_bids_.empty();
+           unscored_bids_.empty() &&
+           (!is_server_auction_ || saved_response_.has_value());
   }
 
   // Invoked when a component auction completes. If `success` is true, gets
@@ -1037,6 +1079,14 @@ class CONTENT_EXPORT InterestGroupAuction
   // Computes a key for a worklet associated with `bid_state`
   AuctionWorkletManager::WorkletKey BidderWorkletKey(BidState& bid_state);
 
+  // Returns the query string for the associated
+  // TrustedBiddingSignalsSlotSizeMode. Much like
+  // CreateTrustedBiddingSignalsSlotSizeParam(), but Caches strings that have
+  // previously been generated.
+  const std::string& GetTrustedBiddingSignalsSlotSizeParam(
+      blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+          trusted_bidding_signals_slot_size_mode);
+
   // Determines if an extended private aggregation buyers request should be
   // made, and if so, issues the request. Otherwise, does nothing.
   //
@@ -1084,10 +1134,19 @@ class CONTENT_EXPORT InterestGroupAuction
   // creating it if needed.
   SubresourceUrlBuilder* SubresourceUrlBuilderIfReady();
 
-  const HeaderDirectFromSellerSignals*
+  const HeaderDirectFromSellerSignals::Result*
   direct_from_seller_signals_header_ad_slot() const {
     return direct_from_seller_signals_header_ad_slot_.get();
   }
+
+  // Some of these methods are split to ensure that regardless of how they
+  // return they still call MaybeCompleteBiddingAndScoringPhase if they are
+  // called during the scoring phase.
+
+  // Returns false if we need to fail the auction instead of continuing in
+  // OnDecompressedServerResponse.
+  bool HandleServerResponseImpl(mojo_base::BigBuffer response,
+                                AdAuctionPageData* ad_auction_page_data);
 
   void OnDecompressedServerResponse(
       AdAuctionRequestContext* request_context,
@@ -1096,16 +1155,28 @@ class CONTENT_EXPORT InterestGroupAuction
   void OnParsedServerResponse(AdAuctionRequestContext* request_context,
                               data_decoder::DataDecoder::ValueOrError result);
 
+  // Returns false if we need to fail the auction instead of continuing in
+  // OnLoadedWinningGroup.
+  bool OnParsedServerResponseImpl(
+      AdAuctionRequestContext* request_context,
+      data_decoder::DataDecoder::ValueOrError result);
+
   void OnLoadedWinningGroup(BiddingAndAuctionResponse response,
                             absl::optional<StorageInterestGroup> maybe_group);
 
-  // Completion callback for HeaderDirectFromSellerSignals::ParseAndFind(). Sets
-  // `direct_from_seller_signals_header_ad_slot_`, and sets
+  void OnLoadedWinningGroupImpl(
+      BiddingAndAuctionResponse response,
+      absl::optional<StorageInterestGroup> maybe_group);
+
+  void CreateBidFromServerResponse();
+
+  // Completion callback for AdAuctionPageData::ParseAndFindAdAuctionSignals().
+  // Sets `direct_from_seller_signals_header_ad_slot_`, and sets
   // `direct_from_seller_signals_header_ad_slot_pending_` to false, appending
   // `errors` to `errors_`.
   void OnDirectFromSellerSignalHeaderAdSlotResolved(
-      std::unique_ptr<HeaderDirectFromSellerSignals> signals,
-      std::vector<std::string> errors);
+      std::string ad_slot,
+      scoped_refptr<HeaderDirectFromSellerSignals::Result> signals);
 
   static data_decoder::DataDecoder* GetDataDecoder(
       base::WeakPtr<InterestGroupAuction> instance);
@@ -1140,6 +1211,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // directFromSellerSignalsHeaderAdSlot response. Bid generation will be
   // blocked while true, even if promises have all resolved.
   bool direct_from_seller_signals_header_ad_slot_pending_ = false;
+
+  // This is true during the window where the additional bids have been moved
+  // away from `encoded_signed_additional_bids_` but haven't yet been put into
+  // `bid_states_for_additional_bids_` (and a little bit afterwards).
+  bool currently_decoding_additional_bids_ = false;
 
   // If this is a component auction, the parent Auction. Null, otherwise.
   const raw_ptr<const InterestGroupAuction> parent_;
@@ -1197,8 +1273,6 @@ class CONTENT_EXPORT InterestGroupAuction
   bool seller_worklet_received_ = false;
 
   enum class PhaseState { kBefore, kDuring, kAfter };
-  // Note: this should only be used for real bidding and scoring phase, not
-  // when StartFromServerResponse is used.
   PhaseState bidding_and_scoring_phase_state_ = PhaseState::kBefore;
 
   // Number of things that are pending that are needed to score everything.
@@ -1245,16 +1319,16 @@ class CONTENT_EXPORT InterestGroupAuction
   // transferred to InterestGroupAuctionReporter.
   std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder_;
 
-  // Stores the loaded HeaderDirectFromSellerSignals, if there were any. Should
-  // never be null until moved to the reporter.
+  // Stores the loaded HeaderDirectFromSellerSignals::Result, if there were any.
+  // Should never be null until moved to the reporter.
   //
   // After `direct_from_seller_signals_header_ad_slot_` has been
   // set to true, the default constructed value gets replaced with the found
   // signals, if the auction config provided an ad-slot, and it matched one of
   // the captured responses for the seller's origin.
-  std::unique_ptr<HeaderDirectFromSellerSignals>
+  scoped_refptr<HeaderDirectFromSellerSignals::Result>
       direct_from_seller_signals_header_ad_slot_ =
-          std::make_unique<HeaderDirectFromSellerSignals>();
+          base::MakeRefCounted<HeaderDirectFromSellerSignals::Result>();
 
   // The number of buyers in the AuctionConfig that passed the
   // IsInterestGroupApiAllowedCallback filter and interest groups were found
@@ -1287,8 +1361,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // Stores all pending Private Aggregation API report requests of reserved
   // event type from the bidding and scoring phase. These are passed to the
   // InterestGroupAuctionReporter when it's created. Keyed by the origin of the
-  // script that issued the request (i.e. the reporting origin).
-  std::map<url::Origin, PrivateAggregationRequests>
+  // script that issued the request (i.e. the reporting origin) and the
+  // aggregation coordinator origin.
+  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
+           PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
 
   // Stores all pending Private Aggregation API report requests of non-reserved
@@ -1300,6 +1376,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Callback for checking who can participate in the auction.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
+
+  base::flat_map<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode,
+                 std::string>
+      trusted_bidding_signals_size_mode_strings_;
 
   // Callback for passing encountered PrivateAggregationRequests up in order to
   // maybe trigger Private Aggregation web features, as appropriate.

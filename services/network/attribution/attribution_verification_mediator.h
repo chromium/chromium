@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
@@ -89,7 +89,7 @@ class AttributionVerificationMediator {
     // forbid adding duplicates; however, duplicates might contribute to an
     // overall limit on the number of permitted keys, so the caller may wish to
     // ensure this is called at most once per distinct key.
-    [[nodiscard]] virtual bool AddKey(base::StringPiece key) = 0;
+    [[nodiscard]] virtual bool AddKey(std::string_view key) = 0;
 
     // On success, returns a base64-encoded string representing the blinded
     // `message`. on error, returns nullopt.
@@ -98,7 +98,7 @@ class AttributionVerificationMediator {
     // to attest to. We "blind" it as part of the blind signature protocol
     // before sending it to the issuer for signature.
     [[nodiscard]] virtual absl::optional<std::string> BeginIssuance(
-        base::StringPiece message) = 0;
+        std::string_view message) = 0;
 
     // Given a base64-encoded issuance `response header`, attempts to unblind a
     // blind token represented by the header using the keys previously added by
@@ -106,7 +106,7 @@ class AttributionVerificationMediator {
     // Sec-Attribution-Reporting-Private-State-Token header. On error, it
     // returns nullopt.
     [[nodiscard]] virtual absl::optional<std::string>
-    ConfirmIssuanceAndBeginRedemption(base::StringPiece response_header) = 0;
+    ConfirmIssuanceAndBeginRedemption(std::string_view response_header) = 0;
   };
 
   class MetricsRecorder {

@@ -18,8 +18,8 @@
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/prerender_handle.h"
-#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
     // Prerender the same insecure form.
     std::unique_ptr<content::PrerenderHandle> prerender_handle =
         web_contents()->StartPrerendering(
-            kUrl, content::PrerenderTriggerType::kEmbedder,
+            kUrl, content::PreloadingTriggerType::kEmbedder,
             prerender_utils::kDirectUrlInputMetricSuffix,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

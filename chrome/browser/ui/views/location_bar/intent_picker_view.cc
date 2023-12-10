@@ -32,7 +32,7 @@ IntentPickerView::IntentPickerView(
                          "IntentPicker"),
       browser_(browser) {
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
 }
 

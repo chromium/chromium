@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.xsurface;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;

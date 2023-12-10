@@ -112,7 +112,7 @@ class ProjectorAppClient {
   // gain access to link-shared files. Since the `resource_key` is currently
   // only used by Googlers, the `resource_key` might be empty.
   virtual void GetVideo(const std::string& video_file_id,
-                        const absl::optional<std::string>& resource_key,
+                        const std::optional<std::string>& resource_key,
                         OnGetVideoCallback callback) const = 0;
 
   // Registers the AnnotatorPageHandlerImpl that is owned by the WebUI that

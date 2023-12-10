@@ -5,13 +5,11 @@
 package org.chromium.chrome.browser.app.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -27,9 +25,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -62,6 +58,7 @@ public class BookmarkFolderPickerActivityTest {
     private static BookmarkModel sBookmarkModel;
     private static BookmarkId sMobileFolderId;
     private static BookmarkId sOtherFolderId;
+
     private BookmarkFolderPickerActivity mActivity;
 
     @BeforeClass
@@ -94,36 +91,33 @@ public class BookmarkFolderPickerActivityTest {
     @Test
     @MediumTest
     @Feature({"Bookmark"})
-    @DisabledTest(message = "https://crbug.com/1469705")
-    public void testMoveBookmark() throws ExecutionException, TimeoutException {
+    public void testMoveBookmark() throws ExecutionException, TimeoutException, Exception {
         BookmarkId bookmark =
                 addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
         BookmarkId folder = addFolder(sMobileFolderId, 1, "folder");
-        startFolderPickerActivity(bookmark, folder);
-        Toolbar toolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
+        startFolderPickerActivity(bookmark);
 
-        assertEquals("Move to…", toolbar.getTitle());
+        onView(withText("folder")).perform(click());
         onView(withText("Move here")).perform(click());
 
         BookmarkItem item = getBookmarkItem(bookmark);
-        assertEquals(sOtherFolderId, item.getParentId());
+        assertEquals(folder, item.getParentId());
+
+        CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
     }
 
     @Test
     @MediumTest
     @Feature({"Bookmark"})
-    public void testCancel() throws ExecutionException, TimeoutException, InterruptedException {
-        BookmarkId folder = addFolder(sMobileFolderId, 0, "folder");
-        BookmarkId bookmark = addBookmark(folder, 0, "bookmark", new GURL("https://google.com"));
+    public void testCancelButton()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        BookmarkId bookmark =
+                addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
         startFolderPickerActivity(bookmark);
 
-        onView(withText("folder"));
-        pressBack();
-        onView(withText("Move to..."));
         onView(withText("Cancel")).perform(click());
 
-        BookmarkItem item = getBookmarkItem(folder);
-        assertEquals(sMobileFolderId, item.getParentId());
+        CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
     }
 
     private BookmarkItem getBookmarkItem(BookmarkId bookmarkId) throws ExecutionException {

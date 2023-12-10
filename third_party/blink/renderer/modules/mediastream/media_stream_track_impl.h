@@ -28,9 +28,11 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -125,6 +127,14 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   ExecutionContext* GetExecutionContext() const override;
   void AddedEventListener(const AtomicString&,
                           RegisteredEventListener&) override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SendWheel(
+      CapturedWheelAction* action,
+      base::OnceCallback<void(bool, const String&)> callback) override;
+  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+                        callback) override;
+#endif
 
   // ScriptWrappable
   bool HasPendingActivity() const final;

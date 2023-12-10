@@ -46,9 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-/**
- * App menu properties delegate for {@link CustomTabActivity}.
- */
+/** App menu properties delegate for {@link CustomTabActivity}. */
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     private static final String CUSTOM_MENU_ITEM_ID_KEY = "CustomMenuItemId";
 
@@ -66,20 +64,37 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
     private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
 
-    /**
-     * Creates an {@link CustomTabAppMenuPropertiesDelegate} instance.
-     */
-    public CustomTabAppMenuPropertiesDelegate(Context context,
+    /** Creates an {@link CustomTabAppMenuPropertiesDelegate} instance. */
+    public CustomTabAppMenuPropertiesDelegate(
+            Context context,
             ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier, Verifier verifier,
-            @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
-            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito,
-            boolean isStartIconMenu, BooleanSupplier isPageInsightsHubEnabled) {
-        super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, null, bookmarkModelSupplier, null,
-                /*readAloudControllerSupplier=*/null);
+            TabModelSelector tabModelSelector,
+            ToolbarManager toolbarManager,
+            View decorView,
+            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            Verifier verifier,
+            @CustomTabsUiType final int uiType,
+            List<String> menuEntries,
+            boolean isOpenedByChrome,
+            boolean showShare,
+            boolean showStar,
+            boolean showDownload,
+            boolean isIncognito,
+            boolean isStartIconMenu,
+            BooleanSupplier isPageInsightsHubEnabled) {
+        super(
+                context,
+                activityTabProvider,
+                multiWindowModeStateDispatcher,
+                tabModelSelector,
+                toolbarManager,
+                decorView,
+                null,
+                null,
+                bookmarkModelSupplier,
+                null,
+                /* readAloudControllerSupplier= */ null);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
@@ -114,7 +129,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             forwardMenuItem.setEnabled(currentTab.canGoForward());
 
             Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
-            DrawableCompat.setTintList(icon,
+            DrawableCompat.setTintList(
+                    icon,
                     AppCompatResources.getColorStateList(
                             mContext, R.color.default_icon_color_tint_list));
             menu.findItem(R.id.reload_menu_id).setIcon(icon);
@@ -180,8 +196,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
             }
 
-            boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                    || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+            boolean isChromeScheme =
+                    url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                            || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
             boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
             boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
             if (isChromeScheme || isFileScheme || isContentScheme || url.isEmpty()) {
@@ -201,7 +218,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             MenuItem bookmarkItem = menu.findItem(R.id.bookmark_this_page_id);
             if (bookmarkItemVisible) {
-                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab, /*fromCCT=*/true);
+                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab, /* fromCCT= */ true);
             } else {
                 bookmarkItem.setVisible(false);
             }
@@ -210,10 +227,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             MenuItem openInChromeItem = menu.findItem(R.id.open_in_browser_id);
             if (openInChromeItemVisible) {
-                String title = mIsIncognito ?
-                        ContextUtils.getApplicationContext()
-                                .getString(R.string.menu_open_in_incognito_chrome) :
-                        DefaultBrowserInfo.getTitleOpenInDefaultBrowser(mIsOpenedByChrome);
+                String title =
+                        mIsIncognito
+                                ? ContextUtils.getApplicationContext()
+                                        .getString(R.string.menu_open_in_incognito_chrome)
+                                : DefaultBrowserInfo.getTitleOpenInDefaultBrowser(
+                                        mIsOpenedByChrome);
 
                 openInChromeItem.setTitle(title);
             } else {
@@ -256,12 +275,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
     @Override
     public Bundle getBundleForMenuItem(int itemId) {
-        Bundle itemBundle = super.getBundleForMenuItem(itemId);
-
         if (!mItemIdToIndexMap.containsKey(itemId)) {
-            return itemBundle;
+            return null;
         }
 
+        Bundle itemBundle = new Bundle();
         itemBundle.putInt(CUSTOM_MENU_ITEM_ID_KEY, mItemIdToIndexMap.get(itemId).intValue());
         return itemBundle;
     }

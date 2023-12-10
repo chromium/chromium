@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin.fre;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -57,10 +55,6 @@ public class SigninFirstRunView extends RelativeLayout {
         mSigninProgressSpinner = findViewById(R.id.fre_signin_progress_spinner);
         mSigninProgressText = findViewById(R.id.fre_signin_progress_text);
         mPrivacyDisclaimer = (TextView) findViewById(R.id.privacy_disclaimer);
-
-        if (FREMobileIdentityConsistencyFieldTrial.shouldHideTitleUntilPoliciesAreLoaded()) {
-            mTitle.setVisibility(INVISIBLE);
-        }
     }
 
     View getBrowserManagedHeaderView() {
@@ -103,20 +97,7 @@ public class SigninFirstRunView extends RelativeLayout {
         return mSigninProgressText;
     }
 
-    /** Updates the title and the subtitle for UI variations on native and policy load. **/
-    void applyVariationsExperiment(boolean useExperimentalStrings) {
-        Pair<Integer, Integer> titleAndSubtitleId;
-        if (useExperimentalStrings) {
-            titleAndSubtitleId =
-                    FREMobileIdentityConsistencyFieldTrial.getVariationTitleAndSubtitle();
-        } else {
-            titleAndSubtitleId = new Pair(R.string.fre_welcome, 0);
-        }
-        mTitle.setText(titleAndSubtitleId.first);
-        mTitle.setVisibility(VISIBLE);
-        if (titleAndSubtitleId.second != 0) {
-            mSubtitle.setText(titleAndSubtitleId.second);
-            mSubtitle.setVisibility(VISIBLE);
-        }
+    TextView getSubtitle() {
+        return mSubtitle;
     }
 }

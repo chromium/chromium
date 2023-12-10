@@ -470,19 +470,11 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest,
 }
 
 class CastMirroringServiceHostBrowserTestTabSwitcher
-    : public CastMirroringServiceHostBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+    : public CastMirroringServiceHostBrowserTest {
  public:
-  CastMirroringServiceHostBrowserTestTabSwitcher()
-      : enable_openscreen_session_(GetParam()) {
-    if (enable_openscreen_session_) {
-      feature_list_.InitWithFeatures({features::kAccessCodeCastTabSwitchingUI,
-                                      media::kOpenscreenCastStreamingSession},
-                                     {});
-    } else {
-      feature_list_.InitWithFeatures({features::kAccessCodeCastTabSwitchingUI},
-                                     {media::kOpenscreenCastStreamingSession});
-    }
+  CastMirroringServiceHostBrowserTestTabSwitcher() {
+    feature_list_.InitWithFeatures({features::kAccessCodeCastTabSwitchingUI},
+                                   {});
   }
 
   CastMirroringServiceHostBrowserTestTabSwitcher(
@@ -495,27 +487,13 @@ class CastMirroringServiceHostBrowserTestTabSwitcher
   void VerifyEnabledFeatures() {
     ASSERT_TRUE(
         base::FeatureList::IsEnabled(features::kAccessCodeCastTabSwitchingUI));
-
-    if (enable_openscreen_session_) {
-      ASSERT_TRUE(
-          base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
-    } else {
-      ASSERT_FALSE(
-          base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
-    }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  const bool enable_openscreen_session_;
 };
 
-// Templatize test on whether OpenscreenCastStreamingSession is enabled or not.
-INSTANTIATE_TEST_SUITE_P(All,
-                         CastMirroringServiceHostBrowserTestTabSwitcher,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(CastMirroringServiceHostBrowserTestTabSwitcher,
+IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTestTabSwitcher,
                        SwitchTabSource) {
   VerifyEnabledFeatures();
   EnableAccessCodeCast();

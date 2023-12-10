@@ -41,11 +41,12 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
                        const std::string& task_id,
                        bool checked) override;
   void AddTask(const std::string& task_list_id,
-               const std::string& title) override;
+               const std::string& title,
+               TasksClient::OnTaskSavedCallback callback) override;
   void UpdateTask(const std::string& task_list_id,
                   const std::string& task_id,
                   const std::string& title,
-                  TasksClient::UpdateTaskCallback callback) override;
+                  TasksClient::OnTaskSavedCallback callback) override;
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
 
@@ -57,6 +58,12 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
 
   // Runs `pending_get_task_lists_callbacks_` and returns their number.
   size_t RunPendingGetTaskListsCallbacks();
+
+  // Runs `pending_add_task_callbacks_` and returns their number.
+  size_t RunPendingAddTaskCallbacks();
+
+  // Runs `pending_update_task_callbacks_` and returns their number.
+  size_t RunPendingUpdateTaskCallbacks();
 
   void set_paused(bool paused) { paused_ = paused; }
 
@@ -86,6 +93,8 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   bool paused_ = false;
   std::list<base::OnceClosure> pending_get_tasks_callbacks_;
   std::list<base::OnceClosure> pending_get_task_lists_callbacks_;
+  std::list<base::OnceClosure> pending_add_task_callbacks_;
+  std::list<base::OnceClosure> pending_update_task_callbacks_;
 };
 
 }  // namespace ash::api

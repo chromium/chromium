@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -179,7 +178,7 @@ size_t StartsWithAny(base::StringPiece16 name,
   for (size_t i = 0; i < prefix_count; i++) {
     buffer.clear();
     base::UTF8ToUTF16(prefixes[i], strlen(prefixes[i]), &buffer);
-    if (base::StartsWith(name, buffer, base::CompareCase::SENSITIVE)) {
+    if (name.starts_with(buffer)) {
       return buffer.size();
     }
   }

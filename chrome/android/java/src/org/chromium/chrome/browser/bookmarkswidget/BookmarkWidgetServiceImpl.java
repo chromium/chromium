@@ -84,8 +84,9 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
     }
 
     static SharedPreferences getWidgetState(int widgetId) {
-        return ContextUtils.getApplicationContext().getSharedPreferences(
-                String.format(Locale.US, "widgetState-%d", widgetId), Context.MODE_PRIVATE);
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(
+                        String.format(Locale.US, "widgetState-%d", widgetId), Context.MODE_PRIVATE);
     }
 
     static void deleteWidgetState(int widgetId) {
@@ -113,9 +114,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                 .notifyAppWidgetViewDataChanged(widgetId, R.id.bookmarks_list);
     }
 
-    /**
-     * Holds data describing a bookmark or bookmark folder.
-     */
+    /** Holds data describing a bookmark or bookmark folder. */
     private static class Bookmark {
         public String title;
         public GURL url;
@@ -143,14 +142,11 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
      */
     private static class BookmarkFolder {
         public Bookmark folder;
-        @Nullable
-        public Bookmark parent;
+        @Nullable public Bookmark parent;
         public final List<Bookmark> children = new ArrayList<>();
     }
 
-    /**
-     * Called when the BookmarkLoader has finished loading the bookmark folder.
-     */
+    /** Called when the BookmarkLoader has finished loading the bookmark folder. */
     private interface BookmarkLoaderCallback {
         @UiThread
         void onBookmarksLoaded(BookmarkFolder folder);
@@ -184,12 +180,13 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
             mRemainingTaskCount = 1;
             mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-            mBookmarkModel.finishLoadingBookmarkModel(new Runnable() {
-                @Override
-                public void run() {
-                    loadBookmarks(folderId);
-                }
-            });
+            mBookmarkModel.finishLoadingBookmarkModel(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            loadBookmarks(folderId);
+                        }
+                    });
         }
 
         @UiThread
@@ -207,18 +204,21 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                         Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
             }
 
-            mFolder.parent = Bookmark.fromBookmarkItem(
-                    mBookmarkModel.getBookmarkById(mFolder.folder.parentId));
+            mFolder.parent =
+                    Bookmark.fromBookmarkItem(
+                            mBookmarkModel.getBookmarkById(mFolder.folder.parentId));
 
             List<BookmarkItem> items = mBookmarkModel.getBookmarksForFolder(folderId);
 
             // Move folders to the beginning of the list.
-            Collections.sort(items, new Comparator<BookmarkItem>() {
-                @Override
-                public int compare(BookmarkItem lhs, BookmarkItem rhs) {
-                    return lhs.isFolder() == rhs.isFolder() ? 0 : lhs.isFolder() ? -1 : 1;
-                }
-            });
+            Collections.sort(
+                    items,
+                    new Comparator<BookmarkItem>() {
+                        @Override
+                        public int compare(BookmarkItem lhs, BookmarkItem rhs) {
+                            return lhs.isFolder() == rhs.isFolder() ? 0 : lhs.isFolder() ? -1 : 1;
+                        }
+                    });
 
             for (BookmarkItem item : items) {
                 Bookmark bookmark = Bookmark.fromBookmarkItem(item);
@@ -234,21 +234,26 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             if (bookmark.isFolder) return;
 
             mRemainingTaskCount++;
-            LargeIconCallback callback = new LargeIconCallback() {
-                @Override
-                public void onLargeIconAvailable(Bitmap icon, int fallbackColor,
-                        boolean isFallbackColorDefault, @IconType int iconType) {
-                    if (icon == null) {
-                        mIconGenerator.setBackgroundColor(fallbackColor);
-                        icon = mIconGenerator.generateIconForUrl(bookmark.url);
-                    } else {
-                        icon = Bitmap.createScaledBitmap(
-                                icon, mDisplayedIconSize, mDisplayedIconSize, true);
-                    }
-                    bookmark.favicon = icon;
-                    taskFinished();
-                }
-            };
+            LargeIconCallback callback =
+                    new LargeIconCallback() {
+                        @Override
+                        public void onLargeIconAvailable(
+                                Bitmap icon,
+                                int fallbackColor,
+                                boolean isFallbackColorDefault,
+                                @IconType int iconType) {
+                            if (icon == null) {
+                                mIconGenerator.setBackgroundColor(fallbackColor);
+                                icon = mIconGenerator.generateIconForUrl(bookmark.url);
+                            } else {
+                                icon =
+                                        Bitmap.createScaledBitmap(
+                                                icon, mDisplayedIconSize, mDisplayedIconSize, true);
+                            }
+                            bookmark.favicon = icon;
+                            taskFinished();
+                        }
+                    };
             mLargeIconBridge.getLargeIconForUrl(bookmark.url, mMinIconSizeDp, callback);
         }
 
@@ -267,9 +272,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         }
     }
 
-    /**
-     * Provides the RemoteViews, one per bookmark, to be shown in the widget.
-     */
+    /** Provides the RemoteViews, one per bookmark, to be shown in the widget. */
     private static class BookmarkAdapter
             implements RemoteViewsService.RemoteViewsFactory, SystemNightModeMonitor.Observer {
         // Can be accessed on any thread
@@ -304,17 +307,18 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             }
 
             mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-            mBookmarkModel.addObserver(new BookmarkModelObserver() {
-                @Override
-                public void bookmarkModelLoaded() {
-                    // Do nothing. No need to refresh.
-                }
+            mBookmarkModel.addObserver(
+                    new BookmarkModelObserver() {
+                        @Override
+                        public void bookmarkModelLoaded() {
+                            // Do nothing. No need to refresh.
+                        }
 
-                @Override
-                public void bookmarkModelChanged() {
-                    redrawWidget(mWidgetId);
-                }
-            });
+                        @Override
+                        public void bookmarkModelChanged() {
+                            redrawWidget(mWidgetId);
+                        }
+                    });
         }
 
         @UiThread
@@ -328,8 +332,12 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         @UiThread
         private void refreshWidget() {
             mContext.sendBroadcast(
-                    new Intent(BookmarkWidgetProvider.getBookmarkAppWidgetUpdateAction(mContext),
-                            null, mContext, BookmarkThumbnailWidgetProvider.class)
+                    new Intent(
+                                    BookmarkWidgetProvider.getBookmarkAppWidgetUpdateAction(
+                                            mContext),
+                                    null,
+                                    mContext,
+                                    BookmarkThumbnailWidgetProvider.class)
                             .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mWidgetId));
         }
 
@@ -345,8 +353,11 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         @BinderThread
         @Override
         public void onDestroy() {
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                    () -> { SystemNightModeMonitor.getInstance().removeObserver(this); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        SystemNightModeMonitor.getInstance().removeObserver(this);
+                    });
             deleteWidgetState(mWidgetId);
         }
 
@@ -358,10 +369,12 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @BinderThread
         private void updateBookmarkList() {
-            BookmarkId folderId = BookmarkId.getBookmarkIdFromString(
-                    mPreferences.getString(PREF_CURRENT_FOLDER, null));
+            BookmarkId folderId =
+                    BookmarkId.getBookmarkIdFromString(
+                            mPreferences.getString(PREF_CURRENT_FOLDER, null));
             mCurrentFolder = loadBookmarks(folderId);
-            mPreferences.edit()
+            mPreferences
+                    .edit()
                     .putString(PREF_CURRENT_FOLDER, mCurrentFolder.folder.id.toString())
                     .apply();
         }
@@ -372,14 +385,19 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             // A reference of BookmarkLoader is needed in binder thread to
             // prevent it from being garbage collected.
             final BookmarkLoader bookmarkLoader = new BookmarkLoader();
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-                bookmarkLoader.initialize(mContext, folderId, new BookmarkLoaderCallback() {
-                    @Override
-                    public void onBookmarksLoaded(BookmarkFolder folder) {
-                        resultQueue.add(folder);
-                    }
-                });
-            });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        bookmarkLoader.initialize(
+                                mContext,
+                                folderId,
+                                new BookmarkLoaderCallback() {
+                                    @Override
+                                    public void onBookmarksLoaded(BookmarkFolder folder) {
+                                        resultQueue.add(folder);
+                                    }
+                                });
+                    });
             try {
                 return resultQueue.take();
             } catch (InterruptedException e) {
@@ -424,9 +442,14 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             // On some Sony devices, getCount() could be called before onDatasetChanged()
             // returns. If it happens, refresh widget until the bookmarks are all loaded.
             if (mCurrentFolder == null
-                    || !mPreferences.getString(PREF_CURRENT_FOLDER, "")
-                                .equals(mCurrentFolder.folder.id.toString())) {
-                PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { refreshWidget(); });
+                    || !mPreferences
+                            .getString(PREF_CURRENT_FOLDER, "")
+                            .equals(mCurrentFolder.folder.id.toString())) {
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            refreshWidget();
+                        });
             }
             if (mCurrentFolder == null) {
                 return 0;
@@ -488,9 +511,10 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
             Intent fillIn;
             if (bookmark.isFolder) {
-                fillIn = new Intent(getChangeFolderAction())
-                                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mWidgetId)
-                                 .putExtra(EXTRA_FOLDER_ID, id.toString());
+                fillIn =
+                        new Intent(getChangeFolderAction())
+                                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mWidgetId)
+                                .putExtra(EXTRA_FOLDER_ID, id.toString());
             } else {
                 fillIn = new Intent(Intent.ACTION_VIEW);
                 fillIn.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, id.toString());

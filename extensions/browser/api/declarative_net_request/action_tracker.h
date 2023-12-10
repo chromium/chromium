@@ -7,15 +7,14 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -93,7 +92,7 @@ class ActionTracker {
   // rules matched for |tab_id| will be returned.
   std::vector<api::declarative_net_request::MatchedRuleInfo> GetMatchedRules(
       const Extension& extension,
-      const absl::optional<int>& tab_id,
+      const std::optional<int>& tab_id,
       const base::Time& min_time_stamp);
 
   // Returns the number of matched rules in |rules_tracked_| for the given

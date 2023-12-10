@@ -26,15 +26,18 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
-#include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/prefs_util.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#include "chrome/browser/enterprise/data_protection/print_utils.h"
 #endif
 
 using content::BrowserThread;
@@ -118,7 +121,7 @@ bool PrintViewManager::PrintForSystemDialogNow(
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::ShouldPrintJobOop()) {
+  if (ShouldPrintJobOop()) {
     // Register this worker so that the service persists as long as the user
     // keeps the system print dialog UI displayed.
     if (!RegisterSystemPrintClient())
@@ -294,9 +297,9 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
     content::GlobalRenderFrameHostId rfh_id,
     base::OnceCallback<void(bool should_proceed)> callback) {
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_connectors::GetPrintAnalysisData(
+      scanning_data = enterprise_data_protection::GetPrintAnalysisData(
           web_contents(),
-          enterprise_connectors::PrintScanningContext::kBeforePreview);
+          enterprise_data_protection::PrintScanningContext::kBeforePreview);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (rfh && scanning_data) {
     GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(

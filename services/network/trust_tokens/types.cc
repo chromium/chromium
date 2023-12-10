@@ -21,7 +21,7 @@ Timestamp TimeToTimestamp(base::Time time) {
   return timestamp;
 }
 
-base::StringPiece TrustTokenOperationTypeToString(
+std::string_view TrustTokenOperationTypeToString(
     mojom::TrustTokenOperationType type) {
   // WARNING: These values are used to construct histogram names. When making
   // changes, please make sure that the Trust Tokens-related histograms

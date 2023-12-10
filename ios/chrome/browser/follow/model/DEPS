@@ -1,0 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/discover_feed/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+  "+ios/chrome/browser/signin/model",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "follow_browser_agent.mm": [
+    "+ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h",
+    "+ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h",
+  ]
+}

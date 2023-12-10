@@ -294,7 +294,7 @@ public abstract class BookmarkRow extends CheckableSelectableItemView<BookmarkId
                         mDelegate
                                 .getModel()
                                 .setReadStatusForReadingList(
-                                        bookmarkItem.getUrl(), /* read= */ true);
+                                        bookmarkItem.getId(), /* read= */ true);
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
                     } else if (textId == R.string.reading_list_mark_as_unread) {
                         BookmarkItem bookmarkItem =
@@ -302,7 +302,7 @@ public abstract class BookmarkRow extends CheckableSelectableItemView<BookmarkId
                         mDelegate
                                 .getModel()
                                 .setReadStatusForReadingList(
-                                        bookmarkItem.getUrl(), /* read= */ false);
+                                        bookmarkItem.getId(), /* read= */ false);
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
                     } else if (textId == R.string.bookmark_item_move) {
                         BookmarkFolderSelectActivity.startFolderSelectActivity(

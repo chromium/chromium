@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+[FAIL] An autofocus element in an OBJECT with a loaded frame should not be processed
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] An autofocus element in an OBJECT with a load-failed frame should be processed
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] An autofocus element in an OBJECT with a loaded image should not be processed
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] An autofocus element in an OBJECT with a load-failed image should be processed
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] An autofocus element in nested OBJECTs with load-failed images should be processed
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

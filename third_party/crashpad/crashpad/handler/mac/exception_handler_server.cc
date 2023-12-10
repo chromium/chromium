@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/apple/mach_logging.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "util/mach/composite_mach_message_server.h"
 #include "util/mach/mach_extensions.h"

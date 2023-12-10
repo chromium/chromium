@@ -71,8 +71,10 @@ public abstract class PolicyData {
 
         @Override
         public void putInBundle(Bundle bundle) {
-            Assert.fail(String.format(
-                    "Attempted to push the '%s' policy without value to a bundle.", getKey()));
+            Assert.fail(
+                    String.format(
+                            "Attempted to push the '%s' policy without value to a bundle.",
+                            getKey()));
         }
 
         @Override

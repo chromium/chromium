@@ -169,13 +169,15 @@ void NetworkScreen::OnUserAction(const base::Value::List& args) {
     if (context()->quick_start_setup_ongoing) {
       // Clicking 'Back' (only visible on the actual network list) while
       // QuickStart is going on will cancel the QuickStart flow.
-      ExitQuickStartFlow();
+      ExitQuickStartFlow(quick_start::QuickStartController::AbortFlowReason::
+                             USER_CLICKED_BACK);
     } else {
       OnBackButtonClicked();
     }
   } else if (action_id == kUserActionCancelButtonClicked) {
     CHECK(context()->quick_start_setup_ongoing);
-    ExitQuickStartFlow();
+    ExitQuickStartFlow(quick_start::QuickStartController::AbortFlowReason::
+                           USER_CLICKED_CANCEL);
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -197,7 +199,8 @@ void NetworkScreen::NetworkConnectionStateChanged(const NetworkState* network) {
   if (context()->quick_start_setup_ongoing && !network->IsOnline()) {
     if (base::UTF8ToUTF16(network->name()) == network_id_ &&
         !network->GetError().empty()) {
-      ExitQuickStartFlow();
+      ExitQuickStartFlow(
+          quick_start::QuickStartController::AbortFlowReason::ERROR);
       return;
     }
   }
@@ -255,7 +258,8 @@ void NetworkScreen::NotifyOnConnection() {
 
 void NetworkScreen::OnConnectionTimeout() {
   if (context()->quick_start_setup_ongoing) {
-    ExitQuickStartFlow();
+    ExitQuickStartFlow(
+        quick_start::QuickStartController::AbortFlowReason::ERROR);
     return;
   }
   if (!network_state_helper_->IsConnected() && view_) {
@@ -369,13 +373,14 @@ void NetworkScreen::ConfigureWifiNetwork(
 }
 
 void NetworkScreen::OnConfigureWifiNetworkResult(
-    const absl::optional<std::string>& network_guid,
+    const std::optional<std::string>& network_guid,
     const std::string& error_message) {
   if (!network_guid.has_value() || !error_message.empty()) {
     LOG(ERROR) << "Configure network failed with  "
                << " network_guid: " << network_guid.value_or("none")
                << " and error_message: " << error_message;
-    ExitQuickStartFlow();
+    ExitQuickStartFlow(
+        quick_start::QuickStartController::AbortFlowReason::ERROR);
     return;
   }
   remote_cros_network_config_->StartConnect(
@@ -390,20 +395,22 @@ void NetworkScreen::OnStartConnectCompleted(
   if (result != chromeos::network_config::mojom::StartConnectResult::kSuccess) {
     LOG(ERROR) << "Start connect failed with result " << result
                << " and message " << message;
-    ExitQuickStartFlow();
+    ExitQuickStartFlow(
+        quick_start::QuickStartController::AbortFlowReason::ERROR);
     return;
   }
   WaitForConnection(network_id_);
 }
 
-void NetworkScreen::ExitQuickStartFlow() {
+void NetworkScreen::ExitQuickStartFlow(
+    quick_start::QuickStartController::AbortFlowReason reason) {
   CHECK(context()->quick_start_setup_ongoing);
   auto* quick_start_controller = LoginDisplayHost::default_host()
                                      ->GetWizardController()
                                      ->quick_start_controller();
   quick_start_controller->DetachFrontend(this);
   const auto entry_point = quick_start_controller->GetExitPoint();
-  quick_start_controller->AbortFlow();
+  quick_start_controller->AbortFlow(reason);
   if (entry_point ==
       quick_start::QuickStartController::EntryPoint::NETWORK_SCREEN) {
     // Switches to the screen step that shows the list of networks.

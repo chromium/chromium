@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Test logging functionalities. */
@@ -175,29 +176,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    public void testTelemetryDisabled() throws JSONException {
-        final String url = NativeTestServer.getEchoBodyURL();
-        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", false);
-        final String experimentalOptions = jsonExperimentalOptions.toString();
-        mTestRule
-                .getTestFramework()
-                .applyEngineBuilderPatch(
-                        (builder) -> builder.setExperimentalOptions(experimentalOptions));
-        CronetEngine engine = mTestRule.getTestFramework().startEngine();
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder requestBuilder =
-                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
-        UrlRequest request = requestBuilder.build();
-        request.start();
-        callback.blockForDone();
-
-        // Test-logger should be bypassed.
-        assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(0);
-        assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(0);
-    }
-
-    @Test
-    @SmallTest
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns =
                 new JSONObject()
@@ -268,7 +246,7 @@ public final class CronetLoggerTest {
     public void testEngineCreationAndTrafficInfoEngineId() throws Exception {
         final String url = "www.example.com";
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
-        final int engineId = mTestLogger.getLastCronetEngineId();
+        final long engineId = mTestLogger.getLastCronetEngineId();
 
         TestUrlRequestCallback callback1 = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder1 =
@@ -282,12 +260,12 @@ public final class CronetLoggerTest {
         request1.start();
         callback1.blockForDone();
         mTestLogger.waitForLogCronetTrafficInfo();
-        final int request1Id = mTestLogger.getLastCronetRequestId();
+        final long request1Id = mTestLogger.getLastCronetRequestId();
 
         request2.start();
         callback2.blockForDone();
         mTestLogger.waitForLogCronetTrafficInfo();
-        final int request2Id = mTestLogger.getLastCronetRequestId();
+        final long request2Id = mTestLogger.getLastCronetRequestId();
 
         assertThat(request1Id).isEqualTo(engineId);
         assertThat(request2Id).isEqualTo(engineId);
@@ -308,9 +286,9 @@ public final class CronetLoggerTest {
                                         mTestRule.getTestFramework().getContext());
 
         CronetEngine engine1 = engineBuilder.build();
-        final int engine1Id = mTestLogger.getLastCronetEngineId();
+        final long engine1Id = mTestLogger.getLastCronetEngineId();
         CronetEngine engine2 = engineBuilder.build();
-        final int engine2Id = mTestLogger.getLastCronetEngineId();
+        final long engine2Id = mTestLogger.getLastCronetEngineId();
 
         try {
             TestUrlRequestCallback callback1 = new TestUrlRequestCallback();
@@ -325,12 +303,12 @@ public final class CronetLoggerTest {
             request1.start();
             callback1.blockForDone();
             mTestLogger.waitForLogCronetTrafficInfo();
-            final int request1Id = mTestLogger.getLastCronetRequestId();
+            final long request1Id = mTestLogger.getLastCronetRequestId();
 
             request2.start();
             callback2.blockForDone();
             mTestLogger.waitForLogCronetTrafficInfo();
-            final int request2Id = mTestLogger.getLastCronetRequestId();
+            final long request2Id = mTestLogger.getLastCronetRequestId();
 
             assertThat(request1Id).isEqualTo(engine1Id);
             assertThat(request2Id).isEqualTo(engine2Id);
@@ -492,10 +470,11 @@ public final class CronetLoggerTest {
 
     /** Records the last engine creation (and traffic info) call it has received. */
     public static final class TestLogger extends CronetLogger {
+        private AtomicInteger mNextId = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
-        private AtomicInteger mCronetEngineId = new AtomicInteger();
-        private AtomicInteger mCronetRequestId = new AtomicInteger();
+        private AtomicLong mCronetEngineId = new AtomicLong();
+        private AtomicLong mCronetRequestId = new AtomicLong();
         private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
         private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
         private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
@@ -503,8 +482,13 @@ public final class CronetLoggerTest {
         private final ConditionVariable mBlock = new ConditionVariable();
 
         @Override
+        public long generateId() {
+            return mNextId.incrementAndGet();
+        }
+
+        @Override
         public void logCronetEngineCreation(
-                int cronetEngineId,
+                long cronetEngineId,
                 CronetEngineBuilderInfo engineBuilderInfo,
                 CronetVersion version,
                 CronetSource source) {
@@ -516,7 +500,7 @@ public final class CronetLoggerTest {
         }
 
         @Override
-        public void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo) {
+        public void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo) {
             mCallsToLogCronetTrafficInfo.incrementAndGet();
             mCronetRequestId.set(cronetEngineId);
             mTrafficInfo.set(trafficInfo);
@@ -536,11 +520,11 @@ public final class CronetLoggerTest {
             mBlock.close();
         }
 
-        public int getLastCronetEngineId() {
+        public long getLastCronetEngineId() {
             return mCronetEngineId.get();
         }
 
-        public int getLastCronetRequestId() {
+        public long getLastCronetRequestId() {
             return mCronetRequestId.get();
         }
 

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -62,15 +62,15 @@ class NearbySchedulerBase
                       const base::Clock* clock);
 
   // The time to wait until the next regularly recurring request.
-  virtual absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
+  virtual std::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const = 0;
 
   // NearbyScheduler:
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
   void Reschedule() override;
-  absl::optional<base::Time> GetLastSuccessTime() const override;
-  absl::optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
+  std::optional<base::Time> GetLastSuccessTime() const override;
+  std::optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
   bool IsWaitingForResult() const override;
   size_t GetNumConsecutiveFailures() const override;
   void OnStart() override;
@@ -79,7 +79,7 @@ class NearbySchedulerBase
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  absl::optional<base::Time> GetLastAttemptTime() const;
+  std::optional<base::Time> GetLastAttemptTime() const;
   bool HasPendingImmediateRequest() const;
 
   // Set and persist scheduling data in prefs.
@@ -95,9 +95,9 @@ class NearbySchedulerBase
   void InitializePersistedRequest();
 
   // The amount of time to wait until the next automatic failure retry. Returns
-  // absl::nullopt if there is no failure to retry or if failure retry is not
+  // std::nullopt if there is no failure to retry or if failure retry is not
   // enabled for the scheduler.
-  absl::optional<base::TimeDelta> TimeUntilRetry(base::Time now) const;
+  std::optional<base::TimeDelta> TimeUntilRetry(base::Time now) const;
 
   // Notifies the owner that a request is ready. Early returns if not online and
   // the scheduler requires connectivity; the attempt is rescheduled when

@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <compare>
 #include <cstddef>
 #include <functional>
 #include <tuple>
-#include <algorithm>
 
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -114,15 +115,11 @@ class IdentifiableSurface {
     // GenericFamilyType.
     kGenericFontLookup = 4,
 
-    // Represents an attempt to access files made publicly accessible by
-    // extensions via web_accessible_resources. This may be recorded both in the
-    // renderer and the browser. Browser-side events will be associated with
-    // the top frame's navigation ID, not a child frame. Render-side events are
-    // associated with document's ID.
-    kExtensionFileAccess = 5,
+    // Reserved 5.
+    // Was kExtensionFileAccess.
 
-    // Extension running content-script. Input is the extension ID.
-    kExtensionContentScript = 6,
+    // Reserved 6.
+    // Was kExtensionContentScript.
 
     // Represents making a measurement of one of the above surfacess. This
     // metric is retained even if filtering discards the surface.
@@ -158,8 +155,8 @@ class IdentifiableSurface {
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupAsLastResort = 14,
 
-    // Extension cancelled a network request. Input is the extension ID.
-    kExtensionCancelRequest = 15,
+    // Reserved 15.
+    // Was kExtensionCancelRequest.
 
     // WebGLRenderingContext.getShaderPrecisionFormat() is a high entropy API
     // that leaks entropy about the underlying GL implementation.
@@ -406,6 +403,11 @@ class IdentifiableSurface {
 
   constexpr bool IsValid() const { return metric_hash_ != kInvalidHash; }
 
+  friend constexpr auto operator<=>(const IdentifiableSurface& lhs,
+                                    const IdentifiableSurface& rhs) = default;
+  friend constexpr bool operator==(const IdentifiableSurface& lhs,
+                                   const IdentifiableSurface& rhs) = default;
+
  private:
   constexpr explicit IdentifiableSurface(uint64_t metric_hash)
       : metric_hash_(metric_hash) {}
@@ -435,48 +437,10 @@ class IdentifiableSurface {
   uint64_t metric_hash_;
 };
 
-constexpr bool operator<(const IdentifiableSurface& left,
-                         const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() < right.ToUkmMetricHash();
-}
-
-constexpr bool operator<=(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() <= right.ToUkmMetricHash();
-}
-
-constexpr bool operator>(const IdentifiableSurface& left,
-                         const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() > right.ToUkmMetricHash();
-}
-
-constexpr bool operator>=(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() >= right.ToUkmMetricHash();
-}
-
-constexpr bool operator==(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() == right.ToUkmMetricHash();
-}
-
-constexpr bool operator!=(const IdentifiableSurface& left,
-                          const IdentifiableSurface& right) {
-  return left.ToUkmMetricHash() != right.ToUkmMetricHash();
-}
-
 // Hash function compatible with std::hash.
 struct IdentifiableSurfaceHash {
   size_t operator()(const IdentifiableSurface& s) const {
     return std::hash<uint64_t>{}(s.ToUkmMetricHash());
-  }
-};
-
-// Compare function compatible with std::less
-struct IdentifiableSurfaceCompLess {
-  bool operator()(const IdentifiableSurface& lhs,
-                  const IdentifiableSurface& rhs) const {
-    return lhs.ToUkmMetricHash() < rhs.ToUkmMetricHash();
   }
 };
 

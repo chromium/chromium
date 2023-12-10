@@ -124,13 +124,13 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-bool HTMLOptionElement::SupportsFocus() const {
+bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
   if (is_descendant_of_select_list_)
     return !IsDisabledFormControl();
-  return HTMLElement::SupportsFocus();
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 bool HTMLOptionElement::MatchesDefaultPseudoClass() const {

@@ -18,10 +18,10 @@ class RichAnswersUnitConversionView : public RichAnswersView {
  public:
   METADATA_HEADER(RichAnswersUnitConversionView);
 
-  explicit RichAnswersUnitConversionView(
+  RichAnswersUnitConversionView(
       const gfx::Rect& anchor_view_bounds,
       base::WeakPtr<QuickAnswersUiController> controller,
-      const quick_answers::QuickAnswer& result);
+      UnitConversionResult& unit_conversion_result);
 
   RichAnswersUnitConversionView(const RichAnswersUnitConversionView&) = delete;
   RichAnswersUnitConversionView& operator=(
@@ -31,6 +31,10 @@ class RichAnswersUnitConversionView : public RichAnswersView {
 
  private:
   void InitLayout();
+
+  raw_ptr<views::View> content_view_ = nullptr;
+
+  UnitConversionResult unit_conversion_result_;
 
   base::WeakPtrFactory<RichAnswersUnitConversionView> weak_factory_{this};
 };

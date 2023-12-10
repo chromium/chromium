@@ -100,7 +100,7 @@ class BluetoothGetDevicesFunction : public BluetoothExtensionFunction {
   void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) override;
 
  private:
-  absl::optional<bluetooth::GetDevices::Params> params_;
+  std::optional<bluetooth::GetDevices::Params> params_;
 };
 
 class BluetoothGetDeviceFunction : public BluetoothExtensionFunction {
@@ -121,7 +121,7 @@ class BluetoothGetDeviceFunction : public BluetoothExtensionFunction {
   ~BluetoothGetDeviceFunction() override;
 
  private:
-  absl::optional<extensions::api::bluetooth::GetDevice::Params> params_;
+  std::optional<extensions::api::bluetooth::GetDevice::Params> params_;
 };
 
 class BluetoothStartDiscoveryFunction : public BluetoothExtensionFunction {

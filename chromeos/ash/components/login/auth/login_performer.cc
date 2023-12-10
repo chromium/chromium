@@ -33,8 +33,9 @@ LoginPerformer::LoginPerformer(Delegate* delegate,
 LoginPerformer::~LoginPerformer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Deleting LoginPerformer";
-  if (authenticator_.get())
+  if (authenticator_.get()) {
     authenticator_->SetConsumer(NULL);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +57,8 @@ void LoginPerformer::OnAuthFailure(const AuthFailure& failure) {
 
 void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LoginEventRecorder::Get()->AddLoginTimeMarker("OnAuthSuccess", false);
+  delegate_->ReportOnAuthSuccessMetrics();
 
   const bool is_known_user = user_manager::UserManager::Get()->IsKnownUser(
       user_context.GetAccountId());
@@ -76,8 +79,15 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
                                         is_login_offline, is_ephemeral);
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
-      user_context.GetUserType() == user_manager::USER_TYPE_CHILD) {
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  bool is_primary_user = !primary_user || primary_user->GetAccountId() ==
+                                              user_context.GetAccountId();
+  bool regular_or_child =
+      user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
+      user_context.GetUserType() == user_manager::USER_TYPE_CHILD;
+  // TODO(b/315279142): Remove `is_primary_user` check and run factor updates
+  // for all users.
+  if (regular_or_child && is_primary_user) {
     LoadAndApplyEarlyPrefs(std::make_unique<UserContext>(user_context),
                            base::BindOnce(&LoginPerformer::OnEarlyPrefsApplied,
                                           weak_factory_.GetWeakPtr()));
@@ -90,7 +100,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
 
 void LoginPerformer::OnEarlyPrefsApplied(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Could not apply policies due to error:"
                << error->ToDebugString();
@@ -109,29 +119,29 @@ void LoginPerformer::OnOffTheRecordAuthSuccess() {
                                 weak_factory_.GetWeakPtr()));
 }
 
-void LoginPerformer::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
+void LoginPerformer::OnOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auth_events_recorder_->OnPasswordChange();
-  password_changed_ = true;
-  password_changed_callback_count_++;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetectedLegacy,
-                     weak_factory_.GetWeakPtr(), user_context));
-}
-
-void LoginPerformer::OnPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auth_events_recorder_->OnPasswordChange();
-  password_changed_ = true;
+  if (online_password_mismatch) {
+    auth_events_recorder_->OnPasswordChange();
+    password_changed_ = true;
+  }
   DCHECK(user_context);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetected,
+      base::BindOnce(&LoginPerformer::NotifyOnlinePasswordUnusable,
+                     weak_factory_.GetWeakPtr(), std::move(user_context),
+                     online_password_mismatch));
+}
+
+void LoginPerformer::OnLocalAuthenticationRequired(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LoginPerformer::NotifyLocalAuthenticationRequired,
                      weak_factory_.GetWeakPtr(), std::move(user_context)));
 }
 
@@ -293,20 +303,22 @@ void LoginPerformer::NotifyOffTheRecordAuthSuccess() {
   delegate_->OnOffTheRecordAuthSuccess();
 }
 
-void LoginPerformer::NotifyPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
+void LoginPerformer::NotifyOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
-  user_context_ = user_context;
-  delegate_->OnPasswordChangeDetectedLegacy(user_context);
+  DCHECK(user_context);
+  delegate_->OnOnlinePasswordUnusable(std::move(user_context),
+                                      online_password_mismatch);
 }
 
-void LoginPerformer::NotifyPasswordChangeDetected(
+void LoginPerformer::NotifyLocalAuthenticationRequired(
     std::unique_ptr<UserContext> user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   DCHECK(user_context);
-  delegate_->OnPasswordChangeDetected(std::move(user_context));
+  delegate_->OnLocalAuthenticationRequired(std::move(user_context));
 }
 
 void LoginPerformer::NotifyOldEncryptionDetected(

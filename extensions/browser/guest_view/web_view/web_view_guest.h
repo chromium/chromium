@@ -9,9 +9,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -21,7 +21,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/script_executor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
@@ -217,7 +216,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) final;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) final;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
@@ -269,7 +268,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) final;
+      const std::optional<std::u16string>& untrusted_stack_trace) final;
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) final;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) final;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
@@ -316,7 +315,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       std::unique_ptr<GuestViewBase> owned_this,
       const base::Value::Dict& create_params,
       WebContentsCreatedCallback callback,
-      absl::optional<content::StoragePartitionConfig> storage_partition_config);
+      std::optional<content::StoragePartitionConfig> storage_partition_config);
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;

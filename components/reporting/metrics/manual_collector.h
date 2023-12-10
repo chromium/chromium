@@ -16,12 +16,17 @@ namespace reporting {
 class MetricReportQueue;
 class MetricReportingController;
 class ReportingSettings;
+
 // Class to collect and report metric data when manually triggered. Does not
 // automatically collect data. Necessary reporting settings must be set or
 // `setting_enabled_default_value` must be set to True in order to trigger
 // collection.
 class ManualCollector : public CollectorBase {
  public:
+  // Metrics name for reporting missing metric data to UMA.
+  static constexpr char kNoMetricDataMetricsName[] =
+      "Browser.ERP.MetricsReporting.ManualCollectorNoMetricData";
+
   ManualCollector(Sampler* sampler,
                   MetricReportQueue* metric_report_queue,
                   ReportingSettings* reporting_settings,
@@ -45,4 +50,4 @@ class ManualCollector : public CollectorBase {
 };
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_METRICS_ONE_SHOT_COLLECTOR_H_
+#endif  // COMPONENTS_REPORTING_METRICS_MANUAL_COLLECTOR_H_

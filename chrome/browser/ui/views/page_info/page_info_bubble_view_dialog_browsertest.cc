@@ -99,10 +99,12 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewDialogBrowserTest() {
     feature_list_.InitWithFeatures(
-        {},
+        {safe_browsing::kRedInterstitialFacelift},
         {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
          // to disable this feature.
-         features::kHttpsUpgrades, safe_browsing::kRedInterstitialFacelift});
+         features::kHttpsUpgrades,
+         // TODO(http://b/306151669): Add coverage for 3PCD state.
+         content_settings::features::kTrackingProtection3pcd});
   }
 
   PageInfoBubbleViewDialogBrowserTest(
@@ -477,8 +479,10 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     : public DialogBrowserTest {
  public:
   PageInfoBubbleViewAboutThisSiteDialogBrowserTest() {
-    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSiteMoreLangs},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoAboutThisSiteMoreLangs},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
@@ -557,14 +561,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
 }
 
 class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
-    : public DialogBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public DialogBrowserTest {
  public:
   PageInfoBubbleViewPrivacySandboxDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {GetParam() ? privacy_sandbox::kPrivacySandboxSettings4
-                    : privacy_sandbox::kPrivacySandboxSettings3},
-        {});
+    // TODO(http://b/306151669): Add coverage for 3PCD state.
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
   }
 
   void SetUpOnMainThread() override {
@@ -625,24 +627,23 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxMain) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxSubpage) {
   ShowAndVerifyUi();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
-                         testing::Bool());
-
 class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewHistoryDialogBrowserTest() {
-    feature_list_.InitWithFeatures({page_info::kPageInfoHistoryDesktop}, {});
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoHistoryDesktop},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
@@ -690,38 +691,18 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHistoryDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-enum class UserBypassFeatureState {
-  kOff = 0,
-  kOnTemporaryExceptions = 1,
-  kOnPermanentExceptions = 2,
-};
-
 class PageInfoBubbleViewCookiesSubpageBrowserTest
     : public DialogBrowserTest,
-      public testing::WithParamInterface<UserBypassFeatureState> {
+      public testing::WithParamInterface</*temporary_exception*/ bool> {
  public:
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI, {}});
-
-    switch (GetParam()) {
-      case UserBypassFeatureState::kOff:
-        disabled_features.push_back(content_settings::features::kUserBypassUI);
-        break;
-      case UserBypassFeatureState::kOnTemporaryExceptions:
-        enabled_features.push_back({content_settings::features::kUserBypassUI,
-                                    {{"expiration", "30d"}}});
-        break;
-      case UserBypassFeatureState::kOnPermanentExceptions:
-        enabled_features.push_back({content_settings::features::kUserBypassUI,
-                                    {{"expiration", "0d"}}});
-        break;
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    std::string expiration = GetParam() ? "30d" : "0d";
+    // TODO(http://b/306151669): Add coverage for 3PCD state.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxFirstPartySetsUI, {}},
+         {content_settings::features::kUserBypassUI,
+          {{"expiration", expiration}}}},
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   static base::Time GetReferenceTime() {
@@ -803,7 +784,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       cookie_info.status = CookieControlsStatus::kDisabled;
     }
 
-    if (GetParam() == UserBypassFeatureState::kOnTemporaryExceptions) {
+    if (GetParam()) {
       cookie_info.expiration = GetReferenceTime() + base::Days(30);
     }
     cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
@@ -873,9 +854,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
-    testing::ValuesIn({UserBypassFeatureState::kOff,
-                       UserBypassFeatureState::kOnTemporaryExceptions,
-                       UserBypassFeatureState::kOnPermanentExceptions}));
+    testing::Bool());
 
 // Show different sets of buttons in cookies subpage with different
 // enforcements:
@@ -919,15 +898,14 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     PageInfoBubbleViewCookiesSubpageBrowserTest,
-    testing::ValuesIn({UserBypassFeatureState::kOff,
-                       UserBypassFeatureState::kOnTemporaryExceptions,
-                       UserBypassFeatureState::kOnPermanentExceptions}));
-
+    testing::Bool());
 class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewIsolatedWebAppBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {

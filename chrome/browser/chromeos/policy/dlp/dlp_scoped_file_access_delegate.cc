@@ -10,9 +10,9 @@
 #include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/file_access/scoped_file_access.h"
-#include "components/file_access/scoped_file_access_copy.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,12 +34,19 @@ dlp::RequestFileAccessRequest PrepareBaseRequestFileAccessRequest(
 
 void RequestFileAccessForSystem(
     const std::vector<base::FilePath>& files,
-    base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback,
+    bool check_default) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (file_access::ScopedFileAccessDelegate::HasInstance()) {
-    file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
-        files, base::BindPostTask(content::GetIOThreadTaskRunner({}),
-                                  std::move(callback)));
+    if (check_default) {
+      file_access::ScopedFileAccessDelegate::Get()->RequestDefaultFilesAccess(
+          files, base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                    std::move(callback)));
+    } else {
+      file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
+          files, base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                    std::move(callback)));
+    }
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -61,7 +68,7 @@ void DlpScopedFileAccessDelegate::Initialize(
         if (!request_files_access_for_system_io_callback_) {
           request_files_access_for_system_io_callback_ =
               new file_access::ScopedFileAccessDelegate::
-                  RequestFilesAccessIOCallback(base::BindPostTask(
+                  RequestFilesAccessCheckDefaultCallback(base::BindPostTask(
                       content::GetUIThreadTaskRunner({}),
                       base::BindRepeating(&RequestFileAccessForSystem)));
         }
@@ -124,9 +131,24 @@ void DlpScopedFileAccessDelegate::RequestFilesAccessForSystem(
   PostRequestFileAccessToDaemon(client, request, std::move(callback));
 }
 
+void DlpScopedFileAccessDelegate::RequestDefaultFilesAccess(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(b/306617373): Add UMA when default access is used.
+  if (chromeos::features::IsDataControlsFileAccessDefaultDenyEnabled()) {
+    // With is_allowed set the caller will not deny anything themself but the
+    // daemon will block the access as no request was sent to it.
+    std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+    return;
+  }
+  RequestFilesAccessForSystem(files, std::move(callback));
+}
+
 DlpScopedFileAccessDelegate::RequestFilesAccessIOCallback
 DlpScopedFileAccessDelegate::CreateFileAccessCallback(
     const GURL& destination) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return base::BindPostTask(
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(

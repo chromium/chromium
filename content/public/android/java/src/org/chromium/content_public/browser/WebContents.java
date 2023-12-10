@@ -57,9 +57,7 @@ public interface WebContents extends Parcelable {
          */
         void set(WebContentsInternals internals);
 
-        /**
-         * Returns {@link WebContentsInternals} object. Can be {@code null}.
-         */
+        /** Returns {@link WebContentsInternals} object. Can be {@code null}. */
         WebContentsInternals get();
     }
 
@@ -98,8 +96,11 @@ public interface WebContents extends Parcelable {
      * @param windowAndroid An instance of the WindowAndroid.
      * @param internalsHolder A holder of objects used internally by WebContents.
      */
-    void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
-            ViewEventSink.InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
+    void initialize(
+            String productVersion,
+            ViewAndroidDelegate viewDelegate,
+            ViewEventSink.InternalAccessDelegate accessDelegate,
+            WindowAndroid windowAndroid,
             @NonNull InternalsHolder internalsHolder);
 
     /**
@@ -113,7 +114,7 @@ public interface WebContents extends Parcelable {
     void clearJavaWebContentsObservers();
 
     /**
-     * @return The top level WindowAndroid associated with this WebContents.  This can be null.
+     * @return The top level WindowAndroid associated with this WebContents. This can be null.
      */
     @Nullable
     WindowAndroid getTopLevelNativeWindow();
@@ -133,9 +134,7 @@ public interface WebContents extends Parcelable {
     @Nullable
     ViewAndroidDelegate getViewAndroidDelegate();
 
-    /**
-     * Deletes the Web Contents object.
-     */
+    /** Deletes the Web Contents object. */
     void destroy();
 
     /**
@@ -244,19 +243,13 @@ public interface WebContents extends Parcelable {
      */
     void dispatchBeforeUnload(boolean autoCancel);
 
-    /**
-     * Stop any pending navigation.
-     */
+    /** Stop any pending navigation. */
     void stop();
 
-    /**
-     * To be called when the ContentView is hidden.
-     */
+    /** To be called when the ContentView is hidden. */
     void onHide();
 
-    /**
-     * To be called when the ContentView is shown.
-     */
+    /** To be called when the ContentView is shown. */
     void onShow();
 
     /**
@@ -297,14 +290,10 @@ public interface WebContents extends Parcelable {
      */
     boolean isFullscreenForCurrentTab();
 
-    /**
-     * Inform WebKit that Fullscreen mode has been exited by the user.
-     */
+    /** Inform WebKit that Fullscreen mode has been exited by the user. */
     void exitFullscreen();
 
-    /**
-     * Brings the Editable to the visible area while IME is up to make easier for inputing text.
-     */
+    /** Brings the Editable to the visible area while IME is up to make easier for inputing text. */
     void scrollFocusedEditableNodeIntoView();
 
     /**
@@ -354,9 +343,7 @@ public interface WebContents extends Parcelable {
      */
     boolean isIncognito();
 
-    /**
-     * Resumes the requests for a newly created window.
-     */
+    /** Resumes the requests for a newly created window. */
     void resumeLoadingCreatedWebContents();
 
     /**
@@ -401,8 +388,11 @@ public interface WebContents extends Parcelable {
      * @param ports The sent message ports, if any. Pass null if there is no
      *                  message ports to pass.
      */
-    void postMessageToMainFrame(MessagePayload messagePayload, String sourceOrigin,
-            String targetOrigin, @Nullable MessagePort[] ports);
+    void postMessageToMainFrame(
+            MessagePayload messagePayload,
+            String sourceOrigin,
+            String targetOrigin,
+            @Nullable MessagePort[] ports);
 
     /**
      * Creates a message channel for sending postMessage requests and returns the ports for
@@ -440,9 +430,7 @@ public interface WebContents extends Parcelable {
      */
     void requestSmartClipExtract(int x, int y, int width, int height);
 
-    /**
-     * Register a handler to handle smart clip data once extraction is done.
-     */
+    /** Register a handler to handle smart clip data once extraction is done. */
     void setSmartClipResultHandler(final Handler smartClipHandler);
 
     /**
@@ -451,6 +439,12 @@ public interface WebContents extends Parcelable {
      * @param stylusWritingHandler the object that implements StylusWritingHandler interface.
      */
     void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler);
+
+    /**
+     * @return {@link StylusWritingImeCallback} which is used to implement the IME functionality for
+     *     the Stylus handwriting feature.
+     */
+    StylusWritingImeCallback getStylusWritingImeCallback();
 
     /**
      * Returns {@link EventForwarder} which is used to forward input/view events
@@ -502,7 +496,11 @@ public interface WebContents extends Parcelable {
      *                 renderer.
      * @return The unique id of the download request
      */
-    int downloadImage(GURL url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
+    int downloadImage(
+            GURL url,
+            boolean isFavicon,
+            int maxBitmapSize,
+            boolean bypassCache,
             ImageDownloadCallback callback);
 
     /**
@@ -564,9 +562,7 @@ public interface WebContents extends Parcelable {
      */
     void setDisplayCutoutSafeArea(Rect insets);
 
-    /**
-     * Notify that web preferences needs update for various properties.
-     */
+    /** Notify that web preferences needs update for various properties. */
     void notifyRendererPreferenceUpdate();
 
     /**

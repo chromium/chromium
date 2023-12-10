@@ -18,7 +18,6 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 
 import java.util.Iterator;
@@ -53,8 +52,7 @@ public class BookmarkImageFetcher {
             LargeIconBridge largeIconBridge,
             RoundedIconGenerator roundedIconGenerator,
             int imageSize,
-            int faviconSize,
-            SyncService syncService) {
+            int faviconSize) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mImageFetcher = imageFetcher;
@@ -63,7 +61,7 @@ public class BookmarkImageFetcher {
         mRoundedIconGenerator = roundedIconGenerator;
         mImageSize = imageSize;
         mFaviconSize = faviconSize;
-        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel, syncService);
+        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel);
     }
 
     /** Destroys this object. */
@@ -131,8 +129,8 @@ public class BookmarkImageFetcher {
     public void fetchFaviconForBookmark(BookmarkItem item, Callback<Drawable> callback) {
         mLargeIconBridge.getLargeIconForUrl(
                 item.getUrl(),
-                /*minSize*/ mFaviconFetchSize,
-                /*desiredSize*/ mFaviconSize,
+                /* minSize= */ mFaviconFetchSize,
+                /* desiredSize= */ mFaviconSize,
                 (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) -> {
                     callback.onResult(
                             FaviconUtils.getIconDrawableWithoutFilter(

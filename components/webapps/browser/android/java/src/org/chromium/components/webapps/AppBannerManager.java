@@ -22,15 +22,15 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * Manages an AppBannerInfoBar for a WebContents.
  *
- * The AppBannerManager is responsible for fetching details about native apps to display in the
+ * <p>The AppBannerManager is responsible for fetching details about native apps to display in the
  * banner. The actual observation of the WebContents (which triggers the automatic creation and
  * removal of banners, among other things) is done by the native-side AppBannerManagerAndroid.
  */
 @JNINamespace("webapps")
 public class AppBannerManager {
     /**
-     * A struct containing the string resources IDs for the strings to show in the install
-     * dialog (both the dialog title and the accept button).
+     * A struct containing the string resources IDs for the strings to show in the install dialog
+     * (both the dialog title and the accept button).
      */
     public static class InstallStringPair {
         public final @StringRes int titleTextId;
@@ -47,9 +47,6 @@ public class AppBannerManager {
     public static final InstallStringPair NON_PWA_PAIR =
             new InstallStringPair(R.string.menu_add_to_homescreen, R.string.add);
 
-    /** The key to use to store and retrieve (from the menu data) what was shown in the menu. */
-    public static final String MENU_TITLE_KEY = "AppMenuTitleShown";
-
     /** Retrieves information about a given package. */
     private static AppDetailsDelegate sAppDetailsDelegate;
 
@@ -61,6 +58,7 @@ public class AppBannerManager {
 
     /**
      * Checks if the add to home screen intent is supported.
+     *
      * @return true if add to home screen is supported, false otherwise.
      */
     @CalledByNative
@@ -79,7 +77,8 @@ public class AppBannerManager {
 
     /**
      * Sets the delegate that provides information about a given package.
-     * @param delegate Delegate to use.  Previously set ones are destroyed.
+     *
+     * @param delegate Delegate to use. Previously set ones are destroyed.
      */
     public static void setAppDetailsDelegate(AppDetailsDelegate delegate) {
         if (sAppDetailsDelegate != null) sAppDetailsDelegate.destroy();
@@ -88,6 +87,7 @@ public class AppBannerManager {
 
     /**
      * Constructs an AppBannerManager.
+     *
      * @param nativePointer the native-side object that owns this AppBannerManager.
      */
     private AppBannerManager(long nativePointer) {
@@ -106,7 +106,8 @@ public class AppBannerManager {
 
     /**
      * Grabs package information for the banner asynchronously.
-     * @param url         URL for the page that is triggering the banner.
+     *
+     * @param url URL for the page that is triggering the banner.
      * @param packageName Name of the package that is being advertised.
      */
     @CalledByNative
@@ -131,7 +132,8 @@ public class AppBannerManager {
             /**
              * Called when data about the package has been retrieved, which includes the url for the
              * app's icon but not the icon Bitmap itself.
-             * @param data Data about the app.  Null if the task failed.
+             *
+             * @param data Data about the app. Null if the task failed.
              */
             @Override
             public void onAppDetailsRetrieved(AppData data) {
@@ -140,9 +142,14 @@ public class AppBannerManager {
                 String imageUrl = data.imageUrl();
                 if (TextUtils.isEmpty(imageUrl)) return;
 
-                AppBannerManagerJni.get().onAppDetailsRetrieved(mNativePointer,
-                        AppBannerManager.this, data, data.title(), data.packageName(),
-                        data.imageUrl());
+                AppBannerManagerJni.get()
+                        .onAppDetailsRetrieved(
+                                mNativePointer,
+                                AppBannerManager.this,
+                                data,
+                                data.title(),
+                                data.packageName(),
+                                data.imageUrl());
             }
         };
     }
@@ -211,6 +218,7 @@ public class AppBannerManager {
 
     /**
      * Checks whether the renderer has navigated to a PWA.
+     *
      * @param contents The web contents to check.
      * @return true if the site has been determined to contain a PWA.
      */
@@ -225,17 +233,32 @@ public class AppBannerManager {
     @NativeMethods
     public interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
+
         String getInstallableWebAppName(WebContents webContents);
+
         String getInstallableWebAppManifestId(WebContents webContents);
-        boolean onAppDetailsRetrieved(long nativeAppBannerManagerAndroid, AppBannerManager caller,
-                AppData data, String title, String packageName, String imageUrl);
+
+        boolean onAppDetailsRetrieved(
+                long nativeAppBannerManagerAndroid,
+                AppBannerManager caller,
+                AppData data,
+                String title,
+                String packageName,
+                String imageUrl);
+
         // Testing methods.
         void ignoreChromeChannelForTesting();
+
         boolean isRunningForTesting(long nativeAppBannerManagerAndroid, AppBannerManager caller);
+
         int getPipelineStatusForTesting(long nativeAppBannerManagerAndroid);
+
         int getBadgeStatusForTesting(long nativeAppBannerManagerAndroid);
+
         void setDaysAfterDismissAndIgnoreToTrigger(int dismissDays, int ignoreDays);
+
         void setTimeDeltaForTesting(int days);
+
         void setTotalEngagementToTrigger(double engagement);
     }
 }

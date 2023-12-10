@@ -30,7 +30,9 @@ public class PasswordCheckChangePasswordHelper {
     private final PasswordCheckComponentUi.CustomTabIntentHelper mCustomTabIntentHelper;
     private final PasswordCheckComponentUi.TrustedIntentHelper mTrustedIntentHelper;
 
-    public PasswordCheckChangePasswordHelper(Context context, SettingsLauncher settingsLauncher,
+    public PasswordCheckChangePasswordHelper(
+            Context context,
+            SettingsLauncher settingsLauncher,
             PasswordCheckComponentUi.CustomTabIntentHelper customTabIntentHelper,
             PasswordCheckComponentUi.TrustedIntentHelper trustedIntentHelper) {
         mContext = context;
@@ -47,7 +49,8 @@ public class PasswordCheckChangePasswordHelper {
         if (!canManuallyChangeCredential(credential)) return;
         // TODO(crbug.com/1092444): Always launch the URL if possible and let Android handle the
         // match to open it.
-        IntentUtils.safeStartActivity(mContext,
+        IntentUtils.safeStartActivity(
+                mContext,
                 credential.getAssociatedApp().isEmpty()
                         ? buildIntent(
                                 credential.getPasswordChangeUrl(), PasswordChangeType.MANUAL_CHANGE)
@@ -64,8 +67,9 @@ public class PasswordCheckChangePasswordHelper {
     }
 
     private Intent getPackageLaunchIntent(String packageName) {
-        return Objects.requireNonNull(mContext).getPackageManager().getLaunchIntentForPackage(
-                packageName);
+        return Objects.requireNonNull(mContext)
+                .getPackageManager()
+                .getLaunchIntentForPackage(packageName);
     }
 
     /**
@@ -79,11 +83,13 @@ public class PasswordCheckChangePasswordHelper {
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
         customTabIntent.intent.setData(Uri.parse(initialUrl));
-        Intent intent = mCustomTabIntentHelper.createCustomTabActivityIntent(
-                mContext, customTabIntent.intent);
+        Intent intent =
+                mCustomTabIntentHelper.createCustomTabActivityIntent(
+                        mContext, customTabIntent.intent);
         intent.setPackage(mContext.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
-        intent.putExtra(PasswordCheckUkmRecorder.PASSWORD_CHECK_PACKAGE
+        intent.putExtra(
+                PasswordCheckUkmRecorder.PASSWORD_CHECK_PACKAGE
                         + PasswordCheckUkmRecorder.PASSWORD_CHANGE_TYPE,
                 passwordChangeType);
         mTrustedIntentHelper.addTrustedIntentExtras(intent);

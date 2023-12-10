@@ -23,9 +23,7 @@ import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.Locale;
 
-/**
- * Utilities for IME such as computing outAttrs, and dumping object information.
- */
+/** Utilities for IME such as computing outAttrs, and dumping object information. */
 public class ImeUtils {
     /**
      * Compute {@link EditorInfo} based on the given parameters. This is needed for
@@ -39,8 +37,14 @@ public class ImeUtils {
      * @param initialSelEnd The initial selection end position.
      * @param outAttrs An instance of {@link EditorInfo} that we are going to change.
      */
-    public static void computeEditorInfo(int inputType, int inputFlags, int inputMode,
-            int inputAction, int initialSelStart, int initialSelEnd, String lastText,
+    public static void computeEditorInfo(
+            int inputType,
+            int inputFlags,
+            int inputMode,
+            int inputAction,
+            int initialSelStart,
+            int initialSelEnd,
+            String lastText,
             EditorInfo outAttrs) {
         outAttrs.inputType =
                 EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT;
@@ -71,14 +75,13 @@ public class ImeUtils {
                 outAttrs.inputType =
                         InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
             } else if (inputType == TextInputType.TELEPHONE) {
-                // Telephone
-                // Number and telephone do not have both a Tab key and an
-                // action in default OSK, so set the action to NEXT
+                // Telephone Number and telephone do not have both a Tab key and an action in
+                // default OSK, so set the action to NEXT
                 outAttrs.inputType = InputType.TYPE_CLASS_PHONE;
             } else if (inputType == TextInputType.NUMBER) {
                 // Number
-                outAttrs.inputType = InputType.TYPE_CLASS_NUMBER
-                        | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+                outAttrs.inputType =
+                        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
             }
         } else {
             switch (inputMode) {
@@ -99,8 +102,9 @@ public class ImeUtils {
                             InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI;
                     break;
                 case WebTextInputMode.EMAIL:
-                    outAttrs.inputType = InputType.TYPE_CLASS_TEXT
-                            | InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
+                    outAttrs.inputType =
+                            InputType.TYPE_CLASS_TEXT
+                                    | InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
                     break;
                 case WebTextInputMode.NUMERIC:
                     outAttrs.inputType = InputType.TYPE_CLASS_NUMBER;
@@ -115,8 +119,13 @@ public class ImeUtils {
             }
         }
 
-        outAttrs.imeOptions |= getImeAction(inputType, inputFlags, inputMode, inputAction,
-                (outAttrs.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
+        outAttrs.imeOptions |=
+                getImeAction(
+                        inputType,
+                        inputFlags,
+                        inputMode,
+                        inputAction,
+                        (outAttrs.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
 
         // Handling of autocapitalize. Blink will send the flag taking into account the element's
         // type. This is not using AutocapitalizeNone because Android does not autocapitalize by
@@ -145,7 +154,11 @@ public class ImeUtils {
         EditorInfoCompat.setInitialSurroundingText(outAttrs, lastText);
     }
 
-    private static int getImeAction(int inputType, int inputFlags, int inputMode, int inputAction,
+    private static int getImeAction(
+            int inputType,
+            int inputFlags,
+            int inputMode,
+            int inputAction,
             boolean isMultiLineInput) {
         int imeAction = 0;
         if (inputAction == TextInputAction.DEFAULT) {
@@ -206,8 +219,11 @@ public class ImeUtils {
      * @return Debug string for the given {@Editable}.
      */
     static String getEditableDebugString(Editable editable) {
-        return String.format(Locale.US, "Editable {[%s] SEL[%d %d] COM[%d %d]}",
-                editable.toString(), Selection.getSelectionStart(editable),
+        return String.format(
+                Locale.US,
+                "Editable {[%s] SEL[%d %d] COM[%d %d]}",
+                editable.toString(),
+                Selection.getSelectionStart(editable),
                 Selection.getSelectionEnd(editable),
                 BaseInputConnection.getComposingSpanStart(editable),
                 BaseInputConnection.getComposingSpanEnd(editable));
@@ -239,9 +255,7 @@ public class ImeUtils {
         if (!condition) throw new AssertionError(msg);
     }
 
-    /**
-     * Check that the current thread is UI thread, and raise an error if it is not.
-     */
+    /** Check that the current thread is UI thread, and raise an error if it is not. */
     static void checkOnUiThread() {
         checkCondition("Should be on UI thread.", ThreadUtils.runningOnUiThread());
     }

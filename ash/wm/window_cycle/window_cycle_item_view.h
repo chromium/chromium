@@ -9,7 +9,6 @@
 #include "ash/wm/window_mini_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/events/event.h"
 
 namespace aura {
 class Window;
@@ -19,9 +18,14 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
+namespace ui {
+class MouseEvent;
+}  // namespace ui
+
 namespace ash {
 
 class SnapGroup;
+class WindowCycleController;
 
 // This view represents a single aura::Window by displaying a title and a
 // thumbnail of the window's contents.
@@ -48,6 +52,9 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
 
   // WindowMiniViewBase:
   void RefreshItemVisuals() override;
+
+ private:
+  const raw_ptr<WindowCycleController> window_cycle_controller_;
 };
 
 // Container view used to host multiple `WindowCycleItemView`s and be the focus
@@ -61,6 +68,10 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   GroupContainerCycleView& operator=(const GroupContainerCycleView&) = delete;
   ~GroupContainerCycleView() override;
 
+  const std::vector<WindowCycleItemView*>& mini_views() const {
+    return mini_views_;
+  }
+
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
@@ -68,15 +79,18 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   void RefreshItemVisuals() override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
+  void SetSelectedWindowForFocus(aura::Window* window) override;
+  void ClearFocusSelection() override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  // TODO(b/297070130): Use vector store the child `WindowCycleItemView` hosted
-  // by this.
-  raw_ptr<WindowCycleItemView> mini_view1_;
-  raw_ptr<WindowCycleItemView> mini_view2_;
+  std::vector<WindowCycleItemView*> mini_views_;
+
+  // True if `this` is the first time a focus selection request is made to this
+  // item.
+  bool is_first_focus_selection_request_ = true;
 };
 
 }  // namespace ash

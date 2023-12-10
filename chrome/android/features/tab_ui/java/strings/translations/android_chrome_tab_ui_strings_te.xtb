@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1075622780330595106">మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు ఇటీవల ఉపయోగించబడలేదు. వాటిని మూసివేయాలా?</translation>
+<translation id="1155815720264022949">పాత ట్యాబ్‌లను మూసివేయాలనుకుంటున్నారా?</translation>
 <translation id="1215127405478249895">ట్యాబ్‌లను రివ్యూ చేయండి</translation>
 <translation id="125153950246128346">మరొక ట్యాబ్‌ను చూడటానికి నొక్కండి</translation>
 <translation id="1499635324672558517">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయాలా?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">ఫుల్-స్క్రీన్‌ గ్రిడ్‌‌ను దాచిపెట్టు</translation>
 <translation id="5076161749301278626">స్టోర్ రివ్యూలను చూడాలనుకుంటున్నారా?</translation>
 <translation id="5082793167783849073">పేజీలను సమూహంగా వర్గీకరించడం ద్వారా వేగంగా సరిపోల్చండి. ప్రారంభించడానికి, లింక్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{మీ దగ్గర మీరు ఇటీవల ఉపయోగించని ట్యాబ్ <ph name="TABS_COUNT_ONE" /> ఉంది}other{మీ దగ్గర మీరు ఇటీవల ఉపయోగించని ట్యాబ్‌లు <ph name="TABS_COUNT_MANY" /> ఉన్నాయి}}</translation>
 <translation id="5339733443032484186">మీ చివరి ట్యాబ్</translation>
 <translation id="5490235265819901748">ట్యాబ్ గ్రూప్ విస్తరించబడింది</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
+<translation id="5545379293264651575">రివ్యూ చేయకుండానే మూసివేయండి</translation>
 <translation id="5556417849629758491">స్టోర్ సమాచారాన్ని చూడండి, ఆప్షన్ స్క్రీన్ పైభాగంలో అందుబాటులో ఉంది</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ట్యాబ్‌లు గ్రూప్ చేయబడ్డాయి</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">ట్యాబ్‌ను కుడి వైపునకు తరలించు</translation>
 <translation id="7966321538264951561">సూచనలను తీసివేయండి.</translation>
 <translation id="8029301326595421733">ఈ స్టోర్ గురించిన సమాచారం ఫుల్-స్క్రీన్‌లో తెరవబడింది</translation>
-<translation id="814503310257431685">అన్నింటినీ చూడండి</translation>
 <translation id="8205266828577616993">ట్యాబ్‌ను పైక్ తరలించండి</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ఎంపిక చేసిన <ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను మూసివేయి}other{ఎంపిక చేసిన <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను మూసివేయి}}</translation>
 <translation id="8398929769197326728">కొత్త ఫోల్డర్ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

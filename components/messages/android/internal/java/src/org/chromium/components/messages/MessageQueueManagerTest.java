@@ -356,9 +356,7 @@ public class MessageQueueManagerTest {
         verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
-    /**
-     * Tests that delegate methods are properly called to show/hide message when queue is suspended.
-     */
+    /** Tests that delegate methods are properly called to show/hide message when queue is suspended. */
     @Test
     @SmallTest
     public void testDismissOnSuspend() {
@@ -497,9 +495,7 @@ public class MessageQueueManagerTest {
                 .dismiss(anyInt());
     }
 
-    /**
-     * Test that animateTransition gets propagated from MessageScopeChange to hide() call correctly.
-     */
+    /** Test that animateTransition gets propagated from MessageScopeChange to hide() call correctly. */
     @Test
     @SmallTest
     public void testMessageAnimationTransitionOnScopeChange() {
@@ -552,9 +548,7 @@ public class MessageQueueManagerTest {
                 .dismiss(anyInt());
     }
 
-    /**
-     * Test that callback can be correctly called if #hide is called without #show called before.
-     */
+    /** Test that callback can be correctly called if #hide is called without #show called before. */
     @Test
     @SmallTest
     public void testShowHideMultipleTimes() {

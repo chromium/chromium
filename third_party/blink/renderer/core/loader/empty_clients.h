@@ -239,7 +239,10 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void RequestUnbufferedInputEvents(LocalFrame*) override {}
   void SetTouchAction(LocalFrame*, TouchAction) override {}
   void SetPanAction(LocalFrame*, mojom::blink::PanAction pan_action) override {}
-  void DidAddOrRemoveFormRelatedElementsAfterLoad(LocalFrame*) override {}
+  void DidChangeFormRelatedElementDynamically(
+      LocalFrame*,
+      HTMLElement*,
+      WebFormRelatedChangeType) override {}
   String AcceptLanguages() override;
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override {}
   void UnregisterPopupOpeningObserver(PopupOpeningObserver*) override {}
@@ -373,11 +376,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
   void SelectorMatchChanged(const Vector<String>&,
                             const Vector<String>&) override {}
   LocalFrame* CreateFrame(const AtomicString&, HTMLFrameOwnerElement*) override;
-  std::pair<RemoteFrame*, PortalToken> CreatePortal(
-      HTMLPortalElement*,
-      mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
-      mojo::PendingAssociatedRemote<mojom::blink::PortalClient>) override;
-  RemoteFrame* AdoptPortal(HTMLPortalElement*) override;
 
   RemoteFrame* CreateFencedFrame(
       HTMLFencedFrameElement*,

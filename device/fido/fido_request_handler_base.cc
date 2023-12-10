@@ -63,6 +63,12 @@ struct TransportAvailabilityCallbackReadiness {
   // signal that they have started.
   unsigned num_discoveries_pending = 0;
 
+  // This separately counts for platform discoveries in order to track whether
+  // at least one discovery succeeded, for situations where there is more than
+  // one platform authenticator available.
+  unsigned num_platform_discoveries_pending = 0;
+  bool platform_discovery_succeeded = false;
+
   bool CanMakeCallback() const {
     return !callback_made && !ble_information_pending &&
            num_platform_credential_checks_pending == 0 &&
@@ -173,6 +179,12 @@ void FidoRequestHandlerBase::InitDiscoveries(
     }
   }
 
+  for (auto& discovery : discoveries_) {
+    if (discovery->transport() == FidoTransportProtocol::kInternal) {
+      transport_availability_callback_readiness_
+          ->num_platform_discoveries_pending++;
+    }
+  }
   transport_availability_callback_readiness_->num_discoveries_pending =
       discoveries_.size();
 
@@ -229,7 +241,7 @@ void FidoRequestHandlerBase::StartAuthenticatorRequest(
 }
 
 void FidoRequestHandlerBase::CancelActiveAuthenticators(
-    base::StringPiece exclude_device_id) {
+    std::string_view exclude_device_id) {
   for (auto task_it = active_authenticators_.begin();
        task_it != active_authenticators_.end();) {
     DCHECK(!task_it->first.empty());
@@ -320,9 +332,24 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     std::vector<FidoAuthenticator*> authenticators) {
   transport_availability_callback_readiness_->num_discoveries_pending--;
 
+  bool is_platform_discovery =
+      discovery->transport() == FidoTransportProtocol::kInternal;
+  if (is_platform_discovery) {
+    CHECK(transport_availability_callback_readiness_
+              ->num_platform_discoveries_pending > 0);
+    transport_availability_callback_readiness_
+        ->num_platform_discoveries_pending--;
+  }
+
   if (!success) {
-    transport_availability_info_.available_transports.erase(
-        discovery->transport());
+    if (!is_platform_discovery ||
+        (transport_availability_callback_readiness_
+                 ->num_platform_discoveries_pending == 0 &&
+         !transport_availability_callback_readiness_
+              ->platform_discovery_succeeded)) {
+      transport_availability_info_.available_transports.erase(
+          discovery->transport());
+    }
   } else {
     for (auto* authenticator : authenticators) {
       AuthenticatorAdded(discovery, authenticator);
@@ -331,9 +358,10 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     // Allow GetAssertionRequestHandler to asynchronously check for known
     // platform credentials and defer |OnTransportAvailabilityEnumerated| until
     // that check is done.
-    if (discovery->transport() == FidoTransportProtocol::kInternal &&
-        // |authenticators| can be empty in tests.
-        !authenticators.empty()) {
+    // |authenticators| can be empty in tests.
+    if (is_platform_discovery && !authenticators.empty()) {
+      transport_availability_callback_readiness_->platform_discovery_succeeded =
+          true;
       for (FidoAuthenticator* platform_authenticator : authenticators) {
         if (platform_authenticator->GetType() == AuthenticatorType::kEnclave) {
           continue;

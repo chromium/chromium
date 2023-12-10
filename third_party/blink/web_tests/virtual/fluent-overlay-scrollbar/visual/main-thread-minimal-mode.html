@@ -1,40 +1,37 @@
-<!DOCTYPE html>
-<!-- Tests that main threaded scrollbars are correctly drawn in
-  Minimal mode for normal and left side vertical scrollbars. -->
-<script src='../../../resources/gesture-util.js'></script>
-<script src='../../../resources/testharness.js'></script>
+<!doctype html>
+<!-- Tests that main threaded scrollbars are correctly drawn in Minimal mode for
+     normal and left side vertical scrollbars. -->
+<meta charset="utf-8">
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
 <style>
   body {
-    color-scheme: light dark;
     background-color: green;
+    color-scheme: light dark;
   }
-  #scrollable-rtl {
-    width: 200px;
-    height: 200px;
-    overflow: scroll;
-    resize: both;
-    scrollbar-gutter: stable;
+
+  .rtl {
     direction: rtl;
   }
-  #scrollable {
-    width: 200px;
+
+  .scrollable {
     height: 200px;
     overflow: scroll;
     resize: both;
     scrollbar-gutter: stable;
+    width: 200px;
   }
-  #content {
+
+  .content {
     background-image: radial-gradient(yellow, yellow);
-    overflow: scroll;
     height: 400px;
+    overflow: scroll;
     width: 400px;
   }
 </style>
-<div id="scrollable">
-  <div id="content">
-  </div>
+<div class="scrollable">
+  <div class="content"></div>
 </div>
-<div id="scrollable-rtl">
-  <div id="content">
-  </div>
+<div class="scrollable rtl">
+  <div class="content"></div>
 </div>

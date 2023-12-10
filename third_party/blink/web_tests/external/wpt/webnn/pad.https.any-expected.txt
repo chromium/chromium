@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] pad float32 4D tensor options.mode='edge' / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: XNNPACK only supports constant padding mode."
+[FAIL] pad float32 4D tensor options.mode='reflection' / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: XNNPACK only supports constant padding mode."
+[FAIL] pad float32 4D tensor options.mode='symmetric' / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: XNNPACK only supports constant padding mode."
+Harness: the test ran to completion.
+

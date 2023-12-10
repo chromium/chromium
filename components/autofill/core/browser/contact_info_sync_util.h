@@ -51,4 +51,4 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_SYNC_UTIL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_CONTACT_INFO_SYNC_UTIL_H_

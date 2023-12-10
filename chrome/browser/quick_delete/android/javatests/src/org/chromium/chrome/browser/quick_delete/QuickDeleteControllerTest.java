@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -106,9 +106,8 @@ public class QuickDeleteControllerTest {
         Tab initialTab = mActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((TabImpl) initialTab)
-                            .setLastNavigationCommittedTimestampMillis(
-                                    System.currentTimeMillis() - FIFTEEN_MINUTES_IN_MS);
+                    TabTestUtils.setLastNavigationCommittedTimestampMillis(
+                            initialTab, System.currentTimeMillis() - FIFTEEN_MINUTES_IN_MS);
                 });
 
         // Open new tab for tests.

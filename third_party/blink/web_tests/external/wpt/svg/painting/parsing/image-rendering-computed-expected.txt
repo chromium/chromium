@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Property image-rendering value 'auto'
 [FAIL] Property image-rendering value 'optimizequality'
   assert_true: 'optimizequality' is a supported value for image-rendering. expected true got false
 [FAIL] Property image-rendering value 'optimizespeed'

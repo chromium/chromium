@@ -95,34 +95,37 @@ class TestVideoConfig {
   // Returns a configuration that is invalid.
   static VideoDecoderConfig Invalid();
 
-  static VideoDecoderConfig Normal(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig Normal(VideoCodec codec = VideoCodec::kAV1);
   static VideoDecoderConfig NormalWithColorSpace(
       VideoCodec codec,
       const VideoColorSpace& color_space);
   static VideoDecoderConfig NormalH264(VideoCodecProfile = H264PROFILE_MIN);
   static VideoDecoderConfig NormalCodecProfile(
-      VideoCodec codec = VideoCodec::kVP8,
+      VideoCodec codec = VideoCodec::kAV1,
       VideoCodecProfile profile = VP8PROFILE_MIN);
   static VideoDecoderConfig NormalEncrypted(
-      VideoCodec codec = VideoCodec::kVP8);
+      VideoCodec codec = VideoCodec::kAV1);
   static VideoDecoderConfig NormalEncrypted(VideoCodec codec,
                                             VideoCodecProfile);
   static VideoDecoderConfig NormalRotated(VideoRotation rotation);
+  static VideoDecoderConfig NormalHdr(VideoCodec codec = VideoCodec::kAV1);
+  static VideoDecoderConfig NormalHdrEncrypted(
+      VideoCodec codec = VideoCodec::kAV1);
 
   // Returns a configuration that is larger in dimensions than Normal().
-  static VideoDecoderConfig Large(VideoCodec codec = VideoCodec::kVP8);
-  static VideoDecoderConfig LargeEncrypted(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig Large(VideoCodec codec = VideoCodec::kAV1);
+  static VideoDecoderConfig LargeEncrypted(VideoCodec codec = VideoCodec::kAV1);
 
   // Returns a configuration that is larger in dimensions that Large().
-  static VideoDecoderConfig ExtraLarge(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig ExtraLarge(VideoCodec codec = VideoCodec::kAV1);
   static VideoDecoderConfig ExtraLargeEncrypted(
-      VideoCodec codec = VideoCodec::kVP8);
+      VideoCodec codec = VideoCodec::kAV1);
 
   static VideoDecoderConfig Custom(gfx::Size size,
-                                   VideoCodec codec = VideoCodec::kVP8);
+                                   VideoCodec codec = VideoCodec::kAV1);
   static VideoDecoderConfig CustomEncrypted(
       gfx::Size size,
-      VideoCodec codec = VideoCodec::kVP8);
+      VideoCodec codec = VideoCodec::kAV1);
 
   // Returns coded size for Normal and Large config.
   static gfx::Size NormalCodedSize();

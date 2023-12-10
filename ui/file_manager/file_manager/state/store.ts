@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {VolumeType} from '../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
 import {FileData, FileKey, State, Volume} from '../externs/ts/state.js';
 import {BaseStore} from '../lib/base_store.js';
@@ -14,6 +14,7 @@ import {currentDirectorySlice} from './ducks/current_directory.js';
 import {deviceSlice} from './ducks/device.js';
 import {driveSlice} from './ducks/drive.js';
 import {folderShortcutsSlice} from './ducks/folder_shortcuts.js';
+import {launchParamsSlice} from './ducks/launch_params.js';
 import {navigationSlice} from './ducks/navigation.js';
 import {preferencesSlice} from './ducks/preferences.js';
 import {searchSlice} from './ducks/search.js';
@@ -58,6 +59,7 @@ export function getStore(): Store {
       driveSlice,
       currentDirectorySlice,
       allEntriesSlice,
+      launchParamsSlice,
     ]);
   }
 
@@ -87,9 +89,12 @@ export function getEmptyState(): State {
     volumes: {},
     uiEntries: [],
     folderShortcuts: [],
-    androidApps: [],
+    androidApps: {},
     bulkPinning: undefined,
     preferences: undefined,
+    launchParams: {
+      dialogType: undefined,
+    },
   };
 }
 
@@ -159,8 +164,8 @@ export function getVolume(state: State, fileData?: FileData|null): Volume|null {
   return (volumeId && state.volumes[volumeId]) || null;
 }
 
-export function getVolumeType(state: State, fileData?: FileData|null):
-    VolumeManagerCommon.VolumeType|null {
+export function getVolumeType(
+    state: State, fileData?: FileData|null): VolumeType|null {
   return getVolume(state, fileData)?.volumeType ?? null;
 }
 

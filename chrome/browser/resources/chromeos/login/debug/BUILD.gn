@@ -17,12 +17,13 @@ import("//tools/polymer/html_to_js.gni")
 
 # Copy existing files to output directory.
 copy("copy_js") {
-  sources = [ "debug.js" ]
+  sources = [
+    "debug.js",
+    "no_debug.js",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "quick_start_debugger.js",
-  ]
+  js_files = [ "quick_start_debugger.js" ]
 }

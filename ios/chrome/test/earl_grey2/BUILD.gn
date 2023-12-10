@@ -39,7 +39,7 @@ chrome_ios_eg2_test_app_host("ios_chrome_multitasking_eg2tests") {
 chrome_ios_eg2_test("ios_chrome_autofill_automation_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/browser/autofill/automation:eg2_tests" ]
+  deps = [ "//ios/chrome/browser/autofill/model/automation:eg2_tests" ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
@@ -80,21 +80,22 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
-    "//ios/chrome/browser/autofill:eg2_tests",
-    "//ios/chrome/browser/device_sharing:eg2_tests",
+    "//ios/chrome/browser/autofill/model:eg2_tests",
+    "//ios/chrome/browser/device_sharing/model:eg2_tests",
     "//ios/chrome/browser/feature_engagement/model:eg2_tests",
     "//ios/chrome/browser/find_in_page/model:eg2_tests",
     "//ios/chrome/browser/https_upgrades/model:eg2_tests",
-    "//ios/chrome/browser/metrics:eg2_tests",
+    "//ios/chrome/browser/metrics/model:eg2_tests",
     "//ios/chrome/browser/net:eg2_tests",
     "//ios/chrome/browser/ntp_tiles/model:eg2_tests",
-    "//ios/chrome/browser/optimization_guide:eg2_tests",
+    "//ios/chrome/browser/optimization_guide/model:eg2_tests",
     "//ios/chrome/browser/passwords/model:eg2_tests",
     "//ios/chrome/browser/policy:eg2_tests",
     "//ios/chrome/browser/policy_url_blocking/model:eg2_tests",
     "//ios/chrome/browser/prerender/model:eg2_tests",
     "//ios/chrome/browser/safe_browsing/model:eg2_tests",
     "//ios/chrome/browser/supervised_user/model:eg2_tests",
+    "//ios/chrome/browser/sync/model/prefs:eg2_tests",
     "//ios/chrome/browser/ui/autofill:eg2_tests",
     "//ios/chrome/browser/ui/autofill/branding:eg2_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:eg2_tests",
@@ -149,6 +150,8 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy/lockdown_mode:eg2_tests",
+    "//ios/chrome/browser/ui/settings/privacy/privacy_guide:eg2_tests",
+    "//ios/chrome/browser/ui/settings/safety_check:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:eg2_tests",
@@ -161,8 +164,7 @@ chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
-    "//ios/chrome/browser/signin:eg2_tests",
-    "//ios/chrome/browser/ui/authentication/signed_in_accounts:eg2_tests",
+    "//ios/chrome/browser/signin/model:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:eg2_tests",
@@ -177,6 +179,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/plus_addresses/ui:eg2_tests",
     "//ios/chrome/browser/settings/model/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/autofill/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:eg2_tests",
@@ -189,6 +192,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/download:eg2_tests",
     "//ios/chrome/browser/ui/find_bar:eg2_tests",
     "//ios/chrome/browser/ui/first_run:eg2_tests",
+    "//ios/chrome/browser/ui/first_run/omnibox_position:eg2_tests",
     "//ios/chrome/browser/ui/fullscreen:eg2_tests",
     "//ios/chrome/browser/ui/history:eg2_tests",
     "//ios/chrome/browser/ui/incognito_interstitial:eg2_tests",
@@ -222,7 +226,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:eg2_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:eg2_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/tests:eg2_tests",
-    "//ios/chrome/browser/ui/tab_switcher/tab_strip:eg2_tests",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/test:eg2_tests",
     "//ios/chrome/browser/ui/tabs:eg2_tests",
     "//ios/chrome/browser/ui/tabs/tab_pickup:eg2_tests",
     "//ios/chrome/browser/ui/text_fragments:eg2_tests",
@@ -271,7 +275,6 @@ source_set("eg2_tests") {
   sources = [ "smoke_egtest.mm" ]
 
   deps = [
-    "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

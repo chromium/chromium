@@ -29,6 +29,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -139,11 +140,12 @@ views::BubbleBorder::Arrow TranslateArrow(
 // The alt-text and button callback can be set based on the needs of the
 // specific bubble.
 class ClosePromoButton : public views::ImageButton {
+  METADATA_HEADER(ClosePromoButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(ClosePromoButton);
   ClosePromoButton(const std::u16string accessible_name,
                    PressedCallback callback) {
-    SetCallback(callback);
+    SetCallback(std::move(callback));
     views::ConfigureVectorImageButton(this);
     views::HighlightPathGenerator::Install(
         this,
@@ -173,8 +175,9 @@ BEGIN_METADATA(ClosePromoButton, views::ImageButton)
 END_METADATA
 
 class DotView : public views::View {
+  METADATA_HEADER(DotView, views::View)
+
  public:
-  METADATA_HEADER(DotView);
   DotView(gfx::Size size, bool should_fill)
       : size_(size), should_fill_(should_fill) {
     // In order to anti-alias properly, we'll grow by the stroke width and then
@@ -227,6 +230,32 @@ constexpr int DotView::kStrokeWidth;
 
 BEGIN_METADATA(DotView, views::View)
 END_METADATA
+
+// An `aura::WindowTargeter` that restricts located events to those within the
+// area of the `gfx::Rect` given by `HelpBubbleViewAsh::GetHitRect()`.
+class HelpBubbleWindowTargeter : public aura::WindowTargeter {
+ public:
+  explicit HelpBubbleWindowTargeter(HelpBubbleViewAsh* view)
+      : view_tracker_(view) {}
+  HelpBubbleWindowTargeter(const HelpBubbleWindowTargeter&) = delete;
+  HelpBubbleWindowTargeter& operator=(const HelpBubbleWindowTargeter&) = delete;
+  ~HelpBubbleWindowTargeter() override = default;
+
+ private:
+  // aura::WindowTargeter:
+  std::unique_ptr<HitTestRects> GetExtraHitTestShapeRects(
+      aura::Window* target) const override {
+    if (!view_tracker_.view()) {
+      return nullptr;
+    }
+
+    return std::make_unique<HitTestRects>(std::initializer_list<gfx::Rect>(
+        {views::AsViewClass<const HelpBubbleViewAsh>(view_tracker_.view())
+             ->GetHitRect()}));
+  }
+
+  const views::ViewTracker view_tracker_;
+};
 
 }  // namespace
 
@@ -369,12 +398,6 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   for (views::Label* label : labels_) {
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
-    // There is a problem with FlexLayout under the current layout, CloseButton
-    // cannot stretch its width to achieve kEnd alignment behavior. Let's
-    // temporarily disable the bounded layout of views::Label. Waiting for
-    // FlexLayout to be fixed.
-    // TODO(crbug.com/1495581): Remove this.
-    label->SetUseLegacyPreferredSize(true);
     label->SetElideBehavior(gfx::NO_ELIDE);
   }
 
@@ -423,8 +446,8 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     for (user_education::HelpBubbleButtonParams& button_params :
          params.buttons) {
       auto button = std::make_unique<PillButton>(
-          base::BindRepeating(run_callback_and_close, base::Unretained(this),
-                              base::Passed(std::move(button_params.callback))),
+          base::BindOnce(run_callback_and_close, base::Unretained(this),
+                         std::move(button_params.callback)),
           button_params.text,
           button_params.is_default ? PillButton::Type::kPrimaryWithoutIcon
                                    : PillButton::Type::kSecondaryWithoutIcon);
@@ -613,6 +636,13 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   SizeToContents();
   UpdateRoundedCorners();
 
+  // Use a custom `aura::WindowTargeter` to avoid swallowing events from the
+  // area outside the contents.
+  // TODO(http://b/307780200): Possibly remove this after fixing the root issue
+  // in the default `aura::WindowTargeter`.
+  widget->GetNativeWindow()->SetEventTargeter(
+      std::make_unique<HelpBubbleWindowTargeter>(this));
+
   if (widget->IsModal()) {
     // If the help bubble widget is a system modal widget, then it should be the
     // only interactive widget on the screen. Therefore, activate `widget`.
@@ -782,8 +812,7 @@ gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
 }
 
 void HelpBubbleViewAsh::GetWidgetHitTestMask(SkPath* mask) const {
-  // NOTE: Mask to bubble frame view contents bounds to exclude shadows.
-  mask->addRect(gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
+  mask->addRect(gfx::RectToSkRect(GetHitRect()));
 }
 
 bool HelpBubbleViewAsh::WidgetHasHitTestMask() const {
@@ -822,6 +851,11 @@ views::LabelButton* HelpBubbleViewAsh::GetDefaultButtonForTesting() const {
 views::LabelButton* HelpBubbleViewAsh::GetNonDefaultButtonForTesting(
     int index) const {
   return non_default_buttons_[index];
+}
+
+gfx::Rect HelpBubbleViewAsh::GetHitRect() const {
+  // NOTE: Mask to bubble frame view contents bounds to exclude shadows.
+  return GetBubbleFrameView()->GetContentsBounds();
 }
 
 void HelpBubbleViewAsh::UpdateRoundedCorners() {

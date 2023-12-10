@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 class CrOSComponentManager;

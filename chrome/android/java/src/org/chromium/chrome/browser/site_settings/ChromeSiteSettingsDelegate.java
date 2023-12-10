@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
@@ -57,9 +58,7 @@ import org.chromium.url.GURL;
 
 import java.util.Set;
 
-/**
- * A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic.
- */
+/** A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic. */
 public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public static final String EMBEDDED_CONTENT_HELP_CENTER_URL =
             "https://support.google.com/chrome/?p=embedded_content";
@@ -83,13 +82,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         }
     }
 
-    /**
-     * Used to set an instance of {@link SnackbarManager} by the parent activity.
-     */
+    /** Used to set an instance of {@link SnackbarManager} by the parent activity. */
     public void setSnackbarManager(SnackbarManager manager) {
         if (manager != null) {
-            mPrivacySandboxController = new PrivacySandboxSnackbarController(
-                    mContext, manager, new SettingsLauncherImpl());
+            mPrivacySandboxController =
+                    new PrivacySandboxSnackbarController(
+                            mContext, manager, new SettingsLauncherImpl());
         }
     }
 
@@ -101,15 +99,17 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public ManagedPreferenceDelegate getManagedPreferenceDelegate() {
         if (mManagedPreferenceDelegate == null) {
-            mManagedPreferenceDelegate = new ChromeManagedPreferenceDelegate(mProfile) {
-                @Override
-                public boolean isPreferenceControlledByPolicy(Preference preference) {
-                    return false;
-                }
-            };
+            mManagedPreferenceDelegate =
+                    new ChromeManagedPreferenceDelegate(mProfile) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return false;
+                        }
+                    };
         }
         return mManagedPreferenceDelegate;
     }
+
     @Override
     public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
         if (mLargeIconBridge == null) {
@@ -121,8 +121,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isCategoryVisible(@SiteSettingsCategory.Type int type) {
         switch (type) {
-            // TODO(csharrison): Remove this condition once the experimental UI lands. It is not
-            // great to dynamically remove the preference in this way.
+                // TODO(csharrison): Remove this condition once the experimental UI lands. It is not
+                // great to dynamically remove the preference in this way.
             case SiteSettingsCategory.Type.ADS:
                 return SiteSettingsCategory.adsCategoryEnabled();
             case SiteSettingsCategory.Type.ANTI_ABUSE:
@@ -134,8 +134,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return ContentFeatureMap.isEnabled(
                         ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
             case SiteSettingsCategory.Type.BLUETOOTH_SCANNING:
-                return CommandLine.getInstance().hasSwitch(
-                        ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
+                return CommandLine.getInstance()
+                        .hasSwitch(ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
                 return ContentFeatureMap.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
@@ -163,11 +163,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI);
-    }
-
-    @Override
-    public boolean isUserBypassUIEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.USER_BYPASS_UI);
     }
 
     @Override
@@ -207,14 +202,20 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchSettingsHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
-                currentActivity, currentActivity.getString(R.string.help_context_settings), null);
+        HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
+                .show(
+                        currentActivity,
+                        currentActivity.getString(R.string.help_context_settings),
+                        null);
     }
 
     @Override
     public void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(currentActivity,
-                currentActivity.getString(R.string.help_context_protected_content), null);
+        HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
+                .show(
+                        currentActivity,
+                        currentActivity.getString(R.string.help_context_protected_content),
+                        null);
     }
 
     // TODO(crbug.com/1494876): Migrate to `HelpAndFeedbackLauncherImpl` when Chrome has migrated to
@@ -316,8 +317,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
-        new SettingsLauncherImpl().launchSettingsActivity(
-                currentActivity, ClearBrowsingDataTabsFragment.class);
+        new SettingsLauncherImpl()
+                .launchSettingsActivity(currentActivity, ClearBrowsingDataTabsFragment.class);
     }
 
     @Override
@@ -325,5 +326,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     // notifyPageOpened(String className).
     public void notifyRequestDesktopSiteSettingsPageOpened() {
         RequestDesktopUtils.notifyRequestDesktopSiteSettingsPageOpened();
+    }
+
+    @Override
+    public boolean shouldShowSettingsOffboardingNotice() {
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE)
+                && TrackingProtectionBridge.isOffboarded();
     }
 }

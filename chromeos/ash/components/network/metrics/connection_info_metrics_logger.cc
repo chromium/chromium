@@ -153,7 +153,7 @@ void ConnectionInfoMetricsLogger::ConnectFailed(const std::string& service_path,
 
 void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
     const NetworkState* network) {
-  const absl::optional<ConnectionInfo> prev_info =
+  const std::optional<ConnectionInfo> prev_info =
       GetCachedInfo(network->guid());
   // If a connect has been requested, maintain the connect request until the
   // connect succeeded or failed.
@@ -174,14 +174,15 @@ void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
 }
 
 void ConnectionInfoMetricsLogger::ConnectionAttemptFinished(
-    const absl::optional<ConnectionInfo>& prev_info,
+    const std::optional<ConnectionInfo>& prev_info,
     const ConnectionInfo& curr_info) const {
   DCHECK(!prev_info || prev_info && prev_info->guid == curr_info.guid);
 
   if (curr_info.status == ConnectionInfo::Status::kConnected) {
     NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid,
-                                                 !curr_info.is_user_initiated);
-    NotifyConnectionResult(curr_info.guid, /*shill_error=*/absl::nullopt);
+                                                 !curr_info.is_user_initiated,
+                                                 /*is_repeated_error=*/false);
+    NotifyConnectionResult(curr_info.guid, /*shill_error=*/std::nullopt);
   }
 
   // If the network goes from connecting or disconnecting state to the
@@ -192,18 +193,20 @@ void ConnectionInfoMetricsLogger::ConnectionAttemptFinished(
       curr_info.status == ConnectionInfo::Status::kDisconnected &&
       NetworkState::ErrorIsValid(curr_info.shill_error)) {
     NetworkMetricsHelper::LogAllConnectionResult(
-        curr_info.guid, !curr_info.is_user_initiated, curr_info.shill_error);
+        curr_info.guid, !curr_info.is_user_initiated,
+        /*is_repeated_error=*/prev_info->shill_error == curr_info.shill_error,
+        curr_info.shill_error);
     NotifyConnectionResult(curr_info.guid, curr_info.shill_error);
   }
 }
 
 void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
-    const absl::optional<ConnectionInfo>& prev_info,
+    const std::optional<ConnectionInfo>& prev_info,
     const ConnectionInfo& curr_info) const {
   if (curr_info.status == ConnectionInfo::Status::kConnected) {
     NetworkMetricsHelper::LogConnectionStateResult(
         curr_info.guid, NetworkMetricsHelper::ConnectionState::kConnected,
-        /*shill_error=*/absl::nullopt);
+        /*shill_error=*/std::nullopt);
     return;
   }
 
@@ -221,17 +224,17 @@ void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
   }
 }
 
-absl::optional<ConnectionInfoMetricsLogger::ConnectionInfo>
+std::optional<ConnectionInfoMetricsLogger::ConnectionInfo>
 ConnectionInfoMetricsLogger::GetCachedInfo(const std::string& guid) const {
   const auto prev_info_it = guid_to_connection_info_.find(guid);
   if (prev_info_it == guid_to_connection_info_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return prev_info_it->second;
 }
 
 void ConnectionInfoMetricsLogger::NotifyConnectionResult(
     const std::string& guid,
-    const absl::optional<std::string>& shill_error) const {
+    const std::optional<std::string>& shill_error) const {
   for (auto& observer : observers_)
     observer.OnConnectionResult(guid, shill_error);
 }

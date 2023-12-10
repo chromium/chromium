@@ -65,7 +65,7 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
   model_callback = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
   // DialogModelHost should be using OnDialogCanceled() instead.
-  model_button.emplace(model_->GetPassKey(), model_.get(),
+  model_button.emplace(model_->GetPassKey(),
                        base::BindRepeating([](const Event&) { NOTREACHED(); }),
                        params);
 
@@ -80,8 +80,8 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
   DCHECK(!model_->extra_link_);
   // Extra buttons are required to have labels.
   DCHECK(!params.label_.empty());
-  model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
-                                std::move(callback), params);
+  model_->extra_button_.emplace(model_->GetPassKey(), std::move(callback),
+                                params);
   return *this;
 }
 
@@ -124,7 +124,7 @@ DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
 
 DialogModel::DialogModel(base::PassKey<Builder>,
                          std::unique_ptr<DialogModelDelegate> delegate)
-    : delegate_(std::move(delegate)) {
+    : delegate_(std::move(delegate)), contents_(GetPassKey()) {
   if (delegate_)
     delegate_->set_dialog_model(this);
 }
@@ -134,15 +134,15 @@ DialogModel::~DialogModel() = default;
 void DialogModel::AddParagraph(const DialogModelLabel& label,
                                std::u16string header,
                                ElementIdentifier id) {
-  AddField(std::make_unique<DialogModelParagraph>(GetPassKey(), this, label,
-                                                  header, id));
+  AddField(
+      std::make_unique<DialogModelParagraph>(GetPassKey(), label, header, id));
 }
 
 void DialogModel::AddCheckbox(ElementIdentifier id,
                               const DialogModelLabel& label,
                               const DialogModelCheckbox::Params& params) {
-  AddField(std::make_unique<DialogModelCheckbox>(GetPassKey(), this, id, label,
-                                                 params));
+  AddField(
+      std::make_unique<DialogModelCheckbox>(GetPassKey(), id, label, params));
 }
 
 void DialogModel::AddCombobox(ElementIdentifier id,
@@ -150,21 +150,20 @@ void DialogModel::AddCombobox(ElementIdentifier id,
                               std::unique_ptr<ui::ComboboxModel> combobox_model,
                               const DialogModelCombobox::Params& params) {
   AddField(std::make_unique<DialogModelCombobox>(
-      GetPassKey(), this, id, std::move(label), std::move(combobox_model),
-      params));
+      GetPassKey(), id, std::move(label), std::move(combobox_model), params));
 }
 
 void DialogModel::AddSeparator() {
-  AddField(std::make_unique<DialogModelSeparator>(GetPassKey(), this));
+  AddField(std::make_unique<DialogModelSeparator>(GetPassKey()));
 }
 
 void DialogModel::AddMenuItem(ImageModel icon,
                               std::u16string label,
                               base::RepeatingCallback<void(int)> callback,
                               const DialogModelMenuItem::Params& params) {
-  AddField(std::make_unique<DialogModelMenuItem>(
-      GetPassKey(), this, std::move(icon), std::move(label),
-      std::move(callback), params));
+  AddField(std::make_unique<DialogModelMenuItem>(GetPassKey(), std::move(icon),
+                                                 std::move(label),
+                                                 std::move(callback), params));
 }
 
 void DialogModel::AddTextfield(ElementIdentifier id,
@@ -172,19 +171,25 @@ void DialogModel::AddTextfield(ElementIdentifier id,
                                std::u16string text,
                                const DialogModelTextfield::Params& params) {
   AddField(std::make_unique<DialogModelTextfield>(
-      GetPassKey(), this, id, std::move(label), std::move(text), params));
+      GetPassKey(), id, std::move(label), std::move(text), params));
 }
 
 void DialogModel::AddCustomField(
     std::unique_ptr<DialogModelCustomField::Field> field,
     ElementIdentifier id) {
-  AddField(std::make_unique<DialogModelCustomField>(GetPassKey(), this, id,
+  AddField(std::make_unique<DialogModelCustomField>(GetPassKey(), id,
                                                     std::move(field)));
 }
 
 bool DialogModel::HasField(ElementIdentifier id) const {
-  return base::ranges::any_of(fields_,
-                              [id](auto& field) { return field->id_ == id; }) ||
+  return base::ranges::any_of(contents_.fields(GetPassKey()),
+                              [id](auto& field) {
+                                // TODO(pbos): This does not
+                                // work recursively yet.
+                                CHECK_NE(field->type_,
+                                         DialogModelField::kSection);
+                                return field->id_ == id;
+                              }) ||
          (ok_button_ && ok_button_->id_ == id) ||
          (cancel_button_ && cancel_button_->id_ == id) ||
          (extra_button_ && extra_button_->id_ == id);
@@ -193,11 +198,17 @@ bool DialogModel::HasField(ElementIdentifier id) const {
 DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
   // Assert that there are not duplicate fields corresponding to `id`. There
   // could be no matches in `fields_` if `id` corresponds to a button.
-  DCHECK_LE(static_cast<int>(base::ranges::count_if(
-                fields_, [id](auto& field) { return field->id_ == id; })),
-            1);
+  CHECK_LE(static_cast<int>(base::ranges::count_if(
+               contents_.fields(GetPassKey()),
+               [id](auto& field) {
+                 // TODO(pbos): This does not
+                 // work recursively yet.
+                 CHECK_NE(field->type_, DialogModelField::kSection);
+                 return field->id_ == id;
+               })),
+           1);
 
-  for (auto& field : fields_) {
+  for (auto& field : contents_.fields(GetPassKey())) {
     if (field->id_ == id)
       return field.get();
   }
@@ -287,9 +298,16 @@ void DialogModel::SetButtonLabel(DialogModelButton* button,
 }
 
 void DialogModel::AddField(std::unique_ptr<DialogModelField> field) {
-  fields_.push_back(std::move(field));
+  // TODO(pbos): This doesn't work for recursive fields. Here be dragons once we
+  // start nesting items. Right now we only support the top-level kSection.
+  //
+  // Once we start nesting sections then the DialogModelSection::AddField call
+  // should probably also be able to communicate the update.
+  CHECK_NE(field->type_, DialogModelField::kSection);
+  DialogModelField* const field_ptr = field.get();
+  contents_.AddField(GetPassKey(), std::move(field));
   if (host_)
-    host_->OnFieldAdded(fields_.back().get());
+    host_->OnFieldAdded(field_ptr);
 }
 
 }  // namespace ui

@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="1407843355326180937">Identifikohu në këtë sajt dhe Chrome për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
 <translation id="1436059927646026729">Hap skedën time të fundit në Chrome</translation>
+<translation id="1449241544691504574">Shto faqeshënuesit te Chrome</translation>
 <translation id="1462727070346936664">Identifikohu për të përfituar sa më shumë nga Chrome.</translation>
-<translation id="1479202195792305274">Chrome mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="1491435845014430217">Aktivizo “Kyç skedat 'e fshehta' kur mbyll Chrome”.</translation>
 <translation id="1493827051843127077">Caktoje Chrome si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="1504372625950710826">Chrome nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
@@ -32,10 +32,10 @@ Gjëra për të pasur parasysh:
         Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="1682483655351012182">Sinkronizo të dhënat e tua të Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Shton URL-të e futura te faqeshënuesit në Chrome.</translation>
 <translation id="1843217788865538014">Përdor automatikisht Chrome kur troket lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="1917964099031477364">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chrome dhe nga aplikacionet e tjera në këtë pajisje.</translation>
 <translation id="1987779152850321833">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chrome.</translation>
-<translation id="2009224836393115614">Chrome nuk mund t'i kontrollonte fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2056123005618757196">Bëj më shumë me një Google Chrome të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
 <translation id="2120238739383482109">Hap faqeshënuesit e Chrome.</translation>
 <translation id="2147651015520127414">Chrome verifikoi që <ph name="ISSUER" /> ka lëshuar certifikatën e këtij sajti të uebit.</translation>
@@ -57,7 +57,7 @@ Gjëra për të pasur parasysh:
 <translation id="2671426118752779020">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve të Google" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="2689064829982324496">Për të dalë nga "Llogaria jote e Google" në të gjitha uebsajtet, <ph name="BEGIN_LINK" />dil nga Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
-<translation id="2732745070297234559">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
+<translation id="2702250627063295552">Shto artikullin e listës së leximit në Chrome</translation>
 <translation id="2736805085127235148">Njoftimet e Chrome janë çaktivizuar aktualisht te cilësimet e pajisjes sate.</translation>
 <translation id="2767464022270041271">Nuk ka asnjë fjalëkalim të ruajtur. "Menaxheri i fjalëkalimeve i Google" mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="2868822340714096138">Pastro të dhënat e shfletimit në Chrome</translation>
@@ -75,7 +75,6 @@ Gjëra për të pasur parasysh:
 <translation id="3472587960215700950">Chrome përdor Google Maps për të të dhënë udhëzime dhe informacione lokale në adresat e zbuluara.</translation>
 <translation id="3503014945441706099">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chrome</translation>
 <translation id="3522659714780527202">Për të parë skedat e tua nga çdo vend ku përdor Chrome, aktivizo sinkronizimin</translation>
-<translation id="3533694711092285624">Nuk ka asnjë fjalëkalim të ruajtur. Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="3577555362230509265">Përdor Chrome në aplikacionet e tjera.</translation>
 <translation id="3594076341410558780">Fshihe "Përfito sa më shumë nga Chrome"</translation>
 <translation id="3655656110921623717">Kjo do të thotë që Chrome do kërkojë sajtin në celular çdo herë.</translation>
@@ -84,6 +83,7 @@ Gjëra për të pasur parasysh:
 <translation id="3744018071945602754">Menaxho fjalëkalimet në Chrome</translation>
 <translation id="3827545470516145620">Po merr mbrojtjen standarde të sigurisë në këtë pajisje</translation>
 <translation id="384394811301901750">Google Chrome nuk mund të përdorë kamerën tënde për momentin</translation>
+<translation id="3863841106411295595">Shton URL-të e futura te lista e leximit në Chrome.</translation>
 <translation id="3901001113120561395">Përfito sa më shumë nga Chrome.</translation>
 <translation id="3967382818307165056">Menaxho mënyrat e pagesës në Chrome</translation>
 <translation id="3980220367029651214">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chrome po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
@@ -97,12 +97,10 @@ Gjëra për të pasur parasysh:
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4251174643044751591">Hap faqen e cilësimit të mënyrës së pagesës në Chrome.</translation>
 <translation id="4453284704333523777">Menaxho cilësimet e Chrome</translation>
-<translation id="4471662743048412085">Gjurmo paketat e zbuluara në Chrome</translation>
 <translation id="4508370294876102450">Hap Chrome nga çdo aplikacion</translation>
 <translation id="4523886039239821078">Disa komponentë shtesë i shkaktojnë Chrome ndërprerje aksidentale. Çinstalo:</translation>
 <translation id="4633328489441962921">Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="4636900170638246267">Identifikohu në këtë sajt dhe në Chrome.</translation>
-<translation id="4698415050768537821">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>
 <translation id="4761869838909035636">Ekzekuto "Kontrollin e sigurisë" të Chrome</translation>
 <translation id="4819268619367838612">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google".
@@ -160,7 +158,6 @@ Gjëra për të pasur parasysh:
 <translation id="6815466750807582739">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
 <translation id="6851982868877411675">Hap "Cilësimet" e Chrome në iOS dhe më pas trokit te "Default Browser App" dhe zgjidh Chrome.</translation>
 <translation id="6916015246697034114">Kërko me zë në Chrome</translation>
 <translation id="6964931465519938134">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>

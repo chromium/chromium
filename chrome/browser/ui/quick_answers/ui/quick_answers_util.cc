@@ -11,12 +11,16 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace {
 
 // Spacing between labels in the horizontal elements view.
 constexpr int kLabelSpacingDip = 2;
+
+// Spacing between views in the horizontal container view.
+constexpr auto kViewSpacingMargins = gfx::Insets::TLBR(0, 0, 0, 8);
 
 // Google search link.
 constexpr char kGoogleSearchUrlPrefix[] = "https://www.google.com/search?q=";
@@ -29,6 +33,23 @@ constexpr char kTranslationQueryPrefix[] = "Translate:";
 namespace quick_answers {
 
 using views::View;
+
+gfx::FontList GetFontList(TypographyToken token) {
+  std::vector<std::string> kGoogleSansFontFamily = {kGoogleSansFont,
+                                                    kRobotoFont};
+
+  switch (token) {
+    case TypographyToken::kCrosBody2:
+      return gfx::FontList(kGoogleSansFontFamily, gfx::Font::NORMAL,
+                           /*font_size=*/13, gfx::Font::Weight::NORMAL);
+    case TypographyToken::kCrosButton2:
+      return gfx::FontList(kGoogleSansFontFamily, gfx::Font::NORMAL,
+                           /*font_size=*/13, gfx::Font::Weight::MEDIUM);
+    case TypographyToken::kCrosTitle1:
+      return gfx::FontList(kGoogleSansFontFamily, gfx::Font::NORMAL,
+                           /*font_size=*/16, gfx::Font::Weight::MEDIUM);
+  }
+}
 
 const gfx::VectorIcon& GetResultTypeIcon(ResultType result_type) {
   switch (result_type) {
@@ -44,8 +65,8 @@ const gfx::VectorIcon& GetResultTypeIcon(ResultType result_type) {
 }
 
 View* AddHorizontalUiElements(
-    const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements,
-    View* container) {
+    View* container,
+    const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements) {
   auto* labels_container = container->AddChildView(std::make_unique<View>());
   auto* layout =
       labels_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -69,6 +90,29 @@ View* AddHorizontalUiElements(
   }
 
   return labels_container;
+}
+
+View* AddHorizontalViews(View* container,
+                         std::vector<std::unique_ptr<views::View>>& views) {
+  auto* views_container = container->AddChildView(std::make_unique<View>());
+  auto* layout =
+      views_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetDefault(views::kMarginsKey, kViewSpacingMargins);
+
+  for (auto& view : views) {
+    views_container->AddChildView(std::move(view));
+  }
+
+  return views_container;
+}
+
+View* AddFillLayoutChildView(View* container,
+                             std::unique_ptr<views::View> view) {
+  View* child_view = container->AddChildView(std::move(view));
+  child_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  return child_view;
 }
 
 GURL GetDetailsUrlForQuery(const std::string& query) {

@@ -100,6 +100,7 @@ WebRequestResourceType ToWebRequestResourceType(
     // The compression dictionary has not been exposed to extensions yet.
     // We could do so if the need arises.
     case network::mojom::RequestDestination::kDictionary:
+    case network::mojom::RequestDestination::kSpeculationRules:
       return WebRequestResourceType::OTHER;
   }
   NOTREACHED();

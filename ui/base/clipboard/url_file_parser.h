@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace ui::clipboard_util::internal {
 

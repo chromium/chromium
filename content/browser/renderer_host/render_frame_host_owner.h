@@ -131,7 +131,8 @@ class RenderFrameHostOwner {
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features,
-      bool once) = 0;
+      bool once,
+      bool cross_origin_exposed) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   virtual void GetVirtualAuthenticatorManager(

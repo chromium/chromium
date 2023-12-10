@@ -125,40 +125,28 @@ TEST_F(AutofillI18nApiTest, GetLegacyAddressHierarchy) {
 }
 
 TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
-  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
-  for (const std::string& country_code : country_data_map->country_codes()) {
-    AddressCountryCode address_country_code{country_code};
+  auto* format_pattern_provider =
+      StructuredAddressesFormatProvider::GetInstance();
 
-    for (std::underlying_type_t<ServerFieldType> i = 0;
-         i < MAX_VALID_FIELD_TYPE; ++i) {
-      if (ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
-          field_type != NO_SERVER_DATA) {
-        std::u16string expected;
-        if (IsCustomHierarchyAvailableForCountry(address_country_code)) {
-          // The expected value is contained in `kAutofillFormattingRulesMap`.
-          // If no entry is found, it should *not* fallback to a legacy
-          // expression.
-          auto* it =
-              kAutofillFormattingRulesMap.find({country_code, field_type});
-          expected = it != kAutofillFormattingRulesMap.end()
-                         ? std::u16string(it->second)
-                         : u"";
+  // Check addresses with supported i18n hierarchies. The expected value is
+  // contained in `kAutofillFormattingRulesMap`.
+  EXPECT_EQ(
+      GetFormattingExpression(ADDRESS_HOME_OVERFLOW, AddressCountryCode("MX")),
+      u"${ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK;;}");
+  EXPECT_EQ(GetFormattingExpression(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                                    AddressCountryCode("BR")),
+            u"${ADDRESS_HOME_OVERFLOW;;}\n${ADDRESS_HOME_LANDMARK;Ponto de "
+            u"referência: ;}");
 
-          EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
-                    expected);
+  // If the country has no custom entry, it should default to the legacy
+  // expressions.
+  EXPECT_EQ(GetFormattingExpression(ADDRESS_HOME_SUBPREMISE,
+                                    AddressCountryCode("ES")),
+            u"${ADDRESS_HOME_APT_NUM;Apt. ;}, ${ADDRESS_HOME_FLOOR;Floor ;}");
 
-        } else {
-          auto* legacy_it = kAutofillFormattingRulesMap.find(
-              {kLegacyHierarchyCountryCode.value(), field_type});
-          expected = legacy_it != kAutofillFormattingRulesMap.end()
-                         ? std::u16string(legacy_it->second)
-                         : u"";
-        }
-        EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
-                  expected);
-      }
-    }
-  }
+  // If the type does not refer to an address, use the legacy code instead.
+  EXPECT_EQ(GetFormattingExpression(NAME_FULL, AddressCountryCode("ES")),
+            format_pattern_provider->GetPattern(NAME_FULL, "ES"));
 }
 
 TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {

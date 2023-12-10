@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -30,7 +31,6 @@
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::network_diagnostics {
@@ -40,7 +40,7 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
                             public UdpProber {
  public:
   using ConnectCallback = base::OnceCallback<
-      void(int result, const absl::optional<net::IPEndPoint>& local_addr_out)>;
+      void(int result, const std::optional<net::IPEndPoint>& local_addr_out)>;
   using SendCallback = base::OnceCallback<void(int result)>;
 
   // Establishes a UDP connection and sends |data| to |host_port_pair|. The
@@ -70,13 +70,13 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
   // On success, the UDP socket is connected to the destination and is ready to
   // send data. On failure, the UdpProberImpl exits with a failure.
   void OnConnectComplete(int result,
-                         const absl::optional<net::IPEndPoint>& local_addr_out);
+                         const std::optional<net::IPEndPoint>& local_addr_out);
 
   // On success, the UDP socket is ready to receive data. So long as the
   // received data is not empty, it is considered valid. The content itself is
@@ -85,8 +85,8 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
 
   // network::mojom::UDPSocketListener:
   void OnReceived(int32_t result,
-                  const absl::optional<net::IPEndPoint>& src_ip,
-                  absl::optional<base::span<const uint8_t>> data) override;
+                  const std::optional<net::IPEndPoint>& src_ip,
+                  std::optional<base::span<const uint8_t>> data) override;
 
   // Signals the end of the probe. Manages the clean up and returns a response
   // to the caller.
@@ -166,8 +166,8 @@ UdpProberImpl::~UdpProberImpl() = default;
 void UdpProberImpl::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&) {
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != net::OK) {
@@ -204,7 +204,7 @@ void UdpProberImpl::OnHostResolutionComplete(
 
 void UdpProberImpl::OnConnectComplete(
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr_out) {
+    const std::optional<net::IPEndPoint>& local_addr_out) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != net::OK) {
     OnDone(result, ProbeExitEnum::kConnectFailure);
@@ -227,8 +227,8 @@ void UdpProberImpl::OnSendComplete(int result) {
 }
 
 void UdpProberImpl::OnReceived(int32_t result,
-                               const absl::optional<net::IPEndPoint>& src_ip,
-                               absl::optional<base::span<const uint8_t>> data) {
+                               const std::optional<net::IPEndPoint>& src_ip,
+                               std::optional<base::span<const uint8_t>> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != net::OK) {

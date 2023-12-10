@@ -65,7 +65,7 @@ FakeScreenControls::~FakeScreenControls() = default;
 
 void FakeScreenControls::SetScreenResolution(
     const ScreenResolution& resolution,
-    absl::optional<webrtc::ScreenId> screen_id) {}
+    std::optional<webrtc::ScreenId> screen_id) {}
 
 void FakeScreenControls::SetVideoLayout(
     const protocol::VideoLayout& video_layout) {}

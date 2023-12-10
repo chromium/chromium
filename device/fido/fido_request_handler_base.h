@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
@@ -228,7 +228,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     virtual void BluetoothAdapterPowerChanged(bool is_powered_on) = 0;
     virtual void FidoAuthenticatorAdded(
         const FidoAuthenticator& authenticator) = 0;
-    virtual void FidoAuthenticatorRemoved(base::StringPiece device_id) = 0;
+    virtual void FidoAuthenticatorRemoved(std::string_view device_id) = 0;
 
     // SupportsPIN returns true if this observer supports collecting a PIN from
     // the user. If this function returns false, |CollectPIN| and
@@ -298,7 +298,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // received from the any one of the connected authenticators, in which case
   // all other authenticators are cancelled.
   // https://w3c.github.io/webauthn/#iface-pkcredential
-  void CancelActiveAuthenticators(base::StringPiece exclude_id = "");
+  void CancelActiveAuthenticators(std::string_view exclude_id = "");
   virtual void OnBluetoothAdapterEnumerated(bool is_present,
                                             bool is_powered_on,
                                             bool can_power_on,

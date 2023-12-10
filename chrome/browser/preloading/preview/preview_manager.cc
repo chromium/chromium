@@ -26,6 +26,16 @@ void PreviewManager::InitiatePreview(const GURL& url) {
   tab_ = std::make_unique<PreviewTab>(this, GetWebContents(), url);
 }
 
+void PreviewManager::Cancel() {
+  if (!tab_) {
+    return;
+  }
+
+  // Delete `tab_` asynchronously so that we can call this inside PreviewTab.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(tab_)));
+}
+
 void PreviewManager::PromoteToNewTab() {
   if (!tab_) {
     return;

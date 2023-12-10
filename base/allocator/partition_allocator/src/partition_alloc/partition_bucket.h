@@ -8,13 +8,13 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page_constants.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_page_constants.h"
 
 namespace partition_alloc::internal {
 
@@ -217,6 +217,7 @@ struct PartitionBucket {
   // InitializeSlotSpan() first.
   PA_ALWAYS_INLINE uintptr_t
   ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
+                                AllocFlags flags,
                                 SlotSpanMetadata* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 };

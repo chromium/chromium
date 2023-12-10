@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_RESUME;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_ID;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
-import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.EXTRA_NOTIFICATION_ID;
 
@@ -55,12 +54,13 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
 
     private final DownloadNotificationService mDownloadNotificationService;
     private final Handler mHandler = new Handler();
-    private final Runnable mStopSelfRunnable = new Runnable() {
-        @Override
-        public void run() {
-            getService().stopSelf();
-        }
-    };
+    private final Runnable mStopSelfRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    getService().stopSelf();
+                }
+            };
 
     public static <T> void checkNotNull(T reference) {
         if (reference == null) {
@@ -120,9 +120,19 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         switch (action) {
             case ACTION_DOWNLOAD_PAUSE:
                 if (entry != null) {
-                    mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName,
-                            true, false, entry.otrProfileID, entry.isTransient, null, null, false,
-                            true, false, PendingState.NOT_PENDING);
+                    mDownloadNotificationService.notifyDownloadPaused(
+                            entry.id,
+                            entry.fileName,
+                            true,
+                            false,
+                            entry.otrProfileID,
+                            entry.isTransient,
+                            null,
+                            null,
+                            false,
+                            true,
+                            false,
+                            PendingState.NOT_PENDING);
                 }
                 break;
 
@@ -143,18 +153,32 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 if (entry != null) {
                     // If user manually resumes a download, update the network type if it
                     // is not metered previously.
-                    boolean canDownloadWhileMetered = entry.canDownloadWhileMetered
-                            || DownloadManagerService.isActiveNetworkMetered(
-                                    ContextUtils.getApplicationContext());
+                    boolean canDownloadWhileMetered =
+                            entry.canDownloadWhileMetered
+                                    || DownloadManagerService.isActiveNetworkMetered(
+                                            ContextUtils.getApplicationContext());
                     // Update the SharedPreference entry.
                     mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                            new DownloadSharedPreferenceEntry(entry.id, entry.notificationId,
-                                    entry.otrProfileID, canDownloadWhileMetered, entry.fileName,
-                                    true, entry.isTransient));
+                            new DownloadSharedPreferenceEntry(
+                                    entry.id,
+                                    entry.notificationId,
+                                    entry.otrProfileID,
+                                    canDownloadWhileMetered,
+                                    entry.fileName,
+                                    true,
+                                    entry.isTransient));
 
-                    mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
-                            entry.otrProfileID, entry.canDownloadWhileMetered, entry.isTransient,
-                            null, null, false, true, PendingState.PENDING_NETWORK);
+                    mDownloadNotificationService.notifyDownloadPending(
+                            entry.id,
+                            entry.fileName,
+                            entry.otrProfileID,
+                            entry.canDownloadWhileMetered,
+                            entry.isTransient,
+                            null,
+                            null,
+                            false,
+                            true,
+                            PendingState.PENDING_NETWORK);
                 }
                 break;
 
@@ -165,7 +189,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
     }
 
     boolean immediateNotificationUpdateNeeded(String action) {
-        return ACTION_DOWNLOAD_PAUSE.equals(action) || ACTION_DOWNLOAD_CANCEL.equals(action)
+        return ACTION_DOWNLOAD_PAUSE.equals(action)
+                || ACTION_DOWNLOAD_CANCEL.equals(action)
                 || ACTION_DOWNLOAD_RESUME.equals(action);
     }
 
@@ -176,24 +201,27 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
     @VisibleForTesting
     void loadNativeAndPropagateInteraction(final Intent intent) {
         final ContentId id = getContentIdFromIntent(intent);
-        final BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public void finishNativeInitialization() {
-                // Delay the stop of the service by WAIT_TIME_MS after native library is loaded.
-                mHandler.postDelayed(mStopSelfRunnable, WAIT_TIME_MS);
+        final BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public void finishNativeInitialization() {
+                        // Delay the stop of the service by WAIT_TIME_MS after native library is
+                        // loaded.
+                        mHandler.postDelayed(mStopSelfRunnable, WAIT_TIME_MS);
 
-                DownloadStartupUtils.ensureDownloadSystemInitialized(
-                        BrowserStartupController.getInstance().isFullBrowserStarted(),
-                        IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false));
-                propagateInteraction(intent);
-            }
+                        DownloadStartupUtils.ensureDownloadSystemInitialized(
+                                BrowserStartupController.getInstance().isFullBrowserStarted(),
+                                IntentUtils.safeGetBooleanExtra(
+                                        intent, EXTRA_IS_OFF_THE_RECORD, false));
+                        propagateInteraction(intent);
+                    }
 
-            @Override
-            public boolean startMinimalBrowser() {
-                if (!LegacyHelpers.isLegacyDownload(id)) return false;
-                return !ACTION_DOWNLOAD_OPEN.equals(intent.getAction());
-            }
-        };
+                    @Override
+                    public boolean startMinimalBrowser() {
+                        if (!LegacyHelpers.isLegacyDownload(id)) return false;
+                        return !ACTION_DOWNLOAD_OPEN.equals(intent.getAction());
+                    }
+                };
 
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
@@ -229,8 +257,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                     OpenParams openParams = new OpenParams(LaunchLocation.NOTIFICATION);
                     openParams.openInIncognito =
                             IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false);
-                    OfflineContentAggregatorNotificationBridgeUiFactory.instance().openItem(
-                            openParams, id);
+                    OfflineContentAggregatorNotificationBridgeUiFactory.instance()
+                            .openItem(openParams, id);
                 }
                 return;
         }
@@ -251,14 +279,16 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
-                DownloadItem item = (entry != null) ? entry.buildDownloadItem()
-                                                    : new DownloadItem(false,
-                                                            new DownloadInfo.Builder()
-                                                                    .setDownloadGuid(id.id)
-                                                                    .setOTRProfileId(otrProfileID)
-                                                                    .build());
-                downloadServiceDelegate.resumeDownload(id, item,
-                        !IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_AUTO_RESUMPTION, false));
+                DownloadItem item =
+                        (entry != null)
+                                ? entry.buildDownloadItem()
+                                : new DownloadItem(
+                                        false,
+                                        new DownloadInfo.Builder()
+                                                .setDownloadGuid(id.id)
+                                                .setOTRProfileId(otrProfileID)
+                                                .build());
+                downloadServiceDelegate.resumeDownload(id, item);
                 break;
 
             default:
@@ -272,8 +302,10 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
     static boolean isActionHandled(Intent intent) {
         if (intent == null) return false;
         String action = intent.getAction();
-        return ACTION_DOWNLOAD_CANCEL.equals(action) || ACTION_DOWNLOAD_PAUSE.equals(action)
-                || ACTION_DOWNLOAD_RESUME.equals(action) || ACTION_DOWNLOAD_OPEN.equals(action)
+        return ACTION_DOWNLOAD_CANCEL.equals(action)
+                || ACTION_DOWNLOAD_PAUSE.equals(action)
+                || ACTION_DOWNLOAD_RESUME.equals(action)
+                || ACTION_DOWNLOAD_OPEN.equals(action)
                 || ACTION_NOTIFICATION_CLICKED.equals(action);
     }
 
@@ -325,8 +357,9 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      */
     private void openDownload(
             Context context, Intent intent, OTRProfileID otrProfileID, ContentId contentId) {
-        String downloadFilePath = IntentUtils.safeGetStringExtra(
-                intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
+        String downloadFilePath =
+                IntentUtils.safeGetStringExtra(
+                        intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
         if (ContentUriUtils.isContentUri(downloadFilePath)) {
             // On Q+, content URI is being used and there is no download ID.
             openDownloadWithId(context, intent, DownloadConstants.INVALID_DOWNLOAD_ID, contentId);
@@ -340,14 +373,16 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             }
 
             long id = ids[0];
-            DownloadManagerBridge.queryDownloadResult(id, result -> {
-                if (result.contentUri == null) {
-                    DownloadManagerService.openDownloadsPage(
-                            otrProfileID, DownloadOpenSource.NOTIFICATION);
-                    return;
-                }
-                openDownloadWithId(context, intent, id, contentId);
-            });
+            DownloadManagerBridge.queryDownloadResult(
+                    id,
+                    result -> {
+                        if (result.contentUri == null) {
+                            DownloadManagerService.openDownloadsPage(
+                                    otrProfileID, DownloadOpenSource.NOTIFICATION);
+                            return;
+                        }
+                        openDownloadWithId(context, intent, id, contentId);
+                    });
         }
     }
 
@@ -360,21 +395,31 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      * @param contentId Content ID of the download.
      */
     private void openDownloadWithId(Context context, Intent intent, long id, ContentId contentId) {
-        String downloadFilePath = IntentUtils.safeGetStringExtra(
-                intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
-        boolean isSupportedMimeType = IntentUtils.safeGetBooleanExtra(
-                intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
-        boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
-                intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
+        String downloadFilePath =
+                IntentUtils.safeGetStringExtra(
+                        intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
+        boolean isSupportedMimeType =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
+        boolean isOffTheRecord =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
         // If the profile doesn't exist, then do not open the download.
         if (!DownloadUtils.doesProfileExistFromIntent(intent)) return;
         OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
         assert !isOffTheRecord || otrProfileID != null;
         Uri originalUrl = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_ORIGINATING_URI);
         Uri referrer = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_REFERRER);
-        DownloadManagerService.openDownloadedContent(context, downloadFilePath, isSupportedMimeType,
-                otrProfileID, contentId.id, id, originalUrl == null ? null : originalUrl.toString(),
-                referrer == null ? null : referrer.toString(), DownloadOpenSource.NOTIFICATION,
+        DownloadManagerService.openDownloadedContent(
+                context,
+                downloadFilePath,
+                isSupportedMimeType,
+                otrProfileID,
+                contentId.id,
+                id,
+                originalUrl == null ? null : originalUrl.toString(),
+                referrer == null ? null : referrer.toString(),
+                DownloadOpenSource.NOTIFICATION,
                 null);
     }
 

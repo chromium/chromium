@@ -36,8 +36,8 @@ export class TabSearchAppElement extends PolymerElement {
       tabIcons_: {
         type: Array,
         value: () =>
-            ['chrome://resources/images/error.svg',
-             'chrome://resources/images/error.svg',
+            ['images/tab_search.svg',
+             'images/auto_tab_groups.svg',
     ],
       },
 
@@ -61,8 +61,9 @@ export class TabSearchAppElement extends PolymerElement {
   private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {
     if (event.detail.value === 1) {
       const tabOrganizationPage =
-          this.shadowRoot!.querySelector('tab-organization-page');
-      tabOrganizationPage!.classList.toggle('changed-state', false);
+          this.shadowRoot!.querySelector('tab-organization-page')!;
+      tabOrganizationPage.classList.toggle('changed-state', false);
+      tabOrganizationPage.updateContentsHeightAfterNextRender();
     }
     this.apiProxy_.setTabIndex(event.detail.value);
   }

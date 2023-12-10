@@ -47,12 +47,13 @@ class TestRunnerTestRule extends ExternalResource {
     protected void before() {
         // Register a fake Instrumentation so that class runners for instrumentation tests
         // can be run even in Robolectric tests.
-        Instrumentation instrumentation = new Instrumentation() {
-            @Override
-            public Context getTargetContext() {
-                return ApplicationProvider.getApplicationContext();
-            }
-        };
+        Instrumentation instrumentation =
+                new Instrumentation() {
+                    @Override
+                    public Context getTargetContext() {
+                        return ApplicationProvider.getApplicationContext();
+                    }
+                };
         InstrumentationRegistry.registerInstance(instrumentation, new Bundle());
     }
 
@@ -61,9 +62,7 @@ class TestRunnerTestRule extends ExternalResource {
         InstrumentationRegistry.registerInstance(null, new Bundle());
     }
 
-    /**
-     * A struct-like class containing lists of run and skipped tests.
-     */
+    /** A struct-like class containing lists of run and skipped tests. */
     public static class TestLog {
         public final List<Description> runTests = new ArrayList<>();
         public final List<Description> skippedTests = new ArrayList<>();
@@ -72,41 +71,45 @@ class TestRunnerTestRule extends ExternalResource {
     /**
      * Creates a new test runner and executes the test in the given {@code testClass} on it,
      * returning lists of tests that were run and tests that were skipped.
+     *
      * @param testClass The test class
      * @return A {@link TestLog} that contains lists of run and skipped tests.
      */
-    public TestLog runTest(Class<?> testClass) throws InvocationTargetException,
-                                                      NoSuchMethodException, InstantiationException,
-                                                      IllegalAccessException {
+    public TestLog runTest(Class<?> testClass)
+            throws InvocationTargetException,
+                    NoSuchMethodException,
+                    InstantiationException,
+                    IllegalAccessException {
         TestLog testLog = new TestLog();
 
         // TODO(bauerb): Using Mockito mock() or spy() throws a ClassCastException.
-        RunListener runListener = new RunListener() {
-            @Override
-            public void testStarted(Description description) {
-                testLog.runTests.add(description);
-            }
+        RunListener runListener =
+                new RunListener() {
+                    @Override
+                    public void testStarted(Description description) {
+                        testLog.runTests.add(description);
+                    }
 
-            @Override
-            public void testFinished(Description description) {
-                Assert.assertThat(description, isIn(testLog.runTests));
-            }
+                    @Override
+                    public void testFinished(Description description) {
+                        Assert.assertThat(description, isIn(testLog.runTests));
+                    }
 
-            @Override
-            public void testFailure(Failure failure) {
-                fail(failure.toString());
-            }
+                    @Override
+                    public void testFailure(Failure failure) {
+                        fail(failure.toString());
+                    }
 
-            @Override
-            public void testAssumptionFailure(Failure failure) {
-                fail(failure.toString());
-            }
+                    @Override
+                    public void testAssumptionFailure(Failure failure) {
+                        fail(failure.toString());
+                    }
 
-            @Override
-            public void testIgnored(Description description) {
-                testLog.skippedTests.add(description);
-            }
-        };
+                    @Override
+                    public void testIgnored(Description description) {
+                        testLog.skippedTests.add(description);
+                    }
+                };
         RunNotifier runNotifier = new RunNotifier();
         runNotifier.addListener(runListener);
         Runner runner;

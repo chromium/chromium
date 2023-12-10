@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Sutrumpinkite šį tekstą iki <ph name="MAX_CHARACTERS" /> simb. ar mažiau (šiuo metu naudojate <ph name="CURRENT_LENGTH" /> simb.).</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> m. <ph name="WEEKNUMBER" /> sav.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> takelis</translation>
+<translation id="2353297238722298836">Fotoaparatas ir mikrofonas leidžiami</translation>
 <translation id="2393030564806080191">Šešioliktainė spalvos vertė</translation>
 <translation id="2398813069815436052">dialogo langas atidarytas.</translation>
 <translation id="245932805758469625">likusių vaizdo įrašo sekundžių skaičius</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Pailginkite šį tekstą iki <ph name="MIN_CHARACTERS" /> simb. ar daugiau (šiuo metu naudojate <ph name="CURRENT_LENGTH" /> simb.).</translation>
 <translation id="383465348367842624">Prieš „<ph name="ATSIGN" />“ esančioje dalyje neturėtų būti simbolio „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Išjungti viso ekrano režimą</translation>
+<translation id="4031179711345676612">Mikrofonas leidžiamas</translation>
 <translation id="4103419683916926126">Milisekundės</translation>
 <translation id="4201051445878709314">Rodyti ankstesnį mėnesį</translation>
 <translation id="4360991593054037559">Įveskite galiojančią vertę. Dvi artimiausios vertės yra <ph name="VALID_VALUE_LOW" /> ir <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Išsami informacija</translation>
+<translation id="4663373278480897665">Fotoaparatas leidžiamas</translation>
 <translation id="4664250907885839816">Po „<ph name="ATSIGN" />“ esančioje dalyje neturėtų būti simbolio „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Leidžiama vaizdo vaizde režimu</translation>
 <translation id="4748357248530471599">perjungti ekrano išpjovą į visą ekraną</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">atsisiųsti mediją</translation>
 <translation id="698788488269350478">išskleistas.</translation>
 <translation id="6989848892321993519">Pailginkite šį tekstą iki <ph name="MIN_CHARACTERS" /> simb. ar daugiau (šiuo metu naudojate 1 simbolį).</translation>
+<translation id="7080893216867146095">Leidžiama bendrinti vietovės informaciją</translation>
 <translation id="709897737746224366">Priderinkite reikalaujamą formatą.</translation>
 <translation id="7102274145889307184">dabartinė vietovė</translation>
 <translation id="7263440858009898357">Pasirinkite sąraše pateiktą elementą.</translation>

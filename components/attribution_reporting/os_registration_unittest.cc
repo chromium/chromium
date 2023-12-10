@@ -4,9 +4,9 @@
 
 #include "components/attribution_reporting/os_registration.h"
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -17,7 +17,7 @@ namespace {
 TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
   const struct {
     const char* description;
-    base::StringPiece header;
+    std::string_view header;
     std::vector<OsRegistrationItem> expected;
   } kTestCases[] = {
       {

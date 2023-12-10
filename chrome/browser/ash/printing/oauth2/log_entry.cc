@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/oauth2/log_entry.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
@@ -20,7 +20,7 @@ namespace ash::printing::oauth2 {
 std::string LogEntry(base::StringPiece message,
                      base::StringPiece method,
                      const GURL& auth_server,
-                     absl::optional<StatusCode> status,
+                     std::optional<StatusCode> status,
                      const chromeos::Uri& ipp_endpoint) {
   std::vector<base::StringPiece> strv;
   strv.reserve(10);

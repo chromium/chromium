@@ -269,7 +269,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kChromeLoadTimesWasNpnNegotiated,
           WebFeature::kGamepadButtons,
           WebFeature::kWebNfcNdefReaderScan,
-          WebFeature::kWakeLockAcquireScreenLockWithoutActivation,
+          WebFeature::kWakeLockAcquireScreenLockWithoutStickyActivation,
           WebFeature::kDataUrlInSvgUse,
           WebFeature::kExecutedNonTrivialJavaScriptURL,
           WebFeature::kV8DeprecatedStorageQuota_QueryUsageAndQuota_Method,
@@ -346,6 +346,31 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use,
           WebFeature::kAdClickMainFrameNavigation,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use,
+          WebFeature::kThirdPartyCookieDeprecation_AllowByExplicitSetting,
+          WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
+          WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
+          WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD,
+          WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics,
+          WebFeature::kThirdPartyCookieDeprecation_AllowByStorageAccess,
+          WebFeature::kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess,
+          WebFeature::kAutoSpeculationRulesOptedOut,
+          WebFeature::kOverrideFlashEmbedwithHTML,
       }));
   return *opt_in_features;
 }

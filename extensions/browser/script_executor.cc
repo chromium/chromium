@@ -202,7 +202,7 @@ class Handler : public content::WebContentsObserver {
   void UpdateResult(content::RenderFrameHost* render_frame_host,
                     const std::string& error,
                     const GURL& url,
-                    absl::optional<base::Value> result) {
+                    std::optional<base::Value> result) {
     ScriptExecutor::FrameResult& frame_result =
         GetFrameResult(render_frame_host->GetFrameToken());
     frame_result.frame_responded = true;
@@ -249,12 +249,12 @@ class Handler : public content::WebContentsObserver {
                                               host_id_);
     }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(frame)
-        ->ExecuteCode(std::move(params),
-                      base::BindOnce(&Handler::OnExecuteCodeFinished,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     frame->GetProcess()->GetID(),
-                                     frame->GetRoutingID()));
+        ->GetLocalFrameChecked(frame)
+        .ExecuteCode(std::move(params),
+                     base::BindOnce(&Handler::OnExecuteCodeFinished,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    frame->GetProcess()->GetID(),
+                                    frame->GetRoutingID()));
   }
 
   // Handles the ExecuteCodeFinished message.
@@ -262,7 +262,7 @@ class Handler : public content::WebContentsObserver {
                              int render_frame_id,
                              const std::string& error,
                              const GURL& on_url,
-                             absl::optional<base::Value> result) {
+                             std::optional<base::Value> result) {
     auto* render_frame_host =
         content::RenderFrameHost::FromID(render_process_id, render_frame_id);
     if (!render_frame_host)
@@ -316,7 +316,7 @@ class Handler : public content::WebContentsObserver {
 
   // The the root frame key to search FrameResult, if only a single frame is
   // explicitly specified.
-  absl::optional<blink::LocalFrameToken> root_frame_token_;
+  std::optional<blink::LocalFrameToken> root_frame_token_;
 
   // The hosts of the still-running injections. Note: this is a vector because
   // order matters (some tests - and therefore perhaps some extensions - rely on

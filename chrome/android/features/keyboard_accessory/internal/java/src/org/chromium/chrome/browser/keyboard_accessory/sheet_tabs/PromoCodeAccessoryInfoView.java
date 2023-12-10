@@ -26,9 +26,7 @@ class PromoCodeAccessoryInfoView extends LinearLayout {
     private ChipView mPromoCode;
     private TextView mDetailsText;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public PromoCodeAccessoryInfoView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

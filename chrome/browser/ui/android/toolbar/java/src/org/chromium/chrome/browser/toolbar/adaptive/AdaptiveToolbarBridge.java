@@ -12,9 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Bridge between UI layer and native where segmentation platform is invoked.
- */
+/** Bridge between UI layer and native where segmentation platform is invoked. */
 public class AdaptiveToolbarBridge {
     /**
      * Called to get the per-session button variant to show on the adaptive toolbar.
@@ -23,8 +21,8 @@ public class AdaptiveToolbarBridge {
      */
     public static void getSessionVariantButton(
             Profile profile, Callback<Pair<Boolean, Integer>> callback) {
-        AdaptiveToolbarBridgeJni.get().getSessionVariantButton(
-                profile, result -> callback.onResult(result));
+        AdaptiveToolbarBridgeJni.get()
+                .getSessionVariantButton(profile, result -> callback.onResult(result));
     }
 
     @CalledByNative

@@ -66,21 +66,24 @@ public class StubbedProvider {
                 }
             }
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    observer.onItemRemoved(id);
-                    deleteItemCallback.notifyCalled();
-                }
-            });
+            mHandler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            observer.onItemRemoved(id);
+                            deleteItemCallback.notifyCalled();
+                        }
+                    });
         }
 
         @Override
         public void openItem(OpenParams openParams, ContentId id) {}
+
         @Override
         public void pauseDownload(ContentId id) {}
+
         @Override
-        public void resumeDownload(ContentId id, boolean hasUserGesture) {}
+        public void resumeDownload(ContentId id) {}
 
         @Override
         public void cancelDownload(ContentId id) {}
@@ -123,25 +126,64 @@ public class StubbedProvider {
         long startTime = dateToEpoch(date);
         int downloadState = OfflineItemState.COMPLETE;
         if (which == 0) {
-            return createOfflineItem("offline_guid_1", JUnitTestGURLs.URL_1, downloadState, 0,
-                    "page 1", "/data/fake_path/Downloads/first_file", startTime, 1000, filter);
+            return createOfflineItem(
+                    "offline_guid_1",
+                    JUnitTestGURLs.URL_1,
+                    downloadState,
+                    0,
+                    "page 1",
+                    "/data/fake_path/Downloads/first_file",
+                    startTime,
+                    1000,
+                    filter);
         } else if (which == 1) {
-            return createOfflineItem("offline_guid_2", JUnitTestGURLs.URL_2, downloadState, 0,
-                    "page 2", "/data/fake_path/Downloads/file_two", startTime, 10000, filter);
+            return createOfflineItem(
+                    "offline_guid_2",
+                    JUnitTestGURLs.URL_2,
+                    downloadState,
+                    0,
+                    "page 2",
+                    "/data/fake_path/Downloads/file_two",
+                    startTime,
+                    10000,
+                    filter);
         } else if (which == 2) {
-            return createOfflineItem("offline_guid_3", JUnitTestGURLs.URL_1, downloadState, 100,
-                    "page 3", "/data/fake_path/Downloads/3_file", startTime, 100000, filter);
+            return createOfflineItem(
+                    "offline_guid_3",
+                    JUnitTestGURLs.URL_1,
+                    downloadState,
+                    100,
+                    "page 3",
+                    "/data/fake_path/Downloads/3_file",
+                    startTime,
+                    100000,
+                    filter);
         } else if (which == 3) {
-            return createOfflineItem("offline_guid_4", JUnitTestGURLs.URL_3, downloadState, 1024,
-                    "page 4", "/data/fake_path/Downloads/4", startTime, ONE_GIGABYTE * 5L, filter);
+            return createOfflineItem(
+                    "offline_guid_4",
+                    JUnitTestGURLs.URL_3,
+                    downloadState,
+                    1024,
+                    "page 4",
+                    "/data/fake_path/Downloads/4",
+                    startTime,
+                    ONE_GIGABYTE * 5L,
+                    filter);
         } else {
             return null;
         }
     }
 
-    public static OfflineItem createOfflineItem(String guid, GURL url, int state,
-            long downloadProgressBytes, String title, String targetPath, long startTime,
-            long totalSize, int filter) {
+    public static OfflineItem createOfflineItem(
+            String guid,
+            GURL url,
+            int state,
+            long downloadProgressBytes,
+            String title,
+            String targetPath,
+            long startTime,
+            long totalSize,
+            int filter) {
         OfflineItem offlineItem = new OfflineItem();
         offlineItem.id = new ContentId(LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE, guid);
         offlineItem.url = url;

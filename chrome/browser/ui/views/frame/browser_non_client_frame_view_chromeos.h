@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,7 +40,8 @@ class BrowserNonClientFrameViewChromeOS
       public display::DisplayObserver,
       public TabIconViewModel,
       public aura::WindowObserver,
-      public ImmersiveModeController::Observer {
+      public ImmersiveModeController::Observer,
+      public apps::AppRegistryCache::Observer {
  public:
   METADATA_HEADER(BrowserNonClientFrameViewChromeOS);
   BrowserNonClientFrameViewChromeOS(BrowserFrame* frame,
@@ -119,6 +122,11 @@ class BrowserNonClientFrameViewChromeOS
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
   void OnImmersiveFullscreenExited() override;
+
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
   chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
@@ -242,7 +250,11 @@ class BrowserNonClientFrameViewChromeOS
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observation_{this};
+
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   gfx::Size last_minimum_size_;
 

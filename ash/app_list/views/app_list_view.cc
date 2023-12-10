@@ -125,10 +125,10 @@ class AppListView::StateAnimationMetricsReporter {
 
  private:
   static void RecordMetrics(
-      absl::optional<TabletModeAnimationTransition> transition,
+      std::optional<TabletModeAnimationTransition> transition,
       int value);
 
-  absl::optional<TabletModeAnimationTransition> tablet_transition_;
+  std::optional<TabletModeAnimationTransition> tablet_transition_;
 };
 
 void AppListView::StateAnimationMetricsReporter::Reset() {
@@ -137,7 +137,7 @@ void AppListView::StateAnimationMetricsReporter::Reset() {
 
 // static
 void AppListView::StateAnimationMetricsReporter::RecordMetrics(
-    absl::optional<TabletModeAnimationTransition> tablet_transition,
+    std::optional<TabletModeAnimationTransition> tablet_transition,
     int value) {
   UMA_HISTOGRAM_PERCENTAGE("Apps.StateTransition.AnimationSmoothness", value);
 
@@ -297,7 +297,7 @@ void AppListView::Show(AppListViewState preferred_state) {
 
   UMA_HISTOGRAM_TIMES("Apps.AppListCreationTime",
                       base::Time::Now() - time_shown_.value());
-  time_shown_ = absl::nullopt;
+  time_shown_ = std::nullopt;
 }
 
 void AppListView::SetDragAndDropHostOfCurrentAppList(

@@ -131,7 +131,6 @@ found in the LICENSE file.
   }
 
   #scrollContainer {
-    border: transparent;
     margin-top: var(--oobe-adaptive-dialog-content-top-padding);
     overflow-y: auto;
     padding-bottom: 0;
@@ -141,7 +140,7 @@ found in the LICENSE file.
   }
 
   [read-more-content=true] {
-    -webkit-mask-image: linear-gradient(180deg, #FFF 95%, transparent);
+    border-bottom: var(--cros-sys-separator) solid 1px;
     overflow-y: hidden;
   }
 

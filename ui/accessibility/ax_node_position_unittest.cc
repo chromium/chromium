@@ -226,6 +226,9 @@ struct TextNavigationTestParam {
   // A list of positions that should be returned from the method being tested,
   // in stringified form.
   std::vector<std::string> expectations;
+
+  // Optional; if true, checks that upstream positions are not moved.
+  bool upstream_is_not_moved = false;
 };
 
 // This is a fixture for a set of parameterized tests that ensure that text
@@ -12498,10 +12501,18 @@ TEST_P(AXPositionTextNavigationTestWithParam,
       CreateTextPosition(GetParam().start_node_id, GetParam().start_offset,
                          ax::mojom::TextAffinity::kUpstream);
   ASSERT_TRUE(text_position->IsTextPosition());
+
+  bool upstream_is_not_moved = GetParam().upstream_is_not_moved;
   for (const std::string& expectation : GetParam().expectations) {
+    auto prev_position = text_position->Clone();
     text_position = GetParam().TestMethod.Run(text_position);
     EXPECT_NE(nullptr, text_position);
-    EXPECT_EQ(expectation, text_position->ToString());
+
+    if (upstream_is_not_moved) {
+      EXPECT_EQ(*prev_position, *text_position);
+    } else {
+      EXPECT_EQ(expectation, text_position->ToString());
+    }
   }
 }
 
@@ -14878,7 +14889,8 @@ INSTANTIATE_TEST_SUITE_P(
             0 /* text_offset */,
             {"TextPosition anchor_id=1 text_offset=7 "
              "affinity=downstream annotated_text=Line 1\n<L>ine 2",
-             "NullPosition"}},
+             "NullPosition"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14889,7 +14901,8 @@ INSTANTIATE_TEST_SUITE_P(
             0 /* text_offset */,
             {"TextPosition anchor_id=4 text_offset=7 "
              "affinity=downstream annotated_text=Line 1\n<L>ine 2",
-             "NullPosition"}},
+             "NullPosition"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14900,7 +14913,8 @@ INSTANTIATE_TEST_SUITE_P(
             1 /* text_offset */,
             {"TextPosition anchor_id=9 text_offset=0 "
              "affinity=downstream annotated_text=<L>ine 2",
-             "NullPosition"}},
+             "NullPosition"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14909,7 +14923,8 @@ INSTANTIATE_TEST_SUITE_P(
             }),
             INLINE_BOX2_ID,
             4 /* text_offset */,
-            {"NullPosition"}}));
+            {"NullPosition"},
+            /* upstream_is_not_moved = */ true}));
 
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
@@ -14926,7 +14941,8 @@ INSTANTIATE_TEST_SUITE_P(
             {"TextPosition anchor_id=1 text_offset=7 "
              "affinity=downstream annotated_text=Line 1\n<L>ine 2",
              "TextPosition anchor_id=1 text_offset=13 "
-             "affinity=downstream annotated_text=Line 1\nLine 2<>"}},
+             "affinity=downstream annotated_text=Line 1\nLine 2<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14938,7 +14954,8 @@ INSTANTIATE_TEST_SUITE_P(
             {"TextPosition anchor_id=4 text_offset=7 "
              "affinity=downstream annotated_text=Line 1\n<L>ine 2",
              "TextPosition anchor_id=4 text_offset=13 "
-             "affinity=downstream annotated_text=Line 1\nLine 2<>"}},
+             "affinity=downstream annotated_text=Line 1\nLine 2<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14948,7 +14965,8 @@ INSTANTIATE_TEST_SUITE_P(
             STATIC_TEXT1_ID,
             1 /* text_offset */,
             {"TextPosition anchor_id=5 text_offset=6 "
-             "affinity=downstream annotated_text=Line 1<>"}},
+             "affinity=downstream annotated_text=Line 1<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14958,7 +14976,8 @@ INSTANTIATE_TEST_SUITE_P(
             INLINE_BOX2_ID,
             4 /* text_offset */,
             {"TextPosition anchor_id=9 text_offset=6 "
-             "affinity=downstream annotated_text=Line 2<>"}}));
+             "affinity=downstream annotated_text=Line 2<>"},
+            /* upstream_is_not_moved = */ true}));
 
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorStopAtAnchorBoundaryOrIfAlreadyAtBoundary,
@@ -14976,7 +14995,8 @@ INSTANTIATE_TEST_SUITE_P(
             {"TextPosition anchor_id=1 text_offset=0 "
              "affinity=downstream annotated_text=<L>ine 1\nLine 2",
              "TextPosition anchor_id=1 text_offset=0 "
-             "affinity=downstream annotated_text=<L>ine 1\nLine 2"}},
+             "affinity=downstream annotated_text=<L>ine 1\nLine 2"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -14989,7 +15009,8 @@ INSTANTIATE_TEST_SUITE_P(
             {"TextPosition anchor_id=4 text_offset=0 "
              "affinity=downstream annotated_text=<L>ine 1\nLine 2",
              "TextPosition anchor_id=4 text_offset=0 "
-             "affinity=downstream annotated_text=<L>ine 1\nLine 2"}},
+             "affinity=downstream annotated_text=<L>ine 1\nLine 2"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -15002,7 +15023,8 @@ INSTANTIATE_TEST_SUITE_P(
             {"TextPosition anchor_id=5 text_offset=6 affinity=downstream "
              "annotated_text=Line 1<>",
              "TextPosition anchor_id=5 text_offset=6 affinity=downstream "
-             "annotated_text=Line 1<>"}},
+             "annotated_text=Line 1<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -15013,7 +15035,8 @@ INSTANTIATE_TEST_SUITE_P(
             INLINE_BOX2_ID,
             4 /* text_offset */,
             {"TextPosition anchor_id=9 text_offset=6 affinity=downstream "
-             "annotated_text=Line 2<>"}}));
+             "annotated_text=Line 2<>"},
+            /* upstream_is_not_moved = */ true}));
 
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
@@ -15032,7 +15055,8 @@ INSTANTIATE_TEST_SUITE_P(
              "TextPosition anchor_id=1 text_offset=13 "
              "affinity=downstream annotated_text=Line 1\nLine 2<>",
              "TextPosition anchor_id=1 text_offset=13 "
-             "affinity=downstream annotated_text=Line 1\nLine 2<>"}},
+             "affinity=downstream annotated_text=Line 1\nLine 2<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -15046,7 +15070,8 @@ INSTANTIATE_TEST_SUITE_P(
              "TextPosition anchor_id=4 text_offset=13 "
              "affinity=downstream annotated_text=Line 1\nLine 2<>",
              "TextPosition anchor_id=4 text_offset=13 "
-             "affinity=downstream annotated_text=Line 1\nLine 2<>"}},
+             "affinity=downstream annotated_text=Line 1\nLine 2<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -15060,7 +15085,8 @@ INSTANTIATE_TEST_SUITE_P(
              "TextPosition anchor_id=9 text_offset=6 "
              "affinity=downstream annotated_text=Line 2<>",
              "TextPosition anchor_id=9 text_offset=6 "
-             "affinity=downstream annotated_text=Line 2<>"}},
+             "affinity=downstream annotated_text=Line 2<>"},
+            /* upstream_is_not_moved = */ true},
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -15072,7 +15098,8 @@ INSTANTIATE_TEST_SUITE_P(
             {"TextPosition anchor_id=9 text_offset=6 "
              "affinity=downstream annotated_text=Line 2<>",
              "TextPosition anchor_id=9 text_offset=6 "
-             "affinity=downstream annotated_text=Line 2<>"}}));
+             "affinity=downstream annotated_text=Line 2<>"},
+            /* upstream_is_not_moved = */ true}));
 
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineStartPositionWithBoundaryBehaviorCrossBoundary,

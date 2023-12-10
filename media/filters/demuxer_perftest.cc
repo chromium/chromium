@@ -6,15 +6,13 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/at_exit.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/base/media.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"

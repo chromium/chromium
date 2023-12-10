@@ -125,9 +125,7 @@ public class NfcSystemLevelPromptTest {
         Assert.assertEquals(0, mIntentCallback.getCallCount());
     }
 
-    /**
-     * Tests whether intent and callback for clicking on the 'Turn on' button functions correctly.
-     */
+    /** Tests whether intent and callback for clicking on the 'Turn on' button functions correctly. */
     @Test
     public void testTurnOnCallback() {
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();

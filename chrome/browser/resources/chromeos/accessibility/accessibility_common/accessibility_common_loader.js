@@ -7,7 +7,7 @@ import {InstanceChecker} from '../common/instance_checker.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
 import {Dictation} from './dictation/dictation.js';
-import {GameFace} from './gameface/gameface.js';
+import {FaceGaze} from './facegaze/facegaze.js';
 import {Magnifier} from './magnifier/magnifier.js';
 
 /**
@@ -22,8 +22,8 @@ export class AccessibilityCommon {
     this.magnifier_ = null;
     /** @private {Dictation} */
     this.dictation_ = null;
-    /** @private {GameFace} */
-    this.gameFace_ = null;
+    /** @private {FaceGaze} */
+    this.faceGaze_ = null;
 
     // For tests.
     /** @private {?function()} */
@@ -46,9 +46,9 @@ export class AccessibilityCommon {
     return this.autoclick_;
   }
 
-  /** @return {GameFace} */
-  getGameFaceForTest() {
-    return this.gameFace_;
+  /** @return {FaceGaze} */
+  getFaceGazeForTest() {
+    return this.faceGaze_;
   }
 
   /** @return {Magnifier} */
@@ -85,10 +85,25 @@ export class AccessibilityCommon {
     chrome.accessibilityFeatures.dictation.onChange.addListener(
         details => this.onDictationUpdated_(details));
 
-    const gameFaceFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature.GAME_FACE_INTEGRATION;
-    chrome.accessibilityPrivate.isFeatureEnabled(gameFaceFeature, enabled => {
-      this.onGameFaceFetched_(enabled);
+    const faceGazeFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature.FACE_GAZE;
+    chrome.accessibilityPrivate.isFeatureEnabled(faceGazeFeature, enabled => {
+      if (!enabled) {
+        return;
+      }
+      // TODO(b/309121742): Add FaceGaze pref to the accessibilityFeatures
+      // extension API.
+      chrome.settingsPrivate.getPref(
+          AccessibilityCommon.FACEGAZE_PREF_NAME,
+          pref => this.onFaceGazeUpdated_(pref));
+      chrome.settingsPrivate.onPrefsChanged.addListener(prefs => {
+        for (const pref of prefs) {
+          if (pref.key === AccessibilityCommon.FACEGAZE_PREF_NAME) {
+            this.onFaceGazeUpdated_(pref);
+            break;
+          }
+        }
+      });
     });
 
     // AccessibilityCommon is an IME so it shows in the input methods list
@@ -120,17 +135,17 @@ export class AccessibilityCommon {
   }
 
   /**
-   * Called when the GameFace feature status is fetched.
-   * @param {boolean} enabled
+   * Called when the FaceGaze feature is fetched enabled or disabled.
+   * @param {*} details
    * @private
    */
-  onGameFaceFetched_(enabled) {
-    if (enabled) {
-      // Initialize the GameFace extension.
-      this.gameFace_ = new GameFace();
-    } else if (!enabled && this.gameFace_) {
-      this.gameFace_.onGameFaceDisabled();
-      this.gameFace_ = null;
+  onFaceGazeUpdated_(details) {
+    if (details.value && !this.faceGaze_) {
+      // Initialize the FaceGaze extension.
+      this.faceGaze_ = new FaceGaze();
+    } else if (!details.value && this.faceGaze_) {
+      this.faceGaze_.onFaceGazeDisabled();
+      this.faceGaze_ = null;
     }
   }
 
@@ -203,6 +218,8 @@ export class AccessibilityCommon {
     }
   }
 }
+
+AccessibilityCommon.FACEGAZE_PREF_NAME = 'settings.a11y.face_gaze.enabled';
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.

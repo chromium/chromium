@@ -22,6 +22,8 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
 
+import dagger.Lazy;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -40,8 +42,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import dagger.Lazy;
 
 /**
  * Handles preserving and surfacing the permissions of installed webapps (TWAs and WebAPKs) for
@@ -68,7 +68,8 @@ public class InstalledWebappPermissionManager {
     }
 
     @Inject
-    public InstalledWebappPermissionManager(@Named(APP_CONTEXT) Context context,
+    public InstalledWebappPermissionManager(
+            @Named(APP_CONTEXT) Context context,
             InstalledWebappPermissionStore store,
             Lazy<NotificationChannelPreserver> channelPreserver,
             TrustedWebActivityUmaRecorder umaRecorder) {
@@ -94,13 +95,11 @@ public class InstalledWebappPermissionManager {
         List<InstalledWebappBridge.Permission> permissions = new ArrayList<>();
         for (String originAsString : mStore.getStoredOrigins()) {
             Origin origin = Origin.create(originAsString);
-            assert origin
-                    != null : "Found unparsable Origins in the Permission Store : "
-                              + originAsString;
+            assert origin != null
+                    : "Found unparsable Origins in the Permission Store : " + originAsString;
             if (origin == null) continue;
 
-            @ContentSettingValues
-            int setting = getPermission(type, origin);
+            @ContentSettingValues int setting = getPermission(type, origin);
 
             if (setting != ContentSettingValues.DEFAULT) {
                 permissions.add(new InstalledWebappBridge.Permission(origin, setting));
@@ -124,23 +123,13 @@ public class InstalledWebappPermissionManager {
     }
 
     @UiThread
-    public void updatePermission(Origin origin, String packageName, @ContentSettingsType int type,
+    public void updatePermission(
+            Origin origin,
+            String packageName,
+            @ContentSettingsType int type,
             @ContentSettingValues int settingValue) {
         String appName = getAppNameForPackage(packageName);
         if (appName == null) return;
-
-        if (type == ContentSettingsType.GEOLOCATION) {
-            boolean enabled = settingValue == ContentSettingValues.ALLOW;
-            @ContentSettingValues
-            Integer lastPermissionSetting = mStore.getPermission(type, origin);
-            Boolean lastPermissionBoolean;
-            if (lastPermissionSetting == null) {
-                lastPermissionBoolean = null;
-            } else {
-                lastPermissionBoolean = lastPermissionSetting == ContentSettingValues.ALLOW;
-            }
-            mUmaRecorder.recordLocationPermissionChanged(lastPermissionBoolean, enabled);
-        }
 
         // It's important that we set the state before we destroy the notification channel. If we
         // did it the other way around there'd be a small moment in time where the website's
@@ -221,45 +210,46 @@ public class InstalledWebappPermissionManager {
     @ContentSettingValues
     int getPermission(@ContentSettingsType int type, Origin origin) {
         switch (type) {
-            case ContentSettingsType.NOTIFICATIONS: {
-                @ContentSettingValues
-                Integer settingValue = mStore.getPermission(type, origin);
-                if (settingValue == null) {
-                    Log.w(TAG, "Origin %s is known but has no permission set.", origin);
-                    break;
+            case ContentSettingsType.NOTIFICATIONS:
+                {
+                    @ContentSettingValues Integer settingValue = mStore.getPermission(type, origin);
+                    if (settingValue == null) {
+                        Log.w(TAG, "Origin %s is known but has no permission set.", origin);
+                        break;
+                    }
+                    return settingValue;
                 }
-                return settingValue;
-            }
-            case ContentSettingsType.GEOLOCATION: {
-                String packageName = getDelegatePackageName(origin);
-                Boolean enabled = hasAndroidLocationPermission(packageName);
+            case ContentSettingsType.GEOLOCATION:
+                {
+                    String packageName = getDelegatePackageName(origin);
+                    Boolean enabled = hasAndroidLocationPermission(packageName);
 
-                // Skip if the delegated app did not enable location delegation.
-                if (enabled == null) break;
+                    // Skip if the delegated app did not enable location delegation.
+                    if (enabled == null) break;
 
-                @ContentSettingValues
-                Integer storedPermission = mStore.getPermission(type, origin);
+                    @ContentSettingValues
+                    Integer storedPermission = mStore.getPermission(type, origin);
 
-                // Return |ASK| if is the first time (no previous state), and is not enabled.
-                if (storedPermission == null && !enabled) return ContentSettingValues.ASK;
+                    // Return |ASK| if is the first time (no previous state), and is not enabled.
+                    if (storedPermission == null && !enabled) return ContentSettingValues.ASK;
 
-                // This is a temperate solution for the new Android one-time permission. Since we
-                // are not able to detect if use is changing the setting to "ask every time", when
-                // there is no permission, return ASK to let the client app decide whether to show
-                // the prompt.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (!enabled) return ContentSettingValues.ASK;
+                    // This is a temperate solution for the new Android one-time permission. Since
+                    // we are not able to detect if use is changing the setting to "ask every
+                    // time", when there is no permission, return ASK to let the client app decide
+                    // whether to show the prompt.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        if (!enabled) return ContentSettingValues.ASK;
+                    }
+
+                    @ContentSettingValues
+                    int settingValue =
+                            enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+
+                    updatePermission(
+                            origin, packageName, ContentSettingsType.GEOLOCATION, settingValue);
+
+                    return settingValue;
                 }
-
-                @ContentSettingValues
-                int settingValue =
-                        enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
-
-                updatePermission(
-                        origin, packageName, ContentSettingsType.GEOLOCATION, settingValue);
-
-                return settingValue;
-            }
         }
         return ContentSettingValues.DEFAULT;
     }
@@ -285,7 +275,7 @@ public class InstalledWebappPermissionManager {
                     if (ACCESS_COARSE_LOCATION.equals(requestedPermissions[i])
                             || ACCESS_FINE_LOCATION.equals(requestedPermissions[i])) {
                         if ((requestedPermissionsFlags[i]
-                                    & PackageInfo.REQUESTED_PERMISSION_GRANTED)
+                                        & PackageInfo.REQUESTED_PERMISSION_GRANTED)
                                 != 0) {
                             return true;
                         }

@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
@@ -49,7 +50,9 @@ constexpr float kDefaultHighlightOpacityForDark = 0.20f;
 }  // namespace
 
 FrameCenterButton::FrameCenterButton(PressedCallback callback)
-    : FrameCaptionButton(callback, views::CAPTION_BUTTON_ICON_CENTER, HTMENU) {
+    : FrameCaptionButton(std::move(callback),
+                         views::CAPTION_BUTTON_ICON_CENTER,
+                         HTMENU) {
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CENTER));
   background_color_changed_subscription_ = AddBackgroundColorChangedCallback(
       base::BindRepeating(&FrameCenterButton::OnBackgroundColorChanged,
@@ -84,7 +87,7 @@ void FrameCenterButton::SetSubImage(const gfx::VectorIcon& icon_definition) {
     parent()->InvalidateLayout();
 }
 
-void FrameCenterButton::SetText(absl::optional<std::u16string> text) {
+void FrameCenterButton::SetText(std::optional<std::u16string> text) {
   if (text_ && text_->text() == text)
     return;
 
@@ -164,8 +167,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
                                          int x,
                                          int y,
                                          cc::PaintFlags flags) {
-  absl::optional<gfx::ImageSkia> left_icon = icon_image();
-  absl::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
+  std::optional<gfx::ImageSkia> left_icon = icon_image();
+  std::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
   const bool is_rtl = base::i18n::IsRTL();
   if (is_rtl) {
     std::swap(left_icon, right_icon);

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] When hidden is added, nodes in non-activatable tree are not exposed to accessibility tree
+  accessibilityController is not defined
+Harness: the test ran to completion.

@@ -65,8 +65,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     return -1;
   }
 
-  size_t GetActionViewSize() { return input_mapping_view_->children().size(); }
-
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
 
   void PressDeleteButton(ButtonOptionsMenu* menu) {

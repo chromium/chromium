@@ -31,9 +31,9 @@ class SpeechRecognitionPrivateDelegate;
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   using OnStartCallback =
       base::OnceCallback<void(speech::SpeechRecognitionType type,
-                              absl::optional<std::string> error)>;
+                              std::optional<std::string> error)>;
   using OnStopCallback =
-      base::OnceCallback<void(absl::optional<std::string> error)>;
+      base::OnceCallback<void(std::optional<std::string> error)>;
 
  public:
   SpeechRecognitionPrivateRecognizer(SpeechRecognitionPrivateDelegate* delegate,
@@ -44,7 +44,7 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   // SpeechRecognizerDelegate:
   void OnSpeechResult(const std::u16string& text,
                       bool is_final,
-                      const absl::optional<media::SpeechRecognitionResult>&
+                      const std::optional<media::SpeechRecognitionResult>&
                           full_result) override;
   void OnSpeechSoundLevelChanged(int16_t level) override {}
   void OnSpeechRecognitionStateChanged(
@@ -52,8 +52,8 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void OnSpeechRecognitionStopped() override {}
 
   // Handles a call to start speech recognition.
-  void HandleStart(absl::optional<std::string> locale,
-                   absl::optional<bool> interim_results,
+  void HandleStart(std::optional<std::string> locale,
+                   std::optional<bool> interim_results,
                    OnStartCallback callback);
   // Handles a call to stop speech recognition. The callback accepts an
   // optional string specifying an error message, if any.
@@ -70,8 +70,8 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void RecognizerOff();
 
   // Updates properties used for speech recognition.
-  void MaybeUpdateProperties(absl::optional<std::string> locale,
-                             absl::optional<bool> interim_results,
+  void MaybeUpdateProperties(std::optional<std::string> locale,
+                             std::optional<bool> interim_results,
                              OnStartCallback callback);
 
   base::WeakPtr<SpeechRecognitionPrivateRecognizer> GetWeakPtr() {

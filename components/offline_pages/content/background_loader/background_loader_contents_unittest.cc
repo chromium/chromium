@@ -163,7 +163,8 @@ TEST_F(BackgroundLoaderContentsTest, ShouldNotAddNewContents) {
 TEST_F(BackgroundLoaderContentsTest, DoesNotGiveMediaAccessPermission) {
   content::MediaStreamRequest request(
       0 /* render_process_id */, 0 /* render_frame_id */,
-      0 /* page_request_id */, GURL::EmptyGURL() /* security_origin */,
+      0 /* page_request_id */,
+      url::Origin::Create(GURL::EmptyGURL()) /* url_origin */,
       false /* user_gesture */,
       blink::MediaStreamRequestType::MEDIA_DEVICE_ACCESS /* request_type */,
       std::string() /* requested_audio_device_id */,
@@ -188,7 +189,7 @@ TEST_F(BackgroundLoaderContentsTest, DoesNotGiveMediaAccessPermission) {
 
 TEST_F(BackgroundLoaderContentsTest, CheckMediaAccessPermissionFalse) {
   ASSERT_FALSE(contents()->CheckMediaAccessPermission(
-      nullptr /* contents */, GURL::EmptyGURL() /* security_origin */,
+      nullptr /* contents */, url::Origin() /* security_origin */,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE /* type */));
 }
 

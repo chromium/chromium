@@ -127,12 +127,6 @@ GURL IOSChromeSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
   return item ? item->GetVirtualURL() : GURL();
 }
 
-std::string IOSChromeSyncedTabDelegate::GetPageLanguageAtIndex(int i) const {
-  // TODO(crbug.com/957657): Add page language to NavigationItem.
-  DCHECK(!IsPlaceholderTab());
-  return std::string();
-}
-
 void IOSChromeSyncedTabDelegate::GetSerializedNavigationAtIndex(
     int i,
     sessions::SerializedNavigationEntry* serialized_entry) const {

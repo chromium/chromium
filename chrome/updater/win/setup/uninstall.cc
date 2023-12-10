@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -137,7 +137,7 @@ void DeleteUpdaterKey(UpdaterScope scope) {
 void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {
   DeleteUpdaterKey(scope);
 
-  const absl::optional<base::FilePath> target_path =
+  const std::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
   if (target_path) {
     base::DeletePathRecursively(target_path->DirName());
@@ -145,13 +145,13 @@ void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {
 }
 
 int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
-  const absl::optional<base::FilePath> versioned_dir =
+  const std::optional<base::FilePath> versioned_dir =
       GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedInstallDirectory failed.";
     return kErrorNoVersionedDirectory;
   }
-  const absl::optional<base::FilePath> base_dir = GetInstallDirectory(scope);
+  const std::optional<base::FilePath> base_dir = GetInstallDirectory(scope);
   if (IsSystemInstall(scope) && !base_dir) {
     LOG(ERROR) << "GetInstallDirectory failed.";
     return kErrorNoBaseDirectory;

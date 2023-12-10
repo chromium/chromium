@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_paths.h"
@@ -41,7 +42,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -217,8 +217,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   std::unique_ptr<AutomaticRebootManager> automatic_reboot_manager_;
 
   base::ScopedTempDir temp_dir_;
-  absl::optional<base::ScopedPathOverride> file_uptime_override_;
-  absl::optional<base::ScopedPathOverride> file_reboot_needed_override_;
+  std::optional<base::ScopedPathOverride> file_uptime_override_;
+  std::optional<base::ScopedPathOverride> file_reboot_needed_override_;
   base::FilePath update_reboot_needed_uptime_file_;
 
   bool reboot_after_update_ = false;

@@ -6,44 +6,44 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_MATH_LAYOUT_UTILS_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 
 namespace blink {
 
+class BlockNode;
+class ConstraintSpace;
+class LayoutInputNode;
+class SimpleFontData;
 struct LogicalSize;
 struct MinMaxSizes;
 struct MinMaxSizesResult;
-class NGBlockNode;
-class NGConstraintSpace;
-class NGLayoutInputNode;
-class SimpleFontData;
 
 // Creates a new constraint space for the current child.
-NGConstraintSpace CreateConstraintSpaceForMathChild(
-    const NGBlockNode& parent_node,
+ConstraintSpace CreateConstraintSpaceForMathChild(
+    const BlockNode& parent_node,
     const LogicalSize& child_available_size,
-    const NGConstraintSpace& parent_constraint_space,
-    const NGLayoutInputNode&,
-    const NGCacheSlot = NGCacheSlot::kLayout,
-    const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
+    const ConstraintSpace& parent_constraint_space,
+    const LayoutInputNode&,
+    const LayoutResultCacheSlot = LayoutResultCacheSlot::kLayout,
+    const absl::optional<ConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes = absl::nullopt,
     const absl::optional<LayoutUnit> target_stretch_inline_size =
         absl::nullopt);
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
-    const NGConstraintSpace& parent_constraint_space,
-    const NGBlockNode& child,
+    const ConstraintSpace& parent_constraint_space,
+    const BlockNode& child,
     LayoutUnit child_available_block_size);
 
-NGLayoutInputNode FirstChildInFlow(const NGBlockNode&);
-NGLayoutInputNode NextSiblingInFlow(const NGBlockNode&);
+LayoutInputNode FirstChildInFlow(const BlockNode&);
+LayoutInputNode NextSiblingInFlow(const BlockNode&);
 
-bool IsValidMathMLFraction(const NGBlockNode&);
-bool IsValidMathMLScript(const NGBlockNode&);
-bool IsValidMathMLRadical(const NGBlockNode&);
+bool IsValidMathMLFraction(const BlockNode&);
+bool IsValidMathMLScript(const BlockNode&);
+bool IsValidMathMLRadical(const BlockNode&);
 
 // https://w3c.github.io/mathml-core/#dfn-default-rule-thickness
 inline float RuleThicknessFallback(const ComputedStyle& style) {
@@ -96,9 +96,9 @@ RadicalVerticalParameters GetRadicalVerticalParameters(const ComputedStyle&,
 MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
                                                       UChar character);
 
-bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node);
-bool IsTextOnlyToken(const NGBlockNode& node);
-bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
+bool IsUnderOverLaidOutAsSubSup(const BlockNode& node);
+bool IsTextOnlyToken(const BlockNode& node);
+bool IsOperatorWithSpecialShaping(const BlockNode& node);
 
 LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
 
@@ -114,13 +114,13 @@ struct MathMLEmbellishedOperatorProperties {
   LayoutUnit rspace;
 };
 absl::optional<MathMLEmbellishedOperatorProperties>
-GetMathMLEmbellishedOperatorProperties(const NGBlockNode&);
+GetMathMLEmbellishedOperatorProperties(const BlockNode&);
 
-bool IsStretchyOperator(const NGBlockNode& node, bool stretch_axis_is_vertical);
-inline bool IsBlockAxisStretchyOperator(const NGBlockNode& node) {
+bool IsStretchyOperator(const BlockNode& node, bool stretch_axis_is_vertical);
+inline bool IsBlockAxisStretchyOperator(const BlockNode& node) {
   return IsStretchyOperator(node, true);
 }
-inline bool IsInlineAxisStretchyOperator(const NGBlockNode& node) {
+inline bool IsInlineAxisStretchyOperator(const BlockNode& node) {
   return IsStretchyOperator(node, false);
 }
 

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PEOPLE_PEOPLE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PEOPLE_PEOPLE_SECTION_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,7 +19,6 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -76,7 +77,7 @@ class PeopleSection : public OsSettingsSection,
   void UpdateAccountManagerSearchTags(
       const std::vector<::account_manager::Account>& accounts);
 
-  absl::optional<SyncSection> sync_subsection_;
+  std::optional<SyncSection> sync_subsection_;
 
   raw_ptr<account_manager::AccountManager, ExperimentalAsh> account_manager_ =
       nullptr;

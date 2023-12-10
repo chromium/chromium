@@ -49,8 +49,7 @@ import java.util.concurrent.TimeUnit;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
 public class AwNetworkConfigurationTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;

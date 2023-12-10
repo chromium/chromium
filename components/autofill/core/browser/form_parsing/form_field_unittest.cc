@@ -32,8 +32,9 @@ class FormFieldTest
  protected:
   // Parses all added fields using `ParseFormFields`.
   // Returns the number of fields parsed.
-  int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode("")) {
-    FormField::ParseFormFields(list_, client_country, LanguageCode(""),
+  int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
+                      LanguageCode language = LanguageCode("")) {
+    FormField::ParseFormFields(list_, client_country, language,
                                /*is_form_tag=*/true,
                                GetActivePatternSource().value(),
                                field_candidates_map_,
@@ -381,6 +382,19 @@ TEST_P(FormFieldTest, ParseStandaloneEmail) {
 TEST_P(FormFieldTest, ParseStandaloneEmailWithNoEmailFields) {
   AddTextFormFieldData("unknown", "Horseradish", UNKNOWN_TYPE);
   EXPECT_EQ(0, ParseStandaloneEmailFields());
+  TestClassificationExpectations();
+}
+
+// Tests that an email field is recognized even though it matches the pattern
+// nombre.*dirección, which is used to detect address name/type patterns.
+TEST_P(FormFieldTest, ParseStandaloneEmailSimilarToAddressName) {
+  AddTextFormFieldData("-",
+                       "nombre de usuario o dirección de correo electrónico",
+                       EMAIL_ADDRESS);
+  AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);
+  AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
+  AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
+  EXPECT_EQ(4, ParseFormFields(GeoIpCountryCode("BR"), LanguageCode("es")));
   TestClassificationExpectations();
 }
 

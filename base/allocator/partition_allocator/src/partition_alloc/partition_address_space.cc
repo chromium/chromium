@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_address_space.h"
 
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <ostream>
 #include <string>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/compressed_pointer.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/compressed_pointer.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(IS_IOS)
 #include <mach-o/dyld.h>
@@ -301,7 +301,7 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   PA_CHECK(pool_base);
   PA_CHECK(size <= kConfigurablePoolMaxSize);
   PA_CHECK(size >= kConfigurablePoolMinSize);
-  PA_CHECK(base::bits::IsPowerOfTwo(size));
+  PA_CHECK(std::has_single_bit(size));
   PA_CHECK(pool_base % size == 0);
 
   setup_.configurable_pool_base_address_ = pool_base;

@@ -13,8 +13,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 EmbeddedPermissionPromptSystemSettingsView::
-    EmbeddedPermissionPromptSystemSettingsView(Browser* browser,
-                                               base::WeakPtr<Delegate> delegate)
+    EmbeddedPermissionPromptSystemSettingsView(
+        Browser* browser,
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptSystemSettingsView::
@@ -51,7 +52,19 @@ EmbeddedPermissionPromptSystemSettingsView::GetRequestLinesConfiguration()
 
 std::vector<EmbeddedPermissionPromptSystemSettingsView::ButtonConfiguration>
 EmbeddedPermissionPromptSystemSettingsView::GetButtonsConfiguration() const {
-  return {{l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS),
+  std::u16string operating_system_name;
+
+#if BUILDFLAG(IS_MAC)
+  operating_system_name = l10n_util::GetStringUTF16(IDS_MACOS_NAME_FRAGMENT);
+#endif
+
+  // Do not show buttons if the OS is not supported.
+  if (operating_system_name.empty()) {
+    return std::vector<ButtonConfiguration>();
+  }
+
+  return {{l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
+                                      operating_system_name),
            ButtonType::kSystemSettings, ui::ButtonStyle::kTonal}};
 }
 
@@ -69,6 +82,5 @@ std::u16string EmbeddedPermissionPromptSystemSettingsView::GetMessageText()
   }
 
   return l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
-                                    permission_name,
-                                    GetUrlIdentityObject().name);
+                                    permission_name);
 }

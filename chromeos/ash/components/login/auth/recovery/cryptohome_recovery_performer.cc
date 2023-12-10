@@ -97,7 +97,7 @@ std::string CryptohomeRecoveryPerformer::GetConsumerName() const {
 }
 
 void CryptohomeRecoveryPerformer::OnNetworkFetchEpoch(
-    absl::optional<CryptohomeRecoveryEpochResponse> opt_epoch,
+    std::optional<CryptohomeRecoveryEpochResponse> opt_epoch,
     CryptohomeRecoveryServerStatusCode status) {
   if (status != CryptohomeRecoveryServerStatusCode::kSuccess) {
     RecordRecoveryResult(
@@ -116,9 +116,9 @@ void CryptohomeRecoveryPerformer::OnNetworkFetchEpoch(
 
 void CryptohomeRecoveryPerformer::OnGetRecoveryRequest(
     CryptohomeRecoveryEpochResponse epoch,
-    absl::optional<RecoveryRequest> recovery_request,
+    std::optional<RecoveryRequest> recovery_request,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
                      << error->get_cryptohome_code();
@@ -141,7 +141,7 @@ void CryptohomeRecoveryPerformer::OnGetRecoveryRequest(
 
 void CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse(
     CryptohomeRecoveryEpochResponse epoch,
-    absl::optional<CryptohomeRecoveryResponse> opt_response,
+    std::optional<CryptohomeRecoveryResponse> opt_response,
     CryptohomeRecoveryServerStatusCode status) {
   if (status != CryptohomeRecoveryServerStatusCode::kSuccess) {
     RecordRecoveryResult(AuthEventsRecorder::CryptohomeRecoveryResult::
@@ -162,7 +162,7 @@ void CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse(
 
 void CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     RecordRecoveryResult(
         GetRecoveryResultFromCryptohomeError(error->get_cryptohome_code()));
@@ -182,7 +182,7 @@ void CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery(
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   RecordRecoveryResult(
       AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded);
-  std::move(callback_).Run(std::move(context), absl::nullopt);
+  std::move(callback_).Run(std::move(context), std::nullopt);
 }
 
 void CryptohomeRecoveryPerformer::RecordRecoveryResult(

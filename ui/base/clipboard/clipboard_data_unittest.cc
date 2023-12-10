@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_util.h"

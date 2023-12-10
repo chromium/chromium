@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Олеле! Генерирането на произволен RSA личен ключ не бе успешно.</translation>
 <translation id="1445572445564823378">Това разширение забавя работата на <ph name="PRODUCT_NAME" />. Трябва да деактивирате <ph name="PRODUCT_NAME" />, за да възстановите ефективността на браузъра.</translation>
 <translation id="1468038450257740950">WebGL не се поддържа.</translation>
+<translation id="1610570795592207282">Зареждането на CSS <ph name="RELATIVE_PATH" /> за скрипта не бе успешно.</translation>
 <translation id="1803557475693955505">Не можа да се зареди фоновата страница „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Изображението не можа да се декодира: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Беше използвана локализация, но променливата „default_locale“ не беше посочена в манифеста.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Неизвестен продукт <ph name="PRODUCT_ID" /> от доставчик <ph name="VENDOR_ID" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Замяната на crx файла не бе успешна. Проверете дали не се използва.</translation>
 <translation id="3163201441334626963">Неизвестен продукт <ph name="PRODUCT_ID" /> от доставчик <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Не можа да се зареди css „<ph name="RELATIVE_PATH" />“ за скрипта за съдържание.</translation>
 <translation id="3369521687965833290">Разширението не може да се разпакетира.  За да направите това по безопасен начин, трябва да има път към директорията в потребителския ви профил, който започва с буква на локален диск и не съдържа възел, точка на монтиране или символна връзка.  Не съществува такъв път за потребителския ви профил.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от доставчик <ph name="VENDOR_ID" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Въведената стойност за личен ключ трябва да бъде валиден път.</translation>
 <translation id="388442998277590542">Страницата за опции „<ph name="OPTIONS_PAGE" />“ не можа да се зареди.</translation>
 <translation id="3984413272403535372">Грешка при подписването на разширението.</translation>
-<translation id="39964277676607559">Не можа да се зареди javascript „<ph name="RELATIVE_PATH" />“ за скрипта за съдържание.</translation>
 <translation id="4115165561519362854">Администраторът на тази машина е поставил изискване версията на <ph name="EXTENSION_NAME" /> да е поне <ph name="EXTENSION_VERSION" />. Разширението не може да бъде активирано, докато не бъде актуализирано до тази или по-нова версия.</translation>
 <translation id="4233778200880751280">Страницата с информация <ph name="ABOUT_PAGE" /> не можа да се зареди.</translation>
 <translation id="471800408830181311">Извеждането на личния ключ не бе успешно.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Експортирането на публичен ключ не бе успешно.</translation>
 <translation id="5026754133087629784">Изглед в мрежата: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Абсолютният път към директорията за пакетиране не може да бъде намерен.</translation>
+<translation id="5160071981665899014">Зареждането на JavaScript <ph name="RELATIVE_PATH" /> за скрипта не бе успешно.</translation>
 <translation id="5356315618422219272">Изглед за приложението: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Оформените прозорци не се поддържат.</translation>
 <translation id="5456409301717116725">Разширението включва файла с ключ „<ph name="KEY_PATH" />“. Вероятно не искате да направите това.</translation>

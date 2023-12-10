@@ -14,13 +14,13 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/functional/callback_forward.h"
@@ -112,8 +112,11 @@ class PersonalizationAppTimeOfDayBrowserTest
       public testing::WithParamInterface<TimeOfDayTestParams> {
  public:
   PersonalizationAppTimeOfDayBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+    std::vector<base::test::FeatureRef> enabled_features =
+        personalization_app::GetTimeOfDayEnabledFeatures();
+    enabled_features.emplace_back(
+        features::kTimeOfDayWallpaperForcedAutoSchedule);
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
     base::Time start_time = StartTime();
     clock_.SetNow(start_time);
     tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));
@@ -150,26 +153,28 @@ class PersonalizationAppTimeOfDayBrowserTest
     test_chrome_webui_controller_factory_.AddFactoryOverride(
         kChromeUIPersonalizationAppHost, &test_webui_provider_);
 
-    auto* dark_light_controller = Shell::Get()->dark_light_mode_controller();
+    time_of_day_scheduler_ = Shell::Get()
+                                 ->wallpaper_controller()
+                                 ->time_of_day_scheduler_for_testing();
     // Disable any running timers to set a fake clock.
-    dark_light_controller->SetAutoScheduleEnabled(false);
-    dark_light_controller->SetClockForTesting(this);
+    time_of_day_scheduler_->SetScheduleType(ScheduleType::kNone);
+    time_of_day_scheduler_->SetClockForTesting(this);
     // Re-enable auto schedule and sun timer.
-    dark_light_controller->SetAutoScheduleEnabled(true);
-    dark_light_controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
+    time_of_day_scheduler_->SetScheduleType(ScheduleType::kSunsetToSunrise);
 
     auto* geolocation_controller = GeolocationController::Get();
     geolocation_controller->SetClockForTesting(this);
 
+    // Override SharedUrlLoaderFactory to return fixed geoposition.
     scoped_refptr<TestGeolocationUrlLoaderFactory>
         geolocation_url_loader_factory =
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
-    test_geolocation_url_loader_factory_ = geolocation_url_loader_factory.get();
-    test_geolocation_url_loader_factory_->set_position(GetGeoposition());
-    geolocation_controller->SetGeolocationProviderForTesting(
-        std::make_unique<SimpleGeolocationProvider>(
-            geolocation_controller, std::move(geolocation_url_loader_factory),
-            SimpleGeolocationProvider::DefaultGeolocationProviderURL()));
+    geolocation_url_loader_factory->set_position(GetGeoposition());
+    SimpleGeolocationProvider::GetInstance()
+        ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory);
+    // Request immediate geoposition to fetch and broadcast the fixed
+    // geoposition set by TestSharedUrlLoaderFactory above.
+    GeolocationController::Get()->RequestImmediateGeopositionForTesting();
 
     WaitForTestSystemAppInstall();
   }
@@ -177,7 +182,7 @@ class PersonalizationAppTimeOfDayBrowserTest
   void TearDownOnMainThread() override {
     SystemWebAppBrowserTestBase::TearDownOnMainThread();
 
-    test_geolocation_url_loader_factory_ = nullptr;
+    time_of_day_scheduler_ = nullptr;
   }
 
   content::WebContents* LaunchAppAtWallpaperSubpage(Browser** browser) {
@@ -218,14 +223,17 @@ class PersonalizationAppTimeOfDayBrowserTest
   bool FastForwardBy(base::TimeDelta time_delta) {
     clock_.Advance(time_delta);
     tick_clock_.Advance(time_delta);
-    auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
     const bool checkpoint_should_change =
-        dark_light_mode_controller->timer()->IsRunning() &&
-        dark_light_mode_controller->timer()->desired_run_time() < NowTicks();
+        time_of_day_scheduler_->timer()->IsRunning() &&
+        time_of_day_scheduler_->timer()->desired_run_time() < NowTicks();
     if (checkpoint_should_change) {
-      dark_light_mode_controller->timer()->FireNow();
+      time_of_day_scheduler_->timer()->FireNow();
     }
     return checkpoint_should_change;
+  }
+
+  ScheduleCheckpoint GetCurrentCheckpoint() {
+    return time_of_day_scheduler_->current_checkpoint();
   }
 
  private:
@@ -241,7 +249,7 @@ class PersonalizationAppTimeOfDayBrowserTest
   const std::vector<base::Time> times_to_test_ = GenerateTimesToTest();
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
-  raw_ptr<TestGeolocationUrlLoaderFactory> test_geolocation_url_loader_factory_;
+  raw_ptr<WallpaperTimeOfDayScheduler> time_of_day_scheduler_;
   TestChromeWebUIControllerFactory test_chrome_webui_controller_factory_;
   TestPersonalizationAppWebUIProvider test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
@@ -310,26 +318,19 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
     loop.Run();
   }
 
-  auto* dark_light_controller = Shell::Get()->dark_light_mode_controller();
   auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
 
-  ASSERT_TRUE(dark_light_controller->GetAutoScheduleEnabled())
-      << "Time of day wallpaper needs auto schedule enabled";
-  ASSERT_EQ(ScheduleType::kSunsetToSunrise,
-            dark_light_controller->GetScheduleType())
-      << "Time of day wallpaper needs sunrise/sunset to change automatically";
   ASSERT_EQ(WallpaperType::kOnline, wallpaper_controller->GetWallpaperType())
       << "Time of day wallpaper expected";
   ASSERT_EQ(wallpaper_handlers::MockBackdropImageInfoFetcher::kTimeOfDayUnitId,
             wallpaper_controller->GetActiveUserWallpaperInfo()->unit_id.value())
       << "Time of day wallpaper unit id set as wallpaper";
 
-  std::vector<ScheduleCheckpoint> all_checkpoints(
-      {dark_light_controller->current_checkpoint()});
+  std::vector<ScheduleCheckpoint> all_checkpoints({GetCurrentCheckpoint()});
   std::vector<backdrop::Image::ImageType> all_image_types = {
       FirstValidVariant(
           wallpaper_controller->GetActiveUserWallpaperInfo()->variants,
-          dark_light_controller->current_checkpoint())
+          GetCurrentCheckpoint())
           ->type};
 
   for (const auto& checkpoint_time : TimesToIterate()) {
@@ -340,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
       loop.Run();
     }
 
-    all_checkpoints.push_back(dark_light_controller->current_checkpoint());
+    all_checkpoints.push_back(GetCurrentCheckpoint());
 
     auto current_wallpaper_info =
         wallpaper_controller->GetActiveUserWallpaperInfo().value();
@@ -348,10 +349,9 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
         wallpaper_handlers::MockBackdropImageInfoFetcher::kTimeOfDayUnitId,
         current_wallpaper_info.unit_id.value())
         << "WallpaperInfo still has time of day unit_id";
-    all_image_types.push_back(
-        FirstValidVariant(current_wallpaper_info.variants,
-                          dark_light_controller->current_checkpoint())
-            ->type);
+    all_image_types.push_back(FirstValidVariant(current_wallpaper_info.variants,
+                                                GetCurrentCheckpoint())
+                                  ->type);
   }
 
   EXPECT_EQ(ExpectedScheduleCheckpoints(), all_checkpoints);

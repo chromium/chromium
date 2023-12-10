@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,11 +34,12 @@
 #include "content/public/common/content_paths.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
+#include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -76,8 +79,8 @@ class AggregationServiceStorageSqlTest : public testing::Test {
 
   // Use the default limit unless specified.
   void OpenDatabase(
-      absl::optional<int> max_stored_requests_per_reporting_origin =
-          absl::nullopt) {
+      std::optional<int> max_stored_requests_per_reporting_origin =
+          std::nullopt) {
     if (max_stored_requests_per_reporting_origin.has_value()) {
       storage_ = std::make_unique<AggregationServiceStorageSql>(
           /*run_in_memory=*/false, temp_directory_.GetPath(), &clock_,
@@ -96,6 +99,7 @@ class AggregationServiceStorageSqlTest : public testing::Test {
   }
 
  protected:
+  base::HistogramTester histograms_;
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<AggregationServiceStorage> storage_;
   base::SimpleTestClock clock_;
@@ -121,8 +125,6 @@ class AggregationServiceStorageSqlInMemoryTest : public testing::Test {
 
 TEST_F(AggregationServiceStorageSqlTest,
        DBInitializationSucceeds_HistogramRecorded) {
-  base::HistogramTester histograms;
-
   OpenDatabase();
   GURL url(kExampleUrl);
   PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
@@ -130,15 +132,13 @@ TEST_F(AggregationServiceStorageSqlTest,
   storage_->SetPublicKeys(url, keyset);
   CloseDatabase();
 
-  histograms.ExpectUniqueSample(
+  histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
-  base::HistogramTester histograms;
-
   OpenDatabase();
   CloseDatabase();
 
@@ -157,7 +157,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   EXPECT_FALSE(base::PathExists(db_path()));
 
   // DB creation UMA should not be recorded.
-  histograms.ExpectTotalCount(
+  histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2", 0);
 
   // Storing a public key should create and initialize the database.
@@ -168,7 +168,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   CloseDatabase();
 
   // DB creation UMA should be recorded if ThreadTicks is supported
-  histograms.ExpectTotalCount(
+  histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2",
       base::ThreadTicks::IsSupported() ? 1 : 0);
 
@@ -495,6 +495,11 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_ExpectedResult) {
   EXPECT_EQ(stored_requests_and_ids[0].id, RequestId(1));
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       stored_requests_and_ids[0].request, request));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, DeleteRequest_ExpectedResult) {
@@ -511,6 +516,11 @@ TEST_F(AggregationServiceStorageSqlTest, DeleteRequest_ExpectedResult) {
   storage_->DeleteRequest(RequestId(1));
   EXPECT_TRUE(
       storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -548,6 +558,11 @@ TEST_F(AggregationServiceStorageSqlTest,
       storage_->GetRequestsReportingOnOrBefore(next_run_time);
   ASSERT_EQ(requests_at_run_time.size(), 1u);
   EXPECT_EQ(requests_at_run_time[0].request.failed_send_attempts(), 2);
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      2);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -577,6 +592,11 @@ TEST_F(AggregationServiceStorageSqlTest,
   ASSERT_TRUE(storage_->NextReportTimeAfter(base::Time::Min()).has_value());
   EXPECT_EQ(storage_->NextReportTimeAfter(base::Time::Min()).value(),
             request.shared_info().scheduled_report_time);
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, DatabaseReopened_RequestsPersisted) {
@@ -597,6 +617,11 @@ TEST_F(AggregationServiceStorageSqlTest, DatabaseReopened_RequestsPersisted) {
   ASSERT_EQ(stored_requests.size(), 1u);
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       stored_requests[0].request, request));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -624,6 +649,11 @@ TEST_F(AggregationServiceStorageSqlTest,
               test_case.number_requests)
         << test_case.not_after_time;
   }
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      2);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -644,6 +674,11 @@ TEST_F(AggregationServiceStorageSqlTest,
                   /*not_after_time=*/base::Time::Max()),
               ElementsAre(RequestIdIs(RequestId(1)), RequestIdIs(RequestId(2)),
                           RequestIdIs(RequestId(3))));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, GetRequests_ReturnValuesAlignWithIds) {
@@ -674,13 +709,13 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   const struct {
     base::Time strictly_after_time;
-    absl::optional<base::Time> expected_return_value;
+    std::optional<base::Time> expected_return_value;
   } kTestCases[] = {
       {base::Time::Min(), report_time},
       {report_time - base::Seconds(1), report_time},
-      {report_time, absl::nullopt},
-      {report_time + base::Seconds(1), absl::nullopt},
-      {base::Time::Max(), absl::nullopt},
+      {report_time, std::nullopt},
+      {report_time + base::Seconds(1), std::nullopt},
+      {base::Time::Max(), std::nullopt},
 
   };
 
@@ -708,7 +743,7 @@ TEST_F(AggregationServiceStorageSqlTest,
         example_request.shared_info().Clone();
     shared_info.scheduled_report_time = scheduled_report_time;
 
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(shared_info));
     ASSERT_TRUE(request.has_value());
@@ -730,6 +765,10 @@ TEST_F(AggregationServiceStorageSqlTest,
   EXPECT_EQ(storage_->NextReportTimeAfter(kExampleTime - base::Milliseconds(1))
                 .value(),
             kExampleTime);
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 
   std::vector<AggregationServiceStorage::RequestAndId> example_time_reports =
       storage_->GetRequestsReportingOnOrBefore(kExampleTime);
@@ -743,22 +782,38 @@ TEST_F(AggregationServiceStorageSqlTest,
   ASSERT_TRUE(storage_->NextReportTimeAfter(kExampleTime).has_value());
   EXPECT_EQ(storage_->NextReportTimeAfter(kExampleTime).value(),
             kExampleTime + base::Hours(1));
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      2);
 
   EXPECT_EQ(storage_
                 ->GetRequestsReportingOnOrBefore(kExampleTime + base::Hours(1) -
                                                  base::Milliseconds(1))
                 .size(),
             2u);
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      4);
 
   std::vector<AggregationServiceStorage::RequestAndId> all_reports =
       storage_->GetRequestsReportingOnOrBefore(kExampleTime + base::Hours(1));
   ASSERT_EQ(all_reports.size(), 3u);
   EXPECT_EQ(all_reports[2].id, RequestId(3));
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      7);
 
   EXPECT_FALSE(
       storage_->NextReportTimeAfter(kExampleTime + base::Hours(1)).has_value());
   EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
             3u);
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      7);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -775,6 +830,11 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
             0u);
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -806,6 +866,11 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   // Only the last request should be left. Request IDs start from 1.
   EXPECT_EQ(stored_reports[0].id, RequestId(3));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -846,6 +911,11 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   // Only the last request should be left. Request IDs start from 1.
   EXPECT_EQ(stored_reports[0].id, RequestId(3));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, GetReportRequestReportingOrigins) {
@@ -906,7 +976,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   {
     // The report time is now considered in the past so it is adjusted.
-    absl::optional<base::Time> new_report_time =
+    std::optional<base::Time> new_report_time =
         storage_->AdjustOfflineReportTimes(
             /*now=*/original_report_time + base::Minutes(1),
             /*min_delay=*/base::Minutes(1),
@@ -934,7 +1004,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   {
     // The delay can be constant (i.e. min delay can be equal to max delay)
-    absl::optional<base::Time> new_report_time =
+    std::optional<base::Time> new_report_time =
         storage_->AdjustOfflineReportTimes(
             /*now=*/original_report_time + base::Minutes(1),
             /*min_delay=*/base::Minutes(1),
@@ -948,7 +1018,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   {
     // The min delay can be zero
-    absl::optional<base::Time> new_report_time =
+    std::optional<base::Time> new_report_time =
         storage_->AdjustOfflineReportTimes(
             /*now=*/original_report_time + base::Minutes(5),
             /*min_delay=*/base::Minutes(0),
@@ -979,7 +1049,7 @@ TEST_F(AggregationServiceStorageSqlTest,
         example_request.shared_info().Clone();
     shared_info.scheduled_report_time = scheduled_report_time;
 
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(shared_info));
     ASSERT_TRUE(request.has_value());
@@ -1009,11 +1079,59 @@ TEST_F(AggregationServiceStorageSqlTest,
   // Finally there's the unaffected second report.
   EXPECT_EQ(storage_->NextReportTimeAfter(kExampleTime + base::Minutes(1)),
             kExampleTime + base::Hours(1));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
+}
+
+// This test corrupts the SQLite database on disk and verifies that
+// AdjustOfflineReportTimes() encounters SQLITE_CORRUPT errors. There's nothing
+// special about this function besides the fact that it attempts to run a query.
+TEST_F(AggregationServiceStorageSqlTest,
+       AdjustOfflineReportTimes_DiskCorruption) {
+  constexpr auto kExampleTime =
+      base::Time::FromMillisecondsSinceUnixEpoch(1701791394350);
+
+  // Ensure the database schema is initialized. This is kind of an off-label use
+  // of StoreRequest(), and could be replaced with any other method that calls
+  // `EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent)`.
+  OpenDatabase();
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  CloseDatabase();
+
+  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path()));
+  OpenDatabase();
+
+#if DCHECK_IS_ON()
+  // AggregationServiceStorageSql::DatabaseErrorCallback() intentionally crashes
+  // in debug builds. Note that death tests run in a forked process, so this
+  // call should have no visible effects on the following lines.
+  ASSERT_DEATH_IF_SUPPORTED(storage_->AdjustOfflineReportTimes(
+                                kExampleTime, base::Hours(1), base::Hours(2)),
+                            "database disk image is malformed");
+#endif
+
+  // Suppress the crash in with `ScopedErrorExpecter`.
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    storage_->AdjustOfflineReportTimes(kExampleTime, base::Hours(1),
+                                       base::Hours(2));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  histograms_.ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.Storage.Sql.Error",
+      base::checked_cast<base::HistogramBase::Sample>(
+          sql::SqliteLoggedResultCode::kCorrupt),
+      /*expected_bucket_count=*/6);
+
+  CloseDatabase();
 }
 
 TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
-  base::HistogramTester histograms;
-
   size_t example_limit = 10;
   OpenDatabase(example_limit);
 
@@ -1042,17 +1160,19 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
   EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
             example_limit);
 
-  histograms.ExpectBucketCount(
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
+  histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       true, example_limit + 1);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       false, 1);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
-  base::HistogramTester histograms;
-
   size_t example_limit = 10;
   OpenDatabase(example_limit);
 
@@ -1098,10 +1218,14 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
   EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
             example_limit + 1);
 
-  histograms.ExpectBucketCount(
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
+  histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       true, example_limit + 1);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       false, 2);
 }
@@ -1134,6 +1258,11 @@ TEST_F(AggregationServiceStorageSqlTest,
   ASSERT_EQ(stored_requests_and_ids.size(), 1u);
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       stored_requests_and_ids[0].request, request));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -1152,7 +1281,7 @@ TEST_F(AggregationServiceStorageSqlTest,
           example_request.payload_contents(),
           example_request.shared_info().Clone(),
           /*reporting_path=*/std::string(),
-          /*debug_key=*/absl::nullopt,
+          /*debug_key=*/std::nullopt,
           /*additional_fields=*/{{"additional_key", "example_value"}})
           .value();
 
@@ -1164,6 +1293,11 @@ TEST_F(AggregationServiceStorageSqlTest,
   ASSERT_EQ(stored_requests_and_ids.size(), 1u);
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       stored_requests_and_ids[0].request, request));
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -1191,7 +1325,7 @@ TEST_F(AggregationServiceStorageSqlTest,
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone(),
                                         /*reporting_path=*/std::string(),
-                                        /*debug_key=*/absl::nullopt,
+                                        /*debug_key=*/std::nullopt,
                                         /*additional_fields=*/{})
           .value();
 
@@ -1203,10 +1337,15 @@ TEST_F(AggregationServiceStorageSqlTest,
   ASSERT_EQ(stored_requests_and_ids.size(), 1u);
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       stored_requests_and_ids[0].request, request));
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlInMemoryTest,
        DatabaseInMemoryReopened_RequestsNotPersisted) {
+  base::HistogramTester histograms;
   OpenDatabase();
 
   AggregatableReportRequest request =
@@ -1223,6 +1362,10 @@ TEST_F(AggregationServiceStorageSqlInMemoryTest,
   EXPECT_FALSE(storage_->NextReportTimeAfter(base::Time::Min()).has_value());
   EXPECT_TRUE(
       storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+  histograms.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -1286,6 +1429,10 @@ TEST_F(AggregationServiceStorageSqlTest,
                 .GetURL()
                 .spec(),
             "https://aws.example.test/");
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -1331,6 +1478,11 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   EXPECT_TRUE(
       storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "RequestDelayFromUpdatedReportTime",
+      0);
 }
 
 class AggregationServiceStorageSqlMigrationsTest
@@ -1394,7 +1546,6 @@ class AggregationServiceStorageSqlMigrationsTest
 };
 
 TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
-  base::HistogramTester histograms;
   {
     OpenDatabase();
 
@@ -1421,10 +1572,10 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
     EXPECT_EQ(db.GetSchema(), GetCurrentSchema());
   }
 
-  histograms.ExpectTotalCount(
+  histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2",
       base::ThreadTicks::IsSupported() ? 1 : 0);
-  histograms.ExpectUniqueSample(
+  histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
 }
@@ -1433,7 +1584,6 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
 // deprecate a version.
 
 TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
-  base::HistogramTester histograms;
   LoadDatabase(/*version_id=*/1);
 
   // Verify pre-conditions.
@@ -1471,15 +1621,14 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
     ASSERT_FALSE(s.Step());
   }
 
-  histograms.ExpectTotalCount(
+  histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2", 0);
-  histograms.ExpectUniqueSample(
+  histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
 }
 
 TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
-  base::HistogramTester histograms;
   LoadDatabase(/*version_id=*/2);
 
   // Verify pre-conditions.
@@ -1520,9 +1669,9 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
     ASSERT_FALSE(s.Step());
   }
 
-  histograms.ExpectTotalCount(
+  histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql.CreationTime2", 0);
-  histograms.ExpectUniqueSample(
+  histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
 }

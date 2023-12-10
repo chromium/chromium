@@ -36,6 +36,25 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
       context, arc::ArcServiceManager::Get()->arc_bridge_service());
 }
 
+base::FilePath GetPathForRoot(const std::string& root,
+                              const std::string& name) {
+  return arc::GetDocumentsProviderMountPath(
+             arc::kMediaDocumentsProviderAuthority, root)
+      .Append(name);
+}
+
+base::FilePath GetDocumentPath(const std::string& name) {
+  return GetPathForRoot(arc::kDocumentsRootDocumentId, name);
+}
+
+base::FilePath GetImagePath(const std::string& name) {
+  return GetPathForRoot(arc::kImagesRootDocumentId, name);
+}
+
+base::FilePath GetVideoPath(const std::string& name) {
+  return GetPathForRoot(arc::kVideosRootDocumentId, name);
+}
+
 arc::FakeFileSystemInstance::Document MakeDocument(
     const std::string& document_id,
     const std::string& parent_document_id,
@@ -76,7 +95,7 @@ class RecentArcMediaSourceTest : public testing::Test {
     // until EnableFakeFileSystemInstance() is called.
     AddDocumentsToFakeFileSystemInstance();
 
-    source_ = std::make_unique<RecentArcMediaSource>(profile_.get());
+    source_ = std::make_unique<RecentArcMediaSource>(profile_.get(), 10);
   }
 
   void TearDown() override {
@@ -174,19 +193,19 @@ class RecentArcMediaSourceTest : public testing::Test {
 
     base::RunLoop run_loop;
 
-    source_->GetRecentFiles(RecentSource::Params(
-        nullptr /* file_system_context */, GURL() /* origin */,
-        1 /* max_files: ignored */, query,
-        base::Time() /* cutoff_time: ignored */,
-        base::TimeTicks::Max() /* end_time: ignored */,
-        file_type /* file_type */,
+    source_->GetRecentFiles(
+        RecentSource::Params(
+            /*file_system_context=*/nullptr, /*origin=*/GURL(), query,
+            /*cutoff_time=*/base::Time(),
+            /*end_time=*/base::TimeTicks::Max(),
+            /*file_type=*/file_type),
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {
               run_loop->Quit();
               *out_files = std::move(files);
             },
-            &run_loop, &files)));
+            &run_loop, &files));
 
     run_loop.Run();
 
@@ -214,56 +233,28 @@ TEST_F(RecentArcMediaSourceTest, Normal) {
   std::vector<RecentFile> files = GetRecentFiles("");
 
   ASSERT_EQ(6u, files.size());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kImagesRootDocumentId)
-          .Append("cat.png"),
-      files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
-            files[0].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kImagesRootDocumentId)
-          .Append("dog.jpg"),
-      files[1].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
-            files[1].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kVideosRootDocumentId)
-          .Append("hot.mp4"),
-      files[2].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
-            files[2].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kVideosRootDocumentId)
-          .Append("ink.webm"),
-      files[3].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
-            files[3].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kDocumentsRootDocumentId)
-          .Append("text.txt"),
-      files[4].url().path());
+  EXPECT_EQ(GetDocumentPath("text.txt"), files[0].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10),
-            files[4].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kDocumentsRootDocumentId)
-          .Append("word.doc"),
-      files[5].url().path());
+            files[0].last_modified());
+  EXPECT_EQ(GetDocumentPath("word.doc"), files[1].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
+            files[1].last_modified());
+  EXPECT_EQ(GetVideoPath("ink.webm"), files[2].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
+            files[2].last_modified());
+  EXPECT_EQ(GetVideoPath("hot.mp4"), files[3].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
+            files[3].last_modified());
+  EXPECT_EQ(GetImagePath("dog.jpg"), files[4].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
+            files[4].last_modified());
+  EXPECT_EQ(GetImagePath("cat.png"), files[5].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
             files[5].last_modified());
 
   files = GetRecentFiles("text");
   ASSERT_EQ(1u, files.size());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kDocumentsRootDocumentId)
-          .Append("text.txt"),
-      files[0].url().path());
+  EXPECT_EQ(GetDocumentPath("text.txt"), files[0].url().path());
 }
 
 TEST_F(RecentArcMediaSourceTest, ArcNotAvailable) {
@@ -302,19 +293,11 @@ TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
       GetRecentFiles("", RecentSource::FileType::kImage);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kImagesRootDocumentId)
-          .Append("cat.png"),
-      files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
-            files[0].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kImagesRootDocumentId)
-          .Append("dog.jpg"),
-      files[1].url().path());
+  EXPECT_EQ(GetImagePath("dog.jpg"), files[0].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
+            files[0].last_modified());
+  EXPECT_EQ(GetImagePath("cat.png"), files[1].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
             files[1].last_modified());
 }
 
@@ -325,19 +308,11 @@ TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
       GetRecentFiles("", RecentSource::FileType::kVideo);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kVideosRootDocumentId)
-          .Append("hot.mp4"),
-      files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
-            files[0].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kVideosRootDocumentId)
-          .Append("ink.webm"),
-      files[1].url().path());
+  EXPECT_EQ(GetVideoPath("ink.webm"), files[0].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
+            files[0].last_modified());
+  EXPECT_EQ(GetVideoPath("hot.mp4"), files[1].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
             files[1].last_modified());
 }
 
@@ -348,28 +323,16 @@ TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
       GetRecentFiles("", RecentSource::FileType::kDocument);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kDocumentsRootDocumentId)
-          .Append("text.txt"),
-      files[0].url().path());
+  EXPECT_EQ(GetDocumentPath("text.txt"), files[0].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10),
             files[0].last_modified());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kDocumentsRootDocumentId)
-          .Append("word.doc"),
-      files[1].url().path());
+  EXPECT_EQ(GetDocumentPath("word.doc"), files[1].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
             files[1].last_modified());
 
   files = GetRecentFiles("word", RecentSource::FileType::kDocument);
   ASSERT_EQ(1u, files.size());
-  EXPECT_EQ(
-      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         arc::kDocumentsRootDocumentId)
-          .Append("word.doc"),
-      files[0].url().path());
+  EXPECT_EQ(GetDocumentPath("word.doc"), files[0].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
             files[0].last_modified());
 

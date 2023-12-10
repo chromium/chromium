@@ -277,20 +277,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "nacl_loader_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "nacl_loader_unittests",
-        "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "net_unittests",
         "swarming": {
           "dimensions": {
@@ -314,20 +300,6 @@
         },
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ppapi_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ppapi_unittests",
-        "test_id_prefix": "ninja://ppapi:ppapi_unittests/"
       },
       {
         "merge": {
@@ -749,20 +721,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "nacl_loader_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "nacl_loader_unittests",
-        "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "net_unittests",
         "swarming": {
           "dimensions": {
@@ -786,20 +744,6 @@
         },
         "test": "pdf_unittests",
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ppapi_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ppapi_unittests",
-        "test_id_prefix": "ninja://ppapi:ppapi_unittests/"
       },
       {
         "merge": {

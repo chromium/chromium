@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -175,6 +176,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   void HandleGetAvailableAdapters(
       DBusResult<std::vector<internal::AdapterWithEnabled>> adapters);
 
+  // Handle response to |GetAdapterEnabled| DBus method call.
+  // Currently we only expect to handle |GetAdapterEnabled| calls when we get a
+  // notification that an adapter is present.
+  void HandleGetAdapterEnabledAfterPresent(int32_t adapter,
+                                           DBusResult<bool> response);
+
   // Handle response to |RegisterCallback| DBus method call.
   void HandleRegisterCallback(DBusResult<Void> result);
 
@@ -234,6 +241,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Cached list of available adapters and their enabled state indexed by hci
   // index.
   base::flat_map<int, bool> adapter_to_enabled_;
+
+  // List of adapters that the enabled state is unknown, pending querying.
+  base::flat_set<int> adapter_present_pending_;
 
   // Name of service that implements manager interface.
   std::string service_name_;

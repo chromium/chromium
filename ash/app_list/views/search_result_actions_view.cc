@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
@@ -19,7 +21,6 @@
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -82,7 +83,7 @@ SearchResultActionButton::SearchResultActionButton(
     Type type,
     const gfx::VectorIcon* icon,
     const std::u16string& accessible_name)
-    : IconButton(callback,
+    : IconButton(std::move(callback),
                  type,
                  icon,
                  action.tooltip_text,

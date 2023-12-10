@@ -32,17 +32,13 @@ namespace printing {
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    bool skip_system_calls) {
-  auto context = std::make_unique<PrintingContextLinux>(delegate);
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (skip_system_calls)
-    context->set_skip_system_calls();
-#endif
-  return context;
+    ProcessBehavior process_behavior) {
+  return std::make_unique<PrintingContextLinux>(delegate, process_behavior);
 }
 
-PrintingContextLinux::PrintingContextLinux(Delegate* delegate)
-    : PrintingContext(delegate), print_dialog_(nullptr) {}
+PrintingContextLinux::PrintingContextLinux(Delegate* delegate,
+                                           ProcessBehavior process_behavior)
+    : PrintingContext(delegate, process_behavior), print_dialog_(nullptr) {}
 
 PrintingContextLinux::~PrintingContextLinux() {
   ReleaseContext();
@@ -134,12 +130,15 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   document_name_ = document_name;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (skip_system_calls()) {
+  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
   }
 
-  if (features::ShouldPrintJobOop() &&
+  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
+    // Take the settings captured by the browser process from the system print
+    // dialog and apply them to this printing context in the PrintBackend
+    // service.
     if (!print_dialog_) {
       CHECK(ui::LinuxUi::instance());
       print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);

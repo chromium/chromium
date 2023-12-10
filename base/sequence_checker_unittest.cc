@@ -213,7 +213,7 @@ TEST(SequenceCheckerTest, MoveFromDetachedRebinds) {
 }
 
 TEST(SequenceCheckerTest, MoveOffSequenceBanned) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   SequenceCheckerImpl other_sequence;
   other_sequence.DetachFromSequence();

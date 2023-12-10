@@ -216,11 +216,34 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Not allowed"/>
 </enum>
 
+<enum name="ArcFeaturesParseResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorParsingJson"/>
+  <int value="2" label="kInvalidFeatureList"/>
+  <int value="3" label="kInvalidUnavailableFeatureList"/>
+  <int value="4" label="kInvalidPropertiesList"/>
+  <int value="5" label="kMissingFingerprintProperty"/>
+  <int value="6" label="kMissingSdkProperty"/>
+  <int value="7" label="kMissingReleaseProperty"/>
+  <int value="8" label="kMissingAbiListProperty"/>
+  <int value="9" label="kMissingPlayStoreVersion"/>
+</enum>
+
 <enum name="ArcFileSystemWatcherExceedLimitState">
   <int value="0"
       label="inotify exceeds its limit when ArcFileSystemWatcher is started"/>
   <int value="1"
       label="inotify exceeds its limit while processing a filesystem change"/>
+</enum>
+
+<enum name="ArcKeyMintError">
+  <int value="0" label="Other unspecified error code"/>
+  <int value="1" label="OK"/>
+  <int value="2" label="Unknown error"/>
+  <int value="3" label="Invalid Key Blob"/>
+  <int value="4" label="Invalid Arguement"/>
+  <int value="5" label="Unsupported Algorithm"/>
+  <int value="6" label="Unimplemented"/>
 </enum>
 
 <enum name="ArcMainAccountHashMigrationStatus">
@@ -578,15 +601,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ON"/>
   <int value="3" label="OFF"/>
   <int value="4" label="FULLY_LOCKED"/>
-</enum>
-
-<enum name="ArcRightClickConversionResult">
-  <summary>
-    Describes whether the right click was converted to long press or not
-  </summary>
-  <int value="0" label="DISABLED"/>
-  <int value="1" label="CONVERTED"/>
-  <int value="2" label="NOT_CONVERTED"/>
 </enum>
 
 <enum name="ArcSdkVersionUpgradeType">

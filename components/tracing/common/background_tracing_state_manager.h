@@ -7,18 +7,13 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 
-namespace android_webview {
-class AwTracingDelegateTest;
-}
-
 namespace tracing {
-
-class BackgroundTracingStateManagerTest;
 
 // Do not remove or change the order of enum fields since it is stored in
 // preferences.
@@ -63,10 +58,12 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // Saves the given state to prefs, public for testing.
   void SaveState(BackgroundTracingState state);
 
+  // Used in tests to reset the state since a singleton instance is never
+  // destroyed.
+  void ResetForTesting();
+
  private:
   friend base::NoDestructor<BackgroundTracingStateManager>;
-  friend class tracing::BackgroundTracingStateManagerTest;
-  friend class android_webview::AwTracingDelegateTest;
 
   BackgroundTracingStateManager();
   ~BackgroundTracingStateManager();
@@ -76,15 +73,11 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // Updates the current tracing state and saves it to prefs.
   void SetState(BackgroundTracingState new_state);
 
-  // Used in tests to reset the state since a singleton instance is never
-  // destroyed.
-  void Reset();
-
   BackgroundTracingState state_ = BackgroundTracingState::NOT_ACTIVATED;
 
   bool initialized_ = false;
 
-  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Following are valid only when |initialized_| = true.
   BackgroundTracingState last_session_end_state_ =

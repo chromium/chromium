@@ -1,8 +1,4 @@
 This is a wdspec test.
-[PASS] test_pen_pointer_in_shadow_tree[outer-open]
-[PASS] test_pen_pointer_in_shadow_tree[outer-closed]
-[PASS] test_pen_pointer_in_shadow_tree[inner-open]
-[PASS] test_pen_pointer_in_shadow_tree[inner-closed]
 [FAIL] test_pen_pointer_properties
   AssertionError: assert 7 == 10
 Harness: the test ran to completion.

@@ -185,6 +185,8 @@ enum SearchResultType {
   IMAGE_SEARCH,
   // A zero-state result representing a admin template.
   DESKS_ADMIN_TEMPLATE,
+  // New app shortcuts.
+  APP_SHORTCUTS_V2,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

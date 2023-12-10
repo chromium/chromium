@@ -2,4 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-blink_core_tests_url_pattern = [ "url_pattern_histogram_test.cc" ]
+blink_core_tests_url_pattern = [
+  "url_pattern_histogram_test.cc",
+  "url_pattern_test.cc",
+]

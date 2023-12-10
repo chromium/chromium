@@ -32,7 +32,7 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
-#include "ash/public/cpp/test/in_process_image_decoder.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/test_ash_web_view.h"
@@ -110,7 +110,7 @@ std::vector<base::OnceClosure> GetEventGeneratorCallbacks(
 
   event_callbacks.push_back(
       base::BindOnce(&ui::test::EventGenerator::PressTouch,
-                     base::Unretained(event_generator), absl::nullopt));
+                     base::Unretained(event_generator), std::nullopt));
 
   return event_callbacks;
 }
@@ -1735,12 +1735,12 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   void SimulateScreensaverStart() {
     LockScreen();
     FastForwardByLockScreenInactivityTimeout();
-    EXPECT_EQ(absl::nullopt, GetRemainingLockScreenTimeoutFraction());
+    EXPECT_EQ(std::nullopt, GetRemainingLockScreenTimeoutFraction());
     EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  InProcessImageDecoder decoder_;
+  InProcessDataDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride>

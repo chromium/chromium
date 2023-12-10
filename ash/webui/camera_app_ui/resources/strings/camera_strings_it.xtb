@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Elimina pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modalità Fotocamera</translation>
 <translation id="1153190633558910465">Griglia off</translation>
-<translation id="1175958423215084756">Link rilevato. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> eliminata</translation>
 <translation id="1258009455399840361">Ruota di 90 gradi in senso orario</translation>
 <translation id="1417314334557041815">Modifica pagina <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Elaborazione del video in corso…</translation>
 <translation id="3789724198583203151">Ruota di 90 gradi in senso antiorario</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Copia testo</translation>
 <translation id="4060608699153044055">Impossibile registrare perché lo spazio di archiviazione del dispositivo è in esaurimento. Per avviare la registrazione, devi liberare spazio sul dispositivo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Metti in pausa la registrazione</translation>
 <translation id="4121305183798804752">Documento rilevato</translation>
 <translation id="414641094616694804">Non è possibile modificare la risoluzione di questa fotocamera</translation>
 <translation id="4176463684765177261">Disattivato</translation>
-<translation id="4269820728363426813">Copia indirizzo link</translation>
 <translation id="428234092390943511">Miniatura della pagina</translation>
 <translation id="4349714250734879769">Scala frame per Chrome</translation>
 <translation id="4383571725254449280">Log relativi alle prestazioni di stampa</translation>
@@ -144,7 +141,6 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7726641833034062494">Registra video normale</translation>
 <translation id="7748344063862150053">Angolo superiore destro del documento</translation>
 <translation id="7933675232020478311">Spostamento in basso a destra</translation>
-<translation id="7983668134180549431">Testo rilevato.</translation>
 <translation id="8079255378695216066">Impossibile avviare la registrazione</translation>
 <translation id="8120146556401698679">Panoramica Inclinazione Zoom</translation>
 <translation id="8131740175452115882">Conferma</translation>
@@ -163,6 +159,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8870695351537079478">Impossibile avviare la registrazione</translation>
 <translation id="8880167521484863515">4 su 3</translation>
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
+<translation id="8926890870105777777">Connettiti alla rete "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Posiziona i bordi del documento all'interno dell'inquadratura</translation>
 <translation id="9045155556724273246">10 secondi</translation>
 <translation id="906331135292332864">Elaborazione dell'immagine in corso…</translation>

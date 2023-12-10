@@ -109,7 +109,11 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     return nullptr;
   }
   const BookmarkNode* parent = bookmarks::GetBookmarkNodeByID(model, parent_id);
-  if (!CanBeModified(parent, error) || !parent->is_folder()) {
+  if (!CanBeModified(parent, error)) {
+    return nullptr;
+  }
+  if (!parent->is_folder()) {
+    *error = bookmark_api_constants::kInvalidParentError;
     return nullptr;
   }
 
@@ -603,8 +607,14 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
 
     parent = bookmarks::GetBookmarkNodeByID(model, parent_id);
   }
-  if (!CanBeModified(parent, &error) || !CanBeModified(node, &error))
+
+  if (!CanBeModified(parent, &error) || !CanBeModified(node, &error)) {
     return Error(error);
+  }
+
+  if (!parent->is_folder()) {
+    return Error(bookmark_api_constants::kInvalidParentError);
+  }
 
   size_t index;
   if (params->destination.index) {  // Optional (defaults to end).

@@ -68,7 +68,7 @@ class IndexedDBContextTest : public testing::Test {
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
-    indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    indexed_db_context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -85,7 +85,7 @@ class IndexedDBContextTest : public testing::Test {
   // uses the thread pool for querying QuotaDatabase.
   base::test::TaskEnvironment task_environment_;
 
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  std::unique_ptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 

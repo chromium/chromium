@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 
+#include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -13,6 +15,44 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using SigninInterceptionType = WebSigninInterceptor::SigninInterceptionType;
+
+namespace {
+
+// Helper function to provide a readable test case name.
+std::string SigninInterceptTypeToString(SigninInterceptionType type) {
+  switch (type) {
+    case SigninInterceptionType::kEnterprise:
+      return "Entreprise";
+    case SigninInterceptionType::kMultiUser:
+      return "MultiUser";
+    case SigninInterceptionType::kProfileSwitch:
+      return "ProfileSwitch";
+    case SigninInterceptionType::kChromeSignin:
+      return "ChromeSignin";
+    default:
+      NOTREACHED() << "Interception type not supported in the tests.";
+      return std::string();
+  }
+}
+
+// Helper function to provide a readable test case name.
+std::string SigninInterceptResultToString(SigninInterceptionResult result) {
+  switch (result) {
+    case SigninInterceptionResult::kAccepted:
+      return "Accepted";
+    case SigninInterceptionResult::kDeclined:
+      return "Declined";
+    case SigninInterceptionResult::kIgnored:
+      return "Ignored";
+    case SigninInterceptionResult::kNotDisplayed:
+      return "NotDisplayed";
+    default:
+      NOTREACHED() << "Interception result not supported in the tests.";
+      return std::string();
+  }
+}
+
+}  // namespace
 
 class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
  public:
@@ -106,6 +146,14 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
     histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch.NoSync",
                                       0);
   }
+
+  // Check ChromeSignin histograms.
+  if (type == SigninInterceptionType::kChromeSignin) {
+    histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                        result, 1);
+  } else {
+    histogram_tester.ExpectTotalCount("Signin.InterceptResult.ChromeSignin", 0);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -115,13 +163,19 @@ INSTANTIATE_TEST_SUITE_P(
                          SigninInterceptionType::kEnterprise,
                          SigninInterceptionType::kMultiUser,
                          SigninInterceptionType::kProfileSwitch,
+                         SigninInterceptionType::kChromeSignin,
                      }),
                      testing::ValuesIn({
                          SigninInterceptionResult::kAccepted,
                          SigninInterceptionResult::kDeclined,
                          SigninInterceptionResult::kIgnored,
                          SigninInterceptionResult::kNotDisplayed,
-                     })));
+                     })),
+    [](const testing::TestParamInfo<
+        DiceWebSigninInterceptionBubbleViewSyncParamTest::ParamType>& info) {
+      return SigninInterceptTypeToString(std::get<0>(info.param)) + "_" +
+             SigninInterceptResultToString(std::get<1>(info.param));
+    });
 
 TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
   SigninInterceptionResult result = SigninInterceptionResult::kAccepted;

@@ -9,7 +9,7 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Debug"],
         "steps": {
-            "webdriver_tests_suite": {
+            "webdriver_wpt_tests": {
                 "product": "chrome"
             }
         }
@@ -55,6 +55,15 @@
         "is_try_builder": true,
         "is_cq_builder": true
     },
+    "linux-wpt-chromium-rel": {
+        "main": "tryserver.blink",
+        "port_name": "chrome",
+        "specifiers": ["Chrome", "Release"],
+        "is_try_builder": true,
+        "steps": {
+            "chrome_wpt_tests (with patch)": {}
+        }
+    },
     "linux-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "linux",
@@ -77,7 +86,7 @@
             "not_site_per_process_blink_wpt_tests (with patch)": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "webdriver_tests_suite (with patch)": {
+            "webdriver_wpt_tests (with patch)": {
                 "product": "chrome"
             }
         },

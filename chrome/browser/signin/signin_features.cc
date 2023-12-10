@@ -9,14 +9,7 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 // Enables the new style, "For You" First Run Experience
-BASE_FEATURE(kForYouFre,
-             "ForYouFre",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Whether the browser should be opened when the user closes the FRE window. If
@@ -48,7 +41,7 @@ constexpr base::FeatureParam<WithDefaultBrowserStep>::Option
 const base::FeatureParam<WithDefaultBrowserStep>
     kForYouFreWithDefaultBrowserStep{
         &kForYouFre, /*name=*/"with_default_browser_step",
-        /*default_value=*/WithDefaultBrowserStep::kNo,
+        /*default_value=*/WithDefaultBrowserStep::kYes,
         /*options=*/&kWithDefaultBrowserStepOptions};
 
 constexpr base::FeatureParam<DefaultBrowserVariant>::Option
@@ -59,7 +52,7 @@ constexpr base::FeatureParam<DefaultBrowserVariant>::Option
 
 const base::FeatureParam<DefaultBrowserVariant> kForYouFreDefaultBrowserVariant{
     &kForYouFre, /*name=*/"default_browser_variant",
-    /*default_value=*/DefaultBrowserVariant::kCurrent,
+    /*default_value=*/DefaultBrowserVariant::kNew,
     /*options=*/&kDefaultBrowserVariantOptions};
 
 // Feature that indicates that we should put the client in a study group
@@ -78,6 +71,15 @@ const base::FeatureParam<std::string> kForYouFreStudyGroup{
     /*default_value=*/""};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables the generation of pseudo-stable per-user per-device device
+// identifiers. This identifier can be reset by the user by powerwashing the
+// device.
+BASE_FEATURE(kStableDeviceId,
+             "StableDeviceId",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables the client-side processing of the HTTP response header
 // Google-Accounts-RemoveLocalAccount.

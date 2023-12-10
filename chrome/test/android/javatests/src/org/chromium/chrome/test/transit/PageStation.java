@@ -8,6 +8,7 @@ import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -59,12 +60,14 @@ public class PageStation extends BasePageStation {
         mPageLoadedEnterCondition =
                 new PageLoadedCondition(mChromeTabbedActivityTestRule, mIncognito);
         elements.declareEnterCondition(mPageLoadedEnterCondition);
-        elements.declareEnterCondition(new PageInteractableCondition(mPageLoadedEnterCondition));
+        elements.declareEnterCondition(
+                new PageInteractableOrHiddenCondition(mPageLoadedEnterCondition));
     }
 
     private class PageStationTabModelObserver implements TabModelObserver {
         private CallbackHelper mTabAddedCallback = new CallbackHelper();
         private CallbackHelper mTabSelectedCallback = new CallbackHelper();
+        private TabModel mTabModel;
 
         @Override
         public void didSelectTab(Tab tab, int type, int lastId) {
@@ -79,22 +82,19 @@ public class PageStation extends BasePageStation {
         public void install() {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mChromeTabbedActivityTestRule
-                                .getActivity()
-                                .getTabModelSelector()
-                                .getModel(mIncognito)
-                                .addObserver(mTabModelObserver);
+                        mTabModel =
+                                mChromeTabbedActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelector()
+                                        .getModel(mIncognito);
+                        mTabModel.addObserver(mTabModelObserver);
                     });
         }
 
         private void uninstall() {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mChromeTabbedActivityTestRule
-                                .getActivity()
-                                .getTabModelSelector()
-                                .getModel(mIncognito)
-                                .removeObserver(mTabModelObserver);
+                        mTabModel.removeObserver(mTabModelObserver);
                     });
         }
     }

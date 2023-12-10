@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sq">
+<translation id="1220509181886849806">Të përdoret fjalëkalimi i ruajtur?</translation>
+<translation id="1435940442311036198">Përdor një çelës kalimi në një pajisje tjetër</translation>
+<translation id="1717486229951421299">Lista e kredencialeve për t'u plotësuar me prekje është hapur në gjysmë lartësi.</translation>
+<translation id="2359808026110333948">Vazhdo</translation>
+<translation id="2364266287022099258">Të përdoret çelësi i kalimit që është ruajtur?</translation>
+<translation id="3399357656427473483">Lista e kredencialeve për t'u plotësuar me prekje.</translation>
+<translation id="3653689374478248324">Do të identifikohesh në <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Identifikohu</translation>
+<translation id="4553044860350038560">Më shumë çelësa kalimi</translation>
+<translation id="4598345735110653698">Menaxho çelësat e kalimit</translation>
+<translation id="4722735765955348426">Fjalëkalimi për <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Përdor kyçjen e ekranit</translation>
+<translation id="5012523644916800014">Menaxho fjalëkalimet dhe çelësat e kalimit</translation>
+<translation id="5441504010984421144">Lista e kredencialeve për t'u plotësuar me prekje është hapur në lartësi të plotë.</translation>
+<translation id="5591247451101092906">Të përdoret çelësi i kalimit ose fjalëkalimi që është ruajtur?</translation>
+<translation id="5624120631404540903">Menaxho fjalëkalimet</translation>
+<translation id="6560306912274274630">Çelësi i kalimit për <ph name="USERNAME" />, përdor kyçjen e ekranit</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Fjalëkalim i ri për këtë sajt}other{Fjalëkalime të reja për këtë sajt}}</translation>
+<translation id="7286867818472074330">Zgjidh çelësin e kalimit</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> nga <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Ke marrë fjalëkalime për <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ka ndarë një fjalëkalim me ty për <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Lista e kredencialeve është mbyllur.</translation>
+</translationbundle>

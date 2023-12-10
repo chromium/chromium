@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
@@ -806,7 +806,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
   pack->source_images_ =
-      reinterpret_cast<int*>(const_cast<char*>(pointer->data()));
+      reinterpret_cast<SourceImage*>(const_cast<char*>(pointer->data()));
 
   pointer = data_pack->GetStringPiece(kScaleFactorsID);
   if (!pointer) {
@@ -929,9 +929,10 @@ bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {
       sizeof(DisplayPropertyPair[kDisplayPropertiesSize]));
 
   int source_count = 1;
-  int* end = source_images_;
-  for (; *end != -1; end++)
+  SourceImage* end = source_images_;
+  for (; end->id != -1; end++) {
     source_count++;
+  }
   resources[kSourceImagesID] =
       base::StringPiece(reinterpret_cast<const char*>(source_images_.get()),
                         source_count * sizeof(*source_images_));
@@ -967,36 +968,32 @@ bool BrowserThemePack::GetTint(int id, color_utils::HSL* hsl) const {
 }
 
 bool BrowserThemePack::GetColor(int id, SkColor* color) const {
-  static const base::NoDestructor<
-      base::flat_set<TP::OverwritableByUserThemeProperty>>
-      kOpaqueColors(
-          // Explicitly creating a base::flat_set here is not strictly
-          // necessary according to C++, but we do so to work around
-          // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84849.
-          base::flat_set<TP::OverwritableByUserThemeProperty>({
-              // Background tabs must be opaque since the tabstrip expects to be
-              // able to render text opaquely atop them.
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO,
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO,
-              // The frame colors will be used for background tabs when not
-              // otherwise overridden and thus must be opaque as well.
-              TP::COLOR_FRAME_ACTIVE,
-              TP::COLOR_FRAME_INACTIVE,
-              TP::COLOR_FRAME_ACTIVE_INCOGNITO,
-              TP::COLOR_FRAME_INACTIVE_INCOGNITO,
-              // The toolbar is used as the foreground tab color, so it must be
-              // opaque just like background tabs.
-              TP::COLOR_TOOLBAR,
-          }));
+  static constexpr auto kOpaqueColors =
+      base::MakeFixedFlatSet<TP::OverwritableByUserThemeProperty>({
+          // Background tabs must be opaque since the tabstrip expects to be
+          // able to render text opaquely atop them.
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO,
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO,
+          // The frame colors will be used for background tabs when not
+          // otherwise overridden and thus must be opaque as well.
+          TP::COLOR_FRAME_ACTIVE,
+          TP::COLOR_FRAME_INACTIVE,
+          TP::COLOR_FRAME_ACTIVE_INCOGNITO,
+          TP::COLOR_FRAME_INACTIVE_INCOGNITO,
+          // The toolbar is used as the foreground tab color, so it must be
+          // opaque just like background tabs.
+          TP::COLOR_TOOLBAR,
+      });
 
   if (colors_) {
     for (size_t i = 0; i < kColorsArrayLength; ++i) {
       if (colors_[i].id == id) {
         *color = colors_[i].color;
-        if (base::Contains(*kOpaqueColors, id))
+        if (base::Contains(kOpaqueColors, id)) {
           *color = SkColorSetA(*color, SK_AlphaOPAQUE);
+        }
         return true;
       }
     }
@@ -1072,10 +1069,11 @@ bool BrowserThemePack::HasCustomImage(int idr_id) const {
   if (prs_id == PersistentID::kInvalid)
     return false;
 
-  int* img = source_images_;
-  for (; *img != -1; ++img) {
-    if (*img == prs_id)
+  SourceImage* img = source_images_;
+  for (; img->id != -1; ++img) {
+    if (img->id == prs_id) {
       return true;
+    }
   }
 
   return false;
@@ -1283,8 +1281,8 @@ void BrowserThemePack::InitDisplayProperties() {
 }
 
 void BrowserThemePack::InitSourceImages() {
-  source_images_ = new int[1];
-  source_images_[0] = -1;
+  source_images_ = new SourceImage[1];
+  source_images_[0].id = -1;
 }
 
 void BrowserThemePack::FinalizePackFromColors() {
@@ -1499,10 +1497,11 @@ void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
 }
 
 void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
-  source_images_ = new int[file_paths.size() + 1];
-  base::ranges::transform(file_paths, source_images_.get(),
-                          &FilePathMap::value_type::first);
-  source_images_[file_paths.size()] = -1;
+  source_images_ = new SourceImage[file_paths.size() + 1];
+  base::ranges::transform(
+      file_paths, source_images_.get(),
+      [](const auto& pair) { return SourceImage{pair.first}; });
+  source_images_[file_paths.size()].id = -1;
 }
 
 bool BrowserThemePack::LoadRawBitmapsTo(

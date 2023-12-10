@@ -1,10 +1,15 @@
 <style include="signin-shared">
 
 #interceptDialog {
-  padding: 20px;
+  padding: 12px 4px 4px;
   display: flex;
   flex-direction: column;
   text-align: center;
+  overflow-wrap: break-word;  /* For very long names/emails/strings*/
+}
+
+:host-context([chrome-refresh-2023]) #interceptDialog {
+  padding: 12px 0px 4px;
 }
 
 #product-logo {
@@ -47,7 +52,7 @@
   margin-top: 16px;
   padding: 20px;
   border-radius: 16px;
-  background-color: var(--google-blue-50);
+  background-color: var(--color-chrome-signin-bubble-info-background);
 }
 
 #name {
@@ -64,6 +69,17 @@
 #accept-button,
 #cancel-button {
   width: 100%;
+}
+
+#acceppt-button-content {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host-context([chrome-refresh-2023]) cr-button {
+  color: --color-button-background-tonal;
 }
 
 #cancel-button {
@@ -98,7 +114,10 @@ aria-describedby="contents">
       <div id="button-container">
         <cr-button id="accept-button" class="action-button"
             on-click="onAccept_">
-          [[i18n('chromeSigninAcceptText', interceptionParameters_.givenName)]]
+            <div id="acceppt-button-content">
+              [[i18n('chromeSigninAcceptText',
+                 interceptionParameters_.givenName)]]
+            </div>
         </cr-button>
         <cr-button id="cancel-button" on-click="onCancel_">
           $i18n{chromeSigninDeclineText}

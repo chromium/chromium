@@ -93,7 +93,7 @@ TEST_F(HelpAppDiscoverTabNotificationTest, ClickingNotificationDismissesIt) {
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                       kShowHelpAppDiscoverTabNotificationId,
                                       /*action_index=*/0,
-                                      /*reply=*/absl::nullopt);
+                                      /*reply=*/std::nullopt);
 
   EXPECT_EQ(false, HasDiscoverTabNotification());
 }
@@ -108,7 +108,7 @@ TEST_F(HelpAppDiscoverTabNotificationTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                       kShowHelpAppDiscoverTabNotificationId,
                                       /*action_index=*/0,
-                                      /*reply=*/absl::nullopt);
+                                      /*reply=*/std::nullopt);
 
   EXPECT_EQ(false, HasDiscoverTabNotification());
 }
@@ -122,7 +122,7 @@ TEST_F(HelpAppDiscoverTabNotificationTest, LogsMetricWhenNotificationClicked) {
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                       kShowHelpAppDiscoverTabNotificationId,
                                       /*action_index=*/0,
-                                      /*reply=*/absl::nullopt);
+                                      /*reply=*/std::nullopt);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Discover.DiscoverTabNotification.Clicked"));
 }

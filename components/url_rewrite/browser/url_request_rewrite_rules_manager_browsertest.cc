@@ -21,46 +21,9 @@
 
 namespace url_rewrite {
 
-using ::testing::IsEmpty;
-using ::testing::SizeIs;
-
-// Attaches an inner WebContents to the UrlRequestRewriteRulesManager.
-class InnerWebContentsHandler : public content::WebContentsObserver {
- public:
-  InnerWebContentsHandler(
-      content::WebContents* web_contents,
-      UrlRequestRewriteRulesManager* url_request_rewrite_rules_manager)
-      : content::WebContentsObserver(web_contents),
-        url_request_rewrite_rules_manager_(url_request_rewrite_rules_manager) {}
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // content::WebContentsObserver implementation.
-  void InnerWebContentsCreated(
-      content::WebContents* inner_web_contents) override {
-    CHECK(
-        url_request_rewrite_rules_manager_->AddWebContents(inner_web_contents));
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  raw_ptr<UrlRequestRewriteRulesManager> url_request_rewrite_rules_manager_;
-};
-
 class UrlRequestRewriteRulesManagerBrowserTest
     : public content::ContentBrowserTest {
- public:
  protected:
-  void SetUp() override {
-    // Enable portals to emulate creation of inner WebContents.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
-    ContentBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     base::FilePath root_dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir);
@@ -70,7 +33,6 @@ class UrlRequestRewriteRulesManagerBrowserTest
     ContentBrowserTest::SetUpOnMainThread();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   UrlRequestRewriteRulesManager url_request_rewrite_rules_manager_;
 };
 
@@ -95,8 +57,6 @@ IN_PROC_BROWSER_TEST_F(UrlRequestRewriteRulesManagerBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url));
   navigation_observer.Wait();
 
-  // Verify there were no inner WebContents created, and updaters size is 1.
-  ASSERT_THAT(shell()->web_contents()->GetInnerWebContents(), IsEmpty());
   ASSERT_EQ(url_request_rewrite_rules_manager_.GetUpdatersSizeForTesting(), 1u);
   ASSERT_TRUE(url_request_rewrite_rules_manager_.OnRulesUpdated(
       mojom::UrlRequestRewriteRules::New()));
@@ -104,23 +64,32 @@ IN_PROC_BROWSER_TEST_F(UrlRequestRewriteRulesManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(UrlRequestRewriteRulesManagerBrowserTest,
                        RulesUpdatedWithMultipleWebContents) {
-  ASSERT_TRUE(url_request_rewrite_rules_manager_.AddWebContents(
-      shell()->web_contents()));
+  GURL url = embedded_test_server()->GetURL("/single_web_contents.html");
 
-  // Load an HTML page with portal element. This will results in creation of the
-  // second inner WebContents that is signaled by the
-  // |inner_web_contents_waiter|. As the operation is finished, the 2nd
-  // WebContents will be registered with |url_request_rewrite_rules_manager_|
-  // and rewrite rules' update will be verified.
-  GURL url = embedded_test_server()->GetURL("/multiple_web_contents.html");
-  InnerWebContentsHandler inner_web_contents_waiter(
-      shell()->web_contents(), &url_request_rewrite_rules_manager_);
-  content::TestNavigationObserver navigation_observer(shell()->web_contents());
-  ASSERT_TRUE(NavigateToURL(shell(), url));
-  navigation_observer.Wait();
-  inner_web_contents_waiter.Wait();
+  // Load a URL in two separate contents -- the default, and a second shell.
+  // Both contents should be registered with
+  // |url_request_rewrite_rules_manager_| and rewrite rules' update will be
+  // verified.
 
-  ASSERT_THAT(shell()->web_contents()->GetInnerWebContents(), SizeIs(1));
+  {
+    ASSERT_TRUE(url_request_rewrite_rules_manager_.AddWebContents(
+        shell()->web_contents()));
+    content::TestNavigationObserver navigation_observer(
+        shell()->web_contents());
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    navigation_observer.Wait();
+  }
+
+  {
+    content::TestNavigationObserver navigation_observer(url);
+    navigation_observer.StartWatchingNewWebContents();
+    auto* second_shell = content::Shell::CreateNewWindow(
+        shell()->web_contents()->GetBrowserContext(), url, nullptr, {800, 600});
+    ASSERT_TRUE(url_request_rewrite_rules_manager_.AddWebContents(
+        second_shell->web_contents()));
+    navigation_observer.Wait();
+  }
+
   ASSERT_EQ(url_request_rewrite_rules_manager_.GetUpdatersSizeForTesting(), 2u);
   ASSERT_TRUE(url_request_rewrite_rules_manager_.OnRulesUpdated(
       mojom::UrlRequestRewriteRules::New()));
@@ -142,9 +111,6 @@ IN_PROC_BROWSER_TEST_F(UrlRequestRewriteRulesManagerBrowserTest,
   ASSERT_TRUE(url_request_rewrite_rules_manager_.AddWebContents(
       shell()->web_contents()));
 
-  // Verify there were no inner WebContents created, and updaters size is 1.
-  ASSERT_THAT(shell()->web_contents()->GetInnerWebContents(), IsEmpty());
-  ASSERT_EQ(url_request_rewrite_rules_manager_.GetUpdatersSizeForTesting(), 1u);
   ASSERT_TRUE(url_request_rewrite_rules_manager_.OnRulesUpdated(
       mojom::UrlRequestRewriteRules::New()));
 }

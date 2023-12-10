@@ -2,6 +2,10 @@
   #pairNewDeviceBtn {
     margin-inline-end: 20px;
   }
+
+  :host-context(body.revamp-wayfinding-enabled) #statusIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
 </style>
 <template is="dom-if" if="[[!isSecondaryUser_]]" >
   <div id="bluetoothSummary" class="settings-box two-line first no-padding">

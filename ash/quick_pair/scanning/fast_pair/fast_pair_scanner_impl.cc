@@ -141,7 +141,7 @@ void FastPairScannerImpl::RemoveObserver(FastPairScanner::Observer* observer) {
 
 void FastPairScannerImpl::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
-    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+    std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
   RecordBluetoothLowEnergyScannerStartSessionResult(
       /*success=*/!error_code.has_value());

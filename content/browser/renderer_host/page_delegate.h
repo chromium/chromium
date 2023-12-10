@@ -36,6 +36,10 @@ class PageDelegate {
   // Tells if `page` should be handled as in preview mode.
   virtual bool IsInPreviewMode() const = 0;
 
+  // Notifies `BrowserView` about the resizable boolean having been set vith
+  // `window.setResizable(bool)` API.
+  virtual void OnCanResizeFromWebAPIChanged() = 0;
+
   // Notify the page uses a forbidden powerful API and cannot be shown in
   // preview mode.
   virtual void CancelPreviewByMojoBinderPolicy(

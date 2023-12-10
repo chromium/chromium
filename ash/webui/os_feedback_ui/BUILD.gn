@@ -23,16 +23,12 @@ static_library("os_feedback_ui") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/os_feedback_ui/backend",
     "//ash/webui/os_feedback_ui/mojom",
-    "//ash/webui/resources:os_feedback_resources",
-    "//ash/webui/resources:os_feedback_untrusted_resources",
+    "//ash/webui/os_feedback_ui/resources:resources",
+    "//ash/webui/os_feedback_ui/untrusted_resources:resources",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/resources",
     "//ui/web_dialogs",
     "//ui/webui",
   ]
-}
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
 }

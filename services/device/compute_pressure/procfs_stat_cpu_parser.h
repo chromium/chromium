@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "services/device/compute_pressure/core_times.h"
 
@@ -52,9 +52,9 @@ class ProcfsStatCpuParser {
 
  private:
   // Returns -1 if the line does not include any CPU.
-  static int CoreIdFromLine(base::StringPiece stat_line);
+  static int CoreIdFromLine(std::string_view stat_line);
 
-  static void UpdateCore(base::StringPiece core_line, CoreTimes& core_times);
+  static void UpdateCore(std::string_view core_line, CoreTimes& core_times);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

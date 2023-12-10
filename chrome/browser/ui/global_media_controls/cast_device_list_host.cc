@@ -53,7 +53,7 @@ bool SupportsTabAudioMirroring(media_router::CastModeSet cast_mode,
           icon_type == media_router::SinkIconType::CAST_AUDIO_GROUP);
 }
 
-absl::optional<media_router::MediaCastMode> GetPreferredCastMode(
+std::optional<media_router::MediaCastMode> GetPreferredCastMode(
     media_router::CastModeSet cast_mode,
     media_router::SinkIconType icon_type) {
   if (base::Contains(cast_mode, media_router::MediaCastMode::PRESENTATION)) {
@@ -64,7 +64,7 @@ absl::optional<media_router::MediaCastMode> GetPreferredCastMode(
   } else if (SupportsTabAudioMirroring(cast_mode, icon_type)) {
     return media_router::MediaCastMode::TAB_MIRROR;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 global_media_controls::mojom::DevicePtr CreateDevice(

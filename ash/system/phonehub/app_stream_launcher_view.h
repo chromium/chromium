@@ -68,8 +68,7 @@ class ASH_EXPORT AppStreamLauncherView
       views::Button::PressedCallback callback,
       const gfx::VectorIcon& icon,
       int message_id);
-  void AppIconActivated(phonehub::Notification::AppMetadata app,
-                        const ui::Event& event);
+  void AppIconActivated(phonehub::Notification::AppMetadata app);
 
   // Update the UI based on the information in the data model.
   void UpdateFromDataModel();

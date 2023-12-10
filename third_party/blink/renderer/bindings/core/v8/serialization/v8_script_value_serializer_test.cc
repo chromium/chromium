@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -129,6 +130,7 @@ v8::Local<v8::Value> Eval(const String& source, V8TestingScope& scope) {
 
 String ToJSON(v8::Local<v8::Object> object, const V8TestingScope& scope) {
   return ToBlinkString<String>(
+      scope.GetIsolate(),
       v8::JSON::Stringify(scope.GetContext(), object).ToLocalChecked(),
       kDoNotExternalize);
 }
@@ -157,6 +159,7 @@ testing::AssertionResult HadDOMExceptionInCoreTest(
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripJSONLikeValue) {
+  test::TaskEnvironment task_environment;
   // Ensure that simple JavaScript objects work.
   // There are more exhaustive tests of JavaScript objects in V8.
   V8TestingScope scope;
@@ -170,6 +173,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripJSONLikeValue) {
 }
 
 TEST(V8ScriptValueSerializerTest, ThrowsDataCloneError) {
+  test::TaskEnvironment task_environment;
   // Ensure that a proper DataCloneError DOMException is thrown when issues
   // are encountered in V8 (for example, cloning a symbol). It should be an
   // instance of DOMException, and it should have a proper descriptive
@@ -191,6 +195,7 @@ TEST(V8ScriptValueSerializerTest, ThrowsDataCloneError) {
 }
 
 TEST(V8ScriptValueSerializerTest, RethrowsScriptError) {
+  test::TaskEnvironment task_environment;
   // Ensure that other exceptions, like those thrown by script, are properly
   // rethrown.
   V8TestingScope scope;
@@ -209,6 +214,7 @@ TEST(V8ScriptValueSerializerTest, RethrowsScriptError) {
 }
 
 TEST(V8ScriptValueSerializerTest, DeserializationErrorReturnsNull) {
+  test::TaskEnvironment task_environment;
   // If there's a problem during deserialization, it results in null, but no
   // exception.
   V8TestingScope scope;
@@ -222,6 +228,7 @@ TEST(V8ScriptValueSerializerTest, DeserializationErrorReturnsNull) {
 }
 
 TEST(V8ScriptValueSerializerTest, DetachHappensAfterSerialization) {
+  test::TaskEnvironment task_environment;
   // This object will throw an exception before the [[Transfer]] step.
   // As a result, the ArrayBuffer will not be transferred.
   V8TestingScope scope;
@@ -243,6 +250,7 @@ TEST(V8ScriptValueSerializerTest, DetachHappensAfterSerialization) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMPoint) {
+  test::TaskEnvironment task_environment;
   // DOMPoint objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMPoint* point = DOMPoint::Create(1, 2, 3, 4);
@@ -260,6 +268,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMPoint) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMPoint) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -278,6 +287,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMPoint) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMPointReadOnly) {
+  test::TaskEnvironment task_environment;
   // DOMPointReadOnly objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMPointReadOnly* point = DOMPointReadOnly::Create(1, 2, 3, 4);
@@ -296,6 +306,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMPointReadOnly) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMPointReadOnly) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -315,6 +326,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMPointReadOnly) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMRect) {
+  test::TaskEnvironment task_environment;
   // DOMRect objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMRect* rect = DOMRect::Create(1, 2, 3, 4);
@@ -331,6 +343,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMRect) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMRect) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -349,6 +362,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMRect) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMRectReadOnly) {
+  test::TaskEnvironment task_environment;
   // DOMRectReadOnly objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMRectReadOnly* rect = DOMRectReadOnly::Create(1, 2, 3, 4);
@@ -367,6 +381,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMRectReadOnly) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMRectReadOnly) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -386,6 +401,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMRectReadOnly) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMQuad) {
+  test::TaskEnvironment task_environment;
   // DOMQuad objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMPointInit* pi1 = DOMPointInit::Create();
@@ -438,6 +454,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMQuad) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMQuad) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -476,6 +493,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMQuad) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrix2D) {
+  test::TaskEnvironment task_environment;
   // DOMMatrix objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMMatrixInit* init = DOMMatrixInit::Create();
@@ -504,6 +522,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrix2D) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMMatrix2D) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue({
@@ -531,6 +550,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMMatrix2D) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrixReadOnly2D) {
+  test::TaskEnvironment task_environment;
   // DOMMatrix objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMMatrixInit* init = DOMMatrixInit::Create();
@@ -562,6 +582,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrixReadOnly2D) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMMatrixReadOnly2D) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue({
@@ -590,6 +611,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMMatrixReadOnly2D) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrix) {
+  test::TaskEnvironment task_environment;
   // DOMMatrix objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMMatrixInit* init = DOMMatrixInit::Create();
@@ -638,6 +660,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrix) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMMatrix) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue({
@@ -678,6 +701,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMMatrix) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrixReadOnly) {
+  test::TaskEnvironment task_environment;
   // DOMMatrixReadOnly objects should serialize and deserialize correctly.
   V8TestingScope scope;
   DOMMatrixInit* init = DOMMatrixInit::Create();
@@ -729,6 +753,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrixReadOnly) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMMatrixReadOnly) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue({
@@ -771,6 +796,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMMatrixReadOnly) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
+  test::TaskEnvironment task_environment;
   // ImageData objects should serialize and deserialize correctly.
   V8TestingScope scope;
   ImageData* image_data = ImageData::ValidateAndCreate(
@@ -793,6 +819,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
+  test::TaskEnvironment task_environment;
   // If an ImageData is detached, it can be serialized, but will fail when being
   // deserialized.
   V8TestingScope scope;
@@ -810,6 +837,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
+  test::TaskEnvironment task_environment;
   // ImageData objects with color space information should serialize and
   // deserialize correctly.
   V8TestingScope scope;
@@ -840,6 +868,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageDataV9) {
+  test::TaskEnvironment task_environment;
   // Backward compatibility with existing serialized ImageData objects must be
   // maintained. Add more cases if the format changes; don't remove tests for
   // old versions.
@@ -860,6 +889,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV9) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input =
@@ -878,6 +908,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -900,6 +931,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
 }
 
 TEST(V8ScriptValueSerializerTest, InvalidImageDataDecodeV18) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   {
@@ -926,6 +958,7 @@ MessagePort* MakeMessagePort(ExecutionContext* execution_context,
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripMessagePort) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ::MojoHandle unowned_handle;
@@ -946,6 +979,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripMessagePort) {
 }
 
 TEST(V8ScriptValueSerializerTest, NeuteredMessagePortThrowsDataCloneError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
@@ -964,6 +998,7 @@ TEST(V8ScriptValueSerializerTest, NeuteredMessagePortThrowsDataCloneError) {
 
 TEST(V8ScriptValueSerializerTest,
      UntransferredMessagePortThrowsDataCloneError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
@@ -979,6 +1014,7 @@ TEST(V8ScriptValueSerializerTest,
 }
 
 TEST(V8ScriptValueSerializerTest, OutOfRangeMessagePortIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input =
@@ -1014,6 +1050,7 @@ TEST(V8ScriptValueSerializerTest, OutOfRangeMessagePortIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripMojoHandle) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ContextFeatureSettings::From(
       scope.GetExecutionContext(),
@@ -1037,6 +1074,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripMojoHandle) {
 }
 
 TEST(V8ScriptValueSerializerTest, UntransferredMojoHandleThrowsDataCloneError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
@@ -1058,6 +1096,7 @@ TEST(V8ScriptValueSerializerTest, UntransferredMojoHandleThrowsDataCloneError) {
 
 // A more exhaustive set of ImageBitmap cases are covered by web tests.
 TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Make a 10x7 red ImageBitmap.
@@ -1087,6 +1126,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
 }
 
 TEST(V8ScriptValueSerializerTest, ImageBitmapEXIFImageOrientation) {
+  test::TaskEnvironment task_environment;
   // More complete end-to-end testing is provided by WPT test
   // imagebitmap-replication-exif-orientation.html.
   // The purpose of this complementary test is to get complete code coverage
@@ -1118,6 +1158,7 @@ TEST(V8ScriptValueSerializerTest, ImageBitmapEXIFImageOrientation) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
+  test::TaskEnvironment task_environment;
   sk_sp<SkColorSpace> p3 =
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kDisplayP3);
   V8TestingScope scope;
@@ -1166,6 +1207,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
+  test::TaskEnvironment task_environment;
   // Backward compatibility with existing serialized ImageBitmap objects must be
   // maintained. Add more cases if the format changes; don't remove tests for
   // old versions.
@@ -1206,6 +1248,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1244,6 +1287,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV20WithoutImageOrientation) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue({
@@ -1306,6 +1350,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV20WithoutImageOrientation) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV20WithImageOrientation) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   scoped_refptr<SerializedScriptValue> input = SerializedValue({
@@ -1368,6 +1413,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV20WithImageOrientation) {
 }
 
 TEST(V8ScriptValueSerializerTest, InvalidImageBitmapDecode) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   {
@@ -1405,6 +1451,7 @@ TEST(V8ScriptValueSerializerTest, InvalidImageBitmapDecode) {
 }
 
 TEST(V8ScriptValueSerializerTest, InvalidImageBitmapDecodeV18) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   {
@@ -1483,6 +1530,7 @@ TEST(V8ScriptValueSerializerTest, InvalidImageBitmapDecodeV18) {
 }
 
 TEST(V8ScriptValueSerializerTest, TransferImageBitmap) {
+  test::TaskEnvironment task_environment;
   // More thorough tests exist in web_tests/.
   V8TestingScope scope;
 
@@ -1521,6 +1569,7 @@ TEST(V8ScriptValueSerializerTest, TransferImageBitmap) {
 }
 
 TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
+  test::TaskEnvironment task_environment;
   // More exhaustive tests in web_tests/. This is a sanity check.
   V8TestingScope scope;
   OffscreenCanvas* canvas =
@@ -1541,6 +1590,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const char kHelloWorld[] = "Hello world!";
   Blob* blob =
@@ -1558,6 +1608,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeBlob) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
       {0xff, 0x09, 0x3f, 0x00, 0x62, 0x24, 0x64, 0x38, 0x37, 0x35, 0x64,
@@ -1575,6 +1626,7 @@ TEST(V8ScriptValueSerializerTest, DecodeBlob) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const char kHelloWorld[] = "Hello world!";
   Blob* blob =
@@ -1605,6 +1657,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeBlobIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x69, 0x00});
@@ -1624,6 +1677,7 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeBlobIndexOutOfRange) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x69, 0x01});
@@ -1644,6 +1698,7 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobIndexOutOfRange) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNative) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FileBackedBlobFactoryTestHelper file_factory_helper(
       scope.GetExecutionContext());
@@ -1660,6 +1715,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNative) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileBackedByBlob) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const base::Time kModificationTime = base::Time::UnixEpoch();
   scoped_refptr<BlobDataHandle> blob_data_handle = BlobDataHandle::Create();
@@ -1675,6 +1731,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileBackedByBlob) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FileMetadata metadata;
   metadata.platform_path = "/native/snapshot";
@@ -1692,6 +1749,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNonNativeSnapshot) {
+  test::TaskEnvironment task_environment;
   // Preserving behavior, filesystem URL is not preserved across cloning.
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   V8TestingScope scope;
@@ -1728,6 +1786,7 @@ class TimeIntervalChecker {
 };
 
 TEST(V8ScriptValueSerializerTest, DecodeFileV3) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TimeIntervalChecker time_interval_checker;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1750,6 +1809,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV3) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileV4) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TimeIntervalChecker time_interval_checker;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1775,6 +1835,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV4) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileV4WithSnapshot) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
       {0xff, 0x04, 0x3f, 0x00, 0x66, 0x04, 'p', 'a',  't',  'h',  0x04, 'n',
@@ -1803,6 +1864,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV4WithSnapshot) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileV7) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TimeIntervalChecker time_interval_checker;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1828,6 +1890,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV7) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
       {0xff, 0x08, 0x3f, 0x00, 0x66, 0x04, 'p',  'a',  't',  'h',  0x04, 'n',
@@ -1858,6 +1921,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FileBackedBlobFactoryTestHelper file_factory_helper(
       scope.GetExecutionContext());
@@ -1889,6 +1953,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x65, 0x00});
@@ -1909,6 +1974,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileIndexOutOfRange) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x65, 0x01});
@@ -1932,6 +1998,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileIndexOutOfRange) {
 // fairly basic.
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileList) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FileBackedBlobFactoryTestHelper file_factory_helper(
       scope.GetExecutionContext());
@@ -1951,6 +2018,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileList) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeEmptyFileList) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x6c, 0x00});
@@ -1962,6 +2030,7 @@ TEST(V8ScriptValueSerializerTest, DecodeEmptyFileList) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileListWithInvalidLength) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x6c, 0x01});
@@ -1971,6 +2040,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListWithInvalidLength) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileListV8WithoutSnapshot) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TimeIntervalChecker time_interval_checker;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1998,6 +2068,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListV8WithoutSnapshot) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileListIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FileBackedBlobFactoryTestHelper file_factory_helper(
       scope.GetExecutionContext());
@@ -2031,6 +2102,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileListIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeEmptyFileListIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x4c, 0x00});
@@ -2046,6 +2118,7 @@ TEST(V8ScriptValueSerializerTest, DecodeEmptyFileListIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileListIndexWithInvalidLength) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x4c, 0x02});
@@ -2059,6 +2132,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListIndexWithInvalidLength) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileListIndex) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x4c, 0x01, 0x00, 0x00});
@@ -2080,6 +2154,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListIndex) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeHardcodedNullValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_TRUE(V8ScriptValueDeserializer(scope.GetScriptState(),
                                         SerializedScriptValue::NullValue())
@@ -2091,6 +2166,7 @@ TEST(V8ScriptValueSerializerTest, DecodeHardcodedNullValue) {
 // technically admissible. We should handle this in a consistent way to avoid
 // DCHECK failure. Thus this is "true" encoded slightly strangely.
 TEST(V8ScriptValueSerializerTest, DecodeWithInefficientVersionEnvelope) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x90, 0x00, 0xff, 0x09, 0x54});
@@ -2103,6 +2179,7 @@ TEST(V8ScriptValueSerializerTest, DecodeWithInefficientVersionEnvelope) {
 // Sanity check for transferring ReadableStreams. This is mostly tested via
 // web tests.
 TEST(V8ScriptValueSerializerTest, RoundTripReadableStream) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto* script_state = scope.GetScriptState();
@@ -2124,6 +2201,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripReadableStream) {
 }
 
 TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto* script_state = scope.GetScriptState();
@@ -2179,6 +2257,7 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripDOMException) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMException* exception =
       DOMException::Create("message", "InvalidStateError");
@@ -2195,6 +2274,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMException) {
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeDOMExceptionWithInvalidNameString) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
       {0xff, 0x13, 0xff, 0x0d, 0x5c, 0x78, 0x01, 0xff, 0x00, 0x00});
@@ -2204,6 +2284,7 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMExceptionWithInvalidNameString) {
 }
 
 TEST(V8ScriptValueSerializerTest, NoSharedValueConveyor) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x14, 0xff, 0x0f, 'p', 0x00});
@@ -2213,6 +2294,7 @@ TEST(V8ScriptValueSerializerTest, NoSharedValueConveyor) {
 }
 
 TEST(V8ScriptValueSerializerTest, CanDeserializeIn_OldValues) {
+  test::TaskEnvironment task_environment;
   // This is `true` serialized in version 9. It should still return true from
   // CanDeserializeIn.
   V8TestingScope scope;
@@ -2224,6 +2306,7 @@ TEST(V8ScriptValueSerializerTest, CanDeserializeIn_OldValues) {
 // TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for
 // `features::kSSVTrailerWriteNewVersion.
 TEST(V8ScriptValueSerializerTest, SSVTrailerWriteNewVersionDisabled) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(features::kSSVTrailerWriteNewVersion);
   V8TestingScope scope;
@@ -2241,6 +2324,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerWriteNewVersionDisabled) {
 // TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for
 // `features::kSSVTrailerWriteExposureAssertion`.
 TEST(V8ScriptValueSerializerTest, SSVTrailerWriteExposureAssertionDisabled) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(
       features::kSSVTrailerWriteExposureAssertion);
@@ -2264,6 +2348,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerWriteExposureAssertionDisabled) {
 // TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for
 // `features::kSSVTrailerWriteExposureAssertion`.
 TEST(V8ScriptValueSerializerTest, SSVTrailerEnforceExposureAssertionDisabled) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(
       features::kSSVTrailerEnforceExposureAssertion);
@@ -2296,6 +2381,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerEnforceExposureAssertionDisabled) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
+  test::TaskEnvironment task_environment;
   ScopedFencedFramesForTest fenced_frames(true);
   V8TestingScope scope;
   FencedFrameConfig* config = FencedFrameConfig::Create(
@@ -2327,6 +2413,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
+  test::TaskEnvironment task_environment;
   ScopedFencedFramesForTest fenced_frames(true);
   V8TestingScope scope;
   FencedFrameConfig* config = FencedFrameConfig::Create(g_empty_string);

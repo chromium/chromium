@@ -6,6 +6,7 @@
 
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -141,7 +142,8 @@ bool StructTraits<media_router::mojom::CastMediaSinkDataView,
   if (!data.ReadModelName(&out->model_name))
     return false;
 
-  out->capabilities = data.capabilities();
+  out->capabilities = cast_channel::CastDeviceCapabilitySet::FromEnumBitmask(
+      data.capabilities());
   out->cast_channel_id = data.cast_channel_id();
 
   return true;

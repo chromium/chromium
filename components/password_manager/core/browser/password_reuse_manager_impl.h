@@ -6,21 +6,25 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
 class PasswordReuseManagerImpl : public PasswordReuseManager,
                                  public PasswordStoreConsumer,
-                                 public PasswordStoreInterface::Observer {
+                                 public PasswordStoreInterface::Observer,
+                                 public signin::IdentityManager::Observer {
  public:
   PasswordReuseManagerImpl();
   ~PasswordReuseManagerImpl() override;
@@ -38,7 +42,10 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // Implements PasswordReuseManager interface.
   void Init(PrefService* prefs,
             PasswordStoreInterface* profile_store,
-            PasswordStoreInterface* account_store) override;
+            PasswordStoreInterface* account_store,
+            signin::IdentityManager* identity_manager = nullptr,
+            std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate =
+                nullptr) override;
   void ReportMetrics(const std::string& username,
                      bool is_under_advanced_protection) override;
   void CheckReuse(const std::u16string& input,
@@ -69,7 +76,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // Schedules the update of password hashes used by reuse detector.
   // |sign_in_state_for_metrics|, if not nullopt, is used for metrics only.
   void SchedulePasswordHashUpdate(
-      absl::optional<metrics_util::SignInState> sign_in_state_for_metrics);
+      std::optional<metrics_util::SignInState> sign_in_state_for_metrics);
 
   // Executed deferred on Android in order avoid high startup latencies.
   void RequestLoginsFromStores();
@@ -85,6 +92,10 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void OnLoginsRetained(
       PasswordStoreInterface* store,
       const std::vector<PasswordForm>& retained_passwords) override;
+
+  // Implements signin::IdentityManager::Observer.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // Saves |username| and a hash of |password| for password reuse checking.
   // |is_gaia_password| indicates if it is a Gaia account. |event| is used for
@@ -114,6 +125,10 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   scoped_refptr<PasswordStoreInterface> profile_store_;
 
   scoped_refptr<PasswordStoreInterface> account_store_;
+
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate_;
 
   // Return value of PasswordStoreInterface::AddSyncEnabledOrDisabledCallback().
   base::CallbackListSubscription account_store_cb_list_subscription_;

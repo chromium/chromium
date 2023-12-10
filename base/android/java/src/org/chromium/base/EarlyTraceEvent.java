@@ -78,10 +78,8 @@ public class EarlyTraceEvent {
     // - disable(): ENABLED -> FINISHED
     @VisibleForTesting static final int STATE_DISABLED = 0;
     @VisibleForTesting static final int STATE_ENABLED = 1;
-    @VisibleForTesting
-    static final int STATE_FINISHED = 2;
-    @VisibleForTesting
-    static volatile int sState = STATE_DISABLED;
+    @VisibleForTesting static final int STATE_FINISHED = 2;
+    @VisibleForTesting static volatile int sState = STATE_DISABLED;
 
     // In child processes the CommandLine is not available immediately, so early tracing is enabled
     // unconditionally in Chrome. This flag allows not to enable early tracing twice in this case.
@@ -108,13 +106,13 @@ public class EarlyTraceEvent {
     public static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH = "trace-early-java-in-child";
 
     // Protects the fields below.
-    @VisibleForTesting
-    static final Object sLock = new Object();
+    @VisibleForTesting static final Object sLock = new Object();
 
     // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")
     @VisibleForTesting
     static List<Event> sEvents;
+
     @GuardedBy("sLock")
     @VisibleForTesting
     static List<AsyncEvent> sAsyncEvents;
@@ -123,7 +121,7 @@ public class EarlyTraceEvent {
     static void maybeEnableInBrowserProcess() {
         ThreadUtils.assertOnUiThread();
         assert !sEnabledInChildProcessBeforeCommandLine
-            : "Should not have been initialized in a child process";
+                : "Should not have been initialized in a child process";
         if (sState != STATE_DISABLED) return;
         boolean shouldEnable = false;
         // Checking for the trace config filename touches the disk.
@@ -138,8 +136,8 @@ public class EarlyTraceEvent {
                     // Access denied, not enabled.
                 }
             }
-            if (ContextUtils.getAppSharedPreferences().getBoolean(
-                        BACKGROUND_STARTUP_TRACING_ENABLED_KEY, false)) {
+            if (ContextUtils.getAppSharedPreferences()
+                    .getBoolean(BACKGROUND_STARTUP_TRACING_ENABLED_KEY, false)) {
                 if (shouldEnable) {
                     // If user has enabled tracing, then force disable background tracing for this
                     // session.
@@ -156,9 +154,7 @@ public class EarlyTraceEvent {
         if (shouldEnable) enable();
     }
 
-    /**
-     * Enables early tracing in child processes before CommandLine arrives there.
-     */
+    /** Enables early tracing in child processes before CommandLine arrives there. */
     public static void earlyEnableInChildWithoutCommandLine() {
         sEnabledInChildProcessBeforeCommandLine = true;
         assert sState == STATE_DISABLED;
@@ -219,9 +215,7 @@ public class EarlyTraceEvent {
         }
     }
 
-    /**
-     * Stops early tracing without flushing the buffered events.
-     */
+    /** Stops early tracing without flushing the buffered events. */
     @VisibleForTesting
     static void reset() {
         synchronized (sLock) {
@@ -235,9 +229,7 @@ public class EarlyTraceEvent {
         return sState == STATE_ENABLED;
     }
 
-    /**
-     * Sets the background startup tracing enabled in app preferences for next startup.
-     */
+    /** Sets the background startup tracing enabled in app preferences for next startup. */
     @CalledByNative
     static void setBackgroundStartupTracingFlag(boolean enabled) {
         // Setting preferences might cause a disk write
@@ -265,7 +257,7 @@ public class EarlyTraceEvent {
         // begin() and end() are going to be called once per TraceEvent, this avoids entering a
         // synchronized block at each and every call.
         if (!enabled()) return;
-        Event event = new Event(name, true /*isStart*/, isToplevel);
+        Event event = new Event(name, /* isStart= */ true, isToplevel);
         synchronized (sLock) {
             if (!enabled()) return;
             sEvents.add(event);
@@ -275,7 +267,7 @@ public class EarlyTraceEvent {
     /** @see TraceEvent#end */
     public static void end(String name, boolean isToplevel) {
         if (!enabled()) return;
-        Event event = new Event(name, false /*isStart*/, isToplevel);
+        Event event = new Event(name, /* isStart= */ false, isToplevel);
         synchronized (sLock) {
             if (!enabled()) return;
             sEvents.add(event);
@@ -285,7 +277,7 @@ public class EarlyTraceEvent {
     /** @see TraceEvent#startAsync */
     public static void startAsync(String name, long id) {
         if (!enabled()) return;
-        AsyncEvent event = new AsyncEvent(name, id, true /*isStart*/);
+        AsyncEvent event = new AsyncEvent(name, id, /* isStart= */ true);
         synchronized (sLock) {
             if (!enabled()) return;
             sAsyncEvents.add(event);
@@ -295,7 +287,7 @@ public class EarlyTraceEvent {
     /** @see TraceEvent#finishAsync */
     public static void finishAsync(String name, long id) {
         if (!enabled()) return;
-        AsyncEvent event = new AsyncEvent(name, id, false /*isStart*/);
+        AsyncEvent event = new AsyncEvent(name, id, /* isStart= */ false);
         synchronized (sLock) {
             if (!enabled()) return;
             sAsyncEvents.add(event);
@@ -318,19 +310,23 @@ public class EarlyTraceEvent {
         for (Event e : events) {
             if (e.mIsStart) {
                 if (e.mIsToplevel) {
-                    EarlyTraceEventJni.get().recordEarlyToplevelBeginEvent(
-                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                    EarlyTraceEventJni.get()
+                            .recordEarlyToplevelBeginEvent(
+                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 } else {
-                    EarlyTraceEventJni.get().recordEarlyBeginEvent(
-                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                    EarlyTraceEventJni.get()
+                            .recordEarlyBeginEvent(
+                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 }
             } else {
                 if (e.mIsToplevel) {
-                    EarlyTraceEventJni.get().recordEarlyToplevelEndEvent(
-                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                    EarlyTraceEventJni.get()
+                            .recordEarlyToplevelEndEvent(
+                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 } else {
-                    EarlyTraceEventJni.get().recordEarlyEndEvent(
-                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                    EarlyTraceEventJni.get()
+                            .recordEarlyEndEvent(
+                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 }
             }
         }
@@ -349,12 +345,17 @@ public class EarlyTraceEvent {
     @NativeMethods
     interface Natives {
         void recordEarlyBeginEvent(String name, long timeNanos, int threadId, long threadMillis);
+
         void recordEarlyEndEvent(String name, long timeNanos, int threadId, long threadMillis);
+
         void recordEarlyToplevelBeginEvent(
                 String name, long timeNanos, int threadId, long threadMillis);
+
         void recordEarlyToplevelEndEvent(
                 String name, long timeNanos, int threadId, long threadMillis);
+
         void recordEarlyAsyncBeginEvent(String name, long id, long timeNanos);
+
         void recordEarlyAsyncEndEvent(long id, long timeNanos);
     }
 }

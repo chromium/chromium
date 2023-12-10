@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -74,7 +74,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
-  void IsTeacherRoleActive(IsRoleEnabledCallback callback) override;
   void GetTeacherAssignmentsWithApproachingDueDate(
       GetAssignmentsCallback callback) override;
   void GetTeacherAssignmentsRecentlyDue(
@@ -431,7 +430,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // always returns true - the return value is bool for consistency with
   // `GetFilteredTeacherAssignments()`.
   bool GetFilteredStudentAssignments(
-      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+      base::RepeatingCallback<bool(const std::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
@@ -456,7 +455,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // callbask was delayed to refresh submissions state of a subset of filtered
   // assignments.
   bool GetFilteredTeacherAssignments(
-      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+      base::RepeatingCallback<bool(const std::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,

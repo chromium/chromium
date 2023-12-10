@@ -18,6 +18,8 @@ class ArcOptInPreferenceHandler;
 
 namespace ash {
 
+class ScopedSessionRefresher;
+
 // Controller for the consolidated consent screen.
 class ConsolidatedConsentScreen
     : public BaseScreen,
@@ -128,7 +130,7 @@ class ConsolidatedConsentScreen
   // Updates the state of the metrics toggle.
   void UpdateMetricsMode(bool enabled, bool managed);
 
-  absl::optional<bool> is_owner_;
+  std::optional<bool> is_owner_;
 
   bool is_child_account_ = false;
 
@@ -137,6 +139,9 @@ class ConsolidatedConsentScreen
   bool location_services_managed_ = false;
 
   base::ObserverList<Observer, true> observer_list_;
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
 

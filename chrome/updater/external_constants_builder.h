@@ -5,12 +5,12 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_BUILDER_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_BUILDER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -75,7 +75,7 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& ClearIdleCheckPeriod();
 
   ExternalConstantsBuilder& SetMachineManaged(
-      const absl::optional<bool>& is_managed_device);
+      const std::optional<bool>& is_managed_device);
   ExternalConstantsBuilder& ClearMachineManaged();
 
   ExternalConstantsBuilder& SetEnableDiffUpdates(bool enable_diffs);

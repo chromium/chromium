@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+Testing.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -19,30 +20,25 @@
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/default_search_manager.h"
-#import "components/search_engines/template_url.h"
-#import "components/search_engines/template_url_service.h"
+#import "components/search/search.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/discover_feed/feed_model_configuration.h"
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
-#import "ios/chrome/browser/follow/followed_web_site.h"
-#import "ios/chrome/browser/follow/followed_web_site_state.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_state.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_model_configuration.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/follow/model/followed_web_site.h"
+#import "ios/chrome/browser/follow/model/followed_web_site_state.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -60,14 +56,14 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
@@ -76,6 +72,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_manage_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
@@ -95,7 +92,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
@@ -120,6 +116,7 @@
                                      AuthenticationServiceObserving,
                                      BooleanObserver,
                                      ContentSuggestionsDelegate,
+                                     DiscoverFeedManageDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
                                      FeedControlDelegate,
@@ -285,8 +282,7 @@
   DCHECK(NewTabPageTabHelper::FromWebState(self.webState)->IsActive());
 
   // Start observing SceneState changes.
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [sceneState addObserver:self];
 
   // Configures incognito NTP if user is in incognito mode.
@@ -341,8 +337,7 @@
 
   _webState = nullptr;
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
 
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
@@ -369,7 +364,7 @@
   self.containedViewController = nil;
   [self.NTPViewController invalidate];
   self.NTPViewController = nil;
-  self.feedHeaderViewController.ntpDelegate = nil;
+  self.feedHeaderViewController.NTPDelegate = nil;
   self.feedHeaderViewController = nil;
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
@@ -602,7 +597,8 @@
       self.componentFactory;
   self.logoVendor = ios::provider::CreateLogoVendor(browser, self.webState);
   self.NTPViewController = [componentFactory NTPViewController];
-  self.headerViewController = [componentFactory headerViewController];
+  self.headerViewController =
+      [componentFactory headerViewControllerForBrowser:browser];
   self.NTPMediator =
       [componentFactory NTPMediatorForBrowser:browser
                      identityDiscImageUpdater:self.headerViewController];
@@ -642,7 +638,7 @@
   }
 
   self.feedHeaderViewController.feedControlDelegate = self;
-  self.feedHeaderViewController.ntpDelegate = self;
+  self.feedHeaderViewController.NTPDelegate = self;
   self.feedHeaderViewController.feedMetricsRecorder = self.feedMetricsRecorder;
   if (!IsFollowUIUpdateEnabled()) {
     self.feedHeaderViewController.followingFeedSortType =
@@ -703,6 +699,7 @@
   self.contentSuggestionsCoordinator.NTPDelegate = self;
   self.contentSuggestionsCoordinator.delegate = self;
   self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
+  self.contentSuggestionsCoordinator.NTPViewDelegate = self.NTPViewController;
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -856,6 +853,12 @@
       [self.NTPMediator handleFeedLearnMoreTapped];
       break;
   }
+}
+
+#pragma mark - DiscoverFeedManageDelegate
+
+- (void)didTapDiscoverFeedManage {
+  [self handleFeedManageTapped];
 }
 
 #pragma mark - DiscoverFeedPreviewDelegate
@@ -1176,14 +1179,7 @@
 }
 
 - (BOOL)isGoogleDefaultSearchEngine {
-  DCHECK(self.templateURLService);
-  const TemplateURL* defaultURL =
-      self.templateURLService->GetDefaultSearchProvider();
-  BOOL isGoogleDefaultSearchProvider =
-      defaultURL &&
-      defaultURL->GetEngineType(self.templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE;
-  return isGoogleDefaultSearchProvider;
+  return search::DefaultSearchProviderIsGoogle(self.templateURLService);
 }
 
 - (BOOL)isStartSurface {
@@ -1526,6 +1522,7 @@
   viewControllerConfig.browser = self.browser;
   viewControllerConfig.scrollDelegate = self.NTPViewController;
   viewControllerConfig.previewDelegate = self;
+  viewControllerConfig.manageDelegate = self;
   viewControllerConfig.signInPromoDelegate = self;
 
   return viewControllerConfig;
@@ -1572,7 +1569,7 @@
       [[FeedTopSectionCoordinator alloc]
           initWithBaseViewController:self.NTPViewController
                              browser:self.browser];
-  feedTopSectionCoordinator.ntpDelegate = self;
+  feedTopSectionCoordinator.NTPDelegate = self;
   [feedTopSectionCoordinator start];
   return feedTopSectionCoordinator;
 }

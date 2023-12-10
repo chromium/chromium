@@ -5,7 +5,10 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/activation_code_page.js';
 
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -29,6 +32,8 @@ suite('CrComponentsActivationCodePageTest', function() {
   /** @type {function(Function, number)} */
   let intervalFunction = null;
 
+  let networkConfigRemote;
+
   function flushAsync() {
     flush();
     // Use setTimeout to wait for the next macrotask.
@@ -49,6 +54,16 @@ suite('CrComponentsActivationCodePageTest', function() {
   function stopStreamFunction(stream) {}
 
   setup(async function() {
+    networkConfigRemote = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
+    loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
+    networkConfigRemote.setDeviceStateForTest({
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      isCarrierLocked: true,
+    });
+    await flushAsync();
+
     activationCodePage = document.createElement('activation-code-page');
     await activationCodePage.setFakesForTesting(
         FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
@@ -611,4 +626,35 @@ suite('CrComponentsActivationCodePageTest', function() {
         activationCodeUpdatedEvent.detail.activationCode,
         ACTIVATION_CODE_VALID);
   });
+
+  test('check carrier lock warning', async function() {
+    assertTrue(!!activationCodePage.$$('#carrierLockWarningContainer'));
+  });
+
+  test(
+      'check carrier lock warning not displayed for consumer devices',
+      async function() {
+        networkConfigRemote.setDeviceStateForTest({
+          type: NetworkType.kCellular,
+          deviceState: DeviceStateType.kEnabled,
+          isCarrierLocked: false,
+        });
+        await flushAsync();
+        const page = document.createElement('activation-code-page');
+        assertFalse(!!page.$$('#carrierLockWarningContainer'));
+      });
+
+  test(
+      'check carrier lock warning not displayed with feature flag disabled',
+      async function() {
+        loadTimeData.overrideValues({'isCellularCarrierLockEnabled': false});
+        networkConfigRemote.setDeviceStateForTest({
+          type: NetworkType.kCellular,
+          deviceState: DeviceStateType.kEnabled,
+          isCarrierLocked: true,
+        });
+        await flushAsync();
+        const page = document.createElement('activation-code-page');
+        assertFalse(!!page.$$('#carrierLockWarningContainer'));
+      });
 });

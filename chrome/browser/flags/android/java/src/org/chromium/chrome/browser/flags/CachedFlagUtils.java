@@ -12,18 +12,14 @@ import java.util.List;
  * TODO(crbug.com/1442347): Rename this to CachedFlagUtils.
  */
 public class CachedFlagUtils {
-    /**
-     * Caches flags that must take effect on startup but are set via native code.
-     */
+    /** Caches flags that must take effect on startup but are set via native code. */
     public static void cacheNativeFlags(List<CachedFlag> featuresToCache) {
         for (CachedFlag feature : featuresToCache) {
             feature.cacheFeature();
         }
     }
 
-    /**
-     * Caches flags that must take effect on startup but are set via native code.
-     */
+    /** Caches flags that must take effect on startup but are set via native code. */
     public static void cacheFieldTrialParameters(List<CachedFieldTrialParameter> parameters) {
         for (CachedFieldTrialParameter parameter : parameters) {
             parameter.cacheToDisk();

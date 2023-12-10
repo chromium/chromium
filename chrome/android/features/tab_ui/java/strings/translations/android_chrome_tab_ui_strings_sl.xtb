@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1075622780330595106">Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
+<translation id="1155815720264022949">Želite zapreti stare zavihke?</translation>
 <translation id="1215127405478249895">Pregled zavihkov</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Skrij celozaslonsko mrežo</translation>
 <translation id="5076161749301278626">Si želite ogledati mnenja o trgovini?</translation>
 <translation id="5082793167783849073">Hitro primerjate strani tako, da ustvarite skupino. Če želite začeti, se dotaknite povezave in jo pridržite.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> zavihek, ki ga nedavno niste uporabljali}one{Imate <ph name="TABS_COUNT_MANY" /> zavihek, ki jih nedavno niste uporabljali}two{Imate <ph name="TABS_COUNT_MANY" /> zavihka, ki ju nedavno niste uporabljali}few{Imate <ph name="TABS_COUNT_MANY" /> zavihke, ki jih nedavno niste uporabljali}other{Imate <ph name="TABS_COUNT_MANY" /> zavihkov, ki jih nedavno niste uporabljali}}</translation>
 <translation id="5339733443032484186">Zadnji zavihek</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
+<translation id="5545379293264651575">Zapri brez pregleda</translation>
 <translation id="5556417849629758491">Ogled podatkov o trgovini, možnosti so na voljo pri vrhu zaslona</translation>
 <translation id="5558362125926932819">Zapri skupino zavihkov s toliko zavihki: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Št. združenih zavihkov: <ph name="TAB_COUNT" /></translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Premakni zavihek v desno</translation>
 <translation id="7966321538264951561">Opustitev predlogov.</translation>
 <translation id="8029301326595421733">Informacije o tej trgovini, odprte pri polni višini.</translation>
-<translation id="814503310257431685">Prikaži vse</translation>
 <translation id="8205266828577616993">Premakni zavihek navzgor</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega zavihka}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega zavihka}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

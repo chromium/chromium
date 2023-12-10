@@ -66,6 +66,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -138,13 +139,9 @@ gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
       -ash::ShelfConfig::Get()->status_area_hit_region_padding();
 
   if (is_shelf_horizontal) {
-    insets =
-        gfx::Insets::TLBR(secondary_padding, primary_padding, secondary_padding,
-                          primary_padding + ash::kTraySeparatorWidth);
+    insets = gfx::Insets::VH(secondary_padding, primary_padding);
   } else {
-    insets = gfx::Insets::TLBR(primary_padding, secondary_padding,
-                               primary_padding + ash::kTraySeparatorWidth,
-                               secondary_padding);
+    insets = gfx::Insets::VH(primary_padding, secondary_padding);
   }
   MirrorInsetsIfNecessary(&insets);
   return insets;
@@ -170,7 +167,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
 
   // HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds(tray_background_view_->GetBackgroundBounds());
     bounds.Inset(gfx::InsetsF(insets_));
     return gfx::RRectF(bounds, tray_background_view_->GetRoundedCorners());
@@ -182,6 +179,19 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
 };
 
 }  // namespace
+
+TrayBackgroundView::TrayButtonControllerDelegate::TrayButtonControllerDelegate(
+    views::Button* button,
+    TrayBackgroundViewCatalogName catalogue_name)
+    : views::Button::DefaultButtonControllerDelegate(button),
+      catalog_name_(catalogue_name) {}
+
+void TrayBackgroundView::TrayButtonControllerDelegate::NotifyClick(
+    const ui::Event& event) {
+  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
+                                catalog_name_);
+  DefaultButtonControllerDelegate::NotifyClick(event);
+}
 
 // Used to track when the anchor widget changes position on screen so that the
 // bubble position can be updated.
@@ -264,6 +274,9 @@ TrayBackgroundView::TrayBackgroundView(
       handler_(new TrayBackgroundViewSessionChangeHandler(this)),
       should_close_bubble_on_lock_state_change_(true) {
   DCHECK(shelf_);
+  SetButtonController(std::make_unique<views::ButtonController>(
+      this,
+      std::make_unique<TrayButtonControllerDelegate>(this, catalog_name)));
   SetNotifyEnterExitOnChild(true);
 
   // Override the settings of inkdrop ripple only since others like Highlight
@@ -614,12 +627,6 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
   }
 
   return views::View::RecreateLayer();
-}
-
-void TrayBackgroundView::NotifyClick(const ui::Event& event) {
-  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
-                                catalog_name_);
-  views::Button::NotifyClick(event);
 }
 
 void TrayBackgroundView::OnThemeChanged() {

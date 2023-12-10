@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/time.h"
@@ -58,7 +59,8 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
       // 2. Reflection, thus should be ignored.
       // 3. Update without a client tag hash (including permanent nodes, which
       // have server tags instead).
-      // 4. Remote creation containing invalid data according to the bridge.
+      // 4. Remote creation or update containing invalid data according to the
+      // bridge.
       continue;
     }
 
@@ -161,6 +163,18 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
+  // TODO(crbug.com/1409462): Remove the storage key check as storage keys
+  // should not be empty after IsEntityDataValid() has been implemented by all
+  // bridges.
+  if (!data.is_deleted() && (!bridge_->IsEntityDataValid(data) ||
+                             (bridge_->SupportsGetStorageKey() &&
+                              bridge_->GetStorageKey(data).empty()))) {
+    DLOG(WARNING) << "Received invalid remote update."
+                  << " client_tag_hash: " << client_tag_hash << " for "
+                  << ModelTypeToDebugString(type_);
+    return nullptr;
+  }
+
   // Cache update encryption_key_name and is_deleted in case |update| will be
   // moved away into ResolveConflict().
   const std::string update_encryption_key_name = update.encryption_key_name;
@@ -169,13 +183,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     // Remote creation.
     DCHECK(!data.is_deleted());
     entity = CreateEntity(update);
-    // |entity| is null in case remote creation is invalid.
-    if (!entity) {
-      DLOG(WARNING) << "Received invalid remote creation."
-                    << " client_tag_hash: " << client_tag_hash << " for "
-                    << ModelTypeToDebugString(type_);
-      return nullptr;
-    }
+    CHECK(entity);
     entity_changes->push_back(EntityChange::CreateAdd(
         entity->storage_key(), std::move(update.entity)));
   } else if (entity->IsUnsynced()) {
@@ -307,9 +315,7 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
 
 ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
     const UpdateResponseData& update) {
-  if (!bridge_->IsEntityDataValid(update.entity)) {
-    return nullptr;
-  }
+  CHECK(bridge_->IsEntityDataValid(update.entity));
   DCHECK(!update.entity.client_tag_hash.value().empty());
   if (bridge_->SupportsGetClientTag()) {
     DCHECK_EQ(update.entity.client_tag_hash,
@@ -319,11 +325,8 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
   std::string storage_key;
   if (bridge_->SupportsGetStorageKey()) {
     storage_key = bridge_->GetStorageKey(update.entity);
-    // TODO(crbug.com/1057947): Remove this as storage keys should not be
-    // empty after ValidateRemoteUpdate() has been implemented by all bridges.
-    if (storage_key.empty()) {
-      return nullptr;
-    }
+    // If the storage key was empty, CreateEntity() won't be reached.
+    CHECK(!storage_key.empty());
   }
   return entity_tracker_->AddRemote(
       storage_key, update,

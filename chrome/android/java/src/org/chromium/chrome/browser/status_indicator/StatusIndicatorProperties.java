@@ -53,7 +53,17 @@ class StatusIndicatorProperties {
     static final PropertyModel.WritableBooleanPropertyKey IS_OBSCURED =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {STATUS_TEXT, STATUS_ICON,
-            ANDROID_VIEW_VISIBILITY, COMPOSITED_VIEW_VISIBLE, BACKGROUND_COLOR, TEXT_ALPHA,
-            TEXT_COLOR, ICON_TINT, CURRENT_VISIBLE_HEIGHT, IS_OBSCURED};
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                STATUS_TEXT,
+                STATUS_ICON,
+                ANDROID_VIEW_VISIBILITY,
+                COMPOSITED_VIEW_VISIBLE,
+                BACKGROUND_COLOR,
+                TEXT_ALPHA,
+                TEXT_COLOR,
+                ICON_TINT,
+                CURRENT_VISIBLE_HEIGHT,
+                IS_OBSCURED
+            };
 }

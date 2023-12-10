@@ -16,11 +16,6 @@ found in the LICENSE file.
         android:title="@string/allow_chrome_signin_title"
         android:summary="@string/allow_chrome_signin_summary"
         android:persistent="false"/>
-    <!-- Only shown when metrics-settings-android flag is on. -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="metrics_settings"
-        android:title="@string/manage_metrics_settings"
-        android:fragment="org.chromium.chrome.browser.metrics_settings.MetricsSettingsFragment"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="usage_and_crash_reports"
         android:title="@string/usage_and_crash_reports_title"

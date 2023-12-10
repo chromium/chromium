@@ -85,6 +85,27 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         },
       },
 
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              googleDrive: 'os-settings:google-drive-revamp',
+              ms365: 'os-settings:ms365',
+              oneDrive: 'settings20:onedrive',
+              smbShares: 'os-settings:folder-shared',
+            };
+          }
+
+          return {
+            googleDrive: 'os-settings:google-drive',
+            ms365: '',
+            oneDrive: 'settings20:onedrive',
+            smbShares: '',
+          };
+        },
+      },
+
       shouldShowGoogleDriveSettings_: {
         type: Boolean,
         value: () => {
@@ -128,10 +149,11 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   private bulkPinningPrefEnabled_: boolean;
   private driveDisabled_: boolean;
   private isBulkPinningEnabled_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
+  private readonly isRevampWayfindingEnabled_: boolean;
   private oneDriveBrowserProxy_: OneDriveBrowserProxy|undefined;
   private oneDriveConnectionState_: OneDriveConnectionState;
   private oneDriveEmailAddress_: string|null;
+  private rowIcons_: Record<string, string>;
   private smbBrowserProxy_: SmbBrowserProxy;
   private shouldShowAddSmbButton_: boolean;
   private shouldShowAddSmbDialog_: boolean;

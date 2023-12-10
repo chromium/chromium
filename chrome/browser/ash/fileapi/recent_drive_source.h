@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_DRIVE_SOURCE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -31,7 +31,7 @@ class RecentFile;
 // TODO(nya): Write unit tests.
 class RecentDriveSource : public RecentSource {
  public:
-  explicit RecentDriveSource(Profile* profile);
+  RecentDriveSource(Profile* profile, size_t max_files);
 
   RecentDriveSource(const RecentDriveSource&) = delete;
   RecentDriveSource& operator=(const RecentDriveSource&) = delete;
@@ -39,7 +39,7 @@ class RecentDriveSource : public RecentSource {
   ~RecentDriveSource() override;
 
   // RecentSource overrides:
-  void GetRecentFiles(Params params) override;
+  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
 
   // Generates type filters based on the file_type parameter. This is done so
   // that this code can be shared between recent files and file search.
@@ -49,20 +49,21 @@ class RecentDriveSource : public RecentSource {
  private:
   static const char kLoadHistogramName[];
 
-  void OnComplete();
+  void OnComplete(GetRecentFilesCallback callback);
 
   void GotSearchResults(
+      const Params& params,
+      GetRecentFilesCallback callback,
       drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
-
-  // Set at the beginning of GetRecentFiles().
-  absl::optional<Params> params_;
 
   base::TimeTicks build_start_time_;
 
   std::vector<RecentFile> files_;
+
+  const size_t max_files_;
 
   mojo::Remote<drivefs::mojom::SearchQuery> search_query_;
 

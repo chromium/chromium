@@ -34,7 +34,7 @@ ErrorPageJavaScriptFeature::ErrorPageJavaScriptFeature()
 
 ErrorPageJavaScriptFeature::~ErrorPageJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 ErrorPageJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWebUIMessageHandlerName;
 }
@@ -47,7 +47,7 @@ void ErrorPageJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  absl::optional<GURL> url = script_message.request_url();
+  std::optional<GURL> url = script_message.request_url();
   // Messages must be from an error page.
   if (!url || ![CRWErrorPageHelper isErrorPageFileURL:url.value()]) {
     return;

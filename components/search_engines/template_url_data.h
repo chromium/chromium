@@ -17,6 +17,12 @@
 // users to do SSA-style usage of TemplateURL: construct a TemplateURLData with
 // whatever fields are desired, then create an immutable TemplateURL from it.
 struct TemplateURLData {
+  enum class CreatedByPolicy {
+    kNoPolicy = 0,
+    kDefaultSearchProvider = 1,
+    kSiteSearch = 2,
+  };
+
   TemplateURLData();
   TemplateURLData(const TemplateURLData& other);
   TemplateURLData& operator=(const TemplateURLData& other);
@@ -163,7 +169,7 @@ struct TemplateURLData {
 
   // True if this TemplateURL was automatically created by the administrator via
   // group policy.
-  bool created_by_policy;
+  CreatedByPolicy created_by_policy;
 
   // True if this TemplateURL is forced to be the default search engine via
   // policy. This prevents the user from setting another search engine as
@@ -174,6 +180,10 @@ struct TemplateURLData {
 
   // True if this TemplateURL was created from metadata received from Play API.
   bool created_from_play_api;
+
+  // True if this TemplateURL should be promoted in the Omnibox along with the
+  // starter pack.
+  bool featured_by_policy = false;
 
   // Number of times this TemplateURL has been explicitly used to load a URL.
   // We don't increment this for uses as the "default search engine" since

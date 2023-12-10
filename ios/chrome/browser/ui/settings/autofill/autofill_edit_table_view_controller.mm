@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 @interface AutofillEditTableViewController () <FormInputAccessoryViewDelegate> {

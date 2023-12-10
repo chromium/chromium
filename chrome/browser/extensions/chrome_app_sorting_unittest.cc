@@ -213,21 +213,18 @@ class ChromeAppSortingInitializeWithNoApps : public PrefsPrepopulatedTestBase {
     // Make sure that the web store has valid ordinals.
     syncer::StringOrdinal initial_ordinal =
         syncer::StringOrdinal::CreateInitialOrdinal();
-    app_sorting()->SetPageOrdinal(extensions::kWebStoreAppId,
-                                  initial_ordinal);
-    app_sorting()->SetAppLaunchOrdinal(extensions::kWebStoreAppId,
-                                       initial_ordinal);
+    app_sorting()->SetPageOrdinal(kWebStoreAppId, initial_ordinal);
+    app_sorting()->SetAppLaunchOrdinal(kWebStoreAppId, initial_ordinal);
   }
   void Verify() override {
-    syncer::StringOrdinal page =
-        app_sorting()->GetPageOrdinal(extensions::kWebStoreAppId);
+    syncer::StringOrdinal page = app_sorting()->GetPageOrdinal(kWebStoreAppId);
     EXPECT_TRUE(page.IsValid());
 
     auto page_it = app_sorting()->ntp_ordinal_map_.find(page);
     EXPECT_TRUE(page_it != app_sorting()->ntp_ordinal_map_.end());
 
     syncer::StringOrdinal app_launch =
-        app_sorting()->GetPageOrdinal(extensions::kWebStoreAppId);
+        app_sorting()->GetPageOrdinal(kWebStoreAppId);
     EXPECT_TRUE(app_launch.IsValid());
 
     auto app_launch_it = page_it->second.find(app_launch);

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -27,9 +28,9 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/user_education/common/user_education_class_properties.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -43,6 +44,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_mask.h"
@@ -105,7 +107,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 ToolbarButton::~ToolbarButton() = default;
 
 void ToolbarButton::SetHighlight(const std::u16string& highlight_text,
-                                 absl::optional<SkColor> highlight_color) {
+                                 std::optional<SkColor> highlight_color) {
   if (highlight_text.empty() && !highlight_color.has_value()) {
     ClearHighlight();
     return;
@@ -158,7 +160,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
   const gfx::Insets paint_insets =
       gfx::Insets(extra_height / 2) + *GetProperty(views::kInternalPaddingKey);
 
-  absl::optional<SkColor> background_color =
+  std::optional<SkColor> background_color =
       highlight_color_animation_.GetBackgroundColor();
   if (background_color) {
     SetBackground(views::CreateBackgroundFromPainter(
@@ -174,7 +176,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   // Apply new border with target insets.
 
-  absl::optional<SkColor> border_color =
+  std::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
   if (!GetBorder() || target_insets != current_insets ||
       last_border_color_ != border_color ||
@@ -257,12 +259,12 @@ bool ToolbarButton::ShouldDirectlyUseHighlightAsBackground() const {
   return true;
 }
 
-absl::optional<SkColor> ToolbarButton::GetHighlightTextColor() const {
-  return absl::nullopt;
+std::optional<SkColor> ToolbarButton::GetHighlightTextColor() const {
+  return std::nullopt;
 }
 
-absl::optional<SkColor> ToolbarButton::GetHighlightBorderColor() const {
-  return absl::nullopt;
+std::optional<SkColor> ToolbarButton::GetHighlightBorderColor() const {
+  return std::nullopt;
 }
 
 void ToolbarButton::SetVectorIcon(const gfx::VectorIcon& icon) {
@@ -343,11 +345,11 @@ bool ToolbarButton::IsMenuShowing() const {
   return menu_showing_;
 }
 
-absl::optional<gfx::Insets> ToolbarButton::GetLayoutInsets() const {
+std::optional<gfx::Insets> ToolbarButton::GetLayoutInsets() const {
   return layout_insets_;
 }
 
-void ToolbarButton::SetLayoutInsets(const absl::optional<gfx::Insets>& insets) {
+void ToolbarButton::SetLayoutInsets(const std::optional<gfx::Insets>& insets) {
   if (layout_insets_ == insets)
     return;
   layout_insets_ = insets;
@@ -520,8 +522,7 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
 
   menu_showing_ = true;
 
-  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
-                                            nullptr /* event */);
+  menu_anchor_higlight_ = AddAnchorHighlight();
 
   // Exit if the model is null. Although ToolbarButton::ShouldShowMenu()
   // performs the same check, its overrides may not.
@@ -536,17 +537,16 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
       model_.get(), base::BindRepeating(&ToolbarButton::OnMenuClosed,
                                         base::Unretained(this)));
   menu_model_adapter_->set_triggerable_event_flags(GetTriggerableEventFlags());
-  auto* const root = menu_model_adapter_->CreateMenu();
+  std::unique_ptr<views::MenuItemView> root = menu_model_adapter_->CreateMenu();
   root->SetSubmenuId(menu_identifier_);
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      root, views::MenuRunner::HAS_MNEMONICS);
+      std::move(root), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(GetWidget(), nullptr, menu_anchor_bounds,
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 void ToolbarButton::OnMenuClosed() {
-  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::DEACTIVATED,
-                                            nullptr /* event */);
+  menu_anchor_higlight_.reset();
 
   menu_showing_ = false;
 
@@ -585,7 +585,7 @@ ToolbarButton::HighlightColorAnimation::HighlightColorAnimation(
 ToolbarButton::HighlightColorAnimation::~HighlightColorAnimation() = default;
 
 void ToolbarButton::HighlightColorAnimation::Show(
-    absl::optional<SkColor> highlight_color) {
+    std::optional<SkColor> highlight_color) {
   // If the animation is showing, we will jump to a different color in the
   // middle of the animation and continue animating towards the new
   // |highlight_color_|. If the animation is fully shown, we will jump directly
@@ -603,13 +603,13 @@ void ToolbarButton::HighlightColorAnimation::Hide() {
   highlight_color_animation_.Hide();
 }
 
-absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
+std::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
     const {
   if (!IsShown() || !parent_->GetColorProvider())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Use the overridden value supplied by the button.
-  const absl::optional<SkColor> text_color_overridden =
+  const std::optional<SkColor> text_color_overridden =
       parent_->GetHighlightTextColor();
   SkColor text_color;
 
@@ -623,14 +623,14 @@ absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
   return FadeWithAnimation(text_color, highlight_color_animation_);
 }
 
-absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
+std::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
     const {
   if (!IsShown() || !parent_->GetColorProvider()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Use the overridden value is supplied by the button
-  const absl::optional<SkColor> border_color_overridden =
+  const std::optional<SkColor> border_color_overridden =
       parent_->GetHighlightBorderColor();
   SkColor border_color;
 
@@ -645,11 +645,11 @@ absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
   return FadeWithAnimation(border_color, highlight_color_animation_);
 }
 
-absl::optional<SkColor>
+std::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   const auto* const color_provider = parent_->GetColorProvider();
   if (!IsShown() || !color_provider)
-    return absl::nullopt;
+    return std::nullopt;
   SkColor bg_color =
       color_provider->GetColor(kColorToolbarButtonBackgroundHighlightedDefault);
   if (highlight_color_.has_value()) {
@@ -663,10 +663,10 @@ ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   return FadeWithAnimation(bg_color, highlight_color_animation_);
 }
 
-absl::optional<SkColor>
+std::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetInkDropBaseColor() const {
   if (!highlight_color_)
-    return absl::nullopt;
+    return std::nullopt;
   return *highlight_color_;
 }
 
@@ -694,6 +694,25 @@ void ToolbarButton::HighlightColorAnimation::ClearHighlightColor() {
   parent_->UpdateColorsAndInsets();
 }
 
+std::unique_ptr<views::ActionViewInterface>
+ToolbarButton::GetActionViewInterface() {
+  return std::make_unique<ToolbarButtonActionViewInterface>(this);
+}
+
+ToolbarButtonActionViewInterface::ToolbarButtonActionViewInterface(
+    ToolbarButton* action_view)
+    : views::LabelButtonActionViewInterface(action_view),
+      action_view_(action_view) {}
+
+void ToolbarButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  views::LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  if (action_item->GetImage().IsVectorIcon()) {
+    action_view_->SetVectorIcon(
+        *action_item->GetImage().GetVectorIcon().vector_icon());
+  }
+}
+
 BEGIN_METADATA(ToolbarButton, views::LabelButton)
-ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, LayoutInsets)
+ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, LayoutInsets)
 END_METADATA

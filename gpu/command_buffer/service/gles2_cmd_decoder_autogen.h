@@ -2233,14 +2233,6 @@ error::Error GLES2DecoderImpl::HandleHint(uint32_t immediate_data_size,
         }
       }
       break;
-    case GL_TEXTURE_FILTERING_HINT_CHROMIUM:
-      if (state_.hint_texture_filtering != mode) {
-        state_.hint_texture_filtering = mode;
-        if (feature_info_->feature_flags().chromium_texture_filtering_hint) {
-          api()->glHintFn(target, mode);
-        }
-      }
-      break;
     default:
       NOTREACHED();
   }

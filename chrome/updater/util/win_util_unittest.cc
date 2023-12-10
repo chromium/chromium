@@ -9,6 +9,7 @@
 #include <shlobj.h>
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -51,7 +52,6 @@
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -194,14 +194,13 @@ TEST(WinUtil, RunDeElevated_Exe) {
                     test_process_cmd_line.GetArgumentsString()));
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 
-  EXPECT_TRUE(test::WaitFor([&]() {
-    return test::FindProcesses(kTestProcessExecutableName).empty();
-  }));
+  EXPECT_TRUE(test::WaitFor(
+      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, GetOSVersion) {
-  absl::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
-  ASSERT_NE(rtl_os_version, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
+  ASSERT_NE(rtl_os_version, std::nullopt);
 
   // Compare to the version from `::GetVersionEx`.
   OSVERSIONINFOEX os = {};
@@ -224,8 +223,8 @@ TEST(WinUtil, GetOSVersion) {
 }
 
 TEST(WinUtil, CompareOSVersions_SameAsCurrent) {
-  absl::optional<OSVERSIONINFOEX> this_os = GetOSVersion();
-  ASSERT_NE(this_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> this_os = GetOSVersion();
+  ASSERT_NE(this_os, std::nullopt);
 
   EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_EQUAL));
   EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_GREATER_EQUAL));
@@ -235,8 +234,8 @@ TEST(WinUtil, CompareOSVersions_SameAsCurrent) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewBuildNumber) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ASSERT_GT(prior_os->dwBuildNumber, 0UL);
   --prior_os->dwBuildNumber;
 
@@ -248,8 +247,8 @@ TEST(WinUtil, CompareOSVersions_NewBuildNumber) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewMajor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ASSERT_GT(prior_os->dwMajorVersion, 0UL);
   --prior_os->dwMajorVersion;
 
@@ -261,8 +260,8 @@ TEST(WinUtil, CompareOSVersions_NewMajor) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewMinor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
 
   // This test only runs if the current OS has a minor version.
   if (prior_os->dwMinorVersion >= 1) {
@@ -277,8 +276,8 @@ TEST(WinUtil, CompareOSVersions_NewMinor) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewMajorWithLowerMinor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ASSERT_GT(prior_os->dwMajorVersion, 0UL);
   --prior_os->dwMajorVersion;
   ++prior_os->dwMinorVersion;
@@ -291,8 +290,8 @@ TEST(WinUtil, CompareOSVersions_NewMajorWithLowerMinor) {
 }
 
 TEST(WinUtil, CompareOSVersions_OldMajor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ++prior_os->dwMajorVersion;
 
   EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
@@ -303,8 +302,8 @@ TEST(WinUtil, CompareOSVersions_OldMajor) {
 }
 
 TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
 
   // This test only runs if the current OS has a minor version.
   if (prior_os->dwMinorVersion >= 1) {
@@ -332,7 +331,7 @@ TEST(WinUtil, EnableProcessHeapMetadataProtection) {
 }
 
 TEST(WinUtil, CreateSecureTempDir) {
-  absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
+  std::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
   EXPECT_TRUE(temp_dir);
   EXPECT_TRUE(temp_dir->IsValid());
 }
@@ -552,7 +551,7 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(WinUtilGetRegKeyContentsTest, TestCases) {
-  absl::optional<std::wstring> contents = GetRegKeyContents(GetParam().reg_key);
+  std::optional<std::wstring> contents = GetRegKeyContents(GetParam().reg_key);
   ASSERT_TRUE(contents);
   ASSERT_NE(contents->find(GetParam().expected_substring), std::wstring::npos);
 }

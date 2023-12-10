@@ -41,7 +41,6 @@ public class AutofillErrorDialogBridge {
     private PropertyModel mDialogModel;
 
     private final ModalDialogProperties.Controller mModalDialogController =
-
             new ModalDialogProperties.Controller() {
                 @Override
                 public void onClick(PropertyModel model, int buttonType) {
@@ -55,8 +54,10 @@ public class AutofillErrorDialogBridge {
                 }
             };
 
-    public AutofillErrorDialogBridge(long nativeAutofillErrorDialogView,
-            ModalDialogManager modalDialogManager, Context context) {
+    public AutofillErrorDialogBridge(
+            long nativeAutofillErrorDialogView,
+            ModalDialogManager modalDialogManager,
+            Context context) {
         this.mNativeAutofillErrorDialogView = nativeAutofillErrorDialogView;
         this.mModalDialogManager = modalDialogManager;
         this.mContext = context;
@@ -65,8 +66,10 @@ public class AutofillErrorDialogBridge {
     @CalledByNative
     public static AutofillErrorDialogBridge create(
             long nativeAutofillErrorDialogView, WindowAndroid windowAndroid) {
-        return new AutofillErrorDialogBridge(nativeAutofillErrorDialogView,
-                windowAndroid.getModalDialogManager(), windowAndroid.getActivity().get());
+        return new AutofillErrorDialogBridge(
+                nativeAutofillErrorDialogView,
+                windowAndroid.getModalDialogManager(),
+                windowAndroid.getActivity().get());
     }
 
     /**
@@ -85,8 +88,9 @@ public class AutofillErrorDialogBridge {
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_error_dialog, null);
         ((TextView) errorDialogContentView.findViewById(R.id.error_message)).setText(description);
 
-        boolean useCustomTitleView = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
+        boolean useCustomTitleView =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
         if (useCustomTitleView) {
             ViewStub stub = errorDialogContentView.findViewById(R.id.title_with_icon_stub);
             stub.setLayoutResource(R.layout.icon_after_title_view);
@@ -116,8 +120,11 @@ public class AutofillErrorDialogBridge {
      * @param errorDialogContentView The CUSTOM_VIEW used in the PropertyModel that also has the
      * view stub for custom title view.
      */
-    private void updateTitleView(boolean useCustomTitleView, String title,
-            @DrawableRes int titleIcon, PropertyModel.Builder builder,
+    private void updateTitleView(
+            boolean useCustomTitleView,
+            String title,
+            @DrawableRes int titleIcon,
+            PropertyModel.Builder builder,
             View errorDialogContentView) {
         if (useCustomTitleView) {
             TextView titleView = (TextView) errorDialogContentView.findViewById(R.id.title);
@@ -127,16 +134,15 @@ public class AutofillErrorDialogBridge {
         } else {
             builder.with(ModalDialogProperties.TITLE, title);
             if (titleIcon != 0) {
-                builder.with(ModalDialogProperties.TITLE_ICON,
+                builder.with(
+                        ModalDialogProperties.TITLE_ICON,
                         ResourcesCompat.getDrawable(
                                 mContext.getResources(), titleIcon, mContext.getTheme()));
             }
         }
     }
 
-    /**
-     * Dismisses the currently showing dialog.
-     */
+    /** Dismisses the currently showing dialog. */
     @CalledByNative
     public void dismiss() {
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);

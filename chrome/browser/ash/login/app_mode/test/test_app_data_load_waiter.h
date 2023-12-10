@@ -9,15 +9,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 
 namespace ash {
 
 // Helper class for testing that application data was loaded.
 class TestAppDataLoadWaiter : public KioskAppManagerObserver {
  public:
-  TestAppDataLoadWaiter(KioskAppManager* manager,
+  TestAppDataLoadWaiter(KioskChromeAppManager* manager,
                         const std::string& app_id,
                         const std::string& version);
 
@@ -47,7 +47,7 @@ class TestAppDataLoadWaiter : public KioskAppManagerObserver {
   bool IsAppDataLoaded();
 
   std::unique_ptr<base::RunLoop> runner_;
-  raw_ptr<KioskAppManager, ExperimentalAsh> manager_;
+  raw_ptr<KioskChromeAppManager, ExperimentalAsh> manager_;
   WaitType wait_type_;
   bool loaded_;
   bool quit_;

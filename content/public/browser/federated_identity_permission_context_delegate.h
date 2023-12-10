@@ -40,25 +40,6 @@ class FederatedIdentityPermissionContextDelegate {
   virtual void RemoveIdpSigninStatusObserver(
       IdpSigninStatusObserver* observer) = 0;
 
-  // Determine whether the `relying_party_requester` has an existing active
-  // session for the specified `account_identifier` with the
-  // `identity_provider`.
-  virtual bool HasActiveSession(const url::Origin& relying_party_requester,
-                                const url::Origin& identity_provider,
-                                const std::string& account_identifier) = 0;
-
-  // Grant active session capabilities between the `relying_party_requester` and
-  // `identity_provider` origins for the specified account.
-  virtual void GrantActiveSession(const url::Origin& relying_party_requester,
-                                  const url::Origin& identity_provider,
-                                  const std::string& account_identifier) = 0;
-
-  // Revoke a previously-provided grant from the `relying_party_requester` to
-  // the `identity_provider` for the specified account.
-  virtual void RevokeActiveSession(const url::Origin& relying_party_requester,
-                                   const url::Origin& identity_provider,
-                                   const std::string& account_identifier) = 0;
-
   // Determine whether there is an existing permission grant to share identity
   // information for the given account to the `relying_party_requester` when
   // embedded in `relying_party_embedder`. `account_id` can be omitted to
@@ -77,6 +58,15 @@ class FederatedIdentityPermissionContextDelegate {
   // Grants permission to share identity information for the given account to
   // `relying_party_requester` when embedded in `relying_party_embedder`.
   virtual void GrantSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const std::string& account_id) = 0;
+
+  // Revokes a previously granted sharing permission. If there is no sharing
+  // permission associated with the given `account_id`, an arbitrary sharing
+  // permission is revoked.
+  virtual void RevokeSharingPermission(
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,

@@ -37,8 +37,7 @@ public class FakeSyncServiceImpl implements SyncService {
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
     private boolean mCanSyncFeatureStart;
-    @GoogleServiceAuthError.State
-    private int mAuthError;
+    @GoogleServiceAuthError.State private int mAuthError;
 
     public FakeSyncServiceImpl() {
         mDelegate = SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
@@ -52,10 +51,11 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setEngineInitialized(boolean engineInitialized) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mEngineInitialized = engineInitialized;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEngineInitialized = engineInitialized;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -66,10 +66,11 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setAuthError(@GoogleServiceAuthError.State int authError) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAuthError = authError;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAuthError = authError;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -87,10 +88,12 @@ public class FakeSyncServiceImpl implements SyncService {
     @AnyThread
     public void setPassphraseRequiredForPreferredDataTypes(
             boolean passphraseRequiredForPreferredDataTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPassphraseRequiredForPreferredDataTypes = passphraseRequiredForPreferredDataTypes;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPassphraseRequiredForPreferredDataTypes =
+                            passphraseRequiredForPreferredDataTypes;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -101,10 +104,11 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setTrustedVaultKeyRequired(boolean trustedVaultKeyRequired) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTrustedVaultKeyRequired = trustedVaultKeyRequired;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTrustedVaultKeyRequired = trustedVaultKeyRequired;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -116,11 +120,12 @@ public class FakeSyncServiceImpl implements SyncService {
     @AnyThread
     public void setTrustedVaultKeyRequiredForPreferredDataTypes(
             boolean trustedVaultKeyRequiredForPreferredDataTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTrustedVaultKeyRequiredForPreferredDataTypes =
-                    trustedVaultKeyRequiredForPreferredDataTypes;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTrustedVaultKeyRequiredForPreferredDataTypes =
+                            trustedVaultKeyRequiredForPreferredDataTypes;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -131,10 +136,11 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setTrustedVaultRecoverabilityDegraded(boolean recoverabilityDegraded) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -151,10 +157,11 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setCanSyncFeatureStart(boolean canSyncFeatureStart) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCanSyncFeatureStart = canSyncFeatureStart;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCanSyncFeatureStart = canSyncFeatureStart;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -165,16 +172,19 @@ public class FakeSyncServiceImpl implements SyncService {
 
     @AnyThread
     public void setRequiresClientUpgrade(boolean requiresClientUpgrade) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRequiresClientUpgrade = requiresClientUpgrade;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRequiresClientUpgrade = requiresClientUpgrade;
+                    notifySyncStateChanged();
+                });
     }
 
     @AnyThread
     public void setEncryptEverythingEnabled(boolean encryptEverythingEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mEncryptEverythingEnabled = encryptEverythingEnabled; });
+                () -> {
+                    mEncryptEverythingEnabled = encryptEverythingEnabled;
+                });
     }
 
     private void notifySyncStateChanged() {

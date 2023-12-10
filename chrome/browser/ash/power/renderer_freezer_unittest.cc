@@ -199,7 +199,7 @@ TEST_F(RendererFreezerTest, ErrorThawingRenderers) {
   // The "threadsafe" style of death test re-executes the unit test binary,
   // which in turn re-initializes some global state leading to failed CHECKs.
   // Instead, we use the "fast" style here to prevent re-initialization.
-  ::testing::FLAGS_gtest_death_test_style = "fast";
+  GTEST_FLAG_SET(death_test_style, "fast");
   Init();
   test_delegate_->set_thaw_renderers_result(false);
 

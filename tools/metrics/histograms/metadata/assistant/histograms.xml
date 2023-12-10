@@ -22,20 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="UserEligibilityTiming">
-<!--
-    Before M90, the base ("") variant was reported multiple times per search
-    and at other random points in time.
-
-    From M90 onwards, this is reported to exactly once per mic click.
-  -->
-
-  <variant name="" summary="when the mic button is pressed"/>
-  <variant name=".Startup" summary="on browser startup"/>
-</variants>
-
 <histogram name="Assistant.BetterOnboarding.Click"
-    enum="AssistantBetterOnboardingType" expires_after="2024-03-17">
+    enum="AssistantBetterOnboardingType" expires_after="2024-05-19">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -65,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.DspHotwordDetection"
-    enum="DspHotwordDetectionStatus" expires_after="2024-03-10">
+    enum="DspHotwordDetectionStatus" expires_after="2024-05-12">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -105,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Interaction.Resolution"
-    enum="AssistantInteractionResolution" expires_after="2024-03-17">
+    enum="AssistantInteractionResolution" expires_after="2024-05-19">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -116,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcInstallResult"
-    enum="Assistant.LibassistantDlcInstallResult" expires_after="2024-03-17">
+    enum="Assistant.LibassistantDlcInstallResult" expires_after="2024-05-19">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -126,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcLoadStatus"
-    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2024-03-17">
+    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2024-05-19">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -165,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QueryCountPerEntryPoint" enum="AssistantEntryPoint"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>Number of queries fired for each entry point.</summary>
@@ -179,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -189,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -201,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceReadyTime" units="ms"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -219,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceState" enum="AssistantServiceState"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

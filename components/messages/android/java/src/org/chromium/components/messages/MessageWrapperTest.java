@@ -133,9 +133,7 @@ public class MessageWrapperTest {
                 .handleDismissCallback(Mockito.anyLong(), Mockito.anyInt());
     }
 
-    /**
-     * Tests the secondary menu functionality including addition, selection and clearance of items.
-     */
+    /** Tests the secondary menu functionality including addition, selection and clearance of items. */
     @Test
     @SmallTest
     public void testSecondaryMenuUpdates() {

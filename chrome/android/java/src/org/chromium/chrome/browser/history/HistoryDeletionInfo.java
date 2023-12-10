@@ -48,7 +48,9 @@ public class HistoryDeletionInfo {
     @NativeMethods
     interface Natives {
         String[] getDeletedURLs(long historyDeletionInfoPtr);
+
         boolean isTimeRangeValid(long historyDeletionInfoPtr);
+
         boolean isTimeRangeForAllTime(long historyDeletionInfoPtr);
     }
 }

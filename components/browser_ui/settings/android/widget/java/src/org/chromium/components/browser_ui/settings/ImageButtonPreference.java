@@ -31,9 +31,7 @@ public class ImageButtonPreference extends ChromeBasePreference implements View.
         initialize();
     }
 
-    /**
-     * Set the image and content description for this preference.
-     */
+    /** Set the image and content description for this preference. */
     public void setImage(@DrawableRes int image, String contentDescription) {
         mImage = image;
         mContentDescription = contentDescription;

@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -34,8 +33,8 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
  *
  * Subclasses have to call super.onCreatePreferences(bundle, s) when overriding onCreatePreferences.
  */
-public abstract class PrivacySandboxSettingsBaseFragment
-        extends ChromeBaseSettingsFragment implements FragmentSettingsLauncher {
+public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSettingsFragment
+        implements FragmentSettingsLauncher {
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
     // entry to the Privacy Sandbox UI.
@@ -46,19 +45,20 @@ public abstract class PrivacySandboxSettingsBaseFragment
     private SnackbarManager mSnackbarManager;
     private Callback<Context> mCookieSettingsLauncher;
 
-    /**
-     * Launches the right version of PrivacySandboxSettings depending on feature flags.
-     */
-    public static void launchPrivacySandboxSettings(Context context,
-            SettingsLauncher settingsLauncher, @PrivacySandboxReferrer int referrer) {
+    /** Launches the right version of PrivacySandboxSettings depending on feature flags. */
+    public static void launchPrivacySandboxSettings(
+            Context context,
+            SettingsLauncher settingsLauncher,
+            @PrivacySandboxReferrer int referrer) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
         settingsLauncher.launchSettingsActivity(
-                context, PrivacySandboxSettingsFragmentV4.class, fragmentArgs);
+                context, PrivacySandboxSettingsFragment.class, fragmentArgs);
     }
 
     public static CharSequence getStatusString(Context context) {
-        return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
+        return context.getString(
+                PrivacySandboxBridge.isPrivacySandboxEnabled()
                         ? R.string.privacy_sandbox_status_enabled
                         : R.string.privacy_sandbox_status_disabled);
     }
@@ -75,15 +75,16 @@ public abstract class PrivacySandboxSettingsBaseFragment
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(TraceEventVectorDrawableCompat.create(
-                getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(PrivacySandboxSettingsFragmentV4.HELP_CENTER_URL);
+            openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
             return true;
         }
         return false;
@@ -99,13 +100,14 @@ public abstract class PrivacySandboxSettingsBaseFragment
 
     protected void openUrlInCct(String url) {
         assert (mCustomTabHelper != null)
-            : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a "
-              + "link.";
+                : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a "
+                        + "link.";
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
         customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
-                getContext(), customTabIntent.intent);
+        Intent intent =
+                mCustomTabHelper.createCustomTabActivityIntent(
+                        getContext(), customTabIntent.intent);
         intent.setPackage(getContext().getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
@@ -116,22 +118,26 @@ public abstract class PrivacySandboxSettingsBaseFragment
         mSnackbarManager = snackbarManager;
     }
 
-    protected void showSnackbar(int stringResId, SnackbarManager.SnackbarController controller,
-            int type, int identifier) {
+    protected void showSnackbar(
+            int stringResId,
+            SnackbarManager.SnackbarController controller,
+            int type,
+            int identifier) {
         mSnackbarManager.showSnackbar(
                 Snackbar.make(getResources().getString(stringResId), controller, type, identifier));
     }
 
     protected void parseAndRecordReferrer() {
         Bundle extras = getArguments();
-        assert (extras != null)
-                && extras.containsKey(PRIVACY_SANDBOX_REFERRER)
-            : "PrivacySandboxSettingsFragment must be launched with a privacy-sandbox-referrer "
+        assert (extras != null) && extras.containsKey(PRIVACY_SANDBOX_REFERRER)
+                : "PrivacySandboxSettingsFragment must be launched with a privacy-sandbox-referrer "
                         + "fragment argument, but none was provided.";
         int referrer = extras.getInt(PRIVACY_SANDBOX_REFERRER);
         // Record all the referrer metrics.
-        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacySandbox.PrivacySandboxReferrer",
-                referrer, PrivacySandboxReferrer.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.PrivacySandbox.PrivacySandboxReferrer",
+                referrer,
+                PrivacySandboxReferrer.COUNT);
         if (referrer == PrivacySandboxReferrer.PRIVACY_SETTINGS) {
             RecordUserAction.record("Settings.PrivacySandbox.OpenedFromSettingsParent");
         } else if (referrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {

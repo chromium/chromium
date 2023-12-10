@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
@@ -120,7 +120,7 @@ void ShowIntentPickerBubbleForApps(
 
   browser->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
-      apps::IntentPickerBubbleType::kLinkCapturing, absl::nullopt,
+      apps::IntentPickerBubbleType::kLinkCapturing, std::nullopt,
       std::move(callback));
 }
 
@@ -469,7 +469,7 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
     const webapps::AppId& app_id) {
   // WebAppTabHelper has an app_id but it is reset during
   // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
-  absl::optional<webapps::AppId> local_app_id =
+  std::optional<webapps::AppId> local_app_id =
       registrar_->FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
   if (app_id == local_app_id)
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);

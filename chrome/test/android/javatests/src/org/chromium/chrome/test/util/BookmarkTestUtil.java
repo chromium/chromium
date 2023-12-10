@@ -35,9 +35,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Utility functions for dealing with bookmarks in tests.
- */
+/** Utility functions for dealing with bookmarks in tests. */
 public class BookmarkTestUtil {
     /**
      * Loads an empty partner bookmarks folder for testing. The partner bookmarks folder will appear
@@ -46,12 +44,16 @@ public class BookmarkTestUtil {
      */
     public static void loadEmptyPartnerBookmarksForTesting(BookmarkModel bookmarkModel) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { bookmarkModel.loadEmptyPartnerBookmarkShimForTesting(); });
+                () -> {
+                    bookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                });
         waitForBookmarkModelLoaded();
     }
 
     /** Opens the root folder in the bookmarks manager. */
-    public static void openRootFolder(RecyclerView recyclerView, BookmarkDelegate bookmarkDelegate,
+    public static void openRootFolder(
+            RecyclerView recyclerView,
+            BookmarkDelegate bookmarkDelegate,
             BookmarkModel bookmarkModel) {
         waitForBookmarkModelLoaded();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -60,17 +62,35 @@ public class BookmarkTestUtil {
     }
 
     /** Opens the mobile bookmarks folder in the bookmarks manager. */
-    public static void openMobileBookmarks(RecyclerView recyclerView,
-            BookmarkDelegate bookmarkDelegate, BookmarkModel bookmarkModel) {
+    // TODO(crbug.com/1467286): Remove use of waitForIdleSync here.
+    public static void openMobileBookmarks(
+            RecyclerView recyclerView,
+            BookmarkDelegate bookmarkDelegate,
+            BookmarkModel bookmarkModel) {
         openRootFolder(recyclerView, bookmarkDelegate, bookmarkModel);
 
         onView(withText("Mobile bookmarks")).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
+    /** Opens the reading list folder in the bookmarks manager. */
+    // TODO(crbug.com/1467286): Remove use of waitForIdleSync here.
+    public static void openReadingList(
+            RecyclerView recyclerView,
+            BookmarkDelegate bookmarkDelegate,
+            BookmarkModel bookmarkModel) {
+        openRootFolder(recyclerView, bookmarkDelegate, bookmarkModel);
+
+        onView(withText("Reading list")).perform(click());
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
     /** Adds a folder with the given title and parent. */
-    public static BookmarkId addFolder(ChromeTabbedActivityTestRule activityTestRule,
-            BookmarkModel bookmarkModel, String title, BookmarkId parent)
+    public static BookmarkId addFolder(
+            ChromeTabbedActivityTestRule activityTestRule,
+            BookmarkModel bookmarkModel,
+            String title,
+            BookmarkId parent)
             throws ExecutionException {
         BookmarkTestUtil.readPartnerBookmarks(activityTestRule);
         return TestThreadUtils.runOnUiThreadBlocking(
@@ -82,8 +102,11 @@ public class BookmarkTestUtil {
      * {@link BookmarkModel#isBookmarkModelLoaded()} is true.
      */
     public static void waitForBookmarkModelLoaded() {
-        final BookmarkModel bookmarkModel = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile()); });
+        final BookmarkModel bookmarkModel =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+                        });
 
         CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded);
     }
@@ -96,51 +119,60 @@ public class BookmarkTestUtil {
     }
 
     public static ChromeTabbedActivity waitForTabbedActivity() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getLastTrackedFocusedActivity(),
-                    IsInstanceOf.instanceOf(ChromeTabbedActivity.class));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getLastTrackedFocusedActivity(),
+                            IsInstanceOf.instanceOf(ChromeTabbedActivity.class));
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
     public static BookmarkActivity waitForBookmarkActivity() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getLastTrackedFocusedActivity(),
-                    IsInstanceOf.instanceOf(BookmarkActivity.class));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getLastTrackedFocusedActivity(),
+                            IsInstanceOf.instanceOf(BookmarkActivity.class));
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return (BookmarkActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
     public static BookmarkEditActivity waitForEditActivity() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getLastTrackedFocusedActivity(),
-                    IsInstanceOf.instanceOf(BookmarkEditActivity.class));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getLastTrackedFocusedActivity(),
+                            IsInstanceOf.instanceOf(BookmarkEditActivity.class));
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return (BookmarkEditActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
     public static BookmarkAddEditFolderActivity waitForAddEditFolderActivity() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getLastTrackedFocusedActivity(),
-                    IsInstanceOf.instanceOf(BookmarkAddEditFolderActivity.class));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getLastTrackedFocusedActivity(),
+                            IsInstanceOf.instanceOf(BookmarkAddEditFolderActivity.class));
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return (BookmarkAddEditFolderActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
     public static void waitForOfflinePageSaved(GURL url) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            List<OfflinePageItem> pages = OfflineTestUtil.getAllPages();
-            String urlString = url.getSpec();
-            for (OfflinePageItem item : pages) {
-                if (urlString.startsWith(item.getUrl())) {
-                    return true;
-                }
-            }
-            return false;
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    List<OfflinePageItem> pages = OfflineTestUtil.getAllPages();
+                    String urlString = url.getSpec();
+                    for (OfflinePageItem item : pages) {
+                        if (urlString.startsWith(item.getUrl())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 }

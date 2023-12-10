@@ -49,11 +49,13 @@ class PDFiumEngineExports : public PDFEngineExports {
   bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                      int* page_count,
                      float* max_page_width) override;
-  absl::optional<bool> IsPDFDocTagged(
+  std::optional<bool> IsPDFDocTagged(
       base::span<const uint8_t> pdf_buffer) override;
   base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
                                       int page_index) override;
-  absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
+  std::optional<bool> PDFDocHasOutline(
+      base::span<const uint8_t> pdf_buffer) override;
+  std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
       base::span<const uint8_t> pdf_buffer,
       int page_index) override;
 };

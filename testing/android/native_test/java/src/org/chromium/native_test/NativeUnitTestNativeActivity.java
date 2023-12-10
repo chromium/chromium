@@ -24,9 +24,8 @@ public class NativeUnitTestNativeActivity extends NativeActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Force running in sub thread,
-        // since NativeActivity processes Looper messages in native code,
-        // which makes invoking the test runner Handler problematic.
+        // Force running in sub thread, since NativeActivity processes Looper messages in native
+        // code, which makes invoking the test runner Handler problematic.
         mTest.postStart(this, true);
     }
 }

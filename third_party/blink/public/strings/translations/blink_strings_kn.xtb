@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">ದಯವಿಟ್ಟು ಈ ಪಠ್ಯವನ್ನು <ph name="MAX_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="2247351761944213033">ವಾರ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ಟ್ರ್ಯಾಕ್ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ಕ್ಯಾಮೆರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2393030564806080191">ಹೆಕ್ಸಾಡೆಸಿಮಲ್‌‌ ಬಣ್ಣದ ಮೌಲ್ಯ</translation>
 <translation id="2398813069815436052">ಡೈಲಾಗ್ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="245932805758469625">ಇಷ್ಟು ಸೆಕೆಂಡಿನ ವೀಡಿಯೊ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತವಾಗಿ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="3846214748874656680">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4103419683916926126">ಮಿಲಿಸೆಕೆಂಡುಗಳು</translation>
 <translation id="4201051445878709314">ಹಿಂದಿನ ತಿಂಗಳು ತೋರಿಸು</translation>
 <translation id="4360991593054037559">ಮಾನ್ಯವಾದ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. <ph name="VALID_VALUE_LOW" /> ಮತ್ತು <ph name="VALID_VALUE_HIGHER" /> ಎರಡು ಹತ್ತಿರದ ಮಾನ್ಯ ಮೌಲ್ಯಗಳಾಗಿವೆ.</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
+<translation id="4663373278480897665">ಕ್ಯಾಮೆರಾಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="4718048029184481307">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4748357248530471599">ಡಿಸ್‌ಪ್ಲೇ ಕಟ್‌ಔಟ್ ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">ಮಾಧ್ಯಮ ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="698788488269350478">ವಿಸ್ತರಿಸಲಾಗಿದೆ.</translation>
 <translation id="6989848892321993519">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಥವಾ ಇದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳಿಗೆ ಉದ್ದಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ 1 ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
+<translation id="7080893216867146095">ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="709897737746224366">ದಯವಿಟ್ಟು ವಿನಂತಿಸಿದ ಸ್ವರೂಪವನ್ನು ಹೊಂದಿಸಿ.</translation>
 <translation id="7102274145889307184">ಪ್ರಸ್ತುತ ಸ್ಥಳ</translation>
 <translation id="7263440858009898357">ಪಟ್ಟಿಯಲ್ಲಿನ ಐಟಂ ಅನ್ನು ದಯವಿಟ್ಟು ಆಯ್ಕೆ ಮಾಡಿ.</translation>

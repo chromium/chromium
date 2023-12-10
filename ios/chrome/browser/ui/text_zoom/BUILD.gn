@@ -11,15 +11,15 @@ source_set("text_zoom") {
   ]
   deps = [
     ":text_zoom_ui",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/toolbar/accessory",
-    "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/common/ui/colors",
   ]
 }

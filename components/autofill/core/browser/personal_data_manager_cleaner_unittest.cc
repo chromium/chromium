@@ -87,7 +87,7 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
     for (const std::unique_ptr<AutofillProfile>& profile : profile_ptrs) {
       deduped_profiles.push_back(*profile);
     }
-    base::EraseIf(deduped_profiles, [&](const AutofillProfile& profile) {
+    std::erase_if(deduped_profiles, [&](const AutofillProfile& profile) {
       return profiles_to_delete.contains(profile.guid());
     });
     return deduped_profiles;
@@ -148,7 +148,7 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
 TEST_F(PersonalDataManagerCleanerTest,
        ApplyDedupingRoutine_MergedProfileValues) {
   // Create a profile with a higher ranking score.
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -156,7 +156,7 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a medium ranking score.
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -164,7 +164,7 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a profile with a lower ranking score.
-  AutofillProfile profile3;
+  AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -231,7 +231,7 @@ TEST_F(PersonalDataManagerCleanerTest,
 TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   // Create a Homer home profile with a higher ranking score than other Homer
   // profiles.
-  AutofillProfile Homer1;
+  AutofillProfile Homer1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&Homer1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -240,7 +240,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a Homer home profile with a medium ranking score compared to other
   // Homer profiles.
-  AutofillProfile Homer2;
+  AutofillProfile Homer2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&Homer2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -249,7 +249,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a Homer home profile with a lower ranking score than other Homer
   // profiles.
-  AutofillProfile Homer3;
+  AutofillProfile Homer3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&Homer3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -257,7 +257,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Homer3.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a Homer work profile (different address).
-  AutofillProfile Homer4;
+  AutofillProfile Homer4(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&Homer4, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "12 Nuclear Plant.", "",
                        "Springfield", "IL", "91601", "US", "9876543");
@@ -265,7 +265,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Homer4.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a Barney profile (guest user).
-  AutofillProfile Barney;
+  AutofillProfile Barney(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&Barney, "Barney", "", "Gumble", "barney.gumble@abc.com",
                        "ABC", "123 Other Street", "", "Springfield", "IL",
                        "91601", "", "");
@@ -342,7 +342,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfZeroProfiles) {
 
 TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfOneProfile) {
   // Create a profile to dedupe.
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -357,13 +357,13 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfOneProfile) {
 // version.
 TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   // Create a profile to dedupe.
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
 
   // Create a similar profile.
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -383,7 +383,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(1U, profiles.size());
 
   // Add another duplicate profile.
-  AutofillProfile profile3;
+  AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -402,8 +402,6 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
 
 // Tests that `kAccount` profiles are not deduplicated against each other.
 TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillAccountProfileStorage);
   AutofillProfile account_profile1 = test::StandardProfile();
   account_profile1.set_source_for_testing(AutofillProfile::Source::kAccount);
   AutofillProfile account_profile2 = test::StandardProfile();
@@ -416,8 +414,6 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
 // Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
 // profile are deduplicated. The result is a Chrome account profile.
 TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillAccountProfileStorage);
   // Create a non-Chrome account profile and a local profile.
   AutofillProfile account_profile = test::StandardProfile();
   const int non_chrome_service =
@@ -441,8 +437,6 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
 // Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
 // profile are not deduplicated.
 TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSubset) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillAccountProfileStorage);
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   AutofillProfile local_profile = test::StandardProfile();
@@ -458,11 +452,11 @@ TEST_F(PersonalDataManagerCleanerTest,
       features::kAutofillRemoveInaccessibleProfileValuesOnStartup);
 
   // Add a German and a US profile.
-  AutofillProfile profile0;
+  AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "DE", "12345678910");
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
                        "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
                        "Orlando", "FL", "32801", "US", "19482937549");

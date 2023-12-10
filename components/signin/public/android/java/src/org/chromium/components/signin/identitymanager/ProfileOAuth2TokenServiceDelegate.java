@@ -22,7 +22,6 @@ import org.chromium.components.signin.ConnectionRetry;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
@@ -35,9 +34,7 @@ import java.util.List;
  * <p/>
  */
 final class ProfileOAuth2TokenServiceDelegate {
-    /**
-     * A simple callback for getAccessToken.
-     */
+    /** A simple callback for getAccessToken. */
     interface GetAccessTokenCallback {
         /**
          * Invoked on the UI thread if a token is provided by the AccountManager.
@@ -63,10 +60,11 @@ final class ProfileOAuth2TokenServiceDelegate {
 
     @VisibleForTesting
     @CalledByNative
-    ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
+    ProfileOAuth2TokenServiceDelegate(
+            long nativeProfileOAuth2TokenServiceDelegate,
             AccountTrackerService accountTrackerService) {
-        assert nativeProfileOAuth2TokenServiceDelegate
-                != 0 : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
+        assert nativeProfileOAuth2TokenServiceDelegate != 0
+                : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
         assert accountTrackerService != null : "accountTrackerService should not be null!";
         mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegate;
         mAccountTrackerService = accountTrackerService;
@@ -85,32 +83,53 @@ final class ProfileOAuth2TokenServiceDelegate {
     private void getAccessTokenFromNative(
             String accountEmail, String scope, final long nativeCallback) {
         assert accountEmail != null : "Account email cannot be null!";
-        mAccountManagerFacade.getCoreAccountInfos().then(coreAccountInfos -> {
-            final CoreAccountInfo coreAccountInfo =
-                    AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, accountEmail);
-            if (coreAccountInfo == null) {
-                ThreadUtils.postOnUiThread(() -> {
-                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
-                            null, AccessTokenData.NO_KNOWN_EXPIRATION_TIME, false, nativeCallback);
-                });
-                return;
-            }
-            String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
-            getAccessToken(coreAccountInfo, oauth2Scope, new GetAccessTokenCallback() {
-                @Override
-                public void onGetTokenSuccess(AccessTokenData token) {
-                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
-                            token.getToken(), token.getExpirationTimeSecs(), false, nativeCallback);
-                }
+        mAccountManagerFacade
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            final CoreAccountInfo coreAccountInfo =
+                                    AccountUtils.findCoreAccountInfoByEmail(
+                                            coreAccountInfos, accountEmail);
+                            if (coreAccountInfo == null) {
+                                ThreadUtils.postOnUiThread(
+                                        () -> {
+                                            ProfileOAuth2TokenServiceDelegateJni.get()
+                                                    .onOAuth2TokenFetched(
+                                                            null,
+                                                            AccessTokenData
+                                                                    .NO_KNOWN_EXPIRATION_TIME,
+                                                            false,
+                                                            nativeCallback);
+                                        });
+                                return;
+                            }
+                            String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
+                            getAccessToken(
+                                    coreAccountInfo,
+                                    oauth2Scope,
+                                    new GetAccessTokenCallback() {
+                                        @Override
+                                        public void onGetTokenSuccess(AccessTokenData token) {
+                                            ProfileOAuth2TokenServiceDelegateJni.get()
+                                                    .onOAuth2TokenFetched(
+                                                            token.getToken(),
+                                                            token.getExpirationTimeSecs(),
+                                                            false,
+                                                            nativeCallback);
+                                        }
 
-                @Override
-                public void onGetTokenFailure(boolean isTransientError) {
-                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(null,
-                            AccessTokenData.NO_KNOWN_EXPIRATION_TIME, isTransientError,
-                            nativeCallback);
-                }
-            });
-        });
+                                        @Override
+                                        public void onGetTokenFailure(boolean isTransientError) {
+                                            ProfileOAuth2TokenServiceDelegateJni.get()
+                                                    .onOAuth2TokenFetched(
+                                                            null,
+                                                            AccessTokenData
+                                                                    .NO_KNOWN_EXPIRATION_TIME,
+                                                            isTransientError,
+                                                            nativeCallback);
+                                        }
+                                    });
+                        });
     }
 
     /**
@@ -123,20 +142,23 @@ final class ProfileOAuth2TokenServiceDelegate {
     @MainThread
     void getAccessToken(
             CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
-        ConnectionRetry.runAuthTask(new AuthTask<AccessTokenData>() {
-            @Override
-            public AccessTokenData run() throws AuthException {
-                return mAccountManagerFacade.getAccessToken(coreAccountInfo, scope);
-            }
-            @Override
-            public void onSuccess(AccessTokenData token) {
-                callback.onGetTokenSuccess(token);
-            }
-            @Override
-            public void onFailure(boolean isTransientError) {
-                callback.onGetTokenFailure(isTransientError);
-            }
-        });
+        ConnectionRetry.runAuthTask(
+                new AuthTask<AccessTokenData>() {
+                    @Override
+                    public AccessTokenData run() throws AuthException {
+                        return mAccountManagerFacade.getAccessToken(coreAccountInfo, scope);
+                    }
+
+                    @Override
+                    public void onSuccess(AccessTokenData token) {
+                        callback.onGetTokenSuccess(token);
+                    }
+
+                    @Override
+                    public void onFailure(boolean isTransientError) {
+                        callback.onGetTokenFailure(isTransientError);
+                    }
+                });
     }
 
     /**
@@ -168,7 +190,7 @@ final class ProfileOAuth2TokenServiceDelegate {
         Promise<List<CoreAccountInfo>> promise = mAccountManagerFacade.getCoreAccountInfos();
         return promise.isFulfilled()
                 && AccountUtils.findCoreAccountInfoByEmail(promise.getResult(), accountEmail)
-                != null;
+                        != null;
     }
 
     @VisibleForTesting
@@ -194,23 +216,6 @@ final class ProfileOAuth2TokenServiceDelegate {
                 });
     }
 
-    @VisibleForTesting
-    // TODO(crbug/1491005): Implement the native call to this method and then remove if from the
-    // Java layer.
-    void seedAndReloadAccountsWithPrimaryAccount(
-            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId primaryAccountId) {
-        ThreadUtils.assertOnUiThread();
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            throw new IllegalStateException(
-                    "This method should never be called when SeedAccountsRevamp is disabled");
-        }
-        ProfileOAuth2TokenServiceDelegateJni.get()
-                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                        mNativeProfileOAuth2TokenServiceDelegate,
-                        coreAccountInfos.toArray(new CoreAccountInfo[0]),
-                        primaryAccountId);
-    }
-
     @NativeMethods
     interface Natives {
         /**
@@ -223,17 +228,15 @@ final class ProfileOAuth2TokenServiceDelegate {
          * @param nativeCallback the pointer to the native callback that should be run upon
          *         completion.
          */
-        void onOAuth2TokenFetched(String authToken, long expirationTimeSecs,
-                boolean isTransientError, long nativeCallback);
+        void onOAuth2TokenFetched(
+                String authToken,
+                long expirationTimeSecs,
+                boolean isTransientError,
+                long nativeCallback);
 
         void reloadAllAccountsWithPrimaryAccountAfterSeeding(
                 long nativeProfileOAuth2TokenServiceDelegateAndroid,
                 @Nullable String accountId,
                 String[] deviceAccountEmails);
-
-        void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                long nativeProfileOAuth2TokenServiceDelegateAndroid,
-                CoreAccountInfo[] coreAccountInfos,
-                @Nullable CoreAccountId primaryAccountId);
     }
 }

@@ -19,13 +19,18 @@ using testing::ElementsAre;
 
 namespace blink {
 
+enum { kOnePassRasterInvalidation = 1 << 20 };
+
 static constexpr gfx::Vector2dF kDefaultLayerOffset(-9999, -7777);
 static constexpr gfx::Size kDefaultLayerBounds(18888, 16666);
 
 class RasterInvalidatorTest : public testing::Test,
-                              public PaintTestConfigurations {
+                              public PaintTestConfigurations,
+                              private ScopedOnePassRasterInvalidationForTest {
  public:
-  RasterInvalidatorTest() = default;
+  RasterInvalidatorTest()
+      : ScopedOnePassRasterInvalidationForTest(GetParam() &
+                                               kOnePassRasterInvalidation) {}
 
   static PropertyTreeState DefaultPropertyTreeState() {
     return PropertyTreeState::Root();
@@ -57,7 +62,10 @@ class RasterInvalidatorTest : public testing::Test,
   int sequence_number_ = 1;
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(RasterInvalidatorTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         RasterInvalidatorTest,
+                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
+                                           kOnePassRasterInvalidation));
 
 using MapFunction = base::RepeatingCallback<void(gfx::Rect&)>;
 static gfx::Rect ChunkRectToLayer(
@@ -220,14 +228,25 @@ TEST_P(RasterInvalidatorTest, ReorderChunks) {
                                   .Build());
   invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, DefaultPropertyTreeState());
-  // Invalidated new chunk 2's old (as chunks[{0, 1]) and new
-  // (as new_chunks[{0, 2]) bounds.
-  EXPECT_THAT(
-      TrackedRasterInvalidations(),
-      ElementsAre(ChunkInvalidation(chunks, 1,
-                                    PaintInvalidationReason::kChunkReordered),
-                  ChunkInvalidation(new_chunks, 2,
-                                    PaintInvalidationReason::kChunkReordered)));
+  if (RuntimeEnabledFeatures::OnePassRasterInvalidationEnabled()) {
+    EXPECT_THAT(
+        TrackedRasterInvalidations(),
+        ElementsAre(
+            ChunkInvalidation(new_chunks, 2,
+                              PaintInvalidationReason::kChunkAppeared),
+            ChunkInvalidation(chunks, 1,
+                              PaintInvalidationReason::kChunkDisappeared)));
+  } else {
+    // Invalidated new chunk 2's old (as chunks[{0, 1]) and new
+    // (as new_chunks[{0, 2]) bounds.
+    EXPECT_THAT(
+        TrackedRasterInvalidations(),
+        ElementsAre(
+            ChunkInvalidation(chunks, 1,
+                              PaintInvalidationReason::kChunkReordered),
+            ChunkInvalidation(new_chunks, 2,
+                              PaintInvalidationReason::kChunkReordered)));
+  }
   FinishCycle(new_chunks);
 }
 
@@ -253,18 +272,33 @@ TEST_P(RasterInvalidatorTest, ReorderChunkSubsequences) {
                                   .Build());
   invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, DefaultPropertyTreeState());
-  // Invalidated new chunk 3's old (as chunks[{0, 1] and new
-  // (as new_chunks[{0, 3]) bounds.
-  // Invalidated new chunk 4's new bounds. Didn't invalidate old bounds because
-  // it's the same as the new bounds.
-  EXPECT_THAT(
-      TrackedRasterInvalidations(),
-      ElementsAre(ChunkInvalidation(chunks, 1,
-                                    PaintInvalidationReason::kChunkReordered),
-                  ChunkInvalidation(new_chunks, 3,
-                                    PaintInvalidationReason::kChunkReordered),
-                  ChunkInvalidation(new_chunks, 4,
-                                    PaintInvalidationReason::kChunkReordered)));
+  if (RuntimeEnabledFeatures::OnePassRasterInvalidationEnabled()) {
+    EXPECT_THAT(
+        TrackedRasterInvalidations(),
+        ElementsAre(
+            ChunkInvalidation(new_chunks, 3,
+                              PaintInvalidationReason::kChunkAppeared),
+            ChunkInvalidation(new_chunks, 4,
+                              PaintInvalidationReason::kChunkAppeared),
+            ChunkInvalidation(chunks, 1,
+                              PaintInvalidationReason::kChunkDisappeared),
+            ChunkInvalidation(chunks, 2,
+                              PaintInvalidationReason::kChunkDisappeared)));
+  } else {
+    // Invalidated new chunk 3's old (as chunks[{0, 1] and new
+    // (as new_chunks[{0, 3]) bounds.
+    // Invalidated new chunk 4's new bounds. Didn't invalidate old bounds
+    // because it's the same as the new bounds.
+    EXPECT_THAT(
+        TrackedRasterInvalidations(),
+        ElementsAre(
+            ChunkInvalidation(chunks, 1,
+                              PaintInvalidationReason::kChunkReordered),
+            ChunkInvalidation(new_chunks, 3,
+                              PaintInvalidationReason::kChunkReordered),
+            ChunkInvalidation(new_chunks, 4,
+                              PaintInvalidationReason::kChunkReordered)));
+  }
   FinishCycle(new_chunks);
 }
 

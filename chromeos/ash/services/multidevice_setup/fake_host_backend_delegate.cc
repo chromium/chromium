@@ -15,8 +15,7 @@ FakeHostBackendDelegate::FakeHostBackendDelegate() : HostBackendDelegate() {}
 FakeHostBackendDelegate::~FakeHostBackendDelegate() = default;
 
 void FakeHostBackendDelegate::NotifyHostChangedOnBackend(
-    const absl::optional<multidevice::RemoteDeviceRef>&
-        host_device_on_backend) {
+    const std::optional<multidevice::RemoteDeviceRef>& host_device_on_backend) {
   host_device_on_backend_ = host_device_on_backend;
 
   if (pending_host_request_ && *pending_host_request_ == host_device_on_backend)
@@ -33,7 +32,7 @@ void FakeHostBackendDelegate::NotifyBackendRequestFailed() {
 }
 
 void FakeHostBackendDelegate::AttemptToSetMultiDeviceHostOnBackend(
-    const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+    const std::optional<multidevice::RemoteDeviceRef>& host_device) {
   ++num_attempt_to_set_calls_;
 
   if (host_device_on_backend_ == host_device) {
@@ -54,15 +53,15 @@ void FakeHostBackendDelegate::AttemptToSetMultiDeviceHostOnBackend(
 }
 
 bool FakeHostBackendDelegate::HasPendingHostRequest() {
-  return pending_host_request_ != absl::nullopt;
+  return pending_host_request_ != std::nullopt;
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 FakeHostBackendDelegate::GetPendingHostRequest() const {
   return *pending_host_request_;
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 FakeHostBackendDelegate::GetMultiDeviceHostFromBackend() const {
   return host_device_on_backend_;
 }

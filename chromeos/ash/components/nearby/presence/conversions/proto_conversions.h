@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_PROTO_CONVERSIONS_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_PROTO_CONVERSIONS_H_
 
+#include <optional>
+
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/local_credential.pb.h"
 #include "third_party/nearby/internal/proto/metadata.pb.h"

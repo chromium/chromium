@@ -108,7 +108,7 @@ class AdpfHintSession : public HintSession {
   void ReportCpuCompletionTime(base::TimeDelta actual_duration,
                                base::TimeTicks draw_start,
                                BoostType preferable_boost_type) override;
-  void BoostMidFrame() override;
+
   void WakeUp();
 
  private:
@@ -182,14 +182,6 @@ void AdpfHintSession::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
   ReportCpuCompletionTime(target_duration_, base::TimeTicks::Now(),
                           BoostType::kWakeUpBoost);
-}
-
-void AdpfHintSession::BoostMidFrame() {
-  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
-  // Report a fake actual_duration > target_duration_ to ask the system for a
-  // CPU boost.
-  ReportCpuCompletionTime(target_duration_ * 1.5, base::TimeTicks::Now(),
-                          BoostType::kDefault);
 }
 
 HintSessionFactoryImpl::HintSessionFactoryImpl(

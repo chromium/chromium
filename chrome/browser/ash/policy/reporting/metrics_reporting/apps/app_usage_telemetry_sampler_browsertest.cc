@@ -81,7 +81,7 @@ constexpr base::TimeDelta kAppUsageUKMReportingInterval = base::Hours(2);
 
 // Additional webapp usage buffer period before the browser is actually closed.
 // Used when validating reported app usage data.
-constexpr base::TimeDelta kWebAppUsageBufferPeriod = base::Seconds(5);
+constexpr base::TimeDelta kWebAppUsageBufferPeriod = base::Seconds(10);
 
 void AssertRecordData(Priority priority, const Record& record) {
   EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   test::MockClock::Get().Advance(
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   ::content::RunAllTasksUntilIdle();
-  ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,

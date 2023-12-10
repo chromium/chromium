@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,7 +52,6 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/url_constants.h"
 
@@ -162,6 +162,7 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
   DCHECK(policy);
   app->allow_uninstall = policy->UserMayModifySettings(extension, nullptr) &&
                          !policy->MustRemainInstalled(extension, nullptr);
+  app->allow_close = true;
   return app;
 }
 
@@ -348,6 +349,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
     case apps::LaunchSource::kFromSysTrayCalendar:
+    case apps::LaunchSource::kFromInstaller:
       break;
   }
 

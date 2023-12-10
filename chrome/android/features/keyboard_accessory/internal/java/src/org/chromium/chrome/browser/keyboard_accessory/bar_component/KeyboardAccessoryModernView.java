@@ -82,8 +82,9 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         private int estimateLastElementWidth(View view) {
             assert view instanceof ViewGroup;
             return ((ViewGroup) view).getChildCount()
-                    * getContext().getResources().getDimensionPixelSize(
-                            R.dimen.keyboard_accessory_tab_size);
+                    * getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_size);
         }
 
         private int getOccupiedSpaceByChildren(RecyclerView parent) {
@@ -113,9 +114,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         }
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public KeyboardAccessoryModernView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -195,9 +194,14 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     }
 
     void setAccessibilityMessage(boolean hasSuggestions) {
-        setContentDescription(getContext().getString(hasSuggestions
-                        ? R.string.autofill_keyboard_accessory_modern_content_description
-                        : R.string.autofill_keyboard_accessory_modern_content_fallback_description));
+        setContentDescription(
+                getContext()
+                        .getString(
+                                hasSuggestions
+                                        ? R.string
+                                                .autofill_keyboard_accessory_modern_content_description
+                                        : R.string
+                                                .autofill_keyboard_accessory_modern_content_fallback_description));
     }
 
     private void animateSuggestionArrival() {
@@ -209,12 +213,15 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
             mLastBarItemsViewPosition = mBarItemsView.getX();
         }
 
-        float start = mLastBarItemsViewPosition
-                - bounceDirection * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
-                        * getContext().getResources().getDisplayMetrics().density;
+        float start =
+                mLastBarItemsViewPosition
+                        - bounceDirection
+                                * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
+                                * getContext().getResources().getDisplayMetrics().density;
         mBarItemsView.setTranslationX(start);
-        mAnimator = ObjectAnimator.ofFloat(
-                mBarItemsView, "translationX", start, mLastBarItemsViewPosition);
+        mAnimator =
+                ObjectAnimator.ofFloat(
+                        mBarItemsView, "translationX", start, mLastBarItemsViewPosition);
         mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
         mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
         mAnimator.start();

@@ -109,11 +109,27 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testOnWebContentsChanged() {
         // Test that settings are updated and callback is created if null, when WebContents is set.
-        assertNull(mDwTrigger.getServiceCallback());
+        mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
+        doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
         mDwTrigger.onWebContentsChanged(mContext, mWebContents);
         verify(mDwTrigger).updateDWSettings(mContext);
-        assertNotNull(mDwTrigger.getServiceCallback());
         verify(mWebContents).setStylusWritingHandler(mDwTrigger);
+        verify(mWebContents).getStylusWritingImeCallback();
+        verify(mDwServiceCallback).setImeCallback(mStylusWritingImeCallback);
+    }
+
+    @Test
+    @Feature({"Stylus Handwriting"})
+    public void testOnImeAdapterDestroyed() {
+        // Set Ime callback via onWebContentsChanged.
+        doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
+        mDwTrigger.onWebContentsChanged(mContext, mWebContents);
+        assertNotNull(mDwTrigger.getStylusWritingImeCallbackForTest());
+
+        mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
+        mDwTrigger.onImeAdapterDestroyed();
+        assertNull(mDwTrigger.getStylusWritingImeCallbackForTest());
+        verify(mDwServiceCallback).setImeCallback(null);
     }
 
     @Test
@@ -151,8 +167,9 @@ public class DirectWritingTriggerTest {
         verify(mDwServiceBinder, never()).onStopRecognition(any(), any(), any());
 
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        // Set Ime callback via requestStartStylusWriting.
-        assertTrue(mDwTrigger.requestStartStylusWriting(mStylusWritingImeCallback));
+        // Set Ime callback via onWebContentsChanged.
+        doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
+        mDwTrigger.onWebContentsChanged(mContext, mWebContents);
         mDwTrigger.onFocusChanged(false);
         verify(mDwServiceBinder).onStopRecognition(null, null, mContainerView);
     }
@@ -173,13 +190,11 @@ public class DirectWritingTriggerTest {
     public void testRequestStartStylusWriting() {
         mDwTrigger.updateDWSettings(mContext);
         // requestStartStylusWriting returns false until service is connected.
-        assertFalse(mDwTrigger.requestStartStylusWriting(mStylusWritingImeCallback));
+        assertFalse(mDwTrigger.requestStartStylusWriting());
         assertFalse(mDwTrigger.stylusWritingDetected());
 
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
-        assertTrue(mDwTrigger.requestStartStylusWriting(mStylusWritingImeCallback));
-        verify(mDwServiceCallback).setImeCallback(mStylusWritingImeCallback);
+        assertTrue(mDwTrigger.requestStartStylusWriting());
         assertTrue(mDwTrigger.stylusWritingDetected());
     }
 
@@ -312,7 +327,7 @@ public class DirectWritingTriggerTest {
                         editableBounds.right * 2,
                         editableBounds.bottom * 2 + 5);
         verify(mDwServiceCallback).updateEditableBounds(eq(scaledBounds), any());
-        verify(mDwServiceBinder).updateEditableBounds(scaledBounds, mContainerView);
+        verify(mDwServiceBinder).updateEditableBounds(scaledBounds, mContainerView, true);
         verify(mDwServiceBinder)
                 .onStopRecognition(eventReceived.capture(), eq(scaledBounds), eq(mContainerView));
         assertEquals(eventReceived.getValue().getAction(), MotionEvent.ACTION_UP);
@@ -336,7 +351,8 @@ public class DirectWritingTriggerTest {
         // Verify that hide DW toolbar is called and stop recognition is also called.
         verify(mDwServiceBinder).hideDWToolbar();
         verify(mDwServiceBinder).onStopRecognition(null, null, mContainerView);
-        verify(mDwServiceBinder, never()).updateEditableBounds(editableBounds, mContainerView);
+        verify(mDwServiceBinder, never())
+                .updateEditableBounds(editableBounds, mContainerView, true);
         verify(mDwServiceBinder, never())
                 .onStopRecognition(any(), eq(editableBounds), eq(mContainerView));
     }

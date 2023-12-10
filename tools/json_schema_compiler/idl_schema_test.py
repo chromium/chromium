@@ -19,6 +19,9 @@ def getParams(schema, name):
   function = getFunction(schema, name)
   return function['parameters']
 
+def getReturnsAsync(schema, name):
+  function = getFunction(schema, name)
+  return function.get('returns_async', False)
 
 def getReturns(schema, name):
   function = getFunction(schema, name)
@@ -41,24 +44,23 @@ class IdlSchemaTest(unittest.TestCase):
 
   def testSimpleCallbacks(self):
     schema = self.idl_basics
-    expected = [{'type': 'function', 'name': 'cb', 'parameters':[]}]
-    self.assertEqual(expected, getParams(schema, 'function4'))
+    expected = {'name': 'cb', 'parameters':[]}
+    self.assertEqual(expected, getReturnsAsync(schema, 'function4'))
 
-    expected = [{'type': 'function', 'name': 'cb',
-                 'parameters':[{'name': 'x', 'type': 'integer'}]}]
-    self.assertEqual(expected, getParams(schema, 'function5'))
+    expected = {'name': 'cb',
+                 'parameters':[{'name': 'x', 'type': 'integer'}]}
+    self.assertEqual(expected, getReturnsAsync(schema, 'function5'))
 
-    expected = [{'type': 'function', 'name': 'cb',
-                 'parameters':[{'name': 'arg', '$ref': 'MyType1'}]}]
-    self.assertEqual(expected, getParams(schema, 'function6'))
+    expected = {'name': 'cb',
+                 'parameters':[{'name': 'arg', '$ref': 'MyType1'}]}
+    self.assertEqual(expected, getReturnsAsync(schema, 'function6'))
 
   def testCallbackWithArrayArgument(self):
     schema = self.idl_basics
-    expected = [{'type': 'function', 'name': 'cb',
+    expected = {'name': 'cb',
                  'parameters':[{'name': 'arg', 'type': 'array',
-                                'items':{'$ref': 'MyType2'}}]}]
-    self.assertEqual(expected, getParams(schema, 'function12'))
-
+                                'items':{'$ref': 'MyType2'}}]}
+    self.assertEqual(expected, getReturnsAsync(schema, 'function12'))
 
   def testArrayOfCallbacks(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
@@ -92,10 +94,14 @@ class IdlSchemaTest(unittest.TestCase):
                 'type': 'string', 'id': 'EnumType'}
     self.assertEqual(expected, getType(schema, expected['id']))
 
-    expected = [{'name': 'type', '$ref': 'EnumType'},
-                {'type': 'function', 'name': 'cb',
-                  'parameters':[{'name': 'type', '$ref': 'EnumType'}]}]
-    self.assertEqual(expected, getParams(schema, 'function13'))
+    expected_params = [{'name': 'type', '$ref': 'EnumType'}]
+    expected_returns_async = {
+        'name': 'cb',
+        'parameters':[{'name': 'type', '$ref': 'EnumType'}]}
+    self.assertEqual(expected_params, getParams(schema, 'function13'))
+    self.assertEqual(
+        expected_returns_async, getReturnsAsync(schema, 'function13')
+    )
 
     expected = [{'items': {'$ref': 'EnumType'}, 'name': 'types',
                  'type': 'array'}]
@@ -233,16 +239,16 @@ class IdlSchemaTest(unittest.TestCase):
   def testCallbackComment(self):
     schema = self.idl_basics
     self.assertEqual('A comment on a callback.',
-                      getParams(schema, 'function16')[0]['description'])
+                      getReturnsAsync(schema, 'function16')['description'])
     self.assertEqual(
         'A parameter.',
-        getParams(schema, 'function16')[0]['parameters'][0]['description'])
+        getReturnsAsync(schema, 'function16')['parameters'][0]['description'])
     self.assertEqual(
         'Just a parameter comment, with no comment on the callback.',
-        getParams(schema, 'function17')[0]['parameters'][0]['description'])
+        getReturnsAsync(schema, 'function17')['parameters'][0]['description'])
     self.assertEqual(
         'Override callback comment.',
-        getParams(schema, 'function18')[0]['description'])
+        getReturnsAsync(schema, 'function18')['description'])
 
   def testFunctionComment(self):
     schema = self.idl_basics
@@ -415,67 +421,58 @@ class IdlSchemaTest(unittest.TestCase):
   def testUnionsWithCallbacks(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
 
-    blah_params = getParams(schema, 'blah')
-    expected = [{
-                 'type': 'function', 'name': 'callback', 'parameters': [{
+    blah_params = getReturnsAsync(schema, 'blah')
+    expected = {
+                 'name': 'callback', 'parameters': [{
                    'name': 'x',
                    'choices': [
                      {'type': 'integer'},
                      {'type': 'string'}
                    ]}
                  ]
-               }]
-    self.assertEqual(expected, blah_params)
+               }
 
-    badabish_params = getParams(schema, 'badabish')
-    expected = [{
-                 'type': 'function', 'name': 'callback', 'parameters': [{
+    badabish_params = getReturnsAsync(schema, 'badabish')
+    expected = {
+                 'name': 'callback', 'parameters': [{
                    'name': 'x', 'optional': True, 'choices': [
                      {'type': 'integer'},
                      {'type': 'string'}
                    ]
                  }]
-               }]
+               }
 
     self.assertEqual(expected, badabish_params)
 
-  def testFunctionWithPromise(self):
+  def testFunctionWithoutPromiseSupport(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
 
-    promise_function = getFunction(schema, 'promise_supporting')
-    expected = OrderedDict([
-        ('parameters', []),
-        ('returns_async', {
+    params = getParams(schema, 'non_promise_supporting')
+    expected = [{
             'name': 'callback',
+            'type': 'function',
             'parameters': [{'name': 'x', 'type': 'integer'}]
-        }),
-        ('name', 'promise_supporting'),
-        ('type', 'function')
-    ])
-    self.assertEqual(expected, promise_function)
+    }]
+    self.assertEqual(expected, params)
+    self.assertFalse(getReturnsAsync(schema, 'non_promise_supporting'))
 
-  def testFunctionWithPromiseAndParams(self):
+  def testFunctionWithoutPromiseSupportAndParams(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
 
-    promise_function = getFunction(schema, 'promise_supporting_with_params')
-    expected = OrderedDict([
-        ('parameters', [
-            {
-               'name': 'z',
-               'type': 'integer'
-            }, {
-                'name':'y',
-                'choices': [{'type': 'integer'}, {'type': 'string'}]
-            }
-        ]),
-        ('returns_async', {
+    params = getParams(schema, 'non_promise_supporting_with_params')
+    expected = [
+        {'name': 'z', 'type': 'integer'},
+        {'name': 'y', 'choices': [{'type': 'integer'}, {'type': 'string'}]},
+        {
             'name': 'callback',
-            'parameters': [{'name': 'x', 'type': 'integer'}]
-        }),
-        ('name', 'promise_supporting_with_params'),
-        ('type', 'function')
-    ])
-    self.assertEqual(expected, promise_function)
+            'type': 'function',
+            'parameters': [{'name': 'x', 'type': 'integer'}],
+        }
+    ]
+    self.assertEqual(expected, params)
+    self.assertFalse(
+        getReturnsAsync(schema, 'non_promise_supporting_with_params')
+    )
 
   def testProperties(self):
     schema = idl_schema.Load('test/idl_properties.idl')[0]

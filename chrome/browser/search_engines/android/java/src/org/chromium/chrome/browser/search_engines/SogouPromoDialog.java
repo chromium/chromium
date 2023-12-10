@@ -32,14 +32,16 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A promotion dialog showing that the default search provider will be set to Sogou.
- */
+/** A promotion dialog showing that the default search provider will be set to Sogou. */
 public class SogouPromoDialog extends PromoDialog {
     // These constants are here to back a uma histogram. Append new constants at the end of this
     // list (do not rearrange) and don't forget to update NUM_ENTRIES.
-    @IntDef({UserChoice.USE_SOGOU, UserChoice.KEEP_GOOGLE, UserChoice.SETTINGS,
-            UserChoice.BACK_KEY})
+    @IntDef({
+        UserChoice.USE_SOGOU,
+        UserChoice.KEEP_GOOGLE,
+        UserChoice.SETTINGS,
+        UserChoice.BACK_KEY
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface UserChoice {
         int USE_SOGOU = 0;
@@ -59,17 +61,22 @@ public class SogouPromoDialog extends PromoDialog {
 
     private @UserChoice int mChoice = UserChoice.BACK_KEY;
 
-    /**
-     * Creates an instance of the dialog.
-     */
-    public SogouPromoDialog(Activity activity, @NonNull Callback<Boolean> onSelectEngine,
-            @Nullable Callback<Boolean> onDismissed, @NonNull SettingsLauncher settingsLauncher) {
+    /** Creates an instance of the dialog. */
+    public SogouPromoDialog(
+            Activity activity,
+            @NonNull Callback<Boolean> onSelectEngine,
+            @Nullable Callback<Boolean> onDismissed,
+            @NonNull SettingsLauncher settingsLauncher) {
         super(activity);
-        mSpan = new NoUnderlineClickableSpan(activity, (widget) -> {
-            mChoice = UserChoice.SETTINGS;
-            settingsLauncher.launchSettingsActivity(getContext(), SearchEngineSettings.class);
-            dismiss();
-        });
+        mSpan =
+                new NoUnderlineClickableSpan(
+                        activity,
+                        (widget) -> {
+                            mChoice = UserChoice.SETTINGS;
+                            settingsLauncher.launchSettingsActivity(
+                                    getContext(), SearchEngineSettings.class);
+                            dismiss();
+                        });
         setOnDismissListener(this);
         setCanceledOnTouchOutside(false);
         mOnDismissedCallback = onDismissed;
@@ -99,9 +106,11 @@ public class SogouPromoDialog extends PromoDialog {
 
         StyleSpan boldSpan = new StyleSpan(android.graphics.Typeface.BOLD);
         TextView textView = (TextView) findViewById(R.id.subheader);
-        SpannableString description = SpanApplier.applySpans(
-                getContext().getString(R.string.sogou_explanation),
-                new SpanInfo("<link>", "</link>", mSpan), new SpanInfo("<b>", "</b>", boldSpan));
+        SpannableString description =
+                SpanApplier.applySpans(
+                        getContext().getString(R.string.sogou_explanation),
+                        new SpanInfo("<link>", "</link>", mSpan),
+                        new SpanInfo("<b>", "</b>", boldSpan));
         textView.setText(description);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
@@ -132,8 +141,8 @@ public class SogouPromoDialog extends PromoDialog {
             default:
                 assert false : "Unexpected choice";
         }
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN, true);
         RecordHistogram.recordEnumeratedHistogram(
                 "SpecialLocale.PromotionDialog", mChoice, UserChoice.NUM_ENTRIES);
 

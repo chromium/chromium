@@ -47,8 +47,6 @@ enum DialogViewId : int {
   MANAGE_CARDS_BUTTON,  // Typically says [Manage cards]
   MANAGE_IBANS_BUTTON,  // Typically says [Manage payments]
 
-  TOGGLE_IBAN_VALUE_MASKING_BUTTON,  // Used to mask/unmask IBAN value.
-
   // The following are views::Link objects (clickable).
   LEARN_MORE_LINK,
 
@@ -66,7 +64,6 @@ enum DialogViewId : int {
 
   // The following are views::Label objects.
   EXPIRATION_DATE_LABEL,  // Appears during save offer bubble
-  IBAN_VALUE_LABEL,       // Shows or hides during IBAN offer bubble
   NICKNAME_LABEL,         // Appears during manage saved IBAN bubble.
 
   // The following are views::StyledLabel objects.

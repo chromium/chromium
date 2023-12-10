@@ -18,9 +18,9 @@ import './strings.m.js';
 
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import {MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
-import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import type {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';

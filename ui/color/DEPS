@@ -4,5 +4,5 @@ include_rules = [
   "+skia/ext",
   "+ui/base",
   "+ui/gfx",
-  "+ui/base",
+  "+ui/native_theme",
 ]

@@ -20,7 +20,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -33,18 +33,6 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    if (base::FeatureList::IsEnabled(
-            bookmarks::kRollbackBookmarksAccountStorage)) {
-      // Try deleting the file that was used by the account storage. This is a
-      // no-op if the file doesn't exist. Guarded by
-      // `kRollbackBookmarksAccountStorage` to minimize the performance impact.
-      bookmarks::BookmarkModel::WipeAccountStorageForRollback(
-          browser_state->GetStatePath());
-    }
-
-    return nullptr;
-  }
   // Using nullptr for `ManagedBookmarkService`, since managed bookmarks affect
   // only the local bookmark storage.
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(

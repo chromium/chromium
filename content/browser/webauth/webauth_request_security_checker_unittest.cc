@@ -351,9 +351,6 @@ TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
   const base::test::ScopedFeatureList scoped_feature_list{
       device::kWebAuthnRelatedOrigin};
 
-  url::ScopedSchemeRegistryForTests scoped_scheme_registry;
-  url::AddStandardScheme("foo-extension", url::SCHEME_WITH_HOST);
-
   struct TestCase {
     const char* json;
     blink::mojom::AuthenticatorStatus expected;
@@ -366,8 +363,6 @@ TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
       blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
   constexpr blink::mojom::AuthenticatorStatus no_match_hit_limits = blink::
       mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
-  constexpr blink::mojom::AuthenticatorStatus no_match_extension = blink::
-      mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH_EXTENSION;
 
   static const TestCase kTestCases[] = {
       {R"([])", parse_error},
@@ -424,20 +419,6 @@ TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
     SCOPED_TRACE(test.json);
 
     EXPECT_EQ(test.expected, Test("https://foo.com", test.json));
-  }
-
-  static const TestCase kExtensionTestCases[] = {
-      {R"({})", no_match_extension},
-      {R"({"extensions": "bar"})", no_match_extension},
-      {R"({"extensions": []})", no_match},
-      {R"({"extensions": [1]})", parse_error},
-      {R"({"extensions": ["foo-extension://abcde"]})", ok},
-  };
-
-  for (const auto& test : kExtensionTestCases) {
-    SCOPED_TRACE(test.json);
-
-    EXPECT_EQ(test.expected, Test("foo-extension://abcde/", test.json));
   }
 }
 

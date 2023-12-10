@@ -36,6 +36,7 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -55,6 +56,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_layout_store.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
@@ -84,11 +86,86 @@ std::string ToDisplayName(int64_t id) {
   return base::StringPrintf("Display-%d", static_cast<int>(id));
 }
 
+// Asserts that metrics propagated by DisplayManager and DisplayManagerObserver
+// are consistent.
+class DisplayManagerObserverValidator : public display::DisplayObserver,
+                                        public display::DisplayManagerObserver {
+ public:
+  DisplayManagerObserverValidator() {
+    display_observer_.emplace(this);
+    display_manager_observation_.Observe(Shell::Get()->display_manager());
+  }
+
+  // display::DisplayObserver:
+  void OnDisplayAdded(const display::Display& new_display) override {
+    if (!base::Contains(added_displays_, new_display)) {
+      added_displays_.push_back(new_display);
+    }
+  }
+  void OnDisplayRemoved(const display::Display& old_display) override {
+    if (!base::Contains(added_displays_, old_display)) {
+      removed_displays_.push_back(old_display);
+    }
+  }
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override {
+    if (!base::Contains(changed_displays_, display)) {
+      changed_displays_.push_back(display);
+    }
+    if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second) {
+      changed_metrics_[display.id()] |= changed_metrics;
+    }
+  }
+
+  // display::DisplayManager::Observer:
+  void OnWillProcessDisplayChanges() override {
+    // There should not be multiple OnWillProcessDisplayChanges() calls before
+    // the subsequent call to OnDidProcessDisplayChanges().
+    EXPECT_FALSE(processing_display_changes_);
+    processing_display_changes_ = true;
+  }
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override {
+    EXPECT_TRUE(processing_display_changes_);
+
+    EXPECT_TRUE(base::ranges::is_permutation(
+        added_displays_, configuration_change.added_displays));
+    EXPECT_TRUE(base::ranges::is_permutation(
+        removed_displays_, configuration_change.removed_displays));
+
+    EXPECT_EQ(changed_metrics_.size(),
+              configuration_change.display_metrics_changes.size());
+    for (const auto& change : configuration_change.display_metrics_changes) {
+      EXPECT_TRUE(base::Contains(changed_metrics_, change.display->id()));
+      EXPECT_EQ(changed_metrics_[change.display->id()], change.changed_metrics);
+    }
+
+    processing_display_changes_ = false;
+    added_displays_.clear();
+    removed_displays_.clear();
+    changed_displays_.clear();
+    changed_metrics_.clear();
+  }
+
+ private:
+  bool processing_display_changes_ = false;
+  vector<display::Display> added_displays_;
+  vector<display::Display> removed_displays_;
+  vector<display::Display> changed_displays_;
+  base::flat_map<int64_t, uint32_t> changed_metrics_;
+
+  std::optional<display::ScopedDisplayObserver> display_observer_;
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
+};
+
 }  // namespace
 
 class DisplayManagerTest : public AshTestBase,
                            public display::DisplayObserver,
-                           public aura::WindowObserver {
+                           public aura::WindowObserver,
+                           public display::DisplayManagerObserver {
  public:
   DisplayManagerTest() = default;
 
@@ -100,10 +177,14 @@ class DisplayManagerTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     display_observer_.emplace(this);
+    display_manager_observation_.Observe(Shell::Get()->display_manager());
     Shell::GetPrimaryRootWindow()->AddObserver(this);
+    display_manager_observer_validator_.emplace();
   }
   void TearDown() override {
+    display_manager_observer_validator_.reset();
     Shell::GetPrimaryRootWindow()->RemoveObserver(this);
+    display_manager_observation_.Reset();
     display_observer_.reset();
     AshTestBase::TearDown();
   }
@@ -154,9 +235,7 @@ class DisplayManagerTest : public AshTestBase,
     return GetDisplayInfo(display_manager()->GetDisplayForId(id));
   }
 
-  // aura::DisplayObserver overrides:
-  void OnWillProcessDisplayChanges() override { ++will_process_count_; }
-  void OnDidProcessDisplayChanges() override { ++did_process_count_; }
+  // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
     changed_.push_back(display);
@@ -168,6 +247,13 @@ class DisplayManagerTest : public AshTestBase,
   }
   void OnDisplayRemoved(const display::Display& old_display) override {
     ++removed_count_;
+  }
+
+  // display::DisplayManager::Observer:
+  void OnWillProcessDisplayChanges() override { ++will_process_count_; }
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override {
+    ++did_process_count_;
   }
 
   // aura::WindowObserver overrides:
@@ -196,7 +282,7 @@ class DisplayManagerTest : public AshTestBase,
   void SetSoftwareMirrorMode(bool active) {
     display_manager()->SetMirrorMode(
         active ? display::MirrorMode::kNormal : display::MirrorMode::kOff,
-        absl::nullopt);
+        std::nullopt);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -218,7 +304,13 @@ class DisplayManagerTest : public AshTestBase,
   base::flat_map<int64_t, uint32_t> changed_metrics_;
   bool check_root_window_on_destruction_ = true;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<DisplayManagerObserverValidator>
+      display_manager_observer_validator_;
+
+  std::optional<display::ScopedDisplayObserver> display_observer_;
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 
   // Currently `display::features::kRoundedDisplay` feature is used during the
   // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore
@@ -337,9 +429,9 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   const vector<display::ManagedDisplayInfo> empty;
   display_manager()->OnNativeDisplaysChanged(empty);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  // Going to 0 displays doesn't actually change the list and but the detected
-  // is set to false.
-  EXPECT_EQ("1 0 0 0 0", GetCountSummary());
+  // Going to 0 displays doesn't actually change the active display list but the
+  // detected bit for the previously connected displays is propagated as false.
+  EXPECT_EQ("1 0 0 1 1", GetCountSummary());
   EXPECT_FALSE(root_window_destroyed());
   // Display configuration stays the same
   EXPECT_EQ(gfx::Rect(0, 0, 800, 300),
@@ -3306,8 +3398,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
   // the destruction of the Unified host when we switched to mirror mode
   // asynchronously.
   auto* app_list_controller = Shell::Get()->app_list_controller();
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(
       app_list_controller->IsVisible(display_manager()->first_display_id()));
 
@@ -3319,7 +3410,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Home Launcher should be dismissed.
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(
       app_list_controller->IsVisible(display_manager()->first_display_id()));
 }
@@ -3700,7 +3791,7 @@ TEST_F(DisplayManagerTest, CheckInitializationOfRotationProperty) {
       /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
       /*is_interlaced=*/false,
       /*variable_refresh_rate_state=*/display::kVrrNotCapable,
-      /*vsync_rate_min=*/absl::nullopt);
+      /*vsync_rate_min=*/std::nullopt);
 
   const display::ManagedDisplayInfo& info =
       display_manager()->GetDisplayInfo(id);
@@ -4641,8 +4732,8 @@ TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
   // display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, id_list[0], dst_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
@@ -4655,7 +4746,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
             display_manager()->GetDisplayForId(id_list[2]).bounds().origin());
 
   // Turn off mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_FALSE(display_manager()->mixed_mirror_mode_params());
   EXPECT_EQ(gfx::Point(300, 0),
@@ -4673,8 +4764,8 @@ TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
   // display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, id_list[0], dst_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
@@ -4686,7 +4777,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
 
   // Overwrite mixed mirror mode with default mirror mode (Mirror all
   // displays).
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
   destination_ids = display_manager()->GetMirroringDestinationDisplayIdList();
@@ -4702,7 +4793,7 @@ TEST_F(DisplayManagerTest, MirrorModeToMixedMirrorMode) {
       display_manager()->GetConnectedDisplayIdList();
 
   // Turn on mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
   display::DisplayIdList destination_ids =
@@ -4716,8 +4807,8 @@ TEST_F(DisplayManagerTest, MirrorModeToMixedMirrorMode) {
   // first display to the second display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, id_list[0], dst_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
@@ -4750,8 +4841,8 @@ TEST_F(DisplayManagerTest, MixedMirrorModeRestore) {
   // first display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(first_display_id);
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, internal_display_id, dst_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, internal_display_id, dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(internal_display_id, display_manager()->mirroring_source_id());
@@ -4806,7 +4897,7 @@ TEST_F(DisplayManagerTest, MirrorModeRestoreAfterResume) {
 
   // Turn on mirror mode.
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 
   // Suspend.
@@ -4858,7 +4949,7 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
         SetSoftwareMirrorMode(true);
 
         ASSERT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
-        ASSERT_FALSE(tablet_mode_controller->IsInTabletMode());
+        ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
         break;
       }
     }
@@ -5112,7 +5203,7 @@ TEST_F(DisplayManagerTest, ExitMirrorModeInTabletMode) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
 
   // Exit mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
 }

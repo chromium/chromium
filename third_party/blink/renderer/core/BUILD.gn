@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
@@ -160,7 +160,7 @@ source_set("prerequisites") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/blink/public/mojom:color_scheme_mojo_bindings",
-    "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
+    "//third_party/blink/public/mojom:mojom_core_blink",
     "//third_party/blink/renderer/bindings/core/v8:generated",
     "//third_party/blink/renderer/core/animation:buildflags",
     "//third_party/blink/renderer/core/inspector:generated",
@@ -176,6 +176,7 @@ source_set("prerequisites") {
     "//ui/accessibility/mojom:mojom_blink",
     "//ui/base:features",
     "//ui/base/ime/mojom",
+    "//ui/color",
     "//ui/display/mojom:mojom_blink",
     "//ui/events:dom_keycode_converter",
     "//ui/gfx/geometry",
@@ -317,7 +318,6 @@ component("core") {
     ":core_hot",
     "//cc",
     "//skia",
-    "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
     "//third_party/blink/public/mojom:mojom_core_blink",
     "//third_party/blink/renderer/bindings:buildflags",
     "//third_party/blink/renderer/bindings/core/v8",
@@ -384,7 +384,7 @@ component("core") {
     deps += [ "//ui/base/mojom" ]
   }
 
-  if (enable_printing) {
+  if (enable_printing || enable_printing_tests) {
     deps += [ "//printing:metafile" ]
   }
 
@@ -471,6 +471,7 @@ source_set("testing") {
 
   deps = [
     ":core",
+    ":element_locator_proto",
     ":generated_testing_idls",
     "//build:chromeos_buildflags",
     "//components/ukm:test_support",
@@ -1432,7 +1433,6 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/platform:test_support",
-    "//third_party/blink/renderer/platform:unit_tests",
     "//ui/accessibility:ax_base",
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_blink",
@@ -1469,6 +1469,90 @@ source_set("unit_tests") {
   if (use_inner_html_parser_fast_path) {
     sources += [ "html/parser/html_document_parser_fastpath_test.cc" ]
   }
+}
+
+source_set("unit_tests_v2") {
+  testonly = true
+
+  # If you create a new subdirectory 'foo' that contains unit tests, list them in
+  # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
+  # the deps section below.
+  sources = []
+
+  sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
+  sources += rebase_path(blink_core_tests_animation, "", "animation")
+  sources += rebase_path(blink_core_tests_annotation, "", "annotation")
+  sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
+  sources +=
+      rebase_path(blink_core_tests_content_capture, "", "content_capture")
+  sources += rebase_path(blink_core_tests_events, "", "events")
+  sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
+  sources += rebase_path(blink_core_tests_imagebitmap, "", "imagebitmap")
+  sources += rebase_path(blink_core_tests_intersection_observer,
+                         "",
+                         "intersection_observer")
+  sources += rebase_path(blink_core_tests_mathml, "", "mathml")
+  sources += rebase_path(blink_core_tests_messaging, "", "messaging")
+  sources += rebase_path(blink_core_tests_mobile_metrics, "", "mobile_metrics")
+  sources +=
+      rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
+  sources +=
+      rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_script, "", "script")
+  sources +=
+      rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
+  sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
+  sources += rebase_path(blink_core_tests_url, "", "url")
+  sources += rebase_path(blink_core_tests_url_pattern, "", "url_pattern")
+  sources += rebase_path(blink_core_tests_xml, "", "xml")
+  sources += rebase_path(blink_core_tests_xmlhttprequest, "", "xmlhttprequest")
+
+  configs += [
+    ":blink_core_pch",
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    ":core",
+    ":element_locator_proto",
+    ":unit_test_support",
+    "//build:chromeos_buildflags",
+    "//cc",
+    "//components/autofill/core/common:features",
+    "//components/paint_preview/common:common",
+    "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/core/common:data_driven_testing",
+    "//components/ukm:test_support",
+    "//components/viz/test:test_support",
+    "//content/test:test_support",
+    "//gpu/command_buffer/client:raster",
+    "//gpu/config",
+    "//mojo/public/cpp/system",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network:test_support",
+    "//skia",
+    "//skia:skcms",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party:freetype_harfbuzz",
+    "//third_party/blink/common/privacy_budget:test_support",
+    "//third_party/blink/public:buildflags",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/common/privacy_budget:test_support",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/platform:test_support",
+    "//ui/accessibility:ax_base",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_blink",
+    "//ui/base/dragdrop/mojom:mojom_blink",
+    "//ui/gfx:test_support",
+  ]
+
+  data_deps = [ ":unit_tests_data" ]
 }
 
 group("unit_tests_data") {
@@ -1528,6 +1612,9 @@ source_set("perf_tests") {
 source_set("unit_test_support") {
   testonly = true
   sources = [
+    "css/css_test_helpers.cc",
+    "css/css_test_helpers.h",
+    "css/mock_css_paint_image_generator.h",
     "frame/frame_test_helpers.cc",
     "frame/frame_test_helpers.h",
     "html/media/html_media_test_helper.cc",
@@ -1557,8 +1644,6 @@ source_set("unit_test_support") {
     "testing/sim/sim_request.h",
     "testing/sim/sim_test.cc",
     "testing/sim/sim_test.h",
-    "testing/sim/sim_web_frame_widget.cc",
-    "testing/sim/sim_web_frame_widget.h",
     "workers/worker_thread_test_helper.h",
   ]
 
@@ -1681,6 +1766,7 @@ action_foreach("element_locator_test_protobuf") {
 
   source_dir = "lcp_critical_path_predictor/test_proto"
   sources = rebase_path([ "lcp_image_id.asciipb" ], "", source_dir)
+  sources += rebase_path([ "lcp_image_id_b.asciipb" ], "", source_dir)
 
   deps = [
     ":element_locator_proto",

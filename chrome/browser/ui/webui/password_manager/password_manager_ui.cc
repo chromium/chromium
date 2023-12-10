@@ -14,10 +14,13 @@
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -26,6 +29,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
@@ -52,12 +56,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -293,6 +291,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
     {"passwordNoteCharacterCountWarning",
      IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING},
+    {"passwordListAriaLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LIST_ARIA_LABEL},
     {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
     {"phishedAndLeakedPassword",
      IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED_AND_LEAKED},
@@ -587,13 +586,9 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<password_manager::SyncHandler>(profile));
   web_ui->AddMessageHandler(std::make_unique<ExtensionControlHandler>());
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  web_ui->AddMessageHandler(std::make_unique<SafetyHubHandler>(profile));
   web_ui->AddMessageHandler(
-      std::make_unique<password_manager::PromoCardsHandler>(
-          profile,
-          password_manager::PromoCardInterface::GetAllPromoCardsForProfile(
-              profile)));
-#endif
+      std::make_unique<password_manager::PromoCardsHandler>(profile));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   web_ui->AddMessageHandler(std::make_unique<settings::PasskeysHandler>());
 #endif

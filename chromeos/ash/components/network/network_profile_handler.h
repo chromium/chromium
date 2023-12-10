@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_HANDLER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_HANDLER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
   bool HasObserver(NetworkProfileObserver* observer);
 
   void GetManagerPropertiesCallback(
-      absl::optional<base::Value::Dict> properties);
+      std::optional<base::Value::Dict> properties);
 
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& name,

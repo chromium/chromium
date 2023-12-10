@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://shortcut-customization/js/search/search_box.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
@@ -143,9 +144,7 @@ suite('searchBoxTest', function() {
     await flushTasks();
 
     // The search input should be focused after the first render.
-    assertEquals(
-        searchFieldElement.shadowRoot?.activeElement,
-        searchFieldElement.getSearchInput());
+    assertEquals(searchFieldElement.getSearchInput(), getDeepActiveElement());
   });
 
   test('SearchResultsPopulated', async () => {

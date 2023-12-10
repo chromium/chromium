@@ -20,8 +20,6 @@ public interface Serializer<T> {
     @Nullable
     T get();
 
-    /**
-     * Prepares data for serialization. Must be called from the UI thread.
-     */
+    /** Prepares data for serialization. Must be called from the UI thread. */
     default void preSerialize() {}
 }

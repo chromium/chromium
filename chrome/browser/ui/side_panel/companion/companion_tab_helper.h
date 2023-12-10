@@ -152,9 +152,9 @@ class CompanionTabHelper
   // Called to cache the trigger which is later recorded as metrics as soon as
   // the companion page opens up.
   void SetMostRecentSidePanelOpenTrigger(
-      absl::optional<SidePanelOpenTrigger> side_panel_open_trigger);
+      std::optional<SidePanelOpenTrigger> side_panel_open_trigger);
   // Called to get the most recent value of trigger and immediately reset it.
-  absl::optional<SidePanelOpenTrigger>
+  std::optional<SidePanelOpenTrigger>
   GetAndResetMostRecentSidePanelOpenTrigger();
 
   // Create and register a contextual Lens entry.
@@ -192,7 +192,7 @@ class CompanionTabHelper
 
   // Caches the trigger source for an in-progress companion page open action in
   // the current tab. Should be cleared after the open action is complete.
-  absl::optional<SidePanelOpenTrigger> side_panel_open_trigger_;
+  std::optional<SidePanelOpenTrigger> side_panel_open_trigger_;
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;

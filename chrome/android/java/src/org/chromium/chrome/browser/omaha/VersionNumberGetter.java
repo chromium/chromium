@@ -23,7 +23,8 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 public class VersionNumberGetter {
     private static final String MIN_SDK_VERSION_PARAM = "min_sdk_version";
     public static final IntCachedFieldTrialParameter MIN_SDK_VERSION =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID,
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID,
                     MIN_SDK_VERSION_PARAM,
                     ContextUtils.getApplicationContext().getApplicationInfo().minSdkVersion);
 
@@ -52,7 +53,7 @@ public class VersionNumberGetter {
     /** If false, OmahaClient will never report that a newer version is available. */
     private static boolean sEnableUpdateDetection = true;
 
-    protected VersionNumberGetter() { }
+    protected VersionNumberGetter() {}
 
     /**
      * Retrieve the latest version we know about from disk.

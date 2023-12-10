@@ -25,14 +25,14 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
     public static interface DefaultSearchEnginePromoDialogObserver {
         void onDialogShown(DefaultSearchEnginePromoDialog shownDialog);
     }
+
     private static DefaultSearchEnginePromoDialogObserver sObserverForTesting;
 
     @SuppressLint("StaticFieldLeak")
     private static DefaultSearchEnginePromoDialog sCurrentDialog;
 
     /** Used to determine the promo dialog contents. */
-    @SearchEnginePromoType
-    private final int mDialogType;
+    @SearchEnginePromoType private final int mDialogType;
 
     /** Called when the dialog is dismissed after the user has chosen a search engine. */
     private final Callback<Boolean> mOnSuccessCallback;
@@ -51,8 +51,10 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
      * @param onSuccessCallback Notified whether the user successfully chose a search engine and
      *                          dismissed the dialog.
      */
-    public DefaultSearchEnginePromoDialog(Activity activity,
-            DefaultSearchEngineDialogHelper.Delegate delegate, int dialogType,
+    public DefaultSearchEnginePromoDialog(
+            Activity activity,
+            DefaultSearchEngineDialogHelper.Delegate delegate,
+            int dialogType,
             @Nullable Callback<Boolean> onSuccessCallback) {
         super(activity);
         assert dialogType == SearchEnginePromoType.SHOW_EXISTING
@@ -89,8 +91,9 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
         RadioButtonLayout radioButtons = new RadioButtonLayout(getContext());
         radioButtons.setId(R.id.default_search_engine_dialog_options);
         addControl(radioButtons);
-        mHelper = new DefaultSearchEngineDialogHelper(
-                mDialogType, mDelegate, radioButtons, okButton, this::dismiss);
+        mHelper =
+                new DefaultSearchEngineDialogHelper(
+                        mDialogType, mDelegate, radioButtons, okButton, this::dismiss);
     }
 
     @Override

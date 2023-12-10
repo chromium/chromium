@@ -49,7 +49,6 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   // object created).
   RulesRegistry(content::BrowserContext* browser_context,
                 const std::string& event_name,
-                content::BrowserThread::ID owner_thread,
                 RulesCacheDelegate* cache_delegate,
                 int id);
 
@@ -109,6 +108,10 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   void GetAllRules(const std::string& extension_id,
                    std::vector<const api::events::Rule*>* out);
 
+  // Called to notify the RulesRegistry that the registry service is being
+  // shut down.
+  void OnShutdown();
+
   // Called to notify the RulesRegistry that the extension availability has
   // changed, so that the registry can update which rules are active.
   void OnExtensionUnloaded(const Extension* extension);
@@ -126,10 +129,6 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
 
   // Returns the context where the rules registry lives.
   content::BrowserContext* browser_context() const { return browser_context_; }
-
-  // Returns the ID of the thread on which the rules registry lives.
-  // It is safe to call this function from any thread.
-  content::BrowserThread::ID owner_thread() const { return owner_thread_; }
 
   // The name of the event with which rules are registered.
   const std::string& event_name() const { return event_name_; }
@@ -227,12 +226,12 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   std::string RemoveAllRulesNoStoreUpdate(const std::string& extension_id,
                                           bool remove_manifest_rules);
 
-  void MarkReady(base::Time storage_init_time);
+  void MarkReady();
 
   // Deserialize the rules from the given Value object and add them to the
   // RulesRegistry.
   void DeserializeAndAddRules(const std::string& extension_id,
-                              absl::optional<base::Value> rules);
+                              std::optional<base::Value> rules);
 
   // Reports an internal error with the specified params to the extensions
   // client.
@@ -240,10 +239,7 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
                            const std::string& error);
 
   // The context to which this rules registry belongs.
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> browser_context_;
-
-  // The ID of the thread on which the rules registry lives.
-  const content::BrowserThread::ID owner_thread_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The name of the event with which rules are registered.
   const std::string event_name_;

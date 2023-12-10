@@ -104,7 +104,7 @@ AlarmsCreateFunction::AlarmsCreateFunction(base::Clock* clock)
 AlarmsCreateFunction::~AlarmsCreateFunction() = default;
 
 ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
-  absl::optional<alarms::Create::Params> params =
+  std::optional<alarms::Create::Params> params =
       alarms::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -145,7 +145,7 @@ void AlarmsCreateFunction::Callback() {
 }
 
 ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
-  absl::optional<alarms::Get::Params> params =
+  std::optional<alarms::Get::Params> params =
       alarms::Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -185,7 +185,7 @@ void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
 }
 
 ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {
-  absl::optional<alarms::Clear::Params> params =
+  std::optional<alarms::Clear::Params> params =
       alarms::Clear::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

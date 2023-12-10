@@ -24,6 +24,9 @@
 // Returns whether sync has finished its first run setup.
 + (BOOL)isInitialSyncFeatureSetupComplete;
 
+// Returns whether the omnibox position choice is enabled.
++ (BOOL)isOmniboxPositionChoiceEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_APP_INTERFACE_H_

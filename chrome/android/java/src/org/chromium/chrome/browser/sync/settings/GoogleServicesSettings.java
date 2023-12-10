@@ -20,7 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -60,18 +59,17 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
-    @VisibleForTesting
-    public static final String PREF_ALLOW_SIGNIN = "allow_signin";
+    @VisibleForTesting public static final String PREF_ALLOW_SIGNIN = "allow_signin";
     private static final String PREF_SEARCH_SUGGESTIONS = "search_suggestions";
     private static final String PREF_USAGE_AND_CRASH_REPORTING = "usage_and_crash_reports";
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
+
     @VisibleForTesting
     public static final String PREF_USAGE_STATS_REPORTING = "usage_stats_reporting";
     @VisibleForTesting
-    public static final String PREF_METRICS_SETTINGS = "metrics_settings";
-    @VisibleForTesting
     public static final String PREF_PRICE_TRACKING_ANNOTATIONS = "price_tracking_annotations";
+
     private static final String PREF_PRICE_NOTIFICATION_SECTION = "price_notifications_section";
 
     private final PrivacyPreferencesManagerImpl mPrivacyPrefManager =
@@ -113,11 +111,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mSearchSuggestions = (ChromeSwitchPreference) findPreference(PREF_SEARCH_SUGGESTIONS);
         mSearchSuggestions.setOnPreferenceChangeListener(this);
         mSearchSuggestions.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-
-        // If the metrics-settings-android flag is not enabled, remove the corresponding element.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.METRICS_SETTINGS_ANDROID)) {
-            removePreference(getPreferenceScreen(), findPreference(PREF_METRICS_SETTINGS));
-        }
 
         mUsageAndCrashReporting =
                 (ChromeSwitchPreference) findPreference(PREF_USAGE_AND_CRASH_REPORTING);
@@ -170,8 +163,8 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            getHelpAndFeedbackLauncher().show(
-                    getActivity(), getString(R.string.help_context_sync_and_services), null);
+            getHelpAndFeedbackLauncher()
+                    .show(getActivity(), getString(R.string.help_context_sync_and_services), null);
             return true;
         }
         return false;
@@ -209,8 +202,10 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return true;
             }
 
-            SignOutDialogCoordinator.show(requireContext(),
-                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+            SignOutDialogCoordinator.show(
+                    requireContext(),
+                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                    this,
                     SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
                     GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
             // Don't change the preference state yet, it will be updated by onSignOutClicked
@@ -256,17 +251,19 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         if (mUsageStatsReporting != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                     && mPrefService.getBoolean(Pref.USAGE_STATS_ENABLED)) {
-                mUsageStatsReporting.setOnPreferenceClickListener(preference -> {
-                    UsageStatsConsentDialog
-                            .create(getActivity(), true,
-                                    (didConfirm) -> {
-                                        if (didConfirm) {
-                                            updatePreferences();
-                                        }
-                                    })
-                            .show();
-                    return true;
-                });
+                mUsageStatsReporting.setOnPreferenceClickListener(
+                        preference -> {
+                            UsageStatsConsentDialog.create(
+                                            getActivity(),
+                                            true,
+                                            (didConfirm) -> {
+                                                if (didConfirm) {
+                                                    updatePreferences();
+                                                }
+                                            })
+                                    .show();
+                            return true;
+                        });
             } else {
                 removePreference(getPreferenceScreen(), mUsageStatsReporting);
                 mUsageStatsReporting = null;
@@ -287,7 +284,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 }
                 if (PREF_USAGE_AND_CRASH_REPORTING.equals(key)) {
                     return !PrivacyPreferencesManagerImpl.getInstance()
-                                    .isUsageAndCrashReportingPermittedByPolicy();
+                            .isUsageAndCrashReportingPermittedByPolicy();
                 }
                 if (PREF_URL_KEYED_ANONYMIZED_DATA.equals(key)) {
                     return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(
@@ -304,14 +301,15 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         // In case the user reached this fragment without being signed in, we guard the sign out so
         // we do not hit a native crash.
         if (!IdentityServicesProvider.get()
-                        .getIdentityManager(getProfile())
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .getIdentityManager(getProfile())
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return;
         }
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
         IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
-                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                .signOut(
+                        SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                         new SigninManager.SignOutCallback() {
                             @Override
                             public void preWipeData() {

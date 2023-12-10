@@ -52,11 +52,21 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
        */
       searchEngines_: Array,
 
-      // Whether the `kSearchEngineChoiceSettingsUi` feature is enabled or not.
+      // Whether the `SearchEngineChoice` or `SearchEngineChoiceFre` features
+      // are enabled or not.
       searchEngineChoiceSettingsUi_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('searchEngineChoiceSettingsUi');
+        },
+      },
+
+      // Whether we need to set the icon size to large because they are loaded
+      // in the binary or smaller because we get them from the favicon service.
+      useLargeSearchEngineIcons_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('useLargeSearchEngineIcons');
         },
       },
 
@@ -85,6 +95,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private focusConfig_: Map<string, string>|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
+  private useLargeSearchEngineIcons_: boolean;
 
   override ready() {
     super.ready();
@@ -101,6 +112,11 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       this.focusConfig_.set(
           routes.SEARCH_ENGINES.path, '#enginesSubpageTrigger');
     }
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setFaviconSize_();
   }
 
   private onChange_() {
@@ -152,6 +168,11 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private onSearchEngineListDialogClose_() {
     assert(this.searchEngineChoiceSettingsUi_);
     this.showSearchEngineListDialog_ = false;
+  }
+
+  private setFaviconSize_() {
+    this.style.setProperty(
+        '--favicon-size', this.useLargeSearchEngineIcons_ ? '24px' : '16px');
   }
 }
 

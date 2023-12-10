@@ -1,0 +1,11 @@
+Name: {{name}}
+URL: {{url}}
+Description: {{description}}
+Version: {{version}}
+Security Critical: {{security_critical}}
+Shipped: {{shipped}}
+License: {{license}}
+License File:{{#each license_files}}{{#if @first}} {{else}},{{/if}}{{this}}{{/each}}
+{{#if revision}}
+Revision: {{revision}}
+{{/if}}

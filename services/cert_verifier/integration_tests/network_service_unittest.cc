@@ -66,6 +66,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
     // Create a cert verifier service.
     cert_verifier_service_impl_.GetNewCertVerifierForTesting(
         cv_service_remote.InitWithNewPipeAndPassReceiver(),
+        /*updater_receiver=*/mojo::NullReceiver(),
         cv_service_client.InitWithNewPipeAndPassRemote(),
         mojom::CertVerifierCreationParams::New(),
         &cert_net_fetcher_url_loader_);

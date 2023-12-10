@@ -36,8 +36,8 @@ out_linux_ash: the directory that holds artifacts for ash-chrome running on linu
 ```shell
 % gn args out_linux_ash/Release
 
-target_os = "chromeos"
-use_goma = true          # speeds up compilation
+target_os="chromeos"
+use_remoteeec=true          # speeds up compilation
 ```
 out_linux_lacros: the directory that holds artifacts for lacros-chrome running on linux
 ```shell
@@ -45,7 +45,7 @@ out_linux_lacros: the directory that holds artifacts for lacros-chrome running o
 
 target_os="chromeos"
 chromeos_is_browser_only=true
-use_goma=true             # speeds up compilation
+use_remoteexec=true             # speeds up compilation
 is_component_build=true   # speeds up links
 ```
 
@@ -62,7 +62,7 @@ Build ash-chrome with typical target_os="chromeos" workflow
 ```shell
 % mkdir -p out_linux_ash/Release
 % echo '
-use_goma=true
+use_remoteexec=true
 target_os="chromeos"' > out_linux_ash/Release/args.gn
 % gn gen out_linux_ash/Release
 % autoninja -C out_linux_ash/Release chrome
@@ -74,7 +74,7 @@ Build lacros-chrome-on-linux:
 % mkdir -p out_linux_lacros/Release
 % echo '
 chromeos_is_browser_only=true
-use_goma=true
+use_remoteexec=true
 target_os="chromeos"
 is_component_build=true' > out_linux_lacros/Release/args.gn
 % gn gen out_linux_lacros/Release

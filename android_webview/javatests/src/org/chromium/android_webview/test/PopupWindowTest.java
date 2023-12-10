@@ -52,8 +52,7 @@ import java.util.concurrent.TimeUnit;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
 public class PopupWindowTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mParentContentsClient;
     private AwTestContainerView mParentContainerView;
@@ -539,7 +538,8 @@ public class PopupWindowTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @SkipMutations(reason = "This test depends on a combination of AwSettings, see crbug.com/1494038")
+    @SkipMutations(
+            reason = "This test depends on a combination of AwSettings, see crbug.com/1494038")
     public void testSingleWindowModeJsInjection() throws Throwable {
         // Choose a free port which is different from |mWebServer| so they have different origins.
         TestWebServer crossOriginWebServer = TestWebServer.startAdditional();

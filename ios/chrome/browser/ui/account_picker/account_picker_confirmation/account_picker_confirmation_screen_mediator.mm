@@ -8,9 +8,9 @@
 
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_consumer.h"
 

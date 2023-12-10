@@ -4,6 +4,8 @@
 
 #include "remoting/host/desktop_resizer_x11.h"
 
+#include <gio/gio.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -64,6 +66,7 @@ namespace {
 
 constexpr auto kInvalidMode = static_cast<x11::RandR::Mode>(0);
 constexpr auto kDisabledCrtc = static_cast<x11::RandR::Crtc>(0);
+constexpr base::TimeDelta kGnomeWaitTime = base::Seconds(1);
 
 int PixelsToMillimeters(int pixels, int dpi) {
   DCHECK(dpi != 0);
@@ -179,11 +182,10 @@ DesktopResizerX11::DesktopResizerX11()
   if (!has_randr_) {
     return;
   }
-  // Let the server know the client version so it sends us data consistent with
-  // xcbproto's definitions.  We don't care about the returned server version,
-  // so no need to sync.
-  randr_->QueryVersion({x11::RandR::major_version, x11::RandR::minor_version});
   randr_->SelectInput({root_, x11::RandR::NotifyMask::ScreenChange});
+
+  gnome_display_config_.Init();
+  registry_ = TakeGObject(g_settings_new("org.gnome.desktop.interface"));
 }
 
 DesktopResizerX11::~DesktopResizerX11() = default;
@@ -479,6 +481,17 @@ void DesktopResizerX11::SetResolutionForOutput(
   int height_mm = size_mm.height();
   HOST_LOG << "Setting physical size in mm: " << width_mm << "x" << height_mm;
   SetOutputPhysicalSizeInMM(connection_, output, width_mm, height_mm);
+
+  // Check to see if GNOME is using automatic-scaling. If the value is non-zero,
+  // the user prefers a particular scaling, so don't adjust the
+  // text-scaling-factor here.
+  if (g_settings_get_uint(registry_.get(), "scaling-factor") == 0U) {
+    // Start the timer to update the text-scaling-factor. Any previously
+    // started timer will be cancelled.
+    requested_dpi_ = resolution.dpi().x();
+    gnome_delay_timer_.Start(FROM_HERE, kGnomeWaitTime, this,
+                             &DesktopResizerX11::RequestGnomeDisplayConfig);
+  }
 }
 
 x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
@@ -563,6 +576,44 @@ DesktopResizerX11::OutputInfoList DesktopResizerX11::GetDisabledOutputs() {
     }
   }
   return disabled_outputs;
+}
+
+void DesktopResizerX11::RequestGnomeDisplayConfig() {
+  // Unretained() is safe because `this` owns gnome_display_config_ which
+  // cancels callbacks on destruction.
+  gnome_display_config_.GetMonitorsConfig(
+      base::BindOnce(&DesktopResizerX11::OnGnomeDisplayConfigReceived,
+                     base::Unretained(this)));
+}
+
+void DesktopResizerX11::OnGnomeDisplayConfigReceived(
+    GnomeDisplayConfig config) {
+  if (config.monitors.size() != 1) {
+    HOST_LOG << "Not setting text-scale-factor for multiple monitors.";
+    return;
+  }
+
+  const auto& monitor = config.monitors.cbegin()->second;
+  if (monitor.scale == 0) {
+    // This should never happen - avoid division by 0.
+    return;
+  }
+
+  // The GNOME scaling, multiplied by the GNOME text-scaling-factor, will be the
+  // rendered scaling of text. This should be the client's requested DPI divided
+  // by kDefaultDPI.
+  double text_scaling_factor =
+      static_cast<double>(requested_dpi_) / kDefaultDPI / monitor.scale;
+  HOST_LOG << "Target DPI = " << requested_dpi_
+           << ", GNOME scale = " << monitor.scale
+           << ", calculated text-scaling = " << text_scaling_factor;
+
+  if (!g_settings_set_double(registry_.get(), "text-scaling-factor",
+                             text_scaling_factor)) {
+    // Just log a warning - failure is expected if the value falls outside the
+    // interval [0.5, 3.0].
+    LOG(WARNING) << "Failed to set text-scaling-factor.";
+  }
 }
 
 }  // namespace remoting

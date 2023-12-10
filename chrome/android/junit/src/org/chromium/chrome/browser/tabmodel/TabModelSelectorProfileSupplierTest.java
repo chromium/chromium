@@ -51,8 +51,16 @@ public class TabModelSelectorProfileSupplierTest {
 
     private void initTabModelSelector() {
         mSelector = new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
-        mSelector.initializeTabModels(new EmptyTabModel(), new IncognitoTabModelImpl(null));
+        mSelector.initializeTabModels(
+                new EmptyTabModel() {
+                    @Override
+                    public boolean isActiveModel() {
+                        return true;
+                    }
+                },
+                new IncognitoTabModelImpl(null));
         mNormalModel = new MockTabModel(mProfile, null);
+        mNormalModel.setActive(true);
         mIncognitoModel = new MockTabModel(mIncognitoProfile, null);
     }
 

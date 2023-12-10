@@ -210,12 +210,15 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
     }
   }
 
-  result->created_by_policy =
-      dict.FindBool(DefaultSearchManager::kCreatedByPolicy)
-          .value_or(result->created_by_policy);
+  result->created_by_policy = static_cast<TemplateURLData::CreatedByPolicy>(
+      dict.FindInt(DefaultSearchManager::kCreatedByPolicy)
+          .value_or(static_cast<int>(result->created_by_policy)));
   result->created_from_play_api =
       dict.FindBool(DefaultSearchManager::kCreatedFromPlayAPI)
           .value_or(result->created_from_play_api);
+  result->featured_by_policy =
+      dict.FindBool(DefaultSearchManager::kFeaturedByPolicy)
+          .value_or(result->featured_by_policy);
   result->preconnect_to_search_url =
       dict.FindBool(DefaultSearchManager::kPreconnectToSearchUrl)
           .value_or(result->preconnect_to_search_url);
@@ -299,9 +302,12 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
     encodings.Append(input_encoding);
   url_dict.Set(DefaultSearchManager::kInputEncodings, std::move(encodings));
 
-  url_dict.Set(DefaultSearchManager::kCreatedByPolicy, data.created_by_policy);
+  url_dict.Set(DefaultSearchManager::kCreatedByPolicy,
+               static_cast<int>(data.created_by_policy));
   url_dict.Set(DefaultSearchManager::kCreatedFromPlayAPI,
                data.created_from_play_api);
+  url_dict.Set(DefaultSearchManager::kFeaturedByPolicy,
+               data.featured_by_policy);
   url_dict.Set(DefaultSearchManager::kPreconnectToSearchUrl,
                data.preconnect_to_search_url);
   url_dict.Set(DefaultSearchManager::kPrefetchLikelyNavigations,

@@ -6,9 +6,6 @@
   {
     "namespace": "input.ime",
     "description": "Use the <code>chrome.input.ime</code> API to implement a custom IME for Chrome OS. This allows your extension to handle keystrokes, set the composition, and manage the candidate window.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "platforms": ["chromeos"],
     "types": [
       {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {CanvasDrawingProvider} from 'chrome://diagnostics/drawing_provider.js';
 import {constructRgba, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, MARK_RADIUS, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';

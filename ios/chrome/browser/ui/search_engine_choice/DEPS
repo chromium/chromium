@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/first_run/first_run_screen_delegate.h",
+  "+ios/chrome/browser/ui/search_engine_choice",
+]

@@ -70,7 +70,6 @@ class MODULES_EXPORT IDBDatabase final
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
           callbacks_receiver,
       mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime);
-  ~IDBDatabase() override;
 
   void Trace(Visitor*) const override;
 

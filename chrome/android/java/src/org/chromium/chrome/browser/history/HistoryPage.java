@@ -17,9 +17,7 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/**
- * Native page for managing browsing history.
- */
+/** Native page for managing browsing history. */
 public class HistoryPage extends BasicNativePage {
     private HistoryManager mHistoryManager;
     private String mTitle;
@@ -35,8 +33,13 @@ public class HistoryPage extends BasicNativePage {
      *                    separate activity.
      * @param url The URL used to address the HistoryPage.
      */
-    public HistoryPage(Activity activity, NativePageHost host, SnackbarManager snackbarManager,
-            Profile profile, Supplier<Tab> tabSupplier, String url) {
+    public HistoryPage(
+            Activity activity,
+            NativePageHost host,
+            SnackbarManager snackbarManager,
+            Profile profile,
+            Supplier<Tab> tabSupplier,
+            String url) {
         super(host);
 
         Uri uri = Uri.parse(url);
@@ -44,13 +47,20 @@ public class HistoryPage extends BasicNativePage {
 
         boolean showHistoryClustersImmediately =
                 uri.getPath().contains(HistoryClustersConstants.JOURNEYS_PATH)
-                || uri.getPath().contains(HistoryClustersConstants.GROUPS_PATH);
+                        || uri.getPath().contains(HistoryClustersConstants.GROUPS_PATH);
         String historyClustersQuery =
                 uri.getQueryParameter(HistoryClustersConstants.HISTORY_CLUSTERS_QUERY_KEY);
 
-        mHistoryManager = new HistoryManager(activity, false, snackbarManager, profile, tabSupplier,
-                showHistoryClustersImmediately, historyClustersQuery,
-                new BrowsingHistoryBridge(profile.getOriginalProfile()));
+        mHistoryManager =
+                new HistoryManager(
+                        activity,
+                        false,
+                        snackbarManager,
+                        profile,
+                        tabSupplier,
+                        showHistoryClustersImmediately,
+                        historyClustersQuery,
+                        new BrowsingHistoryBridge(profile.getOriginalProfile()));
         mTitle = host.getContext().getResources().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());

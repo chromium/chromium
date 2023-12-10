@@ -37,13 +37,9 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 import java.util.Objects;
 
-/**
- * A delegate responsible for providing logic around the quick delete modal dialog.
- */
+/** A delegate responsible for providing logic around the quick delete modal dialog. */
 class QuickDeleteDialogDelegate {
-    /**
-     * An observer for changes made to the spinner in the quick delete dialog.
-     */
+    /** An observer for changes made to the spinner in the quick delete dialog. */
     interface TimePeriodChangeObserver {
         /**
          * @param timePeriod The new {@link TimePeriod} selected by the user.
@@ -58,25 +54,27 @@ class QuickDeleteDialogDelegate {
     private final @NonNull TabModelSelector mTabModelSelector;
     private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull TimePeriodChangeObserver mTimePeriodChangeObserver;
+
     /**
      * The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.
      */
     private PropertyModel mModalDialogPropertyModel;
+
     private TimePeriodSpinnerOption mCurrentTimePeriodOption;
 
-    /**
-     * The modal dialog controller to detect events on the dialog.
-     */
+    /** The modal dialog controller to detect events on the dialog. */
     private final ModalDialogProperties.Controller mModalDialogController =
             new ModalDialogProperties.Controller() {
                 @Override
                 public void onClick(PropertyModel model, int buttonType) {
                     if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                        mModalDialogManager.dismissDialog(mModalDialogPropertyModel,
+                        mModalDialogManager.dismissDialog(
+                                mModalDialogPropertyModel,
                                 DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
-                        mModalDialogManager.dismissDialog(mModalDialogPropertyModel,
+                        mModalDialogManager.dismissDialog(
+                                mModalDialogPropertyModel,
                                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                     }
                 }
@@ -102,10 +100,13 @@ class QuickDeleteDialogDelegate {
      * @param timePeriodChangeObserver {@link TimePeriodChangeObserver} which would be notified when
      *         the spinner is toggled.
      */
-    QuickDeleteDialogDelegate(@NonNull Context context, @NonNull View quickDeleteView,
+    QuickDeleteDialogDelegate(
+            @NonNull Context context,
+            @NonNull View quickDeleteView,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector, @NonNull SettingsLauncher settingsLauncher,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull SettingsLauncher settingsLauncher,
             @NonNull TimePeriodChangeObserver timePeriodChangeObserver) {
         mContext = context;
         mQuickDeleteView = quickDeleteView;
@@ -115,13 +116,13 @@ class QuickDeleteDialogDelegate {
         mSettingsLauncher = settingsLauncher;
         mTimePeriodChangeObserver = timePeriodChangeObserver;
 
-        mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
-                mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
+        mCurrentTimePeriodOption =
+                new TimePeriodSpinnerOption(
+                        TimePeriod.LAST_15_MINUTES,
+                        mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
     }
 
-    /**
-     * A method to create the dialog attributes for the quick delete dialog.
-     */
+    /** A method to create the dialog attributes for the quick delete dialog. */
     private PropertyModel createQuickDeleteDialogProperty() {
         // Update Spinner
         Spinner quickDeleteSpinner = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
@@ -138,12 +139,15 @@ class QuickDeleteDialogDelegate {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                 .with(ModalDialogProperties.CUSTOM_VIEW, mQuickDeleteView)
-                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                .with(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         mContext.getString(R.string.clear_data_delete))
-                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                .with(
+                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         mContext.getString(R.string.cancel))
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                .with(ModalDialogProperties.BUTTON_STYLES,
+                .with(
+                        ModalDialogProperties.BUTTON_STYLES,
                         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 .build();
     }
@@ -156,39 +160,43 @@ class QuickDeleteDialogDelegate {
      */
     private void updateSpinner(@NonNull Spinner quickDeleteSpinner) {
         TimePeriodSpinnerOption[] options = getTimePeriodSpinnerOptions(mContext);
-        ArrayAdapter<TimePeriodSpinnerOption> adapter = new ArrayAdapter<>(
-                mContext, android.R.layout.simple_spinner_dropdown_item, options) {
-            @NonNull
-            @Override
-            public View getView(
-                    int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                view.setPadding(0, 0, 0, 0);
-                return view;
-            }
-        };
+        ArrayAdapter<TimePeriodSpinnerOption> adapter =
+                new ArrayAdapter<>(
+                        mContext, android.R.layout.simple_spinner_dropdown_item, options) {
+                    @NonNull
+                    @Override
+                    public View getView(
+                            int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+                        view.setPadding(0, 0, 0, 0);
+                        return view;
+                    }
+                };
 
         quickDeleteSpinner.setAdapter(adapter);
-        quickDeleteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(
-                    AdapterView<?> adapterView, View view, int position, long id) {
-                TimePeriodSpinnerOption item =
-                        (TimePeriodSpinnerOption) adapterView.getItemAtPosition(position);
-                mCurrentTimePeriodOption = item;
-                @TimePeriod
-                int timePeriod = mCurrentTimePeriodOption.getTimePeriod();
-                mTimePeriodChangeObserver.onTimePeriodChanged(timePeriod);
-                recordTimePeriodChange(timePeriod);
-            }
+        quickDeleteSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(
+                            AdapterView<?> adapterView, View view, int position, long id) {
+                        TimePeriodSpinnerOption item =
+                                (TimePeriodSpinnerOption) adapterView.getItemAtPosition(position);
+                        mCurrentTimePeriodOption = item;
+                        @TimePeriod int timePeriod = mCurrentTimePeriodOption.getTimePeriod();
+                        mTimePeriodChangeObserver.onTimePeriodChanged(timePeriod);
+                        recordTimePeriodChange(timePeriod);
+                    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // Revert back to default time.
-                mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
-                        mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
-            }
-        });
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+                        // Revert back to default time.
+                        String message =
+                                mContext.getString(
+                                        R.string.clear_browsing_data_tab_period_15_minutes);
+                        mCurrentTimePeriodOption =
+                                new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES, message);
+                    }
+                });
     }
 
     private void openClearBrowsingDataDialog() {
@@ -203,16 +211,22 @@ class QuickDeleteDialogDelegate {
     private void setUpSearchHistoryText() {
         TextViewWithClickableSpans text =
                 mQuickDeleteView.findViewById(R.id.search_history_disambiguation);
-        final SpannableString searchHistoryText = SpanApplier.applySpans(
-                mContext.getString(R.string.quick_delete_dialog_search_history_disambiguation_text),
-                new SpanApplier.SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(mContext,
-                                (widget)
-                                        -> openUrlInNewTab(
-                                                UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD))),
-                new SpanApplier.SpanInfo("<link2>", "</link2>",
-                        new NoUnderlineClickableSpan(mContext,
-                                (widget) -> openUrlInNewTab(UrlConstants.MY_ACTIVITY_URL_IN_QD))));
+        Callback<View> openHistoryCallback =
+                (widget) -> openUrlInNewTab(UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD);
+        Callback<View> openActivityCallback =
+                (widget) -> openUrlInNewTab(UrlConstants.MY_ACTIVITY_URL_IN_QD);
+        final SpannableString searchHistoryText =
+                SpanApplier.applySpans(
+                        mContext.getString(
+                                R.string.quick_delete_dialog_search_history_disambiguation_text),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new NoUnderlineClickableSpan(mContext, openHistoryCallback)),
+                        new SpanApplier.SpanInfo(
+                                "<link2>",
+                                "</link2>",
+                                new NoUnderlineClickableSpan(mContext, openActivityCallback)));
         text.setText(searchHistoryText);
         text.setMovementMethod(LinkMovementMethod.getInstance());
     }
@@ -232,8 +246,11 @@ class QuickDeleteDialogDelegate {
                     QuickDeleteMetricsDelegate.QuickDeleteAction.MY_ACTIVITY_LINK_CLICKED);
         }
 
-        mTabModelSelector.openNewTab(new LoadUrlParams(url), TabLaunchType.FROM_LINK,
-                mTabModelSelector.getCurrentTab(), false);
+        mTabModelSelector.openNewTab(
+                new LoadUrlParams(url),
+                TabLaunchType.FROM_LINK,
+                mTabModelSelector.getCurrentTab(),
+                false);
         mModalDialogManager.dismissDialog(
                 mModalDialogPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
@@ -269,9 +286,7 @@ class QuickDeleteDialogDelegate {
         }
     }
 
-    /**
-     * Shows the Quick delete dialog.
-     */
+    /** Shows the Quick delete dialog. */
     void showDialog() {
         mModalDialogPropertyModel = createQuickDeleteDialogProperty();
         mModalDialogManager.showDialog(

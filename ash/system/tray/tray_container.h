@@ -5,9 +5,11 @@
 #ifndef ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 #define ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 
+#include <optional>
+
 #include "ash/system/tray/tray_constants.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -22,6 +24,8 @@ class TrayBackgroundView;
 // Base class for tray containers. Sets the border and layout. The container
 // auto-resizes the widget when necessary.
 class TrayContainer : public views::View {
+  METADATA_HEADER(TrayContainer, views::View)
+
  public:
   TrayContainer(Shelf* shelf, TrayBackgroundView* tray_background_view);
 
@@ -80,7 +84,7 @@ class TrayContainer : public views::View {
   // The set of inputs that impact this widget's layout. The assumption is that
   // this widget needs a relayout if, and only if, one or more of these has
   // changed.
-  absl::optional<LayoutInputs> layout_inputs_;
+  std::optional<LayoutInputs> layout_inputs_;
 
   // The border that has been calculated in the target bounds calculation
   // phase, and will be applied in the layout update phase.

@@ -528,8 +528,8 @@ class NotificationDestructingNotificationDelegate
   ~NotificationDestructingNotificationDelegate() override = default;
 
   // NotificationObserver:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     // Show the UnifiedSystemTrayBubble, which will force all popups to be
     // destroyed.
     Shell::Get()
@@ -599,13 +599,13 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_InTabletMode) {
 
   // Baseline is higher than the top of the shelf after entering tablet mode.
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
 
   // Baseline is higher than the top of the shelf after exiting tablet mode.
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
 }
@@ -619,7 +619,7 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_InAppMode) {
   // Enable tablet mode without an open window.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   auto previous_popup_collection_bottom =
       popup_collection->popup_collection_bounds().bottom();
   EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,

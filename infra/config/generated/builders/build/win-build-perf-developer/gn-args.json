@@ -1,0 +1,22 @@
+{
+  "phases": {
+    "builtin": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_siso": true
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "enable_nacl": false,
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_remoteexec": true
+      }
+    }
+  }
+}

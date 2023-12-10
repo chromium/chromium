@@ -30,7 +30,9 @@
     : UIViewController <NewTabPageHeaderConsumer,
                         UserAccountImageUpdateDelegate>
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

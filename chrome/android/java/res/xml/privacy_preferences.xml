@@ -34,7 +34,7 @@ found in the LICENSE file.
         android:key="privacy_sandbox"
         android:title="@string/ad_privacy_link_row_label"
         android:summary="@string/ad_privacy_link_row_sub_label"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4" />
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment" />
     <Preference
         android:key="do_not_track"
         android:title="@string/do_not_track_title"

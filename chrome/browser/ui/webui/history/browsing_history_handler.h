@@ -96,7 +96,7 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
 
   std::vector<base::OnceClosure> deferred_callbacks_;
 
-  absl::optional<base::Value::Dict> initial_results_;
+  std::optional<base::Value::Dict> initial_results_;
 
   std::string query_history_callback_id_;
 

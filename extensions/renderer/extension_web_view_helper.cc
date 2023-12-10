@@ -34,7 +34,7 @@ ExtensionWebViewHelper::~ExtensionWebViewHelper() {
   GetWebViewHelperSet()->erase(this);
 }
 
-const absl::optional<url::Origin>& ExtensionWebViewHelper::GetOutermostOrigin()
+const std::optional<url::Origin>& ExtensionWebViewHelper::GetOutermostOrigin()
     const {
   return outermost_origin_;
 }

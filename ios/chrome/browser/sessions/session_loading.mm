@@ -85,26 +85,14 @@ bool OrderControllerSourceFromWebStateListStorage::IsOpenerOfItemAt(
   return item_storage.opener().index() == opener_index;
 }
 
+// Returns an ios::proto::WebStateListStorage representing an empty session.
+ios::proto::WebStateListStorage EmptyWebStateListStorage() {
+  ios::proto::WebStateListStorage web_state_list_storage;
+  web_state_list_storage.set_active_index(-1);
+  return web_state_list_storage;
+}
+
 }  // namespace
-
-SessionStorage::SessionStorage() {
-  session_metadata.set_active_index(-1);
-}
-
-SessionStorage::SessionStorage(
-    ios::proto::WebStateListStorage session_metadata_arg,
-    WebStateMetadataStorageMap web_state_storage_map_arg)
-    : session_metadata(std::move(session_metadata_arg)),
-      web_state_storage_map(std::move(web_state_storage_map_arg)) {
-  DCHECK_EQ(session_metadata.items_size(),
-            static_cast<int>(web_state_storage_map.size()));
-}
-
-SessionStorage::SessionStorage(SessionStorage&&) = default;
-
-SessionStorage& SessionStorage::operator=(SessionStorage&&) = default;
-
-SessionStorage::~SessionStorage() = default;
 
 base::FilePath WebStateDirectory(const base::FilePath& directory,
                                  web::WebStateID identifier) {
@@ -164,31 +152,33 @@ ios::proto::WebStateListStorage FilterItems(
   return result;
 }
 
-SessionStorage LoadSessionStorage(const base::FilePath& directory) {
+ios::proto::WebStateListStorage LoadSessionStorage(
+    const base::FilePath& directory) {
   const base::FilePath session_metadata_file =
       directory.Append(kSessionMetadataFilename);
 
   // If the session metadata cannot be loaded, then the session is absent or
   // has been corrupted; return an empty session.
-  ios::proto::WebStateListStorage session_metadata;
-  if (!ParseProto(session_metadata_file, session_metadata)) {
-    return SessionStorage();
+  ios::proto::WebStateListStorage session;
+  if (!ParseProto(session_metadata_file, session)) {
+    return EmptyWebStateListStorage();
   }
 
+  // Used to filter items (either duplicate or WebState with no navigations).
   std::vector<int> items_to_drop;
-  SessionStorage::WebStateMetadataStorageMap web_state_storage_map;
 
-  const int items_size = session_metadata.items_size();
-  std::set<web::WebStateID> seen_identifiers;
   // Count the number of dropped tabs because they are duplicates, for
   // reporting.
+  std::set<web::WebStateID> seen_identifiers;
   int duplicate_count = 0;
+
+  const int items_size = session.items_size();
   for (int index = 0; index < items_size; ++index) {
     // If the item identifier is invalid, then the session has been corrupted;
     // return an empty session.
-    const auto& item = session_metadata.items(index);
+    const auto& item = session.items(index);
     if (!web::WebStateID::IsValidValue(item.identifier())) {
-      return SessionStorage();
+      return EmptyWebStateListStorage();
     }
 
     const auto web_state_id =
@@ -197,14 +187,36 @@ SessionStorage LoadSessionStorage(const base::FilePath& directory) {
     const base::FilePath web_state_dir =
         WebStateDirectory(directory, web_state_id);
 
-    const base::FilePath web_state_metadata_file =
-        web_state_dir.Append(kWebStateMetadataStorageFilename);
+    // While developping the optimised session storage, at some point, the
+    // metadata for WebStates were saved in individual files. As all those
+    // metadata files had to be loaded on startup, this resulted in many
+    // file loads for users with a large number of tabs. This code is here
+    // to convert those sessions to the new storage.
+    //
+    // Since saving in many individual files was never released to stable,
+    // nor enabled via finch, the only users that manually enabled it via
+    // chrome://flags may have the data in that state.
+    //
+    // Thus there is no need to keep this code for many releases (as the
+    // feature was not yet supported when enabled). This workaround can
+    // be removed as soon as M-123.
+    //
+    // TODO(crbug.com/1504753): cleanup when no longer required.
+    if (!item.has_metadata()) {
+      const base::FilePath web_state_metadata_file =
+          web_state_dir.Append(kWebStateMetadataStorageFilename);
 
-    // If the item metadata cannot be loaded, then the session has been
-    // corrupted; return an empty session.
-    web::proto::WebStateMetadataStorage metadata;
-    if (!ParseProto(web_state_metadata_file, metadata)) {
-      return SessionStorage();
+      google::protobuf::RepeatedPtrField<ios::proto::WebStateListItemStorage>&
+          repeated_field = *session.mutable_items();
+
+      web::proto::WebStateMetadataStorage& metadata =
+          *(repeated_field[index].mutable_metadata());
+
+      // If the item metadata cannot be loaded, then the session has been
+      // corrupted; return an empty session.
+      if (!ParseProto(web_state_metadata_file, metadata)) {
+        return EmptyWebStateListStorage();
+      }
     }
 
     const base::FilePath web_state_storage_file =
@@ -213,11 +225,11 @@ SessionStorage LoadSessionStorage(const base::FilePath& directory) {
     // If the item storage does not exist, then the session has been
     // corrupted; return an empty session.
     if (!FileExists(web_state_storage_file)) {
-      return SessionStorage();
+      return EmptyWebStateListStorage();
     }
 
     // If the item would be empty, drop it before restoration.
-    if (!metadata.navigation_item_count()) {
+    if (!item.metadata().navigation_item_count()) {
       items_to_drop.push_back(index);
       continue;
     }
@@ -229,18 +241,12 @@ SessionStorage LoadSessionStorage(const base::FilePath& directory) {
       continue;
     }
     seen_identifiers.insert(web_state_id);
-
-    web_state_storage_map.insert(
-        std::make_pair(web_state_id, std::move(metadata)));
   }
   base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionRestore",
                               duplicate_count);
 
-  session_metadata = FilterItems(std::move(session_metadata),
-                                 RemovingIndexes(std::move(items_to_drop)));
-
-  return SessionStorage(std::move(session_metadata),
-                        std::move(web_state_storage_map));
+  return FilterItems(std::move(session),
+                     RemovingIndexes(std::move(items_to_drop)));
 }
 
 }  // namespace ios::sessions

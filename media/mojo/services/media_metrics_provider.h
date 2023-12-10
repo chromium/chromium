@@ -38,15 +38,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   using GetLearningSessionCallback =
       base::RepeatingCallback<learning::LearningSession*()>;
 
-  using RecordAggregateWatchTimeCallback =
-      base::RepeatingCallback<void(base::TimeDelta total_watch_time,
-                                   base::TimeDelta time_stamp,
-                                   bool has_video,
-                                   bool has_audio)>;
-
-  using GetRecordAggregateWatchTimeCallback =
-      base::RepeatingCallback<RecordAggregateWatchTimeCallback(void)>;
-
   using IsShuttingDownCallback = base::RepeatingCallback<bool(void)>;
 
   MediaMetricsProvider(BrowsingMode is_incognito,
@@ -55,7 +46,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
                        learning::FeatureValue origin,
                        VideoDecodePerfHistory::SaveCallback save_cb,
                        GetLearningSessionCallback learning_session_cb,
-                       RecordAggregateWatchTimeCallback record_playback_cb,
                        IsShuttingDownCallback is_shutting_down_cb);
 
   MediaMetricsProvider(const MediaMetricsProvider&) = delete;
@@ -84,7 +74,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       learning::FeatureValue origin,
       VideoDecodePerfHistory::SaveCallback save_cb,
       GetLearningSessionCallback learning_session_cb,
-      GetRecordAggregateWatchTimeCallback get_record_playback_cb,
       IsShuttingDownCallback is_shutting_down_cb,
       mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
 
@@ -163,7 +152,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   const VideoDecodePerfHistory::SaveCallback save_cb_;
   const GetLearningSessionCallback learning_session_cb_;
-  const RecordAggregateWatchTimeCallback record_playback_cb_;
   const IsShuttingDownCallback is_shutting_down_cb_;
 
   // UMA pipeline packaged data

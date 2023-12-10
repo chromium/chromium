@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -88,7 +89,7 @@ class FakeWebState : public WebState {
   int GetNavigationItemCount() const override;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const override;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const override;
   CRWWebViewProxyType GetWebViewProxy() const override;
 
   void AddObserver(WebStateObserver* observer) override;
@@ -109,8 +110,7 @@ class FakeWebState : public WebState {
       const override API_AVAILABLE(ios(15.0));
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
-                           void (^handler)(id<CRWWebViewDownload>)) override
-      API_AVAILABLE(ios(14.5));
+                           void (^handler)(id<CRWWebViewDownload>)) override;
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;

@@ -93,6 +93,14 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   int64_t display_id_ = display::kInvalidDisplayId;
   scoped_refptr<ui::DisplayLinkMac> display_link_mac_;
   std::unique_ptr<ui::VSyncCallbackMac> vsync_callback_mac_;
+
+  // This is the number of vsync_callbacks running without populating CaLayer
+  // parameters, used for detecting consecutive frames.
+  int vsync_callback_mac_keep_alive_counter_ = 0;
+
+  // Ensure vsync_callback_mac_ is still alive in the case of frame rate
+  // throttling such as 30 fps video playback.
+  constexpr static int kMaxKeepAliveCounter = 5;
 #endif
 
   SwapCompletionCallback completion_callback_;

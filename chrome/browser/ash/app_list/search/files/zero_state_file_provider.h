@@ -47,7 +47,7 @@ class ZeroStateFileProvider : public SearchProvider,
  private:
   // Called when file suggestion data are fetched from the service.
   void OnSuggestFileDataFetched(
-      const absl::optional<std::vector<ash::FileSuggestData>>& suggest_results);
+      const std::optional<std::vector<ash::FileSuggestData>>& suggest_results);
 
   // Builds the search results from file suggestions then publishes the results.
   void SetSearchResults(

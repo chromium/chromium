@@ -8,17 +8,17 @@
 
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_constants.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -37,7 +37,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -69,11 +68,7 @@ constexpr base::TimeDelta kDeskBarBoundsScaleUpDuration =
 constexpr base::TimeDelta kDeskBarBoundsScaleDownDuration =
     base::Milliseconds(150);
 
-constexpr base::TimeDelta kZeroStateAnimationDuration = base::Milliseconds(200);
-
-// Animation duration when feature flag `Jellyroll` is enabled.
-constexpr base::TimeDelta kZeroStateAnimationDurationCrOSNext =
-    base::Milliseconds(150);
+constexpr base::TimeDelta kZeroStateAnimationDuration = base::Milliseconds(150);
 
 // Animation durations for scale up and scale down the desk icon button.
 constexpr base::TimeDelta kScaleUpDeskIconButton = base::Milliseconds(150);
@@ -97,10 +92,7 @@ constexpr base::TimeDelta kZeroDeskBarSlideDuration = base::Milliseconds(250);
 void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
                                  base::TimeDelta duration) {
   settings->SetTransitionDuration(duration);
-  const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
-                                          ? gfx::Tween::ACCEL_20_DECEL_100
-                                          : gfx::Tween::ACCEL_20_DECEL_60;
-  settings->SetTweenType(tween_type);
+  settings->SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
   settings->SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
@@ -158,17 +150,6 @@ gfx::Transform GetScaleTransformForView(views::View* view, int bar_x_center) {
       kEnterOrExitZeroStateScale);
 }
 
-// Scales down the given `view` to `kEnterOrExitZeroStateScale` and fading out
-// it at the same time.
-void ScaleDownAndFadeOutView(views::View* view, int bar_x_center) {
-  ui::Layer* layer = view->layer();
-  ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-  InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
-
-  layer->SetTransform(GetScaleTransformForView(view, bar_x_center));
-  layer->SetOpacity(0.f);
-}
-
 // Scales up the given `view` from `kEnterOrExitZeroStateScale` to identity and
 // fading in it at the same time.
 void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
@@ -178,17 +159,13 @@ void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
   layer->SetOpacity(0.f);
 
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-  const base::TimeDelta animation_duration =
-      chromeos::features::IsJellyrollEnabled()
-          ? kZeroStateAnimationDurationCrOSNext
-          : kZeroStateAnimationDuration;
-  InitScopedAnimationSettings(&settings, animation_duration);
+  InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
   layer->SetTransform(kEndTransform);
   layer->SetOpacity(1.f);
 }
 
-// Performs the CrOS Next spawn animation for the given mini `view`.
-void CrOSNextScaleUpAndFadeInView(DeskMiniView* view) {
+// Performs the spawn animation for the given mini `view`.
+void ScaleUpAndFadeInView(DeskMiniView* view) {
   ui::Layer* preview_layer = view->desk_preview()->layer();
   ui::Layer* view_layer = view->layer();
 
@@ -219,63 +196,29 @@ void CrOSNextScaleUpAndFadeInView(DeskMiniView* view) {
                     gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-void PositionWindowsInOverview() {
-  auto* controller = Shell::Get()->overview_controller();
-  DCHECK(controller->InOverviewSession());
-  controller->overview_session()->PositionWindows(true);
-}
-
-void AnimateDeskBarBounds(DeskBarViewBase* bar_view, bool to_zero_state) {
+void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
   CHECK(bar_view);
 
   auto* desk_widget = bar_view->GetWidget();
   const gfx::Rect current_widget_bounds =
       desk_widget->GetWindowBoundsInScreen();
   gfx::Rect target_widget_bounds = current_widget_bounds;
-  // When `to_zero_state` is false, desk bar is switching from zero to
-  // expanded state.
-  if (to_zero_state) {
-    target_widget_bounds.set_height(kDeskBarZeroStateHeight);
-
-    if (chromeos::features::IsJellyrollEnabled()) {
-      // When `Jellyroll` is enabled, setting desk bar's bounds to its bounds at
-      // zero state directly to layout its contents at the correct position
-      // first before the animation. When `Jellyroll` is enabled, we use the
-      // same buttons (default desk button and library) for both expanded state
-      // and zero state, the scale up and fade in animation is applied to the
-      // button during the desk bar states transition, thus the buttons need to
-      // be layout and put at the correct positions before the animation starts.
-      desk_widget->SetBounds(target_widget_bounds);
-      bar_view->set_pause_layout(true);
-      desk_widget->SetBounds(current_widget_bounds);
-    } else {
-      bar_view->set_pause_layout(true);
-    }
-  } else {
-    // While switching desk bar from zero state to expanded state, setting
-    // its bounds to its bounds at expanded state directly without animation,
-    // which will trigger Layout and make sure the contents of
-    // desk bar(e.g, desk mini view, new desk button) are at the correct
-    // positions before the animation. And set `pause_layout_` to be true, which
-    // will help hold Layout until the animation is done. Then set the bounds of
-    // the desk bar back to its bounds at zero state to start the bounds change
-    // animation. See more details at `pause_layout_`.
-    target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
-        desk_widget->GetNativeWindow()->GetRootWindow(),
-        DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
-    desk_widget->SetBounds(target_widget_bounds);
-    bar_view->set_pause_layout(true);
-    desk_widget->SetBounds(current_widget_bounds);
-  }
+  // While switching desk bar from zero state to expanded state, setting
+  // its bounds to its bounds at expanded state directly without animation,
+  // which will trigger `Layout()` and make sure the contents of
+  // desk bar(e.g, desk mini view, new desk button) are at the correct
+  // positions before the animation. And set `pause_layout_` to be true, which
+  // will help hold Layout until the animation is done. Then set the bounds of
+  // the desk bar back to its bounds at zero state to start the bounds change
+  // animation. See more details at `pause_layout_`.
+  target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
+      desk_widget->GetNativeWindow()->GetRootWindow(),
+      DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
+  desk_widget->SetBounds(target_widget_bounds);
+  bar_view->set_pause_layout(true);
+  desk_widget->SetBounds(current_widget_bounds);
 
   ui::Layer* layer = desk_widget->GetLayer();
-  const base::TimeDelta animation_duration =
-      chromeos::features::IsJellyrollEnabled()
-          ? kZeroStateAnimationDurationCrOSNext
-          : kZeroStateAnimationDuration;
-  const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
-                                          ? gfx::Tween::ACCEL_20_DECEL_100
-                                          : gfx::Tween::ACCEL_20_DECEL_60;
   base::OnceClosure ondone = base::BindOnce(
       base::BindOnce([](DeskBarViewBase* bar_view) {
         bar_view->set_pause_layout(false);
@@ -305,23 +248,23 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view, bool to_zero_state) {
       .OnEnded(std::move(split.first))
       .OnAborted(std::move(split.second))
       .Once()
-      .SetDuration(animation_duration)
-      .SetTransform(layer, kEndTransform, tween_type);
+      .SetDuration(kZeroStateAnimationDuration)
+      .SetTransform(layer, kEndTransform, gfx::Tween::ACCEL_20_DECEL_100);
   desk_widget->SetBounds(target_widget_bounds);
 }
 
-// Animates the scale up / down animation for the cros next desk icon button.
-void AnimateCrOSNextDeskIconButtonScale(CrOSNextDeskIconButton* button,
-                                        const gfx::Transform& scale_transform) {
+// Animates the scale up / down animation for the desk icon button.
+void AnimateDeskIconButtonScale(DeskIconButton* button,
+                                const gfx::Transform& scale_transform) {
   // Please note that since this is called after `button` is laid out in its
   // final position, the target state is its current state.
-  const CrOSNextDeskIconButton::State target_state = button->state();
+  const DeskIconButton::State target_state = button->state();
   const bool is_scale_up_animation =
-      target_state == CrOSNextDeskIconButton::State::kActive;
+      target_state == DeskIconButton::State::kActive;
   const gfx::RoundedCornersF initial_radius =
-      gfx::RoundedCornersF(CrOSNextDeskIconButton::GetCornerRadiusOnState(
-          is_scale_up_animation ? CrOSNextDeskIconButton::State::kExpanded
-                                : CrOSNextDeskIconButton::State::kActive));
+      gfx::RoundedCornersF(DeskIconButton::GetCornerRadiusOnState(
+          is_scale_up_animation ? DeskIconButton::State::kExpanded
+                                : DeskIconButton::State::kActive));
 
   // Since the corner radius of `button` is updated on the state changes, to
   // apply the animation for the corner radius change, set and apply the corner
@@ -343,17 +286,17 @@ void AnimateCrOSNextDeskIconButtonScale(CrOSNextDeskIconButton* button,
   const auto duration =
       is_scale_up_animation ? kScaleUpDeskIconButton : kScaleDownDeskIconButton;
   const gfx::RoundedCornersF end_radius = gfx::RoundedCornersF(
-      CrOSNextDeskIconButton::GetCornerRadiusOnState(target_state));
+      DeskIconButton::GetCornerRadiusOnState(target_state));
   views::AnimationBuilder animation_builder;
   button->set_animation_abort_handle(animation_builder.GetAbortHandle());
   base::OnceClosure ondone = base::BindOnce(
-      [](CrOSNextDeskIconButton* button) {
+      [](DeskIconButton* button) {
         const auto* overview_controller = Shell::Get()->overview_controller();
         if (overview_controller->InOverviewSession()) {
           button->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF());
           button->SetBackground(views::CreateRoundedRectBackground(
               button->background()->get_color(),
-              CrOSNextDeskIconButton::GetCornerRadiusOnState(button->state())));
+              DeskIconButton::GetCornerRadiusOnState(button->state())));
         }
       },
       base::Unretained(button));
@@ -376,42 +319,20 @@ void PerformAddDeskMiniViewAnimation(std::vector<DeskMiniView*> new_mini_views,
   gfx::Transform mini_views_left_begin_transform;
   mini_views_left_begin_transform.Translate(shift_x, 0);
   for (auto* mini_view : new_mini_views) {
-    if (chromeos::features::IsJellyrollEnabled()) {
-      if (!mini_view->desk()->is_desk_being_removed()) {
-        CrOSNextScaleUpAndFadeInView(mini_view);
-      }
-    } else {
-      ui::Layer* layer = mini_view->layer();
-      layer->SetOpacity(0);
-
-      if (!mini_view->desk()->is_desk_being_removed()) {
-        layer->SetTransform(mini_views_left_begin_transform);
-      }
-
-      ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-      InitScopedAnimationSettings(&settings, kMiniViewsAddingAnimationDuration);
-      layer->SetOpacity(1);
-      layer->SetTransform(kEndTransform);
+    if (!mini_view->desk()->is_desk_being_removed()) {
+      ScaleUpAndFadeInView(mini_view);
     }
   }
 }
 
-void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view,
-                                        const bool to_zero_state) {
+void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view) {
   DeskBarViewBase* bar_view = removed_mini_view->owner_bar();
   CHECK(bar_view);
 
   removed_mini_view->set_is_animating_to_remove(true);
 
   ui::Layer* layer = removed_mini_view->layer();
-  const gfx::Transform transform =
-      to_zero_state
-          ? GetScaleTransformForView(removed_mini_view,
-                                     bar_view->bounds().CenterPoint().x())
-          : kEndTransform;
-  const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
-                                          ? gfx::Tween::ACCEL_20_DECEL_100
-                                          : gfx::Tween::ACCEL_20_DECEL_60;
+  const gfx::Tween::Type tween_type = gfx::Tween::ACCEL_20_DECEL_100;
 
   // Uses animation builder so that we can use `views::AnimationAbortHandle`.
   // Setting abort handle is important as it manages to abort ongoing
@@ -452,7 +373,7 @@ void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view,
       .OnAborted(std::move(split.second))
       .Once()
       .SetDuration(kRemovedMiniViewsFadeOutDuration)
-      .SetTransform(layer, transform, tween_type)
+      .SetTransform(layer, kEndTransform, tween_type)
       .SetOpacity(layer, 0.f, tween_type);
 }
 
@@ -466,22 +387,6 @@ void PerformDeskBarChildViewShiftAnimation(
       AnimateView(view, begin_transform, kMiniViewsRemovingAnimationDuration);
     }
   }
-}
-
-void PerformZeroStateToExpandedStateMiniViewAnimation(
-    DeskBarViewBase* bar_view) {
-  AnimateDeskBarBounds(bar_view, /*to_zero_state=*/false);
-  const int bar_x_center = bar_view->bounds().CenterPoint().x();
-  for (auto* mini_view : bar_view->mini_views())
-    ScaleUpAndFadeInView(mini_view, bar_x_center);
-
-  ScaleUpAndFadeInView(bar_view->expanded_state_new_desk_button(),
-                       bar_x_center);
-  if (auto* expanded_state_library_button =
-          bar_view->expanded_state_library_button()) {
-    ScaleUpAndFadeInView(expanded_state_library_button, bar_x_center);
-  }
-  PositionWindowsInOverview();
 }
 
 void PerformDeskBarAddDeskAnimation(DeskBarViewBase* bar_view,
@@ -531,10 +436,9 @@ void PerformDeskBarRemoveDeskAnimation(DeskBarViewBase* bar_view,
       .SetTransform(layer, kEndTransform, gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
+void PerformZeroStateToExpandedStateMiniViewAnimation(
     DeskBarViewBase* bar_view) {
-  bar_view->new_desk_button()->UpdateState(
-      CrOSNextDeskIconButton::State::kExpanded);
+  bar_view->new_desk_button()->UpdateState(DeskIconButton::State::kExpanded);
   auto* library_button = bar_view->library_button();
 
   if (library_button) {
@@ -542,13 +446,13 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
       // For library button, when it's at zero state and clicked, the desks bar
       // will expand, the overview grid will show the saved desk library, the
       // library button should be activated and focused.
-      library_button->UpdateState(CrOSNextDeskIconButton::State::kActive);
+      library_button->UpdateState(DeskIconButton::State::kActive);
     } else {
-      library_button->UpdateState(CrOSNextDeskIconButton::State::kExpanded);
+      library_button->UpdateState(DeskIconButton::State::kExpanded);
     }
   }
 
-  AnimateDeskBarBounds(bar_view, /*to_zero_state=*/false);
+  AnimateDeskBarBounds(bar_view);
 
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
   for (auto* mini_view : bar_view->mini_views()) {
@@ -582,25 +486,6 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
   }
 
   bar_view->overview_grid()->PositionWindows(/*animate=*/true, ignored_items);
-}
-
-void PerformExpandedStateToZeroStateMiniViewAnimation(
-    DeskBarViewBase* bar_view,
-    std::vector<DeskMiniView*> removed_mini_views) {
-  for (auto* mini_view : removed_mini_views) {
-    PerformRemoveDeskMiniViewAnimation(mini_view, /*to_zero_state=*/true);
-  }
-  AnimateDeskBarBounds(bar_view, /*to_zero_state=*/true);
-  const gfx::Rect bounds = bar_view->bounds();
-  ScaleDownAndFadeOutView(bar_view->expanded_state_new_desk_button(),
-                          bounds.CenterPoint().x());
-  if (auto* expanded_state_library_button =
-          bar_view->expanded_state_library_button()) {
-    ScaleDownAndFadeOutView(expanded_state_library_button,
-                            bounds.CenterPoint().x());
-  }
-
-  PositionWindowsInOverview();
 }
 
 void PerformReorderDeskMiniViewAnimation(
@@ -667,12 +552,12 @@ void PerformLibraryButtonVisibilityAnimation(
   AnimateView(new_desk_button, translation, kMiniViewsAddingAnimationDuration);
 }
 
-void PerformDeskIconButtonScaleAnimationCrOSNext(
-    CrOSNextDeskIconButton* button,
+void PerformDeskIconButtonScaleAnimation(
+    DeskIconButton* button,
     DeskBarViewBase* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x) {
-  AnimateCrOSNextDeskIconButtonScale(button, new_desk_button_rects_transform);
+  AnimateDeskIconButtonScale(button, new_desk_button_rects_transform);
 
   gfx::Transform left_begin_transform;
   left_begin_transform.Translate(shift_x, 0);
@@ -707,12 +592,7 @@ void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
   TRACE_EVENT0("ui", "PerformDeskBarSlideAnimation");
 
   // The desks widget should no longer process events at this point.
-  desks_widget->SetVisibilityChangedAnimationsEnabled(false);
-  desks_widget->widget_delegate()->SetCanActivate(false);
-  desks_widget->GetNativeWindow()->SetEventTargetingPolicy(
-      aura::EventTargetingPolicy::kNone);
-  desks_widget->GetContentsView()->SetCanProcessEventsWithinSubtree(false);
-  desks_widget->GetFocusManager()->set_shortcut_handling_suspended(true);
+  PrepareWidgetForOverviewShutdown(desks_widget.get());
 
   gfx::Transform transform;
   transform.Translate(0, -desks_widget->GetWindowBoundsInScreen().height());

@@ -241,11 +241,9 @@ class ChromeMetricsServiceClient
   // needed by other metrics providers.
   std::unique_ptr<metrics::MetricsProvider> cros_system_profile_provider_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The StructuredMetricsService that |this| is a client of.
   std::unique_ptr<metrics::structured::StructuredMetricsService>
       structured_metrics_service_;
-#endif
 
   // The MetricsService that |this| is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;

@@ -51,18 +51,20 @@ public class ChoiceDialogCoordinator {
      *         search engine was selected, or {@code false} if the dialog was dismissed without a
      *         selection.
      */
-    public ChoiceDialogCoordinator(Activity activity,
+    public ChoiceDialogCoordinator(
+            Activity activity,
             DefaultSearchEngineDialogHelper.Delegate delegate,
             @Nullable Callback<Boolean> onClosedCallback) {
         mModalDialogManager = ((ModalDialogManagerHolder) activity).getModalDialogManager();
         mOnClosedCallback = onClosedCallback;
-        mDelegate = new ChoiceScreenDelegate(delegate, onClosedCallback) {
-            @Override
-            void onChoiceMade(String keyword) {
-                super.onChoiceMade(keyword);
-                ChoiceDialogCoordinator.this.dismissDialog();
-            }
-        };
+        mDelegate =
+                new ChoiceScreenDelegate(delegate, onClosedCallback) {
+                    @Override
+                    void onChoiceMade(String keyword) {
+                        super.onChoiceMade(keyword);
+                        ChoiceDialogCoordinator.this.dismissDialog();
+                    }
+                };
         mContentCoordinator = buildContentCoordinator(activity, mDelegate);
     }
 
@@ -70,7 +72,9 @@ public class ChoiceDialogCoordinator {
     public void show() {
         assert mDialogModel == null;
         mDialogModel = createDialogPropertyModel(mContentCoordinator.getContentView());
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP,
+        mModalDialogManager.showDialog(
+                mDialogModel,
+                ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
@@ -95,9 +99,11 @@ public class ChoiceDialogCoordinator {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CUSTOM_VIEW, contentView)
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                .with(ModalDialogProperties.DIALOG_STYLES,
+                .with(
+                        ModalDialogProperties.DIALOG_STYLES,
                         ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG)
-                .with(ModalDialogProperties.CONTROLLER,
+                .with(
+                        ModalDialogProperties.CONTROLLER,
                         new ModalDialogProperties.Controller() {
                             @Override
                             public void onClick(PropertyModel model, @ButtonType int buttonType) {}
@@ -110,7 +116,8 @@ public class ChoiceDialogCoordinator {
                                 }
                             }
                         })
-                .with(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                .with(
+                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                         // Capture back navigations and suppress them. The user must complete the
                         // screen by interacting with the options presented.
                         // TODO(b/280753530): Instead of fully suppressing it, maybe perform back

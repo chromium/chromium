@@ -5,10 +5,12 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_HIGHLIGHT_VIEW_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_HIGHLIGHT_VIEW_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,6 +21,8 @@ namespace ash {
 // with rounded corners. If animations are needed, they are performed by
 // animating the layer's clip rect.
 class ASH_EXPORT SplitViewHighlightView : public views::View {
+  METADATA_HEADER(SplitViewHighlightView, views::View)
+
  public:
   explicit SplitViewHighlightView(bool is_right_or_bottom);
   ~SplitViewHighlightView() override;
@@ -28,7 +32,7 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
 
   // Updates bounds, animating if |animation_type| has a value.
   void SetBounds(const gfx::Rect& bounds,
-                 const absl::optional<SplitviewAnimationType>& animation_type);
+                 const std::optional<SplitviewAnimationType>& animation_type);
 
   // Called to update the opacity of the highlights view on transition from
   // |previous_window_dragging_state| to |window_dragging_state|. If

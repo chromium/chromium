@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> ପୃଷ୍ଠାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1113173431709655881">କ୍ୟାମେରା ମୋଡ</translation>
 <translation id="1153190633558910465">ଗ୍ରିଡ ବନ୍ଦ ଅଛି</translation>
-<translation id="1175958423215084756">ଲିଙ୍କଟି ଚିହ୍ନଟ କରାଯାଇଛି। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> ପୃଷ୍ଠାଟି ଡିଲିଟ ହୋଇଯାଇଛି</translation>
 <translation id="1258009455399840361">ଘଣ୍ଟାକଣ୍ଟାର ଦିଗରେ 90 ଡିଗ୍ରୀ ଘୂରାନ୍ତୁ</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> ପୃଷ୍ଠାକୁ ଏଡିଟ କରନ୍ତୁ</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ଭିଡିଓ ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି…</translation>
 <translation id="3789724198583203151">ଘଣ୍ଟାକଣ୍ଟାର ବିପରୀତ ଦିଗରେ 90 ଡିଗ୍ରୀ ଘୂରାନ୍ତୁ</translation>
 <translation id="3810838688059735925">ଭିଡିଓ</translation>
-<translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="4060608699153044055">ଡିଭାଇସର ଷ୍ଟୋରେଜ ସ୍ପେସ କମ୍ ଥିବା ଯୋଗୁଁ ଆପଣ ରେକର୍ଡିଂ କରିପାରିବେ ନାହିଁ। ରେକର୍ଡିଂ ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସର ସ୍ପେସ ଖାଲି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ରେକର୍ଡିଂ ବିରତ କରନ୍ତୁ</translation>
 <translation id="4121305183798804752">ଡକ୍ୟୁମେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="414641094616694804">ଏହି କ୍ୟାମେରା ରିଜୋଲ୍ୟୁସନ ବଦଳାଇପାରିବ ନାହିଁ</translation>
 <translation id="4176463684765177261">ଅକ୍ଷମ କରାଯାଇଛି</translation>
-<translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
 <translation id="428234092390943511">ପୃଷ୍ଠା ଥମ୍ବନେଲ</translation>
 <translation id="4349714250734879769">Chrome ଦ୍ୱାରା ଫ୍ରେମଗୁଡ଼ିକୁ ସ୍କେଲ କରନ୍ତୁ</translation>
 <translation id="4383571725254449280">କାର୍ଯ୍ୟଦକ୍ଷତା ଲଗଗୁଡ଼ିକ ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">ସାଧାରଣ ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7748344063862150053">ଡକ୍ୟୁମେଣ୍ଟର ଶୀର୍ଷ-ଡାହାଣ ପଟ କୋଣ</translation>
 <translation id="7933675232020478311">ନିମ୍ନ-ଡାହାଣ ପଟକୁ ମୁଭ ହେଉଛି</translation>
-<translation id="7983668134180549431">ଟେକ୍ସଟ୍ ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
 <translation id="8079255378695216066">ରେକର୍ଡିଂ ଆରମ୍ଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8120146556401698679">ପ୍ୟାନ୍ ଟିଲ୍ଟ ଜୁମ୍</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">ରେକର୍ଡିଂ ଆରମ୍ଭ କରିବା ପାଇଁ ଅକ୍ଷମ</translation>
 <translation id="8880167521484863515">4 ରୁ 3</translation>
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" ନେଟୱାର୍କ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="9045010116236796332">ଡକ୍ୟୁମେଣ୍ଟର ସମସ୍ତ ଧାରକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ</translation>
 <translation id="9045155556724273246">10 ସେକେଣ୍ଡ</translation>
 <translation id="906331135292332864">ଇମେଜର ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି...</translation>

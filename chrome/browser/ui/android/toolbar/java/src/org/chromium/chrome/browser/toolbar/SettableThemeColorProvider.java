@@ -24,16 +24,12 @@ class SettableThemeColorProvider extends ThemeColorProvider {
         super(context);
     }
 
-    /**
-     * Sets the primary color to the specified value.
-     */
+    /** Sets the primary color to the specified value. */
     public void setPrimaryColor(int color, boolean shouldAnimate) {
         updatePrimaryColor(color, shouldAnimate);
     }
 
-    /**
-     * Sets the tint to the specified value.
-     */
+    /** Sets the tint to the specified value. */
     public void setTint(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
         updateTint(tint, brandedColorScheme);
     }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -16,10 +15,9 @@
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -32,14 +30,15 @@ class ScopedNewBadgeTracker;
 namespace autofill {
 
 class AutofillPopupController;
-class PopupCellView;
-class PopupRowStrategy;
-class PopupViewViews;
+class PopupRowContentView;
 
-// `PopupRowView` represents a single selectable popup row. Different styles
-// of the row can be achieved by injecting the respective `PopupRowStrategy`
-// objects in the constructor.
+// `PopupRowView` represents a single selectable popup row. It contains logic
+// common to all row types (like selection callbacks or a11y) but it is not
+// responsible for the view layout. It expects a `PopupRowContentView` instead.
+// It also supports the expanding control depending on whether the suggestion
+// has children or not (see `Suggestion::children`).
 class PopupRowView : public views::View, public views::ViewObserver {
+  METADATA_HEADER(PopupRowView, views::View)
  public:
   // Enum class describing the different cells that a `PopupRowView` can
   // contain.
@@ -70,8 +69,8 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
     virtual ~SelectionDelegate() = default;
 
-    virtual absl::optional<CellIndex> GetSelectedCell() const = 0;
-    virtual void SetSelectedCell(absl::optional<CellIndex> cell_index,
+    virtual std::optional<CellIndex> GetSelectedCell() const = 0;
+    virtual void SetSelectedCell(std::optional<CellIndex> cell_index,
                                  PopupCellSelectionSource source) = 0;
   };
 
@@ -99,21 +98,19 @@ class PopupRowView : public views::View, public views::ViewObserver {
     const char* action_name_;
   };
 
-  METADATA_HEADER(PopupRowView);
   PopupRowView(AccessibilitySelectionDelegate& a11y_selection_delegate,
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
                int line_number,
-               std::unique_ptr<PopupCellView> content_view,
-               std::optional<ScopedNewBadgeTrackerWithAcceptAction>
-                   new_badge_tracker = std::nullopt);
+               std::unique_ptr<PopupRowContentView> content_view);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
   ~PopupRowView() override;
 
-  // Acts as a factory method for creating a row view.
-  static std::unique_ptr<PopupRowView> Create(PopupViewViews& popup_view,
-                                              int line_number);
+  void set_new_badge_tracker(
+      std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker) {
+    new_badge_tracker_ = std::move(new_badge_tracker);
+  }
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -127,8 +124,8 @@ class PopupRowView : public views::View, public views::ViewObserver {
   void OnViewFocused(views::View* focused_now) override;
 
   // Gets and sets the selected cell within this row.
-  absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
-  void SetSelectedCell(absl::optional<CellType> cell);
+  std::optional<CellType> GetSelectedCell() const { return selected_cell_; }
+  virtual void SetSelectedCell(std::optional<CellType> cell);
 
   // Sets whether the row's child suggestions are displayed in a sub-popup.
   // Note that the row doesn't control the sub-popup, but rather should be
@@ -140,15 +137,21 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Attempts to process a key press `event`. Returns true if it did (and the
   // parent no longer needs to handle it).
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  virtual bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event);
 
   // Returns the view representing the content area of the row.
-  PopupCellView& GetContentView() { return *content_view_; }
+  PopupRowContentView& GetContentView() { return *content_view_; }
 
   // Returns the view representing the suggestions expanding control of the row.
   views::View* GetExpandChildSuggestionsView() {
     return expand_child_suggestions_view_.get();
   }
+
+ protected:
+  base::WeakPtr<AutofillPopupController> controller() { return controller_; }
+
+  int line_number() const { return line_number_; }
 
  private:
   // If the suggestion has child suggestions the row view adds this view to
@@ -156,6 +159,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // handling only, `PopupViewViews` controls the logic of opening/closing.
   class ExpandChildSuggestionsView : public views::View {
    public:
+    METADATA_HEADER(ExpandChildSuggestionsView);
     ExpandChildSuggestionsView();
     ExpandChildSuggestionsView(const ExpandChildSuggestionsView&) = delete;
     ExpandChildSuggestionsView& operator=(const ExpandChildSuggestionsView&) =
@@ -198,10 +202,10 @@ class PopupRowView : public views::View, public views::ViewObserver {
   std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker_;
 
   // Which (if any) cell of this row is currently selected.
-  absl::optional<CellType> selected_cell_;
+  std::optional<CellType> selected_cell_;
 
   // The cell wrapping the content area of the row.
-  raw_ptr<PopupCellView> content_view_ = nullptr;
+  raw_ptr<PopupRowContentView> content_view_ = nullptr;
   // The cell wrapping the control area of the row.
   // TODO(crbug.com/1411172): Add keyboard event handling.
   raw_ptr<ExpandChildSuggestionsView> expand_child_suggestions_view_ = nullptr;

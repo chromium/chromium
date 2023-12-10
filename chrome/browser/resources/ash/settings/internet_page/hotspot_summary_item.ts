@@ -69,7 +69,7 @@ export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   }
 
   private navigateToDetailPage_(): void {
-    if (!this.shouldShowArrowButton_(this.hotspotInfo.allowStatus)) {
+    if (!this.shouldShowArrowButton_()) {
       return;
     }
 
@@ -90,10 +90,15 @@ export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     return this.i18n('hotspotSummaryStateOff');
   }
 
-  private shouldHideHotspotStateSublabel_(allowStatus: HotspotAllowStatus):
-      boolean {
-    return allowStatus === HotspotAllowStatus.kDisallowedReadinessCheckFail ||
-        allowStatus === HotspotAllowStatus.kDisallowedNoMobileData;
+  private shouldHideHotspotStateSublabel_(): boolean {
+    if (this.hotspotInfo.state === HotspotState.kEnabling ||
+        this.hotspotInfo.state === HotspotState.kEnabled) {
+      return false;
+    }
+    return this.hotspotInfo.allowStatus ===
+        HotspotAllowStatus.kDisallowedReadinessCheckFail ||
+        this.hotspotInfo.allowStatus ===
+        HotspotAllowStatus.kDisallowedNoMobileData;
   }
 
   private getHotspotDisabledSublabelLink_(allowStatus: HotspotAllowStatus):
@@ -118,15 +123,20 @@ export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   }
 
   private isToggleDisabled_(): boolean {
-    if (!this.shouldShowArrowButton_(this.hotspotInfo.allowStatus)) {
+    if (this.hotspotInfo.state === HotspotState.kDisabling) {
       return true;
     }
-
-    return this.hotspotInfo.state === HotspotState.kDisabling;
+    if (this.hotspotInfo.state === HotspotState.kEnabling ||
+        this.hotspotInfo.state === HotspotState.kEnabled) {
+      return false;
+    }
+    return this.hotspotInfo.allowStatus !== HotspotAllowStatus.kAllowed;
   }
 
-  private shouldShowArrowButton_(allowStatus: HotspotAllowStatus): boolean {
-    return allowStatus === HotspotAllowStatus.kAllowed;
+  private shouldShowArrowButton_(): boolean {
+    return this.hotspotInfo.allowStatus === HotspotAllowStatus.kAllowed ||
+        this.hotspotInfo.state === HotspotState.kEnabling ||
+        this.hotspotInfo.state === HotspotState.kEnabled;
   }
 
   private getIconClass_(isHotspotToggleOn: boolean): string {

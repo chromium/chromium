@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -141,7 +142,7 @@ net::IPEndPoint CreateIPEndPoint(int num) {
 
 MediaSinkInternal CreateDialSink(int num) {
   std::string friendly_name = base::StringPrintf("friendly name %d", num);
-  std::string unique_id = base::StringPrintf("dial:<id%d>", num);
+  std::string unique_id = base::StringPrintf("dial:id%d", num);
   net::IPEndPoint ip_endpoint = CreateIPEndPoint(num);
 
   media_router::MediaSink sink(unique_id, friendly_name,
@@ -157,7 +158,7 @@ MediaSinkInternal CreateDialSink(int num) {
 
 MediaSinkInternal CreateCastSink(int num) {
   std::string friendly_name = base::StringPrintf("friendly name %d", num);
-  std::string unique_id = base::StringPrintf("cast:<id%d>", num);
+  std::string unique_id = base::StringPrintf("cast:id%d", num);
   net::IPEndPoint ip_endpoint = CreateIPEndPoint(num);
 
   MediaSink sink{CreateCastSink(unique_id, friendly_name)};
@@ -166,8 +167,8 @@ MediaSinkInternal CreateCastSink(int num) {
   extra_data.port = ip_endpoint.port();
   extra_data.model_name = base::StringPrintf("model name %d", num);
   extra_data.cast_channel_id = num;
-  extra_data.capabilities = cast_channel::CastDeviceCapability::AUDIO_OUT |
-                            cast_channel::CastDeviceCapability::VIDEO_OUT;
+  extra_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
+                             cast_channel::CastDeviceCapability::kVideoOut};
   return MediaSinkInternal(sink, extra_data);
 }
 

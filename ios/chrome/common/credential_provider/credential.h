@@ -14,8 +14,8 @@
 // Associated favicon name.
 @property(nonatomic, readonly) NSString* favicon;
 
-// Identifier used to look up the secret in the Keychain.
-@property(nonatomic, readonly) NSString* keychainIdentifier;
+// Plain text password.
+@property(nonatomic, readonly) NSString* password;
 
 // Importance ranking of this credential.
 @property(nonatomic, readonly) int64_t rank;

@@ -49,11 +49,6 @@ class TranslateAgent : public content::RenderFrameObserver,
   // this URL loads, this is the time to prepare for it.
   void PrepareForUrl(const GURL& url);
 
-  // Under kRetryLanguageDetection, this is true if a previous call to
-  // PageCaptured has been made with captured page content and language
-  // detection was run.
-  bool WasPageContentCapturedForUrl() { return page_contents_length_; }
-
   // mojom::TranslateAgent implementation.
   void TranslateFrame(const std::string& translate_script,
                       const std::string& source_lang,

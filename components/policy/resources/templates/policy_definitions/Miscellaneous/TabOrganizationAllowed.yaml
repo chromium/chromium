@@ -1,0 +1,33 @@
+caption: Allow tab organization
+
+desc: |-
+  Tab organization feature allows users to organize the tabs.
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow Tab Organization
+  name: Allowed
+  value: 0
+- caption: Allow Tab Organization, without logging the tab details
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Disable Tab Organization
+  name: Disabled
+  value: 2
+owners:
+- file://chrome/browser/ui/tabs/OWNERS
+- file://components/optimization_guide/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:121-
+- chrome_os:121-
+tags: []
+type: int-enum

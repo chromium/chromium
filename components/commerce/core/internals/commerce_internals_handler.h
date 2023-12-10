@@ -8,6 +8,7 @@
 #include "components/commerce/core/internals/mojom/commerce_internals.mojom.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,6 +42,8 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   // The shopping service should always outlive this object since its lifecycle
   // is tied to the browser while this object is tied to a specific tab.
   raw_ptr<ShoppingService> shopping_service_;
+
+  base::WeakPtrFactory<CommerceInternalsHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce

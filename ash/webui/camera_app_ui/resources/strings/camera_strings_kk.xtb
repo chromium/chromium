@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />-бетті жою</translation>
 <translation id="1113173431709655881">Камера режимі</translation>
 <translation id="1153190633558910465">Торды өшіру</translation>
-<translation id="1175958423215084756">Сілтеме анықталды. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />-бет жойылды.</translation>
 <translation id="1258009455399840361">Сағат тілімен 90 градус бұру</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-бет мәліметтерін өзгерту</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Бейне өңделуде…</translation>
 <translation id="3789724198583203151">Сағат тіліне қарсы 90 градус бұру</translation>
 <translation id="3810838688059735925">Бейне</translation>
-<translation id="3892148308691398805">Мәтінді көшіру</translation>
 <translation id="4060608699153044055">Құрылғының жад көлемі аз болғандықтан жазу мүмкін емес. Жазуды бастау үшін құрылғыңызда орын босатуыңыз керек.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксель</translation>
 <translation id="4118525110028899586">Жазуды кідірту</translation>
 <translation id="4121305183798804752">Құжат анықталды</translation>
 <translation id="414641094616694804">Бұл камера ажыратымдылықты өзгерте алмайды.</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
-<translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="428234092390943511">Беттің нобайы</translation>
 <translation id="4349714250734879769">Chrome бойынша масштабты кадрлар</translation>
 <translation id="4383571725254449280">Жұмысты тіркеу журналдарын басып шығару</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Қалыпты бейне түсіру</translation>
 <translation id="7748344063862150053">Құжаттың жоғарғы оң жақ бұрышы</translation>
 <translation id="7933675232020478311">Төменгі оң жаққа қарай жылжыту</translation>
-<translation id="7983668134180549431">Мәтін анықталды.</translation>
 <translation id="8079255378695216066">Жазуды бастау мүмкін емес</translation>
 <translation id="8120146556401698679">Панорама, қисайту, масштабтау</translation>
 <translation id="8131740175452115882">Растау</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Бейнеге түсіру мүмкін емес.</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Үлкейту</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" желісіне қосылу</translation>
 <translation id="9045010116236796332">Құжатты жақтаудың ішіне орналастырыңыз.</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Кескін өңделуде…</translation>

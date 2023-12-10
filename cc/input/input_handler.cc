@@ -184,6 +184,15 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     // still need to walk up the scroll tree looking for the first node that
     // can consume delta from the scroll state.
     scrolling_node = FindNodeToLatch(scroll_state, starting_node, type);
+
+    // When using fluent overlay scrollbars and a subscroller receives a scroll
+    // event, but the scroll chains up to a different node, we want to flash the
+    // scrollbars to show that the node is scrollable.
+    if (scrolling_node &&
+        compositor_delegate_->GetSettings().enable_fluent_overlay_scrollbar &&
+        scrolling_node->element_id != starting_node->element_id) {
+      compositor_delegate_->WillScrollContent(starting_node->element_id);
+    }
   }
 
   if (!scrolling_node) {
@@ -314,8 +323,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 
   bool did_scroll_x = scroll_state->caused_scroll_x();
   bool did_scroll_y = scroll_state->caused_scroll_y();
-  did_scroll_x_for_scroll_gesture_ |= did_scroll_x;
-  did_scroll_y_for_scroll_gesture_ |= did_scroll_y;
+
   delta_consumed_for_scroll_gesture_ |=
       scroll_state->delta_consumed_for_scroll_sequence();
   bool did_scroll_content = did_scroll_x || did_scroll_y;
@@ -452,6 +460,7 @@ void InputHandler::ScrollEnd(bool should_snap) {
   deferred_scroll_end_ = false;
   SetNeedsCommit();
   snap_fling_state_ = kNoFling;
+  snap_strategy_.reset();
 }
 
 void InputHandler::RecordScrollBegin(
@@ -821,7 +830,7 @@ bool InputHandler::ScrollLayerTo(ElementId element_id,
   return true;
 }
 
-absl::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
+std::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
   gfx::PointF fling = original;
   if (fling_snap_constrain_x_) {
     fling.set_x(std::clamp(fling.x(), fling_snap_constrain_x_->GetMin(),
@@ -831,7 +840,26 @@ absl::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
     fling.set_y(std::clamp(fling.y(), fling_snap_constrain_y_->GetMin(),
                            fling_snap_constrain_y_->GetMax()));
   }
-  return original == fling ? absl::nullopt : absl::make_optional(fling);
+  return original == fling ? std::nullopt : std::make_optional(fling);
+}
+
+double InputHandler::PredictViewportBoundsDelta(
+    gfx::Vector2dF scroll_distance) {
+  // This adjustment is just an estimate. If we're wrong about where to aim a
+  // snap fling curve, SnapAtScrollEnd will probably take us to a good place.
+  // And if all else fails, the main thread will fix things in SnapAfterLayout
+  // which runs after cc has stopped scrolling. But it does look nicer when no
+  // corrections are needed, so we try to achieve that in the common cases.
+
+  // The outer_viewport_container_bounds_delta is how much the true viewport
+  // size currently differs from what Blink thinks it is.
+  double current_bounds_delta = GetScrollTree()
+                                    .property_trees()
+                                    ->outer_viewport_container_bounds_delta()
+                                    .y();
+  return compositor_delegate_->GetImplDeprecated()
+      .browser_controls_manager()
+      ->PredictViewportBoundsDelta(current_bounds_delta, scroll_distance);
 }
 
 bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
@@ -844,7 +872,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       snap_fling_state_ == kNativeFling) {
     return false;
   }
-  const SnapContainerData& data = scroll_node->snap_container_data.value();
+  SnapContainerData& data = scroll_node->snap_container_data.value();
 
   float scale_factor = ActiveTree().page_scale_factor_for_scroll();
   gfx::Vector2dF current_delta_in_content =
@@ -856,7 +884,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   gfx::PointF new_offset = current_offset + current_delta_in_content;
 
   if (snap_fling_state_ == kConstrainedNativeFling) {
-    if (absl::optional<gfx::PointF> constrained = ConstrainFling(new_offset)) {
+    if (std::optional<gfx::PointF> constrained = ConstrainFling(new_offset)) {
       snap_displacement = *constrained - current_offset;
     } else {
       return false;
@@ -869,7 +897,12 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       SnapSelectionStrategy::CreateForEndAndDirection(
           current_offset, snap_displacement, use_fractional_offsets);
 
-  SnapPositionData snap = data.FindSnapPosition(*strategy);
+  double snapport_height_adjustment =
+      scroll_node->scrolls_outer_viewport
+          ? PredictViewportBoundsDelta(snap_displacement)
+          : 0;
+  SnapPositionData snap = data.FindSnapPositionWithViewportAdjustment(
+      *strategy, snapport_height_adjustment);
   if (snap.type == SnapPositionData::Type::kNone) {
     snap_fling_state_ = kNativeFling;
     return false;
@@ -886,6 +919,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       return false;
     }
   }
+  snap_strategy_ = std::move(strategy);
 
   *out_initial_position = current_offset;
   *out_target_position = snap.position;
@@ -912,7 +946,7 @@ void InputHandler::ScrollEndForSnapFling(bool did_finish) {
     SetNeedsCommit();
   }
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
-  ScrollEnd(false /* should_snap */);
+  ScrollEnd(true /* should_snap */);
 }
 
 void InputHandler::NotifyInputEvent() {
@@ -973,6 +1007,10 @@ void InputHandler::ProcessCommitDeltas(
 
   commit_data->overscroll_delta = overscroll_delta_for_main_thread_;
   overscroll_delta_for_main_thread_ = gfx::Vector2dF();
+
+  if (snap_strategy_) {
+    commit_data->snap_strategy = snap_strategy_->Clone();
+  }
 
   // Use the |last_latched_scroller_| rather than the
   // |CurrentlyScrollingNode| since the latter may be cleared by a GSE before
@@ -1549,6 +1587,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
                delta.x(), "delta_y", delta.y());
   gfx::Vector2dF applied_delta;
   gfx::Vector2dF delta_applied_to_content;
+  std::optional<gfx::PointF> snap_strategy_offset;
   // TODO(tdresser): Use a more rational epsilon. See crbug.com/510550 for
   // details.
   const float kEpsilon = 0.1f;
@@ -1574,10 +1613,10 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       DCHECK(animating_scroll_node->id == scroll_node.id ||
              animating_scroll_node->scrolls_inner_viewport);
 
-      bool animation_updated = ScrollAnimationUpdateTarget(
-          *animating_scroll_node, delta, delayed_by);
+      snap_strategy_offset = ScrollAnimationUpdateTarget(*animating_scroll_node,
+                                                         delta, delayed_by);
 
-      if (animation_updated) {
+      if (snap_strategy_offset) {
         // Because we updated the animation target, consume delta so we notify
         // the `LatencyInfoSwapPromiseMonitor` to tell it that something
         // happened that will cause a swap in the future. This will happen
@@ -1605,6 +1644,9 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
         compositor_delegate_->GetImplDeprecated().ScrollAnimationCreate(
             scroll_node, applied_delta, delayed_by);
       }
+      gfx::PointF current_scroll_offset = GetVisualScrollOffset(scroll_node);
+      snap_strategy_offset = GetScrollTree().ClampScrollOffsetToLimits(
+          current_scroll_offset + applied_delta, scroll_node);
     }
 
     // Animated scrolling always applied only to the content (i.e. not to the
@@ -1637,6 +1679,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       applied_delta = ScrollSingleNode(scroll_node, delta, viewport_point,
                                        scroll_state->is_direct_manipulation());
     }
+    snap_strategy_offset = GetVisualScrollOffset(scroll_node);
   }
   overscroll_delta_for_main_thread_ += delta - applied_delta;
 
@@ -1672,6 +1715,17 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       std::abs(delta_applied_to_content.x()) > kEpsilon,
       std::abs(delta_applied_to_content.y()) > kEpsilon);
   scroll_state->ConsumeDelta(applied_delta.x(), applied_delta.y());
+
+  did_scroll_x_for_scroll_gesture_ |= scroll_state->caused_scroll_x();
+  did_scroll_y_for_scroll_gesture_ |= scroll_state->caused_scroll_y();
+
+  if (snap_strategy_offset && !scroll_state->is_in_inertial_phase()) {
+    // We use |last_scroll_update_state_| instead of |scroll_state| as that more
+    // closely matches what InputHandler::SnapAtScrollend would use.
+    snap_strategy_ = CreateSnapStrategy(
+        last_scroll_update_state_.value(), snap_strategy_offset.value(),
+        SnapReason::kScrollOffsetAnimationFinished);
+  }
 }
 
 bool InputHandler::CanPropagate(ScrollNode* scroll_node, float x, float y) {
@@ -1821,39 +1875,25 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   SnapContainerData& data = scroll_node->snap_container_data.value();
   gfx::PointF current_position = GetVisualScrollOffset(*scroll_node);
 
-  // You might think that if a scroll never received a scroll update we could
-  // just drop the snap. However, if the GSB+GSE arrived while we were mid-snap
-  // from a previous gesture, this would leave the scroller at a
-  // non-snap-point.
-  DCHECK(last_scroll_update_state_ || last_scroll_begin_state_);
-  ScrollState& last_scroll_state = last_scroll_update_state_
-                                       ? *last_scroll_update_state_
-                                       : *last_scroll_begin_state_;
-
-  bool imprecise_wheel_scrolling =
-      latched_scroll_type_ == ui::ScrollInputType::kWheel &&
-      last_scroll_state.delta_granularity() !=
-          ui::ScrollGranularity::kScrollByPrecisePixel;
-  gfx::Vector2dF last_scroll_delta = last_scroll_state.DeltaOrHint();
-
-  std::unique_ptr<SnapSelectionStrategy> strategy;
-  if (imprecise_wheel_scrolling && !last_scroll_delta.IsZero() &&
-      reason == SnapReason::kScrollOffsetAnimationFinished) {
-    // This was an imprecise wheel scroll so use direction snapping.
-    // Note: gesture scroll end is delayed in anticipation of future wheel
-    // scrolls so it is fired well after the scroll ends as opposed to precise
-    // touch devices where we fire it as soon as the user lifts their finger.
-    // TODO(crbug.com/1201678): The directional scroll should probably be
-    // triggered at gesture scroll begin to improve responsiveness.
-    strategy = SnapSelectionStrategy::CreateForDirection(
-        current_position, last_scroll_delta, true);
-  } else {
-    strategy = SnapSelectionStrategy::CreateForEndPosition(
-        current_position, did_scroll_x_for_scroll_gesture_,
-        did_scroll_y_for_scroll_gesture_);
+  if (!snap_strategy_) {
+    // You might think that if a scroll never received a scroll update we could
+    // just drop the snap. However, if the GSB+GSE arrived while we were
+    // mid-snap from a previous gesture, this would leave the scroller at a
+    // non-snap-point.
+    DCHECK(last_scroll_update_state_ || last_scroll_begin_state_);
+    ScrollState& last_scroll_state = last_scroll_update_state_
+                                         ? *last_scroll_update_state_
+                                         : *last_scroll_begin_state_;
+    snap_strategy_ =
+        CreateSnapStrategy(last_scroll_state, current_position, reason);
   }
 
-  SnapPositionData snap = data.FindSnapPosition(*strategy);
+  double snapport_height_adjustment =
+      scroll_node->scrolls_outer_viewport
+          ? PredictViewportBoundsDelta(gfx::Vector2dF())
+          : 0;
+  SnapPositionData snap = data.FindSnapPositionWithViewportAdjustment(
+      *snap_strategy_, snapport_height_adjustment);
   if (snap.type == SnapPositionData::Type::kNone) {
     return false;
   }
@@ -1915,7 +1955,7 @@ void InputHandler::ClearCurrentlyScrollingNode() {
   compositor_delegate_->DidEndScroll();
 }
 
-bool InputHandler::ScrollAnimationUpdateTarget(
+std::optional<gfx::PointF> InputHandler::ScrollAnimationUpdateTarget(
     const ScrollNode& scroll_node,
     const gfx::Vector2dF& scroll_delta,
     base::TimeDelta delayed_by) {
@@ -1930,7 +1970,7 @@ bool InputHandler::ScrollAnimationUpdateTarget(
       gfx::ScaleVector2d(scroll_delta, 1.f / scale_factor);
   adjusted_delta = UserScrollableDelta(scroll_node, adjusted_delta);
 
-  bool animation_updated =
+  std::optional<gfx::PointF> animation_target =
       compositor_delegate_->GetImplDeprecated()
           .mutator_host()
           ->ImplOnlyScrollAnimationUpdateTarget(
@@ -1939,7 +1979,7 @@ bool InputHandler::ScrollAnimationUpdateTarget(
                   .CurrentBeginFrameArgs()
                   .frame_time,
               delayed_by);
-  if (animation_updated) {
+  if (animation_target) {
     compositor_delegate_->DidUpdateScrollAnimationCurve();
 
     // The animation is no longer targeting a snap position. By clearing the
@@ -1948,7 +1988,7 @@ bool InputHandler::ScrollAnimationUpdateTarget(
     scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
   }
 
-  return animation_updated;
+  return animation_target;
 }
 
 void InputHandler::UpdateScrollSourceInfo(const ScrollState& scroll_state,
@@ -2025,6 +2065,31 @@ bool InputHandler::CurrentScrollNeedsFrameAlignment() const {
     }
   }
   return false;
+}
+
+std::unique_ptr<SnapSelectionStrategy> InputHandler::CreateSnapStrategy(
+    const ScrollState& scroll_state,
+    const gfx::PointF& current_offset,
+    SnapReason snap_reason) const {
+  const gfx::Vector2dF scroll_delta = scroll_state.DeltaOrHint();
+  if (latched_scroll_type_ == ui::ScrollInputType::kWheel &&
+      scroll_state.delta_granularity() !=
+          ui::ScrollGranularity::kScrollByPrecisePixel &&
+      !scroll_delta.IsZero() &&
+      snap_reason == SnapReason::kScrollOffsetAnimationFinished) {
+    // This was an imprecise wheel scroll so use direction snapping.
+    // Note: gesture scroll end is delayed in anticipation of future wheel
+    // scrolls so it is fired well after the scroll ends as opposed to precise
+    // touch devices where we fire it as soon as the user lifts their finger.
+    // TODO(crbug.com/1201678): The directional scroll should probably be
+    // triggered at gesture scroll begin to improve responsiveness.
+    return SnapSelectionStrategy::CreateForDirection(current_offset,
+                                                     scroll_delta, true);
+  } else {
+    return SnapSelectionStrategy::CreateForEndPosition(
+        current_offset, did_scroll_x_for_scroll_gesture_,
+        did_scroll_y_for_scroll_gesture_);
+  }
 }
 
 }  // namespace cc

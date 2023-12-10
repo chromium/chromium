@@ -5,6 +5,7 @@
 #include "ash/app_menu/notification_item_view.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -166,5 +167,8 @@ void NotificationItemView::OnGestureEvent(ui::GestureEvent* event) {
       return;
   }
 }
+
+BEGIN_METADATA(NotificationItemView)
+END_METADATA
 
 }  // namespace ash

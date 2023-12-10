@@ -22,9 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * Utilities to support startup metrics - Android version.
- */
+/** Utilities to support startup metrics - Android version. */
 @JNINamespace("chrome::android")
 public class UmaUtils {
     /** Observer for this class. */
@@ -69,10 +67,18 @@ public class UmaUtils {
      * These values are persisted to logs. Entries should not be renumbered and
      * numeric values should never be reused.
      */
-    @IntDef({StandbyBucketStatus.ACTIVE, StandbyBucketStatus.WORKING_SET,
-            StandbyBucketStatus.FREQUENT, StandbyBucketStatus.RARE, StandbyBucketStatus.RESTRICTED,
-            StandbyBucketStatus.UNSUPPORTED, StandbyBucketStatus.EXEMPTED,
-            StandbyBucketStatus.NEVER, StandbyBucketStatus.OTHER, StandbyBucketStatus.COUNT})
+    @IntDef({
+        StandbyBucketStatus.ACTIVE,
+        StandbyBucketStatus.WORKING_SET,
+        StandbyBucketStatus.FREQUENT,
+        StandbyBucketStatus.RARE,
+        StandbyBucketStatus.RESTRICTED,
+        StandbyBucketStatus.UNSUPPORTED,
+        StandbyBucketStatus.EXEMPTED,
+        StandbyBucketStatus.NEVER,
+        StandbyBucketStatus.OTHER,
+        StandbyBucketStatus.COUNT
+    })
     private @interface StandbyBucketStatus {
         int ACTIVE = 0;
         int WORKING_SET = 1;
@@ -140,9 +146,7 @@ public class UmaUtils {
         return sForegroundStartWithNativeTimeMs != 0;
     }
 
-    /**
-     * Determines if Chrome was brought to background.
-     */
+    /** Determines if Chrome was brought to background. */
     public static boolean hasComeToBackgroundWithNative() {
         return sBackgroundWithNativeTimeMs != 0;
     }
@@ -155,9 +159,7 @@ public class UmaUtils {
         return UmaUtilsJni.get().isClientInMetricsReportingSample();
     }
 
-    /**
-     * Records various levels of background restrictions imposed by android on chrome.
-     */
+    /** Records various levels of background restrictions imposed by android on chrome. */
     public static void recordBackgroundRestrictions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Context context = ContextUtils.getApplicationContext();
@@ -168,20 +170,27 @@ public class UmaUtils {
                 "Android.BackgroundRestrictions.IsBackgroundRestricted", isBackgroundRestricted);
 
         int standbyBucketUma = getStandbyBucket(context);
-        RecordHistogram.recordEnumeratedHistogram("Android.BackgroundRestrictions.StandbyBucket",
-                standbyBucketUma, StandbyBucketStatus.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BackgroundRestrictions.StandbyBucket",
+                standbyBucketUma,
+                StandbyBucketStatus.COUNT);
 
         if (isBackgroundRestricted) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction",
-                    standbyBucketUma, StandbyBucketStatus.COUNT);
+                    standbyBucketUma,
+                    StandbyBucketStatus.COUNT);
         }
     }
 
     /** Record minidump uploading time split by background restriction status. */
     public static void recordMinidumpUploadingTime(long taskDurationMs) {
-        RecordHistogram.recordCustomTimesHistogram("Stability.Android.MinidumpUploadingTime",
-                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
+        RecordHistogram.recordCustomTimesHistogram(
+                "Stability.Android.MinidumpUploadingTime",
+                taskDurationMs,
+                1,
+                DateUtils.DAY_IN_MILLIS,
+                50);
     }
 
     private static @StandbyBucketStatus int getStandbyBucket(Context context) {
@@ -242,6 +251,7 @@ public class UmaUtils {
     @NativeMethods
     interface Natives {
         boolean isClientInMetricsReportingSample();
+
         void recordMetricsReportingDefaultOptIn(boolean optIn);
     }
 }

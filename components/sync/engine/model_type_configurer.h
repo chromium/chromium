@@ -32,7 +32,7 @@ class ModelTypeConfigurer {
 
     ~ConfigureParams();
 
-    ConfigureReason reason;
+    ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
     ModelTypeSet to_download;
     ModelTypeSet to_purge;
 
@@ -40,7 +40,7 @@ class ModelTypeConfigurer {
         ready_task;
 
     // Whether full sync (or sync the feature) is enabled;
-    bool is_sync_feature_enabled;
+    bool is_sync_feature_enabled = false;
   };
 
   ModelTypeConfigurer();

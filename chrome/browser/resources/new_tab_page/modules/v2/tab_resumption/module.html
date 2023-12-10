@@ -1,0 +1,155 @@
+<style>
+  :host {
+    background-color: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-border-radius);
+  }
+
+  @media (forced-colors: active) {
+    /* Set outline since background isn't visible in hcm */
+    ntp-module-header-v2,
+    a {
+      border-radius: var(--ntp-module-item-border-radius);
+      outline: var(--cr-border-hcm);
+     }
+
+    .tab {
+      overflow: visible;
+    }
+  }
+
+  ntp-module-header-v2 {
+    background-color: var(--color-new-tab-page-module-background);
+    margin: 8px;
+  }
+
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  #tabs {
+    background-color: var(--color-new-tab-page-module-item-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    margin: 8px;
+  }
+
+  .tab {
+    align-items: center;
+    display: flex;
+    height: 52px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    position: relative;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .tab:hover #hover-layer {
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  #hover-layer {
+    display: none;
+  }
+
+  .tab:first-of-type {
+    border-radius: var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius) 0 0;
+  }
+
+  .tab:last-of-type {
+    border-radius: 0 0 var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius);
+  }
+
+  .tab-icon {
+    height: 18px;
+    margin-inline-end: 17px;
+    margin-inline-start: 17px;
+    width: 18px;
+  }
+
+  .tab-info {
+    min-width: 0;
+    padding-inline-end: 16px;
+  }
+
+  .tab-device,
+  .tab-title,
+  .tab-domain,
+  .dot,
+  .date {
+    color: var(--color-new-tab-page-secondary-foreground);
+  }
+
+  .tab-device,
+  .tab-title,
+  .tab-domain {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tab-device {
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .tab-title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .tab-description {
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .date {
+    white-space: nowrap;
+  }
+</style>
+<ntp-module-header-v2
+    id="moduleHeaderElementV2"
+    header-text="[[i18n('modulesTabResumptionTitle')]]"
+    menu-item-groups="[[getMenuItemGroups_()]]"
+    more-actions-text="[[i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesDriveSentence')]]"
+    on-disable-button-click="onDisableButtonClick_"
+    on-info-button-click="onInfoButtonClick_"
+    on-menu-button-click="onMenuButtonClick_">
+</ntp-module-header-v2>
+<div id="tabs">
+  <template id="tabRepeat" is="dom-repeat" items="[[tabs]]">
+    <a class="tab" href="[[item.url.url]]" on-click="onTabClick_">
+      <div id="hover-layer"></div>
+      <page-favicon id="icon" url="[[item.url]]" size="16">
+      </page-favicon>
+      <div class="tab-info">
+        <div class="tab-device">[[item.sessionName]]</div>
+        <div class="tab-title">[[item.title]]</div>
+        <div class="tab-description">
+          <div class="tab-domain">[[item.url.url]]</div>
+          <span class="dot">&nbsp&#8226&nbsp</span>
+          <div class="date">[[item.relativeTime]]</div>
+        </div>
+      </div>
+    </a>
+  </template>
+</div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog
+        inner-h-t-m-l="[[i18nAdvanced('modulesTabResumptionInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

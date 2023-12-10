@@ -6,6 +6,7 @@ import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 import '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import '//components/autofill/ios/form_util/resources/fill_util.js';
 
+import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
@@ -49,26 +50,28 @@ let AutofillFormFieldData;
 let AutofillFormData;
 
 /**
+ * @typedef {{
+ *   token: string,
+ *   predecessor: number
+ * }}
+ */
+let FrameTokenWithPredecessor;
+
+/**
  * Extracts fields from |controlElements| with |extractMask| to |formFields|.
  * The extracted fields are also placed in |elementArray|.
- *
- * It is based on the logic in
- *     bool ExtractFieldsFromControlElements(
- *         const WebVector<WebFormControlElement>& control_elements,
- *         const FieldValueAndPropertiesMaskMap* field_value_and_properties_map,
- *         ExtractMask extract_mask,
- *         std::vector<std::unique_ptr<FormFieldData>>* form_fields,
- *         std::vector<bool>* fields_extracted,
- *         std::map<WebFormControlElement, FormFieldData*>* element_map)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc
  *
  * TODO(crbug.com/1030490): Make |elementArray| a Map.
  *
  * @param {Array<FormControlElement>} controlElements The control elements that
  *     will be processed.
+ * @param {Array<HTMLIFrameElement>} iframeElements The iframe elements that
+ *     will be processed.
  * @param {number} extractMask Mask controls what data is extracted from
  *     controlElements.
  * @param {Array<AutofillFormFieldData>} formFields The extracted form fields.
+ * @param {Array<FrameTokenWithPredecessor>} childFrames The extracted child
+ *     frames.
  * @param {Array<boolean>} fieldsExtracted Indicates whether the fields were
  *     extracted.
  * @param {Array<?AutofillFormFieldData>} elementArray The extracted form
@@ -77,7 +80,12 @@ let AutofillFormData;
  *     form.
  */
 function extractFieldsFromControlElements_(
-    controlElements, extractMask, formFields, fieldsExtracted, elementArray) {
+    controlElements, iframeElements, extractMask, formFields, childFrames,
+    fieldsExtracted, elementArray) {
+  for (const i of iframeElements) {
+    childFrames.push(/* @type {FrameTokenWithPredecessor} */ {});
+  }
+
   for (let i = 0; i < controlElements.length; ++i) {
     fieldsExtracted[i] = false;
     elementArray[i] = null;
@@ -100,6 +108,10 @@ function extractFieldsFromControlElements_(
     formFields.push(formField);
     elementArray[i] = formField;
     fieldsExtracted[i] = true;
+
+    // TODO(crbug.com/1440471): This loop should also track which control
+    // element appears immediately before the frame, so its index can be set as
+    // the frame predecessor.
 
     // To avoid overly expensive computation, we impose a maximum number of
     // allowable fields.
@@ -229,14 +241,16 @@ function matchLabelsAndFields_(
  * 2) a non-empty |fieldsets|.
  *
  * It is based on the logic in
- *     bool FormOrFieldsetsToFormData(
- *         const blink::WebFormElement* form_element,
- *         const blink::WebFormControlElement* form_control_element,
- *         const std::vector<blink::WebElement>& fieldsets,
- *         const WebVector<WebFormControlElement>& control_elements,
- *         ExtractMask extract_mask,
- *         FormData* form,
- *         FormFieldData* field)
+ *    bool OwnedOrUnownedFormToFormData(
+ *        const WebFrame* frame,
+ *        const blink::WebFormElement& form_element,
+ *        const blink::WebFormControlElement* form_control_element,
+ *        const WebVector<WebFormControlElement>& control_elements,
+ *        const std::vector<blink::WebElement>& iframe_elements,
+ *        const FieldDataManager* field_data_manager,
+ *        ExtractMask extract_mask,
+ *        FormData* form,
+ *        FormFieldData* optional_field)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc
  *
  * @param {HTMLFormElement} formElement The form element that will be processed.
@@ -245,6 +259,8 @@ function matchLabelsAndFields_(
  * @param {Array<Element>} fieldsets The fieldsets to look through if
  *     formElement and formControlElement are not specified.
  * @param {Array<FormControlElement>} controlElements The control elements that
+ *     will be processed.
+ * @param {Array<HTMLIFrameElement>} iframeElements The iframe elements that
  *     will be processed.
  * @param {number} extractMask Mask controls what data is extracted from
  *     formElement.
@@ -256,8 +272,8 @@ function matchLabelsAndFields_(
  *     form.
  */
 __gCrWeb.fill.formOrFieldsetsToFormData = function(
-    formElement, formControlElement, fieldsets, controlElements, extractMask,
-    form, field) {
+    formElement, formControlElement, fieldsets, controlElements, iframeElements,
+    extractMask, form, field) {
   // This should be a map from a control element to the AutofillFormFieldData.
   // However, without Map support, it's just an Array of AutofillFormFieldData.
   const elementArray = [];
@@ -265,14 +281,17 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
   // The extracted FormFields.
   const formFields = [];
 
+  // The extracted child frames.
+  const childFrames = [];
+
   // A vector of booleans that indicate whether each element in
   // |controlElements| meets the requirements and thus will be in the resulting
   // |form|.
   const fieldsExtracted = [];
 
   if (!extractFieldsFromControlElements_(
-          controlElements, extractMask, formFields, fieldsExtracted,
-          elementArray)) {
+          controlElements, iframeElements, extractMask, formFields, childFrames,
+          fieldsExtracted, elementArray)) {
     return false;
   }
 
@@ -321,9 +340,31 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
     ++fieldIdx;
   }
 
+  // Extract the frame tokens of `iframeElements`.
+  if (childFrames.length != iframeElements.length) {
+    // `extractFieldsFromControlElements_` should create one entry in
+    // `childFrames` for each entry in `iframeElements`. If this hasn't
+    // happened, attempting to process the frames will cause errors, so early
+    // return.
+    return false;
+  }
+  for (let j = 0; j < iframeElements.length; ++j) {
+    const frame = iframeElements[j];
+    childFrames[j]['token'] = registerChildFrame(frame);
+
+    // TODO(crbug.com/1440471): Compute the actual predecessor and replace this
+    // placeholder value.
+    childFrames[j]['predecessor'] = 64;
+  }
+
   form['fields'] = formFields;
   // Protect against custom implementation of Array.toJSON in host pages.
   form['fields'].toJSON = null;
+
+  if (childFrames.length > 0) {
+    form['child_frames'] = childFrames;
+    form['child_frames'].toJSON = null;
+  }
   return true;
 };
 
@@ -387,9 +428,14 @@ __gCrWeb.fill.webFormElementToFormData = function(
 
   const controlElements = __gCrWeb.form.getFormControlElements(formElement);
 
+  const iframeElements =
+      __gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+      __gCrWeb.form.getIframeElements(formElement) :
+      [];
+
   return __gCrWeb.fill.formOrFieldsetsToFormData(
       formElement, formControlElement, [] /* fieldsets */, controlElements,
-      extractMask, form, field);
+      iframeElements, extractMask, form, field);
 };
 
 /**
@@ -625,9 +671,11 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   form['is_form_tag'] = false;
 
   if (!restrictUnownedFieldsToFormlessCheckout) {
+    // TODO(crbug.com/1440471): Pass iframe elements.
     return __gCrWeb.fill.formOrFieldsetsToFormData(
         null /* formElement*/, null /* formControlElement */, fieldsets,
-        controlElements, extractMask, form, null /* field */);
+        controlElements, /* iframeElements */[], extractMask, form,
+        null /* field */);
   }
 
 
@@ -643,9 +691,11 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index];
     if (title.includes(keyword) || path.includes(keyword)) {
+      // TODO(crbug.com/1440471): Pass iframe elements.
       return __gCrWeb.fill.formOrFieldsetsToFormData(
           null /* formElement*/, null /* formControlElement */, fieldsets,
-          controlElements, extractMask, form, null /* field */);
+          controlElements, /* iframeElements */[], extractMask, form,
+          null /* field */);
     }
   }
 
@@ -662,9 +712,11 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   if (controlElementsWithAutocomplete.length === 0) {
     return false;
   }
+  // TODO(crbug.com/1440471): Pass iframe elements.
   return __gCrWeb.fill.formOrFieldsetsToFormData(
       null /* formElement*/, null /* formControlElement */, fieldsets,
-      controlElementsWithAutocomplete, extractMask, form, null /* field */);
+      controlElementsWithAutocomplete, /* iframeElements */[], extractMask,
+      form, null /* field */);
 };
 
 

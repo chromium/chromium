@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -52,6 +52,7 @@ constexpr bool IsAllowedInPrefs(WallpaperType type) {
     case WallpaperType::kPolicy:
     case WallpaperType::kDailyGooglePhotos:
     case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kSeaPen:
       return true;
   }
 }
@@ -70,6 +71,7 @@ constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
     case WallpaperType::kOobe:
+    case WallpaperType::kSeaPen:
     case WallpaperType::kCount:
       return false;
   }
@@ -90,17 +92,17 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
       WallpaperPrefManager::kNewWallpaperVariantListNodeName);
 
   info->collection_id = collection_id ? *collection_id : std::string();
-  info->dedup_key = dedup_key ? absl::make_optional(*dedup_key) : absl::nullopt;
+  info->dedup_key = dedup_key ? std::make_optional(*dedup_key) : std::nullopt;
 
   if (asset_id_str) {
     uint64_t asset_id;
     if (base::StringToUint64(*asset_id_str, &asset_id))
-      info->asset_id = absl::make_optional(asset_id);
+      info->asset_id = std::make_optional(asset_id);
   }
   if (unit_id_str) {
     uint64_t unit_id;
     if (base::StringToUint64(*unit_id_str, &unit_id))
-      info->unit_id = absl::make_optional(unit_id);
+      info->unit_id = std::make_optional(unit_id);
   }
   if (variant_list) {
     std::vector<OnlineWallpaperVariant> variants;
@@ -113,7 +115,7 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
           WallpaperPrefManager::kNewWallpaperAssetIdNodeName);
       const std::string* url = variant_info.FindString(
           WallpaperPrefManager::kOnlineWallpaperUrlNodeName);
-      absl::optional<int> type = variant_info.FindInt(
+      std::optional<int> type = variant_info.FindInt(
           WallpaperPrefManager::kOnlineWallpaperTypeNodeName);
       if (variant_asset_id_str && url && type.has_value()) {
         uint64_t variant_asset_id;
@@ -147,9 +149,9 @@ bool GetWallpaperInfo(const AccountId& account_id,
       WallpaperPrefManager::kNewWallpaperLocationNodeName);
   const std::string* file_path = info_dict->FindString(
       WallpaperPrefManager::kNewWallpaperUserFilePathNodeName);
-  absl::optional<int> layout =
+  std::optional<int> layout =
       info_dict->FindInt(WallpaperPrefManager::kNewWallpaperLayoutNodeName);
-  absl::optional<int> type =
+  std::optional<int> type =
       info_dict->FindInt(WallpaperPrefManager::kNewWallpaperTypeNodeName);
   const std::string* date_string =
       info_dict->FindString(WallpaperPrefManager::kNewWallpaperDateNodeName);
@@ -387,43 +389,16 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
                         prefs::kSyncableWallpaperInfo);
   }
 
-  absl::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
+  std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
       base::StringPiece location) const override {
-    absl::optional<std::vector<SkColor>> cached_colors =
-        GetCachedProminentColors(location);
-    absl::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
-    if (!chromeos::features::IsJellyEnabled()) {
-      if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
-        return WallpaperCalculatedColors(cached_colors.value(),
-                                         cached_k_mean_color.value(),
-                                         SK_ColorTRANSPARENT);
-      }
-
-      return absl::nullopt;
-    }
-
-    absl::optional<SkColor> cached_celebi_color = GetCelebiColor(location);
+    std::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
+    std::optional<SkColor> cached_celebi_color = GetCelebiColor(location);
     if (cached_k_mean_color.has_value() && cached_celebi_color.has_value()) {
-      return WallpaperCalculatedColors({}, cached_k_mean_color.value(),
+      return WallpaperCalculatedColors(cached_k_mean_color.value(),
                                        cached_celebi_color.value());
     }
 
-    return absl::nullopt;
-  }
-
-  void CacheProminentColors(base::StringPiece location,
-                            const std::vector<SkColor>& colors) override {
-    if (location.empty()) {
-      return;
-    }
-
-    ScopedDictPrefUpdate wallpaper_colors_update(local_state_,
-                                                 prefs::kWallpaperColors);
-    base::Value::List wallpaper_colors;
-    for (SkColor color : colors)
-      wallpaper_colors.Append(static_cast<double>(color));
-    base::Value wallpaper_colors_value(std::move(wallpaper_colors));
-    wallpaper_colors_update->Set(location, std::move(wallpaper_colors_value));
+    return std::nullopt;
   }
 
   void RemoveProminentColors(const AccountId& account_id) override {
@@ -438,32 +413,12 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     wallpaper_colors_update->Remove(old_info.location);
   }
 
-  absl::optional<std::vector<SkColor>> GetCachedProminentColors(
-      const base::StringPiece location) const override {
-    if (location.empty())
-      return absl::nullopt;
-
-    const base::Value::List* prominent_colors =
-        local_state_->GetDict(prefs::kWallpaperColors).FindList(location);
-    if (!prominent_colors)
-      return absl::nullopt;
-
-    absl::optional<std::vector<SkColor>> cached_colors_out;
-    cached_colors_out = std::vector<SkColor>();
-    cached_colors_out.value().reserve(prominent_colors->size());
-    for (const auto& value : *prominent_colors) {
-      cached_colors_out.value().push_back(
-          static_cast<SkColor>(value.GetDouble()));
-    }
-    return cached_colors_out;
-  }
-
   void CacheKMeanColor(base::StringPiece location,
                        SkColor k_mean_color) override {
     CacheSingleColor(prefs::kWallpaperMeanColors, location, k_mean_color);
   }
 
-  absl::optional<SkColor> GetCachedKMeanColor(
+  std::optional<SkColor> GetCachedKMeanColor(
       const base::StringPiece location) const override {
     return GetSingleCachedColor(prefs::kWallpaperMeanColors, location);
   }
@@ -476,7 +431,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
                         SkColor celebi_color) override {
     CacheSingleColor(prefs::kWallpaperCelebiColors, location, celebi_color);
   }
-  absl::optional<SkColor> GetCelebiColor(
+  std::optional<SkColor> GetCelebiColor(
       const base::StringPiece location) const override {
     return GetSingleCachedColor(prefs::kWallpaperCelebiColors, location);
   }
@@ -593,18 +548,18 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   // Returns the cached color for `location` in `pref_name` if it can be found.
-  absl::optional<SkColor> GetSingleCachedColor(
+  std::optional<SkColor> GetSingleCachedColor(
       const std::string& pref_name,
       base::StringPiece location) const {
     // We don't support blank keys.
     if (location.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const base::Value::Dict& color_dict = local_state_->GetDict(pref_name);
     auto* color_value = color_dict.Find(location);
     if (!color_value) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return static_cast<SkColor>(color_value->GetDouble());
   }
@@ -651,7 +606,7 @@ const char WallpaperPrefManager::kOnlineWallpaperUrlNodeName[] = "url";
 
 // static
 bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
-  if (IsTimeOfDayWallpaper(local_info)) {
+  if (IsTimeOfDayWallpaper(local_info.collection_id)) {
     // Time Of Day wallpapers are not syncable.
     return false;
   }
@@ -679,7 +634,7 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
   if (synced_info.date < local_info.date) {
     return false;
   }
-  if (IsTimeOfDayWallpaper(local_info)) {
+  if (IsTimeOfDayWallpaper(local_info.collection_id)) {
     // Time Of Day wallpapers cannot be overwritten by other wallpapers.
     return false;
   }

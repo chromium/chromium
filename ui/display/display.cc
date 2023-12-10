@@ -235,6 +235,12 @@ int Display::PanelRotationAsDegree() const {
   return RotationToDegrees(panel_rotation());
 }
 
+gfx::Rect Display::GetLocalWorkArea() const {
+  gfx::Rect local_work_area(size());
+  local_work_area.Inset(GetWorkAreaInsets());
+  return local_work_area;
+}
+
 gfx::Insets Display::GetWorkAreaInsets() const {
   return gfx::Insets::TLBR(work_area_.y() - bounds_.y(),
                            work_area_.x() - bounds_.x(),
@@ -351,16 +357,7 @@ Display::GetDefaultDisplayColorSpacesRef() {
           color_space = GetForcedDisplayColorProfile();
         }
 #endif
-        // The default format on Mac is BGRA in screen_mac.cc, so we set it here
-        // too so that it matches with --ensure-forced-color-profile.
-        const gfx::BufferFormat format =
-#if BUILDFLAG(IS_MAC)
-            gfx::BufferFormat::BGRA_8888;
-#else
-            gfx::BufferFormat::RGBA_8888;
-#endif
-        return base::MakeRefCounted<DisplayColorSpacesRef>(
-            gfx::DisplayColorSpaces(color_space, format));
+        return new DisplayColorSpacesRef(gfx::DisplayColorSpaces(color_space));
       }());
   return *default_color_spaces_ref;
 }

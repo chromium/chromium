@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Chromium 최근 탭 보기</translation>
 <translation id="4408912345039114853">Chromium 안전 확인 실행</translation>
 <translation id="4432744876818348753">로그인하여 Chromium의 모든 기능을 이용하세요</translation>
+<translation id="4498832288620833153">입력한 URL을 Chromium의 읽기 목록에 추가합니다.</translation>
 <translation id="452436063477828504">Google 계정의 Chromium 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium에서 결제 수단 설정 페이지를 엽니다.</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chromium 자동 완성 기능을 사용하세요</translation>
 <translation id="5076601183701536878">Chromium에서 인터넷 사용 기록 삭제</translation>
 <translation id="5131565040785979529">내가 로그인한 계정 및 Chromium이 사용되는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다</translation>
+<translation id="5146749061471423558">Chromium에 북마크 추가</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
 <translation id="5213683223491576284">Chromium에서 비밀번호 관리자를 엽니다.</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
@@ -114,6 +116,7 @@
 
         잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
+<translation id="5311557153294205270">Chromium의 북마크에 입력한 URL을 추가합니다.</translation>
 <translation id="5396916991083608703">Chromium을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="5453478652154926037">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5521125884468363740">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">Google 계정의 Chromium 데이터를 계속 사용하세요.</translation>
 <translation id="7006920032187763988">비밀번호 관리자에 저장된 비밀번호를 iPad의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="7018284295775193585">Chromium을 업데이트할 수 없습니다.</translation>
-<translation id="7025471822960602362">Chromium에서 감지된 택배 추적</translation>
 <translation id="7045244423563602563">나만의 Chromium 만들기</translation>
 <translation id="7055269218854630176">내가 로그인한 계정과 Chromium이 사용될 수 있는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
 <translation id="7099326575020694068">Chromium에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">다른 앱에서 링크를 탭할 때마다 Chromium을 엽니다.</translation>
 <translation id="7931842119211730154">Chromium 종료 시 시크릿 탭 잠금</translation>
 <translation id="7934404985878918282">Chromium 읽기 목록 보기</translation>
+<translation id="7971753607796745700">Chromium에 읽기 목록 항목 추가</translation>
 <translation id="7980860476903281594">Chromium은 사용자가 허용한 사이트와 위치 정보를 공유합니다.</translation>
 <translation id="7995166854192397899">추천은 다른 기기에서 탐색한 활동을 기반으로 합니다. 추천을 받으려면 모든 기기에서 Chromium에 로그인하세요.</translation>
 <translation id="800195749539500647">Chromium 최대한 활용하기</translation>

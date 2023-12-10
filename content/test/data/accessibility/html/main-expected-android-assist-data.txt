@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="main"]
+++++TextView text:"This is main element." textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="main"]
+++++TextView text:"This is an ARIA role main." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

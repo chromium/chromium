@@ -27,6 +27,7 @@
 #include "extensions/browser/api/file_handlers/directory_util.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "storage/browser/file_system/external_mount_points.h"
 
 ChromeFilesInternalsUIDelegate::ChromeFilesInternalsUIDelegate(
     content::WebUI* web_ui)
@@ -49,6 +50,11 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
       {
           "execute_file_task",
           &file_manager::file_tasks::GetDebugJSONForKeyForExecuteFileTask,
+          nullptr,
+      },
+      {
+          "external_mount_points",
+          &storage::ExternalMountPoints::GetDebugJSONForKey,
           nullptr,
       },
       {

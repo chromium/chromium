@@ -77,7 +77,7 @@ class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillComposeDelegate;
-class AutofillDownloadManager;
+class AutofillCrowdsourcingManager;
 class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillMlPredictionModelHandler;
@@ -116,8 +116,9 @@ enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
 
 namespace payments {
-class PaymentsClient;
 class MandatoryReauthManager;
+class PaymentsAutofillClient;
+class PaymentsNetworkInterface;
 }
 
 // A client interface that needs to be supplied to the Autofill component by the
@@ -373,10 +374,10 @@ class AutofillClient : public RiskDataLoader {
   // Callback to run after local/upload IBAN save is offered. The callback runs
   // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
-  // or upload save is offered, and can be nullopt.
+  // or upload save is offered, and can be an empty string.
   using SaveIbanPromptCallback =
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
-                              std::optional<std::u16string> nickname)>;
+                              std::u16string_view nickname)>;
 
   // Callback to run if the OK button or the cancel button in a
   // Webauthn dialog is clicked.
@@ -411,9 +412,9 @@ class AutofillClient : public RiskDataLoader {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
-  // Returns the AutofillDownloadManager for communication with the Autofill
-  // crowdsourcing server.
-  virtual AutofillDownloadManager* GetDownloadManager();
+  // Returns the AutofillCrowdsourcingManager for communication with the
+  // Autofill server.
+  virtual AutofillCrowdsourcingManager* GetCrowdsourcingManager();
 
   // Gets the PersonalDataManager instance associated with the original Chrome
   // profile.
@@ -478,8 +479,11 @@ class AutofillClient : public RiskDataLoader {
   // Gets the FormDataImporter instance owned by the client.
   virtual FormDataImporter* GetFormDataImporter() = 0;
 
-  // Gets the payments::PaymentsClient instance owned by the client.
-  virtual payments::PaymentsClient* GetPaymentsClient() = 0;
+  // Gets the payments::PaymentsAutofillClient instance owned by the client.
+  virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
+
+  // Gets the payments::PaymentsNetworkInterface instance owned by the client.
+  virtual payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() = 0;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
@@ -630,22 +634,6 @@ class AutofillClient : public RiskDataLoader {
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback);
 
-  // Runs `callback` once the user makes a decision with respect to the
-  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
-  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
-  virtual void ConfirmSaveIbanLocally(const Iban& iban,
-                                      bool should_show_prompt,
-                                      SaveIbanPromptCallback callback);
-
-  // Runs `callback` once the user makes a decision with respect to the
-  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
-  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
-  virtual void ConfirmUploadIbanToCloud(
-      const Iban& iban,
-      const LegalMessageLines& legal_message_lines,
-      bool should_show_prompt,
-      SaveIbanPromptCallback callback);
-
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be
   // accessible for managers?), and some of the states |KInactive| may be
@@ -722,6 +710,21 @@ class AutofillClient : public RiskDataLoader {
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback);
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmSaveIbanLocally(const Iban& iban,
+                                      bool should_show_prompt,
+                                      SaveIbanPromptCallback callback);
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmUploadIbanToCloud(const Iban& iban,
+                                        LegalMessageLines legal_message_lines,
+                                        bool should_show_prompt,
+                                        SaveIbanPromptCallback callback);
 
   // Called after credit card upload is finished. Will show upload result to
   // users. |card_saved| indicates if the card is successfully saved.
@@ -900,7 +903,7 @@ class AutofillClient : public RiskDataLoader {
   // Navigates to |url| in a new tab. |url| links to the promo code offer
   // details page for the offers in a promo code suggestions popup. Every offer
   // in a promo code suggestions popup links to the same offer details page.
-  virtual void OpenPromoCodeOfferDetailsURL(const GURL& url) = 0;
+  virtual void OpenPromoCodeOfferDetailsURL(const GURL& url);
 
   // Updates and returns the current form interactions flow id. This is used as
   // an approximation for keeping track of the number of user interactions with

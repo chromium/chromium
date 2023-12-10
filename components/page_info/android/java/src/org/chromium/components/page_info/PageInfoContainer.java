@@ -16,9 +16,7 @@ import org.chromium.ui.ElidedUrlTextView;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.ChromeImageButton;
 
-/**
- * Represents the url, a sub page header and container for page info content.
- */
+/** Represents the url, a sub page header and container for page info content. */
 public class PageInfoContainer extends FrameLayout {
     public static final float sScale = 0.92f;
     public static final int sOutDuration = 90;
@@ -40,6 +38,7 @@ public class PageInfoContainer extends FrameLayout {
         public Runnable backButtonClickCallback;
         public Runnable closeButtonClickCallback;
     }
+
     private ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
 
@@ -86,10 +85,11 @@ public class PageInfoContainer extends FrameLayout {
             view.setOnClickListener(v -> params.urlTitleClickCallback.run());
         }
         if (params.urlTitleLongClickCallback != null) {
-            view.setOnLongClickListener(v -> {
-                params.urlTitleLongClickCallback.run();
-                return true;
-            });
+            view.setOnLongClickListener(
+                    v -> {
+                        params.urlTitleLongClickCallback.run();
+                        return true;
+                    });
         }
     }
 
@@ -97,8 +97,12 @@ public class PageInfoContainer extends FrameLayout {
         boolean showExpanded = mExpandedUrlTitle.getVisibility() != VISIBLE;
         mExpandedUrlTitle.setVisibility(showExpanded ? VISIBLE : GONE);
         mTruncatedUrlTitle.setVisibility(showExpanded ? GONE : VISIBLE);
-        announceForAccessibility(getResources().getString(
-                showExpanded ? R.string.page_info_url_expanded : R.string.page_info_url_truncated));
+        announceForAccessibility(
+                getResources()
+                        .getString(
+                                showExpanded
+                                        ? R.string.page_info_url_expanded
+                                        : R.string.page_info_url_truncated));
     }
 
     public void setFavicon(Drawable favicon) {
@@ -118,31 +122,31 @@ public class PageInfoContainer extends FrameLayout {
                 .setDuration(sOutDuration)
                 .alpha(0)
                 .setInterpolator(Interpolators.EMPHASIZED_DECELERATE)
-                .withEndAction(() -> {
-                    replaceContentView(view, subPageTitle);
-                    mWrapper.setScaleX(sScale);
-                    mWrapper.setScaleY(sScale);
-                    mWrapper.setAlpha(0);
-                    mWrapper.animate()
-                            .setDuration(sInDuration)
-                            .scaleX(1)
-                            .scaleY(1)
-                            .alpha(1)
-                            .setInterpolator(Interpolators.EMPHASIZED_DECELERATE)
-                            .withEndAction(onPreviousPageRemoved);
-                });
+                .withEndAction(
+                        () -> {
+                            replaceContentView(view, subPageTitle);
+                            mWrapper.setScaleX(sScale);
+                            mWrapper.setScaleY(sScale);
+                            mWrapper.setAlpha(0);
+                            mWrapper.animate()
+                                    .setDuration(sInDuration)
+                                    .scaleX(1)
+                                    .scaleY(1)
+                                    .alpha(1)
+                                    .setInterpolator(Interpolators.EMPHASIZED_DECELERATE)
+                                    .withEndAction(onPreviousPageRemoved);
+                        });
     }
 
-    /**
-     * Replaces the current view with |view| and configures the subpage header.
-     */
+    /** Replaces the current view with |view| and configures the subpage header. */
     private void replaceContentView(View view, CharSequence subPageTitle) {
         mContent.removeAllViews();
         mCurrentView = view;
         mSubpageHeader.setVisibility(subPageTitle != null ? VISIBLE : GONE);
         mSubpageTitle.setText(subPageTitle);
         mContent.addView(view);
-        announceForAccessibility(subPageTitle != null
+        announceForAccessibility(
+                subPageTitle != null
                         ? subPageTitle
                         : getResources().getString(R.string.accessibility_toolbar_btn_site_info));
     }

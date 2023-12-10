@@ -1,0 +1,1007 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanEligible">
+  <int value="0" label="Not elibible"/>
+  <int value="1" label="Eligible"/>
+</enum>
+
+<enum name="CaptivePortalStatus">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="OFFLINE"/>
+  <int value="2" label="ONLINE"/>
+  <int value="3" label="PORTAL"/>
+  <int value="4" label="PROXY_AUTH_REQUIRED"/>
+</enum>
+
+<enum name="CrFullscreenState">
+  <int value="0" label="Entering Fullscreen State"/>
+  <int value="1" label="Exiting Fullscreen State"/>
+  <int value="2" label="In Fullscreen"/>
+  <int value="3" label="Not In Fullscreen"/>
+</enum>
+
+<enum name="DesktopIOSPasswordPromoAction">
+  <int value="0" label="Dismissed"/>
+  <int value="1" label="ExplicitlyClosed"/>
+  <int value="2" label="GetStartedClicked"/>
+</enum>
+
+<enum name="DesktopIOSPasswordPromoImpression">
+  <int value="0" label="FirstImpression"/>
+  <int value="1" label="SecondImpression"/>
+</enum>
+
+<enum name="ExperienceKitCalendarTypes">
+  <summary>
+    This list corresponds to the calendar providers supported by Experience Kit
+    on iOS.
+  </summary>
+  <int value="0" label="Google Calendar"/>
+  <int value="1" label="Apple Calendar"/>
+</enum>
+
+<enum name="FormInputAccessoryAction">
+  <int value="0" label="PreviousElement"/>
+  <int value="1" label="NextElement"/>
+  <int value="2" label="Done"/>
+  <int value="3" label="Unkown"/>
+</enum>
+
+<enum name="InactiveTabsThresholdSettingType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Never Move"/>
+  <int value="2" label="One Week"/>
+  <int value="3" label="Two Weeks"/>
+  <int value="4" label="Three Weeks"/>
+  <int value="5" label="Default Value"/>
+</enum>
+
+<enum name="IncognitoInterstitialActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open in Chrome Incognito"/>
+  <int value="2" label="Open in Chrome (in a normal tab)"/>
+  <int value="3" label="Cancel"/>
+  <int value="4" label="Learn more about Incognito"/>
+  <int value="5" label="Dismissed by external event"/>
+</enum>
+
+<enum name="IncognitoInterstitialSettingsActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
+<enum name="IOSBringAndroidTabsPromptActionType">
+  <int value="0" label="Review tabs"/>
+  <int value="1" label="Open tabs"/>
+  <int value="2" label="Cancel"/>
+  <int value="3" label="Swipe to dismiss"/>
+</enum>
+
+<enum name="IOSBringAndroidTabsTabsListActionType">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Swipe down"/>
+  <int value="2" label="Open tabs"/>
+</enum>
+
+<enum name="iOSCredentialIdentityStoreErrorForReporting">
+  <int value="0" label="Unknown Error"/>
+  <int value="1" label="Internal Error"/>
+  <int value="2" label="Store Disabled"/>
+  <int value="3" label="Store Busy"/>
+</enum>
+
+<enum name="IOSCredentialProviderNewCredentialUsername">
+  <int value="0" label="Credential With Username"/>
+  <int value="1" label="Credential Without Username"/>
+</enum>
+
+<enum name="IOSCredentialProviderPasswordCreated">
+  <int value="0" label="Password Manually Added"/>
+  <int value="1" label="Password Suggested"/>
+  <int value="2" label="Password Suggested and Manually Changed"/>
+</enum>
+
+<enum name="IOSCredentialProviderPromoAction">
+  <int value="0" label="Learn More"/>
+  <int value="1" label="Go To Settings"/>
+  <int value="2" label="Remind me later"/>
+  <int value="3" label="No"/>
+</enum>
+
+<enum name="IOSCredentialProviderPromoSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Password Copied"/>
+  <int value="2" label="Password Saved"/>
+  <int value="3" label="Autofill Used"/>
+  <int value="4" label="Set Up List"/>
+</enum>
+
+<enum name="IOSDefaultBrowserFullscreenPromoAction">
+  <int value="0" label="Action Button"/>
+  <int value="1" label="Cancel"/>
+  <int value="2" label="Remind Me Later"/>
+  <int value="3" label="Dismiss"/>
+</enum>
+
+<enum name="IOSDefaultBrowserPromoNonModalAction">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Appear"/>
+  <int value="2" label="Dismiss"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="Background prevented impression"/>
+</enum>
+
+<enum name="IOSDefaultBrowserPromoType">
+  <int value="0" label="General"/>
+  <int value="1" label="Made for iOS"/>
+  <int value="2" label="Stay Safe"/>
+  <int value="3" label="All Tabs"/>
+</enum>
+
+<enum name="IOSDefaultBrowserVideoPromoAction">
+  <int value="0" label="Primary Action Button"/>
+  <int value="1" label="Secondary Action Button"/>
+  <int value="2" label="Swipe Down"/>
+</enum>
+
+<enum name="IOSEditMenuActions">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="NativeCut"/>
+  <int value="2" label="NativeCopy"/>
+  <int value="3" label="NativePaste"/>
+  <int value="4" label="NativeDelete"/>
+  <int value="5" label="NativeSelect"/>
+  <int value="6" label="NativeSelectAll"/>
+  <int value="7" label="NativeReplace"/>
+  <int value="8" label="NativeTransliterateChinese"/>
+  <int value="9" label="NativeInsertDrawing"/>
+  <int value="10" label="NativeScanText"/>
+  <int value="11" label="NativeStyleBold"/>
+  <int value="12" label="NativeStyleItalic"/>
+  <int value="13" label="NativeStyleUnderline"/>
+  <int value="14" label="NativeRTL"/>
+  <int value="15" label="NativeLTR"/>
+  <int value="16" label="NativeFindSelection"/>
+  <int value="17" label="NativeDefine"/>
+  <int value="18" label="NativeTranslate"/>
+  <int value="19" label="NativeLearn"/>
+  <int value="20" label="NativeSpeak"/>
+  <int value="21" label="NativeSpeakMore"/>
+  <int value="22" label="NativePause"/>
+  <int value="23" label="NativeShare"/>
+  <int value="24" label="ChromeLinkToText"/>
+  <int value="25" label="ChromePartialTranslate"/>
+  <int value="26" label="CommandOther"/>
+  <int value="27" label="SearchWeb"/>
+  <int value="28" label="CreateEvent"/>
+  <int value="29" label="CreateReminder"/>
+  <int value="30" label="ShowCalendar"/>
+  <int value="31" label="SendMail"/>
+  <int value="32" label="SendMessage"/>
+  <int value="33" label="AddToContacts"/>
+  <int value="34" label="Call"/>
+  <int value="35" label="GetDirections"/>
+  <int value="36" label="OpenMaps"/>
+  <int value="37" label="UnitConversion"/>
+  <int value="38" label="OtherDataDetector"/>
+  <int value="39" label="ActionOther"/>
+  <int value="40" label="UnknownMenuAction"/>
+  <int value="41" label="OpenURL"/>
+  <int value="42" label="AddToReadingList"/>
+  <int value="43" label="SearchWith"/>
+</enum>
+
+<enum name="IOSEditMenuError">
+  <int value="0" label="First method install failed"/>
+  <int value="1" label="Second method install failed"/>
+  <int value="2" label="Unexpected paramters on dismiss"/>
+  <int value="3" label="Unexpected object structure on dismiss"/>
+</enum>
+
+<enum name="IOSEditMenuPage">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="1 out of 1"/>
+  <int value="2" label="1 out of 2"/>
+  <int value="3" label="2 out of 2"/>
+  <int value="4" label="1 out of 3"/>
+  <int value="5" label="2 out of 3"/>
+  <int value="6" label="3 out of 3"/>
+  <int value="7" label="1 out of 4"/>
+  <int value="8" label="2 out of 4"/>
+  <int value="9" label="3 out of 4"/>
+  <int value="10" label="4 out of 4"/>
+  <int value="11" label="1 out of N"/>
+  <int value="12" label="2 out of N"/>
+  <int value="13" label="3 out of N"/>
+  <int value="14" label="4 out of N"/>
+  <int value="15" label="5 out of N"/>
+  <int value="16" label="6 out of N"/>
+  <int value="17" label="7 out of N"/>
+  <int value="18" label="8 out of N"/>
+  <int value="19" label="9 out of N"/>
+  <int value="20" label="10 out of N"/>
+  <int value="21" label="More Than Ten"/>
+</enum>
+
+<enum name="IOSErrorPagePresentationFailed">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Web View Released Error"/>
+  <int value="2" label="JavaScript Exception Occurred"/>
+  <int value="3" label="Other WKErrorDomain Error"/>
+</enum>
+
+<enum name="IOSExternalAction">
+  <summary>
+    The action passed to Chrome for iOS using an external action URL.
+  </summary>
+  <int value="0" label="Invalid Action"/>
+  <int value="1" label="Open NTP"/>
+  <int value="2" label="Default Browser Settings"/>
+</enum>
+
+<enum name="IOSExternalActionDefaultBrowserPromoUsage">
+  <summary>
+    The action taken by the user after they landed on the Default Browser Promo
+    from an External Action (URL passed to Chrome with
+    &quot;ChromeExternalAction&quot; as host).
+  </summary>
+  <int value="0" label="Open iOS Settings"/>
+  <int value="1" label="Dismissed"/>
+</enum>
+
+<enum name="IOSHomeActionType">
+  <int value="0" label="Most Visited Tiles"/>
+  <int value="1" label="Shortcuts"/>
+  <int value="2" label="Return to Recent Tab tile"/>
+  <int value="3" label="Feed Card"/>
+  <int value="4" label="Fake Omnibox tap"/>
+  <int value="5" label="Set Up List"/>
+  <int value="6" label="Omnibox navigation"/>
+  <int value="7" label="Safety Check tile"/>
+  <int value="8" label="Parcel Tracking tile"/>
+  <int value="9" label="Distant tab resumption tile"/>
+</enum>
+
+<enum name="IOSITunesURLsStoreKitHandlingResult">
+  <int value="0" label="Handling failed"/>
+  <int value="1" label="Single App URL, handled"/>
+  <int value="2" label="App Bundle URL, handled"/>
+  <int value="3" label="App Bundle URL, not handled"/>
+</enum>
+
+<enum name="IOSJavascriptContentBlockType">
+  <int value="0" label="Cookie"/>
+  <int value="1" label="Local Storage"/>
+  <int value="2" label="Session Storage"/>
+</enum>
+
+<enum name="IOSLaunchSource">
+  <summary>The way the app was launched on iOS.</summary>
+  <int value="0" label="App Icon"/>
+  <int value="1" label="Long Press on App Icon"/>
+  <int value="2" label="Widget"/>
+  <int value="3" label="Spotlight Chrome (e.g. bookmark)"/>
+  <int value="4" label="Link Opened by OS - Default Intent"/>
+  <int value="5" label="Link Opened Specifically in Chrome from App"/>
+  <int value="6" label="Siri Shortcut"/>
+  <int value="7" label="X-Callback (incl. link shared to Chrome)"/>
+  <int value="8" label="Handoff"/>
+  <int value="9" label="Notification"/>
+  <int value="10" label="External action opened in Chrome"/>
+</enum>
+
+<enum name="IOSMagicStackModuleType">
+  <int value="0" label="Most Visited Tiles"/>
+  <int value="1" label="Shortcuts"/>
+  <int value="2" label="Set Up List Sync"/>
+  <int value="3" label="Set Up List Default Browser"/>
+  <int value="4" label="Set Up List Autofill"/>
+  <int value="5" label="Set Up List Compacted"/>
+  <int value="6" label="Set Up List All Set"/>
+  <int value="7" label="Safety Check"/>
+  <int value="8" label="Safety Check Multi Row"/>
+  <int value="9" label="Safety Check Multi Row Overflow"/>
+  <int value="10" label="Tab Resumption"/>
+  <int value="11" label="Parcel Tracking"/>
+  <int value="12" label="Parcel Tracking See More"/>
+</enum>
+
+<enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
+  <int value="0" label="After Breakpad Ref">
+    Freeze detection stopped after obtaining the breakpad lock.
+  </int>
+  <int value="1" label="After FileManager UTE move">
+    Freeze detection stopped after moving the hang report out of the Breakpad
+    directory and into the |UTE| directory.
+  </int>
+  <int value="2" label="After Crashpad DumpWithoutCrash">
+    Freeze detection stopped after calling DumpWithCrash from Crashpad.
+  </int>
+</enum>
+
+<enum name="IOSMiniMapConsentOutcome">
+  <int value="0" label="Consent was not required"/>
+  <int value="1" label="Consent was skipped (already granted)."/>
+  <int value="2" label="User accepted"/>
+  <int value="3" label="User declined"/>
+  <int value="4" label="User opened settings (double count)"/>
+  <int value="5" label="User dismissed"/>
+  <int value="6" label="Popover displayed"/>
+</enum>
+
+<enum name="IOSMultiWindowConfiguration">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Fullscreen"/>
+  <int value="2" label="Fullscreen with Slideover"/>
+  <int value="3" label="Shared Standard"/>
+  <int value="4" label="Shared Standard with Slideover"/>
+  <int value="5" label="Shared Compact"/>
+  <int value="6" label="Shared Compact with Slideover"/>
+  <int value="7" label="Slideover"/>
+  <int value="8" label="Standard beside Standard"/>
+  <int value="9" label="Standard beside Standard with Slideover"/>
+  <int value="10" label="Standard beside Compact"/>
+  <int value="11" label="Standard beside Compact with Slideover"/>
+  <int value="12" label="Compact beside Compact"/>
+  <int value="13" label="Compact beside Compact with Slideover"/>
+</enum>
+
+<enum name="IOSNTPImpressionType">
+  <int value="0" label="Feed disabled"/>
+  <int value="1" label="Feed visible"/>
+  <int value="2" label="Feed collapsed"/>
+</enum>
+
+<enum name="IOSNTPNewBadgeShownResult">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Not shown due to limit reached"/>
+  <int value="2"
+      label="Not shown due to the button already having been pressed"/>
+</enum>
+
+<enum name="IOSNTPOverscrollAction">
+  <int value="0" label="Open New Tab"/>
+  <int value="1" label="Pull to Refresh"/>
+  <int value="2" label="Close Tab"/>
+</enum>
+
+<enum name="IOSOpenExtensionOutcome">
+  <int value="0" label="Open Extension Success"/>
+  <int value="1" label="Open Extension Invalid outcome"/>
+  <int value="2" label="Open Extension Invalid URL"/>
+  <int value="3" label="Open Extension URL not found"/>
+  <int value="4" label="Open Extension Method not found"/>
+  <int value="5" label="Open Extension Unsupported scheme"/>
+</enum>
+
+<enum name="IOSOpenInDownloadResult">
+  <int value="0" label="Download Succeeded"/>
+  <int value="1" label="Download Canceled">
+    User canceled the download manually.
+  </int>
+  <int value="2" label="Download Failed">
+    Download failed either by getting a corrupted file or no file at all.
+  </int>
+</enum>
+
+<enum name="IOSOpenInMimeType">
+  <int value="0" label="Not handled"/>
+  <int value="1" label="PDF"/>
+  <int value="2" label="Microsof tWord"/>
+  <int value="3" label="Microsoft Word OpenXML"/>
+  <int value="4" label="JPEG"/>
+  <int value="5" label="PNG"/>
+  <int value="6" label="Microsoft PowerPoint"/>
+  <int value="7" label="Microsoft PowerPoint OpenXML"/>
+  <int value="8" label="RTF"/>
+  <int value="9" label="SVG"/>
+  <int value="10" label="Microsoft Excel"/>
+  <int value="11" label="Microsoft Excel OpenXML"/>
+</enum>
+
+<enum name="IOSOverflowMenuAction">
+  <int value="0" label="Reload"/>
+  <int value="1" label="NewTab"/>
+  <int value="2" label="NewIncognitoTab"/>
+  <int value="3" label="NewWindow"/>
+  <int value="4" label="Follow"/>
+  <int value="5" label="Bookmark"/>
+  <int value="6" label="ReadingList"/>
+  <int value="7" label="ClearBrowsingData"/>
+  <int value="8" label="Translate"/>
+  <int value="9" label="DesktopSite"/>
+  <int value="10" label="FindInPage"/>
+  <int value="11" label="TextZoom"/>
+  <int value="12" label="ReportAnIssue"/>
+  <int value="13" label="Help"/>
+  <int value="14" label="ShareChrome"/>
+  <int value="15" label="EditActions"/>
+</enum>
+
+<enum name="IOSOverflowMenuActionType">
+  <int value="0" label="No scroll, no action"/>
+  <int value="1" label="Scroll, no action"/>
+  <int value="2" label="No scroll, action"/>
+  <int value="3" label="Scroll, action"/>
+</enum>
+
+<enum name="IOSOverflowMenuDestination">
+  <int value="0" label="Bookmarks"/>
+  <int value="1" label="History"/>
+  <int value="2" label="ReadingList"/>
+  <int value="3" label="Passwords"/>
+  <int value="4" label="Downloads"/>
+  <int value="5" label="RecentTabs"/>
+  <int value="6" label="SiteInfo"/>
+  <int value="7" label="Settings"/>
+  <int value="8" label="WhatsNew"/>
+  <int value="9" label="SpotlightDebugger"/>
+  <int value="10" label="PriceNotifications"/>
+</enum>
+
+<enum name="IOSOverflowMenuReorderingReason">
+  <int value="0" label="Error Badge"/>
+  <int value="1" label="New Badge"/>
+  <int value="2" label="Both Badges"/>
+</enum>
+
+<enum name="IOSOverflowMenuSmartSortingChange">
+  <int value="0" label="Newly Enabled"/>
+  <int value="1" label="Newly Disabled"/>
+</enum>
+
+<enum name="IOSPageLoadCountNavigationType">
+  <int value="0" label="Chrome URL Navigation"/>
+  <int value="1" label="Same Document Web Navigation"/>
+  <int value="2" label="Page Load Navigation"/>
+  <int value="3" label="Obsolete - Loading Started"/>
+</enum>
+
+<enum name="IOSParcelTrackingOptInActionOnPrompt">
+  <int value="0" label="AskEveryTime"/>
+  <int value="1" label="AlwaysTrack"/>
+  <int value="2" label="NoThanks"/>
+  <int value="3" label="SwipeToDismiss"/>
+</enum>
+
+<enum name="IOSPermissionEvent">
+  <int value="0" label="Camera permission disabled"/>
+  <int value="1" label="Camera permission enabled"/>
+  <int value="2" label="Microphone permission disabled"/>
+  <int value="3" label="Microphone permission enabled"/>
+</enum>
+
+<enum name="IOSPermissionRequest">
+  <int value="0" label="Camera permission"/>
+  <int value="1" label="Microphone permission"/>
+  <int value="2" label="Camera and Microphone permissions"/>
+</enum>
+
+<enum name="IOSPostRestoreDefaultBrowserActionOnPrompt">
+  <int value="0" label="No Thanks"/>
+  <int value="1" label="Go To Settings"/>
+  <int value="2" label="Swipe to Dismiss"/>
+</enum>
+
+<enum name="IOSPostRestoreSigninChoice">
+  <int value="0" label="Continue"/>
+  <int value="1" label="Dismiss"/>
+</enum>
+
+<enum name="IOSPromosManagerPromo">
+  <int value="0" label="Test Promo"/>
+<!--  Default Browser (Fullscreen) not in use, yet.-->
+
+  <int value="1" label="Default Browser (Fullscreen)"/>
+  <int value="2" label="App Store Rating"/>
+<!--  Credential Provider Extension not in use, yet.-->
+
+  <int value="3" label="Credential Provider Extension"/>
+  <int value="4" label="Post Restore Sign-In (Fullscreen)"/>
+  <int value="5" label="Post Restore Sign-In (Alert)"/>
+  <int value="6" label="What's New"/>
+  <int value="7" label="Choice Promo"/>
+  <int value="8" label="Post Restore Default Browser (Alert)"/>
+  <int value="9" label="Default Browser Remind Me Later"/>
+  <int value="10" label="Omnibox Position"/>
+</enum>
+
+<enum name="IOSPromosManagerPromoImpressionLimitEvaluationType">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Invalid (Promo-specific limit triggered)"/>
+  <int value="2" label="Invalid (Promo-agnostic limit triggered)"/>
+  <int value="3" label="Invalid (Global limit triggered)"/>
+</enum>
+
+<enum name="IOSPromosManagerPromoType">
+  <int value="0" label="StandardPromoViewProvider"/>
+  <int value="1" label="BanneredPromoViewProvider"/>
+  <int value="2" label="StandardPromoAlertProvider"/>
+  <int value="3" label="StandardPromoDisplayHandler"/>
+</enum>
+
+<enum name="IOSPromptAndroidTabsStatus">
+  <int value="0" label="Sync Disabled"/>
+  <int value="1" label="Segmentation Incomplete"/>
+  <int value="2" label="Prompt Shown and Dismissed"/>
+  <int value="3" label="Tab Sync Disabled"/>
+  <int value="4" label="No Active Tabs"/>
+  <int value="5" label="Not Android Switcher"/>
+  <int value="6" label="Success"/>
+</enum>
+
+<enum name="IOSSaveToPhotosAccountPickerType">
+  <int value="0"
+      label="Account picker not presented because a default account exists"/>
+  <int value="1" label="User tapped 'Cancel' in the account picker"/>
+  <int value="2" label="User selected an identity in the account picker"/>
+</enum>
+
+<enum name="IOSSaveToPhotosContextMenuType">
+  <int value="0"
+      label="'Save to Google Photos' action was unavailable and the user
+             tapped 'Save to Photos' (saved image locally)"/>
+  <int value="2"
+      label="'Save to Google Photos' action was available but the user tapped
+             'Save to Photos' (saved image locally)"/>
+  <int value="3"
+      label="'Save to Google Photos' action was available and the user tapped
+             'Save to Google Photos'"/>
+</enum>
+
+<enum name="IOSSaveToPhotosSettingsType">
+  <int value="0"
+      label="User has NOT set a default Save to Photos account and did NOT
+             opt-in to skip the account picker"/>
+  <int value="1"
+      label="User has set a default Save to Photos account which exists on
+             device and did NOT opt-in to skip the account picker"/>
+  <int value="2"
+      label="User has set a default Save to Photos account but it is not on
+             device anymore and did NOT opt-in to skip the account picker"/>
+  <int value="3"
+      label="User has set a default Save to Photos account which exists on
+             device and did opt-in to skip the account picker"/>
+  <int value="4"
+      label="User has set a default Save to Photos account but it is not on
+             device anymore; the user did opt-in to skip the account picker"/>
+</enum>
+
+<enum name="IOSSaveToPhotosType">
+  <int value="0" label="Failure - WebState destroyed"/>
+  <int value="1" label="Failure - User signed-out"/>
+  <int value="2"
+      label="Failure - User cancelled in 'This File Could Not Be Uploaded'
+             alert"/>
+  <int value="3" label="Failure - Cancelled with account picker"/>
+  <int value="4" label="Failure - Cancelled with snackbar button"/>
+  <int value="5" label="Success - No post-upload action"/>
+  <int value="6" label="Success - Photo opened in Photos app"/>
+  <int value="7"
+      label="Success - StoreKit opened and app not installed (maybe dismissed
+             before full installation)"/>
+  <int value="8" label="Success - StoreKit opened and app installed"/>
+</enum>
+
+<enum name="IOSSearchExtensionAction">
+  <int value="0" label="No Action"/>
+  <int value="1" label="New Search"/>
+  <int value="2" label="New Incognito Search"/>
+  <int value="3" label="New Voice Search"/>
+  <int value="4" label="New QR Code Search"/>
+  <int value="5" label="Open URL"/>
+  <int value="6" label="Search Text"/>
+  <int value="7" label="Search Image"/>
+  <int value="8" label="Search Image with Lens"/>
+</enum>
+
+<enum name="IOSSearchWithContext">
+  <int value="0" label="Normal Mode, Google Search engine"/>
+  <int value="1" label="Normal Mode, Other Search engine"/>
+  <int value="2" label="Incognito Mode, Google Search engine"/>
+  <int value="3" label="Incognito Mode, Other Search engine"/>
+</enum>
+
+<enum name="IOSSessionMigration">
+  <int value="0" label="No Migration"/>
+  <int value="1" label="Migration Failed"/>
+  <int value="2" label="No Session To Migrate"/>
+  <int value="3" label="Migrated Pre-MW to Multi Scenes"/>
+  <int value="4" label="Migrated Pre-MW to Single Scene"/>
+  <int value="5" label="Migrated Single Scene to Multi Scenes"/>
+  <int value="6" label="Migrated Multi Scenes to Single Scene"/>
+</enum>
+
+<enum name="IOSSetUpListItemType">
+  <int value="1" label="SignIn Sync"/>
+  <int value="2" label="Default Browser"/>
+  <int value="3" label="Autofill"/>
+  <int value="4" label="Follow"/>
+  <int value="5" label="All Set"/>
+  <int value="6" label="Content Notification"/>
+</enum>
+
+<enum name="IOSShareExtensionReceivedEntrySource">
+  <int value="0" label="Unknown Application"/>
+  <int value="1" label="Chrome share extension"/>
+</enum>
+
+<enum name="IOSShareExtensionReceivedEntryType">
+  <int value="0" label="Invalid item"/>
+  <int value="1" label="Cancelled item"/>
+  <int value="2" label="Reading list item"/>
+  <int value="3" label="Bookmark item"/>
+  <int value="4" label="Open in Chrome item"/>
+</enum>
+
+<enum name="IOSSpotlightAction">
+  <int value="0" label="New Tab"/>
+  <int value="1" label="New Incognito Tab"/>
+  <int value="2" label="Voice Search"/>
+  <int value="3" label="QR Code Scanner"/>
+  <int value="4" label="Set Default Browser"/>
+  <int value="5" label="Search with Lens"/>
+</enum>
+
+<enum name="IOSSpotlightAvailability">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Unavailable"/>
+  <int value="2" label="Available"/>
+</enum>
+
+<enum name="IOSSpotlightDonatedIntentType">
+  <int value="0" label="Search In Chrome"/>
+  <int value="1" label="Open Reading List"/>
+  <int value="2" label="Open Bookmarks"/>
+  <int value="3" label="Open Recent Tabs"/>
+  <int value="4" label="Open Tab Grid"/>
+  <int value="5" label="Open Voice Search"/>
+  <int value="6" label="Open New Tab"/>
+  <int value="7" label="Play Dino Game"/>
+  <int value="8" label="Set Default Browser"/>
+  <int value="9" label="View History"/>
+  <int value="10" label="Open Latest Tab"/>
+  <int value="11" label="Start Lens"/>
+  <int value="12" label="Clear Browsing Data"/>
+  <int value="13" label="Open In Chrome"/>
+  <int value="14" label="Open In Incognito"/>
+  <int value="15" label="Open New Incognito Tab"/>
+  <int value="16" label="Manage Payment Methods"/>
+  <int value="17" label="Run Safety Check"/>
+  <int value="18" label="Manage Passwords"/>
+  <int value="19" label="Manage Settings"/>
+</enum>
+
+<enum name="IOSSpotlightOrigin">
+  <int value="0" label="Unknown Origin"/>
+  <int value="1" label="Bookmark"/>
+  <int value="2" label="Top Sites"/>
+  <int value="3" label="Actions"/>
+  <int value="4" label="Reading list"/>
+  <int value="5" label="Open tab"/>
+</enum>
+
+<enum name="IOSStorageCapacity">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="0 GB"/>
+  <int value="2" label="16 GB"/>
+  <int value="3" label="32 GB"/>
+  <int value="4" label="64 GB"/>
+  <int value="5" label="128 GB"/>
+  <int value="6" label="256 GB"/>
+  <int value="7" label="512 GB"/>
+  <int value="8" label="1 TB"/>
+  <int value="9" label="2 TB"/>
+</enum>
+
+<enum name="IOSTabSwitcherDragDropTabs">
+  <int value="0" label="A tab is dragged."/>
+  <int value="1" label="A tab is dropped at the same index position."/>
+  <int value="2" label="A tab is dropped at a new index position."/>
+  <int value="3" label="A tab is dropped outside of its collection view."/>
+</enum>
+
+<enum name="IOSTabSwitcherDragOrigin">
+  <int value="0"
+      label="The item is from the same collection in the same Chrome window."/>
+  <int value="1" label="The item is from the same Chrome window."/>
+  <int value="2" label="The item is from another Chrome window."/>
+  <int value="3" label="The item is not a Chrome Tab."/>
+</enum>
+
+<enum name="IOSTabSwitcherPageChangeInteraction">
+  <int value="0" label="Unknown Interaction"/>
+  <int value="1" label="Scroll View Drag"/>
+  <int value="2" label="Page Control Tap"/>
+  <int value="3" label="Page Control Drag"/>
+  <int value="4" label="Item Drag"/>
+  <int value="5" label="Voice Over Swipe"/>
+</enum>
+
+<enum name="IOSUserInterfaceStyle">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Light"/>
+  <int value="2" label="Dark"/>
+</enum>
+
+<enum name="IOSWebFileInputAttributes">
+  <int value="0" label="No Accept"/>
+  <int value="1" label="No Accept, Multiple files"/>
+  <int value="2" label="Mixed"/>
+  <int value="3" label="Mixed, Multiple files"/>
+  <int value="4" label="Unknown"/>
+  <int value="5" label="Unknown, Multiple files"/>
+  <int value="6" label="Image"/>
+  <int value="7" label="Image, Multiple files"/>
+  <int value="8" label="Video"/>
+  <int value="9" label="Video, Multiple files"/>
+  <int value="10" label="Audio"/>
+  <int value="11" label="Audio, Multiple files"/>
+  <int value="12" label="Archive"/>
+  <int value="13" label="Archive, Multiple files"/>
+  <int value="14" label="PDF"/>
+  <int value="15" label="PDF, Multiple files"/>
+  <int value="16" label="Doc"/>
+  <int value="17" label="Doc, Multiple files"/>
+  <int value="18" label="Apple"/>
+  <int value="19" label="Apple, Multiple files"/>
+</enum>
+
+<enum name="IOSWidgetKitAction">
+  <int value="0" label="Dino Widget - Game"/>
+  <int value="1" label="Search Widget - Search"/>
+  <int value="2" label="Quick Actions Widget - Search"/>
+  <int value="3" label="Quick Actions Widget - Incognito"/>
+  <int value="4" label="Quick Actions Widget - Voice Search"/>
+  <int value="5" label="Quick Actions Widget - QR Reader"/>
+  <int value="6" label="Lockscreen Launcher Widget - Search"/>
+  <int value="7" label="Lockscreen Launcher Widget - Incognito"/>
+  <int value="8" label="Lockscreen Launcher Widget - Voice Search"/>
+  <int value="9" label="Lockscreen Launcher Widget - Dino Game"/>
+  <int value="10" label="Quick Actions Widget - Lens"/>
+  <int value="11" label="Shortcuts Widget - Search"/>
+  <int value="12" label="Shortcuts Widget - Open Shortcut"/>
+  <int value="13" label="Search Passwords Widget - Search Passwords"/>
+</enum>
+
+<enum name="IOSWidgetKitExtensionKind">
+  <int value="0" label="Dino game widget"/>
+  <int value="1" label="Search widget"/>
+  <int value="2" label="Quick actions widget"/>
+  <int value="3" label="A widget that has become obsolete"/>
+  <int value="4" label="Lockscreen launcher widget - Search"/>
+  <int value="5" label="Lockscreen launcher widget - Incognito"/>
+  <int value="6" label="Lockscreen launcher widget - Voice Search"/>
+  <int value="7" label="Lockscreen launcher widget - Dino Game"/>
+  <int value="8" label="Shortcuts widget"/>
+  <int value="9" label="Search Passwords widget"/>
+</enum>
+
+<enum name="LanguageDetectionComparison">
+  <int value="0" label="Language detected by TFLite only (CLD3 failed)"/>
+  <int value="1" label="Language detected by CLD3 only (TFLite failed)"/>
+  <int value="2" label="No language detected (both model failed)"/>
+  <int value="3" label="Both model succeeded and agree"/>
+  <int value="4" label="Both model succeeded bug disagreed"/>
+</enum>
+
+<enum name="LanguageDetectionMethod">
+  <int value="0" label="TFLite model"/>
+  <int value="1" label="CLD3 (TFLite model unavailable)"/>
+  <int value="2" label="CLD3 (TFLite model disabled)"/>
+  <int value="3" label="CLD3 (TFLite model run but is ignored)"/>
+</enum>
+
+<enum name="LinkToTextShouldOfferResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Rejected in JavaScript (deprecated)"/>
+  <int value="2" label="Blocklisted"/>
+  <int value="3" label="Unable to invoke JavaScript"/>
+  <int value="4" label="Web layer task timeout (deprecated)"/>
+  <int value="5" label="Dispatched timeout (deprecated)"/>
+  <int value="6" label="Selection empty"/>
+  <int value="7" label="User editing"/>
+  <int value="8" label="Text Input view not found"/>
+  <int value="9" label="Success, with lower certainty"/>
+</enum>
+
+<enum name="MetricKitExitData">
+  <int value="0" label="App exited normally"/>
+  <int value="1" label="App exited abnormally"/>
+  <int value="2" label="Watchdog terminated the app"/>
+  <int value="3" label="App used too much CPU time"/>
+  <int value="4" label="App used too much memory"/>
+  <int value="5" label="Terminated to free up memory"/>
+  <int value="6" label="Suspended while having file locks"/>
+  <int value="7" label="Invalid memory access"/>
+  <int value="8" label="Illegal or undefined instruction"/>
+  <int value="9" label="Exceeded allocated time for background task"/>
+</enum>
+
+<enum name="OmniboxDeviceSwitcherResult">
+  <int value="1" label="Unavailable"/>
+  <int value="2" label="Top omnibox by default"/>
+  <int value="3" label="Bottom omnibox by default"/>
+  <int value="4" label="Not a new user (user is new for 30 days after FRE)"/>
+</enum>
+
+<enum name="OmniboxPositionType">
+  <int value="0" label="Top"/>
+  <int value="1" label="Bottom"/>
+</enum>
+
+<enum name="PageLoadedSnapshotResult">
+  <int value="0" label="Snapshot not attempted, page load failed">
+    Snapshot was not attempted because the page load failed and would result in
+    a stale snapshot.
+  </int>
+  <int value="1" label="Snapshot was attempted, but the snapshot failed."/>
+  <int value="2" label="Snapshot was successfully taken."/>
+</enum>
+
+<enum name="PartialTranslateOutcome">
+  <int value="0" label="Partial Translate success"/>
+  <int value="1" label="Selection too long, user cancelled"/>
+  <int value="2" label="Selection too long, user pressed full translate"/>
+  <int value="3" label="Selection empty, user cancelled"/>
+  <int value="4" label="Selection empty, user pressed full translate"/>
+  <int value="5" label="Partial translate failed, user cancelled"/>
+  <int value="6" label="Partial translate failed, user pressed full translate"/>
+</enum>
+
+<enum name="PasswordSuggestionBottomSheetExitReason">
+  <int value="0" label="Bottom Sheet dismissed"/>
+  <int value="1" label="Used password suggestion"/>
+  <int value="2" label="Accessed Password Manager through the long press menu"/>
+  <int value="3" label="Accessed Password Details through the long press menu"/>
+</enum>
+
+<enum name="PaymentsSuggestionBottomSheetExitReason">
+  <int value="0" label="Bottom Sheet dismissed"/>
+  <int value="1" label="Used payment suggestion"/>
+  <int value="2" label="Accessed Payment Methods through the long press menu"/>
+  <int value="3" label="Accessed Payment Details through the long press menu"/>
+</enum>
+
+<enum name="PromoWithInstructionsAction">
+  <int value="0" label="Close"/>
+  <int value="1" label="Open Instructions"/>
+</enum>
+
+<enum name="PushNotificationLifecycleEvent">
+  <int value="0" label="Notification received on device"/>
+  <int value="1"
+      label="Notification presented on device while is in foreground"/>
+  <int value="2" label="User tapped on notification"/>
+</enum>
+
+<enum name="PushNotificationPermissionPromptStatus">
+  <int value="0" label="Accpeted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="PushNotificationSettingsAuthorizationStatus">
+  <int value="0" label="Not Determined"/>
+  <int value="1" label="Denied"/>
+  <int value="2" label="Authorized"/>
+  <int value="3" label="Provisional"/>
+  <int value="4" label="Ephemeral"/>
+</enum>
+
+<enum name="TextSelectionDetectedEntityType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="Datetime"/>
+  <int value="3" label="Address"/>
+  <int value="4" label="Phone number"/>
+  <int value="5" label="Email"/>
+  <int value="6" label="ParcelTracking"/>
+  <int value="7" label="Measurement"/>
+</enum>
+
+<enum name="TrendingQueryIndex">
+  <summary>
+    Index of a trending query view on the new tab page. This is only an enum so
+    that the dashboard won't produce misleading statistics like averages.
+  </summary>
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="kMaxValue"/>
+</enum>
+
+<enum name="UnitChangeTypes">
+  <int value="0" label="Unchanged"/>
+  <int value="1" label="Imperial Area"/>
+  <int value="2" label="Metric Area"/>
+  <int value="3" label="Imperial Information Storage"/>
+  <int value="4" label="Metric Information Storage"/>
+  <int value="5" label="Imperial Length"/>
+  <int value="6" label="Metric Length"/>
+  <int value="7" label="Imperial Mass"/>
+  <int value="8" label="Metric Mass"/>
+  <int value="9" label="Imperial Speed"/>
+  <int value="10" label="Metric Speed"/>
+  <int value="11" label="Imperial Temperature"/>
+  <int value="12" label="Metric Temperature"/>
+  <int value="13" label="Imperial Volume"/>
+  <int value="14" label="Metric Volume"/>
+</enum>
+
+<enum name="VariationsFirstRunSeedApplicationStage">
+  <int value="0" label="Seed missing">
+    No seed in native variations seed store
+  </int>
+  <int value="1" label="Seed stored">
+    Seed stored in native variations seed store
+  </int>
+  <int value="2" label="Seed imported">
+    Variations service imported seed from native variations seed store
+  </int>
+  <int value="3" label="Seed used">Seed is applied by variations service</int>
+</enum>
+
+<enum name="WhatsNewType">
+  <int value="-1" label="Error"/>
+  <int value="0" label="Search Tabs"/>
+  <int value="1" label="New Overflow Menu"/>
+  <int value="2" label="Shared Highlighting"/>
+  <int value="3" label="Add Password Manually"/>
+  <int value="4" label="Use Chrome By Default"/>
+  <int value="5" label="Passwords In Ither Apps"/>
+  <int value="6" label="Autofill"/>
+  <int value="7" label="Incognito Tabs From Other Apps"/>
+  <int value="8" label="Incognito Lock"/>
+  <int value="9" label="Calendar Event"/>
+  <int value="10" label="Chrome Actions"/>
+  <int value="11" label="Mini Maps"/>
+</enum>
+
+<enum name="WindowActivityOrigin">
+  <int value="0" label="WindowActivityUnknwonOrigin"/>
+  <int value="1" label="WindowActivityExternalOrigin"/>
+  <int value="2" label="WindowActivityRestoredOrigin"/>
+  <int value="3" label="WindowActivityContextMenuOrigin"/>
+  <int value="4" label="WindowActivityReadingListOrigin"/>
+  <int value="5" label="WindowActivityBookmarksOrigin"/>
+  <int value="6" label="WindowActivityHistoryOrigin"/>
+  <int value="7" label="WindowActivityToolsOrigin"/>
+  <int value="8" label="WindowActivityRecentTabsOrigin"/>
+  <int value="9" label="WindowActivityLocationBarSteadyViewOrigin"/>
+  <int value="10" label="WindowActivityContentSuggestionsOrigin"/>
+  <int value="11" label="WindowActivityTabDragOrigin"/>
+  <int value="12" label="WindowActivityKeyCommandOrigin"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 
+#include <optional>
+
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -104,7 +106,7 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
 
 }  // namespace
 
-EditorTextQueryProvider::EditorTextQueryProvider(
+TextQueryProviderForOrca::TextQueryProviderForOrca(
     mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
     Profile* profile,
     EditorSwitch* editor_switch)
@@ -112,14 +114,10 @@ EditorTextQueryProvider::EditorTextQueryProvider(
       orca_provider_(CreateProvider(profile)),
       editor_switch_(editor_switch) {}
 
-EditorTextQueryProvider::~EditorTextQueryProvider() = default;
+TextQueryProviderForOrca::~TextQueryProviderForOrca() = default;
 
-void EditorTextQueryProvider::OnProfileChanged(Profile* profile) {
-  orca_provider_ = CreateProvider(profile);
-}
-
-void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
-                                      ProcessCallback callback) {
+void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
+                                       ProcessCallback callback) {
   if (orca_provider_ == nullptr) {
     // TODO: b:300557202 - use the right error code
     auto response = orca::mojom::TextQueryResponse::NewError(
@@ -151,6 +149,14 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
           },
           base::NumberToString(request_id_), editor_switch_->GetEditorMode(),
           std::move(callback)));
+}
+
+std::optional<mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider>>
+TextQueryProviderForOrca::Unbind() {
+  if (text_query_provider_receiver_.is_bound()) {
+    return text_query_provider_receiver_.Unbind();
+  }
+  return std::nullopt;
 }
 
 }  // namespace ash::input_method

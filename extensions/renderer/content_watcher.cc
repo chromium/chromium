@@ -159,7 +159,7 @@ void ContentWatcher::OnWatchPages(
   if (!changed)
     return;
 
-  css_selectors_.Swap(new_css_selectors);
+  css_selectors_.swap(new_css_selectors);
 
   // Tell each frame's document about the new set of watched selectors. These
   // will trigger calls to DidMatchCSS after Blink has a chance to apply the new

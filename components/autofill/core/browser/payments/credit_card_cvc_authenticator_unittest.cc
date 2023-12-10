@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -35,7 +34,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -93,12 +92,13 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     autofill_driver_ =
         std::make_unique<testing::NiceMock<TestAutofillDriver>>();
 
-    payments::TestPaymentsClient* payments_client =
-        new payments::TestPaymentsClient(autofill_client_.GetURLLoaderFactory(),
-                                         autofill_client_.GetIdentityManager(),
-                                         &personal_data_manager_);
-    autofill_client_.set_test_payments_client(
-        std::unique_ptr<payments::TestPaymentsClient>(payments_client));
+    payments::TestPaymentsNetworkInterface* payments_network_interface =
+        new payments::TestPaymentsNetworkInterface(
+            autofill_client_.GetURLLoaderFactory(),
+            autofill_client_.GetIdentityManager(), &personal_data_manager_);
+    autofill_client_.set_test_payments_network_interface(
+        std::unique_ptr<payments::TestPaymentsNetworkInterface>(
+            payments_network_interface));
     cvc_authenticator_ =
         std::make_unique<CreditCardCvcAuthenticator>(&autofill_client_);
   }
@@ -139,7 +139,7 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     full_card_request->OnUnmaskPromptAccepted(details);
 
     // Mock payments response.
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.card_type = is_virtual_card
                              ? AutofillClient::PaymentsRpcCardType::kVirtualCard
                              : AutofillClient::PaymentsRpcCardType::kServerCard;

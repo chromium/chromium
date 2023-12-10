@@ -20,10 +20,8 @@ SafeBrowsingLookupMechanism::SafeBrowsingLookupMechanism(
 SafeBrowsingLookupMechanism::~SafeBrowsingLookupMechanism() = default;
 
 SafeBrowsingLookupMechanism::StartCheckResult::StartCheckResult(
-    bool is_safe_synchronously,
-    bool did_check_url_real_time_allowlist)
-    : is_safe_synchronously(is_safe_synchronously),
-      did_check_url_real_time_allowlist(did_check_url_real_time_allowlist) {}
+    bool is_safe_synchronously)
+    : is_safe_synchronously(is_safe_synchronously) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,
@@ -63,6 +61,8 @@ void SafeBrowsingLookupMechanism::CompleteCheck(
     std::unique_ptr<CompleteCheckResult> result) {
   DCHECK(complete_check_callback_);
   std::move(complete_check_callback_).Run(std::move(result));
+  // NOTE: Invoking the callback results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing

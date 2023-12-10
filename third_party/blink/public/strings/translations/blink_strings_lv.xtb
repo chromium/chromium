@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Lūdzu, saīsiniet šo tekstu līdz <ph name="MAX_CHARACTERS" /> vai mazāk zīmēm (pašreiz tas ietver <ph name="CURRENT_LENGTH" /> rakstzīmes).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedēļa, <ph name="YEAR" />. gads</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. ieraksts</translation>
+<translation id="2353297238722298836">Kameras un mikrofona lietošana ir atļauta</translation>
 <translation id="2393030564806080191">Heksadecimāla krāsas vērtība</translation>
 <translation id="2398813069815436052">tika atvērts dialoglodziņš.</translation>
 <translation id="245932805758469625">atlikušais video laiks sekundēs</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver <ph name="CURRENT_LENGTH" /> rakstzīmes).</translation>
 <translation id="383465348367842624">Daļā, kas atrodas pirms zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Aizvērt pilnekrāna režīmu</translation>
+<translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
 <translation id="4103419683916926126">Milisekundes</translation>
 <translation id="4201051445878709314">Rādīt iepriekšējo mēnesi</translation>
 <translation id="4360991593054037559">Lūdzu, ievadiet derīgu vērtību. Divas tuvākās derīgās vērtības ir <ph name="VALID_VALUE_LOW" /> un <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Dati</translation>
+<translation id="4663373278480897665">Kameras lietošana ir atļauta</translation>
 <translation id="4664250907885839816">Daļā, kas atrodas aiz zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Tiek atskaņots režīmā “Attēls attēlā”</translation>
 <translation id="4748357248530471599">pārslēdz displeja izgriezuma apgabalu pilnekrāna režīmā</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">lejupielādēt multivides failus</translation>
 <translation id="698788488269350478">izvērsts.</translation>
 <translation id="6989848892321993519">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver 1 rakstzīmi).</translation>
+<translation id="7080893216867146095">Atrašanās vietas kopīgošana ir atļauta</translation>
 <translation id="709897737746224366">Pieskaņojiet vērtību prasītajam formātam.</translation>
 <translation id="7102274145889307184">pašreizējā atrašanās vieta</translation>
 <translation id="7263440858009898357">Atlasiet vienumu sarakstā.</translation>

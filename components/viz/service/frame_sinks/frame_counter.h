@@ -6,7 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_COUNTER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/viz_service_export.h"

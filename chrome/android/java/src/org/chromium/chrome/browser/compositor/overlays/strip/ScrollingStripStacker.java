@@ -13,8 +13,11 @@ import org.chromium.ui.base.LocalizationUtils;
  */
 public class ScrollingStripStacker extends StripStacker {
     @Override
-    public void setTabOffsets(StripLayoutTab[] indexOrderedTabs, boolean tabClosing,
-            boolean tabCreating, float cachedTabWidth) {
+    public void setTabOffsets(
+            StripLayoutTab[] indexOrderedTabs,
+            boolean tabClosing,
+            boolean tabCreating,
+            float cachedTabWidth) {
         boolean rtl = LocalizationUtils.isLayoutRtl();
         for (int i = 0; i < indexOrderedTabs.length; i++) {
             StripLayoutTab tab = indexOrderedTabs[i];

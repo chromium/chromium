@@ -1676,14 +1676,9 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterIncognitoProfile) {
   ASSERT_TRUE(incognito_profile->IsOffTheRecord());
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(incognito_profile);
-  EXPECT_TRUE(callback);
-  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://example.com")));
-  EXPECT_FALSE(callback.Run(GURL("http://youtube.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://youtube.com")));
+  EXPECT_FALSE(callback);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -1695,10 +1690,14 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
   EXPECT_TRUE(callback);
   EXPECT_FALSE(callback.Run(GURL("https://google.com")));
   EXPECT_FALSE(callback.Run(GURL("https://example.com")));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(callback.Run(GURL("http://youtube.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://youtube.com")));
+#else
   EXPECT_TRUE(callback.Run(GURL("http://youtube.com")));
   EXPECT_TRUE(callback.Run(GURL("https://youtube.com")));
-}
 #endif
+}
 
 TEST_F(
     CookiesTreeModelTest,
@@ -1708,12 +1707,8 @@ TEST_F(
       supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
-  EXPECT_TRUE(callback);
-  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://example.com")));
-  EXPECT_FALSE(callback.Run(GURL("http://youtube.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://youtube.com")));
+
+  EXPECT_FALSE(callback);
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

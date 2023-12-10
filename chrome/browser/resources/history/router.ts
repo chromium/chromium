@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QueryState} from './externs.js';
+import type {QueryState} from './externs.js';
 import {getTemplate} from './router.html.js';
 
 // All valid pages.

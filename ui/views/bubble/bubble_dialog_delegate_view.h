@@ -164,6 +164,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   virtual std::u16string GetSubtitle() const;
   void SetSubtitle(const std::u16string& subtitle);
 
+  bool GetSubtitleAllowCharacterBreak() const;
+  void SetSubtitleAllowCharacterBreak(bool allow);
+
   //////////////////////////////////////////////////////////////////////////////
   // Miscellaneous bubble behaviors:
   //
@@ -297,6 +300,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // Get the maximum available screen space to place a bubble anchored to
   // |anchor_view| at |arrow|. If offscreen adjustment is on, this would return
   // the max space corresponding to the possible arrow positions of the bubble.
+  // NOTE: This function should not be called in ozone platforms where global
+  // screen coordinates are not available.
   static gfx::Size GetMaxAvailableScreenSpaceToPlaceBubble(
       View* anchor_view,
       BubbleBorder::Arrow arrow,
@@ -457,6 +462,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ViewTracker highlighted_button_tracker_;
   ui::ImageModel main_image_;
   std::u16string subtitle_;
+  bool subtitle_allow_character_break_ = false;
 
   // A flag controlling bubble closure on deactivation.
   bool close_on_deactivate_ = true;
@@ -521,9 +527,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 // inherit or use BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
                                               public View {
- public:
-  METADATA_HEADER(BubbleDialogDelegateView);
+  METADATA_HEADER(BubbleDialogDelegateView, View)
 
+ public:
   template <typename T>
   static bool IsBubbleDialogDelegateView(const BubbleDialogDelegateView* view) {
     return ui::metadata::IsClass<T, BubbleDialogDelegateView>(view);

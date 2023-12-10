@@ -24,9 +24,8 @@ dictionary AuthenticationExtensionsClientOutputs {
   boolean credBlob;
   ArrayBuffer getCredBlob;
 
-  // Device-bound public-key support.
-  // https://github.com/w3c/webauthn/pull/1663
-  [RuntimeEnabled=WebAuthenticationDevicePublicKey] AuthenticationExtensionsDevicePublicKeyOutputs devicePubKey;
+  // https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
+  [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] AuthenticationExtensionsSupplementalPubKeysOutputs supplementalPubKeys;
 
   // Pseudo-random function support.
   // https://w3c.github.io/webauthn/#prf-extension

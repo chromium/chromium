@@ -53,6 +53,7 @@ class CONTENT_EXPORT BrowsingTopicsURLLoaderInterceptor
   // provided (implying we are processing a redirect request), appends the
   // topics header to `removed_headers`.
   void PopulateRequestOrRedirectHeaders(
+      bool is_redirect,
       net::HttpRequestHeaders& headers,
       std::vector<std::string>* removed_headers);
 

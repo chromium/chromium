@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/sync_wifi/local_network_collector_impl.h"
+
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
@@ -15,7 +18,6 @@
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/sync_wifi/local_network_collector.h"
-#include "chromeos/ash/components/sync_wifi/local_network_collector_impl.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 #include "chromeos/ash/components/sync_wifi/network_type_conversions.h"
@@ -26,7 +28,6 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::sync_wifi {
 
@@ -82,9 +83,9 @@ class LocalNetworkCollectorImplTest : public testing::Test {
 
   void OnGetSyncableNetwork(
       std::string expected_ssid,
-      absl::optional<sync_pb::WifiConfigurationSpecifics> result) {
+      std::optional<sync_pb::WifiConfigurationSpecifics> result) {
     if (expected_ssid.empty()) {
-      ASSERT_EQ(absl::nullopt, result);
+      ASSERT_EQ(std::nullopt, result);
       return;
     }
     EXPECT_EQ(expected_ssid, DecodeHexString(result->hex_ssid()));

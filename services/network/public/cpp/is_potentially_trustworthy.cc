@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 #include <iterator>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -48,7 +49,7 @@ bool PatternCanMatchIpV4Host(const std::string& hostname_pattern) {
   // IsValidWildcardPattern() ensures there is at least one '*'.
   DCHECK(!hostname_pattern.empty());
 
-  std::vector<base::StringPiece> components = base::SplitStringPiece(
+  std::vector<std::string_view> components = base::SplitStringPiece(
       hostname_pattern, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   // If there are more than 4, it can't match an IPv4 IP.
   if (components.size() > 4)
@@ -260,7 +261,7 @@ bool IsAllowlisted(const std::vector<std::string>& allowlist,
   return false;
 }
 
-bool IsSchemeConsideredAuthenticated(base::StringPiece scheme) {
+bool IsSchemeConsideredAuthenticated(std::string_view scheme) {
   // The code below is based on the specification at
   // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
 

@@ -953,8 +953,8 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectLayoutHeight)) {
   // having 150px of height.
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
-  EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(150.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The layout size on the LocalFrameView should not include the browser
   // controls.
@@ -970,8 +970,8 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectLayoutHeight)) {
   // Hiding the browser controls shouldn't change the height of the initial
   // containing block for non-position: fixed. Position: fixed however should
   // use the entire height of the viewport however.
-  EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The layout size should not change as a result of browser controls hiding.
   EXPECT_EQ(300, GetFrame()->View()->GetLayoutSize().height());
@@ -1035,8 +1035,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
       false);
   Compositor().BeginFrame();
 
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
 
   EXPECT_EQ(400, GetDocument().GetFrame()->View()->GetLayoutSize().height());
 
@@ -1046,8 +1046,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
       cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kBoth, false);
   Compositor().BeginFrame();
 
-  EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
 
   EXPECT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
 
@@ -1057,8 +1057,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
   WebView().ResizeWithBrowserControls(gfx::Size(400, 300), 100.f, 0, true);
   Compositor().BeginFrame();
 
-  EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(150.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, fixed_pos->GetBoundingClientRect()->height());
 
   EXPECT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
 
@@ -1069,8 +1069,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
       false);
   Compositor().BeginFrame();
 
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
 
   EXPECT_EQ(400, GetDocument().GetFrame()->View()->GetLayoutSize().height());
 
@@ -1088,8 +1088,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
       false);
   Compositor().BeginFrame();
 
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
 
   EXPECT_EQ(400, GetDocument().GetFrame()->View()->GetLayoutSize().height());
 }
@@ -1125,14 +1125,14 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectViewportConstrainedSticky)) {
       GetDocument().getElementById(WebString::FromUTF8("sticky"));
   ASSERT_EQ(100.f, WebView().GetBrowserControls().ContentOffset());
   ASSERT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
-  EXPECT_FLOAT_EQ(300.f, sticky_pos->getBoundingClientRect()->bottom());
+  EXPECT_FLOAT_EQ(300.f, sticky_pos->GetBoundingClientRect()->bottom());
 
   // Hide the browser controls.
   VerticalScroll(-100.f);
   WebView().ResizeWithBrowserControls(gfx::Size(400, 400), 100.f, 0, false);
   Compositor().BeginFrame();
   ASSERT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
-  EXPECT_FLOAT_EQ(400.f, sticky_pos->getBoundingClientRect()->bottom());
+  EXPECT_FLOAT_EQ(400.f, sticky_pos->GetBoundingClientRect()->bottom());
 
   // Now lock the controls in a hidden state. The layout and elements should
   // resize without a WebView::resize.
@@ -1141,7 +1141,7 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectViewportConstrainedSticky)) {
       false);
   Compositor().BeginFrame();
   EXPECT_EQ(400, GetDocument().GetFrame()->View()->GetLayoutSize().height());
-  EXPECT_FLOAT_EQ(400.f, sticky_pos->getBoundingClientRect()->bottom());
+  EXPECT_FLOAT_EQ(400.f, sticky_pos->GetBoundingClientRect()->bottom());
 
   // Unlock the controls, the sizes should change even though the controls are
   // still hidden.
@@ -1149,7 +1149,7 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectViewportConstrainedSticky)) {
       cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kBoth, false);
   Compositor().BeginFrame();
   EXPECT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
-  EXPECT_FLOAT_EQ(400.f, sticky_pos->getBoundingClientRect()->bottom());
+  EXPECT_FLOAT_EQ(400.f, sticky_pos->GetBoundingClientRect()->bottom());
 
   // Now lock the controls in a shown state.
   Compositor().LayerTreeHost()->UpdateBrowserControlsState(
@@ -1157,7 +1157,7 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectViewportConstrainedSticky)) {
   WebView().ResizeWithBrowserControls(gfx::Size(400, 300), 100.f, 0, true);
   Compositor().BeginFrame();
   EXPECT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
-  EXPECT_FLOAT_EQ(300.f, sticky_pos->getBoundingClientRect()->bottom());
+  EXPECT_FLOAT_EQ(300.f, sticky_pos->GetBoundingClientRect()->bottom());
 }
 
 // Ensure that browser controls do not affect "static" viewport units
@@ -1181,8 +1181,8 @@ TEST_P(BrowserControlsViewportUnitTest, MAYBE(DontAffectStaticUnits)) {
   // controls are hidden.
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
-  EXPECT_FLOAT_EQ(param.height, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(param.height, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, fixed_pos->GetBoundingClientRect()->height());
 
   // The size used for viewport units should not be reduced by the top
   // controls.
@@ -1200,8 +1200,8 @@ TEST_P(BrowserControlsViewportUnitTest, MAYBE(DontAffectStaticUnits)) {
   // Static *vh units should be static with respect to the browser controls so
   // neither <div> should change size as a result of the browser controls
   // hiding.
-  EXPECT_FLOAT_EQ(param.height, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(param.height, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, fixed_pos->GetBoundingClientRect()->height());
 
   // The viewport size used for static *vh units should not change as a result
   // of top controls hiding.
@@ -1209,14 +1209,14 @@ TEST_P(BrowserControlsViewportUnitTest, MAYBE(DontAffectStaticUnits)) {
             GetFrame()->View()->LargeViewportSizeForViewportUnits().height());
 
   // Static *vw units should not change when scrollbar disappears.
-  EXPECT_FLOAT_EQ(param.width, abs_pos->getBoundingClientRect()->width());
-  EXPECT_FLOAT_EQ(param.width, fixed_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(param.width, abs_pos->GetBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(param.width, fixed_pos->GetBoundingClientRect()->width());
   Element* spacer = GetElementById(WebString::FromUTF8("spacer"));
   ASSERT_TRUE(spacer);
   spacer->remove();
   UpdateAllLifecyclePhases();
-  EXPECT_FLOAT_EQ(param.width, abs_pos->getBoundingClientRect()->width());
-  EXPECT_FLOAT_EQ(param.width, fixed_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(param.width, abs_pos->GetBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(param.width, fixed_pos->GetBoundingClientRect()->width());
 }
 
 static ViewportUnitTestCase viewport_unit_test_cases[] = {
@@ -1245,8 +1245,8 @@ TEST_F(BrowserControlsTest, MAYBE(DoAffectDVHUnits)) {
   // 'dvh' units should respond according to the current state of the controls.
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
-  EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(150.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The size used for viewport units should not be reduced by the top
   // controls.
@@ -1263,8 +1263,8 @@ TEST_F(BrowserControlsTest, MAYBE(DoAffectDVHUnits)) {
 
   // dvh units should be dynamic with respect to the browser controls so both
   // <div>s should change size as a result of the browser controls hiding.
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The viewport size used for dvh units should change as a result of top
   // controls hiding.
@@ -1286,14 +1286,14 @@ TEST_F(BrowserControlsTest, MAYBE(DoAffectDVHUnits)) {
             GetFrame()->View()->DynamicViewportSizeForViewportUnits().height());
 
   // dvw units should not change when scrollbar disappears.
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->width());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->width());
   Element* spacer = GetElementById(WebString::FromUTF8("spacer"));
   ASSERT_TRUE(spacer);
   spacer->remove();
   UpdateAllLifecyclePhases();
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->width());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->width());
 }
 
 // Ensure that on a legacy page (there's a non-1 minimum scale) 100vh units fill
@@ -1321,8 +1321,8 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnitsWithScale)) {
   // so we expect 50vh to be 400px.
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
-  EXPECT_FLOAT_EQ(400.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(400.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(400.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(400.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The size used for viewport units should not be reduced by the top
   // controls.
@@ -1338,8 +1338,8 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnitsWithScale)) {
 
   // vh units should be static with respect to the browser controls so neighter
   // <div> should change size are a result of the browser controls hiding.
-  EXPECT_FLOAT_EQ(400.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(400.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(400.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(400.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The viewport size used for vh units should not change as a result of top
   // controls hiding.
@@ -1394,8 +1394,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithTopMinHeight)) {
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
   float div_height = 0.5f * (300 + (100 - 20));
-  EXPECT_FLOAT_EQ(div_height, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(div_height, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(div_height, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(div_height, fixed_pos->GetBoundingClientRect()->height());
 
   // The size used for viewport units should be reduced by the top controls
   // min-height.
@@ -1412,8 +1412,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithTopMinHeight)) {
 
   // vh units should be static with respect to the browser controls so neither
   // <div> should change size are a result of the browser controls hiding.
-  EXPECT_FLOAT_EQ(190.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(190.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(190.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(190.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The viewport size used for vh units should not change as a result of top
   // controls hiding.
@@ -1443,8 +1443,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithBottomMinHeight)) {
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
   float div_height = 0.5f * (250 + (100 - 20) + (50 - 10));
-  EXPECT_FLOAT_EQ(div_height, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(div_height, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(div_height, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(div_height, fixed_pos->GetBoundingClientRect()->height());
 
   // The size used for viewport units should be reduced by the top/bottom
   // controls min-height.
@@ -1462,8 +1462,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithBottomMinHeight)) {
 
   // vh units should be static with respect to the browser controls so neither
   // <div> should change size are a result of the browser controls hiding.
-  EXPECT_FLOAT_EQ(185.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(185.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(185.f, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(185.f, fixed_pos->GetBoundingClientRect()->height());
 
   // The viewport size used for vh units should not change as a result of the
   // controls hiding.
@@ -1492,8 +1492,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithMinHeightsChanging)) {
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
   float div_height = 0.5f * (250 + (100 - 20) + (50 - 10));
-  EXPECT_FLOAT_EQ(div_height, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(div_height, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(div_height, abs_pos->GetBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(div_height, fixed_pos->GetBoundingClientRect()->height());
 
   // The size used for viewport units should be reduced by the top/bottom
   // controls min-height.
@@ -1671,8 +1671,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(ViewportUnitsWhenControlsLocked)) {
     // Make sure we're not adding the browser controls height to the vh units
     // as when they're locked to hidden, the ICB fills the entire viewport
     // already.
-    EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
-    EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+    EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->height());
+    EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->height());
     EXPECT_EQ(
         400,
         GetDocument().View()->LargeViewportSizeForViewportUnits().height());
@@ -1692,8 +1692,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(ViewportUnitsWhenControlsLocked)) {
 
     // Make sure we're not adding the browser controls height to the vh units as
     // when they're locked to shown, the ICB fills the entire viewport already.
-    EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
-    EXPECT_FLOAT_EQ(150.f, fixed_pos->getBoundingClientRect()->height());
+    EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
+    EXPECT_FLOAT_EQ(150.f, fixed_pos->GetBoundingClientRect()->height());
     EXPECT_EQ(
         400,
         GetDocument().View()->LargeViewportSizeForViewportUnits().height());

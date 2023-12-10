@@ -30,15 +30,15 @@ public final class XSurfaceProcessScopeProvider {
         Class<?> dependencyProviderFactoryClazz;
         try {
             dependencyProviderFactoryClazz =
-                    Class.forName("org.chromium.chrome.browser.app.xsurface_provider."
-                            + "ProcessScopeDependencyProviderFactoryImpl");
+                    Class.forName(
+                            "org.chromium.chrome.browser.app.xsurface_provider."
+                                    + "ProcessScopeDependencyProviderFactoryImpl");
         } catch (ClassNotFoundException e) {
             return null;
         }
         try {
-            return (ProcessScopeDependencyProviderFactory) dependencyProviderFactoryClazz
-                    .getDeclaredMethod("getInstance")
-                    .invoke(null);
+            return (ProcessScopeDependencyProviderFactory)
+                    dependencyProviderFactoryClazz.getDeclaredMethod("getInstance").invoke(null);
         } catch (NoSuchMethodException e) {
         } catch (InvocationTargetException e) {
         } catch (IllegalAccessException e) {

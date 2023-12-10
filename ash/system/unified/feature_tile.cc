@@ -4,18 +4,29 @@
 
 #include "ash/system/unified/feature_tile.h"
 
+#include <algorithm>
+#include <utility>
+
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "base/strings/string_number_conversions.h"
+#include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -25,6 +36,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
@@ -40,7 +52,7 @@ namespace {
 
 // Tile constants
 constexpr int kIconSize = 20;
-constexpr int kButtonRadius = 16;
+constexpr int kDefaultCornerRadius = 16;
 constexpr float kFocusRingPadding = 3.0f;
 
 // Primary tile constants
@@ -48,8 +60,10 @@ constexpr gfx::Size kDefaultSize(180, kFeatureTileHeight);
 constexpr gfx::Size kIconButtonSize(36, 52);
 constexpr int kIconButtonCornerRadius = 12;
 constexpr gfx::Insets kIconButtonMargins = gfx::Insets::VH(6, 6);
-constexpr gfx::Size kTitlesContainerSize(98, kFeatureTileHeight);
 constexpr gfx::Insets kDrillInArrowMargins = gfx::Insets::TLBR(0, 4, 0, 10);
+constexpr gfx::Insets kTitleContainerWithoutDiveInButtonMargins =
+    gfx::Insets::TLBR(0, 0, 0, 10);
+constexpr gfx::Insets kTitleContainerWithDiveInButtonMargins = gfx::Insets();
 
 // Compact tile constants
 constexpr int kCompactWidth = 86;
@@ -65,6 +79,10 @@ constexpr gfx::Size kCompactTwoRowTitleLabelSize(kCompactWidth - 24,
 constexpr gfx::Insets kCompactTitlesContainerMargins =
     gfx::Insets::TLBR(0, 12, 6, 12);
 
+// Download progress constants.
+constexpr int kDownloadProgressBorderThickness = 4;
+constexpr int kDownloadProgressLeadingEdgeRadius = 2;
+
 // Creates an ink drop hover highlight for `host` with `color_id`.
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
     views::View* host,
@@ -79,10 +97,76 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 
 }  // namespace
 
-FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
+FeatureTile::ProgressBackground::ProgressBackground(
+    const ui::ColorId progress_color_id,
+    const ui::ColorId background_color_id)
+    : progress_color_id_(progress_color_id),
+      background_color_id_(background_color_id) {}
+
+void FeatureTile::ProgressBackground::Paint(gfx::Canvas* canvas,
+                                            views::View* view) const {
+  FeatureTile* tile = static_cast<FeatureTile*>(view);
+
+  // Start with a simple rounded-rect background as the base. This part is
+  // symmetric so the canvas does not need to be flipped for RTL.
+  cc::PaintFlags background_flags;
+  background_flags.setAntiAlias(true);
+  background_flags.setStyle(cc::PaintFlags::kFill_Style);
+  background_flags.setColor(
+      view->GetColorProvider()->GetColor(background_color_id_));
+  canvas->DrawRoundRect(view->GetLocalBounds(), tile->corner_radius_,
+                        background_flags);
+
+  // Then draw the progress bar on top. This part is NOT symmetric, so first
+  // flip the canvas (if necessary) to handle RTL layouts. Do this using a
+  // `gfx::ScopedCanvas` so that the canvas does not stay flipped for other
+  // paint commands later in the pipeline that aren't expecting a flipped
+  // canvas.
+  gfx::ScopedCanvas scoped_canvas(canvas);
+  if (!view->GetFlipCanvasOnPaintForRTLUI()) {
+    scoped_canvas.FlipIfRTL(view->width());
+  }
+
+  // The progress bar is a rounded-rect (of radius
+  // `kDownloadProgressLeadingEdgeRadius`) that is clipped to a slightly smaller
+  // rounded-rect. The clip's radius is set such that there appears to be a
+  // border of thickness `kDownloadProgressBorderThickness` all around the tile
+  // (note that this is not an actual `views::Border`).
+
+  // Set the clip.
+  gfx::Rect clip_bounds(view->GetLocalBounds());
+  clip_bounds.Inset(kDownloadProgressBorderThickness);
+  int clip_radius =
+      std::max(0, tile->corner_radius_ - kDownloadProgressBorderThickness);
+  SkScalar clip_radii[8];
+  std::fill_n(clip_radii, 8, clip_radius);
+  SkPath clip;
+  clip.addRoundRect(gfx::RectToSkRect(clip_bounds), clip_radii);
+  canvas->ClipPath(clip, /*do_anti_alias=*/true);
+
+  // Shrink the width of the progress bar according to the tile's current
+  // download progress.
+  float percent = static_cast<float>(tile->download_progress_percent_) / 100.0f;
+  gfx::Rect progress_bounds(clip_bounds);
+  progress_bounds.set_width(percent * progress_bounds.width());
+
+  // Draw the progress bar.
+  cc::PaintFlags progress_flags;
+  progress_flags.setAntiAlias(true);
+  progress_flags.setStyle(cc::PaintFlags::kFill_Style);
+  progress_flags.setColor(
+      view->GetColorProvider()->GetColor(progress_color_id_));
+  canvas->DrawRoundRect(progress_bounds, kDownloadProgressLeadingEdgeRadius,
+                        progress_flags);
+}
+
+FeatureTile::FeatureTile(PressedCallback callback,
                          bool is_togglable,
                          TileType type)
-    : Button(callback), is_togglable_(is_togglable), type_(type) {
+    : Button(std::move(callback)),
+      corner_radius_(kDefaultCornerRadius),
+      is_togglable_(is_togglable),
+      type_(type) {
   // Set up ink drop on click. The corner radius must match the button
   // background corner radius, see UpdateColors().
   // TODO(jamescook): Consider adding support for highlight-path-based
@@ -90,7 +174,7 @@ FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
   // something like CreateThemedHighlightPathBackground() to
   // ui/views/background.h.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kButtonRadius);
+                                                corner_radius_);
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(InkDropHost::InkDropMode::ON);
   ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
@@ -121,22 +205,16 @@ FeatureTile::~FeatureTile() {
 void FeatureTile::CreateChildViews() {
   const bool is_compact = type_ == TileType::kCompact;
 
-  auto* layout_manager = SetLayoutManager(std::make_unique<FlexLayout>());
-  layout_manager->SetOrientation(is_compact
-                                     ? views::LayoutOrientation::kVertical
-                                     : views::LayoutOrientation::kHorizontal);
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_manager->SetOrientation(
+      is_compact ? views::BoxLayout::Orientation::kVertical
+                 : views::BoxLayout::Orientation::kHorizontal);
 
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
-  layout_manager->SetChildViewIgnoredByLayout(ink_drop_container_, true);
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
-  // Since the focus ring doesn't set a LayoutManager it won't get drawn unless
-  // excluded by the tile's LayoutManager.
-  // TODO(crbug/1385946): Modify LayoutManagerBase and FocusRing to always
-  // exclude focus ring from the layout.
-  layout_manager->SetChildViewIgnoredByLayout(focus_ring, true);
 
   SetPreferredSize(is_compact ? kCompactSize : kDefaultSize);
 
@@ -152,28 +230,28 @@ void FeatureTile::CreateChildViews() {
   icon_button_->SetEnabled(false);
   icon_button_->SetCanProcessEventsWithinSubtree(false);
 
-  auto* title_container = AddChildView(std::make_unique<FlexLayoutView>());
-  title_container->SetCanProcessEventsWithinSubtree(false);
-  title_container->SetOrientation(views::LayoutOrientation::kVertical);
-  title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  title_container_ = AddChildView(std::make_unique<FlexLayoutView>());
+  title_container_->SetCanProcessEventsWithinSubtree(false);
+  title_container_->SetOrientation(views::LayoutOrientation::kVertical);
+  title_container_->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  label_ = title_container_->AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
 
-  sub_label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  sub_label_ = title_container_->AddChildView(std::make_unique<views::Label>());
   sub_label_->SetHorizontalAlignment(is_compact ? gfx::ALIGN_CENTER
                                                 : gfx::ALIGN_LEFT);
   sub_label_->SetAutoColorReadabilityEnabled(false);
 
   if (is_compact) {
-    title_container->SetProperty(views::kMarginsKey,
-                                 kCompactTitlesContainerMargins);
+    title_container_->SetProperty(views::kMarginsKey,
+                                  kCompactTitlesContainerMargins);
     label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
     // By default, assume compact tiles will not support sub-labels.
-    SetCompactTileLabelPreferences(/*add_sub_label=*/false);
+    SetCompactTileLabelPreferences(/*has_sub_label=*/false);
 
     // Compact labels use kCrosAnnotation2 with a shorter custom line height.
     const auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
@@ -184,7 +262,10 @@ void FeatureTile::CreateChildViews() {
     sub_label_->SetLineHeight(kCompactTitleLineHeight);
     sub_label_->SetVisible(false);
   } else {
-    title_container->SetPreferredSize(kTitlesContainerSize);
+    // `title_container_` will take all the remaining space of the tile.
+    layout_manager->SetFlexForView(title_container_, 1);
+    title_container_->SetProperty(views::kMarginsKey,
+                                  kTitleContainerWithoutDiveInButtonMargins);
     label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label_);
@@ -221,6 +302,8 @@ void FeatureTile::SetIconClickCallback(
 void FeatureTile::CreateDecorativeDrillInArrow() {
   CHECK_EQ(type_, TileType::kPrimary);
 
+  title_container_->SetProperty(views::kMarginsKey,
+                                kTitleContainerWithDiveInButtonMargins);
   drill_in_arrow_ = AddChildView(std::make_unique<views::ImageView>());
   // The icon is set in UpdateDrillArrowColor().
   drill_in_arrow_->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
@@ -255,8 +338,15 @@ void FeatureTile::UpdateColors() {
     foreground_optional_color = cros_tokens::kCrosSysDisabled;
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                         kButtonRadius));
+  SetBackground(
+      features::IsVcDlcUiEnabled() &&
+              download_state_ == DownloadState::kDownloading
+          ? std::make_unique<ProgressBackground>(
+                /*progress_color_id=*/cros_tokens::kCrosSysHighlightShape,
+                /*background_color_id=*/background_color)
+          : views::CreateThemedRoundedRectBackground(background_color,
+                                                     corner_radius_));
+
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetBaseColorId(toggled_
                                ? cros_tokens::kCrosSysRipplePrimary
@@ -322,6 +412,13 @@ void FeatureTile::SetBackgroundToggledColorId(
   }
 }
 
+void FeatureTile::SetButtonCornerRadius(const int radius) {
+  corner_radius_ = radius;
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                corner_radius_);
+  UpdateColors();
+}
+
 void FeatureTile::SetForegroundColorId(ui::ColorId foreground_color_id) {
   if (foreground_color_ == foreground_color_id) {
     return;
@@ -355,11 +452,23 @@ void FeatureTile::SetIconButtonTooltipText(const std::u16string& tooltip_text) {
 }
 
 void FeatureTile::SetLabel(const std::u16string& label) {
+  // If `VcDlcUi` is enabled and the tile is currently in a download state that
+  // requires a non-client-specified label to be shown then store the new
+  // client-specified label but don't immediately update the UI. The UI will be
+  // updated to show the new label when the download finishes.
+  if (features::IsVcDlcUiEnabled()) {
+    client_specified_label_text_ = label;
+    if (download_state_ == DownloadState::kPending ||
+        download_state_ == DownloadState::kDownloading) {
+      return;
+    }
+  }
+
   label_->SetText(label);
 }
 
 int FeatureTile::GetSubLabelMaxWidth() const {
-  return kTitlesContainerSize.width();
+  return title_container_->size().width();
 }
 
 void FeatureTile::SetSubLabel(const std::u16string& sub_label) {
@@ -381,8 +490,44 @@ void FeatureTile::SetSubLabelVisibility(bool visible) {
     // visible, the primary label and sub-label have one line each to display
     // text. If disabling sub-label visibility, reset `label_` to allow its text
     // to display on two lines.
-    SetCompactTileLabelPreferences(/*add_sub_label=*/visible);
+    SetCompactTileLabelPreferences(/*has_sub_label=*/visible);
   }
+}
+
+void FeatureTile::SetDownloadState(DownloadState state, int progress) {
+  // Download state is only supported when `VcDlcUi` is enabled.
+  CHECK(features::IsVcDlcUiEnabled())
+      << "Download states are not supported when `VcDlcUi` is disabled";
+
+  // Check if this tile is already in a download state such that we can bail out
+  // without doing any updates.
+  if (download_state_ == state) {
+    // We can always bail out early if we're already in the given
+    // non-downloading state.
+    if (state != DownloadState::kDownloading) {
+      return;
+    }
+
+    // We can only bail out early from a downloading state if we're already at
+    // the given download progress.
+    if (download_progress_percent_ == progress) {
+      return;
+    }
+  }
+
+  // Set the new download state and update the tile to reflect it.
+  if (state == DownloadState::kDownloading) {
+    CHECK_GE(progress, 0)
+        << "Expected download progress to be in the range [0, 100], actual: "
+        << progress;
+    CHECK_LE(progress, 100)
+        << "Expected download progress to be in the range [0, 100], actual: "
+        << progress;
+    download_progress_percent_ = progress;
+  }
+  download_state_ = state;
+  UpdateColors();
+  UpdateLabelForDownloadState();
 }
 
 void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -460,6 +605,35 @@ void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
   label_->SetMultiLine(!has_sub_label);
   // Elide after 2 lines if there's no sub-label. Otherwise, 1 line.
   label_->SetMaxLines(has_sub_label ? 1 : 2);
+}
+
+void FeatureTile::SetDownloadLabel(const std::u16string& download_label) {
+  // Download state is only supported when `VcDlcUi` is enabled.
+  CHECK(features::IsVcDlcUiEnabled())
+      << "Download states are not supported when `VcDlcUi` is disabled";
+  label_->SetText(download_label);
+}
+
+void FeatureTile::UpdateLabelForDownloadState() {
+  // Download state is only supported when `VcDlcUi` is enabled.
+  CHECK(features::IsVcDlcUiEnabled())
+      << "Download states are not supported when `VcDlcUi` is disabled";
+  switch (download_state_) {
+    case DownloadState::kNone:
+    case DownloadState::kDownloaded:
+    case DownloadState::kError:
+      label_->SetText(client_specified_label_text_);
+      break;
+    case DownloadState::kPending:
+      SetDownloadLabel(l10n_util::GetStringUTF16(
+          IDS_ASH_FEATURE_TILE_DOWNLOAD_PENDING_TITLE));
+      break;
+    case DownloadState::kDownloading:
+      SetDownloadLabel(l10n_util::GetStringFUTF16(
+          IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE,
+          base::NumberToString16(download_progress_percent_)));
+      break;
+  }
 }
 
 BEGIN_METADATA(FeatureTile, views::Button)

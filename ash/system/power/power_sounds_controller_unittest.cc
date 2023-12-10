@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/test_system_sounds_delegate.h"
 #include "ash/test/ash_test_base.h"
@@ -40,13 +41,8 @@ constexpr int kLowPowerMinutes = 15;
 
 class PowerSoundsControllerTest : public AshTestBase {
  public:
-  PowerSoundsControllerTest()
-      : PowerSoundsControllerTest({features::kSystemSounds}) {}
-
-  explicit PowerSoundsControllerTest(
-      const std::vector<base::test::FeatureRef>& enabled_features) {
-    scoped_feature_.InitWithFeatures(enabled_features, {});
-  }
+  PowerSoundsControllerTest(absl::optional<bool> battery_saver_allowed = false)
+      : battery_saver_allowed_(battery_saver_allowed) {}
 
   PowerSoundsControllerTest(const PowerSoundsControllerTest&) = delete;
   PowerSoundsControllerTest& operator=(const PowerSoundsControllerTest&) =
@@ -56,8 +52,16 @@ class PowerSoundsControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_.InitWithFeatures(
+        {features::kSystemSounds, features::kBatterySaver}, {});
     AshTestBase::SetUp();
+    OverrideIsBatterySaverAllowedForTesting(battery_saver_allowed_);
     SetInitialPowerStatus();
+  }
+
+  void TearDown() override {
+    AshTestBase::TearDown();
+    OverrideIsBatterySaverAllowedForTesting(absl::nullopt);
   }
 
   TestSystemSoundsDelegate* GetSystemSoundsDelegate() const {
@@ -147,6 +151,7 @@ class PowerSoundsControllerTest : public AshTestBase {
 
  private:
   bool is_ac_charger_connected_;
+  absl::optional<bool> battery_saver_allowed_;
 };
 
 class PowerSoundsControllerWithBatterySaverTest
@@ -155,8 +160,7 @@ class PowerSoundsControllerWithBatterySaverTest
           features::BatterySaverNotificationBehavior> {
  public:
   PowerSoundsControllerWithBatterySaverTest()
-      : PowerSoundsControllerTest(
-            {features::kSystemSounds, features::kBatterySaver}) {}
+      : PowerSoundsControllerTest(true) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(

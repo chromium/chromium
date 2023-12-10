@@ -6,6 +6,11 @@
       "all"
     ]
   },
+  "Comparison Linux (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Linux Builder (reclient compare)": {
     "additional_compile_targets": [
       "all"

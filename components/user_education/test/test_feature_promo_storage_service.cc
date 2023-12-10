@@ -28,4 +28,31 @@ void TestFeaturePromoStorageService::Reset(const base::Feature& iph_feature) {
   promo_data_.erase(&iph_feature);
 }
 
+FeaturePromoSessionData TestFeaturePromoStorageService::ReadSessionData()
+    const {
+  return session_data_;
+}
+
+void TestFeaturePromoStorageService::SaveSessionData(
+    const FeaturePromoSessionData& session_data) {
+  session_data_ = session_data;
+}
+
+void TestFeaturePromoStorageService::ResetSession() {
+  session_data_ = FeaturePromoSessionData();
+}
+
+FeaturePromoPolicyData TestFeaturePromoStorageService::ReadPolicyData() const {
+  return policy_data_;
+}
+
+void TestFeaturePromoStorageService::SavePolicyData(
+    const FeaturePromoPolicyData& policy_data) {
+  policy_data_ = policy_data;
+}
+
+void TestFeaturePromoStorageService::ResetPolicy() {
+  policy_data_ = FeaturePromoPolicyData();
+}
+
 }  // namespace user_education::test

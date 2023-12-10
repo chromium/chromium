@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -48,21 +48,24 @@ class TargetDeviceConnectionBroker {
     kTargetDeviceUpdate,
     kResponseTimeout,
     kUnknownError,
+    kConnectionLifecycleListenerDestroyed,
   };
 
   class AuthenticatedConnection {
    public:
     using RequestWifiCredentialsCallback =
-        base::OnceCallback<void(absl::optional<mojom::WifiCredentials>)>;
+        base::OnceCallback<void(std::optional<mojom::WifiCredentials>)>;
     // The ack_successful bool indicates whether the ack was successfully
     // received by the source device. If true, then the target device will
     // prepare to resume the Quick Start connection after it updates.
     using NotifySourceOfUpdateCallback =
         base::OnceCallback<void(/*ack_successful=*/bool)>;
     using RequestAccountTransferAssertionCallback =
-        base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
+        base::OnceCallback<void(std::optional<FidoAssertionInfo>)>;
     using AwaitUserVerificationCallback = base::OnceCallback<void(
-        absl::optional<mojom::UserVerificationResponse>)>;
+        std::optional<mojom::UserVerificationResponse>)>;
+    using RequestAccountInfoCallback =
+        base::OnceCallback<void(/*account_email=*/std::string)>;
 
     // Close the connection.
     virtual void Close(
@@ -79,7 +82,7 @@ class TargetDeviceConnectionBroker {
 
     // The first step in the account transfer process which involves retrieving
     // GAIA account info from the source device.
-    virtual void RequestAccountInfo(base::OnceClosure callback) = 0;
+    virtual void RequestAccountInfo(RequestAccountInfoCallback callback) = 0;
 
     // Begin the account transfer process and retrieve an Assertion from the
     // source device. The caller must provide a "challenge" nonce to be sent to
@@ -100,11 +103,16 @@ class TargetDeviceConnectionBroker {
     // response.
     std::string get_phone_instance_id() { return phone_instance_id_; }
 
+    // Retrieve boolean value indicating whether the account in question is a
+    // supervised account (e.g. Unicorn).
+    bool is_supervised_account() { return is_supervised_account_; }
+
    protected:
     AuthenticatedConnection() = default;
     virtual ~AuthenticatedConnection() = default;
 
     std::string phone_instance_id_;
+    bool is_supervised_account_;
   };
 
   // Clients of TargetDeviceConnectionBroker should implement this interface,

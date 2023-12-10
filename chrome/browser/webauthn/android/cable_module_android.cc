@@ -295,7 +295,7 @@ GetSyncDataIfRegisteredInternal() {
     return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
   }
 
-  if (state->prelink_play_services() && state->link_data_from_play_services()) {
+  if (state->link_data_from_play_services()) {
     absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
         internal::PaaskInfoFromCBOR(*state->link_data_from_play_services());
     if (paask_info) {

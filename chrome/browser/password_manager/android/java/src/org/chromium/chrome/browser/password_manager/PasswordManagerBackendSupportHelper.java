@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.ResettersForTesting;
 
-/**
- * Helper class to check PasswordManager backend availability.
- */
+/** Helper class to check PasswordManager backend availability. */
 public abstract class PasswordManagerBackendSupportHelper {
     private static PasswordManagerBackendSupportHelper sInstance;
 

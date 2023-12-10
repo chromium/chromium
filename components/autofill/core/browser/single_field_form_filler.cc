@@ -10,19 +10,4 @@ SingleFieldFormFiller::SingleFieldFormFiller() = default;
 
 SingleFieldFormFiller::~SingleFieldFormFiller() = default;
 
-SingleFieldFormFiller::QueryHandler::QueryHandler(
-    FieldGlobalId field_id,
-    AutofillSuggestionTriggerSource trigger_source,
-    std::u16string prefix,
-    base::WeakPtr<SuggestionsHandler> handler)
-    : field_id_(field_id),
-      trigger_source_(trigger_source),
-      prefix_(prefix),
-      handler_(std::move(handler)) {}
-
-SingleFieldFormFiller::QueryHandler::QueryHandler(
-    const QueryHandler& original) = default;
-
-SingleFieldFormFiller::QueryHandler::~QueryHandler() = default;
-
 }  // namespace autofill

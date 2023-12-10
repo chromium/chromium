@@ -118,7 +118,8 @@ class IPCMessageSender {
 #endif
 
   // Sends activityLog IPC to the browser process.
-  virtual void SendActivityLogIPC(const ExtensionId& extension_id,
+  virtual void SendActivityLogIPC(ScriptContext* context,
+                                  const ExtensionId& extension_id,
                                   ActivityLogCallType call_type,
                                   const std::string& call_name,
                                   base::Value::List args,

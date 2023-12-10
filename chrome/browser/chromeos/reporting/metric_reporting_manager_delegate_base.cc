@@ -19,6 +19,7 @@
 #include "components/reporting/metrics/one_shot_collector.h"
 #include "components/reporting/metrics/periodic_collector.h"
 #include "components/reporting/util/rate_limiter_interface.h"
+#include "components/reporting/util/rate_limiter_slide_window.h"
 
 namespace reporting::metrics {
 namespace {
@@ -136,6 +137,15 @@ MetricReportingManagerDelegateBase::CreateEventObserverManager(
       std::move(event_observer), metric_report_queue, reporting_settings,
       enable_setting_path, setting_enabled_default_value, collector_pool,
       init_delay);
+}
+
+std::unique_ptr<RateLimiterSlideWindow>
+MetricReportingManagerDelegateBase::CreateSlidingWindowRateLimiter(
+    size_t total_size,
+    base::TimeDelta time_window,
+    size_t bucket_count) {
+  return std::make_unique<RateLimiterSlideWindow>(total_size, time_window,
+                                                  bucket_count);
 }
 
 bool MetricReportingManagerDelegateBase::IsUserAffiliated(

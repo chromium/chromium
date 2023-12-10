@@ -24,7 +24,7 @@
 namespace {
 
 // The size of the `Report an issue` button icon.
-const CGFloat kReportAnIssueIconSize = 18;
+const CGFloat kReportAnIssueIconSize = 15;
 
 // The trailing and leading offsets of the `Report an issue` button.
 const CGFloat kReportAnIssueButtonTrailingOffset = 8;
@@ -57,6 +57,9 @@ const NSInteger kTargetSection = 1;
 // Unit type and unit value field rows indexes.
 const NSInteger kUnitTypeRow = 0;
 const NSInteger kUnitValueFieldRow = 1;
+
+// The height offset to add to the computed preferredContentSize's height.
+const CGFloat kTableViewHeightOffset = 16;
 
 // Returns the `UnitType` group for the given `unit`.
 ios::provider::UnitType TypeByUnit(NSUnit* unit) {
@@ -107,6 +110,11 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
   // The `Report an issue` button.
   UIButton* _reportAnIssueButton;
+
+  // A copy of `self.view.bounds.size.height` before its change, made during
+  // calls to viewDidLayoutSubviews, and used to reduce the number of calls to
+  // calculatePreferredContentHeight.
+  CGFloat _previousHeight;
 }
 
 @property(nonatomic, strong) NSUnit* targetUnit;
@@ -129,19 +137,21 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 @implementation UnitConversionViewController
 
 - (instancetype)initWithSourceUnit:(NSUnit*)sourceUnit
+                        targetUnit:(NSUnit*)targetUnit
                          unitValue:(double)unitValue {
   self = [super initWithStyle:UITableViewStyleInsetGrouped];
 
   if (self) {
     _unitValue = unitValue;
     _sourceUnit = sourceUnit;
+    _targetUnit = targetUnit;
+    _previousHeight = 0;
   }
   return self;
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-
   // Capture the tableView's width and use it to calculate the footer's size.
   CGFloat width = self.tableView.bounds.size.width;
   CGSize size = [_reportAnIssueButton
@@ -157,14 +167,21 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     _tableViewFooterView.frame = frame;
     self.tableView.tableFooterView = _tableViewFooterView;
   }
+
+  // Check for height change before computing the new height.
+  if (!AreCGFloatsEqual(_previousHeight, self.view.bounds.size.height)) {
+    self.preferredContentSize =
+        CGSizeMake(self.preferredContentSize.width,
+                   [self calculatePreferredContentHeight]);
+    _previousHeight = self.view.bounds.size.height;
+  }
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  _targetUnit = ios::provider::GetDefaultTargetUnit(_sourceUnit);
   _unitType = TypeByUnit(_sourceUnit);
   _sourceUnitValueField =
-      [NSString localizedStringWithFormat:@"%lf", _unitValue];
+      [NSString localizedStringWithFormat:@"%g", _unitValue];
   _unitTypes = ios::provider::GetSupportedUnitTypes();
   _unitTypeTitle = [self titleForUnitType:_unitType];
   _formattedSourceUnit = ios::provider::GetFormattedUnit(_sourceUnit);
@@ -177,7 +194,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   [closeButton
       setImage:SymbolWithPalette(closeIcon,
                                  @[
-                                   [UIColor colorNamed:kTextTertiaryColor],
+                                   [UIColor colorNamed:kTextSecondaryColor],
                                    [UIColor colorNamed:kGrey200Color]
                                  ])
       forState:UIControlStateNormal];
@@ -233,6 +250,11 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
 #pragma mark - Private
 
+// Computes the new height based on the height `tableView`.
+- (CGFloat)calculatePreferredContentHeight {
+  return self.tableView.contentSize.height + kTableViewHeightOffset;
+}
+
 - (void)closeButtonTapped:(UIButton*)sender {
   [self.delegate didTapCloseUnitConversionController:self];
 }
@@ -245,19 +267,18 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   UIButton* button = [[UIButton alloc] init];
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.imagePadding = kReportAnIssueButtonPadding;
-  button.configuration = buttonConfiguration;
-  button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-  [button
-      setTitle:l10n_util::GetNSString(IDS_UNITS_MEASUREMENTS_REPORT_AN_ISSUE)
-      forState:UIControlStateNormal];
-  button.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   UIImage* reportAnIssueIcon = DefaultSymbolWithPointSize(
       kExclamationMarkBubbleSymbol, kReportAnIssueIconSize);
-  [button setImage:[reportAnIssueIcon
-                       imageWithTintColor:[UIColor colorNamed:kBlueColor]]
-          forState:UIControlStateNormal];
+  [buttonConfiguration setImage:reportAnIssueIcon];
+  buttonConfiguration.imagePadding = kReportAnIssueButtonPadding;
+  buttonConfiguration.attributedTitle = [self
+      createAttributedStringWithTitle:
+          l10n_util::GetNSString(IDS_UNITS_MEASUREMENTS_REPORT_AN_ISSUE)
+                                 font:[UIFont preferredFontForTextStyle:
+                                                  UIFontTextStyleFootnote]];
+  button.configuration = buttonConfiguration;
+  button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+  [button setTintColor:[UIColor colorNamed:kBlueColor]];
   [button addTarget:self
                 action:@selector(reportIssueButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -349,7 +370,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   NSMeasurement* targetUnitMeasurement =
       [sourceUnitMeasurement measurementByConvertingToUnit:_targetUnit];
   _targetUnitValueField = [NSString
-      localizedStringWithFormat:@"%lf", targetUnitMeasurement.doubleValue];
+      localizedStringWithFormat:@"%g", targetUnitMeasurement.doubleValue];
 }
 
 // Returns the title string based on the unit type.
@@ -416,11 +437,19 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
                       children:menuItemsArray];
 }
 
-// Invoked when the value of textfield is changed.
-- (void)textFieldDidChange:(UITextField*)textField {
+// Invoked when the value of the source unit textfield is changed.
+- (void)sourceUnitFieldDidChange:(UITextField*)textField {
   _sourceUnitValueField = [textField.text copy];
   self.unitValue = [_sourceUnitValueField doubleValue];
   [self.mutator sourceUnitValueFieldDidChange:_sourceUnitValueField
+                                   sourceUnit:_sourceUnit
+                                   targetUnit:_targetUnit];
+}
+
+// Invoked when the value of the target unit textfield is changed.
+- (void)targetUnitFieldDidChange:(UITextField*)textField {
+  _targetUnitValueField = [textField.text copy];
+  [self.mutator targetUnitValueFieldDidChange:_targetUnitValueField
                                    sourceUnit:_sourceUnit
                                    targetUnit:_targetUnit];
 }
@@ -456,19 +485,26 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
         [tableView dequeueReusableCellWithIdentifier:kUnitTypeCellIdentifier];
     cell.unitMenuButton.menu = [self unitsMenuAtSection:indexPath.section];
     cell.unitMenuButton.showsMenuAsPrimaryAction = YES;
+    NSString* unitMenuButtonTitle;
     if (indexPath.section == kSourceSection) {
-      cell.unitTypeLabel.text = _formattedSourceUnit;
-      cell.unitTypeLabel.accessibilityIdentifier = kSourceUnitLabelIdentifier;
+      unitMenuButtonTitle = _formattedSourceUnit;
       cell.unitMenuButton.accessibilityIdentifier =
           kSourceUnitMenuButtonIdentifier;
     } else if (indexPath.section == kTargetSection) {
-      cell.unitTypeLabel.text = _formattedTargetUnit;
-      cell.unitTypeLabel.accessibilityIdentifier = kTargetUnitLabelIdentifier;
+      unitMenuButtonTitle = _formattedTargetUnit;
       cell.unitMenuButton.accessibilityIdentifier =
           kTargetUnitMenuButtonIdentifier;
     } else {
       NOTREACHED_NORETURN();
     }
+    UIButtonConfiguration* unitMenuButtonConfiguration =
+        cell.unitMenuButton.configuration;
+    unitMenuButtonConfiguration.attributedTitle = [self
+        createAttributedStringWithTitle:unitMenuButtonTitle
+                                   font:[UIFont
+                                            preferredFontForTextStyle:
+                                                UIFontTextStyleSubheadline]];
+    cell.unitMenuButton.configuration = unitMenuButtonConfiguration;
     return cell;
   }
 
@@ -481,13 +517,15 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
       cell.unitValueTextField.accessibilityIdentifier =
           kSourceUnitFieldIdentifier;
       [cell.unitValueTextField addTarget:self
-                                  action:@selector(textFieldDidChange:)
+                                  action:@selector(sourceUnitFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
     } else if (indexPath.section == kTargetSection) {
       cell.unitValueTextField.text = _targetUnitValueField;
       cell.unitValueTextField.accessibilityIdentifier =
           kTargetUnitFieldIdentifier;
-      cell.unitValueTextField.enabled = NO;
+      [cell.unitValueTextField addTarget:self
+                                  action:@selector(targetUnitFieldDidChange:)
+                        forControlEvents:UIControlEventEditingChanged];
     } else {
       NOTREACHED_NORETURN();
     }
@@ -512,14 +550,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
 - (void)updateSourceUnitValue:(double)sourceUnitValue reload:(BOOL)reload {
   _sourceUnitValueField =
-      [NSString localizedStringWithFormat:@"%lf", sourceUnitValue];
+      [NSString localizedStringWithFormat:@"%g", sourceUnitValue];
   self.unitValue = sourceUnitValue;
   [self reloadRow:kUnitValueFieldRow section:kSourceSection reload:reload];
 }
 
 - (void)updateTargetUnitValue:(double)targetUnitValue reload:(BOOL)reload {
   _targetUnitValueField =
-      [NSString localizedStringWithFormat:@"%lf", targetUnitValue];
+      [NSString localizedStringWithFormat:@"%g", targetUnitValue];
   [self reloadRow:kUnitValueFieldRow section:kTargetSection reload:reload];
 }
 

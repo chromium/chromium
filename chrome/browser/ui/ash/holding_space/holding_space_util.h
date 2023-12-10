@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_file.h"
@@ -13,7 +14,6 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -35,7 +35,7 @@ struct ValidityRequirement {
   ValidityRequirement(const ValidityRequirement& other);
   ValidityRequirement(ValidityRequirement&& other);
   bool must_exist = true;
-  absl::optional<base::TimeDelta> must_be_newer_than = absl::nullopt;
+  std::optional<base::TimeDelta> must_be_newer_than = std::nullopt;
 };
 
 using FilePathList = std::vector<base::FilePath>;

@@ -265,6 +265,16 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
     std::ignore = success;
 #endif
   }
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            _, FileSystemAccessPermissionContext::PathType::kLocal, _,
+            HandleType::kFile, UserAction::kNone, kBindingContext.frame_id, _))
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<6>(
+            SensitiveEntryResult::kAllowed));
+  }
 
   std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
   blink::mojom::FileSystemAccessErrorPtr result;
@@ -286,31 +296,29 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   EXPECT_THAT(names, testing::UnorderedElementsAreArray(kSafeNames));
 }
 
-#if BUILDFLAG(IS_POSIX)
-TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_Symlink) {
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetFile_SensitiveEntryAccessCheck) {
   if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationSymbolicLinkCheck)) {
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
     return;
   }
 
-  base::FilePath symlink_path(dir_.GetPath().AppendASCII("symlink"));
-  base::FilePath target_path(dir_.GetPath().AppendASCII("target"));
-  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
-
-  EXPECT_CALL(permission_context_,
-              ConfirmSensitiveEntryAccess_(_, _, target_path, HandleType::kFile,
-                                           UserAction::kNone, _, _))
+  base::FilePath child_path(dir_.GetPath().AppendASCII("blocked_path"));
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          _, FileSystemAccessPermissionContext::PathType::kLocal, child_path,
+          HandleType::kFile, UserAction::kNone, kBindingContext.frame_id, _))
       .WillOnce(base::test::RunOnceCallback<6>(SensitiveEntryResult::kAbort));
 
   base::test::TestFuture<
       blink::mojom::FileSystemAccessErrorPtr,
       mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
       future;
-  handle_->GetFile("symlink", /*create=*/false, future.GetCallback());
+  handle_->GetFile("blocked_path", /*create=*/false, future.GetCallback());
   EXPECT_EQ(future.Get<0>()->status,
             blink::mojom::FileSystemAccessStatus::kSecurityError);
 }
-#endif
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
@@ -339,8 +347,75 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetDirectory_NoReadAccess) {
   EXPECT_FALSE(future.Get<1>().is_valid());
 }
 
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetEntries_SensitiveEntryAccessCheck) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    return;
+  }
+
+  ASSERT_TRUE(
+      base::WriteFile(dir_.GetPath().AppendASCII("allowed_file_path"), "data"));
+  ASSERT_TRUE(
+      base::WriteFile(dir_.GetPath().AppendASCII("blocked_file_path"), "data"));
+  ASSERT_TRUE(base::CreateDirectory(dir_.GetPath().AppendASCII("subdir")));
+
+  base::FilePath allowed_file_path(
+      dir_.GetPath().AppendASCII("allowed_file_path"));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(
+                  _, FileSystemAccessPermissionContext::PathType::kLocal,
+                  allowed_file_path, HandleType::kFile, UserAction::kNone,
+                  kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
+
+  base::FilePath blocked_file_path(
+      dir_.GetPath().AppendASCII("blocked_file_path"));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(
+                  _, FileSystemAccessPermissionContext::PathType::kLocal,
+                  blocked_file_path, HandleType::kFile, UserAction::kNone,
+                  kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<6>(SensitiveEntryResult::kAbort));
+
+  // Sensitive entry access is not expected to perform on directories.
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(_, _, _, HandleType::kDirectory, _, _, _))
+      .Times(0);
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  base::RunLoop loop;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+      listener;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+          &entries, &result, loop.QuitClosure()),
+      listener.InitWithNewPipeAndPassReceiver());
+  handle_->GetEntries(std::move(listener));
+  loop.Run();
+
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  std::vector<std::string> names;
+  for (const auto& entry : entries) {
+    names.push_back(entry->name);
+  }
+  EXPECT_THAT(names, testing::UnorderedElementsAreArray(
+                         {"allowed_file_path", "subdir"}));
+}
+
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            _, FileSystemAccessPermissionContext::PathType::kLocal, _,
+            HandleType::kFile, UserAction::kNone, kBindingContext.frame_id, _))
+        .Times(0);
+  }
 
   std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
   blink::mojom::FileSystemAccessErrorPtr result;

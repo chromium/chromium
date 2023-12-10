@@ -43,12 +43,7 @@ class DataTypeManager {
 
   // Note: |errors| is only filled when status is not OK.
   struct ConfigureResult {
-    ConfigureResult();
-    ConfigureResult(ConfigureStatus status, ModelTypeSet requested_types);
-    ConfigureResult(const ConfigureResult& other);
-    ~ConfigureResult();
-
-    ConfigureStatus status;
+    ConfigureStatus status = UNKNOWN;
     ModelTypeSet requested_types;
     DataTypeStatusTable data_type_status_table;
   };

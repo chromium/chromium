@@ -95,7 +95,7 @@ bool mojo::StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
   out_options->set_enable_remote_open_url(data_view.enable_remote_open_url());
   out_options->set_enable_remote_webauthn(data_view.enable_remote_webauthn());
 
-  absl::optional<uint32_t> clipboard_size;
+  std::optional<uint32_t> clipboard_size;
   if (!data_view.ReadClipboardSize(&clipboard_size)) {
     return false;
   }
@@ -210,7 +210,7 @@ bool mojo::StructTraits<remoting::mojom::FileTransferErrorDataView,
   }
   out_error->set_type(type);
 
-  absl::optional<int32_t> api_error_code;
+  std::optional<int32_t> api_error_code;
   if (!data_view.ReadApiErrorCode(&api_error_code)) {
     return false;
   }
@@ -283,7 +283,7 @@ bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
   out_event->set_usb_keycode(data_view.usb_keycode());
   out_event->set_lock_states(data_view.lock_states());
 
-  absl::optional<bool> caps_lock_state;
+  std::optional<bool> caps_lock_state;
   if (!data_view.ReadCapsLockState(&caps_lock_state)) {
     return false;
   }
@@ -291,7 +291,7 @@ bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
     out_event->set_caps_lock_state(*caps_lock_state);
   }
 
-  absl::optional<bool> num_lock_state;
+  std::optional<bool> num_lock_state;
   if (!data_view.ReadNumLockState(&num_lock_state)) {
     return false;
   }
@@ -349,7 +349,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
                         ::remoting::protocol::MouseEvent>::
     Read(remoting::mojom::MouseEventDataView data_view,
          ::remoting::protocol::MouseEvent* out_event) {
-  absl::optional<int32_t> x;
+  std::optional<int32_t> x;
   if (!data_view.ReadX(&x)) {
     return false;
   }
@@ -357,7 +357,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_x(*x);
   }
 
-  absl::optional<int32_t> y;
+  std::optional<int32_t> y;
   if (!data_view.ReadY(&y)) {
     return false;
   }
@@ -373,7 +373,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_button(mouse_button);
   }
 
-  absl::optional<bool> button_down;
+  std::optional<bool> button_down;
   if (!data_view.ReadButtonDown(&button_down)) {
     return false;
   }
@@ -381,7 +381,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_button_down(*button_down);
   }
 
-  absl::optional<float> wheel_delta_x;
+  std::optional<float> wheel_delta_x;
   if (!data_view.ReadWheelDeltaX(&wheel_delta_x)) {
     return false;
   }
@@ -389,7 +389,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_wheel_delta_x(*wheel_delta_x);
   }
 
-  absl::optional<float> wheel_delta_y;
+  std::optional<float> wheel_delta_y;
   if (!data_view.ReadWheelDeltaY(&wheel_delta_y)) {
     return false;
   }
@@ -397,7 +397,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_wheel_delta_y(*wheel_delta_y);
   }
 
-  absl::optional<float> wheel_ticks_x;
+  std::optional<float> wheel_ticks_x;
   if (!data_view.ReadWheelTicksX(&wheel_ticks_x)) {
     return false;
   }
@@ -405,7 +405,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_wheel_ticks_x(*wheel_ticks_x);
   }
 
-  absl::optional<float> wheel_ticks_y;
+  std::optional<float> wheel_ticks_y;
   if (!data_view.ReadWheelTicksY(&wheel_ticks_y)) {
     return false;
   }
@@ -413,7 +413,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_wheel_ticks_y(*wheel_ticks_y);
   }
 
-  absl::optional<int32_t> delta_x;
+  std::optional<int32_t> delta_x;
   if (!data_view.ReadDeltaX(&delta_x)) {
     return false;
   }
@@ -421,7 +421,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_delta_x(*delta_x);
   }
 
-  absl::optional<int32_t> delta_y;
+  std::optional<int32_t> delta_y;
   if (!data_view.ReadDeltaY(&delta_y)) {
     return false;
   }

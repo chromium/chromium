@@ -42,7 +42,7 @@ class HoldingSpaceControllerProgressIndicator
 
  private:
   // ProgressIndicator:
-  absl::optional<float> CalculateProgress() const override {
+  std::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
     // space items. Do not paint the progress indication.
     const HoldingSpaceModel* model = controller_->model();
@@ -138,7 +138,7 @@ class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
 
  private:
   // ProgressIndicator:
-  absl::optional<float> CalculateProgress() const override {
+  std::optional<float> CalculateProgress() const override {
     // If `item_` is `nullptr` it is being destroyed. Ensure the progress
     // indication is not painted in this case. Similarly, ensure the progress
     // indication is not painted when progress is hidden.

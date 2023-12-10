@@ -8,7 +8,9 @@
 
 #include <cstdint>
 
+#include "base/command_line.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
@@ -21,6 +23,7 @@
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/common/content_switches.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -28,10 +31,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
-
-// Used for settng the requested renderer size when testing.
-constexpr int kDefaultWidthForTesting = 980;
-constexpr int kDefaultHeightForTesting = 735;
 
 static void* kObservingContext = &kObservingContext;
 
@@ -46,9 +45,23 @@ static void* kObservingContext = &kObservingContext;
 @end
 
 namespace {
+
+// Used for setting the requested renderer size when testing.
+constexpr gfx::Size kDefaultSizeForTesting = gfx::Size(800, 600);
+constexpr gfx::Size KDefaultSizeForPreventResizingForTesting =
+    gfx::Size(980, 735);
+
 bool IsTesting() {
   return [[UIApplication sharedApplication] isRunningTests];
 }
+
+gfx::Rect GetDefaultSizeForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kPreventResizingContentsForTesting)
+             ? gfx::Rect(KDefaultSizeForPreventResizingForTesting)
+             : gfx::Rect(kDefaultSizeForTesting);
+}
+
 }  // namespace
 
 // TODO(dtapuska): Change this to be UITextInput and handle the other
@@ -349,7 +362,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
-    view_bounds_ = gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting);
+    view_bounds_ = GetDefaultSizeForTesting();
     browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
   }
 
@@ -460,6 +473,12 @@ RenderWidgetHostViewIOS::CreateSyntheticGestureTarget() {
 
 const viz::LocalSurfaceId& RenderWidgetHostViewIOS::GetLocalSurfaceId() const {
   return browser_compositor_->GetRendererLocalSurfaceId();
+}
+
+void RenderWidgetHostViewIOS::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+  browser_compositor_->GetDelegatedFrameHost()->SetIsFrameSinkIdOwner(
+      is_frame_sink_id_owner());
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewIOS::GetFrameSinkId() const {
@@ -643,10 +662,16 @@ void RenderWidgetHostViewIOS::UpdateCALayerTree(
   display_tree_->UpdateCALayerTree(ca_layer_params);
 }
 
-void RenderWidgetHostViewIOS::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
+  if (base::FeatureList::IsEnabled(
+          features::kInvalidateLocalSurfaceIdPreCommit)) {
+    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+    browser_compositor_->DidNavigateMainFramePreCommit();
+  }
+}
+
+void RenderWidgetHostViewIOS::OnNewViewDidNavigatePostCommit() {
   gesture_provider_.ResetDetection();
-  browser_compositor_->DidNavigateMainFramePreCommit();
 }
 
 void RenderWidgetHostViewIOS::DidEnterBackForwardCache() {

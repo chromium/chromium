@@ -47,7 +47,7 @@ bool AutofillClient::IsOffTheRecord() {
   return false;
 }
 
-AutofillDownloadManager* AutofillClient::GetDownloadManager() {
+AutofillCrowdsourcingManager* AutofillClient::GetCrowdsourcingManager() {
   return nullptr;
 }
 
@@ -105,6 +105,10 @@ CreditCardOtpAuthenticator* AutofillClient::GetOtpAuthenticator() {
 }
 
 CreditCardRiskBasedAuthenticator* AutofillClient::GetRiskBasedAuthenticator() {
+  return nullptr;
+}
+
+payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
 }
 
@@ -195,20 +199,6 @@ void AutofillClient::ShowLocalCardMigrationResults(
   // This is overridden by platform subclasses.
 }
 
-void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
-                                            bool should_show_prompt,
-                                            SaveIbanPromptCallback callback) {
-  // This is overridden by platform subclasses.
-}
-
-void AutofillClient::ConfirmUploadIbanToCloud(
-    const Iban& iban,
-    const LegalMessageLines& legal_message_lines,
-    bool should_show_prompt,
-    SaveIbanPromptCallback callback) {
-  // This is overridden by platform subclasses.
-}
-
 void AutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
   // This is overridden by platform subclasses.
@@ -282,6 +272,16 @@ void AutofillClient::ConfirmSaveCreditCardToCloud(
   // This is overridden by platform subclasses.
 }
 
+void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
+                                            bool should_show_prompt,
+                                            SaveIbanPromptCallback callback) {}
+
+void AutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    LegalMessageLines legal_message_lines,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {}
+
 void AutofillClient::CreditCardUploadCompleted(bool card_saved) {
   // This is overridden by platform subclasses.
 }
@@ -343,6 +343,11 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   // As finch configs are profile independent we can use a static instance here.
   static base::NoDestructor<AutofillAblationStudy> ablation_study;
   return *ablation_study;
+}
+
+void AutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
+  // This is overridden by platform subclasses.
+  NOTIMPLEMENTED();
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>

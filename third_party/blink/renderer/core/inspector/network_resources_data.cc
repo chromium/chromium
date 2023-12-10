@@ -40,9 +40,22 @@
 
 namespace blink {
 
-static bool IsHTTPErrorStatusCode(int status_code) {
+namespace {
+
+bool IsPossiblyTextResourceType(InspectorPageAgent::ResourceType type) {
+  return type == InspectorPageAgent::kManifestResource ||
+         type == InspectorPageAgent::kStylesheetResource ||
+         type == InspectorPageAgent::kScriptResource ||
+         type == InspectorPageAgent::kDocumentResource ||
+         type == InspectorPageAgent::kFetchResource ||
+         type == InspectorPageAgent::kXHRResource;
+}
+
+bool IsHTTPErrorStatusCode(int status_code) {
   return status_code >= 400;
 }
+
+}  // namespace
 
 void XHRReplayData::AddHeader(const AtomicString& key,
                               const AtomicString& value) {
@@ -226,7 +239,13 @@ void NetworkResourcesData::ResponseReceived(const String& request_id,
     return;
   resource_data->SetFrameId(frame_id);
   resource_data->SetMimeType(response.MimeType());
-  resource_data->SetTextEncodingName(response.TextEncodingName());
+  if (IsPossiblyTextResourceType(resource_data->GetType())) {
+    // ResourceResponse may come with some arbitrary encoding (e.g.
+    // charset=utf-8). Depending on the actual resource type, it may be ignored
+    // in Blink. We should not blindly transfer such resources as text to avoid
+    // data corruption, and instead encode them as base64.
+    resource_data->SetTextEncodingName(response.TextEncodingName());
+  }
   resource_data->SetHTTPStatusCode(response.HttpStatusCode());
   resource_data->SetRawHeaderSize(response.EncodedDataLength());
 }

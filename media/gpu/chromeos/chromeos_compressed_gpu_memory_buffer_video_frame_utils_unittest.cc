@@ -15,26 +15,45 @@
 namespace media {
 
 class ChromeOSCompressedGpuMemoryBufferTest
-    : public ::testing::TestWithParam<VideoPixelFormat> {};
+    : public testing::TestWithParam<std::tuple<VideoPixelFormat, uint64_t>> {
+ public:
+  ChromeOSCompressedGpuMemoryBufferTest() = default;
+  ~ChromeOSCompressedGpuMemoryBufferTest() override = default;
+
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      return base::StringPrintf(
+          "%s_%s", VideoPixelFormatToString(std::get<0>(info.param)).c_str(),
+          IntelMediaCompressedModifierToString(std::get<1>(info.param))
+              .c_str());
+    }
+  };
+};
+
+constexpr VideoPixelFormat kPixelFormats[] = {PIXEL_FORMAT_NV12,
+                                              PIXEL_FORMAT_P016LE};
+constexpr uint64_t kCompressedBufferModifiers[] = {
+    I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS, I915_FORMAT_MOD_4_TILED_MTL_MC_CCS};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeOSCompressedGpuMemoryBufferTest,
-    testing::Values(PIXEL_FORMAT_NV12, PIXEL_FORMAT_P016LE),
-    [](const ::testing::TestParamInfo<VideoPixelFormat>& info) {
-      return VideoPixelFormatToString(info.param);
-    });
+    testing::Combine(testing::ValuesIn(kPixelFormats),
+                     testing::ValuesIn(kCompressedBufferModifiers)),
+    ChromeOSCompressedGpuMemoryBufferTest::PrintToStringParamName());
 
 TEST_P(ChromeOSCompressedGpuMemoryBufferTest,
        WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame) {
-  const VideoPixelFormat pixel_format = GetParam();
+  const VideoPixelFormat pixel_format = std::get<0>(GetParam());
+  const uint64_t modifier = std::get<1>(GetParam());
   constexpr gfx::Size kCodedSize(256, 256);
   constexpr gfx::Size kNaturalSize(240, 240);
   constexpr gfx::Rect kVisibleRect(kCodedSize);
   constexpr auto kTimestamp = base::Milliseconds(1);
-  constexpr uint64_t kModifier = I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS;
   auto gmb = std::make_unique<FakeChromeOSIntelCompressedGpuMemoryBuffer>(
-      kCodedSize, *VideoPixelFormatToGfxBufferFormat(pixel_format));
+      kCodedSize, *VideoPixelFormatToGfxBufferFormat(pixel_format), modifier);
   FakeChromeOSIntelCompressedGpuMemoryBuffer* gmb_raw_ptr = gmb.get();
 
   auto frame = WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
@@ -51,7 +70,7 @@ TEST_P(ChromeOSCompressedGpuMemoryBufferTest,
     EXPECT_EQ(frame->layout().planes()[i].offset, gmb_raw_ptr->plane_offset(i));
     EXPECT_EQ(frame->layout().planes()[i].size, gmb_raw_ptr->plane_size(i));
   }
-  EXPECT_EQ(frame->layout().modifier(), kModifier);
+  EXPECT_EQ(frame->layout().modifier(), modifier);
   EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   ASSERT_TRUE(frame->HasGpuMemoryBuffer());
   EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_raw_ptr);

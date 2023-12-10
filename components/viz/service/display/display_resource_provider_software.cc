@@ -7,40 +7,74 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/synchronization/waitable_event.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace viz {
 
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
-    SharedBitmapManager* shared_bitmap_manager)
+    SharedBitmapManager* shared_bitmap_manager,
+    gpu::SharedImageManager* shared_image_manager,
+    gpu::SyncPointManager* sync_point_manager)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
-      shared_bitmap_manager_(shared_bitmap_manager) {
+      shared_bitmap_manager_(shared_bitmap_manager),
+      shared_image_manager_(shared_image_manager),
+      sync_point_manager_(sync_point_manager),
+      sync_point_order_data_(
+          (sync_point_manager_ &&
+           base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage))
+              ? sync_point_manager_->CreateSyncPointOrderData()
+              : nullptr) {
   DCHECK(shared_bitmap_manager);
+  DCHECK((shared_image_manager && sync_point_manager) ||
+         !base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage));
+
+  memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 
 DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
   Destroy();
+  if (sync_point_order_data_) {
+    sync_point_order_data_->Destroy();
+  }
 }
 
 const DisplayResourceProvider::ChildResource*
 DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   ChildResource* resource = GetResource(id);
-
   DCHECK(!resource->is_gpu_resource_type());
 
-  if (!resource->shared_bitmap) {
-    const SharedBitmapId& shared_bitmap_id =
-        resource->transferable.mailbox_holder.mailbox;
-    std::unique_ptr<SharedBitmap> bitmap =
-        shared_bitmap_manager_->GetSharedBitmapFromId(
-            resource->transferable.size, resource->transferable.format,
-            shared_bitmap_id);
-    if (bitmap) {
-      resource->shared_bitmap = std::move(bitmap);
-      resource->shared_bitmap_tracing_guid =
-          shared_bitmap_manager_->GetSharedBitmapTracingGUIDFromId(
+  if (shared_image_manager_ &&
+      resource->transferable.mailbox_holder.mailbox.IsSharedImage()) {
+    auto it = resource_shared_images_.find(id);
+    if (it == resource_shared_images_.end()) {
+      const SharedBitmapId& shared_bitmap_id =
+          resource->transferable.mailbox_holder.mailbox;
+      auto access = std::make_unique<SharedImageAccess>();
+      WaitSyncToken(resource->transferable.mailbox_holder.sync_token);
+      access->representation = shared_image_manager_->ProduceMemory(
+          shared_bitmap_id, memory_tracker_.get());
+      access->read_access = access->representation->BeginScopedReadAccess();
+      resource_shared_images_.emplace(id, std::move(access));
+    }
+  } else {
+    if (!resource->shared_bitmap) {
+      const SharedBitmapId& shared_bitmap_id =
+          resource->transferable.mailbox_holder.mailbox;
+      std::unique_ptr<SharedBitmap> bitmap =
+          shared_bitmap_manager_->GetSharedBitmapFromId(
+              resource->transferable.size, resource->transferable.format,
               shared_bitmap_id);
+      if (bitmap) {
+        resource->shared_bitmap = std::move(bitmap);
+        resource->shared_bitmap_tracing_guid =
+            shared_bitmap_manager_->GetSharedBitmapTracingGUIDFromId(
+                shared_bitmap_id);
+      }
     }
   }
 
@@ -77,6 +111,11 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
     auto sk_image_it = resource_sk_images_.find(local_id);
     if (sk_image_it != resource_sk_images_.end()) {
       resource_sk_images_.erase(sk_image_it);
+    }
+
+    auto si_image_it = resource_shared_images_.find(local_id);
+    if (si_image_it != resource_shared_images_.end()) {
+      resource_shared_images_.erase(si_image_it);
     }
 
     ResourceId child_id = resource.transferable.id;
@@ -132,7 +171,21 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     return;
   }
 
-  if (!resource->shared_bitmap) {
+  auto si_image_it =
+      resource_provider->resource_shared_images_.find(resource_id);
+
+  if (resource->shared_bitmap) {
+    SkBitmap sk_bitmap;
+    resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
+                                                    alpha_type);
+    sk_bitmap.setImmutable();
+    sk_image_ = SkImages::RasterFromBitmap(sk_bitmap);
+    resource_provider_->resource_sk_images_[resource_id] = sk_image_;
+  } else if (si_image_it != resource_provider->resource_shared_images_.end()) {
+    sk_image_ = SkImages::RasterFromPixmap(
+        si_image_it->second->read_access->pixmap(), nullptr, nullptr);
+    resource_provider_->resource_sk_images_[resource_id] = sk_image_;
+  } else {
     // If a CompositorFrameSink is destroyed, it destroys all SharedBitmapIds
     // that it registered. In this case, a CompositorFrame can be drawn with
     // SharedBitmapIds that are not known in the viz service. As well, a
@@ -143,18 +196,32 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     sk_image_ = nullptr;
     return;
   }
+}
 
-  SkBitmap sk_bitmap;
-  resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
-                                                  alpha_type);
-  sk_bitmap.setImmutable();
-  sk_image_ = SkImages::RasterFromBitmap(sk_bitmap);
-  resource_provider_->resource_sk_images_[resource_id] = sk_image_;
+void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
+  uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
+  base::WaitableEvent completion;
+  if (sync_point_manager_->Wait(
+          sync_token, sync_point_order_data_->sequence_id(), order_num,
+          base::BindOnce(&base::WaitableEvent::Signal,
+                         base::Unretained(&completion)))) {
+    completion.Wait();
+  }
 }
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::
     ~ScopedReadLockSkImage() {
   resource_provider_->UnlockForRead(resource_id_);
 }
+
+DisplayResourceProviderSoftware::SharedImageAccess::SharedImageAccess() =
+    default;
+DisplayResourceProviderSoftware::SharedImageAccess::~SharedImageAccess() =
+    default;
+DisplayResourceProviderSoftware::SharedImageAccess::SharedImageAccess(
+    SharedImageAccess&& other) = default;
+DisplayResourceProviderSoftware::SharedImageAccess&
+DisplayResourceProviderSoftware::SharedImageAccess::operator=(
+    SharedImageAccess&& other) = default;
 
 }  // namespace viz

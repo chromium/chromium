@@ -63,24 +63,27 @@ public class UpdateSuccessMetrics {
         mProvider = provider;
     }
 
-    /**
-     * To be called right before we are about to interact with the Play Store for an update.
-     */
+    /** To be called right before we are about to interact with the Play Store for an update. */
     public void startUpdate() {
-        mProvider.get().then(state -> {
-            HistogramUtils.recordStartedUpdateHistogram(state != null);
+        mProvider
+                .get()
+                .then(
+                        state -> {
+                            HistogramUtils.recordStartedUpdateHistogram(state != null);
 
-            // We're using System.currentTimeMillis() here to track time across restarts.
-            Tracking info = Tracking.newBuilder()
-                                    .setTimestampMs(System.currentTimeMillis())
-                                    .setVersion(VersionConstants.PRODUCT_VERSION)
-                                    .setType(Type.INTENT)
-                                    .setSource(Source.FROM_MENU)
-                                    .setRecordedSession(false)
-                                    .build();
+                            // We're using System.currentTimeMillis() here to track time across
+                            // restarts.
+                            Tracking info =
+                                    Tracking.newBuilder()
+                                            .setTimestampMs(System.currentTimeMillis())
+                                            .setVersion(VersionConstants.PRODUCT_VERSION)
+                                            .setType(Type.INTENT)
+                                            .setSource(Source.FROM_MENU)
+                                            .setRecordedSession(false)
+                                            .build();
 
-            mProvider.put(info);
-        });
+                            mProvider.put(info);
+                        });
     }
 
     /**
@@ -89,20 +92,26 @@ public class UpdateSuccessMetrics {
      * {@link #startUpdate()}.
      */
     public void analyzeFirstStatus() {
-        mProvider.get().then(state -> {
-            if (state == null) return;
+        mProvider
+                .get()
+                .then(
+                        state -> {
+                            if (state == null) return;
 
-            // We're using System.currentTimeMillis() here to track time across restarts.
-            long timedelta = System.currentTimeMillis() - state.getTimestampMs();
-            boolean expired = timedelta > UpdateConfigs.getUpdateAttributionWindowMs();
-            boolean success =
-                    !TextUtils.equals(state.getVersion(), VersionConstants.PRODUCT_VERSION);
+                            // We're using System.currentTimeMillis() here to track time across
+                            // restarts.
+                            long timedelta = System.currentTimeMillis() - state.getTimestampMs();
+                            boolean expired =
+                                    timedelta > UpdateConfigs.getUpdateAttributionWindowMs();
+                            boolean success =
+                                    !TextUtils.equals(
+                                            state.getVersion(), VersionConstants.PRODUCT_VERSION);
 
-            if (success || expired) {
-                mProvider.clear();
-            } else if (!state.getRecordedSession()) {
-                mProvider.put(state.toBuilder().setRecordedSession(true).build());
-            }
-        });
+                            if (success || expired) {
+                                mProvider.clear();
+                            } else if (!state.getRecordedSession()) {
+                                mProvider.put(state.toBuilder().setRecordedSession(true).build());
+                            }
+                        });
     }
 }

@@ -53,6 +53,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
   void OnViewThemeChanged(views::View* observed_view) override;
 
  private:
+  void StackLayerBelowHost();
   void UpdateBackgroundColor();
 
   ui::Layer background_layer_ = ui::Layer(ui::LAYER_SOLID_COLOR);

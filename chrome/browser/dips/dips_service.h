@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DIPS_DIPS_SERVICE_H_
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,8 +18,6 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
 class Profile;
@@ -37,10 +34,7 @@ namespace signin {
 class PersistentRepeatingTimer;
 }
 
-// TODO(crbug.com/1495414): Move TrackingProtectionSettingsObserver for
-// heuristic backfills into the tpcd/ directory.
-class DIPSService : public KeyedService,
-                    privacy_sandbox::TrackingProtectionSettingsObserver {
+class DIPSService : public KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(
       const GURL& url,
@@ -135,14 +129,6 @@ class DIPSService : public KeyedService,
     }
   }
 
-  // TODO(crbug.com/1495414): Remove methods once
-  // TrackingProtectionSettingsObserver is moved out of DIPS.
-  // TrackingProtectionSettingsObserver overrides:
-  void OnTrackingProtection3pcdChanged() override;
-
-  // Create backfill storage access grants for the provided recent popups.
-  void BackfillPopupHeuristicGrants(std::vector<PopupWithTime> recent_popups);
-
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
@@ -210,14 +196,6 @@ class DIPSService : public KeyedService,
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
   absl::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
-
-  // TODO(crbug.com/1495414): Remove members once
-  // TrackingProtectionSettingsObserver is moved out of DIPS.
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
-  base::ScopedObservation<privacy_sandbox::TrackingProtectionSettings,
-                          privacy_sandbox::TrackingProtectionSettingsObserver>
-      tracking_protection_settings_observation_{this};
 
   std::map<std::string, int> open_sites_;
 

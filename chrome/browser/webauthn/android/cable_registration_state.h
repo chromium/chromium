@@ -93,11 +93,9 @@ class RegistrationState {
   const std::array<uint8_t, 32>& secret() const { return secret_; }
   const EC_KEY* identity_key() const { return identity_key_.get(); }
   bool device_supports_cable() const { return *device_supports_cable_; }
-  bool prelink_play_services() const { return prelink_play_services_; }
   bool am_in_work_profile() const { return *am_in_work_profile_; }
   const absl::optional<std::vector<uint8_t>>& link_data_from_play_services()
       const {
-    DCHECK(prelink_play_services_);
     DCHECK(have_link_data_from_play_services_);
     return link_data_from_play_services_;
   }
@@ -178,12 +176,8 @@ class RegistrationState {
   // currently outstanding.
   bool play_services_query_pending_ = false;
   bool signal_sync_when_ready_ = false;
-  // prelink_play_services_ records the value of the feature flag
-  // `kWebAuthnPrelinkPlayServices`. It's recorded here because its value could
-  // change at run-time, but this code doesn't handle that.
-  bool prelink_play_services_ = false;
 };
 
 }  // namespace webauthn::authenticator
 
-#endif
+#endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_REGISTRATION_STATE_H_

@@ -294,7 +294,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
       base::BindRepeating(&OfflinePageURLLoader::OnHandleReady,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  buffer_ = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   ReadRawData();
 }
 

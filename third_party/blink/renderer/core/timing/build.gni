@@ -108,5 +108,6 @@ blink_core_tests_timing = [
   "profiler_group_test.cc",
   "time_clamper_test.cc",
   "window_performance_test.cc",
+  "soft_navigation_heuristics_test.cc",
   "worker_performance_test.cc",
 ]

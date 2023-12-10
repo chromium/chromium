@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/push_notification/model",
+  "+ios/chrome/browser/download/model/background_service",
+  "+ios/chrome/browser/metrics/model",
+  "+ios/web/public",
+]

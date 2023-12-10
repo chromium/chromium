@@ -111,8 +111,6 @@ if (enable_vr) {
 
   if (enable_openxr) {
     source_set("openxr_data") {
-      sources = [ "openxr/openxr_interaction_profile_type.h" ]
-
       deps = [
         "//base",
         "//device/gamepad/public/cpp:shared_with_blink",
@@ -194,8 +192,11 @@ if (enable_vr) {
         "openxr/openxr_extension_helper.h",
         "openxr/openxr_graphics_binding.cc",
         "openxr/openxr_graphics_binding.h",
+        "openxr/openxr_hand_tracker.cc",
+        "openxr/openxr_hand_tracker.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
+        "openxr/openxr_interaction_profile_paths.h",
         "openxr/openxr_interaction_profiles.cc",
         "openxr/openxr_interaction_profiles.h",
         "openxr/openxr_path_helper.cc",
@@ -217,6 +218,9 @@ if (enable_vr) {
         "openxr/openxr_scene_plane.h",
         "openxr/openxr_scene_understanding_manager.cc",
         "openxr/openxr_scene_understanding_manager.h",
+        "openxr/openxr_stage_bounds_provider.h",
+        "openxr/openxr_stage_bounds_provider_basic.cc",
+        "openxr/openxr_stage_bounds_provider_basic.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
@@ -253,6 +257,8 @@ if (enable_vr) {
         sources += [
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
+          "openxr/android/openxr_hand_tracker_android.cc",
+          "openxr/android/openxr_hand_tracker_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
         ]
 
@@ -347,10 +353,7 @@ if (enable_openxr) {
       include_dirs = [ "//third_party/openxr/src/include" ]
 
       sources = [
-        "openxr/openxr_extension_helper.cc",
-        "openxr/openxr_extension_helper.h",
-        "openxr/openxr_interaction_profiles.cc",
-        "openxr/openxr_interaction_profiles.h",
+        "openxr/openxr_interaction_profile_paths.h",
         "openxr/openxr_platform.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",

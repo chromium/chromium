@@ -1,32 +1,5 @@
 This is a testharness.js-based test.
-[PASS] link rel=modulepreload
-[PASS] same-origin link rel=modulepreload crossorigin=anonymous
-[PASS] same-origin link rel=modulepreload crossorigin=use-credentials
-[PASS] cross-origin link rel=modulepreload
-[PASS] cross-origin link rel=modulepreload crossorigin=anonymous
-[PASS] cross-origin link rel=modulepreload crossorigin=use-credentials
-[PASS] link rel=modulepreload with submodules
-[PASS] link rel=modulepreload for a module with syntax error
-[PASS] link rel=modulepreload for a module with network error
-[PASS] link rel=modulepreload with bad href attribute
-[PASS] link rel=modulepreload as=script
-[PASS] link rel=modulepreload with non-script-like as= value (image)
-[PASS] link rel=modulepreload with non-script-like as= value (xslt)
-[PASS] link rel=modulepreload with integrity match
-[PASS] link rel=modulepreload with integrity match2
-[PASS] link rel=modulepreload with integrity mismatch
-[PASS] link rel=modulepreload with integrity mismatch2
 [FAIL] link rel=modulepreload with integrity mismatch3
   promise_test: Unhandled rejection with value: object "[object Event]"
-[PASS] multiple link rel=modulepreload with same href
-[PASS] multiple link rel=modulepreload with child module before parent
-[PASS] link rel=modulepreload with matching media
-[PASS] link rel=modulepreload with non-matching media
-[PASS] link rel=modulepreload with empty media
-[PASS] link rel=modulepreload with empty href
-[PASS] link rel=modulepreload with empty href and invalid as= value
-[PASS] link rel=modulepreload and script with non-matching crossorigin values
-[PASS] link rel=modulepreload and script with non-matching crossorigin values2
-[PASS] link rel=modulepreload and non-module script
 Harness: the test ran to completion.
 

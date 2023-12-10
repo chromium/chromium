@@ -29,13 +29,14 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
 
   static NativeThemeFluent* web_instance();
 
-  void PaintArrowButton(cc::PaintCanvas* canvas,
-                        const ColorProvider* color_provider,
-                        const gfx::Rect& rect,
-                        Part direction,
-                        State state,
-                        ColorScheme color_scheme,
-                        const ScrollbarArrowExtraParams& arrow) const override;
+  void PaintArrowButton(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      const gfx::Rect& rect,
+      Part direction,
+      State state,
+      ColorScheme color_scheme,
+      const ScrollbarArrowExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
                            Part part,
@@ -69,14 +70,14 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
                    const gfx::Rect& rect,
                    Part direction,
                    ColorScheme color_scheme,
-                   const ScrollbarArrowExtraParams& arrow) const;
+                   const ScrollbarArrowExtraParams& extra_params) const;
   void PaintArrow(cc::PaintCanvas* canvas,
                   const ColorProvider* color_provider,
                   const gfx::Rect& rect,
                   Part part,
                   State state,
                   ColorScheme color_scheme,
-                  const ScrollbarArrowExtraParams& arrow) const;
+                  const ScrollbarArrowExtraParams& extra_params) const;
 
   // Calculates and returns the position and dimensions of the scaled arrow rect
   // within the scrollbar button rect. The goal is to keep the arrow in the

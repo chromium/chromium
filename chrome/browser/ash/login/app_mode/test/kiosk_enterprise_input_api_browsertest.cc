@@ -2,15 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "apps/test/app_window_waiter.h"
-#include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/check_deref.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
+#include "base/strings/string_piece.h"
+#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/policy/extension_force_install_mixin.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/app_window/app_window.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -18,149 +30,222 @@ namespace ash {
 
 namespace {
 
-const char kTestEnterpriseServiceAccountEmail[] =
-    "service_account@system.gserviceaccount.com";
-const char kUsEngKeyboardId[] = "xkb:us::eng";
-const char kLatamSpaKeyboardId[] = "xkb:latam::spa";
-const char kFraFrKeyboardId[] = "xkb:fra::fr";
-constexpr char kSetInputMethodTestTemplate[] = R"(
-    const kioskInput = chrome.enterprise.kioskInput;
-    new Promise((resolve, reject) => {
-      const options = {
-        inputMethodId: '%s',
-      };
-      kioskInput.setCurrentInputMethod(
-        options, () => {
-          if(chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError.message);
-          } else {
-            resolve('DONE');
-          }
-        });
-    });)";
-constexpr char kSetInputMethodTestErrorMessageTemplate[] =
-    "a JavaScript error: \"Could not change current input method. Invalid "
-    "input method id: %s.\"\n";
+using input_method::InputMethodManager;
+
+// See supported method IDs in //chromeos/ime/input_methods.txt.
+constexpr std::string_view kUsEngMethodId = "xkb:us::eng";
+constexpr std::string_view kBrPorMethodId = "xkb:br::por";
+constexpr std::string_view kFrFraMethodId = "xkb:fr::fra";
+
+constexpr std::string_view kCompanionExtensionId =
+    "pogfhljmaechjalhkendaaoldheklnmk";
+
+std::unique_ptr<net::test_server::HttpResponse> ServeSimpleHtmlPage(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  response->set_content(
+      "<!DOCTYPE html>"
+      "<html lang=\"en\">"
+      "<head><title>Test Page</title></head>"
+      "<body>A simple kiosk web page.</body>"
+      "</html>");
+  return response;
+}
+
+void SetUpDeviceLocalAccountPolicy(
+    const std::string& account_id,
+    policy::UserPolicyBuilder& user_policy_builder) {
+  enterprise_management::PolicyData& policy_data =
+      user_policy_builder.policy_data();
+  policy_data.set_public_key_version(1);
+  policy_data.set_policy_type(
+      policy::dm_protocol::kChromePublicAccountPolicyType);
+  policy_data.set_username(account_id);
+  policy_data.set_settings_entity_id(account_id);
+  user_policy_builder.SetDefaultSigningKey();
+
+  auto& session_manager = CHECK_DEREF(FakeSessionManagerClient::Get());
+  session_manager.set_device_local_account_policy(
+      std::string(account_id), user_policy_builder.GetBlob());
+}
+
+std::string CurrentInputMethod() {
+  InputMethodManager& manager = CHECK_DEREF(InputMethodManager::Get());
+  InputMethodManager::State& state =
+      CHECK_DEREF(manager.GetActiveIMEState().get());
+  return state.GetCurrentInputMethod().id();
+}
+
+std::string ToExtensionBasedInputMethod(std::string_view method) {
+  InputMethodManager& manager = CHECK_DEREF(InputMethodManager::Get());
+  std::vector<std::string> extension_based_input_methods{std::string(method)};
+  CHECK(manager.MigrateInputMethods(&extension_based_input_methods));
+  return extension_based_input_methods[0];
+}
+
+MATCHER_P(HasMethodId, input_method, "") {
+  return arg == ToExtensionBasedInputMethod(input_method);
+}
+
+bool EnableInputMethods(const std::vector<std::string_view>& methods) {
+  InputMethodManager& manager = CHECK_DEREF(InputMethodManager::Get());
+  InputMethodManager::State& state =
+      CHECK_DEREF(manager.GetActiveIMEState().get());
+  std::vector<std::string> extension_based_input_methods(methods.begin(),
+                                                         methods.end());
+  return manager.MigrateInputMethods(&extension_based_input_methods) &&
+         state.ReplaceEnabledInputMethods(extension_based_input_methods);
+}
+
+content::EvalJsResult SendMessageToExtension(content::WebContents& web_contents,
+                                             std::string message,
+                                             std::string data) {
+  constexpr std::string_view kScript = R"(
+    chrome.runtime.sendMessage($1, { message: $2, data: $3 })
+  )";
+  return content::EvalJs(
+      &web_contents,
+      content::JsReplace(kScript, kCompanionExtensionId, message, data));
+}
+
+content::EvalJsResult IsExtensionApiAvailable(
+    content::WebContents& web_contents) {
+  return SendMessageToExtension(web_contents,
+                                /*message=*/"is_api_available",
+                                /*data=*/std::string());
+}
+
+content::EvalJsResult SetInputMethodViaExtension(
+    content::WebContents& web_contents,
+    std::string_view input_method) {
+  return SendMessageToExtension(web_contents,
+                                /*message=*/"set_input_method",
+                                /*data=*/std::string(input_method));
+}
+
+std::string CouldNotChangeInputError(std::string_view input_method) {
+  return "Could not change current input method. Invalid input method id: " +
+         std::string(input_method) + ".";
+}
 
 }  // namespace
 
-class KioskEnterpriseInputApiBrowserTest : public KioskBaseTest {
+class KioskEnterpriseInputApiBrowserTest : public WebKioskBaseTest {
  public:
+  KioskEnterpriseInputApiBrowserTest() = default;
   KioskEnterpriseInputApiBrowserTest(
       const KioskEnterpriseInputApiBrowserTest&) = delete;
   KioskEnterpriseInputApiBrowserTest& operator=(
       const KioskEnterpriseInputApiBrowserTest&) = delete;
 
- protected:
-  KioskEnterpriseInputApiBrowserTest() { set_use_consumer_kiosk_mode(false); }
+  ~KioskEnterpriseInputApiBrowserTest() override = default;
 
-  void ConfigureKioskAppInPolicy(const std::string& account_id,
-                                 const std::string& app_id,
-                                 const std::string& update_url) {
-    std::vector<policy::DeviceLocalAccount> accounts;
-    accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-                          policy::DeviceLocalAccount::EphemeralMode::kUnset,
-                          account_id, app_id, update_url);
-    policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
-    settings_helper_.SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
-                               account_id);
-    settings_helper_.SetString(kServiceAccountIdentity,
-                               kTestEnterpriseServiceAccountEmail);
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    WebKioskBaseTest::SetUpInProcessBrowserTestFixture();
+    SetUpDeviceLocalAccountPolicy(app_account_id(),
+                                  device_local_acount_policy_builder_);
+  }
+
+  void SetUpOnMainThread() override {
+    InitializeWebAppServer();
+    WebKioskBaseTest::SetUpOnMainThread();
+    InitializeRegularOnlineKiosk();
+    ForceInstallAndWaitExtensionReady();
+  }
+
+  content::WebContents& app_web_contents() {
+    SelectFirstBrowser();
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    return CHECK_DEREF(browser_view->GetActiveWebContents());
   }
 
  private:
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  void InitializeWebAppServer() {
+    web_app_server_.RegisterRequestHandler(
+        base::BindRepeating(&ServeSimpleHtmlPage));
+    ASSERT_TRUE(web_app_server_handle_ =
+                    web_app_server_.StartAndReturnHandle());
+    SetAppInstallUrl(web_app_server_.base_url().spec());
+  }
+
+  void ForceInstallAndWaitExtensionReady() {
+    constexpr std::string_view kCompanionExtensionPath =
+        "extensions/api_test/enterprise_kiosk_input/";
+    constexpr std::string_view kCompanionExtensionPemPath =
+        "extensions/api_test/enterprise_kiosk_input.pem";
+    base::FilePath test_data_dir =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
+
+    extension_force_install_mixin_.InitWithEmbeddedPolicyMixin(
+        &app_profile(), &policy_test_server_mixin_,
+        &device_local_acount_policy_builder_,
+        /*account_id=*/app_account_id(),
+        /*policy_type=*/policy::dm_protocol::kChromePublicAccountPolicyType);
+
+    extensions::ExtensionId extension_id;
+    bool did_install = extension_force_install_mixin_.ForceInstallFromSourceDir(
+        test_data_dir.AppendASCII(kCompanionExtensionPath),
+        test_data_dir.AppendASCII(kCompanionExtensionPemPath),
+        ExtensionForceInstallMixin::WaitMode::kReadyMessageReceived,
+        &extension_id);
+    ASSERT_TRUE(did_install);
+    ASSERT_EQ(kCompanionExtensionId, extension_id);
+  }
+
+  std::string app_account_id() { return web_app_server_.base_url().spec(); }
+
+  Profile& app_profile() {
+    return CHECK_DEREF(ProfileManager::GetPrimaryUserProfile());
+  }
+
+  net::test_server::EmbeddedTestServer web_app_server_;
+  net::test_server::EmbeddedTestServerHandle web_app_server_handle_;
+
+  policy::UserPolicyBuilder device_local_acount_policy_builder_;
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnterpriseInputApiBrowserTest,
-                       SetCurrentInputMethodTest) {
-  // Prepare Fake CWS to serve app crx.
-  SetTestApp(kTestEnterpriseKioskAppId);
-  SetupTestAppUpdateCheck();
+                       CompanionExtensionCanAccessApi) {
+  ASSERT_EQ(true, IsExtensionApiAvailable(app_web_contents()));
+}
 
-  // Configure `kTestEnterpriseKioskAppId` in device policy.
-  ConfigureKioskAppInPolicy(kTestEnterpriseAccountId, kTestEnterpriseKioskAppId,
-                            /*update_url=*/"");
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseInputApiBrowserTest,
+                       CurrentMethodDefaultsToFirstEnabledMethod) {
+  EXPECT_TRUE(EnableInputMethods({kFrFraMethodId, kBrPorMethodId}));
+  EXPECT_THAT(CurrentInputMethod(), HasMethodId(kFrFraMethodId));
 
-  PrepareAppLaunch();
-  EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskAppId));
+  EXPECT_TRUE(EnableInputMethods({kBrPorMethodId, kUsEngMethodId}));
+  EXPECT_THAT(CurrentInputMethod(), HasMethodId(kBrPorMethodId));
+}
 
-  KioskSessionInitializedWaiter().Wait();
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseInputApiBrowserTest,
+                       CanChangeToEnabledInputMethod) {
+  std::string_view enabled_method_id = kBrPorMethodId;
+  EXPECT_TRUE(EnableInputMethods({kUsEngMethodId, enabled_method_id}));
 
-  // Check installer status.
-  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
-  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
+  EXPECT_THAT(CurrentInputMethod(), HasMethodId(kUsEngMethodId));
 
-  // Enable two input methods: en_US and es_LATAM.
-  auto* imm = ash::input_method::InputMethodManager::Get();
-  ASSERT_TRUE(imm);
-  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
-      imm->GetActiveIMEState();
-  ASSERT_TRUE(ime_state.get());
-  // This step is needed to convert the input method IDs to the input manager
-  // IDs.
-  std::vector<std::string> migrated_input_methods(
-      {kUsEngKeyboardId, kLatamSpaKeyboardId});
-  EXPECT_TRUE(imm->MigrateInputMethods(&migrated_input_methods));
-  for (const auto& method : migrated_input_methods) {
-    EXPECT_TRUE(ime_state->EnableInputMethod(method));
-  }
-  const std::string& migrated_us_keyboard = migrated_input_methods[0];
-  const std::string& migrated_latam_keyboard = migrated_input_methods[1];
+  EXPECT_EQ(true,
+            SetInputMethodViaExtension(app_web_contents(), enabled_method_id));
+  EXPECT_THAT(CurrentInputMethod(), HasMethodId(enabled_method_id));
+}
 
-  // Verify that the two input methods are enabled.
-  EXPECT_EQ(migrated_input_methods.size(),
-            ime_state->GetEnabledInputMethods().size());
-  EXPECT_EQ(migrated_us_keyboard, ime_state->GetCurrentInputMethod().id());
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseInputApiBrowserTest,
+                       CannotChangeToDisabledInputMethod) {
+  EXPECT_TRUE(EnableInputMethods({kUsEngMethodId, kFrFraMethodId}));
 
-  // Wait for the window to appear.
-  extensions::AppWindow* window =
-      apps::AppWindowWaiter(extensions::AppWindowRegistry::Get(
-                                ProfileManager::GetPrimaryUserProfile()),
-                            kTestEnterpriseKioskAppId)
-          .Wait();
-  ASSERT_TRUE(window);
-  EXPECT_TRUE(content::WaitForLoadStop(window->web_contents()));
+  EXPECT_THAT(CurrentInputMethod(), HasMethodId(kUsEngMethodId));
 
-  // Verify that the app window has access to the kiosk input API.
-  EXPECT_EQ("object", content::EvalJs(window->web_contents(),
-                                      "typeof chrome.enterprise"));
-  EXPECT_EQ("object", content::EvalJs(window->web_contents(),
-                                      "typeof chrome.enterprise.kioskInput"));
-  EXPECT_EQ("function",
-            content::EvalJs(
-                window->web_contents(),
-                "typeof chrome.enterprise.kioskInput.setCurrentInputMethod"));
-
-  // Try to switch the current input method to es_LATAM, this should succeed.
-  EXPECT_EQ("DONE",
-            content::EvalJs(window->web_contents(),
-                            base::StringPrintf(kSetInputMethodTestTemplate,
-                                               kLatamSpaKeyboardId)));
-  EXPECT_EQ(migrated_latam_keyboard, ime_state->GetCurrentInputMethod().id());
-
-  // Try to switch the current input method to en_US, this should also succeed.
-  EXPECT_EQ("DONE",
-            content::EvalJs(window->web_contents(),
-                            base::StringPrintf(kSetInputMethodTestTemplate,
-                                               kUsEngKeyboardId)));
-  EXPECT_EQ(migrated_us_keyboard, ime_state->GetCurrentInputMethod().id());
-
-  // Try to switch the current input method to fr_FRA, this should fail as this
-  // languages is not enabled.
-  const content::EvalJsResult error_result = content::EvalJs(
-      window->web_contents(),
-      base::StringPrintf(kSetInputMethodTestTemplate, kFraFrKeyboardId));
-
-  EXPECT_EQ(base::StringPrintf(kSetInputMethodTestErrorMessageTemplate,
-                               kFraFrKeyboardId),
-            error_result.error);
-  EXPECT_EQ(migrated_us_keyboard, ime_state->GetCurrentInputMethod().id());
-
-  // Terminate the app.
-  window->GetBaseWindow()->Close();
-  base::RunLoop().RunUntilIdle();
+  std::string_view disabled_method_id = kBrPorMethodId;
+  EXPECT_EQ(CouldNotChangeInputError(disabled_method_id),
+            SetInputMethodViaExtension(app_web_contents(), disabled_method_id));
+  EXPECT_THAT(CurrentInputMethod(), HasMethodId(kUsEngMethodId));
 }
 
 }  // namespace ash

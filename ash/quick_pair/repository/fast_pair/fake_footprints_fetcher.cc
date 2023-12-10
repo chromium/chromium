@@ -33,7 +33,7 @@ void FakeFootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
 }
 
 void FakeFootprintsFetcher::SetGetUserDevicesResponse(
-    absl::optional<nearby::fastpair::UserReadDevicesResponse> response) {
+    std::optional<nearby::fastpair::UserReadDevicesResponse> response) {
   response_set_ = true;
   response_ = response;
 }

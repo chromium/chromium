@@ -134,7 +134,7 @@ void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
 
   // Keep any old policy timers running if a new policy is ill-formed and can't
   // be used to set a new timer.
-  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+  std::optional<ScheduledTaskExecutor::ScheduledTaskData>
       scheduled_update_check_data =
           scheduled_task_util::ParseScheduledTask(*value, kTaskTimeFieldName);
   if (!scheduled_update_check_data) {
@@ -233,7 +233,7 @@ void DeviceScheduledUpdateChecker::OnUpdateCheckCompletion(
 
 void DeviceScheduledUpdateChecker::ResetState() {
   update_check_executor_->Reset();
-  scheduled_update_check_data_ = absl::nullopt;
+  scheduled_update_check_data_ = std::nullopt;
   os_and_policies_update_checker_.Stop();
   start_update_check_timer_task_executor_.Stop();
 }

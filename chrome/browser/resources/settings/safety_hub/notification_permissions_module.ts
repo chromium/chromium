@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 import '../icons.html.js';
@@ -32,6 +33,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
+import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getTemplate} from './notification_permissions_module.html.js';
 import {SettingsSafetyHubModuleElement, SiteInfo, SiteInfoWithTarget} from './safety_hub_module.js';
@@ -66,8 +68,8 @@ interface NotificationPermissionsDisplay extends NotificationPermission,
                                                  SiteInfo {}
 
 const SettingsSafetyHubNotificationPermissionsModuleElementBase =
-    WebUiListenerMixin(RouteObserverMixin(
-        BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))));
+    TooltipMixin(WebUiListenerMixin(RouteObserverMixin(
+        BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     SettingsSafetyHubNotificationPermissionsModuleElementBase {
@@ -374,6 +376,13 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     }
     return this.i18n(
         'safetyCheckNotificationPermissionReviewResetAriaLabel', origins[0]);
+  }
+
+  private showUndoTooltip_(e: Event) {
+    e.stopPropagation();
+    const tooltip = this.shadowRoot!.querySelector('paper-tooltip');
+    assert(tooltip);
+    this.showTooltipAtTarget(tooltip, e.target!);
   }
 }
 

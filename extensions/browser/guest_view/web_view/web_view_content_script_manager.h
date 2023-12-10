@@ -6,17 +6,16 @@
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_CONTENT_SCRIPT_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct HostID;
 
@@ -50,7 +49,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
                          content::RenderFrameHost* render_frame_host,
                          int view_instance_id,
                          const mojom::HostID& host_id,
-                         std::unique_ptr<UserScriptList> user_scripts);
+                         UserScriptList user_scripts);
 
   // Removes all content scripts for the WebView identified by
   // |embedder_process_id| and |view_instance_id|.
@@ -88,7 +87,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
   // UserScriptLoader is about to be destroyed. This may be called multiple
   // times per script load.
   void OnScriptsUpdated(UserScriptLoader* loader,
-                        const absl::optional<std::string>& error);
+                        const std::optional<std::string>& error);
 
   // If there are no pending script loads, we will run all the remaining
   // callbacks in |pending_scripts_loading_callbacks_|.

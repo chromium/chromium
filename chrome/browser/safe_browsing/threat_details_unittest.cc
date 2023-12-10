@@ -283,8 +283,9 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
                     bool is_subresource,
                     const GURL& url,
                     UnsafeResource* resource) {
+    auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+        primary_main_frame->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
     resource->request_destination =
@@ -293,7 +294,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
     resource->render_process_id = primary_main_frame_id.child_id;
-    resource->render_frame_id = primary_main_frame_id.frame_routing_id;
+    resource->render_frame_token = primary_main_frame->GetFrameToken().value();
   }
 
   void VerifyResults(const ClientSafeBrowsingReportRequest& report_pb,

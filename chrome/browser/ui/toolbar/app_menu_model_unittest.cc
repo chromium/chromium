@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,7 +25,10 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
@@ -39,6 +43,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/signin/public/base/consent_level.h"
@@ -169,7 +176,9 @@ class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+        {features::kTabOrganization, features::kChromeRefresh2023,
+         features::kChromeWebuiRefresh2023},
+        {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
@@ -322,9 +331,9 @@ TEST_F(AppMenuModelTest, GlobalError) {
 
   AppMenuModel model(this, browser());
   model.Init();
-  absl::optional<size_t> index1 = model.GetIndexOfCommandId(command1);
+  std::optional<size_t> index1 = model.GetIndexOfCommandId(command1);
   ASSERT_TRUE(index1.has_value());
-  absl::optional<size_t> index2 = model.GetIndexOfCommandId(command2);
+  std::optional<size_t> index2 = model.GetIndexOfCommandId(command2);
   ASSERT_TRUE(index2.has_value());
 
   EXPECT_TRUE(model.IsEnabledAt(index1.value()));
@@ -363,12 +372,28 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
+  ASSERT_TRUE(toolModel.GetIndexOfCommandId(IDC_PERFORMANCE));
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
 }
 
+TEST_F(TestAppMenuModelCR2023, PerformanceItemElevated) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kChromeRefresh2023,
+                            performance_manager::features::
+                                kPerformanceControlsSidePanel},
+      /*disabled_features=*/{});
+  AppMenuModel model(this, browser());
+  model.Init();
+  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_PERFORMANCE));
+  size_t performance_index = model.GetIndexOfCommandId(IDC_PERFORMANCE).value();
+  EXPECT_TRUE(model.IsEnabledAt(performance_index));
+}
+
 TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
+  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());
   model.Init();
   size_t organize_tabs_index =
@@ -536,8 +561,14 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
     feature_list_.InitAndEnableFeature(features::kSafetyHub);
   }
 
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    password_store_ = CreateAndUseTestPasswordStore(profile());
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<password_manager::TestPasswordStore> password_store_;
 };
 
 TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
@@ -546,6 +577,12 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   AppMenuModel model(this, browser());
   model.Init();
   EXPECT_FALSE(model.GetIndexOfCommandId(IDC_OPEN_SAFETY_HUB).has_value());
+
+  // Let PasswordStatusCheckService to run till it fetches the latest data.
+  PasswordStatusCheckService* password_service =
+      PasswordStatusCheckServiceFactory::GetForProfile(profile());
+  safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
+  EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
 
   // Creating and showing a notification for a site that has never been
   // interacted with, will be caught by the notification permission review

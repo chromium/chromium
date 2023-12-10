@@ -84,21 +84,21 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns true if during keyboard navigation, alt-tab focuses the tab slider
   // instead of cycle window.
-  bool IsTabSliderFocused();
+  bool IsTabSliderFocused() const;
 
   // Checks whether |event| occurs within the cycle view. Returns false if
   // |cycle_view_| does not exist.
-  bool IsEventInCycleView(const ui::LocatedEvent* event);
+  bool IsEventInCycleView(const ui::LocatedEvent* event) const;
 
   // Returns the window for the preview item located at |event|. Returns nullptr
   // if |event| not in cycle view or if |cycle_view_| does not exist.
   aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
   // Returns whether or not the event is located in tab slider container.
-  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event);
+  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event) const;
 
   // Returns true if the window list overlay should be shown.
-  bool ShouldShowUi();
+  bool ShouldShowUi() const;
 
   // Updates the tab slider mode UI when alt-tab mode in user prefs changes.
   void OnModePrefsChanged();
@@ -157,9 +157,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows_|.
   int GetIndexOfWindow(aura::Window* window) const;
 
-  // Returns the number of items to be cycled in the window cycle list with the
-  // existence of snap groups for all desks.
-  int GetNumberOfCycleItemsAllDesks() const;
+  // Returns the number of windows in the window cycle list for all desks.
+  int GetNumberOfWindowsAllDesks() const;
 
   // Computes and reports the number of non-same-app windows skipped metric if
   // `same_app_only_`. This must be called from the destructor before the call

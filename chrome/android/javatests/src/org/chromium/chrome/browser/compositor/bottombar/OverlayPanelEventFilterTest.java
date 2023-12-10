@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -64,6 +65,7 @@ public class OverlayPanelEventFilterTest {
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ViewGroup mCompositorViewHolder;
+    @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private OverlayContentDelegate mOverlayContentDelegate;
     @Mock private OverlayContentProgressObserver mOverlayContentProgressObserver;
@@ -142,6 +144,7 @@ public class OverlayPanelEventFilterTest {
                 OverlayPanelManager manager,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 WindowAndroid windowAndroid,
+                Profile profile,
                 ViewGroup compositorViewHolder,
                 Tab tab) {
             super(
@@ -150,6 +153,7 @@ public class OverlayPanelEventFilterTest {
                     manager,
                     browserControlsStateProvider,
                     windowAndroid,
+                    profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
                     () -> tab);
@@ -167,7 +171,7 @@ public class OverlayPanelEventFilterTest {
                         mOverlayContentDelegate,
                         mOverlayContentProgressObserver,
                         mActivity,
-                        /* isIncognito= */ false,
+                        mProfile,
                         MOCK_TOOLBAR_HEIGHT,
                         mCompositorViewHolder,
                         mWindowAndroid,
@@ -281,6 +285,7 @@ public class OverlayPanelEventFilterTest {
                                     new OverlayPanelManager(),
                                     mBrowserControlsStateProvider,
                                     mWindowAndroid,
+                                    mProfile,
                                     mCompositorViewHolder,
                                     mTab);
                     mEventFilter = new OverlayPanelEventFilterWrapper(mActivity, mPanel);

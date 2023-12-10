@@ -405,7 +405,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static network::mojom::IPAddressSpace required_ip_address_space(
       const network::ResourceRequest& request) {
-    return request.target_address_space;
+    return request.required_ip_address_space;
   }
 
 #if BUILDFLAG(IS_ANDROID)

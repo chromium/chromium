@@ -32,6 +32,7 @@ class AppServerPosix : public AppServer {
   bool MigrateLegacyUpdaters(
       base::RepeatingCallback<void(const RegistrationRequest&)>
           register_callback) override;
+  void RepairUpdater(UpdaterScope scope, bool is_internal) override;
   void UninstallSelf() override;
   void Uninitialize() override;
   bool ShutdownIfIdleAfterTask() override;

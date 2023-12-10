@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -25,7 +25,7 @@ public class PaneListBuilder {
      * All {@link PaneId}s and {@link Pane}s that were registered before {@link #build()} is
      * invoked.
      */
-    private @Nullable HashMap<Integer, Supplier<Pane>> mRegisteredPanes =
+    private @Nullable HashMap<Integer, LazyOneshotSupplier<Pane>> mRegisteredPanes =
             new HashMap<>(PaneId.COUNT);
 
     /**
@@ -36,19 +36,27 @@ public class PaneListBuilder {
         mPaneOrderController = paneOrderController;
     }
 
+    /** Returns an object that holds the authoritative order of panes. */
+    public PaneOrderController getPaneOrderController() {
+        return mPaneOrderController;
+    }
+
     /**
      * Register a new Pane for the Hub. This operation is invalid if {@link #build()} was invoked.
+     *
      * @param paneId The {@link PaneId} to use for {@code pane}.
      * @param paneSupplier A supplier for a {@link Pane}. It is recommended that the underlying
-     *                     {@link Pane} is lazily initialized.
+     *     {@link Pane} is lazily initialized. {@link LazyOneshotSupplier#get()} will not be called
+     *     at registration time to facilitate lazy initialization.
      */
-    public PaneListBuilder registerPane(@PaneId int paneId, @NonNull Supplier<Pane> paneSupplier) {
+    public PaneListBuilder registerPane(
+            @PaneId int paneId, @NonNull LazyOneshotSupplier<Pane> paneSupplier) {
         if (isBuilt()) {
             throw new IllegalStateException(
                     "PaneListBuilder#build() was already invoked. Cannot add a pane for " + paneId);
         }
         assert !mRegisteredPanes.containsKey(paneId)
-            : String.format(Locale.ENGLISH, "a pane for %d was already registered.", paneId);
+                : String.format(Locale.ENGLISH, "a pane for %d was already registered.", paneId);
 
         mRegisteredPanes.put(paneId, paneSupplier);
 
@@ -68,14 +76,15 @@ public class PaneListBuilder {
      * Builds a {@link ImmutableMap} of Panes keyed by {@link PaneId} and ordered according to the
      * supplied {@link PaneOrderController}.
      */
-    ImmutableMap<Integer, Supplier<Pane>> build() {
+    ImmutableMap<Integer, LazyOneshotSupplier<Pane>> build() {
         if (isBuilt()) {
             throw new IllegalStateException("PaneListBuilder#build() was already invoked");
         }
 
-        ImmutableMap.Builder<Integer, Supplier<Pane>> panesBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Integer, LazyOneshotSupplier<Pane>> panesBuilder =
+                ImmutableMap.builder();
         for (@PaneId int paneId : mPaneOrderController.getPaneOrder()) {
-            Supplier<Pane> paneSupplier = mRegisteredPanes.get(paneId);
+            LazyOneshotSupplier<Pane> paneSupplier = mRegisteredPanes.get(paneId);
             if (paneSupplier == null) {
                 Log.d(TAG, "No Pane was registered for " + paneId);
                 continue;
@@ -85,7 +94,8 @@ public class PaneListBuilder {
         }
 
         if (!mRegisteredPanes.isEmpty()) {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     "Some registered panes were not used. PaneIds: " + mRegisteredPanes.keySet());
         }
         mRegisteredPanes = null;

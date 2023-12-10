@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+#include <string_view>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
@@ -72,6 +74,23 @@ const base::FeatureParam<int> kMinTotalEngagementPointsForTypicallySecureUser{
     &features::kHttpsFirstModeV2ForTypicallySecureUsers,
     "min-total-site-engagement-score", 50};
 
+// Rolling window size in days to count recent navigations. Navigations within
+// this window will be counted to be used for the Typically Secure heuristic.
+// Navigations older than this many days will be discarded from the count.
+const base::FeatureParam<int> kNavigationCounterRollingWindowSizeInDays{
+    &features::kHttpsFirstModeV2ForTypicallySecureUsers,
+    "navigation-counts-rolling-window-size-in-days", 15};
+
+// Minimum number of main frame navigations counted in this profile during a
+// rolling window of kNavigationCounterDefaultRollingWindowSizeInDays for a user
+// to be considered typically secure. If the user doesn't have at least this
+// many navigations counted, they might not have used Chrome sufficiently for us
+// to auto-enable HFM. A default value of 1500 is 100 navigations per day during
+// the 15 day rolling window.
+const base::FeatureParam<int> kMinRecentNavigationsForTypicallySecureUser{
+    &features::kHttpsFirstModeV2ForTypicallySecureUsers,
+    "min-recent-navigations", 1500};
+
 // The key for the fallback events in the base preference.
 constexpr char kFallbackEventsKey[] = "fallback_events";
 
@@ -85,6 +104,8 @@ constexpr char kHeuristicStartTimestampKey[] = "heuristic_start_timestamp";
 // kFallbackEntriesRollingWindowSize.
 constexpr char kFallbackEventsPrefTimestampKey[] = "timestamp";
 
+constexpr int kNavigationCounterDefaultSaveInterval = 10;
+
 namespace {
 
 using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
@@ -93,6 +114,7 @@ const char kHttpsFirstModeServiceName[] = "HttpsFirstModeService";
 const char kHttpsFirstModeSyntheticFieldTrialName[] =
     "HttpsFirstModeClientSetting";
 const char kHttpsFirstModeSyntheticFieldTrialEnabledGroup[] = "Enabled";
+const char kHttpsFirstModeSyntheticFieldTrialIncognitoGroup[] = "Incognito";
 const char kHttpsFirstModeSyntheticFieldTrialDisabledGroup[] = "Disabled";
 
 // We don't need to protect this with a lock since it's only set while
@@ -181,6 +203,20 @@ base::Time GetTimestamp(const base::Value::Dict& dict, const char* key) {
   return base::Time();
 }
 
+std::string GetSyntheticFieldTrialGroupName(HttpsFirstModeSetting setting) {
+  switch (setting) {
+    case HttpsFirstModeSetting::kEnabledFull:
+      return kHttpsFirstModeSyntheticFieldTrialEnabledGroup;
+    case HttpsFirstModeSetting::kEnabledIncognito:
+      return kHttpsFirstModeSyntheticFieldTrialIncognitoGroup;
+    case HttpsFirstModeSetting::kDisabled:
+      return kHttpsFirstModeSyntheticFieldTrialDisabledGroup;
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 // static
@@ -214,6 +250,10 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
       prefs::kHttpsOnlyModeEnabled,
       base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kHttpsFirstModeIncognito,
+      base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
+                          base::Unretained(this)));
 
   // Track Advanced Protection status.
   if (base::FeatureList::IsEnabled(
@@ -231,14 +271,30 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
 
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
-  bool enabled = profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingEnabledAtStartup",
-                            enabled);
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kHttpsFirstModeSyntheticFieldTrialName,
-      enabled ? kHttpsFirstModeSyntheticFieldTrialEnabledGroup
-              : kHttpsFirstModeSyntheticFieldTrialDisabledGroup,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  HttpsFirstModeSetting setting = GetCurrentSetting();
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    base::UmaHistogramEnumeration(
+        "Security.HttpsFirstMode.SettingEnabledAtStartup2", setting);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  } else {
+    bool fully_enabled = setting == HttpsFirstModeSetting::kEnabledFull;
+    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingEnabledAtStartup",
+                              fully_enabled);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  }
+
+  // Restore navigation counts from the pref to be used in the Typically Secure
+  // heuristic.
+  navigation_counts_dict_ =
+      profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeNavigations).Clone();
+  navigation_counter_ = std::make_unique<DailyNavigationCounter>(
+      &navigation_counts_dict_, clock_,
+      kNavigationCounterRollingWindowSizeInDays.Get(),
+      kNavigationCounterDefaultSaveInterval);
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE, base::BindOnce(&HttpsFirstModeService::AfterStartup,
@@ -275,13 +331,22 @@ void HttpsFirstModeService::
 HttpsFirstModeService::~HttpsFirstModeService() = default;
 
 void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
-  bool enabled = profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged", enabled);
-  // Update synthetic field trial group registration.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kHttpsFirstModeSyntheticFieldTrialName,
-      enabled ? kHttpsFirstModeSyntheticFieldTrialEnabledGroup
-              : kHttpsFirstModeSyntheticFieldTrialDisabledGroup);
+  HttpsFirstModeSetting setting = GetCurrentSetting();
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                  setting);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  } else {
+    bool fully_enabled = setting == HttpsFirstModeSetting::kEnabledFull;
+    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged",
+                              fully_enabled);
+    // Update synthetic field trial group registration.
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  }
 
   // Reset the allowlist when the pref changes. A user going from HTTPS-Upgrades
   // to HTTPS-First Mode shouldn't inherit the set of allowlisted sites (or
@@ -290,6 +355,7 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
       static_cast<StatefulSSLHostStateDelegate*>(
           profile_->GetSSLHostStateDelegate());
   state->ClearHttpsOnlyModeAllowlist();
+  state->ClearHttpsEnforcelist();
 
   // Since the user modified the UI pref, explicitly disable any automatic
   // HTTPS-First Mode heuristic.
@@ -396,7 +462,9 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
       (recent_warning_count <= kMaxRecentFallbackEntryCount) &&
       (engagement_svc->GetTotalEngagementPoints() >=
        kMinTotalEngagementPointsForTypicallySecureUser.Get()) &&
-      (now - latest_fallback_timestamp > base::Days(1));
+      (now - latest_fallback_timestamp > base::Days(1)) &&
+      (static_cast<int>(GetRecentNavigationCount()) >=
+       kMinRecentNavigationsForTypicallySecureUser.Get());
 
   // Update the pref with the new fallback events.
   base::Value::Dict new_base_pref;
@@ -410,11 +478,23 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
 
 void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
     base::OnceClosure done_callback) {
+  // If HFM or the auto-enable prefs were previously set, do not modify HFM
+  // status.
+  if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+      profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
+    if (!done_callback.is_null()) {
+      std::move(done_callback).Run();
+    }
+    return;
+  }
   // Ideal parameter order is kHttpsAddThreshold > kHttpsRemoveThreshold >
   // kHttpRemoveThreshold > kHttpAddThreshold.
   if (!(kHttpsAddThreshold.Get() > kHttpsRemoveThreshold.Get() &&
         kHttpsRemoveThreshold.Get() > kHttpRemoveThreshold.Get() &&
         kHttpRemoveThreshold.Get() > kHttpAddThreshold.Get())) {
+    if (!done_callback.is_null()) {
+      std::move(done_callback).Run();
+    }
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -444,11 +524,19 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
   auto* engagement_service =
       site_engagement::SiteEngagementService::Get(profile_);
 
-  // TODO(crbug.com/1435222): Sites dropping off from the engaged sites list
-  // should no longer have HTTPS enforced.
+  // Get all hostnames that have HTTPS enforced on them at some point. Some
+  // hostnames may no longer have a site engagement score thus be missing from
+  // `details`. We still want to process those hostnames because we want to
+  // unenforce HTTPS on these hostnames if the conditions no longer hold.
+  std::set<GURL> origins =
+      state->GetHttpsEnforcedHosts(profile_->GetDefaultStoragePartition());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    if (detail.origin.SchemeIsHTTPOrHTTPS()) {
-      MaybeEnableHttpsFirstModeForUrl(detail.origin, engagement_service, state);
+    origins.insert(detail.origin);
+  }
+
+  for (const GURL& origin : origins) {
+    if (origin.SchemeIsHTTPOrHTTPS() && origin.port().empty()) {
+      MaybeEnableHttpsFirstModeForUrl(origin, engagement_service, state);
     }
   }
 
@@ -461,8 +549,9 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
     const GURL& url,
     site_engagement::SiteEngagementService* engagement_service,
     StatefulSSLHostStateDelegate* state) {
-  bool enforced = state->IsHttpsEnforcedForHost(
-      url.host(), profile_->GetDefaultStoragePartition());
+  DCHECK(url.port().empty()) << "Url should have a default port";
+  bool enforced =
+      state->IsHttpsEnforcedForUrl(url, profile_->GetDefaultStoragePartition());
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
   GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
 
@@ -487,6 +576,28 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
     return;
   }
   // Don't change the state otherwise.
+}
+
+HttpsFirstModeSetting HttpsFirstModeService::GetCurrentSetting() const {
+  if (profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+    return HttpsFirstModeSetting::kEnabledFull;
+  } else if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+             profile_->GetPrefs()->GetBoolean(
+                 prefs::kHttpsFirstModeIncognito)) {
+    return HttpsFirstModeSetting::kEnabledIncognito;
+  }
+  return HttpsFirstModeSetting::kDisabled;
+}
+
+void HttpsFirstModeService::IncrementRecentNavigationCount() {
+  if (navigation_counter_->Increment()) {
+    profile_->GetPrefs()->SetDict(prefs::kHttpsUpgradeNavigations,
+                                  navigation_counts_dict_.Clone());
+  }
+}
+
+size_t HttpsFirstModeService::GetRecentNavigationCount() const {
+  return navigation_counter_->GetTotal();
 }
 
 void HttpsFirstModeService::SetClockForTesting(base::Clock* clock) {

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 # These sources depend on targets from "//content/*", which means they cannot
 # be loaded on ios.
@@ -62,6 +64,17 @@ if (use_blink) {
       ":privacy_sandbox_attestations",
       "//base",
     ]
+  }
+
+  if (use_fuzzing_engine_with_lpm) {
+    fuzzer_test("parser_proto_fuzzer") {
+      sources = [ "privacy_sandbox_attestations_parser_proto_fuzzer.cc" ]
+      deps = [
+        ":privacy_sandbox_attestations",
+        "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+        "//third_party/libprotobuf-mutator",
+      ]
+    }
   }
 }
 

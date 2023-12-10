@@ -72,6 +72,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/text",
     "+third_party/blink/renderer/platform/timer.h",
     "+third_party/blink/renderer/platform/region_capture_crop_id.h",
+    "+third_party/blink/renderer/platform/restriction_target_id.h",
     "+third_party/blink/renderer/platform/transforms",
     "+third_party/blink/renderer/platform/waitable_event.h",
     "+third_party/blink/renderer/platform/weborigin/kurl.h",

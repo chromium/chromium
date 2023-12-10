@@ -5,14 +5,14 @@
 #include "base/strings/strcat_win.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/strings/strcat_internal.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
-std::wstring StrCat(span<const WStringPiece> pieces) {
+std::wstring StrCat(span<const std::wstring_view> pieces) {
   return internal::StrCatT(pieces);
 }
 
@@ -20,7 +20,7 @@ std::wstring StrCat(span<const std::wstring> pieces) {
   return internal::StrCatT(pieces);
 }
 
-void StrAppend(std::wstring* dest, span<const WStringPiece> pieces) {
+void StrAppend(std::wstring* dest, span<const std::wstring_view> pieces) {
   internal::StrAppendT(*dest, pieces);
 }
 

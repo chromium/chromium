@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
@@ -123,37 +124,36 @@ void ExtensionSidePanelManager::OnExtensionLoaded(
 
 void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
     const Extension* extension) {
-  if (browser_ && base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
-      extension->permissions_data()->HasAPIPermission(
+  if (!browser_ || !base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+      !extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
-    actions::ActionId extension_action_id =
-        GetOrCreateActionIdForExtension(extension);
-
-    BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
-    actions::ActionItem* extension_action_item =
-        actions::ActionManager::Get().FindAction(
-            extension_action_id, browser_actions->root_action_item());
-
-    // Create the action item if it does not exist.
-    if (!extension_action_item) {
-      actions::ActionItem* root_action_item =
-          browser_actions->root_action_item();
-      root_action_item->AddChild(
-          actions::ActionItem::Builder(
-              base::BindRepeating(
-                  [](scoped_refptr<const Extension> extension, Browser* browser,
-                     actions::ActionItem* item,
-                     actions::ActionInvocationContext context) {
-                    SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
-                        SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
-                                            extension->id()));
-                  },
-                  base::WrapRefCounted(extension), browser_))
-              .SetText(base::UTF8ToUTF16(extension->short_name()))
-              .SetActionId(extension_action_id)
-              .Build());
-    }
+    return;
   }
+
+  actions::ActionId extension_action_id =
+      GetOrCreateActionIdForExtension(extension);
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+  actions::ActionItem* extension_action_item =
+      actions::ActionManager::Get().FindAction(
+          extension_action_id, browser_actions->root_action_item());
+
+  // Mark the action item as pinnable if it already exists.
+  if (extension_action_item) {
+    return;
+  }
+
+  // Create a new action item.
+  actions::ActionItem* root_action_item = browser_actions->root_action_item();
+  root_action_item->AddChild(
+      actions::ActionItem::Builder(
+          SidePanelUtil::CreateToggleSidePanelActionCallback(
+              SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
+                                  extension->id()),
+              browser_))
+          .SetText(base::UTF8ToUTF16(extension->short_name()))
+          .SetActionId(extension_action_id)
+          .SetProperty(actions::kActionItemPinnableKey, true)
+          .Build());
 }
 
 actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
@@ -172,7 +172,7 @@ void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
       extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
     BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
-    absl::optional<actions::ActionId> extension_action_id =
+    std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(
             SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())
                 .ToString());

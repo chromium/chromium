@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -113,9 +113,9 @@ const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config);
 
 // This function returns the SM-DX activation code found in |onc_config|. If
 // both an SM-DP+ activation code and an SM-DS activation code are provided, or
-// if neither are provided, this function returns |absl::nullopt|.
+// if neither are provided, this function returns |std::nullopt|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
+std::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
     const base::Value::Dict& onc_config);
 
 // When this is called, `AreEphemeralNetworkPoliciesEnabled()` will return true

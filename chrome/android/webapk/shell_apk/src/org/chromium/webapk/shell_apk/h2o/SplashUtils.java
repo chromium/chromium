@@ -40,21 +40,27 @@ public class SplashUtils {
     public static View createSplashView(Context context) {
         Resources resources = context.getResources();
         Bitmap icon = WebApkUtils.decodeBitmapFromDrawable(resources, R.drawable.splash_icon);
-        int backgroundColor = WebApkUtils.inDarkMode(context)
-                ? WebApkUtils.getColor(resources, R.color.dark_background_color_non_empty)
-                : WebApkUtils.getColor(resources, R.color.background_color_non_empty);
+        int backgroundColor =
+                WebApkUtils.inDarkMode(context)
+                        ? WebApkUtils.getColor(resources, R.color.dark_background_color_non_empty)
+                        : WebApkUtils.getColor(resources, R.color.background_color_non_empty);
 
         FrameLayout layout = new FrameLayout(context);
-        SplashLayout.createLayout(context, layout, icon, WebApkUtils.isSplashIconAdaptive(context),
-                false /* isIconGenerated */, resources.getString(R.string.name),
+        SplashLayout.createLayout(
+                context,
+                layout,
+                icon,
+                WebApkUtils.isSplashIconAdaptive(context),
+                /* isIconGenerated= */ false,
+                resources.getString(R.string.name),
                 WebApkUtils.shouldUseLightForegroundOnBackground(backgroundColor));
         layout.setBackgroundColor(backgroundColor);
         return layout;
     }
 
     /**
-     * Returns bitmap with screenshot of passed-in view. Downsamples screenshot so that it is
-     * no more than {@maxSizeInBytes}.
+     * Returns bitmap with screenshot of passed-in view. Downsamples screenshot so that it is no
+     * more than {@maxSizeInBytes}.
      */
     public static Bitmap screenshotView(View view, int maxSizeBytes) {
         // Implementation copied from Android shared element code -
@@ -70,9 +76,7 @@ public class SplashUtils {
         return pair.bitmap;
     }
 
-    /**
-     * Creates a Bitmap of at most {@code maxSizeBytes} with an attached Canvas to draw on it.
-     */
+    /** Creates a Bitmap of at most {@code maxSizeBytes} with an attached Canvas to draw on it. */
     static BitmapAndCanvas createScaledBitmapAndCanvas(int width, int height, int maxSizeBytes) {
         float scale = Math.min(1f, ((float) maxSizeBytes) / (4 * width * height));
         width = Math.round(width * scale);
@@ -90,8 +94,9 @@ public class SplashUtils {
 
     /** Selects encoding for the bitmap based on its size. */
     public static Bitmap.CompressFormat selectBitmapEncoding(int width, int height) {
-        return (width * height <= MAX_SIZE_ENCODE_PNG) ? Bitmap.CompressFormat.PNG
-                                                       : Bitmap.CompressFormat.JPEG;
+        return (width * height <= MAX_SIZE_ENCODE_PNG)
+                ? Bitmap.CompressFormat.PNG
+                : Bitmap.CompressFormat.JPEG;
     }
 
     /** Creates splash view with the passed-in dimensions and screenshots it. */
@@ -99,11 +104,13 @@ public class SplashUtils {
             Context context, int splashWidth, int splashHeight, int maxSizeBytes) {
         if (splashWidth <= 0 || splashHeight <= 0) return null;
 
-        View splashView = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                ? SplashUtilsForS.createSplashView(context)
-                : createSplashView(context);
+        View splashView =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                        ? SplashUtilsForS.createSplashView(context)
+                        : createSplashView(context);
 
-        splashView.measure(View.MeasureSpec.makeMeasureSpec(splashWidth, View.MeasureSpec.EXACTLY),
+        splashView.measure(
+                View.MeasureSpec.makeMeasureSpec(splashWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(splashHeight, View.MeasureSpec.EXACTLY));
         splashView.layout(0, 0, splashWidth, splashHeight);
         return screenshotView(splashView, maxSizeBytes);

@@ -55,14 +55,19 @@ void BuildAncestorChainsAndFindCommonAncestors(
 
 }  // namespace
 
-void BoundaryEventDispatcher::SendBoundaryEvents(EventTarget* exited_target,
-                                                 EventTarget* entered_target) {
-  if (exited_target == entered_target)
+void BoundaryEventDispatcher::SendBoundaryEvents(
+    EventTarget* exited_target,
+    bool original_exited_target_removed,
+    EventTarget* entered_target) {
+  if (exited_target == entered_target && !original_exited_target_removed) {
     return;
+  }
 
   // Dispatch out event
-  if (event_handling_util::IsInDocument(exited_target))
+  if (event_handling_util::IsInDocument(exited_target) &&
+      !original_exited_target_removed) {
     Dispatch(exited_target, entered_target, out_event_, false);
+  }
 
   // Create lists of all exited/entered ancestors, locate the common ancestor
   // Based on httparchive, in more than 97% cases the depth of DOM is less
@@ -90,6 +95,7 @@ void BoundaryEventDispatcher::SendBoundaryEvents(EventTarget* exited_target,
   // behavior from past only to match Firefox and IE behavior.
   //
   // TODO(mustaq): Confirm spec conformance, double-check with other browsers.
+  // See https://crbug.com/1501368.
 
   BuildAncestorChainsAndFindCommonAncestors(
       exited_target, entered_target, &exited_ancestors, &entered_ancestors,
@@ -111,8 +117,9 @@ void BoundaryEventDispatcher::SendBoundaryEvents(EventTarget* exited_target,
   }
 
   // Dispatch over event
-  if (event_handling_util::IsInDocument(entered_target))
+  if (event_handling_util::IsInDocument(entered_target)) {
     Dispatch(entered_target, exited_target, over_event_, false);
+  }
 
   // Defer locating capturing enter listener until /after/ dispatching the leave
   // events because the leave handlers might set a capturing enter handler.

@@ -6,8 +6,6 @@
 #define ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -18,21 +16,26 @@
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_info.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
 
 class WindowState;
 
 class ASH_EXPORT WindowRestoreController
-    : public TabletModeObserver,
+    : public display::DisplayObserver,
       public app_restore::AppRestoreInfo::Observer,
       public aura::WindowObserver {
  public:
@@ -70,6 +73,10 @@ class ASH_EXPORT WindowRestoreController
       aura::Window* window,
       const std::vector<aura::Window*>& windows);
 
+  const aura::Window* to_be_snapped_window() const {
+    return to_be_snapped_window_;
+  }
+
   // Calls SaveWindowImpl for |window_state|. The activation index will be
   // calculated in SaveWindowImpl.
   void SaveWindow(WindowState* window_state);
@@ -94,10 +101,8 @@ class ASH_EXPORT WindowRestoreController
   // conditions are met.
   void MaybeStartInformedRestore();
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // app_restore::AppRestoreInfo::Observer:
   void OnRestorePrefChanged(const AccountId& account_id,
@@ -112,10 +117,6 @@ class ASH_EXPORT WindowRestoreController
                                intptr_t old) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  const aura::Window* to_be_snapped_window() const {
-    return to_be_snapped_window_;
-  }
 
  private:
   friend class WindowRestoreControllerTest;
@@ -132,7 +133,7 @@ class ASH_EXPORT WindowRestoreController
   // the MRU tracker list, so we can pass the activation index during that loop
   // instead of building the MRU list again for each window.
   void SaveWindowImpl(WindowState* window_state,
-                      absl::optional<int> activation_index);
+                      std::optional<int> activation_index);
 
   // Retrieves the saved `WindowInfo` of `window` and restores its
   // `WindowStateType`. Also creates a post task to clear `window`s
@@ -171,8 +172,7 @@ class ASH_EXPORT WindowRestoreController
   std::map<aura::Window*, base::CancelableOnceClosure>
       restore_property_clear_callbacks_;
 
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::ScopedObservation<app_restore::AppRestoreInfo,
                           app_restore::AppRestoreInfo::Observer>

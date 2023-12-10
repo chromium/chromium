@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -56,7 +57,8 @@ class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
 // buttons allow for traversal to the left or right desk, while clicking on the
 // button itself opens up a desk bar.
 class ASH_EXPORT DeskButton : public views::Button,
-                              public DesksController::Observer {
+                              public DesksController::Observer,
+                              public ShellObserver {
  public:
   METADATA_HEADER(DeskButton);
 
@@ -65,7 +67,6 @@ class ASH_EXPORT DeskButton : public views::Button,
   DeskButton& operator=(const DeskButton&) = delete;
   ~DeskButton() override;
 
-  bool is_hovered() const { return is_hovered_; }
   bool is_activated() const { return is_activated_; }
   DeskSwitchButton* prev_desk_button() const { return prev_desk_button_; }
   DeskSwitchButton* next_desk_button() const { return next_desk_button_; }
@@ -76,6 +77,8 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   // Updates label text and visibility of children.
   void OnExpandedStateUpdate(bool expanded);
+
+  bool GetHovered() const;
 
   void SetActivation(bool is_activated);
 
@@ -104,8 +107,9 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void StateChanged(ButtonState old_state) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   // DesksController::Observer:
@@ -122,6 +126,9 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   // views::ViewObserver:
   void OnViewBlurred(views::View* observed_view) override;
+
+  // ShellObserver:
+  void OnShellDestroying() override;
 
   // Toggles the button's `is_activated_` state and adjusts the button's style
   // to reflect the new activation state.
@@ -141,9 +148,14 @@ class ASH_EXPORT DeskButton : public views::Button,
   // to calculate target active desk index before desk switch.
   void MaybeUpdateDeskSwitchButtonVisibility(SwitchButtonUpdateSource source);
 
+  // Shows the context menu for the given located event when the button is not
+  // activated. Please note, it re-uses the shelf view as the context menu
+  // controller so that they show the same menu items.
+  void MaybeShowContextMenuForEvent(ui::LocatedEvent* event);
+
   // Updates the shelf auto-hide disabler given `should_enable_shelf_auto_hide`.
   void UpdateShelfAutoHideDisabler(
-      absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
+      std::optional<Shelf::ScopedDisableAutoHide>& disabler,
       bool should_enable_shelf_auto_hide);
 
   // Set up the focus ring, focus behavior, and highlight path for the buttons.
@@ -169,9 +181,6 @@ class ASH_EXPORT DeskButton : public views::Button,
   // Tracks whether the button is currently in expanded state.
   bool is_expanded_ = false;
 
-  // Tracks whether the button is currently being hovered.
-  bool is_hovered_ = false;
-
   // Tracks whether the button is currently activated (i.e. whether the desk
   // button has been pressed).
   bool is_activated_ = false;
@@ -183,11 +192,14 @@ class ASH_EXPORT DeskButton : public views::Button,
   // always be expanded.
   bool force_expanded_state_ = false;
 
+  // Indicates that shell is destroying.
+  bool is_shell_destroying_ = false;
+
   // Used to suspend the shelf from audo-hiding when the button is activated or
   // hovered.
-  absl::optional<Shelf::ScopedDisableAutoHide>
+  std::optional<Shelf::ScopedDisableAutoHide>
       disable_shelf_auto_hide_activation_;
-  absl::optional<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_hover_;
+  std::optional<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_hover_;
 };
 
 }  // namespace ash

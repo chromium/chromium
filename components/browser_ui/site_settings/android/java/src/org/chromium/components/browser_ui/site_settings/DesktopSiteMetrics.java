@@ -9,9 +9,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsiteAddress.AN
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.content_settings.ContentSettingValues;
 
-/**
- * Metrics recording functions for {@link SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE}.
- */
+/** Metrics recording functions for {@link SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE}. */
 public final class DesktopSiteMetrics {
     /**
      * Records when a user manually adds a domain or subdomain level Request Desktop Setting from
@@ -20,8 +18,10 @@ public final class DesktopSiteMetrics {
      * @param setting The {@link ContentSettingValues} of the newly added setting.
      * @param hostname The hostname of the newly added setting.
      */
-    public static void recordDesktopSiteSettingsManuallyAdded(@SiteSettingsCategory.Type int type,
-            @ContentSettingValues int setting, String hostname) {
+    public static void recordDesktopSiteSettingsManuallyAdded(
+            @SiteSettingsCategory.Type int type,
+            @ContentSettingValues int setting,
+            String hostname) {
         if (type != SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             return;
         }

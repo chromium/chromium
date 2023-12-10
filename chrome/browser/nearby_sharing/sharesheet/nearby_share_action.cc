@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -149,7 +150,10 @@ NearbyShareAction::NearbyShareAction(Profile* profile) : profile_(profile) {}
 NearbyShareAction::~NearbyShareAction() = default;
 
 const std::u16string NearbyShareAction::GetActionName() {
-  return l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
+  return features::IsNameEnabled()
+             ? NearbyShareResourceGetter::GetInstance()
+                   ->GetStringWithFeatureName(IDS_NEARBY_SHARE_FEATURE_NAME_PH)
+             : l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
 }
 
 const gfx::VectorIcon& NearbyShareAction::GetActionIcon() {

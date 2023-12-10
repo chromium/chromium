@@ -41,7 +41,7 @@ TEST_F(OutlinePainterTest, HugeOutlineWidthOffset) {
   )HTML");
   LayoutObject::OutlineInfo info;
   GetLayoutObjectByElementId("target")->OutlineRects(
-      &info, PhysicalOffset(), NGOutlineType::kDontIncludeBlockVisualOverflow);
+      &info, PhysicalOffset(), OutlineType::kDontIncludeBlockInkOverflow);
   const auto& style = GetLayoutObjectByElementId("target")->StyleRef();
   EXPECT_TRUE(style.HasOutline());
   EXPECT_EQ(LayoutUnit::Max().ToInt() * 2,

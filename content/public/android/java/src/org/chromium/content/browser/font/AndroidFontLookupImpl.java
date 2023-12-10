@@ -54,8 +54,10 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
+
     static final String FETCH_ALL_FONT_FILES_HISTOGRAM =
             "Android.FontLookup.FetchAllFontFiles.Time";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
 
@@ -66,10 +68,10 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
-    /**
-     * Map from ICU case folded full font names to corresponding GMS Core font provider query.
-     */
+
+    /** Map from ICU case folded full font names to corresponding GMS Core font provider query. */
     private final Map<String, String> mFullFontNameToQuery;
+
     /**
      * Collection of fonts (by ICU case folded full font name) that may be available
      * locally from GMS Core. This collection of Android Downloadable fonts should initially match
@@ -94,7 +96,9 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AndroidFontLookupImpl(Context appContext, FontsContractWrapper fontsContract,
+    AndroidFontLookupImpl(
+            Context appContext,
+            FontsContractWrapper fontsContract,
             Map<String, String> fullFontNameToQuery) {
         mAppContext = appContext;
         mFontsContract = fontsContract;
@@ -139,12 +143,14 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(() -> {
-            final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
-            RecordHistogram.recordTimesHistogram(MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM,
-                    SystemClock.elapsedRealtime() - startTimeMs);
-            executor.execute(() -> callback.call(result));
-        });
+        mTaskRunner.postTask(
+                () -> {
+                    final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
+                    RecordHistogram.recordTimesHistogram(
+                            MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM,
+                            SystemClock.elapsedRealtime() - startTimeMs);
+                    executor.execute(() -> callback.call(result));
+                });
     }
 
     /** Fetches all available font files from the {@link #mExpectedFonts} array. */
@@ -155,19 +161,21 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(() -> {
-            HashMap<String, ReadOnlyFile> result = new HashMap<>();
-            // Make a copy of mExpectedFonts because it may be modified.
-            for (String font : mExpectedFonts.toArray(new String[mExpectedFonts.size()])) {
-                ReadOnlyFile file = fetchFontInBackground(font, core);
-                if (file != null) {
-                    result.put(font, file);
-                }
-            }
-            RecordHistogram.recordTimesHistogram(
-                    FETCH_ALL_FONT_FILES_HISTOGRAM, SystemClock.elapsedRealtime() - startTimeMs);
-            executor.execute(() -> callback.call(result));
-        });
+        mTaskRunner.postTask(
+                () -> {
+                    HashMap<String, ReadOnlyFile> result = new HashMap<>();
+                    // Make a copy of mExpectedFonts because it may be modified.
+                    for (String font : mExpectedFonts.toArray(new String[mExpectedFonts.size()])) {
+                        ReadOnlyFile file = fetchFontInBackground(font, core);
+                        if (file != null) {
+                            result.put(font, file);
+                        }
+                    }
+                    RecordHistogram.recordTimesHistogram(
+                            FETCH_ALL_FONT_FILES_HISTOGRAM,
+                            SystemClock.elapsedRealtime() - startTimeMs);
+                    executor.execute(() -> callback.call(result));
+                });
     }
 
     /**
@@ -223,8 +231,12 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
             return null;
         }
 
-        FontRequest request = new FontRequest("com.google.android.gms.fonts",
-                "com.google.android.gms", query, R.array.ui_com_google_android_gms_fonts_certs);
+        FontRequest request =
+                new FontRequest(
+                        "com.google.android.gms.fonts",
+                        "com.google.android.gms",
+                        query,
+                        R.array.ui_com_google_android_gms_fonts_certs);
 
         try {
             long startTimeMs = SystemClock.elapsedRealtime();
@@ -234,14 +246,18 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                     GMS_FONT_REQUEST_HISTOGRAM, SystemClock.elapsedRealtime() - startTimeMs);
 
             if (fontFamilyResult.getStatusCode() != FontFamilyResult.STATUS_OK) {
-                Log.d(TAG, "Font fetch failed with status code: %d",
+                Log.d(
+                        TAG,
+                        "Font fetch failed with status code: %d",
                         fontFamilyResult.getStatusCode());
                 return null;
             }
 
             FontInfo[] fontInfos = fontFamilyResult.getFonts();
             if (fontInfos.length != 1) {
-                Log.d(TAG, "Font fetch did not return a unique result: length = %d",
+                Log.d(
+                        TAG,
+                        "Font fetch did not return a unique result: length = %d",
                         fontInfos.length);
                 return null;
             }
@@ -320,9 +336,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     @Override
     public void onConnectionError(MojoException e) {}
 
-    /**
-     * A factory for implementations of the AndroidFontLookup interface.
-     */
+    /** A factory for implementations of the AndroidFontLookup interface. */
     public static class Factory implements InterfaceFactory<AndroidFontLookup> {
         /**
          * It's safe to store this as a global because there's usually only one application context

@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -302,16 +303,16 @@ void WidgetBase::Shutdown() {
         base::SingleThreadTaskRunner::GetCurrentDefault();
     cleanup_runner->PostNonNestableTask(
         FROM_HERE, base::BindOnce(
-                       [](std::unique_ptr<LayerTreeView> view,
+                       [](scoped_refptr<scheduler::WidgetScheduler> scheduler,
                           scoped_refptr<WidgetInputHandlerManager> manager,
-                          scoped_refptr<scheduler::WidgetScheduler> scheduler) {
+                          std::unique_ptr<LayerTreeView> view) {
                          view.reset();
                          manager.reset();
                          scheduler->Shutdown();
                        },
-                       std::move(layer_tree_view_),
+                       std::move(widget_scheduler_),
                        std::move(widget_input_handler_manager_),
-                       std::move(widget_scheduler_)));
+                       std::move(layer_tree_view_)));
   }
 
   if (widget_compositor_) {
@@ -350,6 +351,7 @@ void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget) {
 }
 
 cc::LayerTreeHost* WidgetBase::LayerTreeHost() const {
+  CHECK(layer_tree_view_);
   return layer_tree_view_->layer_tree_host();
 }
 
@@ -808,19 +810,19 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = true;
+  attributes.enable_grcontext = true;
   attributes.enable_raster_interface = true;
   attributes.enable_oop_rasterization = false;
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  bool support_grcontext = true;
   // VideoResourceUpdater is the only usage of gles2 interface from this
   // RasterContextProvider. Thus, if we use RasterInterface in
   // VideoResourceUpdater, enabling gles2 interface is no longer needed.
   if (base::FeatureList::IsEnabled(
           media::kRasterInterfaceInVideoResourceUpdater)) {
     attributes.enable_gles2_interface = false;
-    support_grcontext = false;
+    attributes.enable_grcontext = false;
   }
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
       Platform::Current()->GetGpuMemoryBufferManager();
@@ -829,7 +831,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           gpu_channel_host, kGpuStreamIdDefault, kGpuStreamPriorityDefault,
           gpu::kNullSurfaceHandle, GURL(url), automatic_flushes,
-          support_locking, support_grcontext, limits, attributes,
+          support_locking, limits, attributes,
           viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1168,6 +1170,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     params->value = new_info.value;
     params->selection =
         gfx::Range(new_info.selection_start, new_info.selection_end);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     {
       // It is expected that the selection range is always bounded by
       // the text content, but according to the logs in browser process
@@ -1184,6 +1187,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
         base::debug::DumpWithoutCrashing();
       }
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     if (new_info.composition_start != -1) {
       params->composition =

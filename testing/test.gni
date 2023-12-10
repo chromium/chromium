@@ -39,7 +39,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
 } else if (is_fuchsia) {
-  import("//build/config/chromecast_build.gni")
+  import("//build/config/cast.gni")
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//third_party/fuchsia-gn-sdk/src/cmc.gni")
   import("//third_party/fuchsia-gn-sdk/src/component.gni")
@@ -84,6 +84,9 @@ template("mixed_test") {
   }
 
   if (_rs_sources != []) {
+    # Note: as a weak convention, __ is usually used before a suffix for
+    # internally-generated targets. However, rust_target requires a strict
+    # snake_case name.
     if (defined(invoker.crate_name)) {
       _rust_target_name = "${invoker.crate_name}_rust_objects"
     } else {
@@ -126,6 +129,7 @@ template("mixed_test") {
         generate_crate_root = true
       }
       sources = _rs_sources
+      is_gtest_unittests = true
 
       if (_gtest_is_in_deps) {
         deps += [ "//testing/rust_gtest_interop" ]
@@ -154,29 +158,6 @@ template("mixed_test") {
 
     if (_rs_sources != []) {
       deps += [ ":${_rust_target_name}" ]
-    }
-
-    if (current_os != "aix" && !is_win) {
-      # Inform the build system that this binary contains Rust unit tests. The
-      # test-containing rlibs linked into it must not be discarded by the linker
-      # even if there will be no edges going into them.
-      #
-      # For C++ this is done by not putting them in a library at all, but Rust
-      # must be compiled into an rlib.
-      #
-      # On AIX there's no flag to avoid pruning unit tests in this library from
-      # the linking step. On Windows, there's no need for it.
-      if (_rs_sources != []) {
-        ldflags +=
-            [ "-LinkWrapper,add-whole-archive=${_rust_target_name}.rlib" ]
-      }
-
-      # Do the same for any Rust dependencies with unit tests in them. This will
-      # only match rust targets by looking for rlib extensions.
-      foreach(d, deps) {
-        _dep_target_name = get_label_info(d, "name")
-        ldflags += [ "-LinkWrapper,add-whole-archive=${_dep_target_name}.rlib" ]
-      }
     }
   }
 }
@@ -719,11 +700,11 @@ template("test") {
     ios_test_runner_wrapper(_wrapper_output_name) {
       forward_variables_from(invoker,
                              [
+                               "clones",
                                "data",
                                "deps",
                                "executable_args",
                                "retries",
-                               "shards",
                              ])
 
       _root_build_dir = rebase_path("${root_build_dir}", root_build_dir)

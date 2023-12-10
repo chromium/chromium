@@ -10,6 +10,7 @@
 #import <iterator>
 #import <map>
 #import <numeric>
+#import <optional>
 #import <set>
 #import <vector>
 
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using promos_manager::Promo;
 
@@ -222,7 +222,7 @@ void PromosManagerImpl::InitializePromoConfigs(PromoConfigsSet promo_configs) {
 // Candidates are from active promos and the pending promos that can become
 // active at the time this function is called. Coordinate with other internal
 // functions to rank and validate the candidates.
-absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
+std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
   // Construct a map with the promo from (1) single-display and
   // (2) continuous-display promo campaigns. (3) single-display pending promos
   // that has become active, as keys. The value is the context that will be used
@@ -258,7 +258,7 @@ absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
       SortPromos(active_promos_with_context);
 
   if (sorted_promos.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (promos_manager::Promo promo : sorted_promos) {
@@ -266,7 +266,7 @@ absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
       return promo;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<promos_manager::Impression> PromosManagerImpl::ImpressionHistory(
@@ -276,7 +276,7 @@ std::vector<promos_manager::Impression> PromosManagerImpl::ImpressionHistory(
   for (size_t i = 0; i < stored_impression_history.size(); ++i) {
     const base::Value::Dict& stored_impression =
         stored_impression_history[i].GetDict();
-    absl::optional<promos_manager::Impression> impression =
+    std::optional<promos_manager::Impression> impression =
         promos_manager::ImpressionFromDict(stored_impression);
     if (!impression) {
       continue;
@@ -293,7 +293,7 @@ std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
   std::set<promos_manager::Promo> active_promos;
 
   for (size_t i = 0; i < stored_active_promos.size(); ++i) {
-    absl::optional<promos_manager::Promo> promo =
+    std::optional<promos_manager::Promo> promo =
         promos_manager::PromoForName(stored_active_promos[i].GetString());
 
     // Skip malformed active promos data. (This should almost never happen.)
@@ -316,13 +316,13 @@ void PromosManagerImpl::InitializePendingPromos() {
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
   for (const auto [name, value] : stored_pending_promos) {
-    absl::optional<promos_manager::Promo> promo =
+    std::optional<promos_manager::Promo> promo =
         promos_manager::PromoForName(name);
     // Skip malformed promo data.
     if (!promo.has_value()) {
       continue;
     }
-    absl::optional<base::Time> becomes_active_time = ValueToTime(value);
+    std::optional<base::Time> becomes_active_time = ValueToTime(value);
     // Skip malformed time data.
     if (!becomes_active_time.has_value()) {
       continue;
@@ -489,16 +489,21 @@ bool PromosManagerImpl::CanShowPromo(
 
 bool PromosManagerImpl::CanShowPromoUsingFeatureEngagementTracker(
     promos_manager::Promo promo) const {
-  auto it = promo_configs_.find(promo);
-  if (it == promo_configs_.end()) {
-    return false;
-  }
-
-  const base::Feature* feature = it->feature_engagement_feature;
+  const base::Feature* feature = FeatureForPromo(promo);
   if (!feature) {
     return false;
   }
   return tracker_->ShouldTriggerHelpUI(*feature);
+}
+
+const base::Feature* PromosManagerImpl::FeatureForPromo(
+    promos_manager::Promo promo) const {
+  auto it = promo_configs_.find(promo);
+  if (it == promo_configs_.end()) {
+    return nil;
+  }
+
+  return it->feature_engagement_feature;
 }
 
 std::vector<int> PromosManagerImpl::ImpressionCounts(
@@ -519,7 +524,7 @@ int PromosManagerImpl::TotalImpressionCount(
 }
 
 // Sort the promos in the order that they will be displayed.
-// Based on the Promo's context, type, and the recently shown time.
+// Based on the Promo's context and type.
 std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
     const std::map<promos_manager::Promo, PromoContext>&
         promos_to_sort_with_context) const {
@@ -531,13 +536,11 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
         std::pair<promos_manager::Promo, PromoContext>(it.first, it.second));
   }
 
-  const std::vector<promos_manager::Impression>& impression_history =
-      impression_history_;
-
   // The order: PostRestoreSignIn types are shown first, then Promos with
-  // pending state, then Promos without pending state in least-recently-shown
-  // order.
-  auto compare_promo = [&impression_history](
+  // pending state, then Promos without pending state. For promos without
+  // pending state, those never before shown come before those that have been
+  // shown before.
+  auto compare_promo = [this](
                            std::pair<promos_manager::Promo, PromoContext> lhs,
                            std::pair<promos_manager::Promo, PromoContext> rhs) {
     // PostRestoreDefaultBrowser comes first.
@@ -556,13 +559,6 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
         rhs.first == Promo::PostRestoreSignInAlert) {
       return false;
     }
-    // Choice screen promo comes next.
-    if (lhs.first == Promo::Choice) {
-      return true;
-    }
-    if (rhs.first == Promo::Choice) {
-      return false;
-    }
     // prefer the promo with pending state to the other without.
     if (lhs.second.was_pending && !rhs.second.was_pending) {
       return true;
@@ -570,28 +566,31 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
     if (!lhs.second.was_pending && rhs.second.was_pending) {
       return false;
     }
-    // Tied after comparing the type and pending state, break using the most
-    // recently shown times, prefer the promo that was shown less recently.
-    auto lhs_impression =
-        std::find_if(impression_history.begin(), impression_history.end(),
-                     [lhs](promos_manager::Impression impression) {
-                       return impression.promo == lhs.first;
-                     });
-    // If the promo is unseen, make it show first.
-    if (lhs_impression == impression_history.end()) {
+
+    // Check Feature Engagement Tracker data for promos.
+    const base::Feature* lhs_feature = FeatureForPromo(lhs.first);
+    const base::Feature* rhs_feature = FeatureForPromo(rhs.first);
+    if (!lhs_feature && !rhs_feature) {
+      return lhs.first < rhs.first;
+    } else if (!rhs_feature) {
       return true;
-    }
-    auto rhs_impression =
-        std::find_if(impression_history.begin(), impression_history.end(),
-                     [rhs](promos_manager::Impression impression) {
-                       return impression.promo == rhs.first;
-                     });
-    if (rhs_impression == impression_history.end()) {
+    } else if (!lhs_feature) {
       return false;
     }
-    // Both promos are seen. `impression_history` is in the most recently seen
-    // order. larger iterator = less recently seen = displayed first
-    return lhs_impression > rhs_impression;
+    if (!tracker_->IsInitialized()) {
+      return lhs.first < rhs.first;
+    }
+    // Prefer the promo that has not been shown to the
+    // one that has.
+    bool lhs_shown = tracker_->HasEverTriggered(*lhs_feature, true);
+    bool rhs_shown = tracker_->HasEverTriggered(*rhs_feature, true);
+    if (!lhs_shown && rhs_shown) {
+      return true;
+    }
+    if (lhs_shown && !rhs_shown) {
+      return false;
+    }
+    return lhs.first < rhs.first;
   };
 
   sort(promos_list_to_sort.begin(), promos_list_to_sort.end(), compare_promo);

@@ -52,6 +52,10 @@
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/drive/file_system_core_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -59,7 +63,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "components/user_manager/user.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
+#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -94,10 +98,12 @@ const AccountId& GetAccountId(Profile* profile) {
 
 gfx::Size GetDefaultPdfMediaSizeMicrons() {
   PrintingContextDelegate delegate;
-  // The `PrintingContext` for "Save as PDF" does need to make system printing
-  // calls.
-  auto printing_context(
-      PrintingContext::Create(&delegate, /*skip_system_calls=*/false));
+  // The `PrintingContext` for "Save as PDF" does not need to make system
+  // printing calls, it just relies on localization plus hardcoded defaults
+  // from `PrintingContext::UsePdfSettings()`.  This means that OOP support
+  // is unnecessary in this case.
+  auto printing_context(PrintingContext::Create(
+      &delegate, PrintingContext::ProcessBehavior::kOopDisabled));
   printing_context->UsePdfSettings();
   gfx::Size pdf_media_size = printing_context->GetPdfPaperSizeDeviceUnits();
   float device_microns_per_device_unit =
@@ -434,19 +440,6 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
 
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* service = chromeos::LacrosService::Get();
-  if (use_drive_mount_ && service &&
-      service->IsAvailable<crosapi::mojom::DriveIntegrationService>()) {
-    service->GetRemote<crosapi::mojom::DriveIntegrationService>()
-        ->GetMountPointPath(
-            base::BindOnce(&PdfPrinterHandler::OnSaveLocationReady,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(default_filename), prompt_user));
-    return;
-  }
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
   // Fuchsia does not support system dialog yet. So skip the dialog
   // and store the default download directory. See crbug.com/1226242 for the
@@ -561,6 +554,11 @@ base::FilePath PdfPrinterHandler::GetSaveLocation() const {
   if (use_drive_mount_ && drive_service && drive_service->IsMounted()) {
     return drive_service->GetMountPointPath().Append(
         drive::util::kDriveMyDriveRootDirName);
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::FilePath drivefs;
+  if (use_drive_mount_ && chrome::GetDriveFsMountPointPath(&drivefs)) {
+    return drivefs.Append(drive::util::kDriveMyDriveRootDirName);
   }
 #endif
   DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);

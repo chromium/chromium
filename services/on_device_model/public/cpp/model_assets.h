@@ -14,19 +14,22 @@ namespace on_device_model {
 // A bundle of opened file assets comprising model description to use for
 // execution.
 struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssets {
-  ModelAssets() = default;
-  ModelAssets(ModelAssets&&) = default;
-  ModelAssets& operator=(ModelAssets&&) = default;
-  ~ModelAssets() = default;
+  ModelAssets();
+  ModelAssets(ModelAssets&&);
+  ModelAssets& operator=(ModelAssets&&);
+  ~ModelAssets();
 
   base::File sp_model;
   base::File model;
   base::File weights;
+  base::File ts_data;
+  base::File ts_sp_model;
 };
 
-// Helper to open files for ModelAssets given a base path.
+// Helper to open files for ModelAssets given their containing paths.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
-ModelAssets LoadModelAssets(const base::FilePath& model_path);
+ModelAssets LoadModelAssets(const base::FilePath& model_path,
+                            const base::FilePath& ts_path);
 
 }  // namespace on_device_model
 

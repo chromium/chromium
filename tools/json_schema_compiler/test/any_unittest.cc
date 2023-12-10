@@ -11,25 +11,25 @@
 
 TEST(JsonSchemaCompilerAnyTest, PopulateAndClone) {
   {
-    test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
     any_type_dict.Set("any", "value");
-    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
-    base::Value::Dict any_type_to_value(any_type.ToValue());
+    auto any_type = test::api::any::AnyType::FromValue(any_type_dict);
+    ASSERT_TRUE(any_type);
+    base::Value::Dict any_type_to_value(any_type->ToValue());
     EXPECT_EQ(any_type_dict, any_type_to_value);
 
-    test::api::any::AnyType any_type_copy = any_type.Clone();
+    test::api::any::AnyType any_type_copy = any_type->Clone();
     EXPECT_EQ(any_type_dict, any_type_copy.ToValue());
   }
   {
-    test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
     any_type_dict.Set("any", 5);
-    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
-    base::Value::Dict any_type_to_value(any_type.ToValue());
+    auto any_type = test::api::any::AnyType::FromValue(any_type_dict);
+    ASSERT_TRUE(any_type);
+    base::Value::Dict any_type_to_value(any_type->ToValue());
     EXPECT_EQ(any_type_dict, any_type_to_value);
 
-    test::api::any::AnyType any_type_copy = any_type.Clone();
+    test::api::any::AnyType any_type_copy = any_type->Clone();
     EXPECT_EQ(any_type_dict, any_type_copy.ToValue());
   }
 }
@@ -37,7 +37,7 @@ TEST(JsonSchemaCompilerAnyTest, PopulateAndClone) {
 TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
   {
     base::Value::List params_value;
-    absl::optional<test::api::any::OptionalAny::Params> params(
+    std::optional<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_FALSE(params->any_name);
@@ -46,7 +46,7 @@ TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
     base::Value::List params_value;
     base::Value param("asdf");
     params_value.Append(param.Clone());
-    absl::optional<test::api::any::OptionalAny::Params> params(
+    std::optional<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->any_name);
@@ -56,7 +56,7 @@ TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
     base::Value::List params_value;
     base::Value param(true);
     params_value.Append(param.Clone());
-    absl::optional<test::api::any::OptionalAny::Params> params(
+    std::optional<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->any_name);

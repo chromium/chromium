@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/auth_notification_types.h"
@@ -31,6 +32,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -254,6 +256,16 @@ class WebSocketBrowserHTTPSConnectToTest
   net::EmbeddedTestServer& server() override { return https_server_; }
 
   net::EmbeddedTestServer https_server_;
+};
+
+class WebSocketBrowserHTTPSConnectToTestPre3pcd
+    : public WebSocketBrowserHTTPSConnectToTest {
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+    WebSocketBrowserHTTPSConnectToTest::SetUp();
+  }
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Automatically fill in any login prompts that appear with the supplied
@@ -774,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWithAllowFileAccessFromFiles,
   EXPECT_EQ("FILE", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTestPre3pcd,
                        CookieAccess_ThirdPartyAllowed) {
   ASSERT_TRUE(wss_server_.Start());
 

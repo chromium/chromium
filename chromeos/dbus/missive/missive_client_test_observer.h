@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_TEST_OBSERVER_H_
 #define CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_TEST_OBSERVER_H_
 
+#include <optional>
 #include <tuple>
 
 #include "base/functional/callback_forward.h"
@@ -12,7 +13,6 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,7 +27,7 @@ class MissiveClientTestObserver
   // records with the specified |destination|, otherwise, all records will be
   // captured.
   explicit MissiveClientTestObserver(
-      absl::optional<::reporting::Destination> destination = absl::nullopt);
+      std::optional<::reporting::Destination> destination = std::nullopt);
 
   // The observer will capture only enqueued records that satisfy the condition
   // specified by |observed_record_cb|.
@@ -50,13 +50,22 @@ class MissiveClientTestObserver
   GetNextEnqueuedRecord();
 
   // Returns true immediately if there any records in the queue. Return false
-  // otherwise. Does not wait for new records to arrive. Intended to be called
-  // after GetNextEnqueuedRecord().
-  bool HasNewEnqueuedRecords();
+  // otherwise. Does not wait for new records to arrive, i.e., does not run the
+  // run loop. Keep in mind that the internally stored record is cleared after a
+  // call to `GetNextEnqueuedRecord`; That is, this method always returns false
+  // immediately after a call to `GetNextEnqueuedRecord`.
+  //
+  // To properly test whether new enqueued records have arrived, call
+  // ::content::RunAllTasksUntilIdle() first to ensure the task enqueuing the
+  // record to missive is finished:
+  //
+  // ::content::RunAllTasksUntilIdle();
+  // EXPECT_FALSE(observer.HasNewEnqueuedRecords());
+  bool HasNewEnqueuedRecord();
 
  private:
   base::test::TestFuture<::reporting::Priority, ::reporting::Record>
-      enqueued_records_;
+      enqueued_record_;
 
   RecordFilterCb record_filter_cb_;
 };

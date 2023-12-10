@@ -13,9 +13,7 @@ import org.chromium.base.Callback;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Interface for the launcher responsible for opening the Credential Manager.
- */
+/** Interface for the launcher responsible for opening the Credential Manager. */
 public interface CredentialManagerLauncher {
     /**
      * These values are persisted to logs. Entries should not be renumbered and
@@ -24,10 +22,15 @@ public interface CredentialManagerLauncher {
      * TODO(crbug.com/1345232): These error codes are also used by PasswordCheckup, consider moving
      * out of this class.
      */
-    @IntDef({CredentialManagerError.NO_CONTEXT, CredentialManagerError.NO_ACCOUNT_NAME,
-            CredentialManagerError.API_ERROR, CredentialManagerError.UNCATEGORIZED,
-            CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED,
-            CredentialManagerError.BACKEND_NOT_AVAILABLE, CredentialManagerError.COUNT})
+    @IntDef({
+        CredentialManagerError.NO_CONTEXT,
+        CredentialManagerError.NO_ACCOUNT_NAME,
+        CredentialManagerError.API_ERROR,
+        CredentialManagerError.UNCATEGORIZED,
+        CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED,
+        CredentialManagerError.BACKEND_NOT_AVAILABLE,
+        CredentialManagerError.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CredentialManagerError {
         // There is no application context.
@@ -45,9 +48,7 @@ public interface CredentialManagerLauncher {
         int COUNT = 6;
     }
 
-    /**
-     * Serves as a general exception for failed requests to the credential manager backend.
-     */
+    /** Serves as a general exception for failed requests to the credential manager backend. */
     class CredentialManagerBackendException extends Exception {
         public @CredentialManagerError int errorCode;
 
@@ -67,8 +68,10 @@ public interface CredentialManagerLauncher {
      * @param successCallback callback called with the intent if the retrieving was successful.
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    void getAccountCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
-            String accountName, Callback<PendingIntent> successCallback,
+    void getAccountCredentialManagerIntent(
+            @ManagePasswordsReferrer int referrer,
+            String accountName,
+            Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback);
 
     /**
@@ -79,8 +82,10 @@ public interface CredentialManagerLauncher {
      * @param successCallback callback called with the intent if the retrieving was successful.
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    void getLocalCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
-            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback);
+    void getLocalCredentialManagerIntent(
+            @ManagePasswordsReferrer int referrer,
+            Callback<PendingIntent> successCallback,
+            Callback<Exception> failureCallback);
 
     /**
      * Retrieves a pending AccountSettings API intent that can be used to launch the credential

@@ -85,11 +85,15 @@ void InputDeviceSettingsPolicyHandler::Initialize(PrefService* local_state,
   has_user_prefs_ = pref_service != nullptr;
   if (local_state) {
     pref_change_registrar_local_state_.Init(local_state);
-    pref_change_registrar_local_state_.Add(
-        prefs::kOwnerPrimaryMouseButtonRight,
-        base::BindRepeating(
-            &InputDeviceSettingsPolicyHandler::OnMousePoliciesChanged,
-            base::Unretained(this)));
+    // Add pref observer for kOwnerPrimaryMouseButtonRight only when there is
+    // no user pref_service.
+    if (!pref_service) {
+      pref_change_registrar_local_state_.Add(
+          prefs::kOwnerPrimaryMouseButtonRight,
+          base::BindRepeating(
+              &InputDeviceSettingsPolicyHandler::OnMousePoliciesChanged,
+              base::Unretained(this)));
+    }
     pref_change_registrar_local_state_.Add(
         prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
         base::BindRepeating(

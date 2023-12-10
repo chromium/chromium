@@ -24,9 +24,9 @@ class QuickStartScreen : public BaseScreen,
   enum class Result {
     CANCEL_AND_RETURN_TO_WELCOME,
     CANCEL_AND_RETURN_TO_NETWORK,
+    CANCEL_AND_RETURN_TO_GAIA_INFO,
     CANCEL_AND_RETURN_TO_SIGNIN,
     WIFI_CREDENTIALS_RECEIVED,
-    WIFI_CONNECTED
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;

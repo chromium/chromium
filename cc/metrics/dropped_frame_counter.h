@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/ring_buffer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class TotalFrameCounter;
@@ -91,7 +91,6 @@ class CC_EXPORT DroppedFrameCounter {
   void AddPartialFrame();
   void AddDroppedFrame();
   void ReportFrames();
-  void ReportFramesForUI();
   void ReportFramesOnEveryFrameForUI();
 
   void OnBeginFrame(const viz::BeginFrameArgs& args);
@@ -125,15 +124,15 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_max_percent_dropped_;
   }
 
-  absl::optional<double> max_percent_dropped_After_1_sec() const {
+  std::optional<double> max_percent_dropped_After_1_sec() const {
     return sliding_window_max_percent_dropped_After_1_sec_;
   }
 
-  absl::optional<double> max_percent_dropped_After_2_sec() const {
+  std::optional<double> max_percent_dropped_After_2_sec() const {
     return sliding_window_max_percent_dropped_After_2_sec_;
   }
 
-  absl::optional<double> max_percent_dropped_After_5_sec() const {
+  std::optional<double> max_percent_dropped_After_5_sec() const {
     return sliding_window_max_percent_dropped_After_5_sec_;
   }
 
@@ -196,9 +195,9 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_smoothness_dropped_ = 0;
   bool fcp_received_ = false;
   double sliding_window_max_percent_dropped_ = 0;
-  absl::optional<double> sliding_window_max_percent_dropped_After_1_sec_;
-  absl::optional<double> sliding_window_max_percent_dropped_After_2_sec_;
-  absl::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
+  std::optional<double> sliding_window_max_percent_dropped_After_1_sec_;
+  std::optional<double> sliding_window_max_percent_dropped_After_2_sec_;
+  std::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_fcp_received_;
   raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
@@ -209,10 +208,10 @@ class CC_EXPORT DroppedFrameCounter {
     double p95_window = 0;
   } last_reported_metrics_;
 
-  absl::optional<SortedFrameCallback> sorted_frame_callback_;
+  std::optional<SortedFrameCallback> sorted_frame_callback_;
 
   bool report_for_ui_ = false;
-  absl::optional<double> sliding_window_current_percent_dropped_;
+  std::optional<double> sliding_window_current_percent_dropped_;
 
   // Sets to true on a newly dropped frame and stays true as long as the frames
   // that follow are dropped. Reset when a frame is presented. It is used to

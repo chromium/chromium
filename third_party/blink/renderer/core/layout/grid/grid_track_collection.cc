@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 
 #include "base/check.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_data.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -63,12 +63,11 @@ void GridRange::SetIsImplicit() {
 }
 
 GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
-                                   const GridPlacementData& placement_data,
-                                   GridTrackSizingDirection track_direction)
-    : auto_repetitions_(placement_data.AutoRepetitions(track_direction)),
-      start_offset_((track_direction == kForColumns)
-                        ? placement_data.column_start_offset
-                        : placement_data.row_start_offset),
+                                   const GridLineResolver& line_resolver,
+                                   GridTrackSizingDirection track_direction,
+                                   wtf_size_t start_offset)
+    : auto_repetitions_(line_resolver.AutoRepetitions(track_direction)),
+      start_offset_(start_offset),
       must_sort_grid_lines_(false),
       explicit_tracks_((track_direction == kForColumns)
                            ? grid_style.GridTemplateColumns().track_list
@@ -390,23 +389,16 @@ GridSet::GridSet(wtf_size_t track_count,
   } else {
     // Normalize |track_size| into a |kMinMaxTrackSizing| type; follow the
     // definitions from https://drafts.csswg.org/css-grid-2/#algo-terms.
-    bool is_unresolvable_percentage_min_function =
-        is_available_size_indefinite &&
-        track_size.MinTrackBreadth().IsPercentOrCalc();
-
-    Length normalized_min_track_sizing_function =
-        (is_unresolvable_percentage_min_function ||
+    const auto normalized_min_track_sizing_function =
+        ((is_available_size_indefinite &&
+          track_size.MinTrackBreadth().IsPercentOrCalc()) ||
          track_size.HasFlexMinTrackBreadth())
             ? Length::Auto()
             : track_size.MinTrackBreadth();
 
-    bool is_unresolvable_percentage_max_function =
-        is_available_size_indefinite &&
-        track_size.MaxTrackBreadth().IsPercentOrCalc();
-
-    Length normalized_max_track_sizing_function =
-        (is_unresolvable_percentage_max_function ||
-         track_size.HasAutoMaxTrackBreadth())
+    const auto normalized_max_track_sizing_function =
+        (is_available_size_indefinite &&
+         track_size.MaxTrackBreadth().IsPercentOrCalc())
             ? Length::Auto()
             : track_size.MaxTrackBreadth();
 
@@ -843,13 +835,18 @@ bool GridLayoutTrackCollection::HasIntrinsicTrack() const {
   return properties_.HasProperty(TrackSpanProperties::kHasIntrinsicTrack);
 }
 
+bool GridLayoutTrackCollection::HasNonDefiniteTrack() const {
+  return properties_.HasProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+}
+
 bool GridLayoutTrackCollection::IsDependentOnAvailableSize() const {
   return properties_.HasProperty(
       TrackSpanProperties::kIsDependentOnAvailableSize);
 }
 
-bool GridLayoutTrackCollection::IsSpanningOnlyDefiniteTracks() const {
-  return !properties_.HasProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+bool GridLayoutTrackCollection::HasIndefiniteSet() const {
+  return !last_indefinite_index_.empty() &&
+         last_indefinite_index_.back() != kNotFound;
 }
 
 GridSizingTrackCollection::GridSizingTrackCollection(

@@ -81,8 +81,8 @@ MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
       }
     }
     case ExecutionMode::kSync: {
-      auto* graph =
-          builder->buildSync(named_operands, scope.GetExceptionState());
+      auto* graph = builder->buildSync(scope.GetScriptState(), named_operands,
+                                       scope.GetExceptionState());
       if (graph) {
         return BuildResult{.graph = static_cast<MLGraph*>(graph),
                            .exception = nullptr};

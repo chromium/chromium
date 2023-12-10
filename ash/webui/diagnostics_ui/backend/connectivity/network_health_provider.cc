@@ -227,8 +227,7 @@ bool ClearDisconnectedNetwork(NetworkObserverInfo* network_info) {
   return true;
 }
 
-mojom::RoamingState GetRoamingState(
-    absl::optional<std::string>& roaming_state) {
+mojom::RoamingState GetRoamingState(std::optional<std::string>& roaming_state) {
   if (!roaming_state.has_value()) {
     return mojom::RoamingState::kNone;
   }

@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Wait for load
 [FAIL] Checkboxes should clear :active when the user tabs away from them while pressing it with a pointing device
   assert_equals: Checkboxes should not be :active after tab is used to change focus. expected null but got Element node <html><head>\n<meta charset="utf-8">\n<script src="/resourc...
 [FAIL] Radios should clear :active when the user tabs away from them while pressing it with a pointing device

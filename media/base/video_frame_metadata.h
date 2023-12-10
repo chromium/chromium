@@ -216,6 +216,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // This is an experimental feature, see crbug.com/1138888 for more
   // information.
   absl::optional<int> maximum_composition_delay_in_frames;
+
+  // Identifies a BeginFrameArgs (along with the source_id).
+  // See comments in components/viz/common/frame_sinks/begin_frame_args.h.
+  //
+  // Only set for video frames produced by the frame sink video capturer.
+  absl::optional<uint64_t> frame_sequence;
 };
 
 }  // namespace media

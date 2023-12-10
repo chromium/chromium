@@ -317,17 +317,20 @@ bool ChromeNativeAppWindowViews::AcceleratorPressed(
       zoom::PageZoom::Zoom(web_view()->GetWebContents(), content::PAGE_ZOOM_IN);
       return true;
     case IDC_DEV_TOOLS:
-      DevToolsWindow::OpenDevToolsWindow(web_view()->GetWebContents(),
-                                         DevToolsToggleAction::Show());
+      DevToolsWindow::OpenDevToolsWindow(
+          web_view()->GetWebContents(), DevToolsToggleAction::Show(),
+          DevToolsOpenedByAction::kMainMenuOrMainShortcut);
       return true;
     case IDC_DEV_TOOLS_CONSOLE:
       DevToolsWindow::OpenDevToolsWindow(
           web_view()->GetWebContents(),
-          DevToolsToggleAction::ShowConsolePanel());
+          DevToolsToggleAction::ShowConsolePanel(),
+          DevToolsOpenedByAction::kConsoleShortcut);
       return true;
     case IDC_DEV_TOOLS_INSPECT:
-      DevToolsWindow::OpenDevToolsWindow(web_view()->GetWebContents(),
-                                         DevToolsToggleAction::Inspect());
+      DevToolsWindow::OpenDevToolsWindow(
+          web_view()->GetWebContents(), DevToolsToggleAction::Inspect(),
+          DevToolsOpenedByAction::kInspectorModeShortcut);
       return true;
     default:
       NOTREACHED_NORETURN() << "Unknown accelerator sent to app window.";

@@ -624,11 +624,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoFocusVisible &&
-      !RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoPaused &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -641,11 +636,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoPlaying &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoHighlight &&
-      !RuntimeEnabledFeatures::HighlightAPIEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -669,6 +659,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if ((match->type == CSSSelector::kPseudoUserInvalid ||
        match->type == CSSSelector::kPseudoUserValid) &&
       !RuntimeEnabledFeatures::UserValidUserInvalidEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if ((match->type == CSSSelector::kPseudoOpen ||
+       match->type == CSSSelector::kPseudoClosed) &&
+      !RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

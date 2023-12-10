@@ -11,5 +11,4 @@ mojom("mojom") {
   sources = [ "cros_hotspot_config.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom"
-  use_typescript_sources = true
 }

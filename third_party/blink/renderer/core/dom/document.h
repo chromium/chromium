@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
+#include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -123,6 +124,10 @@ enum class CSPDisposition : int32_t;
 }  // namespace mojom
 }  // namespace network
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 class AXContext;
@@ -182,6 +187,7 @@ class HTMLDialogElement;
 class HTMLElement;
 class HTMLFrameOwnerElement;
 class HTMLHeadElement;
+class HTMLImageElement;
 class HTMLLinkElement;
 class HTMLMetaElement;
 class HitTestRequest;
@@ -197,6 +203,7 @@ class LiveNodeListBase;
 class LocalDOMWindow;
 class LocalFrame;
 class LocalFrameView;
+class LocalSVGResource;
 class Locale;
 class Location;
 class MediaQueryListListener;
@@ -398,6 +405,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsPrerendering() const { return is_prerendering_; }
 
+  bool HasDocumentPictureInPictureWindow() const;
+
   void SetIsTrackingSoftNavigationHeuristics(bool value) {
     is_tracking_soft_navigation_heuristics_ = value;
   }
@@ -442,6 +451,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   DOMImplementation& implementation();
 
+  // Typically, but not guaranteed, to be non-null.
+  //
+  // ```js
+  // document.documentElement.remove();
+  // // document.documentElement is now null
+  // ```
   Element* documentElement() const { return document_element_.Get(); }
 
   Location* location() const;
@@ -619,6 +634,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ScheduleUseShadowTreeUpdate(SVGUseElement&);
   void UnscheduleUseShadowTreeUpdate(SVGUseElement&);
+
+  void ScheduleSVGResourceInvalidation(LocalSVGResource&);
+  void InvalidatePendingSVGResources();
 
   void EvaluateMediaQueryList();
 
@@ -1457,6 +1475,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueVisualViewportScrollEvent();
   void EnqueueVisualViewportResizeEvent();
   void EnqueueSnapChangedEvent(Node* target, HeapVector<Member<Node>>& targets);
+  void EnqueueSnapChangingEvent(Node* target,
+                                HeapVector<Member<Node>>& targets);
 
   void DispatchEventsForPrinting();
 
@@ -1597,7 +1617,11 @@ class CORE_EXPORT Document : public ContainerNode,
   Document& EnsureTemplateDocument();
   Document* TemplateDocumentHost() { return template_document_host_.Get(); }
 
-  void DidAddOrRemoveFormRelatedElement(Element*);
+  // Signals the ChromeClient that a (Form|Listed)Element changed dynamically,
+  // passing the changed element as well as the type of the change.
+  // TODO(crbug.com/1483242): Fire the signal for elements that become hidden.
+  void DidChangeFormRelatedElementDynamically(HTMLElement*,
+                                              WebFormRelatedChangeType);
 
   void AddConsoleMessage(ConsoleMessage* message,
                          bool discard_duplicates = false) const;
@@ -1845,6 +1869,9 @@ class CORE_EXPORT Document : public ContainerNode,
   bool InForcedColorsMode() const;
   bool InDarkMode();
 
+  const ui::ColorProvider* GetColorProviderForPainting(
+      mojom::blink::ColorScheme color_scheme) const;
+
   // Capture the toggle event during parsing either by HTML parser or XML
   // parser.
   void SetToggleDuringParsing(bool toggle_during_parsing) {
@@ -1923,6 +1950,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void AddPostPrerenderingActivationStep(base::OnceClosure callback);
 
+  using LCPCallback = base::OnceCallback<void(const Element&)>;
+  void AddLCPPredictedCallback(LCPCallback callback);
+  void RunLCPPredictedCallbacks(const Element& lcp_element);
+
   class CORE_EXPORT PaintPreviewScope {
     STACK_ALLOCATED();
 
@@ -1946,6 +1977,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ObserveForIntrinsicSize(Element* element);
   void UnobserveForIntrinsicSize(Element* element);
+
+  void ObserveForLazyLoadedAutoSizedImg(HTMLImageElement* img);
+  void UnobserveForLazyLoadedAutoSizedImg(HTMLImageElement* img);
 
   // Returns true if motion should be forcibly reduced in animations on this
   // document. This returns true if all of the following conditions are true:
@@ -1990,9 +2024,19 @@ class CORE_EXPORT Document : public ContainerNode,
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const String& html);
 
+  // Delays execution of pending async scripts until a milestone is reached.
+  // Used in conjunction with kDelayAsyncScriptExecution experiment.
+  void DelayAsyncScriptExecution();
+  void ResumeAsyncScriptExecution();
+
   // This method should only be called when the document is top-level and it is
   // rendering static media like video or images.
   void SetOverrideSiteForCookiesForCSPMedia(bool value);
+
+  // Flags to determine if LCPP ElementLocator matched during
+  // HTML preload scanning.
+  void SetLcpElementFoundInHtml(bool found);
+  bool IsLcpElementFoundInHtml();
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
@@ -2216,6 +2260,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Resource* GetPendingLinkPreloadForTesting(const KURL&);
 
+  ResizeObserver& GetLazyLoadedAutoSizedImgObserver();
+
   const DocumentToken token_;
 
   // Bitfield used for tracking UKM sampling of media features such that each
@@ -2240,6 +2286,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // The callback list for post-prerendering activation step.
   // https://wicg.github.io/nav-speculation/prerendering.html#document-post-prerendering-activation-steps-list
   Vector<base::OnceClosure> post_prerendering_activation_callbacks_;
+
+  // Callbacks are called when predicted LCP is painted. Never called if
+  // prediction is incorrect.
+  Vector<LCPCallback> lcp_predicted_callbacks_;
 
   bool evaluate_media_queries_on_style_recalc_;
 
@@ -2552,6 +2602,11 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<Document> template_document_host_;
 
   HeapHashSet<Member<SVGUseElement>> use_elements_needing_update_;
+  // SVG resources ("resource elements") for which NotifyContentChanged() needs
+  // to be called to notify any clients about a change in layout attachment
+  // state. Should be populated during layout detach or style recalc, and be
+  // empty before and after those operations.
+  HeapHashSet<Member<LocalSVGResource>> svg_resources_needing_invalidation_;
 
   ParserSynchronizationPolicy parser_sync_policy_;
 
@@ -2682,6 +2737,9 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLMetaElement>> meta_theme_color_elements_;
 
   Member<ResizeObserver> intrinsic_size_observer_;
+
+  // Watches lazy loaded auto sized img elements for resizes.
+  Member<ResizeObserver> lazy_loaded_auto_sized_img_observer_;
 
   // Whether any resource loads that block printing are happening.
   bool loading_for_print_ = false;

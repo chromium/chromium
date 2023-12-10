@@ -13,15 +13,17 @@ import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {Command, CommandCategory} from '../common/command.js';
 import {CommandStore} from '../common/command_store.js';
+import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
 import {KeyBinding, KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
-import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
+import {PanelMode} from './panel_mode.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -331,6 +333,17 @@ export class MenuManager {
   }
 
   /**
+   * Get the callback for whatever item is currently selected.
+   * @return {?Function} The callback for the current item.
+   */
+  getCallbackForCurrentItem() {
+    if (this.activeMenu_) {
+      return this.activeMenu_.getCallbackForCurrentItem();
+    }
+    return null;
+  }
+
+  /**
    * @param {string|undefined} opt_menuTitle
    * @return {!PanelMenu}
    */
@@ -419,6 +432,97 @@ export class MenuManager {
     this.activateMenu(menu, true /* activateFirstItem */);
     mouseUpEvent.preventDefault();
     mouseUpEvent.stopPropagation();
+  }
+
+  /**
+   * Open / show the ChromeVox Menus.
+   * @param {Event=} opt_event An optional event that triggered this.
+   * @param {string=} opt_activateMenuTitle Title msg id of menu to open.
+   */
+  async onOpenMenus(opt_event, opt_activateMenuTitle) {
+    // If the menu was already open, close it now and exit early.
+    if (PanelInterface.instance.mode !== PanelMode.COLLAPSED) {
+      PanelInterface.instance.setMode(PanelMode.COLLAPSED);
+      return;
+    }
+
+    // Eat the event so that a mousedown isn't turned into a drag, allowing
+    // users to click-drag-release to select a menu item.
+    if (opt_event) {
+      opt_event.stopPropagation();
+      opt_event.preventDefault();
+    }
+
+    await BackgroundBridge.PanelBackground.saveCurrentNode();
+    PanelInterface.instance.setMode(PanelMode.FULLSCREEN_MENUS);
+
+    // The panel does not get focus immediately when we request to be full
+    // screen (handled in ChromeVoxPanel natively on hash changed). Wait, if
+    // needed, for focus to begin initialization.
+    if (!document.hasFocus()) {
+      await waitForWindowFocus();
+    }
+
+    const eventSource = await BackgroundBridge.EventSource.get();
+    const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
+
+    // Build the top-level menus.
+    const searchMenu = this.addSearchMenu('panel_search_menu');
+    const jumpMenu = this.addMenu('panel_menu_jump');
+    const speechMenu = this.addMenu('panel_menu_speech');
+    const touchMenu =
+        touchScreen ? this.addMenu('panel_menu_touchgestures') : null;
+    const chromevoxMenu = this.addMenu('panel_menu_chromevox');
+    const actionsMenu = this.addMenu('panel_menu_actions');
+
+    // Add a menu item that opens the full list of ChromeBook keyboard
+    // shortcuts. We want this to be at the top of the ChromeVox menu.
+    await this.addOSKeyboardShortcutsMenuItem(chromevoxMenu);
+
+    // Create a mapping between categories from CommandStore, and our
+    // top-level menus. Some categories aren't mapped to any menu.
+    const categoryToMenu = this.makeCategoryMapping(
+        actionsMenu, chromevoxMenu, jumpMenu, speechMenu);
+
+    // Make a copy of the key bindings, get the localized title of each
+    // command, and then sort them.
+    const sortedBindings = await this.getSortedKeyBindings();
+
+    // Insert items from the bindings into the menus.
+    const bindingMap = this.makeBindingMap(sortedBindings);
+    for (const binding of bindingMap.values()) {
+      const category = CommandStore.categoryForCommand(binding.command);
+      const menu = category ? categoryToMenu[category] : null;
+      this.addMenuItemFromKeyBinding(binding, menu, touchScreen);
+    }
+
+    // Add Touch Gestures menu items.
+    if (touchMenu) {
+      this.addTouchGestureMenuItems(touchMenu);
+    }
+
+    if (PanelInterface.instance.sessionState !== 'IN_SESSION') {
+      this.denySignedOut();
+    }
+
+    // Add a menu item that disables / closes ChromeVox.
+    chromevoxMenu.addMenuItem(
+        Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '',
+        async () => PanelInterface.instance.onClose());
+
+    for (const menuData of ALL_PANEL_MENU_NODE_DATA) {
+      this.addNodeMenu(menuData);
+    }
+    await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
+        opt_activateMenuTitle);
+
+    await this.addActionsMenuItems(actionsMenu, bindingMap);
+
+    // Activate either the specified menu or the search menu.
+    const selectedMenu = this.getSelectedMenu(opt_activateMenuTitle);
+
+    const activateFirstItem = (selectedMenu !== this.searchMenu);
+    this.activateMenu(selectedMenu, activateFirstItem);
   }
 
   /**
@@ -536,3 +640,8 @@ const ACTION_TO_MSG_ID = {
   showContextMenu: 'show_context_menu',
   longClick: 'force_long_click_on_current_item',
 };
+
+async function waitForWindowFocus() {
+  return new Promise(
+      resolve => window.addEventListener('focus', resolve, {once: true}));
+}

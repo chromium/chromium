@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_widget_types.h"
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -24,6 +25,7 @@ static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
 
 class GURL;
 class Profile;
+class Browser;
 
 namespace base {
 class FilePath;
@@ -54,12 +56,10 @@ struct WebAppInstallInfo;
 using AppInstallationAcceptanceCallback =
     base::OnceCallback<void(bool, std::unique_ptr<WebAppInstallInfo>)>;
 
-// Shows the Web App install bubble.
+// Shows the Create Shortcut confirmation dialog.
 //
 // |web_app_info| is the WebAppInstallInfo being converted into an app.
-// |web_app_info.app_url| should contain a start url from a web app manifest
-// (for a Desktop PWA), or the current url (when creating a shortcut app).
-void ShowWebAppInstallDialog(
+void ShowCreateShortcutDialog(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
@@ -72,7 +72,6 @@ void ShowWebAppInstallDialog(
 // information to represent each app to the user.
 views::Widget* CreateSubAppsInstallDialogWidget(
     const std::u16string parent_app_name,
-    const std::u16string parent_app_scope,
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     base::RepeatingClosure settings_page_callback,
     gfx::NativeWindow window);
@@ -174,6 +173,11 @@ void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 // Shows the Isolated Web App manual install wizard.
 void LaunchIsolatedWebAppInstaller(Profile* profile,
                                    const base::FilePath& bundle_path);
+
+void PostCallbackOnBrowserActivation(
+    const Browser* browser,
+    ui::ElementIdentifier id,
+    base::OnceCallback<void(bool)> view_and_element_activated_callback);
 
 }  // namespace web_app
 

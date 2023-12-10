@@ -25,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
@@ -200,10 +199,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       bool same_document);
-
-  // Creates a WebBluetooth Service with a dummy InterfaceRequest.
-  WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting(
-      mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
   // Returns a pending Frame remote that represents a connection to a non-
   // existent renderer, where all messages will go into the void.

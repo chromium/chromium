@@ -14,7 +14,8 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -408,7 +409,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // Sets the context widget. Must be called before RunTestSequence() or any of
   // the mouse functions.
   void SetContextWidget(Widget* context_widget);
-  Widget* context_widget() { return context_widget_; }
+  Widget* context_widget() { return context_widget_.get(); }
 
  protected:
   explicit InteractiveViewsTestApi(
@@ -440,7 +441,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // Creates the follow-up step for a mouse action.
   StepBuilder CreateMouseFollowUpStep(const base::StringPiece& description);
 
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> context_widget_ = nullptr;
+  base::WeakPtr<Widget> context_widget_;
 };
 
 // Template that adds InteractiveViewsTestApi to any test fixture. Prefer to use

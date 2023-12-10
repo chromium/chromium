@@ -51,8 +51,8 @@ enum DeviceForm : uint32_t {
 // appear once per device.
 constexpr char kDescriptionLogInputDeviceHeader[] = "class=ui::InputDevice";
 
-constexpr char kImposterIsTrue[] = "suspected_imposter=1";
-constexpr char kImposterIsFalse[] = "suspected_imposter=0";
+constexpr char kKeyboardImposterIsTrue[] = "suspected_keyboard_imposter=1";
+constexpr char kKeyboardImposterIsFalse[] = "suspected_keyboard_imposter=0";
 
 // Splits multi-line block of text into array of strings.
 std::vector<std::string> SplitLines(const std::string& param) {
@@ -261,7 +261,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest, AttachSingularMouse) {
@@ -319,7 +319,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -354,7 +354,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_TRUE(keyboards_.front().suspected_imposter);
+  EXPECT_TRUE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -389,7 +389,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -424,7 +424,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_TRUE(keyboards_.front().suspected_imposter);
+  EXPECT_TRUE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -452,7 +452,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_TRUE(keyboards_.front().suspected_imposter);
+  EXPECT_TRUE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -480,7 +480,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -515,7 +515,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -550,7 +550,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -585,7 +585,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -613,7 +613,7 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -648,11 +648,11 @@ TEST_F(InputDeviceFactoryEvdevTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_TRUE(keyboards_.front().suspected_imposter);
+  EXPECT_TRUE(keyboards_.front().suspected_keyboard_imposter);
 
   input_device_factory_->RemoveInputDevice(mouse_path);
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
-  EXPECT_FALSE(keyboards_.front().suspected_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -793,7 +793,7 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogAttachInternalKeyboard) {
 
   EXPECT_THAT(lines,
               Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
-  EXPECT_THAT(lines, Contains(HasSubstr(kImposterIsFalse)));
+  EXPECT_THAT(lines, Contains(HasSubstr(kKeyboardImposterIsFalse)));
 }
 
 TEST_F(
@@ -846,7 +846,7 @@ TEST_F(
 
   EXPECT_THAT(lines,
               Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(3));
-  EXPECT_THAT(lines, Contains(HasSubstr(kImposterIsFalse)).Times(3));
+  EXPECT_THAT(lines, Contains(HasSubstr(kKeyboardImposterIsFalse)).Times(3));
 }
 
 TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogOneDeviceMouseAndKeyboard) {
@@ -880,7 +880,7 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogOneDeviceMouseAndKeyboard) {
 
   EXPECT_THAT(lines,
               Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
-  EXPECT_THAT(lines, Contains(HasSubstr(kImposterIsTrue)));
+  EXPECT_THAT(lines, Contains(HasSubstr(kKeyboardImposterIsTrue)));
 }
 
 }  // namespace ui

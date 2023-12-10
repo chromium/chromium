@@ -11,6 +11,7 @@
 #include <wrl/implements.h>
 
 #include <cstring>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -230,7 +231,7 @@ std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope) {
 bool InstallComInterfaces(UpdaterScope scope, bool is_internal) {
   VLOG(1) << __func__ << ": scope: " << scope
           << ": is_internal: " << is_internal;
-  const absl::optional<base::FilePath> versioned_directory =
+  const std::optional<base::FilePath> versioned_directory =
       GetVersionedInstallDirectory(scope);
   if (!versioned_directory) {
     return false;
@@ -248,6 +249,8 @@ bool InstallComInterfaces(UpdaterScope scope, bool is_internal) {
 bool AreComInterfacesPresent(UpdaterScope scope, bool is_internal) {
   VLOG(1) << __func__ << ": scope: " << scope
           << ": is_internal: " << is_internal;
+
+  bool are_interfaces_present = true;
   for (const auto& [iid, interface_name] : GetInterfaces(is_internal, scope)) {
     const HKEY root = UpdaterScopeToHKeyRoot(scope);
     const std::wstring iid_path = GetComIidRegistryPath(iid);
@@ -258,14 +261,15 @@ bool AreComInterfacesPresent(UpdaterScope scope, bool is_internal) {
       for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
         if (!base::win::RegKey(root, path.c_str(), KEY_QUERY_VALUE | key_flag)
                  .Valid()) {
-          VLOG(2) << __func__ << ": interface missing: " << iid_path;
-          return false;
+          VLOG(2) << __func__ << ": interface entry missing: " << interface_name
+                  << ": path: " << path << ": key_flag: " << key_flag;
+          are_interfaces_present = false;
         }
       }
     }
   }
-  VLOG(2) << __func__ << ": all interfaces present";
-  return true;
+  VLOG_IF(2, are_interfaces_present) << __func__ << ": all interfaces present";
+  return are_interfaces_present;
 }
 
 // Adds work items to `list` to install the interface `iid`.
@@ -276,13 +280,6 @@ void AddInstallComInterfaceWorkItems(HKEY root,
                                      WorkItemList* list) {
   const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
   const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
-
-  // Delete any old registrations first.
-  for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
-    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-    }
-  }
 
   for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
     // Registering the Ole Automation marshaler with the CLSID
@@ -333,10 +330,8 @@ void AddInstallServerWorkItems(HKEY root,
   const std::wstring clsid_reg_path = GetComServerClsidRegistryPath(clsid);
 
   // Delete any old registrations first.
-  for (const auto& reg_path : {clsid_reg_path}) {
-    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-    }
+  for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    list->AddDeleteRegKeyWorkItem(root, clsid_reg_path, key_flag);
   }
 
   list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);

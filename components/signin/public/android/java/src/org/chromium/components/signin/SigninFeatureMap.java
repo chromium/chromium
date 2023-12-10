@@ -17,9 +17,7 @@ public final class SigninFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private SigninFeatureMap() {}
 
-    /**
-     * @return the singleton SigninFeatureMap.
-     */
+    /** @return the singleton SigninFeatureMap. */
     public static SigninFeatureMap getInstance() {
         return sInstance;
     }

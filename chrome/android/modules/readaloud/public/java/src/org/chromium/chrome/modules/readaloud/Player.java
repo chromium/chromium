@@ -6,16 +6,17 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.List;
-import java.util.Map;
 
 /** This interface represents Read Aloud player UI. */
 public interface Player {
@@ -23,27 +24,39 @@ public interface Player {
     interface Delegate {
         /** Returns the BottomSheetController that will manage the bottom sheets. */
         BottomSheetController getBottomSheetController();
+
         /** Returns true if highlighting is supported. */
         boolean isHighlightingSupported();
+
+        /** Set highlighter mode. */
+        void setHighlighterMode(@Highlighter.Mode int mode);
+
         /** Returns the supplier for the "highlighting enabled" setting. */
         ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier();
+
         /** Returns the supplier for the list of voices to show in the voice menu. */
         ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier();
+
         /** Returns the supplier for the current language's selected voice. */
         ObservableSupplier<String> getVoiceIdSupplier();
-        /** Returns the mapping of language to current user-selected voice. */
-        Map<String, String> getVoiceOverrides();
 
         /**
-         * Called when the user selects a voice in the voice settings menu.
-         * Saves the new choice for the given language and continues playback from the
-         * same position.
+         * Called when the user selects a voice in the voice settings menu. Saves the new choice for
+         * the given language and continues playback from the same position.
          */
-        void setVoiceOverride(PlaybackVoice voice);
-        /** Play a short example of the specified voice. */
-        void previewVoice(PlaybackVoice voice);
+        void setVoiceOverrideAndApplyToPlayback(PlaybackVoice voice);
+
+        /**
+         * Play a short example of the specified voice.
+         *
+         * @param voice Voice to preview.
+         * @return Promise that resolves to the preview's playback.
+         */
+        Promise<Playback> previewVoice(PlaybackVoice voice);
+
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
+
         /** Returns the Activity in which the player UI should live. */
         Activity getActivity();
 
@@ -68,6 +81,9 @@ public interface Player {
          * then calling dismissPlayers().
          */
         void onRequestClosePlayers();
+
+        /** Called when the user closes the voice menu. */
+        void onVoiceMenuClosed();
     }
 
     /**
@@ -87,9 +103,7 @@ public interface Player {
     /** Stop playback and stop tracking players. */
     default void destroy() {}
 
-    /**
-     * Show the mini player, called when playback is requested.
-     */
+    /** Show the mini player, called when playback is requested. */
     default void playTabRequested() {}
 
     /**

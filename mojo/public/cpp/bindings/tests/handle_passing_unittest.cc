@@ -212,7 +212,7 @@ TEST_P(HandlePassingTest, Basic) {
                                       run_loop.QuitClosure());
 
   sample::RequestPtr request(sample::Request::New(
-      1, std::move(pipe1.handle0), absl::nullopt, std::move(imported)));
+      1, std::move(pipe1.handle0), std::nullopt, std::move(imported)));
   bool got_response = false;
   std::string got_text_reply;
   base::RunLoop run_loop2;
@@ -236,7 +236,7 @@ TEST_P(HandlePassingTest, PassInvalid) {
   SampleFactoryImpl factory_impl(factory.BindNewPipeAndPassReceiver());
 
   sample::RequestPtr request(sample::Request::New(1, ScopedMessagePipeHandle(),
-                                                  absl::nullopt, NullRemote()));
+                                                  std::nullopt, NullRemote()));
 
   bool got_response = false;
   std::string got_text_reply;

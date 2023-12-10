@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -29,7 +29,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace crx_file {
@@ -116,11 +115,11 @@ class ExtensionDownloader {
     ping_enabled_domain_ = domain;
   }
 
-  // Set backoff policy for manifest and extension queue. Set `absl::nullopt` to
+  // Set backoff policy for manifest and extension queue. Set `std::nullopt` to
   // restore to the default backoff policy. Used in tests and Kiosk launcher to
   // reduce retry backoff.
   void SetBackoffPolicy(
-      absl::optional<net::BackoffEntry::Policy> backoff_policy);
+      std::optional<net::BackoffEntry::Policy> backoff_policy);
 
   bool HasActiveManifestRequestForTesting();
 
@@ -298,7 +297,7 @@ class ExtensionDownloader {
   // If |results| is null, it means something went wrong when parsing it.
   void HandleManifestResults(std::unique_ptr<ManifestFetchData> fetch_data,
                              std::unique_ptr<UpdateManifestResults> results,
-                             const absl::optional<ManifestParseFailure>& error);
+                             const std::optional<ManifestParseFailure>& error);
 
   // This function partition extensions from given |tasks| into two sets:
   // update/error using the update information from |possible_updates| and
@@ -317,10 +316,10 @@ class ExtensionDownloader {
       std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>>* errors);
 
   // Checks whether extension is presented in cache. If yes, return path to its
-  // cached CRX, absl::nullopt otherwise. |manifest_fetch_failed| flag indicates
+  // cached CRX, std::nullopt otherwise. |manifest_fetch_failed| flag indicates
   // whether the lookup in cache is performed after the manifest is fetched or
   // due to failure while fetching or parsing manifest.
-  absl::optional<base::FilePath> GetCachedExtension(
+  std::optional<base::FilePath> GetCachedExtension(
       const ExtensionId& id,
       const std::string& package_hash,
       const base::Version& expected_version,
@@ -330,7 +329,7 @@ class ExtensionDownloader {
   // additional information about the extension update from the info field in
   // the update manifest.
   void FetchUpdatedExtension(std::unique_ptr<ExtensionFetch> fetch_data,
-                             absl::optional<std::string> info);
+                             std::optional<std::string> info);
 
   // Called by RequestQueue when a new extension load request is started.
   void CreateExtensionLoader();

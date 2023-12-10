@@ -17,12 +17,14 @@ source_set("mac") {
   visibility = [ "//media/gpu" ]
 
   sources = [
-    "video_toolbox_decode_metadata.cc",
-    "video_toolbox_decode_metadata.h",
-    "video_toolbox_decompression_interface.cc",
-    "video_toolbox_decompression_interface.h",
+    "video_toolbox_av1_accelerator.cc",
+    "video_toolbox_av1_accelerator.h",
+    "video_toolbox_decompression_metadata.cc",
+    "video_toolbox_decompression_metadata.h",
     "video_toolbox_decompression_session.cc",
     "video_toolbox_decompression_session.h",
+    "video_toolbox_decompression_session_manager.cc",
+    "video_toolbox_decompression_session_manager.h",
     "video_toolbox_frame_converter.cc",
     "video_toolbox_frame_converter.h",
     "video_toolbox_h264_accelerator.cc",
@@ -90,7 +92,8 @@ source_set("unit_tests") {
   }
 
   sources = [
-    "video_toolbox_decompression_interface_unittest.cc",
+    "video_toolbox_av1_accelerator_unittest.cc",
+    "video_toolbox_decompression_session_manager_unittest.cc",
     "video_toolbox_h264_accelerator_unittest.cc",
     "video_toolbox_output_queue_unittest.cc",
     "video_toolbox_vp9_accelerator_unittest.cc",

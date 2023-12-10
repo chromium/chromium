@@ -62,7 +62,7 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
                                          const base::Value::Dict& value,
                                          std::string* error,
                                          bool* bad_message) {
-  absl::optional<int> parameter = value.FindInt("parameter");
+  std::optional<int> parameter = value.FindInt("parameter");
   if (!parameter) {
     *error = "No parameter";
     *bad_message = true;

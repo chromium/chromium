@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -12,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_byte_range.h"
@@ -292,7 +292,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   }
 
   // CORS-Safelisted headers are the only headers permitted in a CORS request.
-  static constexpr auto safe_names = base::MakeFixedFlatSet<base::StringPiece>({
+  static constexpr auto safe_names = base::MakeFixedFlatSet<std::string_view>({
 
       // [Block 1 - Specification]
       // Headers in this section are included in the order listed by:

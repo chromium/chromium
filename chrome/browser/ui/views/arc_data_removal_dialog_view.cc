@@ -55,7 +55,8 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
   void OnAppImageUpdated(
       const std::string& app_id,
       const gfx::ImageSkia& image,
-      const absl::optional<gfx::ImageSkia>& badge_image) override;
+      bool is_placeholder_icon,
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   // ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
@@ -135,7 +136,8 @@ DataRemovalConfirmationDialog::~DataRemovalConfirmationDialog() {
 void DataRemovalConfirmationDialog::OnAppImageUpdated(
     const std::string& app_id,
     const gfx::ImageSkia& image,
-    const absl::optional<gfx::ImageSkia>& badge_image) {
+    bool is_placeholder_icon,
+    const std::optional<gfx::ImageSkia>& badge_image) {
   DCHECK(!image.isNull());
   DCHECK_EQ(image.width(), kArcAppIconSize);
   DCHECK_EQ(image.height(), kArcAppIconSize);

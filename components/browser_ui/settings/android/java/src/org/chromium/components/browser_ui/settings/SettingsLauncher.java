@@ -15,13 +15,17 @@ import androidx.fragment.app.Fragment;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Interface for launching Settings.
- */
+/** Interface for launching Settings. */
 public interface SettingsLauncher {
-    @IntDef({SettingsFragment.MAIN, SettingsFragment.CLEAR_BROWSING_DATA,
-            SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE, SettingsFragment.PAYMENT_METHODS,
-            SettingsFragment.SAFETY_CHECK, SettingsFragment.SITE, SettingsFragment.ACCESSIBILITY})
+    @IntDef({
+        SettingsFragment.MAIN,
+        SettingsFragment.CLEAR_BROWSING_DATA,
+        SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE,
+        SettingsFragment.PAYMENT_METHODS,
+        SettingsFragment.SAFETY_CHECK,
+        SettingsFragment.SITE,
+        SettingsFragment.ACCESSIBILITY
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SettingsFragment {
         /// Main settings page.
@@ -72,7 +76,9 @@ public interface SettingsLauncher {
      * @param fragment The fragment to show, or null to show the default fragment.
      * @param fragmentArgs A bundle of additional fragment arguments.
      */
-    void launchSettingsActivity(Context context, @Nullable Class<? extends Fragment> fragment,
+    void launchSettingsActivity(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs);
 
     /**

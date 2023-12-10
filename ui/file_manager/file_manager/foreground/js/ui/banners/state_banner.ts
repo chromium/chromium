@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {visitURL} from '../../../../common/js/util.js';
@@ -30,7 +24,7 @@ import {type AllowedVolumeOrType, Banner} from './types.js';
  *
  *    class ConcreteStateBanner extends StateBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *

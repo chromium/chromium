@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/onc/onc_merger.h"
 
 #include <array>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::onc {
 namespace {

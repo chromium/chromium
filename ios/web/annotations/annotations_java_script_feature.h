@@ -5,12 +5,12 @@
 #ifndef IOS_WEB_ANNOTATIONS_ANNOTATIONS_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_ANNOTATIONS_ANNOTATIONS_JAVA_SCRIPT_FEATURE_H_
 
+#import <optional>
 #import <string>
 
 #import "base/no_destructor.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
@@ -45,7 +45,7 @@ class AnnotationsJavaScriptFeature : public JavaScriptFeature {
   // JavaScriptFeature:
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& script_message) override;
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   AnnotationsJavaScriptFeature();
   ~AnnotationsJavaScriptFeature() override;
 

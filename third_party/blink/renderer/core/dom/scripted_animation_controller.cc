@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -83,10 +84,10 @@ void ScriptedAnimationController::ContextLifecycleStateChanged(
 }
 
 void ScriptedAnimationController::DispatchEventsAndCallbacksForPrinting() {
-  DispatchEvents([](const Event* event) {
+  DispatchEvents(WTF::BindRepeating([](Event* event) {
     return event->InterfaceName() ==
            event_interface_names::kMediaQueryListEvent;
-  });
+  }));
   CallMediaQueryListListeners();
 }
 
@@ -119,15 +120,15 @@ void ScriptedAnimationController::RunTasks() {
     std::move(task).Run();
 }
 
-void ScriptedAnimationController::DispatchEvents(const DispatchFilter& filter) {
+bool ScriptedAnimationController::DispatchEvents(DispatchFilter filter) {
   HeapVector<Member<Event>> events;
-  if (!filter.has_value()) {
+  if (filter.is_null()) {
     events.swap(event_queue_);
     per_frame_events_.clear();
   } else {
     HeapVector<Member<Event>> remaining;
     for (auto& event : event_queue_) {
-      if (event && filter.value()(event)) {
+      if (event && filter.Run(event)) {
         EraseFromPerFrameEventsMap(event.Get());
         events.push_back(event.Release());
       } else {
@@ -137,7 +138,10 @@ void ScriptedAnimationController::DispatchEvents(const DispatchFilter& filter) {
     remaining.swap(event_queue_);
   }
 
+  bool did_dispatch = false;
+
   for (const auto& event : events) {
+    did_dispatch = true;
     EventTarget* event_target = event->target();
     // FIXME: we should figure out how to make dispatchEvent properly virtual to
     // avoid special casting window.
@@ -150,6 +154,8 @@ void ScriptedAnimationController::DispatchEvents(const DispatchFilter& filter) {
     else
       event_target->DispatchEvent(*event);
   }
+
+  return did_dispatch;
 }
 
 void ScriptedAnimationController::ExecuteVideoFrameCallbacks() {

@@ -25,8 +25,11 @@ const char kLauncherSearchAppId[] = "ceoplblcdaffnnflkkcagjpomjgedmdl";
 const char kIgnoredAppIdPrefix[] = "org.chromium.guest_os.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
-const re2::LazyRE2 kURLAllowlistRegex[] = {{"//store/[0-9]{1,32}"},
-                                           {"//run/[0-9]{1,32}"}};
+const re2::LazyRE2 kURLAllowlistRegex[] = {
+    {"//store/[0-9]{1,32}"},
+    {"//run/[0-9]{1,32}"},
+    {"//subscriptioninstall/[0-9]{1,32}"},
+    {"//launch/[0-9]{1,32}/Dialog"}};
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 const re2::LazyRE2 kSpuriousGameBlocklist[] = {
@@ -61,45 +64,45 @@ const re2::LazyRE2 kSteamGameIdFromWindowRegex = {
 
 // Works for window-data either in the exo_id form, or the anonymous app_id
 // form.
-absl::optional<int> ParseGameIdFromWindowData(const std::string& data) {
+std::optional<int> ParseGameIdFromWindowData(const std::string& data) {
   int app_id;
   if (RE2::PartialMatch(data, *kSteamGameIdFromWindowRegex, &app_id)) {
     return app_id;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
-absl::optional<int> ParseSteamGameId(std::string exec) {
+std::optional<int> ParseSteamGameId(std::string exec) {
   int app_id;
   if (RE2::PartialMatch(exec, *kSteamGameIdFromExecRegex, &app_id)) {
     return app_id;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> SteamGameId(const aura::Window* window) {
+std::optional<int> SteamGameId(const aura::Window* window) {
   const std::string* id = exo::GetShellApplicationId(window);
   if (!id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ParseGameIdFromWindowData(*id);
 }
 
-absl::optional<int> SteamGameId(Profile* profile, const std::string& app_id) {
+std::optional<int> SteamGameId(Profile* profile, const std::string& app_id) {
   if (BorealisWindowManager::IsAnonymousAppId(app_id)) {
     return ParseGameIdFromWindowData(app_id);
   }
   guest_os::GuestOsRegistryService* registry =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   if (!registry) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<guest_os::GuestOsRegistryService::Registration> reg =
+  std::optional<guest_os::GuestOsRegistryService::Registration> reg =
       registry->GetRegistration(app_id);
   if (!reg) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ParseSteamGameId(reg->Exec());
 }
@@ -145,7 +148,7 @@ bool GetCompatToolInfo(const std::string& owner_id, std::string* output) {
   return base::GetAppOutputAndError(command, output);
 }
 
-CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
+CompatToolInfo ParseCompatToolInfo(std::optional<int> game_id,
                                    const std::string& output) {
   // Expected stdout of get_compat_tool_versions.py:
   // GameID: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>

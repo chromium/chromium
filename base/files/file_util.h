@@ -646,6 +646,11 @@ BASE_EXPORT bool CreateLocalNonBlockingPipe(int fds[2]);
 // Returns true if it was able to set it in the close-on-exec mode, otherwise
 // false.
 BASE_EXPORT bool SetCloseOnExec(int fd);
+
+// Removes close-on-exec flag from the given |fd|.
+// Returns true if it was able to remove the close-on-exec flag, otherwise
+// false.
+BASE_EXPORT bool RemoveCloseOnExec(int fd);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_MAC)

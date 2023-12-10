@@ -34,9 +34,13 @@ public class DownloadTaskScheduler {
 
     @VisibleForTesting
     @CalledByNative
-    public static void scheduleTask(@DownloadTaskType int taskType,
-            boolean requiresUnmeteredNetwork, boolean requiresCharging,
-            int optimalBatteryPercentage, long windowStartTimeSeconds, long windowEndTimeSeconds) {
+    public static void scheduleTask(
+            @DownloadTaskType int taskType,
+            boolean requiresUnmeteredNetwork,
+            boolean requiresCharging,
+            int optimalBatteryPercentage,
+            long windowStartTimeSeconds,
+            long windowEndTimeSeconds) {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putInt(EXTRA_TASK_TYPE, taskType);
         bundle.putInt(EXTRA_OPTIMAL_BATTERY_PERCENTAGE, optimalBatteryPercentage);
@@ -98,8 +102,9 @@ public class DownloadTaskScheduler {
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK:
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
-                return requiresUnmeteredNetwork ? TaskInfo.NetworkType.UNMETERED
-                                                : TaskInfo.NetworkType.ANY;
+                return requiresUnmeteredNetwork
+                        ? TaskInfo.NetworkType.UNMETERED
+                        : TaskInfo.NetworkType.ANY;
             case DownloadTaskType.DOWNLOAD_LATER_TASK:
                 return TaskInfo.NetworkType.ANY;
         }

@@ -276,6 +276,10 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
   options.single_feed_entry_point = entry_point;
+  if (!loaded_after_start_ &&
+      base::FeatureList::IsEnabled(kRefreshFeedOnRestart)) {
+    options.refresh_even_when_not_stale = true;
+  }
   task_queue_.AddTask(FROM_HERE,
                       std::make_unique<LoadStreamTask>(
                           options, this,
@@ -323,6 +327,8 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
 void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   DCHECK(result.load_type == LoadType::kInitialLoad ||
          result.load_type == LoadType::kManualRefresh);
+
+  loaded_after_start_ = true;
 
   Stream& stream = GetStream(result.stream_type);
   if (result.load_type == LoadType::kManualRefresh)

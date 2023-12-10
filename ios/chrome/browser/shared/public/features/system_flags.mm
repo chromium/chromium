@@ -83,6 +83,11 @@ bool ShouldResetFirstFollowCount() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:@"ResetFirstFollow"];
 }
 
+bool ShouldForceContentNotificationsPromo() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"ForceContentNotificationsPromo"];
+}
+
 bool ShouldForceFeedSigninPromo() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"ForceFeedSigninPromo"];
@@ -159,7 +164,7 @@ NSString* GetForcedPromoToDisplay() {
       stringForKey:kNextPromoForDisplayOverride];
 }
 
-absl::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState() {
+std::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState() {
   std::string state =
       base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
           stringForKey:kSafetyCheckUpdateChromeStateOverride]);
@@ -167,7 +172,7 @@ absl::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState() {
   return UpdateChromeSafetyCheckStateForName(state);
 }
 
-absl::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState() {
+std::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState() {
   std::string state =
       base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
           stringForKey:kSafetyCheckPasswordStateOverride]);
@@ -175,7 +180,7 @@ absl::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState() {
   return PasswordSafetyCheckStateForName(state);
 }
 
-absl::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState() {
+std::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState() {
   std::string state =
       base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
           stringForKey:kSafetyCheckSafeBrowsingStateOverride]);
@@ -183,34 +188,34 @@ absl::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState() {
   return SafeBrowsingSafetyCheckStateForName(state);
 }
 
-absl::optional<int> GetSafetyCheckWeakPasswordsCount() {
+std::optional<int> GetSafetyCheckWeakPasswordsCount() {
   int weakPasswordsCount = [[NSUserDefaults standardUserDefaults]
       integerForKey:kSafetyCheckWeakPasswordsCountOverride];
 
   if (weakPasswordsCount == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return weakPasswordsCount;
 }
 
-absl::optional<int> GetSafetyCheckReusedPasswordsCount() {
+std::optional<int> GetSafetyCheckReusedPasswordsCount() {
   int reusedPasswordsCount = [[NSUserDefaults standardUserDefaults]
       integerForKey:kSafetyCheckReusedPasswordsCountOverride];
 
   if (reusedPasswordsCount == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return reusedPasswordsCount;
 }
 
-absl::optional<int> GetSafetyCheckCompromisedPasswordsCount() {
+std::optional<int> GetSafetyCheckCompromisedPasswordsCount() {
   int compromisedPasswordsCount = [[NSUserDefaults standardUserDefaults]
       integerForKey:kSafetyCheckCompromisedPasswordsCountOverride];
 
   if (compromisedPasswordsCount == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return compromisedPasswordsCount;

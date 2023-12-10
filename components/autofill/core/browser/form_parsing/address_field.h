@@ -141,11 +141,13 @@ class AddressField : public FormField {
 
   ParseNameLabelResult ParseNameAndLabelForLandmark(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForBetweenStreets(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
@@ -154,26 +156,31 @@ class AddressField : public FormField {
   // match is found.
   ParseNameLabelResult ParseNameAndLabelForBetweenStreetsLines12(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForAdminLevel2(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForBetweenStreetsOrLandmark(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForOverflowAndLandmark(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForOverflow(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 

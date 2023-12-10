@@ -150,8 +150,8 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
       kHorizontalMargin));
 
   auto gripper = std::make_unique<views::ImageView>();
-  gripper->SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP));
+  gripper->SetImage(
+      ui::ImageModel::FromResourceId(IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP));
   AddChildView(std::move(gripper));
 
   auto label = std::make_unique<views::Label>(text);

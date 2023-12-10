@@ -5,10 +5,12 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -35,8 +37,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
@@ -44,6 +46,8 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+enum class NameFormat { Regular, LongName, LongNameSingleWord };
 
 struct TestParam {
   std::string test_suffix = "";
@@ -56,6 +60,8 @@ struct TestParam {
   bool use_dark_theme = false;
   SkColor4f intercepted_profile_color = SkColors::kLtGray;
   SkColor4f primary_profile_color = SkColors::kBlue;
+  bool enable_webui_refresh = false;
+  NameFormat name_format = NameFormat::Regular;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -134,12 +140,31 @@ const TestParam kTestParams[] = {
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/false},
-    // TODO(b/301431278): Implement the dark mode and update the test.
     {"ChromeSigninDarkMode",
      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/true},
+    {.test_suffix = "ChromeSigninWebUIRefresh",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .enable_webui_refresh = true},
+
+    {.test_suffix = "ChromeSigninDarkModeWebUIRefresh",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .use_dark_theme = true,
+     .enable_webui_refresh = true},
+
+    {.test_suffix = "ChromeSigninLongName",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .name_format = NameFormat::LongName},
+
+    {.test_suffix = "ChromeSigninLongNameSingleWord",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .name_format = NameFormat::LongNameSingleWord},
 };
 
 // Returns the avatar button, which is the anchor view for the interception
@@ -158,7 +183,13 @@ class DiceWebSigninInterceptionBubblePixelTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  DiceWebSigninInterceptionBubblePixelTest() = default;
+  DiceWebSigninInterceptionBubblePixelTest() {
+    if (GetParam().enable_webui_refresh) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023},
+          {});
+    }
+  }
 
   // DialogBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -213,13 +244,24 @@ class DiceWebSigninInterceptionBubblePixelTest
     observer.Wait();
   }
 
+  std::string GivenNameFromNameFormat() {
+    switch (GetParam().name_format) {
+      case NameFormat::Regular:
+        return "Sam";
+      case NameFormat::LongName:
+        return "Sam With A Very Very Very Long Name";
+      case NameFormat::LongNameSingleWord:
+        return "SamWithAVeryVeryVeryVeryLongName";
+    }
+  }
+
   // Generates bubble parameters for testing.
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo intercepted_account;
     intercepted_account.account_id =
         CoreAccountId::FromGaiaId("intercepted_ID");
-    intercepted_account.given_name = "Sam";
-    intercepted_account.full_name = "Sam Sample";
+    intercepted_account.given_name = GivenNameFromNameFormat();
+    intercepted_account.full_name = intercepted_account.given_name + " Sample";
     intercepted_account.email = "sam.sample@intercepted.com";
     intercepted_account.hosted_domain =
         GetParam().is_intercepted_account_managed ? "intercepted.com"
@@ -253,6 +295,7 @@ class DiceWebSigninInterceptionBubblePixelTest
             show_managed_disclaimer};
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 
@@ -290,6 +333,16 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
   }
 
   WebSigninInterceptor::Delegate::BubbleParameters
+  GetTestChromeSigninBubbleParameters() {
+    AccountInfo account;
+    account.account_id = CoreAccountId::FromGaiaId("ID1");
+
+    return WebSigninInterceptor::Delegate::BubbleParameters(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin, account,
+        AccountInfo());
+  }
+
+  WebSigninInterceptor::Delegate::BubbleParameters
   GetTestBubbleParametersForManagedProfile() {
     WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters =
         GetTestBubbleParameters();
@@ -297,7 +350,7 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
     return bubble_parameters;
   }
 
-  absl::optional<SigninInterceptionResult> callback_result_;
+  std::optional<SigninInterceptionResult> callback_result_;
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 
@@ -501,4 +554,119 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_NE(new_tab_web_contents, bubble_web_contents);
   EXPECT_EQ(new_tab_web_contents->GetVisibleURL(), learn_more_url);
   EXPECT_FALSE(widget->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       ChromeSigninAccepted) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ASSERT_TRUE(GetAvatarButton()->GetEnabled());
+  // Creating the bubble through the static function.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      DiceWebSigninInterceptionBubbleView::CreateBubble(
+          browser(), GetAvatarButton(), GetTestChromeSigninBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      static_cast<DiceWebSigninInterceptionBubbleView::ScopedHandle*>(
+          handle.get())
+          ->GetBubbleViewForTesting();
+
+  views::Widget* widget = bubble->GetWidget();
+  // Equivalent to `kInterceptionBubbleBaseHeight` default.
+  bubble->SetHeightAndShowWidget(/*height=*/500);
+  EXPECT_FALSE(callback_result_.has_value());
+  EXPECT_FALSE(GetAvatarButton()->GetEnabled());
+
+  // Take a handle on the bubble, to close it later.
+  bubble_handle_ = bubble->GetHandle();
+
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
+  EXPECT_FALSE(bubble->GetAccepted());
+  // Simulate clicking Accept in the WebUI.
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kAccept);
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(bubble->GetAccepted());
+  EXPECT_TRUE(GetAvatarButton()->GetEnabled());
+
+  // Widget was not closed yet - the delegate then takes care of it through the
+  // handle.
+  ASSERT_FALSE(widget->IsClosed());
+  // Simulate completion of the interception process.
+  bubble_handle_.reset();
+  // Widget will close now.
+  closing_observer.Wait();
+
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                      SigninInterceptionResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 0);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       ChromeSigninDeclined) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ASSERT_TRUE(GetAvatarButton()->GetEnabled());
+  // Creating the bubble through the static function.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      DiceWebSigninInterceptionBubbleView::CreateBubble(
+          browser(), GetAvatarButton(), GetTestChromeSigninBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      static_cast<DiceWebSigninInterceptionBubbleView::ScopedHandle*>(
+          handle.get())
+          ->GetBubbleViewForTesting();
+
+  views::Widget* widget = bubble->GetWidget();
+  // Equivalent to `kInterceptionBubbleBaseHeight` default.
+  bubble->SetHeightAndShowWidget(/*height=*/500);
+  EXPECT_FALSE(callback_result_.has_value());
+  EXPECT_FALSE(GetAvatarButton()->GetEnabled());
+
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
+  EXPECT_FALSE(bubble->GetAccepted());
+  // Simulate clicking Decline in the WebUI.
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kDecline);
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kDeclined);
+  EXPECT_FALSE(bubble->GetAccepted());
+  EXPECT_TRUE(GetAvatarButton()->GetEnabled());
+
+  EXPECT_TRUE(widget->IsClosed());
+  // Widget will close now.
+  closing_observer.Wait();
+
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                      SigninInterceptionResult::kDeclined, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
 }

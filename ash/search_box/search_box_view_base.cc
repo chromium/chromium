@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -19,6 +20,8 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -130,6 +133,8 @@ class SearchBoxBackground : public views::Background {
 // To paint grey background on mic and back buttons, and close buttons for
 // fullscreen launcher.
 class SearchBoxImageButton : public views::ImageButton {
+  METADATA_HEADER(SearchBoxImageButton, views::ImageButton)
+
  public:
   explicit SearchBoxImageButton(PressedCallback callback)
       : ImageButton(std::move(callback)) {
@@ -186,14 +191,18 @@ class SearchBoxImageButton : public views::ImageButton {
 
  private:
   int GetButtonRadius() const { return width() / 2; }
-
-  const char* GetClassName() const override { return "SearchBoxImageButton"; }
 };
+
+BEGIN_METADATA(SearchBoxImageButton)
+END_METADATA
 
 // To show context menu of selected view instead of that of focused view which
 // is always this view when the user uses keyboard shortcut to open context
 // menu.
 class SearchBoxTextfield : public views::Textfield {
+  // TODO (kylixrd): Add metadata here once the Tast tests are updated.
+  // METADATA_HEADER(SearchBoxTextfield, views::Textfield)
+
  public:
   explicit SearchBoxTextfield(SearchBoxViewBase* search_box_view)
       : search_box_view_(search_box_view) {}
@@ -266,11 +275,19 @@ class SearchBoxTextfield : public views::Textfield {
   const raw_ptr<SearchBoxViewBase, ExperimentalAsh> search_box_view_;
 };
 
+// TODO (kylixrd): Enable the following once tast-tests are fixed. Metadata
+// on this class causes failures since the return value of GetClassName() no
+// longer lies and returns the correct class name.
+// BEGIN_METADATA(SearchBoxTextfield)
+// END_METADATA
+
 // Used to animate the transition between icon images. When a new icon is set,
 // this view will temporarily store the layer of the previous icon and animate
 // its opacity to fade out, while keeping the correct bounds for the fading out
 // layer. At the same time the new icon will fade in.
 class SearchIconImageView : public views::ImageView {
+  METADATA_HEADER(SearchIconImageView, views::ImageView)
+
  public:
   SearchIconImageView() = default;
 
@@ -332,6 +349,9 @@ class SearchIconImageView : public views::ImageView {
 
   base::WeakPtrFactory<SearchIconImageView> weak_factory_{this};
 };
+
+BEGIN_METADATA(SearchIconImageView)
+END_METADATA
 
 SearchBoxViewBase::InitParams::InitParams() = default;
 
@@ -535,8 +555,9 @@ views::ImageView* SearchBoxViewBase::search_icon() {
   return search_icon_;
 }
 
-void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
-  if (iph_view()) {
+void SearchBoxViewBase::SetIphView(
+    std::unique_ptr<LauncherSearchIphView> view) {
+  if (GetIphView()) {
     DCHECK(false) << "SetIphView gets called with an IPH view being shown.";
 
     DeleteIphView();
@@ -545,8 +566,19 @@ void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
   iph_view_tracker_.SetView(main_container_->AddChildView(std::move(view)));
 }
 
+LauncherSearchIphView* SearchBoxViewBase::GetIphView() {
+  views::View* view = iph_view_tracker_.view();
+  if (!view) {
+    return nullptr;
+  }
+
+  CHECK(views::IsViewClass<LauncherSearchIphView>(view))
+      << "Only LaunchserSearchIph view is supported now";
+  return static_cast<LauncherSearchIphView*>(view);
+}
+
 void SearchBoxViewBase::DeleteIphView() {
-  main_container_->RemoveChildViewT(iph_view());
+  main_container_->RemoveChildViewT(GetIphView());
 }
 
 void SearchBoxViewBase::TriggerSearch() {
@@ -633,10 +665,6 @@ void SearchBoxViewBase::OnEnabledChanged() {
   if (filter_button_) {
     filter_button_->SetEnabled(enabled);
   }
-}
-
-const char* SearchBoxViewBase::GetClassName() const {
-  return "SearchBoxView";
 }
 
 void SearchBoxViewBase::OnGestureEvent(ui::GestureEvent* event) {
@@ -857,5 +885,8 @@ void SearchBoxViewBase::MaybeCreateFilterAndCloseButtonContainer() {
     filter_and_close_button_container_->SetVisible(false);
   }
 }
+
+BEGIN_METADATA(SearchBoxViewBase)
+END_METADATA
 
 }  // namespace ash

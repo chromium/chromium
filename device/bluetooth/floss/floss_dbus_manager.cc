@@ -101,7 +101,7 @@ dbus::PropertySet* FlossDBusManager::CreateProperties(
 // Some interface is available.
 void FlossDBusManager::ObjectAdded(const dbus::ObjectPath& object_path,
                                    const std::string& interface_name) {
-  DVLOG(1) << __func__ << ":" << object_path.value() << ", " << interface_name;
+  DVLOG(1) << __func__ << ": " << object_path.value() << ", " << interface_name;
 
   if (interface_name == kAdapterInterface) {
     if (adapter_interface_present_) {
@@ -170,7 +170,7 @@ void FlossDBusManager::ObjectAdded(const dbus::ObjectPath& object_path,
 // Some interface is gone (no longer present).
 void FlossDBusManager::ObjectRemoved(const dbus::ObjectPath& object_path,
                                      const std::string& interface_name) {
-  DVLOG(1) << __func__ << ":" << object_path.value() << ", " << interface_name;
+  DVLOG(1) << __func__ << ": " << object_path.value() << ", " << interface_name;
 
   if (interface_name == kAdapterInterface) {
     adapter_interface_present_ = false;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "base/logging.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -46,7 +46,7 @@ bool ObtainSignatureAlgorithms(
   }
   signature_algorithms->clear();
   for (auto ssl_algorithm : ssl_algorithms) {
-    absl::optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
+    std::optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
         GetChallengeResponseKeyAlgorithmFromSsl(ssl_algorithm);
     if (algorithm)
       signature_algorithms->push_back(*algorithm);

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './lit/components/record-time-chip.js';
-import './lit/components/svg-wrapper.js';
+import './lit/components/index.js';
 
 import {
   ColorChangeUpdater,

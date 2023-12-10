@@ -148,7 +148,7 @@ class DeviceNameContainerHighlightPathGenerator
 
  private:
   // HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::Rect slider_bounds = slider_->GetInactiveRadioSliderRect();
     gfx::RectF bounds(slider_bounds.x() + kRadioSliderViewPadding.left(),
                       slider_bounds.y(), slider_bounds.width(),

@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-[PASS] non-parsable URL
 [FAIL] unsupported_scheme
   Failed to construct 'Worker': Script at 'unsupported:' cannot be accessed from origin 'http://web-platform.test:8001'.
-[PASS] data_url
 [FAIL] about_blank
   Failed to construct 'Worker': Script at 'about:blank' cannot be accessed from origin 'http://web-platform.test:8001'.
 [FAIL] example_invalid

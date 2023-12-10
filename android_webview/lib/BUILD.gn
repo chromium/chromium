@@ -31,7 +31,6 @@ source_set("lib") {
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
-    "//components/translate/core/common",
     "//components/variations",
     "//components/version_info",
     "//components/version_info/android:channel_getter",

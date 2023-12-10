@@ -20,11 +20,9 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * Controls the behaviour of the Cookies privacy guide page.
- */
-public class CookiesFragment
-        extends PrivacyGuideBasePage implements RadioGroup.OnCheckedChangeListener {
+/** Controls the behaviour of the Cookies privacy guide page. */
+public class CookiesFragment extends PrivacyGuideBasePage
+        implements RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
     private RadioButtonWithDescription mBlockThirdParty;
 
@@ -59,8 +57,9 @@ public class CookiesFragment
     }
 
     private void initialRadioButtonConfig() {
-        boolean allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
-                getProfile(), ContentSettingsType.COOKIES);
+        boolean allowCookies =
+                WebsitePreferenceBridge.isCategoryEnabled(
+                        getProfile(), ContentSettingsType.COOKIES);
         if (!allowCookies) {
             assert false : "Cookies page should not be shown if cookies are blocked";
         }

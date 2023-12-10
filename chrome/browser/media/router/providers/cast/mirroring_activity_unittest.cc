@@ -24,6 +24,7 @@
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "media/base/media_switches.h"
@@ -175,7 +176,8 @@ class MirroringActivityTest
                     bool enable_rtcp_reporting = false) {
     CastSinkExtraData cast_data;
     cast_data.cast_channel_id = kChannelId;
-    cast_data.capabilities = cast_channel::AUDIO_OUT | cast_channel::VIDEO_OUT;
+    cast_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
+                              cast_channel::CastDeviceCapability::kVideoOut};
     cast_data.discovery_type = discovery_type;
     MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_);
     route.set_presentation_id(kPresentationId);

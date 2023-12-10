@@ -97,7 +97,7 @@ void AudioServiceLacros::GetDevices(
 
   auto crosapi_callback = base::BindOnce(
       [](base::OnceCallback<void(bool, DeviceInfoList)> extapi_callback,
-         absl::optional<std::vector<crosapi::mojom::AudioDeviceInfoPtr>>
+         std::optional<std::vector<crosapi::mojom::AudioDeviceInfoPtr>>
              crosapi_devices) {
         bool result_out = false;
         DeviceInfoList devices_out;

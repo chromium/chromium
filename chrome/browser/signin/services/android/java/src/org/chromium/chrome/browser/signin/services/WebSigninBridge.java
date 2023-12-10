@@ -23,9 +23,7 @@ import java.util.Objects;
  */
 @MainThread
 public class WebSigninBridge {
-    /**
-     * Listener to be notified about sign-in completion.
-     */
+    /** Listener to be notified about sign-in completion. */
     public interface Listener {
         /**
          * Sign-in completed successfully and the primary account is available in the cookie jar.
@@ -39,9 +37,7 @@ public class WebSigninBridge {
         void onSigninFailed(GoogleServiceAuthError error);
     }
 
-    /**
-     * Factory to create WebSigninBridge object.
-     */
+    /** Factory to create WebSigninBridge object. */
     public static class Factory {
         /**
          * Creates a WebSigninBridge object.
@@ -71,9 +67,7 @@ public class WebSigninBridge {
         assert mNativeWebSigninBridge != 0 : "Couldn't create native WebSigninBridge object!";
     }
 
-    /**
-     * Releases native resources used by this class.
-     */
+    /** Releases native resources used by this class. */
     public void destroy() {
         WebSigninBridgeJni.get().destroy(mNativeWebSigninBridge);
         mNativeWebSigninBridge = 0;
@@ -94,6 +88,7 @@ public class WebSigninBridge {
     @NativeMethods
     interface Natives {
         long create(Profile profile, CoreAccountInfo account, Listener listener);
+
         void destroy(long webSigninBridgePtr);
     }
 }

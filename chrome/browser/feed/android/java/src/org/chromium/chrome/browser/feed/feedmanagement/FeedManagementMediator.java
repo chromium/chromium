@@ -34,7 +34,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Design doc here: https://docs.google.com/document/d/1D-ZfhGv9GFLXHYKzAqsaw-LiVhsENRTJC5ZMaZ9z0sQ/
  * edit#heading=h.p79wagdgjgx6
  */
-
 public class FeedManagementMediator {
     private static final String TAG = "FeedManagementMdtr";
     private ModelList mModelList;
@@ -42,40 +41,56 @@ public class FeedManagementMediator {
     private final FollowManagementLauncher mFollowManagementLauncher;
     private final @StreamKind int mInitiatingStreamKind;
 
-    /**
-     * Interface to supply a method which can launch the FollowManagementActivity.
-     */
+    /** Interface to supply a method which can launch the FollowManagementActivity. */
     public interface FollowManagementLauncher {
         void launchFollowManagement(Context mContext);
     }
 
-    FeedManagementMediator(Context context, ModelList modelList,
-            FollowManagementLauncher followLauncher, @StreamKind int initiatingStreamKind) {
+    FeedManagementMediator(
+            Context context,
+            ModelList modelList,
+            FollowManagementLauncher followLauncher,
+            @StreamKind int initiatingStreamKind) {
         mModelList = modelList;
         mContext = context;
         mFollowManagementLauncher = followLauncher;
         mInitiatingStreamKind = initiatingStreamKind;
 
         // Add the menu items into the menu.
-        PropertyModel activityModel = generateListItem(R.string.feed_manage_activity,
-                R.string.feed_manage_activity_description, this::handleActivityClick);
-        mModelList.add(new ModelListAdapter.ListItem(
-                FeedManagementItemProperties.DEFAULT_ITEM_TYPE, activityModel));
-        int descResource = ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
-                ? R.string.feed_manage_interests_description_ui_update
-                : R.string.feed_manage_interests_description;
-        PropertyModel interestsModel = generateListItem(
-                R.string.feed_manage_interests, descResource, this::handleInterestsClick);
-        mModelList.add(new ModelListAdapter.ListItem(
-                FeedManagementItemProperties.DEFAULT_ITEM_TYPE, interestsModel));
-        PropertyModel hiddenModel = generateListItem(R.string.feed_manage_hidden,
-                R.string.feed_manage_hidden_description, this::handleHiddenClick);
-        mModelList.add(new ModelListAdapter.ListItem(
-                FeedManagementItemProperties.DEFAULT_ITEM_TYPE, hiddenModel));
-        PropertyModel followingModel = generateListItem(R.string.feed_manage_following,
-                R.string.feed_manage_following_description, this::handleFollowingClick);
-        mModelList.add(new ModelListAdapter.ListItem(
-                FeedManagementItemProperties.DEFAULT_ITEM_TYPE, followingModel));
+        PropertyModel activityModel =
+                generateListItem(
+                        R.string.feed_manage_activity,
+                        R.string.feed_manage_activity_description,
+                        this::handleActivityClick);
+        mModelList.add(
+                new ModelListAdapter.ListItem(
+                        FeedManagementItemProperties.DEFAULT_ITEM_TYPE, activityModel));
+        int descResource =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
+                        ? R.string.feed_manage_interests_description_ui_update
+                        : R.string.feed_manage_interests_description;
+        PropertyModel interestsModel =
+                generateListItem(
+                        R.string.feed_manage_interests, descResource, this::handleInterestsClick);
+        mModelList.add(
+                new ModelListAdapter.ListItem(
+                        FeedManagementItemProperties.DEFAULT_ITEM_TYPE, interestsModel));
+        PropertyModel hiddenModel =
+                generateListItem(
+                        R.string.feed_manage_hidden,
+                        R.string.feed_manage_hidden_description,
+                        this::handleHiddenClick);
+        mModelList.add(
+                new ModelListAdapter.ListItem(
+                        FeedManagementItemProperties.DEFAULT_ITEM_TYPE, hiddenModel));
+        PropertyModel followingModel =
+                generateListItem(
+                        R.string.feed_manage_following,
+                        R.string.feed_manage_following_description,
+                        this::handleFollowingClick);
+        mModelList.add(
+                new ModelListAdapter.ListItem(
+                        FeedManagementItemProperties.DEFAULT_ITEM_TYPE, followingModel));
     }
 
     private PropertyModel generateListItem(

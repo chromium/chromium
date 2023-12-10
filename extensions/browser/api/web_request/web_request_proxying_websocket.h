@@ -5,9 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_PROXYING_WEBSOCKET_H_
 #define EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_PROXYING_WEBSOCKET_H_
 
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,12 +19,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -53,7 +51,6 @@ class WebRequestProxyingWebSocket
       bool has_extra_headers,
       int process_id,
       int render_frame_id,
-      ukm::SourceIdObj ukm_source_id,
       content::BrowserContext* browser_context,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       WebRequestAPI::ProxySet* proxies);
@@ -94,13 +91,12 @@ class WebRequestProxyingWebSocket
       WebSocketFactory factory,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<std::string>& user_agent,
+      const std::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
       bool has_extra_headers,
       int process_id,
       int render_frame_id,
-      ukm::SourceIdObj ukm_source_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       const url::Origin& origin,
       content::BrowserContext* browser_context,

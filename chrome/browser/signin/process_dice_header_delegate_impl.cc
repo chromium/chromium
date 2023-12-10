@@ -9,16 +9,21 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace {
@@ -30,6 +35,42 @@ DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
     return nullptr;
   }
   return DiceTabHelper::FromWebContents(contents);
+}
+
+// Should Sign in to Chrome for all access points except Web Signin when Uno is
+// enabled.
+void AttemptChromeSignin(CoreAccountId account_id,
+                         Profile& profile,
+                         signin_metrics::AccessPoint access_point) {
+  CHECK(!account_id.empty());
+
+  // For the non-Uno equivalent counterpart, the code takes care of in
+  // `SigninManager::UpdateUnconsentedPrimaryAccount()`.
+  if (!base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+    return;
+  }
+
+  // Do not signin to chrome if we are accessing through WebSignin, the Chrome
+  // Signin Bubble Intercept should be shown and the choice given to the user.
+  // Also if the access point is unknown.
+  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN ||
+      access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+    return;
+  }
+
+  // This access point should only be used as a result of a non Uno flow.
+  CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER,
+           access_point);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    base::UmaHistogramEnumeration(
+        "Signin.SigninManager.SigninAccessPoint", access_point,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+        account_id, signin::ConsentLevel::kSignin, access_point);
+  }
 }
 
 }  // namespace
@@ -135,13 +176,15 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
     CoreAccountId account_id,
     bool is_new_account) {
+  AttemptChromeSignin(account_id, profile_.get(), access_point_);
+
   // is_sync_signin_tab_ tells whether the current signin is happening in a tab
   // that was opened from a "Enable Sync" Chrome UI. Usually this is indeed a
   // sync signin, but it is not always the case: the user may abandon the sync
   // signin and do a simple web signin in the same tab instead.
   DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get())
-      ->MaybeInterceptWebSignin(web_contents_.get(), account_id, is_new_account,
-                                is_sync_signin_tab_);
+      ->MaybeInterceptWebSignin(web_contents_.get(), account_id, access_point_,
+                                is_new_account, is_sync_signin_tab_);
 }
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(

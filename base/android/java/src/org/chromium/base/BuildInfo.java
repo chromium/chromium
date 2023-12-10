@@ -42,41 +42,54 @@ public class BuildInfo {
      * e.g. com.google.android.sdksandbox:com:com.example.myappwithads
      */
     public final String hostPackageName;
+
     /**
      * The application name (e.g. "Chrome"). For WebView, this is name of the embedding app.
      * In the context of the SDK Runtime, this is the name of the app that owns this particular
      * instance of the SDK Runtime.
      */
     public final String hostPackageLabel;
+
     /**
      * By default: same as versionCode. For WebView: versionCode of the embedding app.
      * In the context of the SDK Runtime, this is the versionCode of the app that owns this
      * particular instance of the SDK Runtime.
      */
     public final long hostVersionCode;
+
     /**
      * The packageName of Chrome/WebView. Use application context for host app packageName.
      * Same as the host information within any child process.
      */
     public final String packageName;
+
     /** The versionCode of the apk. */
     public final long versionCode;
+
     /** The versionName of Chrome/WebView. Use application context for host app versionName. */
     public final String versionName;
+
     /** Result of PackageManager.getInstallerPackageName(). Never null, but may be "". */
     public final String installerPackageName;
+
     /** The versionCode of Play Services (for crash reporting). */
     public final String gmsVersionCode;
+
     /** Formatted ABI string (for crash reporting). */
     public final String abiString;
+
     /** Truncated version of Build.FINGERPRINT (for crash reporting). */
     public final String androidBuildFingerprint;
+
     /** Whether or not the device has apps installed for using custom themes. */
     public final String customThemes;
+
     /** Product version as stored in Android resources. */
     public final String resourcesVersion;
+
     /** Whether we're running on Android TV or not */
     public final boolean isTV;
+
     /** Whether we're running on an Android Automotive OS device or not. */
     public final boolean isAutomotive;
 
@@ -133,6 +146,7 @@ public class BuildInfo {
             targetsAtLeastU() ? "1" : "0",
             Build.VERSION.CODENAME,
             String.valueOf(vulkanDeqpLevel),
+            isFoldable ? "1" : "0",
         };
     }
 
@@ -206,15 +220,19 @@ public class BuildInfo {
             }
 
             if (commandLine.hasSwitch(BaseSwitches.PACKAGE_VERSION_CODE)) {
-                providedPackageVersionCode = Long.parseLong(
-                        commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_CODE));
+                providedPackageVersionCode =
+                        Long.parseLong(
+                                commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_CODE));
             }
         }
 
-        boolean hostInformationProvided = providedHostPackageName != null
-                && providedHostPackageLabel != null && providedHostVersionCode != null
-                && providedPackageName != null && providedPackageVersionName != null
-                && providedPackageVersionCode != null;
+        boolean hostInformationProvided =
+                providedHostPackageName != null
+                        && providedHostPackageLabel != null
+                        && providedHostVersionCode != null
+                        && providedPackageName != null
+                        && providedPackageVersionName != null
+                        && providedPackageVersionCode != null;
 
         // We want to retrieve the original package installed to verify to host package name.
         // In the case of the SDK Runtime, we would like to retrieve the package name loading the
@@ -277,8 +295,10 @@ public class BuildInfo {
         installerPackageName = nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
 
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
-        gmsVersionCode = gmsPackageInfo != null ? String.valueOf(packageVersionCode(gmsPackageInfo))
-                                                : "gms versionCode not available.";
+        gmsVersionCode =
+                gmsPackageInfo != null
+                        ? String.valueOf(packageVersionCode(gmsPackageInfo))
+                        : "gms versionCode not available.";
 
         // Substratum is a theme engine that enables users to use custom themes provided
         // by theme apps. Sometimes these can cause crashs if not installed correctly.
@@ -294,8 +314,9 @@ public class BuildInfo {
                 // corrupted resources were the cause of a crash. This can happen if the app
                 // loads resources from the outdated package  during an update
                 // (http://crbug.com/820591).
-                currentResourcesVersion = ContextUtils.getApplicationContext().getString(
-                        BuildConfig.R_STRING_PRODUCT_VERSION);
+                currentResourcesVersion =
+                        ContextUtils.getApplicationContext()
+                                .getString(BuildConfig.R_STRING_PRODUCT_VERSION);
             } catch (Exception e) {
                 currentResourcesVersion = "Not found";
             }
@@ -305,13 +326,16 @@ public class BuildInfo {
         abiString = TextUtils.join(", ", Build.SUPPORTED_ABIS);
 
         // The value is truncated, as this is used for crash and UMA reporting.
-        androidBuildFingerprint = Build.FINGERPRINT.substring(
-                0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
+        androidBuildFingerprint =
+                Build.FINGERPRINT.substring(
+                        0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
 
         // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
         UiModeManager uiModeManager = (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
-        isTV = uiModeManager != null
-                && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+        isTV =
+                uiModeManager != null
+                        && uiModeManager.getCurrentModeType()
+                                == Configuration.UI_MODE_TYPE_TELEVISION;
 
         boolean isAutomotive;
         try {

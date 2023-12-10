@@ -1,0 +1,72 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "aho_corasick"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/ahocorasick.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/automaton.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/dfa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/nfa/contiguous.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/nfa/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/nfa/noncontiguous.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/api.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/ext.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/pattern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/rabinkarp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/teddy/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/teddy/generic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/teddy/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/vector.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/transducer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/alphabet.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/byte_frequencies.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/debug.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/int.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/prefilter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/primitives.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/remapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/search.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/util/special.rs",
+  ]
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/src/packed/teddy/README.md" ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "1.1.2"
+  cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
+  cargo_pkg_name = "aho-corasick"
+  cargo_pkg_description = "Fast multiple substring searching."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ "//third_party/rust/memchr/v2:lib" ]
+  features = [
+    "perf-literal",
+    "std",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
+}

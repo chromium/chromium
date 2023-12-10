@@ -182,8 +182,7 @@ public class ReadingListTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkId bookmarkId =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        () -> mBookmarkModel.addToReadingList(title, url));
-        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(url) != null);
+                        () -> mBookmarkModel.addToDefaultReadingList(title, url));
         return bookmarkId;
     }
 
@@ -264,10 +263,10 @@ public class ReadingListTest {
     @Test
     @SmallTest
     public void testReadingListItemMenuItems_ReadItem() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        BookmarkId id = addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mBookmarkModel.setReadStatusForReadingList(mTestUrlA, /* read= */ true);
+                    mBookmarkModel.setReadStatusForReadingList(id, /* read= */ true);
                 });
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
@@ -314,27 +313,6 @@ public class ReadingListTest {
         View more = readingListItem.findViewById(R.id.more);
         TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
         onView(withText("Delete")).check(matches(isDisplayed())).perform(click());
-        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestUrlA) == null);
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
-    // @TODO(crbug.com/1468380): clean up after Empty States is fully launched.
-    public void testReadingListEmptyView() throws Exception {
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
-        openBookmarkManager();
-        openRootFolder();
-        openReadingList();
-
-        // We should see an empty view with reading list text.
-        onView(withText(R.string.reading_list_empty_list_title)).check(matches(isDisplayed()));
-
-        // Open other folders will show the default empty view text.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getBookmarkDelegate().openFolder(mBookmarkModel.getMobileFolderId()));
-        onView(withText(R.string.bookmarks_folder_empty)).check(matches(isDisplayed()));
     }
 
     @Test

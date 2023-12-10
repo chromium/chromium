@@ -305,7 +305,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     const auto* fragment = iterator.GetFragmentData();
     ScopedDisplayItemFragment scoped_fragment(context, index);
     Vector<PhysicalRect> rects = object->CollectOutlineRectsAndAdvance(
-        NGOutlineType::kIncludeBlockVisualOverflow, iterator);
+        OutlineType::kIncludeBlockInkOverflow, iterator);
     if (rects.size() > 1)
       use_rounded_rects = false;
 

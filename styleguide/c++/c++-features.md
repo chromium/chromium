@@ -32,9 +32,9 @@ The current status of existing standards and Abseil features is:
 *   **C++14:** _Default allowed_
 *   **C++17:** _Initially supported December 23, 2021; see allowed/banned/TBD
     features below_
-*   **C++20:** _Not yet supported in Chromium_, with the exception of
-    [designated initializers](https://google.github.io/styleguide/cppguide.html#Designated_initializers)
-*   **C++23:** _Not yet standardized_
+*   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
+    features below_
+*   **C++23:** _Not yet officially standardized_
 *   **Abseil:** _Default allowed; see banned/TBD features below. The following
     dates represent the start of the two-year TBD periods for certain parts of
     Abseil:_
@@ -43,6 +43,7 @@ The current status of existing standards and Abseil features is:
       * CRC32C library: Initially added to third_party Dec 5, 2022
       * Nullability annotation: Initially added to third_party Jun 21, 2023
       * Overload: Initially added to third_party Sep 27, 2023
+      * NoDestructor: Initially added to third_party Nov 15, 2023
 
 [TOC]
 
@@ -274,9 +275,10 @@ std::function y = std::bind(foo, args);
 
 **Notes:**
 *** promo
-Use `base::{Once,Repeating}Callback` instead. Compared to `std::function`,
-`base::{Once,Repeating}Callback` directly supports Chromium's refcounting
-classes and weak pointers and deals with additional thread safety concerns.
+Use `base::{Once,Repeating}Callback` or `base::FunctionRef` instead. Compared
+to `std::function`, `base::{Once,Repeating}Callback` directly supports
+Chromium's refcounting classes and weak pointers and deals with additional
+thread safety concerns.
 
 [Discussion thread](https://groups.google.com/a/chromium.org/forum/#!topic/cxx/SoEj7oIDNuA)
 ***
@@ -652,9 +654,6 @@ const auto [x, y] = FuncReturningStdPair();
 
 **Notes:**
 *** promo
-In C++17, structured bindings don't work with lambda captures.
-[C++20 will allow capturing structured bindings by value](https://wg21.link/p1091r3).
-
 This feature forces omitting type names. Its use should follow
 [the guidance around `auto` in Google C++ Style guide](https://google.github.io/styleguide/cppguide.html#Type_deduction).
 
@@ -674,7 +673,7 @@ This feature forces omitting type names. Its use should follow
 
 **Notes:**
 *** promo
-See similar attribute macros in base/compiler_specific.h.
+See similar attribute macros in `base/compiler_specific.h`.
 ***
 
 ## C++17 Allowed Library Features {#library-allowlist-17}
@@ -1548,6 +1547,108 @@ None
 
 ## C++20 Allowed Language Features {#core-allowlist-20}
 
+The following C++20 language features are allowed in the Chromium codebase.
+
+### Abbreviated function templates <sup>[allowed]</sup>
+
+```c++
+// template <typename T>
+// void f1(T x);
+void f1(auto x);
+
+// template <C T>  // `C` is a concept
+// void f2(T x);
+void f2(C auto x);
+
+// template <typename T, C U>  // `C` is a concept
+// void f3(T x, U y);
+template <typename T>
+void f3(T x, C auto y);
+
+// template<typename... Ts>
+// void f4(Ts... xs);
+void f4(auto... xs);
+```
+
+**Description:** Function params of type `auto` become syntactic sugar for
+declaring a template type for each such parameter.
+
+**Documentation:**
+[Abbreviated function template](https://en.cppreference.com/w/cpp/language/function_template#Abbreviated_function_template)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414526)
+***
+
+### consteval <sup>[allowed]</sup>
+
+```c++
+consteval int sqr(int n) { return n * n; }
+constexpr int kHundred = sqr(10);                  // OK
+constexpr int quad(int n) { return sqr(sqr(n)); }  // ERROR, might be runtime
+```
+
+**Description:** Specified that a function may only be used in a compile-time
+context.
+
+**Documentation:**
+[`consteval` specifier](https://en.cppreference.com/w/cpp/language/consteval)
+
+**Notes:**
+*** promo
+None
+***
+
+### Constraints and concepts <sup>[allowed]</sup>
+
+```c++
+// `Hashable` is a concept satisfied by any type `T` for which the expression
+// `std::hash<T>{}(a)` compiles and produces a value convertible to `size_t`.
+template<typename T>
+concept Hashable = requires(T a)
+{
+    { std::hash<T>{}(a) } -> std::convertible_to<size_t>;
+};
+template <Hashable T>  // Only instantiable for `T`s that satisfy `Hashable`.
+void f(T) { ... }
+```
+
+**Description:** Allows bundling sets of requirements together as named
+concepts, then enforcing them on template arguments.
+
+**Documentation:**
+[Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414528)
+***
+
+### Default comparisons <sup>[allowed]</sup>
+
+```c++
+struct S : public T {
+  bool operator==(const S&) const = default;  // Compares `T` bases, then `x`,
+                                              // then `y`, short-circuiting.
+  int x;
+  bool y;
+};
+```
+
+**Description:** Requests that the compiler generate the implementation of any
+comparison operator, including `<=>`. Defaulting `<=>` and not declaring `==`
+implicitly defaults `==`, which together are sufficient to allow any comparison
+as long as callers do not need to take the address of any non-declared operator.
+
+**Documentation:**
+[Default comparisons](https://en.cppreference.com/w/cpp/language/default_comparisons)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414530)
+***
+
 ### Designated initializers <sup>[allowed]</sup>
 
 ```c++
@@ -1564,6 +1665,777 @@ at construction.
 **Notes:**
 *** promo
 None
+***
+
+### __has_cpp_attribute <sup>[allowed]</sup>
+
+```c++
+#if __has_cpp_attribute(assume)  // Toolchain supports C++23 `[[assume]]`.
+...
+#endif
+```
+
+**Description:** Checks whether the toolchain supports a particular standard
+attribute.
+
+**Documentation:**
+[Feature testing](https://en.cppreference.com/w/cpp/feature_test)
+
+**Notes:**
+*** promo
+None
+***
+
+### constinit <sup>[allowed]</sup>
+
+```c++
+constinit int x = 3;
+void foo() {
+  ++x;
+}
+```
+
+**Description:** Ensures that a variable can be compile-time initialized. This
+is like a milder form of `constexpr` that does not force variables to be const
+or have constant destruction.
+
+**Documentation:**
+[`constinit` specifier](https://en.cppreference.com/w/cpp/language/constinit)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414612)
+***
+
+### Initializers for bit-field members <sup>[allowed]</sup>
+
+```c++
+struct S {
+  uint32_t x : 27 = 2;
+};
+```
+
+**Description:** Allows specifying the default initial value of a bit-field
+member, as can already be done for other member types.
+
+**Documentation:**
+[Bit-field](https://en.cppreference.com/w/cpp/language/bit_field)
+
+**Notes:**
+*** promo
+None
+***
+
+### Lambda captures with initializers that are pack expansions <sup>[allowed]</sup>
+
+```c++
+template <typename... Args>
+void foo(Args... args) {
+  const auto l = [...n = args] { (x(n), ...); };
+}
+```
+
+**Description:** Allows initializing a capture with a pack expansion.
+
+**Documentation:**
+[Lambda capture](https://en.cppreference.com/w/cpp/language/lambda#Lambda_capture)
+
+**Notes:**
+*** promo
+None
+***
+
+### Language feature-test macros <sup>[allowed]</sup>
+
+```c++
+#if !defined(__cpp_modules) || (__cpp_modules < 201907L)
+...  // Toolchain does not support modules
+#endif
+```
+
+**Description:** Provides a standardized way to test the toolchain's
+implementation of a particular language feature.
+
+**Documentation:**
+[Feature testing](https://en.cppreference.com/w/cpp/feature_test)
+
+**Notes:**
+*** promo
+None
+***
+
+### Range-for statements with initializer <sup>[allowed]</sup>
+
+```c++
+T foo();
+...
+for (auto& x : foo().items()) { ... }                   // UAF before C++23!
+for (T thing = foo(); auto& x : thing.items()) { ... }  // OK
+```
+
+**Description:** Like C++17's selection statements with initializer.
+Particularly useful before C++23, since temporaries inside range-expressions are
+not lifetime-extended until the end of the loop before C++23.
+
+**Documentation:**
+[Range-based `for` loop](https://en.cppreference.com/w/cpp/language/range-for)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414531)
+***
+
+### Three-way comparison ("spaceship") operator <sup>[allowed]</sup>
+
+```c++
+// `ordering` is an instance of `std::strong_odering` or `std::partial_ordering`
+// that describes how `a` and `b` are related.
+const auto ordering = a <=> b;
+if (ordering < 0) { ... }       // `a` < `b`
+else if (ordering > 0) { ... }  // `a` > `b`
+else { ... }                    // `a` == `b`
+```
+
+**Description:** Compares two objects in a fashion similar to `strcmp`. Perhaps
+most useful when defined as an overload in a class, in which case it can replace
+definitions of other inequalities. See also "Default comparisons".
+
+**Documentation:**
+[Three-way comparison](https://en.cppreference.com/w/cpp/language/operator_comparison#Three-way_comparison)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414530)
+***
+
+## C++20 Allowed Library Features {#library-allowlist-20}
+
+The following C++20 library features are allowed in the Chromium codebase.
+
+### &lt;bit&gt; <sup>[allowed]</sup>
+
+```c++
+#include <bit>
+```
+
+**Description:** Provides various byte- and bit-twiddling functions, e.g.
+counting leading zeros.
+
+**Documentation:**
+[Standard library header `<bit>`](https://en.cppreference.com/w/cpp/header/bit)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414634)
+***
+
+### &lt;compare&gt; <sup>[allowed]</sup>
+
+```c++
+#include <compare>
+```
+
+**Description:** Concepts and classes used to implement three-way comparison
+("spaceship", `<=>`) support.
+
+**Documentation:**
+[Standard library header `<compare>`](https://en.cppreference.com/w/cpp/header/compare)
+
+**Notes:**
+*** promo
+None
+***
+
+### &lt;concepts&gt; <sup>[allowed]</sup>
+
+```c++
+#include <concepts>
+```
+
+**Description:** Various useful concepts, many of which replace pre-concept
+machinery in `<type_traits>`.
+
+**Documentation:**
+[Standard library header `<concepts>`](https://en.cppreference.com/w/cpp/header/concepts)
+
+**Notes:**
+*** promo
+None
+***
+
+### Library feature-test macros and &lt;version&gt; <sup>[allowed]</sup>
+
+```c++
+#if !defined(__cpp_lib_atomic_value_initialization) || \
+    (__cpp_lib_atomic_value_initialization < 201911L)
+...  // `std::atomic` is not value-initialized by default.
+#endif
+```
+
+**Description:** Provides a standardized way to test the toolchain's
+implementation of a particular library feature.
+
+**Documentation:**
+[Feature testing](https://en.cppreference.com/w/cpp/feature_test)
+
+**Notes:**
+*** promo
+None
+***
+
+### &lt;numbers&gt; <sup>[allowed]</sup>
+
+```c++
+#include <numbers>
+```
+
+**Description:** Provides compile-time constants for many common mathematical
+values, e.g. pi and e.
+
+**Documentation:**
+[Mathematical constants](https://en.cppreference.com/w/cpp/numeric/constants)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414635)
+***
+
+### std::assume_aligned <sup>[allowed]</sup>
+
+```c++
+void f(int* p) {
+  int* aligned = std::assume_aligned<256>(p);
+  ...
+```
+
+**Description:** Informs the compiler that a pointer points to an address
+aligned to at least some particular power of 2.
+
+**Documentation:**
+[`std::assume_aligned`](https://en.cppreference.com/w/cpp/memory/assume_aligned)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414637)
+***
+
+### std::erase[_if] for containers <sup>[allowed]</sup>
+
+```c++
+std::vector<int> numbers = ...;
+std::erase_if(numbers, [](int x) { return x % 2 == 0; });
+```
+
+**Description:** Erases from a container by value comparison or predicate,
+avoiding the need to use the `erase(remove(...` paradigm.
+
+**Documentation:**
+[`std::erase`, `std::erase_if` (`std::vector`)](https://en.cppreference.com/w/cpp/container/vector/erase2)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414639)
+***
+
+### std::is_[un]bounded_array <sup>[allowed]</sup>
+
+```c++
+template <typename T>
+static constexpr bool kBoundedArray = std::is_bounded_array_v<T>;
+```
+
+**Description:** Checks if a type is an array type with a known or unknown
+bound.
+
+**Documentation:**
+[`std::is_bounded_array`](https://en.cppreference.com/w/cpp/types/is_bounded_array),
+[`std::is_unbounded_array`](https://en.cppreference.com/w/cpp/types/is_unbounded_array)
+
+**Notes:**
+*** promo
+None
+***
+
+### std::lerp <sup>[allowed]</sup>
+
+```c++
+double val = std::lerp(start, end, t);
+```
+
+**Description:** Linearly interpolates (or extrapolates) between two values.
+
+**Documentation:**
+[`std::lerp`](https://en.cppreference.com/w/cpp/numeric/lerp)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414537)
+***
+
+### std::make_obj_using_allocator etc. <sup>[allowed]</sup>
+
+```c++
+auto obj = std::make_obj_using_allocator<Obj>(alloc, ...);
+```
+
+**Description:** Constructs an object using
+[uses-allocator construction](https://en.cppreference.com/w/cpp/memory/uses_allocator).
+
+**Documentation:**
+[`std::make_obj_using_allocator`](https://en.cppreference.com/w/cpp/memory/make_obj_using_allocator)
+
+**Notes:**
+*** promo
+None
+***
+
+### std::make_unique_for_overwrite <sup>[allowed]</sup>
+
+```c++
+auto ptr = std::make_unique_for_overwrite<int>();  // `*ptr` is uninitialized
+```
+
+**Description:** Like calling `std::unique_ptr<T>(new T)` instead of the more
+typical `std::unique_ptr<T>(new T(...))`.
+
+**Documentation:**
+[`std::make_unique`, `std::make_unique_for_overwrite`](https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique)
+
+**Notes:**
+*** promo
+None
+***
+
+### std::midpoint <sup>[allowed]</sup>
+
+```c++
+int center = std::midpoint(top, bottom);
+```
+
+**Description:** Finds the midpoint between its two arguments, avoiding any
+possible overflow. For integral inputs, rounds towards the first argument.
+
+**Documentation:**
+[`std::midpoint`](https://en.cppreference.com/w/cpp/numeric/midpoint)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414539)
+***
+
+### std::remove_cvref[_t] <sup>[allowed]</sup>
+
+```c++
+template <typename T,
+          typename = std::enable_if_t<std::is_same_v<std::remove_cvref_t<T>,
+                                                     int>>>
+void foo(T t);
+```
+
+**Description:** Provides a way to remove const, volatile, and reference
+qualifiers from a type.
+
+**Documentation:**
+[`std::remove_cvref`](https://en.cppreference.com/w/cpp/types/remove_cvref)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414646)
+***
+
+### std::ssize <sup>[allowed]</sup>
+
+```c++
+str.replace(it, it + std::ssize(substr), 1, 'x');
+```
+
+**Description:** Returns the size of an object as a signed type.
+
+**Documentation:**
+[`std::size`, `std::ssize`](https://en.cppreference.com/w/cpp/iterator/size)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414543)
+***
+
+### std::string::(starts,ends)_with <sup>[allowed]</sup>
+
+```c++
+const std::string str = "Foo bar";
+const bool is_true = str.ends_with("bar");
+```
+
+**Description:** Tests whether a string starts or ends with a particular
+character or string.
+
+**Documentation:**
+[`std::basic_string<CharT,Traits,Allocator>::starts_with`](https://en.cppreference.com/w/cpp/string/basic_string/starts_with),
+[`std::basic_string<CharT,Traits,Allocator>::ends_with`](https://en.cppreference.com/w/cpp/string/basic_string/ends_with)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414647)
+***
+
+### std::to_address <sup>[allowed]</sup>
+
+```c++
+std::vector<int> numbers;
+int* i = std::to_address(numbers.begin());
+```
+
+**Description:** Converts a pointer-like object to a pointer, even if the
+pointer does not refer to a constructed object (in which case an expression like
+`&*p` is UB).
+
+**Documentation:**
+[`std::to_address`](https://en.cppreference.com/w/cpp/memory/to_address)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/1414648)
+***
+
+## C++20 Banned Language Features {#core-blocklist-20}
+
+The following C++20 language features are not allowed in the Chromium codebase.
+
+### Modules <sup>[banned]</sup>
+
+```c++
+export module helloworld; // module declaration
+
+import <iostream>;        // import declaration
+
+export void hello() {     // export declaration
+  std::cout << "Hello world!\n";
+}
+```
+
+**Description:** Modules provide an alternative to many uses of headers which
+allows for faster compilation, better tooling support, and reduction of problems
+like "include what you use".
+
+**Documentation:**
+[Modules](https://en.cppreference.com/w/cpp/language/modules)
+
+**Notes:**
+*** promo
+Not yet sufficiently supported in Clang and GN. Re-evaluate when support
+improves.
+***
+
+### [[no_unique_address]] <sup>[banned]</sup>
+
+```c++
+struct Empty {};
+struct X {
+  int i;
+  [[no_unique_address]] Empty e;
+};
+```
+
+**Description:** Allows a data member to be overlapped with other members.
+
+**Documentation:**
+[C++ attribute: `no_unique_address`](https://en.cppreference.com/w/cpp/language/attributes/no_unique_address)
+
+**Notes:**
+*** promo
+Has no effect on Windows, for compatibility with Microsoft's ABI. Use
+`NO_UNIQUE_ADDRESS` from `base/compiler_specific.h` instead. Do not use (either
+form) on members of unions due to
+[potential memory safety problems](https://github.com/llvm/llvm-project/issues/60711).
+
+[Migration bug](https://crbug.com/1414621)
+***
+
+## C++20 Banned Library Features {#library-blocklist-20}
+
+The following C++20 library features are not allowed in the Chromium codebase.
+
+### std::atomic_ref <sup>[banned]</sup>
+
+```c++
+struct S { int a; int b; };
+S not_atomic;
+std::atomic_ref<S> is_atomic(not_atomic);
+```
+
+**Description:** Allows atomic access to objects that might not themselves be
+atomic types. While any atomic_ref to an object exists, the object must be
+accessed exclusively through atomic_ref instances.
+
+**Documentation:**
+[`std::atomic_ref`](https://en.cppreference.com/w/cpp/atomic/atomic_ref)
+
+**Notes:**
+*** promo
+Banned due to being [unimplemented in libc++](https://reviews.llvm.org/D72240).
+
+[Migration bug](https://crbug.com/1422701) (once this is allowed)
+***
+
+### std::bind_front <sup>[banned]</sup>
+
+```c++
+int minus(int a, int b);
+auto fifty_minus_x = std::bind_front(minus, 50);
+int forty = fifty_minus_x(10);
+```
+
+**Description:** An updated version of `std::bind` with fewer gotchas, similar
+to `absl::bind_front`.
+
+**Documentation:**
+[`std::bind_front`, `std::bind_back`](https://en.cppreference.com/w/cpp/utility/functional/bind_front)
+
+**Notes:**
+*** promo
+Overlaps with `base::Bind`.
+***
+
+### std::{c8rtomb,mbrtoc8} <sup>[banned]</sup>
+
+```c++
+std::u8string_view strv = u8"zß水🍌";
+std::mbstate_t state;
+char out[MB_LEN_MAX] = {0};
+for (char8_t c : strv) {
+  size_t rc = std::c8rtomb(out, c, &state);
+  ...
+```
+
+**Description:** Converts a code point between UTF-8 and a multibyte character
+encoded using the current C locale.
+
+**Documentation:**
+[`std::c8rtomb`](https://en.cppreference.com/w/cpp/string/multibyte/c8rtomb),
+[`std::mbrtoc8`](https://en.cppreference.com/w/cpp/string/multibyte/mbrtoc8)
+
+**Notes:**
+*** promo
+Chromium functionality should not vary with the C locale.
+***
+
+### &lt;syncstream&gt; <sup>[banned]</sup>
+
+```c++
+#include <syncstream>
+```
+
+**Description:** Facilities for multithreaded access to streams.
+
+**Documentation:**
+[Standard library header `<syncstream>`](https://en.cppreference.com/w/cpp/header/syncstream)
+
+**Notes:**
+*** promo
+Banned due to being unimplemented per
+[the libc++ C++20 status page](https://libcxx.llvm.org/Status/Cxx20.html).
+Reevaluate usefulness once implemented.
+***
+
+## C++20 TBD Language Features {#core-review-20}
+
+The following C++20 language features are not allowed in the Chromium codebase.
+See the top of this page on how to propose moving a feature from this list into
+the allowed or banned sections.
+
+### Aggregate initialization using parentheses <sup>[tbd]</sup>
+
+```c++
+struct B {
+  int a;
+  int&& r;
+} b2(1, 1);  // Warning: dangling reference
+```
+
+**Description:** Allows initialization of aggregates using parentheses, not just
+braces.
+
+**Documentation:**
+[Aggregate initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization),
+[Direct initialization](https://en.cppreference.com/w/cpp/language/direct_initialization)
+
+**Notes:**
+*** promo
+There are subtle but important differences between brace- and paren-init of
+aggregates. The parenthesis style appears to have more pitfalls (allowing
+narrowing conversions, not extending lifetimes of temporaries bound to
+references).
+***
+
+### char8_t <sup>[tbd]</sup>
+
+```c++
+char8_t c = u8'x';
+```
+
+**Description:** A single UTF-8 code unit. Similar to `unsigned char`, but
+considered a distinct type.
+
+**Documentation:**
+[Fundamental types](https://en.cppreference.com/w/cpp/language/types#char8_t)
+
+**Notes:**
+*** promo
+`char8_t*` is not interconvertible with `char*` and many UTF-8 APIs take
+`char*`.
+***
+
+### Coroutines <sup>[tbd]</sup>
+
+```c++
+co_return 1;
+```
+
+**Description:** Allows writing functions that logically block while physically
+returning control to a caller. This enables writing some kinds of async code in
+simple, straight-line ways without storing state in members or binding
+callbacks.
+
+**Documentation:**
+[Coroutines](https://en.cppreference.com/w/cpp/language/coroutines)
+
+**Notes:**
+*** promo
+Requires significant support code and planning around API and migration.
+
+[Prototyping bug](https://crbug.com/1403840)
+***
+
+### [[likely]], [[unlikely]] <sup>[tbd]</sup>
+
+```c++
+if (n > 0) [[likely]] {
+  return 1;
+}
+```
+
+**Description:** Tells the optimizer that a particular codepath is more or less
+likely than an alternative.
+
+**Documentation:**
+[C++ attribute: `likely`, `unlikely`](https://en.cppreference.com/w/cpp/language/attributes/likely)
+
+**Notes:**
+*** promo
+[Will be allowed soon](https://crbug.com/1414620); for now, use `[UN]LIKELY`.
+***
+
+## C++20 TBD Library Features {#library-review-20}
+
+The following C++20 library features are not allowed in the Chromium codebase.
+See the top of this page on how to propose moving a feature from this list into
+the allowed or banned sections.
+
+### &lt;coroutine&gt; <sup>[tbd]</sup>
+
+```c++
+#include <coroutine>
+```
+
+**Description:** Header which defines various core coroutine types.
+
+**Documentation:**
+[Coroutine support](https://en.cppreference.com/w/cpp/coroutine)
+
+**Notes:**
+*** promo
+See notes on "Coroutines" above.
+***
+
+### &lt;format&gt; <sup>[tbd]</sup>
+
+```c++
+std::cout << std::format("Hello {}!\n", "world");
+```
+
+**Description:** Utilities for producing formatted strings.
+
+**Documentation:**
+[Formatting library](https://en.cppreference.com/w/cpp/utility/format)
+
+**Notes:**
+*** promo
+Has both pros and cons compared to `absl::StrFormat` (which we don't yet use).
+Migration would be nontrivial.
+***
+
+### &lt;ranges&gt; <sup>[tbd]</sup>
+
+```c++
+constexpr int arr[] = {6, 2, 8, 4, 4, 2};
+constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
+static_assert(std::ranges::equal(arr | plus_one, {7, 3, 9, 5, 5, 3}));
+```
+
+**Description:** Generalizes algorithms using range views, which are lightweight
+objects that represent iterable sequences. Provides facilities for eager and
+lazy operations on ranges, along with composition into pipelines.
+
+**Documentation:**
+[Ranges library](https://en.cppreference.com/w/cpp/ranges)
+
+**Notes:**
+*** promo
+Significant concerns expressed internally. We should consider whether there are
+clearly-safe pieces to allow (e.g. to replace `base/ranges/algorithm.h`) and
+engage with the internal library team.
+***
+
+### &lt;source_location&gt; <sup>[tbd]</sup>
+
+```c++
+#include <source_location>
+```
+
+**Description:** Provides a class that can hold source code details such as
+filenames, function names, and line numbers.
+
+**Documentation:**
+[Standard library header `<source_location>`](https://en.cppreference.com/w/cpp/header/source_location)
+
+**Notes:**
+*** promo
+Seems to regress code size vs. `base::Location`.
+***
+
+### &lt;span&gt; <sup>[tbd]</sup>
+
+```c++
+#include <span>
+```
+
+**Description:** Utilities for non-owning views over a sequence of objects.
+
+**Documentation:**
+[](https://en.cppreference.com/w/cpp/header/span)
+
+**Notes:**
+*** promo
+Use `base::span` for now.
+
+[Migration bug](https://crbug.com/1414652)
+***
+
+### std::u8string <sup>[tbd]</sup>
+
+```c++
+std::u8string str = u8"Foo";
+```
+
+**Description:** A string whose character type is `char8_t`, intended to hold
+UTF-8-encoded text.
+
+**Documentation:**
+[`std::basic_string`](https://en.cppreference.com/w/cpp/string/basic_string)
+
+**Notes:**
+*** promo
+See notes on `char8_t` above.
 ***
 
 ## Abseil Banned Library Features {#absl-blocklist}
@@ -1929,6 +2801,30 @@ absl::AddLogSink(&custom_sink_to_capture_absl_logs);
 **Notes:**
 *** promo
 Overlaps and uses same macros names as `base/logging.h`.
+***
+
+### NoDestructor <sup>[tbd]</sup>
+
+```c++
+// Global or namespace scope.
+ABSL_CONST_INIT absl::NoDestructor<MyRegistry> reg{"foo", "bar", 8008};
+
+// Function scope.
+const std::string& MyString() {
+  static const absl::NoDestructor<std::string> x("foo");
+  return *x;
+}
+```
+
+**Description:** `absl::NoDestructor<T>` is a wrapper around an object of
+type T that behaves as an object of type T but never calls T's destructor.
+
+**Documentation:**
+[no_destructor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/no_desctructor.h)
+
+**Notes:**
+*** promo
+Overlaps with `base::NoDestructor`.
 ***
 
 ### Nullability annotations <sup>[tbd]</sup>

@@ -39,19 +39,19 @@ namespace {
 using assistant::AssistantInteractionMetadata;
 using assistant::AssistantInteractionType;
 
-#define EXPECT_INTERACTION_OF_TYPE(type_)                      \
-  ({                                                           \
-    absl::optional<AssistantInteractionMetadata> interaction = \
-        current_interaction();                                 \
-    ASSERT_TRUE(interaction.has_value());                      \
-    EXPECT_EQ(interaction->type, type_);                       \
+#define EXPECT_INTERACTION_OF_TYPE(type_)                     \
+  ({                                                          \
+    std::optional<AssistantInteractionMetadata> interaction = \
+        current_interaction();                                \
+    ASSERT_TRUE(interaction.has_value());                     \
+    EXPECT_EQ(interaction->type, type_);                      \
   })
 
-#define EXPECT_NO_INTERACTION()                                \
-  ({                                                           \
-    absl::optional<AssistantInteractionMetadata> interaction = \
-        current_interaction();                                 \
-    ASSERT_FALSE(interaction.has_value());                     \
+#define EXPECT_NO_INTERACTION()                               \
+  ({                                                          \
+    std::optional<AssistantInteractionMetadata> interaction = \
+        current_interaction();                                \
+    ASSERT_FALSE(interaction.has_value());                    \
   })
 
 // Ensures that the given view has the focus. If it doesn't, this will print a
@@ -191,12 +191,6 @@ class AssistantPageViewTest : public AssistantAshTestBase {
   const views::View* GetFocusedView() {
     return page_view()->GetWidget()->GetFocusManager()->GetFocusedView();
   }
-
-  // Ensures the onboarding views will not be shown.
-  void DoNotShowOnboardingViews() {
-    SetNumberOfSessionsWhereOnboardingShown(
-        assistant::ui::kOnboardingMaxSessionsShown);
-  }
 };
 
 // Counts the number of Assistant interactions that are started.
@@ -298,39 +292,6 @@ TEST_F(AssistantPageViewTest, FocusShouldRemainInAssistantViewWhenPressingTab) {
   } while (focused_view != initial_focused_view);
 }
 
-TEST_F(AssistantPageViewTest,
-       FocusShouldCycleThroughOnboardingSuggestionsWhenPressingTab) {
-  constexpr int kMaxIterations = 100;
-
-  // Show Assistant UI and verify onboarding suggestions exist.
-  ShowAssistantUi();
-  auto onboarding_suggestions = GetOnboardingSuggestionViews();
-  ASSERT_FALSE(onboarding_suggestions.empty());
-
-  // Cache the first focused view.
-  auto* first_focused_view = GetFocusedView();
-
-  // Advance focus to the first onboarding suggestion.
-  int num_iterations = 0;
-  while (GetFocusedView() != onboarding_suggestions.at(0)) {
-    PressKeyAndWait(ui::VKEY_TAB);
-    ASSERT_LE(++num_iterations, kMaxIterations);  // Validity check.
-  }
-
-  // Verify we can cycle through them.
-  for (auto* onboarding_suggestion : onboarding_suggestions) {
-    ASSERT_EQ(GetFocusedView(), onboarding_suggestion);
-    PressKeyAndWait(ui::VKEY_TAB);
-  }
-
-  // Confirm that we eventually get back to our first focused view.
-  num_iterations = 0;
-  while (GetFocusedView() != first_focused_view) {
-    PressKeyAndWait(ui::VKEY_TAB);
-    ASSERT_LE(++num_iterations, kMaxIterations);  // Validity check.
-  }
-}
-
 TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
@@ -338,44 +299,22 @@ TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   EXPECT_TRUE(greeting_label()->IsDrawn());
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_F(AssistantPageViewTest, ShouldShowOnboardingWhenOpening) {
-  ShowAssistantUi();
-
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(greeting_label()->IsDrawn());
-}
-
 TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse("The response");
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
   EXPECT_FALSE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest, ShouldDismissOnboardingAfterQuery) {
-  ShowAssistantUi();
-
-  MockTextInteraction().WithTextResponse("The response");
-
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   // Cause the label to be hidden.
@@ -392,8 +331,6 @@ TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
 
 TEST_F(AssistantPageViewTest,
        ShouldNotShowGreetingLabelWhenOpeningFromSearchResult) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
@@ -406,75 +343,6 @@ TEST_F(AssistantPageViewTest,
 
   EXPECT_FALSE(onboarding_view()->IsDrawn());
   EXPECT_FALSE(greeting_label()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest, ShouldShowOnboardingForNewUsers) {
-  // A user is considered new if they haven't had an Assistant interaction in
-  // the past 28 days.
-  const base::Time new_user_cutoff = base::Time::Now() - base::Days(28);
-
-  SetTimeOfLastInteraction(new_user_cutoff + base::Minutes(1));
-  ShowAssistantUi();
-
-  // This user *has* interacted with Assistant more recently than 28 days ago so
-  // they are *not* considered new. Therefore, onboarding should *not* be shown.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-
-  SetTimeOfLastInteraction(new_user_cutoff);
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // This user has *not* interacted with Assistant more recently than 28 days
-  // ago so they *are* considered new. Therefore, onboarding *should* be shown.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest, ShouldShowOnboardingUntilInteractionOccurs) {
-  SetTimeOfLastInteraction(base::Time::Now() - base::Days(28));
-  ShowAssistantUi();
-
-  // This user has *not* interacted with Assistant more recently than 28 days
-  // ago so they *are* considered new. Therefore, onboarding *should* be shown.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // The user has *not* yet interacted with Assistant in this user session, so
-  // we should continue to show onboarding.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-
-  MockTextInteraction().WithQuery("Any Query").WithTextResponse("Any Response");
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // The user *has* had an interaction with Assistant in this user session, so
-  // we should *not* show onboarding anymore.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest,
-       ShouldShowOnboardingToExistingUsersIfShownPreviouslyInDifferentSession) {
-  SetTimeOfLastInteraction(base::Time::Now());
-  SetNumberOfSessionsWhereOnboardingShown(1);
-
-  ShowAssistantUi();
-
-  // This user *has* interacted with Assistant more recently than 28 days ago so
-  // so they are *not* considered new. Onboarding would not normally be shown
-  // but, since it *was* shown in a previous user session, we *do* show it.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-
-  MockTextInteraction().WithQuery("Any Query").WithTextResponse("Any Response");
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // But once the user has had an interaction with Assistant in this user
-  // session, we still expect onboarding to no longer show.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest,
@@ -719,20 +587,10 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldHaveConversationStarters) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   EXPECT_FALSE(onboarding_view()->IsDrawn());
   EXPECT_FALSE(GetSuggestionChips().empty());
-}
-
-TEST_F(AssistantPageViewTest,
-       ShouldNotHaveConversationStartersWhenShowingOnboarding) {
-  ShowAssistantUi();
-
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-  EXPECT_TRUE(GetSuggestionChips().empty());
 }
 
 TEST_F(AssistantPageViewTest, ShouldHavePopulatedSuggestionChips) {

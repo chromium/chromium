@@ -605,7 +605,7 @@ TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
     local_data_migration_helper_->Run(syncer::ModelTypeSet());
 
     // Nothing logged to histogram.
-    histogram_tester.ExpectTotalCount("Sync.BatchUpload.Requests", 0);
+    histogram_tester.ExpectTotalCount("Sync.BatchUpload.Requests2", 0);
   }
   {
     base::HistogramTester histogram_tester;
@@ -613,8 +613,8 @@ TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
         syncer::ModelTypeSet({syncer::PASSWORDS}));
 
     histogram_tester.ExpectUniqueSample(
-        "Sync.BatchUpload.Requests",
-        syncer::ModelTypeForHistograms(syncer::PASSWORDS), 1);
+        "Sync.BatchUpload.Requests2",
+        syncer::ModelTypeForHistograms::kPasswords, 1);
   }
   {
     base::HistogramTester histogram_tester;
@@ -626,16 +626,16 @@ TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
     local_data_migration_helper_->Run(syncer::ModelTypeSet(
         {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}));
 
-    histogram_tester.ExpectTotalCount("Sync.BatchUpload.Requests", 3);
+    histogram_tester.ExpectTotalCount("Sync.BatchUpload.Requests2", 3);
     histogram_tester.ExpectBucketCount(
-        "Sync.BatchUpload.Requests",
-        syncer::ModelTypeForHistograms(syncer::PASSWORDS), 1);
+        "Sync.BatchUpload.Requests2",
+        syncer::ModelTypeForHistograms::kPasswords, 1);
     histogram_tester.ExpectBucketCount(
-        "Sync.BatchUpload.Requests",
-        syncer::ModelTypeForHistograms(syncer::BOOKMARKS), 1);
+        "Sync.BatchUpload.Requests2",
+        syncer::ModelTypeForHistograms::kBookmarks, 1);
     histogram_tester.ExpectBucketCount(
-        "Sync.BatchUpload.Requests",
-        syncer::ModelTypeForHistograms(syncer::READING_LIST), 1);
+        "Sync.BatchUpload.Requests2",
+        syncer::ModelTypeForHistograms::kReadingList, 1);
   }
 }
 
@@ -647,8 +647,8 @@ TEST_F(LocalDataMigrationHelperTest,
 
   // Only the request for PASSWORDS is logged.
   histogram_tester.ExpectUniqueSample(
-      "Sync.BatchUpload.Requests",
-      syncer::ModelTypeForHistograms(syncer::PASSWORDS), 1);
+      "Sync.BatchUpload.Requests2", syncer::ModelTypeForHistograms::kPasswords,
+      1);
 }
 
 TEST_F(LocalDataMigrationHelperTest, ShouldHandleZeroTypes) {

@@ -159,7 +159,7 @@
     </style>
     <dialog id="dialog" on-close="onNativeDialogClose_"
         on-cancel="onNativeDialogCancel_" part="dialog"
-        aria-labelledby="title" aria-describedby="container">
+        aria-labelledby="title" aria-description$="[[ariaDescriptionText]]">
     <!-- This wrapper is necessary, such that the "pulse" animation is not
         erroneously played when the user clicks on the outer-most scrollbar. -->
       <div id="content-wrapper" part="wrapper">

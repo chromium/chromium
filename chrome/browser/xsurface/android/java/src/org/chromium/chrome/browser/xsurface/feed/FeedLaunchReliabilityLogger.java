@@ -24,8 +24,13 @@ public interface FeedLaunchReliabilityLogger {
         int NEW_TAB_PAGE = 1;
         int START_SURFACE = 2;
     }
-    @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED,
-            StreamType.SINGLE_WEB_FEED})
+
+    @IntDef({
+        StreamType.UNSPECIFIED,
+        StreamType.FOR_YOU,
+        StreamType.WEB_FEED,
+        StreamType.SINGLE_WEB_FEED
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface StreamType {
         int UNSPECIFIED = 0;
@@ -43,9 +48,7 @@ public interface FeedLaunchReliabilityLogger {
     default void sendPendingEvents(
             @org.chromium.chrome.browser.xsurface.feed.StreamType int streamType, int streamId) {}
 
-    /**
-     * Clear any pending events and end the flow without logging any events.
-     */
+    /** Clear any pending events and end the flow without logging any events. */
     default void cancelPendingEvents() {}
 
     /**
@@ -63,9 +66,7 @@ public interface FeedLaunchReliabilityLogger {
      */
     default void logUiStarting(@SurfaceType int surfaceType) {}
 
-    /**
-     * Log when a feed refresh is requested manually.
-     */
+    /** Log when a feed refresh is requested manually. */
     default void logManualRefresh() {}
 
     /**
@@ -87,9 +88,7 @@ public interface FeedLaunchReliabilityLogger {
     default void logSwitchedFeeds(
             @org.chromium.chrome.browser.xsurface.feed.StreamType int toStreamType) {}
 
-    /**
-     * Log when cached feed content is about to be read.
-     */
+    /** Log when cached feed content is about to be read. */
     default void logCacheReadStart() {}
 
     /**
@@ -98,14 +97,10 @@ public interface FeedLaunchReliabilityLogger {
      */
     default void logCacheReadEnd(int result) {}
 
-    /**
-     * Log when the loading spinner is shown.
-     */
+    /** Log when the loading spinner is shown. */
     default void logLoadingIndicatorShown() {}
 
-    /**
-     * Log when rendering of above-the-fold feed content begins.
-     */
+    /** Log when rendering of above-the-fold feed content begins. */
     default void logAtfRenderStart() {}
 
     /**
@@ -151,9 +146,7 @@ public interface FeedLaunchReliabilityLogger {
      */
     default void pendingFinished(int result) {}
 
-    /**
-     * Drop anything kept with pendingFinished().
-     */
+    /** Drop anything kept with pendingFinished(). */
     default void cancelPendingFinished() {}
 
     /**

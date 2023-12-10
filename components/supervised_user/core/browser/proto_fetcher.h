@@ -126,8 +126,8 @@ class ProtoFetcherStatus {
 template <typename Response>
 class ProtoFetcher {
  public:
-  using Callback =
-      base::OnceCallback<void(ProtoFetcherStatus, std::unique_ptr<Response>)>;
+  using Callback = base::OnceCallback<void(const ProtoFetcherStatus&,
+                                           std::unique_ptr<Response>)>;
   virtual ~ProtoFetcher() = default;
 };
 

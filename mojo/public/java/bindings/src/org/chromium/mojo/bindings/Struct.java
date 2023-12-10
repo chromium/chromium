@@ -8,23 +8,15 @@ import org.chromium.mojo.system.Core;
 
 import java.nio.ByteBuffer;
 
-/**
- * Base class for all mojo structs.
- */
+/** Base class for all mojo structs. */
 public abstract class Struct {
-    /**
-     * The base size of the encoded struct.
-     */
+    /** The base size of the encoded struct. */
     private final int mEncodedBaseSize;
 
-    /**
-     * The version of the struct.
-     */
+    /** The version of the struct. */
     private final int mVersion;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     protected Struct(int encodedBaseSize, int version) {
         mEncodedBaseSize = encodedBaseSize;
         mVersion = version;
@@ -82,8 +74,6 @@ public abstract class Struct {
         return new ServiceMessage(encoder.getMessage(), header);
     }
 
-    /**
-     * Use the given encoder to serialize this data structure.
-     */
+    /** Use the given encoder to serialize this data structure. */
     protected abstract void encode(Encoder encoder);
 }

@@ -7,7 +7,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-export function pageToolbarTestSuite() {
+suite('pageToolbarTestSuite', () => {
   /** @type {?PageToolbarElement} */
   let pageToolbarElement = null;
 
@@ -48,4 +48,4 @@ export function pageToolbarTestSuite() {
       assertEquals(expectedTitle, actualTitle);
     });
   });
-}
+});

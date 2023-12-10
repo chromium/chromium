@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -11,90 +12,53 @@ cargo_crate("lib") {
   crate_name = "serde_json"
   epoch = "1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  crate_root = "crate/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lib.rs"
   sources = [
-    "//third_party/rust/serde_json/v1/crate/build.rs",
-    "//third_party/rust/serde_json/v1/crate/src/de.rs",
-    "//third_party/rust/serde_json/v1/crate/src/error.rs",
-    "//third_party/rust/serde_json/v1/crate/src/features_check/error.rs",
-    "//third_party/rust/serde_json/v1/crate/src/features_check/mod.rs",
-    "//third_party/rust/serde_json/v1/crate/src/io/core.rs",
-    "//third_party/rust/serde_json/v1/crate/src/io/mod.rs",
-    "//third_party/rust/serde_json/v1/crate/src/iter.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/algorithm.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/bhcomp.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/bignum.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/cached.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/cached_float80.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/digit.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/errors.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/exponent.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/float.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/large_powers.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/large_powers32.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/large_powers64.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/math.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/mod.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/num.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/parse.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/rounding.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/shift.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lexical/small_powers.rs",
-    "//third_party/rust/serde_json/v1/crate/src/lib.rs",
-    "//third_party/rust/serde_json/v1/crate/src/macros.rs",
-    "//third_party/rust/serde_json/v1/crate/src/map.rs",
-    "//third_party/rust/serde_json/v1/crate/src/number.rs",
-    "//third_party/rust/serde_json/v1/crate/src/raw.rs",
-    "//third_party/rust/serde_json/v1/crate/src/read.rs",
-    "//third_party/rust/serde_json/v1/crate/src/ser.rs",
-    "//third_party/rust/serde_json/v1/crate/src/value/de.rs",
-    "//third_party/rust/serde_json/v1/crate/src/value/from.rs",
-    "//third_party/rust/serde_json/v1/crate/src/value/index.rs",
-    "//third_party/rust/serde_json/v1/crate/src/value/mod.rs",
-    "//third_party/rust/serde_json/v1/crate/src/value/partial_eq.rs",
-    "//third_party/rust/serde_json/v1/crate/src/value/ser.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/compiletest.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/debug.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/algorithm.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/exponent.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/float.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/math.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/num.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/parse.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/lexical/rounding.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/macros/mod.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/map.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/regression.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/regression/issue520.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/regression/issue795.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/regression/issue845.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/stream.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/test.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/missing_colon.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/missing_comma.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/missing_value.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/not_found.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/parse_expr.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/parse_key.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/unexpected_after_array_element.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/unexpected_after_map_entry.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/unexpected_colon.rs",
-    "//third_party/rust/serde_json/v1/crate/tests/ui/unexpected_comma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/features_check/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/features_check/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/io/core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/io/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/algorithm.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/bhcomp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/bignum.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/cached.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/cached_float80.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/digit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/errors.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/exponent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/large_powers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/large_powers32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/large_powers64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/rounding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/shift.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lexical/small_powers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/number.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/raw.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/ser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/value/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/value/from.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/value/index.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/value/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/value/partial_eq.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/src/value/ser.rs",
   ]
-  inputs = [
-    "//third_party/rust/serde_json/v1/crate/CONTRIBUTING.md",
-    "//third_party/rust/serde_json/v1/crate/README.md",
-  ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.0.78"
+  edition = "2021"
+  cargo_pkg_version = "1.0.108"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_json"
   cargo_pkg_description = "A JSON serialization file format"
@@ -108,10 +72,10 @@ cargo_crate("lib") {
     "//third_party/rust/serde/v1:lib",
   ]
   features = [ "std" ]
-  build_root = "crate/build.rs"
-  build_sources = [ "crate/build.rs" ]
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/build.rs"
+  build_sources = [
+    "//third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/build.rs",
+  ]
   testonly = true
 }

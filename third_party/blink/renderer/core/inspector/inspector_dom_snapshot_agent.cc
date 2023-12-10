@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -101,7 +102,7 @@ std::unique_ptr<protocol::DOMSnapshot::RareBooleanData> BooleanData() {
 }
 
 String GetOriginUrl(const Node* node) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = node->GetDocument().GetAgent().isolate();
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
   if (!isolate || !isolate->InContext() || !debugger)
     return String();
@@ -192,10 +193,8 @@ PhysicalRect InspectorDOMSnapshotAgent::RectInDocument(
 PhysicalRect InspectorDOMSnapshotAgent::TextFragmentRectInDocument(
     const LayoutObject* layout_object,
     const LayoutText::TextBoxInfo& text_box) {
-  PhysicalRect local_coords_text_box_rect =
-      layout_object->FlipForWritingMode(text_box.local_rect.ToLayoutRect());
   PhysicalRect absolute_coords_text_box_rect =
-      layout_object->LocalToAbsoluteRect(local_coords_text_box_rect);
+      layout_object->LocalToAbsoluteRect(text_box.local_rect);
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   return local_frame_view
              ? local_frame_view->FrameToDocument(absolute_coords_text_box_rect)

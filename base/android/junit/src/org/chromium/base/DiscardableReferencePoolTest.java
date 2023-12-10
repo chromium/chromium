@@ -14,9 +14,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Tests for {@link DiscardableReferencePool}.
- */
+/** Tests for {@link DiscardableReferencePool}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DiscardableReferencePoolTest {

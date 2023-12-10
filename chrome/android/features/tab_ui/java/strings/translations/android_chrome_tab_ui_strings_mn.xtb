@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
+<translation id="1155815720264022949">Хуучин табуудыг хаахыг хүсэж байна уу?</translation>
 <translation id="1215127405478249895">Табуудыг шалгах</translation>
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
 <translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Бүтэн дэлгэцийн торыг нуух</translation>
 <translation id="5076161749301278626">Дэлгүүрийн шүүмжүүдийг харах уу?</translation>
 <translation id="5082793167783849073">Бүлэг үүсгэх байдлаар хуудаснуудыг хурдан харьцуулаарай. Эхлүүлэхийн тулд холбоосыг удаан дарна уу.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Танд ойрын хугацаанд ашиглаагүй <ph name="TABS_COUNT_ONE" /> таб байна}other{Танд ойрын хугацаанд ашиглаагүй <ph name="TABS_COUNT_MANY" /> таб байна}}</translation>
 <translation id="5339733443032484186">Таны сүүлийн таб</translation>
 <translation id="5490235265819901748">Бүлэг табыг дэлгэсэн</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
+<translation id="5545379293264651575">Хянахгүйгээр хаах</translation>
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг хаах.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> табыг бүлэглэсэн</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Табыг баруун тийш зөөх</translation>
 <translation id="7966321538264951561">Зөвлөмжийг үл хэрэгсэх.</translation>
 <translation id="8029301326595421733">Энэ дэлгүүрийн талаарх мэдээллийг бүтэн өндөртэйгээр нээсэн</translation>
-<translation id="814503310257431685">Бүгдийг харах</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] MessagePort still works after the page is restored from BFCache
+  BFCache not supported.
+Harness: the test ran to completion.

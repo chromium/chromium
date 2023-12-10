@@ -132,8 +132,8 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
   std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
       _controller->GetSuggestionLabelsAt(row);
   if (!suggestion_labels.empty()) {
-    DCHECK_EQ(suggestion_labels.size(), 1U);
-    DCHECK_EQ(suggestion_labels[0].size(), 1U);
+    CHECK_GT(suggestion_labels.size(), 0U);
+    CHECK_GT(suggestion_labels[0].size(), 0U);
     subtext =
         base::SysUTF16ToNSString(std::move(suggestion_labels[0][0].value));
   }

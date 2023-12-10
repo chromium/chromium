@@ -70,7 +70,7 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
     // To compute the next line after the last cached line, update
     // `break_token_` to the last cached break token.
     const LineInfo& last_line = line_info_list.Back();
-    break_token_ = last_line.BreakToken();
+    break_token_ = last_line.GetBreakToken();
     // The last line should not be the end of paragraph.
     // `SuspendUntilConsumed()` should have prevented this from happening.
     DCHECK(break_token_ && !last_line.HasForcedBreak());
@@ -79,15 +79,15 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
   // Compute line breaks and cache the results (`LineInfo`) up to
   // `LineInfoList::kCapacity` lines.
   LayoutUnit line_width = line_widths_[line_index];
-  LineBreaker line_breaker(node_, LineBreakerMode::kContent, ConstraintSpace(),
-                           LineLayoutOpportunity(line_width), leading_floats,
-                           break_token_,
-                           /* column_spanner_path */ nullptr, exclusion_space_);
+  LineBreaker line_breaker(
+      node_, LineBreakerMode::kContent, GetConstraintSpace(),
+      LineLayoutOpportunity(line_width), leading_floats, break_token_,
+      /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
     LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
-    break_token_ = line_info.BreakToken();
+    break_token_ = line_info.GetBreakToken();
     if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
       context.SuspendUntilEndParagraph();
       return;

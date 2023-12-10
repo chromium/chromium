@@ -87,6 +87,8 @@ if (safe_browsing_mode > 0) {
 
 source_set("browser") {
   sources = [
+    "async_check_tracker.cc",
+    "async_check_tracker.h",
     "base_blocking_page.cc",
     "base_blocking_page.h",
     "base_ui_manager.cc",
@@ -105,6 +107,8 @@ source_set("browser") {
     "threat_details_cache.h",
     "threat_details_history.cc",
     "threat_details_history.h",
+    "url_checker_on_sb.cc",
+    "url_checker_on_sb.h",
     "web_api_handshake_checker.cc",
     "web_api_handshake_checker.h",
     "web_contents_key.cc",
@@ -120,6 +124,7 @@ source_set("browser") {
     "//components/back_forward_cache",
     "//components/history/core/browser",
     "//components/prefs",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser",

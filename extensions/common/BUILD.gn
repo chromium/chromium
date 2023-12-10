@@ -73,6 +73,7 @@ mojom("mojom") {
     "mojom/automation_registry.mojom",
     "mojom/channel.mojom",
     "mojom/code_injection.mojom",
+    "mojom/context_type.mojom",
     "mojom/css_origin.mojom",
     "mojom/event_dispatcher.mojom",
     "mojom/event_router.mojom",
@@ -245,6 +246,8 @@ static_library("common") {
     "api/printer_provider/usb_printer_manifest_data.h",
     "api/printer_provider/usb_printer_manifest_handler.cc",
     "api/printer_provider/usb_printer_manifest_handler.h",
+    "api/scripts_internal/script_serialization.cc",
+    "api/scripts_internal/script_serialization.h",
     "api/sockets/sockets_manifest_data.cc",
     "api/sockets/sockets_manifest_data.h",
     "api/sockets/sockets_manifest_handler.cc",
@@ -333,8 +336,6 @@ static_library("common") {
     "frame_context_data.h",
     "hashed_extension_id.cc",
     "hashed_extension_id.h",
-    "identifiability_metrics.cc",
-    "identifiability_metrics.h",
     "image_util.cc",
     "image_util.h",
     "install_warning.cc",
@@ -584,6 +585,7 @@ source_set("unit_tests") {
     "api/declarative_net_request/dnr_manifest_unittest.cc",
     "api/messaging/messaging_endpoint_unittest.cc",
     "api/printer_provider/usb_printer_manifest_unittest.cc",
+    "api/scripts_internal/script_serialization_unittest.cc",
     "api/sockets/sockets_manifest_permission_unittest.cc",
     "command_unittest.cc",
     "component_extension_url_pattern_unittest.cc",
@@ -696,6 +698,9 @@ fuzzer_test("extension_manifest_fuzzer") {
     "//base",
     "//extensions:test_support",
   ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 fuzzer_test("extension_url_pattern_fuzzer") {
@@ -713,4 +718,22 @@ fuzzer_test("extension_csp_validator_fuzzer") {
     "//base",
     "//third_party/icu/fuzzers:fuzzer_support",
   ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
+}
+
+fuzzer_test("extension_api_scripts_internal_serialization_fuzzer") {
+  sources = [ "api/scripts_internal/script_serialization_fuzzer.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//extensions:test_support",
+    "//extensions/common/api",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/icu/fuzzers:fuzzer_support",
+  ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }

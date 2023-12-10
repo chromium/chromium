@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
 
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 

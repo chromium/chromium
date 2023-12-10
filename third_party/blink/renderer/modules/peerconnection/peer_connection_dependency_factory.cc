@@ -668,12 +668,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
   }
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
-  if (base::FeatureList::IsEnabled(blink::features::kWebRtcMetronome)) {
-    pcf_deps.metronome =
-        StaticDeps().metronome_source().CreateWebRtcMetronome();
-  }
-  pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
-      pcf_deps.task_queue_factory.get());
+  pcf_deps.decode_metronome =
+      StaticDeps().metronome_source().CreateWebRtcMetronome();
+  pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
   pcf_deps.adm = audio_device_.get();
   pcf_deps.audio_encoder_factory = blink::CreateWebrtcAudioEncoderFactory();
   pcf_deps.audio_decoder_factory = blink::CreateWebrtcAudioDecoderFactory();
@@ -712,9 +709,6 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   // |web_frame| may be null in tests, e.g. if
   // RTCPeerConnectionHandler::InitializeForTest() is used.
   if (web_frame) {
-    rtc::SetAllowLegacyTLSProtocols(web_frame->View()
-                                        ->GetRendererPreferences()
-                                        .webrtc_allow_legacy_tls_protocols);
     dependencies.allocator = CreatePortAllocator(web_frame);
   }
   dependencies.async_dns_resolver_factory = CreateAsyncDnsResolverFactory();

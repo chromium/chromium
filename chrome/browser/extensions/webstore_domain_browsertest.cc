@@ -17,6 +17,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace extensions {
 namespace {
@@ -169,10 +170,12 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, FrameWebstorePageBlocked) {
     content::RenderFrameHost* subframe =
         content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(subframe);
-    const net::HttpResponseHeaders* headers =
-        subframe->GetLastResponseHeaders();
-    ASSERT_TRUE(headers);
-    EXPECT_TRUE(headers->HasHeaderValue("X-Frame-Options", "foo"));
+    const network::mojom::URLResponseHead* response_head =
+        subframe->GetLastResponseHead();
+    ASSERT_TRUE(response_head);
+    ASSERT_TRUE(response_head->headers);
+    EXPECT_TRUE(
+        response_head->headers->HasHeaderValue("X-Frame-Options", "foo"));
 
     // The subframe should have loaded fine.
     EXPECT_EQ(non_webstore_url, subframe->GetLastCommittedURL());
@@ -192,10 +195,12 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, FrameWebstorePageBlocked) {
     content::RenderFrameHost* subframe =
         content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 1);
     ASSERT_TRUE(subframe);
-    const net::HttpResponseHeaders* headers =
-        subframe->GetLastResponseHeaders();
-    ASSERT_TRUE(headers);
-    EXPECT_TRUE(headers->HasHeaderValue("X-Frame-Options", "SAMEORIGIN"));
+    const network::mojom::URLResponseHead* response_head =
+        subframe->GetLastResponseHead();
+    ASSERT_TRUE(response_head);
+    ASSERT_TRUE(response_head->headers);
+    EXPECT_TRUE(response_head->headers->HasHeaderValue("X-Frame-Options",
+                                                       "SAMEORIGIN"));
 
     // The subframe load should fail due to XFO.
     EXPECT_EQ(webstore_url, subframe->GetLastCommittedURL());
@@ -215,10 +220,12 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, FrameWebstorePageBlocked) {
     content::RenderFrameHost* subframe =
         content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 2);
     ASSERT_TRUE(subframe);
-    const net::HttpResponseHeaders* headers =
-        subframe->GetLastResponseHeaders();
-    ASSERT_TRUE(headers);
-    EXPECT_TRUE(headers->HasHeaderValue("X-Frame-Options", "SAMEORIGIN"));
+    const network::mojom::URLResponseHead* response_head =
+        subframe->GetLastResponseHead();
+    ASSERT_TRUE(response_head);
+    ASSERT_TRUE(response_head->headers);
+    EXPECT_TRUE(response_head->headers->HasHeaderValue("X-Frame-Options",
+                                                       "SAMEORIGIN"));
 
     // The subframe load should fail due to XFO.
     EXPECT_EQ(webstore_url, subframe->GetLastCommittedURL());

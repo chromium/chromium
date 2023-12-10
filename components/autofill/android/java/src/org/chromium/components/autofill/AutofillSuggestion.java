@@ -16,30 +16,22 @@ import org.chromium.url.GURL;
 
 import java.util.Objects;
 
-/**
- * Autofill suggestion container used to store information needed for each Autofill popup entry.
- */
+/** Autofill suggestion container used to store information needed for each Autofill popup entry. */
 public class AutofillSuggestion extends DropdownItemBase {
     private final String mLabel;
-    @Nullable
-    private final String mSecondaryLabel;
+    @Nullable private final String mSecondaryLabel;
     private final String mSublabel;
-    @Nullable
-    private final String mSecondarySublabel;
-    @Nullable
-    private final String mItemTag;
+    @Nullable private final String mSecondarySublabel;
+    @Nullable private final String mItemTag;
     private final int mIconId;
     private final boolean mIsIconAtStart;
     private final int mPopupItemId;
     private final boolean mIsDeletable;
     private final boolean mIsMultilineLabel;
     private final boolean mIsBoldLabel;
-    @Nullable
-    private final String mFeatureForIPH;
-    @Nullable
-    private final GURL mCustomIconUrl;
-    @Nullable
-    private final Drawable mIconDrawable;
+    @Nullable private final String mFeatureForIPH;
+    @Nullable private final GURL mCustomIconUrl;
+    @Nullable private final Drawable mIconDrawable;
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -197,7 +189,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mSecondaryLabel, other.mSecondaryLabel)
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
-                && Objects.equals(this.mItemTag, other.mItemTag) && this.mIconId == other.mIconId
+                && Objects.equals(this.mItemTag, other.mItemTag)
+                && this.mIconId == other.mIconId
                 && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mPopupItemId == other.mPopupItemId
                 && this.mIsDeletable == other.mIsDeletable
@@ -226,9 +219,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setIconDrawable(mIconDrawable);
     }
 
-    /**
-     * Builder for the {@link AutofillSuggestion}.
-     */
+    /** Builder for the {@link AutofillSuggestion}. */
     public static final class Builder {
         private int mIconId;
         private GURL mCustomIconUrl;
@@ -318,10 +309,22 @@ public class AutofillSuggestion extends DropdownItemBase {
         public AutofillSuggestion build() {
             assert !TextUtils.isEmpty(mLabel) : "AutofillSuggestion requires the label to be set.";
             assert (mSubLabel != null)
-                : "The AutofillSuggestion sublabel can be empty but never null.";
-            return new AutofillSuggestion(mLabel, mSecondaryLabel, mSubLabel, mSecondarySubLabel,
-                    mItemTag, mIconId, mIsIconAtStart, mPopupItemId, mIsDeletable,
-                    mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH, mCustomIconUrl, mIconDrawable);
+                    : "The AutofillSuggestion sublabel can be empty but never null.";
+            return new AutofillSuggestion(
+                    mLabel,
+                    mSecondaryLabel,
+                    mSubLabel,
+                    mSecondarySubLabel,
+                    mItemTag,
+                    mIconId,
+                    mIsIconAtStart,
+                    mPopupItemId,
+                    mIsDeletable,
+                    mIsMultiLineLabel,
+                    mIsBoldLabel,
+                    mFeatureForIPH,
+                    mCustomIconUrl,
+                    mIconDrawable);
         }
     }
 

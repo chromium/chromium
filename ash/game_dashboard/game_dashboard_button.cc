@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
@@ -72,7 +73,7 @@ SkColor GetColor(ui::ColorProvider* color_provider,
 }  // namespace
 
 GameDashboardButton::GameDashboardButton(PressedCallback callback)
-    : views::Button(callback) {
+    : views::Button(std::move(callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

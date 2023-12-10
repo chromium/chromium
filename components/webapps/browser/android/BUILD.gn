@@ -30,7 +30,6 @@ android_library("java") {
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaInstallBottomSheetContent.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaInstallBottomSheetView.java",
-    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetContent.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetCoordinator.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetMediator.java",
@@ -42,10 +41,9 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/android/webapk/proto:proto_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/infobars/android:java",
-    "//components/infobars/android:java_resources",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -73,7 +71,6 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
-    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
   ]
 }
 

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/apps/app_service/package_id_util.h"
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
@@ -19,15 +19,15 @@
 namespace apps_util {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<apps::PackageId> GetPackageIdForApp(
+std::optional<apps::PackageId> GetPackageIdForApp(
     Profile* profile,
     const apps::AppUpdate& update) {
   if (update.AppType() != apps::AppType::kArc &&
       update.AppType() != apps::AppType::kWeb) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (update.PublisherId().empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // TWAs should have an ARC package ID despite being a webapp because the
@@ -36,7 +36,7 @@ absl::optional<apps::PackageId> GetPackageIdForApp(
       ash::ApkWebAppService::Get(profile);
   if (apk_web_app_service && update.AppType() == apps::AppType::kWeb) {
     // Check whether the app is an installed (or installing) web app apk.
-    absl::optional<std::string> package_name =
+    std::optional<std::string> package_name =
         apk_web_app_service->GetPackageNameForWebApp(
             update.AppId(), /*include_installing_apks=*/true);
     if (package_name.has_value()) {

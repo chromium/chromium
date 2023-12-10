@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
 
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
@@ -12,16 +13,24 @@ namespace autofill::autofill_metrics {
 // The below issuer names are used for logging purposes, and they thus must be
 // consistent with the Autofill.CreditCardIssuerId in the
 // autofill/histograms.xml file.
-constexpr char kAmericanExpress[] = "Amex";
-constexpr char kCapitalOne[] = "CapitalOne";
-constexpr char kDiscover[] = "Discover";
-constexpr char kMarqeta[] = "Marqeta";
+constexpr std::string_view kAmericanExpress = "Amex";
+constexpr std::string_view kAnz = "Anz";
+constexpr std::string_view kCapitalOne = "CapitalOne";
+constexpr std::string_view kChase = "Chase";
+constexpr std::string_view kCiti = "Citi";
+constexpr std::string_view kDiscover = "Discover";
+constexpr std::string_view kLloyds = "Lloyds";
+constexpr std::string_view kMarqeta = "Marqeta";
+constexpr std::string_view kNab = "Nab";
+constexpr std::string_view kNatwest = "Natwest";
 
-constexpr char kProductNameAndArtImageBothShownSuffix[] =
+constexpr std::string_view kProductNameAndArtImageBothShownSuffix =
     "ProductDescriptionAndArtImageShown";
-constexpr char kProductNameShownOnlySuffix[] = "ProductDescriptionShown";
-constexpr char kArtImageShownOnlySuffix[] = "ArtImageShown";
-constexpr char kProductNameAndArtImageNotShownSuffix[] = "MetadataNotShown";
+constexpr std::string_view kProductNameShownOnlySuffix =
+    "ProductDescriptionShown";
+constexpr std::string_view kArtImageShownOnlySuffix = "ArtImageShown";
+constexpr std::string_view kProductNameAndArtImageNotShownSuffix =
+    "MetadataNotShown";
 
 // Enum for different types of form events. Used for metrics logging.
 enum class CardMetadataLoggingEvent {
@@ -51,12 +60,17 @@ struct CardMetadataLoggingContext {
   bool card_metadata_available = false;
   bool card_product_description_shown = false;
   bool card_art_image_shown = false;
+  // Keeps record of which issuers with metadata were not selected. Only
+  // available when logging the selected form event.
+  base::flat_set<std::string> not_selected_issuer_ids;
   // Keeps record of whether suggestions from issuers had metadata. If the value
   // is true for a particular issuer, at least 1 card suggestion from the issuer
   // had metadata. If it is false, none of the card suggestions from the issuer
   // had metadata.
   base::flat_map<std::string, bool> issuer_to_metadata_availability;
 };
+
+std::string_view GetCardIssuerIdSuffix(const std::string& card_issuer_id);
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(

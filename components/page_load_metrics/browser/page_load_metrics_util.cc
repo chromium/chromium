@@ -163,6 +163,7 @@ absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
     const PageLoadMetricsObserverDelegate& delegate) {
   switch (delegate.GetPrerenderingState()) {
     case PrerenderingState::kNoPrerendering:
+    case PrerenderingState::kInPreview:
       if (delegate.StartedInForeground()) {
         return delegate.GetTimeToFirstBackground();
       } else {
@@ -208,6 +209,7 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
 
   switch (delegate.GetPrerenderingState()) {
     case PrerenderingState::kNoPrerendering:
+    case PrerenderingState::kInPreview:
       return event;
     case PrerenderingState::kInPrerendering:
     case PrerenderingState::kActivatedNoActivationStart:
@@ -364,8 +366,6 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
                             ? PageVisitFinalStatus::kReachedFCP
                             : PageVisitFinalStatus::kAborted;
   }
-  base::UmaHistogramEnumeration("UserPerceivedPageVisit.PageVisitFinalStatus",
-                                page_visit_status);
   ukm::builders::UserPerceivedPageVisit pageVisitBuilder(source_id);
   pageVisitBuilder.SetPageVisitFinalStatus(static_cast<int>(page_visit_status));
   pageVisitBuilder.Record(ukm::UkmRecorder::Get());

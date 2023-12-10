@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 
+#include <optional>
+
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -26,24 +27,24 @@ namespace web_app {
 
 namespace {
 
-absl::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
+std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
-    return absl::nullopt;
+    return std::nullopt;
 
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (!app_id)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!web_app::WebAppTabHelper::FromWebContents(web_contents)->acting_as_app())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar_unsafe()
            .IsInstalled(*app_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *app_id;
@@ -68,7 +69,7 @@ bool GetLabelIdsForAppManagementLinkInPageInfo(
     content::WebContents* web_contents,
     int* link_text_id,
     int* tooltip_text_id) {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetAppIdForManagementLinkInWebContents(web_contents);
   if (!app_id)
     return false;
@@ -80,7 +81,7 @@ bool GetLabelIdsForAppManagementLinkInPageInfo(
 
 bool HandleAppManagementLinkClickedInPageInfo(
     content::WebContents* web_contents) {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetAppIdForManagementLinkInWebContents(web_contents);
   if (!app_id)
     return false;

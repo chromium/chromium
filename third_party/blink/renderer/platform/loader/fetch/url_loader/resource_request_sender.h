@@ -145,17 +145,18 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
       absl::optional<mojo_base::BigBuffer> cached_metadata,
-      base::TimeTicks response_arrival_timing_at_renderer);
+      base::TimeTicks response_ipc_arrival_time);
 
   // Called when a redirect occurs.
   virtual void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      base::TimeTicks redirect_ipc_arrival_time);
 
   // Called when the response is complete.
   virtual void OnRequestComplete(
-      const network::URLLoaderCompletionStatus& status);
+      const network::URLLoaderCompletionStatus& status,
+      base::TimeTicks complete_ipc_arrival_time);
 
  private:
   friend class URLLoaderClientImpl;
@@ -207,13 +208,18 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     // Used to notify the loading stats.
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper;
+
+    // Set to true when the request was frozen. This is used not to record
+    // histograms for frozen requests. Note: Even if the request was unfreezed,
+    // we don't resume recording histograms because tasks are deferred in
+    // MojoURLLoaderClient.
+    bool ignore_for_histogram = false;
   };
 
   // Called as a callback for ResourceRequestClient::OnReceivedRedirect().
   void OnFollowRedirectCallback(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::vector<std::string> removed_headers,
       net::HttpRequestHeaders modified_headers);
 
@@ -228,7 +234,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
 
   void DidReceiveCachedCode();
 
-  bool ShouldDeferTask();
+  bool ShouldDeferTask() const;
 
   void MaybeRunPendingTasks();
 

@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
 [FAIL] InterventionReportBody interface: existence and properties of interface object
   assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
 [FAIL] InterventionReportBody interface object length

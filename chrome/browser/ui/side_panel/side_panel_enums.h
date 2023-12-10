@@ -11,6 +11,7 @@
 // here.
 enum class SidePanelOpenTrigger {
   kToolbarButton = 0,
+  kMinValue = kToolbarButton,
   kLensContextMenu = 1,
   kSideSearchPageAction = 2,
   kNotesInPageContextMenu = 3,
@@ -26,7 +27,8 @@ enum class SidePanelOpenTrigger {
   kAppMenu = 13,
   kOpenedInNewTabFromSidePanel = 14,
   kReadAnythingOmniboxIcon = 15,
-  kMaxValue = kReadAnythingOmniboxIcon,
+  kReadAnythingNavigationThrottle = 16,
+  kMaxValue = kReadAnythingNavigationThrottle,
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

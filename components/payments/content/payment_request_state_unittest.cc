@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/payments/content/payment_app_factory.h"
@@ -473,7 +474,7 @@ TEST_F(PaymentRequestStateTest, JaLatnShippingAddress) {
 
   // Select an address, nothing should happen until the normalization is
   // completed and the merchant has validated the address.
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(AddressCountryCode("JP"));
   autofill::test::SetProfileInfo(&profile, "Jon", "V.", "Doe",
                                  "jon.doe@exampl.com", "Example Inc",
                                  "Roppongi", "6 Chrome-10-1", "Tokyo", "",

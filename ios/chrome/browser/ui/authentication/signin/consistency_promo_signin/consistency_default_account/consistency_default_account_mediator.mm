@@ -15,9 +15,9 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -141,6 +141,7 @@ NSString* GetPromoLabelString(
         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

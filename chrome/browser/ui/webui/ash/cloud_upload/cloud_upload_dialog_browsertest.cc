@@ -21,8 +21,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -47,6 +50,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -56,11 +60,18 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash::cloud_upload {
 
 namespace {
+
+namespace fm_tasks = ::file_manager::file_tasks;
+
+using chromeos::cloud_upload::kCloudUploadPolicyAllowed;
+using chromeos::cloud_upload::kCloudUploadPolicyAutomated;
+using chromeos::cloud_upload::kCloudUploadPolicyDisallowed;
 
 // The mime type and file_extension must be matching for
 // `CreateFakeWebApps()`.
@@ -159,14 +170,14 @@ void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 }
 
-// A matcher to verify that absl::optional<TaskDescriptor> corresponds to a Web
+// A matcher to verify that std::optional<TaskDescriptor> corresponds to a Web
 // Drive Office Task.
 auto IsWebDriveOfficeTask() {
   return testing::Optional(testing::ResultOf(
       &file_manager::file_tasks::IsWebDriveOfficeTask, testing::Eq(true)));
 }
 
-// A matcher to verify that absl::optional<TaskDescriptor> corresponds to an
+// A matcher to verify that std::optional<TaskDescriptor> corresponds to an
 // Open in Office Task.
 auto IsOpenInOfficeTask() {
   return testing::Optional(testing::ResultOf(
@@ -182,8 +193,10 @@ auto IsOpenInOfficeTask() {
 class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
  public:
   FileHandlerDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kUploadOfficeToCloud);
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kUploadOfficeToCloud,
+         chromeos::features::kUploadOfficeToCloudForEnterprise},
+        {});
   }
 
   FileHandlerDialogBrowserTest(const FileHandlerDialogBrowserTest&) = delete;
@@ -212,32 +225,8 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
         {kDocxFileExtension, kPptxFileExtension, kXlsxFileExtension},
         {kDocxMimeType, kPptxMimeType, kXlsxMimeType}, num_tasks_);
 
-    file_manager::test::FolderInMyFiles folder(profile());
-
-    base::FilePath test_data_path;
-    EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-    std::string file_names[] = {"text.docx", "presentation.pptx"};
-
-    for (const auto& file_name : file_names) {
-      base::FilePath file_path =
-          test_data_path.AppendASCII("chromeos/file_manager/" + file_name);
-      {
-        base::ScopedAllowBlockingForTesting allow_blocking;
-        EXPECT_TRUE(base::PathExists(file_path));
-      }
-      // Copy the file into My Files.
-      folder.Add({file_path});
-    }
-
-    for (const auto& path_in_my_files : folder.files()) {
-      GURL url;
-      CHECK(file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile(), path_in_my_files, file_manager::util::GetFileManagerURL(),
-          &url));
-      auto* file_system_context =
-          file_manager::util::GetFileManagerFileSystemContext(profile());
-      files_.push_back(file_system_context->CrackURLInFirstPartyContext(url));
-    }
+    files_ = file_manager::test::CopyTestFilesIntoMyFiles(
+        profile(), {"text.docx", "presentation.pptx"});
   }
 
  protected:
@@ -687,6 +676,315 @@ gfx::NativeWindow LaunchFilesAppAndWait(Profile* profile) {
   Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
   return files_app->window()->GetNativeWindow();
 }
+
+// Runs each test in four configurations (Google And Microsoft prefs
+// respectively):
+//   * `automated` and `allowed`
+//   * `automated` and `disallowed`
+//   * `allowed` and `automated`
+//   * `disallowed` and `automated`
+class FileHandlerDialogBrowserTestWithAutomatedFlow
+    : public FileHandlerDialogBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<base::StringPiece, base::StringPiece>> {
+ protected:
+  // Tests that there are no explicit file handlers set for office extensions &
+  // mime types.
+  bool ExplicitFileHandlersForOfficeExtensionsAndMimeTypesNotSet() {
+    return ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+               fm_tasks::WordGroupExtensions(),
+               fm_tasks::WordGroupMimeTypes()) &&
+           ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+               fm_tasks::ExcelGroupExtensions(),
+               fm_tasks::ExcelGroupMimeTypes()) &&
+           ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+               fm_tasks::PowerPointGroupExtensions(),
+               fm_tasks::PowerPointGroupMimeTypes());
+  }
+
+  // Tests that there are no explicit file handlers set for the given extensions
+  // and mime types.
+  bool ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+      const std::set<std::string>& extensions,
+      const std::set<std::string>& mime_types) {
+    const auto& prefs = *profile()->GetPrefs();
+    for (const auto& extension : extensions) {
+      if (fm_tasks::GetDefaultTaskFromPrefs(prefs,
+                                            /*mime_type=*/{}, extension)) {
+        return false;
+      }
+    }
+    for (const auto& mime_type : mime_types) {
+      fm_tasks::TaskDescriptor default_task;
+      if (fm_tasks::GetDefaultTaskFromPrefs(prefs, mime_type,
+                                            /*suffix=*/{})) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Tests that explicit file handlers for office extensions & mime types are
+  // set to the correct handler (Google Workspace or Microsoft Office depending
+  // on the test configuration).
+  bool ExplicitFileHandlersForOfficeExtensionsAndMimeTypesSet() {
+    const bool google_workspace_test =
+        chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(
+            profile());
+    return ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+               fm_tasks::WordGroupExtensions(), fm_tasks::WordGroupMimeTypes(),
+               google_workspace_test ? fm_tasks::kActionIdWebDriveOfficeWord
+                                     : fm_tasks::kActionIdOpenInOffice) &&
+           ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+               fm_tasks::ExcelGroupExtensions(),
+               fm_tasks::ExcelGroupMimeTypes(),
+               google_workspace_test ? fm_tasks::kActionIdWebDriveOfficeExcel
+                                     : fm_tasks::kActionIdOpenInOffice) &&
+           ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+               fm_tasks::PowerPointGroupExtensions(),
+               fm_tasks::PowerPointGroupMimeTypes(),
+               google_workspace_test
+                   ? fm_tasks::kActionIdWebDriveOfficePowerPoint
+                   : fm_tasks::kActionIdOpenInOffice);
+  }
+
+  // Tests that there are no explicit file handlers set for the given extensions
+  // and mime types are set to a task with a given |action_id|.
+  bool ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      const std::set<std::string>& extensions,
+      const std::set<std::string>& mime_types,
+      base::StringPiece action_id) {
+    return ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+        extensions, mime_types,
+        /*task=*/
+        fm_tasks::TaskDescriptor(file_manager::kFileManagerSwaAppId,
+                                 fm_tasks::TASK_TYPE_WEB_APP,
+                                 fm_tasks::ToSwaActionId(action_id)));
+  }
+
+  // Tests that there are no explicit file handlers set for the given extensions
+  // and mime types are set to a particular |task|.
+  bool ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      const std::set<std::string>& extensions,
+      const std::set<std::string>& mime_types,
+      const fm_tasks::TaskDescriptor& task) {
+    const auto& prefs = *profile()->GetPrefs();
+    for (const auto& extension : extensions) {
+      if (fm_tasks::GetDefaultTaskFromPrefs(prefs,
+                                            /*mime_type=*/{},
+                                            extension) != task) {
+        return false;
+      }
+    }
+    for (const auto& mime_type : mime_types) {
+      if (fm_tasks::GetDefaultTaskFromPrefs(prefs, mime_type, /*suffix=*/{}) !=
+          task) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Assigns Google & Microsoft prefs to param values for this test.
+  void AssignClippyPrefs() {
+    auto [google_workspace_cloud_upload, microsoft_office_cloud_upload] =
+        GetParam();
+    auto* prefs = profile()->GetPrefs();
+    prefs->SetString(prefs::kGoogleWorkspaceCloudUpload,
+                     google_workspace_cloud_upload);
+    prefs->SetString(prefs::kMicrosoftOfficeCloudUpload,
+                     microsoft_office_cloud_upload);
+  }
+};
+
+// Tests that when one handler is automated, the user is brought directly to the
+// move confirmation page instead of file handling dialog.
+IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
+                       AutomatedClippyFlow) {
+  EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesNotSet());
+
+  AssignClippyPrefs();
+
+  if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(
+          profile())) {
+    // Perform the necessary OneDrive & Microsoft365 setup.
+    file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
+    file_manager::test::AddFakeWebApp(
+        web_app::kMicrosoft365AppId, kDocMimeType, kDocFileExtension, "", true,
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
+  }
+
+  EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesSet());
+
+  // Watch for File Handler dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Launch File Handler dialog.
+  const CloudProvider cloud_provider =
+      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+          ? CloudProvider::kGoogleDrive
+          : CloudProvider::kOneDrive;
+  ASSERT_TRUE(CloudOpenTask::Execute(
+      profile(), files_, cloud_provider, nullptr,
+      std::make_unique<CloudOpenMetrics>(cloud_provider, /*file_count=*/1)));
+
+  // Wait for File Handler dialog to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Get the web contents of the dialog to be able to query `cloud-upload`.
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Check that the user is brought to the move confirmation page.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(web_contents,
+                           "!!document.querySelector('move-confirmation-page')")
+        .ExtractBool();
+  }));
+
+  constexpr char kGetProviderNameScript[] = R"(
+    (async () => {
+      const page = document.querySelector('move-confirmation-page');
+      return page.getProviderName(page.cloudProvider);
+    })();
+  )";
+
+  // Validate that the confirmation page is displayed for the correct drive.
+  ASSERT_EQ(content::EvalJs(web_contents, kGetProviderNameScript),
+            l10n_util::GetStringUTF8(
+                chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(
+                    profile())
+                    ? IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE
+                    : IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE));
+}
+
+// Tests that toggling the pref to `automated` and then back to `disallowed`
+// first assigns and then reset office file handlers.
+IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
+                       InvertFileHandlers) {
+  // Initially no handlers should be set.
+  EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesNotSet());
+
+  AssignClippyPrefs();
+
+  // Now all office handlers are set to either Google or Microsoft (depending on
+  // the test param).
+  EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesSet());
+
+  // Now toggle the automated policy to disallowed.
+  profile()->GetPrefs()->SetString(
+      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+          ? prefs::kGoogleWorkspaceCloudUpload
+          : prefs::kMicrosoftOfficeCloudUpload,
+      kCloudUploadPolicyDisallowed);
+
+  // All handlers are reset.
+  EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesNotSet());
+}
+
+// Tests that toggling the pref to `automated` and then back to `disallowed`
+// respects existing user prefs if they're set to other handlers for selected
+// office extensions or mime types.
+IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
+                       PreexistingFileHandlersAreNotOverwritten) {
+  std::set<std::string> test_extensions({".docx", ".pptx", ".xslx"});
+  std::set<std::string> test_mime_types({"application/msword",
+                                         "application/vnd.ms-excel",
+                                         "application/vnd.ms-excel"});
+
+  // Create sets of office extensions excluding the ones reserved for testing.
+  std::set<std::string> word_extensions(fm_tasks::WordGroupExtensions());
+  std::set<std::string> excel_extensions(fm_tasks::ExcelGroupExtensions());
+  std::set<std::string> power_point_extensions(
+      fm_tasks::PowerPointGroupExtensions());
+  for (const auto& extension : test_extensions) {
+    word_extensions.erase(extension);
+    excel_extensions.erase(extension);
+    power_point_extensions.erase(extension);
+  }
+
+  // Create sets of office mime types excluding the ones reserved for testing.
+  std::set<std::string> word_mime_types(fm_tasks::WordGroupMimeTypes());
+  std::set<std::string> excel_mime_types(fm_tasks::ExcelGroupMimeTypes());
+  std::set<std::string> power_point_mime_types(
+      fm_tasks::PowerPointGroupMimeTypes());
+  for (const auto& mime_type : test_mime_types) {
+    word_mime_types.erase(mime_type);
+    excel_mime_types.erase(mime_type);
+    power_point_mime_types.erase(mime_type);
+  }
+
+  // Initially no handlers should be set.
+  EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesNotSet());
+
+  constexpr char kAppId[] = "app_id";
+  constexpr char kActionId[] = "action_id";
+  const fm_tasks::TaskDescriptor descriptor(
+      kAppId, fm_tasks::TASK_TYPE_FILE_HANDLER, kActionId);
+  // Imitate a user setting default preferences for selected extensions & mime
+  // types.
+  fm_tasks::UpdateDefaultTask(profile(), descriptor, test_extensions,
+                              test_mime_types);
+
+  // Check that the handlers have been propagated.
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      test_extensions, test_mime_types, descriptor));
+
+  AssignClippyPrefs();
+
+  // Check that user-selected handlers remain unchanged on `automated`.
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      test_extensions, test_mime_types, descriptor));
+
+  // Check that other office extensions & mime types are set to Google or
+  // Microsoft.
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      word_extensions, word_mime_types,
+      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+          ? fm_tasks::kActionIdWebDriveOfficeWord
+          : fm_tasks::kActionIdOpenInOffice));
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      excel_extensions, excel_mime_types,
+      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+          ? fm_tasks::kActionIdWebDriveOfficeExcel
+          : fm_tasks::kActionIdOpenInOffice));
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      power_point_extensions, power_point_mime_types,
+      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+          ? fm_tasks::kActionIdWebDriveOfficePowerPoint
+          : fm_tasks::kActionIdOpenInOffice));
+
+  // Now toggle the automated policy to disallowed.
+  profile()->GetPrefs()->SetString(
+      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+          ? prefs::kGoogleWorkspaceCloudUpload
+          : prefs::kMicrosoftOfficeCloudUpload,
+      kCloudUploadPolicyDisallowed);
+
+  // Check that user-selected handlers remain unchanged on `disallowed`.
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
+      test_extensions, test_mime_types, descriptor));
+
+  // Check that other office extensions & mime types are reset.
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+      word_extensions, word_mime_types));
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+      excel_extensions, excel_mime_types));
+  EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
+      power_point_extensions, power_point_mime_types));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /**/,
+    FileHandlerDialogBrowserTestWithAutomatedFlow,
+    testing::ValuesIn(
+        std::vector<std::tuple<base::StringPiece, base::StringPiece>>(
+            {{kCloudUploadPolicyAutomated, kCloudUploadPolicyAllowed},
+             {kCloudUploadPolicyAutomated, kCloudUploadPolicyDisallowed},
+             {kCloudUploadPolicyAllowed, kCloudUploadPolicyAutomated},
+             {kCloudUploadPolicyDisallowed, kCloudUploadPolicyAutomated}})));
 
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                        ShowConnectOneDriveDialog_OpensAndClosesDialog) {

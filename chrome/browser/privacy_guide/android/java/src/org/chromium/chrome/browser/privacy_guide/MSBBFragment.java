@@ -9,14 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.widget.SwitchCompat;
-
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
-/**
- * Controls the behaviour of the MSBB privacy guide page.
- */
+/** Controls the behaviour of the MSBB privacy guide page. */
 public class MSBBFragment extends PrivacyGuideBasePage {
     @Override
     public View onCreateView(
@@ -28,13 +25,14 @@ public class MSBBFragment extends PrivacyGuideBasePage {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        SwitchCompat msbbSwitch = view.findViewById(R.id.msbb_switch);
+        MaterialSwitchWithText msbbSwitch = view.findViewById(R.id.msbb_switch);
         msbbSwitch.setChecked(PrivacyGuideUtils.isMsbbEnabled(getProfile()));
 
-        msbbSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(isChecked);
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    getProfile(), isChecked);
-        });
+        msbbSwitch.setOnCheckedChangeListener(
+                (button, isChecked) -> {
+                    PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(isChecked);
+                    UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                            getProfile(), isChecked);
+                });
     }
 }

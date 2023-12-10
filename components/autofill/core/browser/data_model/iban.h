@@ -20,7 +20,7 @@ namespace autofill {
 class Iban : public AutofillDataModel {
  public:
   using Guid = base::StrongAlias<class GuidTag, std::string>;
-  using InstrumentId = base::StrongAlias<class InstrumentIdTag, std::string>;
+  using InstrumentId = base::StrongAlias<class InstrumentIdTag, int64_t>;
 
   enum RecordType {
     // An IBAN extracted from a submitted form, whose record type is currently
@@ -98,7 +98,7 @@ class Iban : public AutofillDataModel {
   void set_identifier(const absl::variant<Guid, InstrumentId>& identifier);
 
   const std::string& guid() const;
-  const std::string& instrument_id() const;
+  int64_t instrument_id() const;
 
   // Returns the value (the actual bank account number) of IBAN.
   const std::u16string& value() const { return value_; }
@@ -178,6 +178,8 @@ class Iban : public AutofillDataModel {
   std::u16string suffix_;
   int length_ = 0;
 };
+
+std::ostream& operator<<(std::ostream& os, const Iban& iban);
 
 }  // namespace autofill
 

@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -156,7 +157,7 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
               .then(r => r.wow64))";
   static constexpr char kFormFactorScript[] = R"(
           navigator.userAgentData.getHighEntropyValues(['formFactor'])
-              .then(r => r.formFactor))";
+              .then(r => r.formFactor.join(', ')))";
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -188,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, DefaultValues) {
   EXPECT_THAT(GetUAMetadataValue(kWow64Script),
               DictHasValue("result.result.value", expected.wow64));
   EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
-              DictHasValue("result.result.value", expected.form_factor));
+              DictHasValue("result.result.value",
+                           base::JoinString(expected.form_factor, ", ")));
 }
 
 // UA Metadata is available via `navigator.userAgentData` when overridden via
@@ -289,7 +291,7 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
 
   bool IsRequestHeaderSet(
       const std::string header,
-      const absl::optional<std::string> value = absl::nullopt) {
+      const std::optional<std::string> value = std::nullopt) {
     if (!got_headers_.contains(header)) {
       return false;
     }

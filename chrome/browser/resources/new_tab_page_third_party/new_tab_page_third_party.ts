@@ -16,7 +16,7 @@ callbackRouter.setTheme.addListener((theme: Theme) => {
   html.toggleAttribute('has-custom-background', theme.hasCustomBackground);
   const style = html.style;
   style.backgroundColor = theme.colorBackground;
-  const backgroundImage = `-webkit-image-set(
+  const backgroundImage = `image-set(
       url(chrome://theme/IDR_THEME_NTP_BACKGROUND?${theme.id}) 1x,
       url(chrome://theme/IDR_THEME_NTP_BACKGROUND@2x?${theme.id}) 2x)`;
   style.backgroundImage = theme.hasCustomBackground ? backgroundImage : 'unset';

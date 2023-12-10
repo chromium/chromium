@@ -194,14 +194,6 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           return absl::nullopt;
         }
         request.get_cred_blob = true;
-      } else if (extension_id == kExtensionDevicePublicKey) {
-        // There's not currently any support for the ep bit in assertion
-        // requests so DPK requests are assumed to be ep=1 only.
-        request.device_public_key = DevicePublicKeyRequest::FromCBOR(
-            extension.second, /* ep_approved_by_browser= */ false);
-        if (!request.device_public_key) {
-          return absl::nullopt;
-        }
       } else if (extension_id == kExtensionPRF) {
         if (!extension.second.is_map()) {
           return absl::nullopt;
@@ -407,11 +399,6 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
 
   if (request.get_cred_blob) {
     extensions.emplace(kExtensionCredBlob, true);
-  }
-
-  if (request.device_public_key) {
-    extensions.emplace(kExtensionDevicePublicKey,
-                       request.device_public_key->ToCBOR());
   }
 
   if (!request.prf_inputs.empty()) {

@@ -18,6 +18,7 @@
 #include "cc/paint/transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -544,6 +545,12 @@ GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
   return mailbox.IsSharedImage()
              ? gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name)
              : gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+}
+
+GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  CHECK(shared_image);
+  return CreateAndConsumeForGpuRaster(shared_image->mailbox());
 }
 
 void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {

@@ -49,8 +49,9 @@ gfx::ImageSkia ScaleAspectRatioAndCropCenter(const gfx::Size& size,
                                              const gfx::ImageSkia& image) {
   float scale = std::min(static_cast<float>(image.width()) / size.width(),
                          static_cast<float>(image.height()) / size.height());
-  gfx::Size scaled_size = {base::ClampFloor(scale * size.width()),
-                           base::ClampFloor(scale * size.height())};
+  gfx::Size scaled_size = {
+      std::max(1, base::ClampFloor(scale * size.width())),
+      std::max(1, base::ClampFloor(scale * size.height()))};
   gfx::Rect bounds{{0, 0}, image.size()};
   bounds.ClampToCenteredSize(scaled_size);
   auto scaled_and_cropped_image = gfx::ImageSkiaOperations::CreateTiledImage(

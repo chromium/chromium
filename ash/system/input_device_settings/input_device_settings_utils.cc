@@ -106,7 +106,7 @@ bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
 bool ShouldPersistFkeySetting(
     const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
     base::StringPiece setting_key,
-    absl::optional<ui::mojom::ExtendedFkeysModifier> new_value,
+    std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
     const base::Value::Dict* existing_settings_dict) {
   if (!new_value.has_value()) {
@@ -340,9 +340,9 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 
   // button is a union.
   mojom::ButtonPtr button;
-  const absl::optional<int> customizable_button =
+  const std::optional<int> customizable_button =
       dict.FindInt(prefs::kButtonRemappingCustomizableButton);
-  const absl::optional<int> key_code =
+  const std::optional<int> key_code =
       dict.FindInt(prefs::kButtonRemappingKeyboardCode);
   // Button can't be both a keyboard key and a customization button.
   if (customizable_button && key_code) {
@@ -370,9 +370,9 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
   mojom::RemappingActionPtr remapping_action;
   const base::Value::Dict* key_event =
       dict.FindDict(prefs::kButtonRemappingKeyEvent);
-  const absl::optional<int> accelerator_action =
+  const std::optional<int> accelerator_action =
       dict.FindInt(prefs::kButtonRemappingAcceleratorAction);
-  const absl::optional<int> static_shortcut_action =
+  const std::optional<int> static_shortcut_action =
       dict.FindInt(prefs::kButtonRemappingStaticShortcutAction);
   // Remapping action can only have one value at most.
   if ((key_event && accelerator_action) ||
@@ -383,13 +383,13 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
   // Remapping action can be either a keyboard event or an accelerator action
   // or static shortcut action or null.
   if (key_event) {
-    const absl::optional<int> dom_code =
+    const std::optional<int> dom_code =
         key_event->FindInt(prefs::kButtonRemappingDomCode);
-    const absl::optional<int> vkey =
+    const std::optional<int> vkey =
         key_event->FindInt(prefs::kButtonRemappingKeyboardCode);
-    const absl::optional<int> dom_key =
+    const std::optional<int> dom_key =
         key_event->FindInt(prefs::kButtonRemappingDomKey);
-    const absl::optional<int> modifiers =
+    const std::optional<int> modifiers =
         key_event->FindInt(prefs::kButtonRemappingModifiers);
     if (!dom_code || !vkey || !dom_key || !modifiers) {
       return nullptr;

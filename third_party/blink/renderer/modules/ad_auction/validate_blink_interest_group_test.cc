@@ -7,7 +7,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -843,7 +842,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
   blink_interest_group->name =
-      WTF::String("paddingTo1048576" + std::string(20, 'P'));
+      WTF::String("paddingTo1048576" + std::string(16, 'P'));
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 13980; ++i) {
     // Each ad component is 75 bytes.

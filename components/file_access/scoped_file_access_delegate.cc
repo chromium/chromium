@@ -5,6 +5,7 @@
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "components/file_access/scoped_file_access.h"
 
 namespace file_access {
@@ -27,12 +28,24 @@ void ScopedFileAccessDelegate::DeleteInstance() {
 }
 
 // static
+void ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(ScopedFileAccess)> callback) {
+  if (request_files_access_for_system_io_callback_) {
+    request_files_access_for_system_io_callback_->Run(
+        files, std::move(callback), /*check_default=*/true);
+  } else {
+    std::move(callback).Run(ScopedFileAccess::Allowed());
+  }
+}
+
+// static
 void ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
     const std::vector<base::FilePath>& files,
     base::OnceCallback<void(ScopedFileAccess)> callback) {
   if (request_files_access_for_system_io_callback_) {
-    request_files_access_for_system_io_callback_->Run(files,
-                                                      std::move(callback));
+    request_files_access_for_system_io_callback_->Run(
+        files, std::move(callback), /*check_default=*/false);
   } else {
     std::move(callback).Run(ScopedFileAccess::Allowed());
   }
@@ -46,7 +59,7 @@ ScopedFileAccessDelegate::GetCallbackForSystem() {
          base::OnceCallback<void(ScopedFileAccess)> callback) {
         if (request_files_access_for_system_io_callback_) {
           request_files_access_for_system_io_callback_->Run(
-              file_paths, std::move(callback));
+              file_paths, std::move(callback), /*check_default=*/false);
         } else {
           std::move(callback).Run(ScopedFileAccess::Allowed());
         }
@@ -71,7 +84,7 @@ ScopedFileAccessDelegate*
     ScopedFileAccessDelegate::scoped_file_access_delegate_ = nullptr;
 
 // static
-ScopedFileAccessDelegate::RequestFilesAccessIOCallback*
+ScopedFileAccessDelegate::RequestFilesAccessCheckDefaultCallback*
     ScopedFileAccessDelegate::request_files_access_for_system_io_callback_ =
         nullptr;
 
@@ -80,9 +93,15 @@ ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
         RequestFilesAccessIOCallback callback,
         bool restore_original_callback)
     : restore_original_callback_(restore_original_callback) {
-  original_callback_ = request_files_access_for_system_io_callback_;
+  original_callback_ =
+      base::WrapUnique(request_files_access_for_system_io_callback_);
   request_files_access_for_system_io_callback_ =
-      new RequestFilesAccessIOCallback(std::move(callback));
+      new RequestFilesAccessCheckDefaultCallback(base::BindRepeating(
+          [](RequestFilesAccessIOCallback callback,
+             const std::vector<base::FilePath>& files,
+             base::OnceCallback<void(ScopedFileAccess)> cb,
+             bool check_default) { callback.Run(files, std::move(cb)); },
+          std::move(callback)));
 }
 
 ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
@@ -91,17 +110,16 @@ ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
     delete request_files_access_for_system_io_callback_;
   }
   if (!restore_original_callback_ && original_callback_) {
-    delete original_callback_;
-    original_callback_ = nullptr;
+    original_callback_.reset();
   }
-  request_files_access_for_system_io_callback_ = original_callback_;
+  request_files_access_for_system_io_callback_ = original_callback_.release();
 }
 
 void ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
     RunOriginalCallback(
         const std::vector<base::FilePath>& path,
         base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
-  original_callback_->Run(path, std::move(callback));
+  original_callback_->Run(path, std::move(callback), /*check_default=*/false);
 }
 
 void RequestFilesAccess(

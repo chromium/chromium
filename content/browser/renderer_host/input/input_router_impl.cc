@@ -14,10 +14,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
 #include "content/browser/renderer_host/input/input_disposition_handler.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/input/gesture_event_queue.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/input_event_ack_state.h"
@@ -235,8 +235,9 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
       if (deltaXHint == 0.0 && deltaYHint == 0.0)
         break;
 
-      if (!client_->GetRenderWidgetHostViewBase())
+      if (!client_->GetStylusInterface()) {
         break;
+      }
 
       absl::optional<cc::TouchAction> allowed_touch_action =
           AllowedTouchAction();
@@ -249,7 +250,7 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
 
       // Request to start stylus writing as we have detected stylus writing
       // movement, and treat scroll gesture as stylus input if started.
-      if (client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting()) {
+      if (client_->GetStylusInterface()->RequestStartStylusWriting()) {
         stylus_writing_started_ = true;
         // The below call is done to Focus the stylus writable input element.
         client_->OnStartStylusWriting();
@@ -349,9 +350,10 @@ void InputRouterImpl::SetPanAction(blink::mojom::PanAction pan_action) {
 
   // TODO(mahesh.ma): Update PanAction state to view, once RenderWidgetHostView
   // is set again.
-  if (!client_->GetRenderWidgetHostViewBase())
+  if (!client_->GetStylusInterface()) {
     return;
-  client_->GetRenderWidgetHostViewBase()->NotifyHoverActionStylusWritable(
+  }
+  client_->GetStylusInterface()->NotifyHoverActionStylusWritable(
       pan_action_ == blink::mojom::PanAction::kStylusWritable);
 }
 

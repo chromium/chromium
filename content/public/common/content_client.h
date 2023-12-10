@@ -223,7 +223,7 @@ class CONTENT_EXPORT ContentClient {
   // The embedder API for participating in gpu logic.
   raw_ptr<ContentGpuClient> gpu_;
   // The embedder API for participating in renderer logic.
-  raw_ptr<ContentRendererClient, LeakedDanglingUntriaged> renderer_;
+  raw_ptr<ContentRendererClient> renderer_;
   // The embedder API for participating in utility logic.
   raw_ptr<ContentUtilityClient> utility_;
 };

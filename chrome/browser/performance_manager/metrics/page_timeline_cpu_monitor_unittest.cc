@@ -33,7 +33,7 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
-#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -141,8 +141,11 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
     mock_utility_process_->SetProcess(base::Process::Current(),
                                       /*launch_time=*/base::TimeTicks::Now());
 
-    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        graph(), delegate_factory_.GetFactoryCallback());
+    // These tests validate specific timing of measurements around process
+    // creation and destruction.
+    delegate_factory_.SetRequireValidProcesses(true);
+    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(graph(),
+                                                            &delegate_factory_);
   }
 
   // Creates a renderer process containing a single page and frame, for simple
@@ -243,7 +246,7 @@ TEST_P(PageTimelineCPUMonitorTest, CPUMeasurement) {
   // Renderer creation racing with StartMonitoring(). Its pid will not be
   // available until after monitoring starts .
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
-  ASSERT_EQ(renderer2.process_node->process_id(), base::kNullProcessId);
+  ASSERT_EQ(renderer2.process_node->GetProcessId(), base::kNullProcessId);
 
   // `renderer1` begins measurement as soon as StartMonitoring is called.
   // `renderer2` begins measurement when its pid is available.

@@ -13,9 +13,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Locale;
 
-/**
- * A utility class for querying information about Play Services Version.
- */
+/** A utility class for querying information about Play Services Version. */
 public class PlayServicesVersionInfo {
     /**
      * Returns info about the Google Play services setup for Chrome and the device.
@@ -38,8 +36,12 @@ public class PlayServicesVersionInfo {
             accessType = "none";
         }
 
-        return String.format(Locale.US, "SDK=%s; Installed=%s; Access=%s", sdkVersion,
-                installedGmsVersion, accessType);
+        return String.format(
+                Locale.US,
+                "SDK=%s; Installed=%s; Access=%s",
+                sdkVersion,
+                installedGmsVersion,
+                accessType);
     }
 
     /**

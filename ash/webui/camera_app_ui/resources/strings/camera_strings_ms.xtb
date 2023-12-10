@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Padamkan halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mod kamera</translation>
 <translation id="1153190633558910465">Grid dimatikan</translation>
-<translation id="1175958423215084756">Pautan dikesan. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Halaman <ph name="PAGE_NUMBER" /> dipadamkan</translation>
 <translation id="1258009455399840361">Putar 90 darjah mengikut arah jam</translation>
 <translation id="1417314334557041815">Edit halaman <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Memproses video...</translation>
 <translation id="3789724198583203151">Putar 90 darjah melawan arah jam</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Salin teks</translation>
 <translation id="4060608699153044055">Anda tidak boleh merakam kerana ruang storan peranti rendah. Untuk mula merakam, anda perlu mengosongkan ruang pada peranti anda.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Jeda rakaman</translation>
 <translation id="4121305183798804752">Dokumen dikesan</translation>
 <translation id="414641094616694804">Kamera ini tidak boleh menukar peleraian</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
-<translation id="4269820728363426813">Salin alamat pautan</translation>
 <translation id="428234092390943511">Lakaran kecil halaman</translation>
 <translation id="4349714250734879769">Bingkai skala oleh Chrome</translation>
 <translation id="4383571725254449280">Cetak log prestasi</translation>
@@ -144,7 +141,6 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="7726641833034062494">Rakam video biasa</translation>
 <translation id="7748344063862150053">Penjuru kanan sebelah atas dokumen</translation>
 <translation id="7933675232020478311">Bergerak ke arah kanan sebelah bawah</translation>
-<translation id="7983668134180549431">Teks dikesan.</translation>
 <translation id="8079255378695216066">Tidak dapat memulakan rakaman</translation>
 <translation id="8120146556401698679">Sorot/condong/zum</translation>
 <translation id="8131740175452115882">Sahkan</translation>
@@ -163,6 +159,7 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="8870695351537079478">Tidak dapat memulakan rakaman</translation>
 <translation id="8880167521484863515">4 nisbah 3</translation>
 <translation id="8903921497873541725">Zum masuk</translation>
+<translation id="8926890870105777777">Sertai Rangkaian "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Pastikan keempat-empat sisi dokumen berada dalam bingkai</translation>
 <translation id="9045155556724273246">10 saat</translation>
 <translation id="906331135292332864">Memproses imej...</translation>

@@ -31,7 +31,7 @@ struct LineBreakResults {
   STACK_ALLOCATED();
 
  public:
-  LineBreakResults(const InlineNode& node, const NGConstraintSpace& space)
+  LineBreakResults(const InlineNode& node, const ConstraintSpace& space)
       : node_(node), space_(space) {}
 
   wtf_size_t Size() const { return lines_.size(); }
@@ -71,10 +71,10 @@ struct LineBreakResults {
       // Bisecting can't find the desired value if the paragraph has forced line
       // breaks.
       DCHECK(!line_info.HasForcedBreak());
-      if (line_info.HasOverflow()) {
+      if (line_breaker.ShouldDisableBisectLineBreak()) {
         return Status::kNotApplicable;
       }
-      break_token_ = line_info.BreakToken();
+      break_token_ = line_info.GetBreakToken();
       lines_.push_back(LineBreakResult{line_info.Width()});
       DCHECK_LE(lines_.size(), MaxLinesToBisectForBalance());
       if (!break_token_ ||
@@ -115,7 +115,7 @@ struct LineBreakResults {
 
  private:
   const InlineNode node_;
-  const NGConstraintSpace& space_;
+  const ConstraintSpace& space_;
   Vector<LineBreakResult, kMaxLinesForBalance> lines_;
   const InlineBreakToken* break_token_ = nullptr;
 };
@@ -143,7 +143,7 @@ wtf_size_t EstimateNumLines(const String& text_content,
 // static
 absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
     const InlineNode& node,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const LineLayoutOpportunity& line_opportunity) {
   if (node.IsBisectLineBreakDisabled()) {
     return absl::nullopt;

@@ -32,7 +32,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
     "//ios/components/security_interstitials",
     "//ios/web/common",
     "//ios/web/public",

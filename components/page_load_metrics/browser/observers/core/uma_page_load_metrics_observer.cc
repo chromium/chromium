@@ -123,6 +123,8 @@ const char kHistogramNumInteractions[] =
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
     "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
     "MaxEventDuration";
+const char kHistogramInpOffset[] = "PageLoad.InteractiveTiming.INPOffset";
+const char kHistogramInpTime[] = "PageLoad.InteractiveTiming.INPTime";
 const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration";
 
@@ -898,28 +900,33 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
 }
 
 void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  if (!normalized_responsiveness_metrics.num_user_interactions)
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
+  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (!inp.has_value()) {
     return;
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
+  }
 
   UmaHistogramCustomTimes(
       internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
-      max_event_durations.worst_latency, base::Milliseconds(1),
-      base::Seconds(60), 50);
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
+      base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
-      page_load_metrics::ResponsivenessMetricsNormalization::
-          ApproximateHighPercentile(
-              normalized_responsiveness_metrics.num_user_interactions,
-              max_event_durations.worst_ten_latencies),
-      base::Milliseconds(1), base::Seconds(60), 50);
+      inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+  base::TimeDelta interaction_time =
+      inp->interaction_time - GetDelegate().GetNavigationStart();
+  UmaHistogramCustomTimes(internal::kHistogramInpTime, interaction_time,
+                          base::Milliseconds(1), base::Seconds(3600), 100);
+  base::UmaHistogramCounts1000(internal::kHistogramInpOffset,
+                               inp->interaction_offset);
   base::UmaHistogramCounts1000(
       internal::kHistogramNumInteractions,
-      normalized_responsiveness_metrics.num_user_interactions);
+      responsiveness_metrics_normalization.num_user_interactions());
 }
 
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(

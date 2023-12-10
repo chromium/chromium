@@ -39,7 +39,7 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
                     bool is_automatic_installation,
                     PrinterSetupCallback callback) override;
   void UninstallPrinter(const std::string& printer_id) override;
-  absl::optional<chromeos::Printer> GetPrinter(
+  std::optional<chromeos::Printer> GetPrinter(
       const std::string& id) const override;
 
   void RecordSetupAbandoned(const chromeos::Printer& printer) override {}

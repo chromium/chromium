@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Observer of tab changes for all tabs owned by a {@link TabModelSelector}.
- */
+/** Observer of tab changes for all tabs owned by a {@link TabModelSelector}. */
 public class TabModelSelectorTabObserver extends EmptyTabObserver {
     private final TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private boolean mShouldDeferTabRegisterNotifications;
@@ -44,15 +42,17 @@ public class TabModelSelectorTabObserver extends EmptyTabObserver {
         // variables are ready.
         // TODO(jinsukkim): Consider making this class final, and introducing an inner
         //     class that extends EmptyTabObserver + provides onTab[Un]Registered instead.
-        ThreadUtils.getUiThreadHandler().postAtFrontOfQueue(() -> {
-            assert !mShouldDeferTabRegisterNotifications;
-            for (Tab tab : mDeferredTabs) {
-                if (tab.isDestroyed()) continue;
-                onTabRegistered(tab);
-            }
-            mDeferredTabs.clear();
-            mIsDeferredInitializationFinished = true;
-        });
+        ThreadUtils.getUiThreadHandler()
+                .postAtFrontOfQueue(
+                        () -> {
+                            assert !mShouldDeferTabRegisterNotifications;
+                            for (Tab tab : mDeferredTabs) {
+                                if (tab.isDestroyed()) continue;
+                                onTabRegistered(tab);
+                            }
+                            mDeferredTabs.clear();
+                            mIsDeferredInitializationFinished = true;
+                        });
     }
 
     private TabModelSelectorTabRegistrationObserver.Observer createRegistrationObserver() {
@@ -73,8 +73,8 @@ public class TabModelSelectorTabObserver extends EmptyTabObserver {
                 if (mShouldDeferTabRegisterNotifications) {
                     boolean didExist = mDeferredTabs.remove(tab);
                     assert didExist
-                        : "Attempting to remove a tab during deferred registration that "
-                          + "never was added";
+                            : "Attempting to remove a tab during deferred registration that "
+                                    + "never was added";
                     return;
                 }
 
@@ -109,9 +109,7 @@ public class TabModelSelectorTabObserver extends EmptyTabObserver {
      */
     protected void onTabUnregistered(Tab tab) {}
 
-    /**
-     * Destroys the observer and removes itself as a listener for Tab updates.
-     */
+    /** Destroys the observer and removes itself as a listener for Tab updates. */
     public void destroy() {
         mIsDestroyed = true;
         mTabRegistrationObserver.destroy();

@@ -293,7 +293,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.SITE_DATA,
       label: 'siteDataPageTitle',
       icon: 'settings:database',
-      shouldShow: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
     },
     {
       route: routes.SITE_SETTINGS_SOUND,
@@ -352,16 +351,12 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:visibility-off',
       enabledLabel: 'siteSettingsCookiesAllowed',
       disabledLabel: 'siteSettingsBlocked',
-      otherLabel: 'cookiePageClearOnExit',
     });
   } else {
     categoryList.push({
       route: routes.COOKIES,
       id: Id.COOKIES,
-      label:
-          (loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-               'thirdPartyCookiesLinkRowLabel' :
-               'siteSettingsCookies'),
+      label: 'thirdPartyCookiesLinkRowLabel',
       icon: 'settings:cookie',
       enabledLabel: 'trackingProtectionLinkRowSubLabel',
       disabledLabel: 'trackingProtectionLinkRowSubLabel',

@@ -43,9 +43,7 @@ public class InputDeviceObserver implements InputDeviceListener {
         INSTANCE.attachObserver();
     }
 
-    /**
-     * Notifies the InputDeviceObserver that an observer has been removed.
-     */
+    /** Notifies the InputDeviceObserver that an observer has been removed. */
     @CalledByNative
     public static void removeObserver() {
         assert ThreadUtils.runningOnUiThread();

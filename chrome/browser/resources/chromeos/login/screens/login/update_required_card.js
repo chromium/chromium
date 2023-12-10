@@ -24,6 +24,7 @@ import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 import {CheckingDownloadingUpdate} from './checking_downloading_update.js';
+import {getTemplate} from './update_required_card.html.js';
 
 
 /**
@@ -68,7 +69,7 @@ class UpdateRequired extends UpdateRequiredBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

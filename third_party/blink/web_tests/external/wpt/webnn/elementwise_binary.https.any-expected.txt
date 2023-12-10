@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] pow float32 1D base tensor and 1D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+[FAIL] pow float32 2D base tensor and 2D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+[FAIL] pow float32 3D base tensor and 3D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+[FAIL] pow float32 4D base tensor and 4D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+[FAIL] pow float32 5D base tensor and 5D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+[FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+[FAIL] pow float32 4D base tensor and broadcastable 3D integer exponent tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Operand b should be defined as a constant for pow."
+Harness: the test ran to completion.
+

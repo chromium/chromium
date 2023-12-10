@@ -91,10 +91,6 @@ class BookmarksFolderChooserSubDataSourceImplTest
         ios::AccountBookmarkModelFactory::GetDefaultFactory());
 
     browser_state_ = builder.Build();
-    // `scoped_feature_list_` should be initialized before creating the
-    // `model_`. Otherwise `AccountBookmarkModelFactory` will return `nullptr`.
-    scoped_feature_list_.InitAndEnableFeature(
-        syncer::kEnableBookmarksAccountStorage);
     model_ = GetParam() == TestParam::kAccountModel
                  ? ios::AccountBookmarkModelFactory::GetForBrowserState(
                        browser_state_.get())
@@ -155,7 +151,6 @@ class BookmarksFolderChooserSubDataSourceImplTest
 
   IOSChromeScopedTestingLocalState local_state_;
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   BookmarkModel* model_;
   BookmarksFolderChooserSubDataSourceImpl* sub_data_source_;

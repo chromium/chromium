@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_COMMANDS_H_
 #define CHROME_BROWSER_UI_BROWSER_COMMANDS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -134,7 +134,7 @@ bool CanMoveTabsToNewWindow(Browser* browser,
 void MoveTabsToNewWindow(
     Browser* browser,
     const std::vector<int>& tab_indices,
-    absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
+    std::optional<tab_groups::TabGroupId> group = std::nullopt);
 bool CanCloseTabsToRight(const Browser* browser);
 bool CanCloseOtherTabs(const Browser* browser);
 content::WebContents* DuplicateTabAt(Browser* browser, int index);
@@ -257,7 +257,7 @@ void ToggleMultitaskMenu(Browser* browser);
 void ToggleCommander(Browser* browser);
 void ExecuteUIDebugCommand(int id, const Browser* browser);
 
-absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
+std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
 void ShowIncognitoClearBrowsingDataDialog(Browser* browser);
 void ShowIncognitoHistoryDisclaimerDialog(Browser* browser);

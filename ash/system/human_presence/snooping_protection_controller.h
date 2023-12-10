@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_HUMAN_PRESENCE_SNOOPING_PROTECTION_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -115,7 +115,7 @@ class ASH_EXPORT SnoopingProtectionController
   void StartServiceObservation(bool service_is_available);
 
   // Performs the state update from the daemon response.
-  void UpdateServiceState(absl::optional<hps::HpsResultProto> result);
+  void UpdateServiceState(std::optional<hps::HpsResultProto> result);
 
   // A callback to update visibility when the user enables or disables the
   // feature.

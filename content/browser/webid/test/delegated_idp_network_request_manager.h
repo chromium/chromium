@@ -53,10 +53,10 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       const GURL& metrics_endpoint_url,
       MetricsEndpointErrorCode error_code) override;
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override;
-  void SendRevokeRequest(const GURL& revoke_url,
-                         const std::string& account_hint,
-                         const std::string& client_id,
-                         RevokeCallback callback) override;
+  void SendDisconnectRequest(const GURL& disconnect_url,
+                             const std::string& account_hint,
+                             const std::string& client_id,
+                             DisconnectCallback callback) override;
 
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;

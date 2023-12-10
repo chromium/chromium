@@ -5,6 +5,7 @@
 #include "chrome/updater/policy/dm_policy_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -80,7 +80,7 @@ int PolicyValueFromProtoUpdateValue(
 DMPolicyManager::DMPolicyManager(
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings,
-    const absl::optional<bool>& override_is_managed_device)
+    const std::optional<bool>& override_is_managed_device)
     : is_managed_device_(override_is_managed_device.value_or(true)),
       omaha_settings_(omaha_settings) {}
 
@@ -94,23 +94,23 @@ std::string DMPolicyManager::source() const {
   return kSourceDMPolicyManager;
 }
 
-absl::optional<base::TimeDelta> DMPolicyManager::GetLastCheckPeriod() const {
+std::optional<base::TimeDelta> DMPolicyManager::GetLastCheckPeriod() const {
   if (!omaha_settings_.has_auto_update_check_period_minutes())
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::Minutes(omaha_settings_.auto_update_check_period_minutes());
 }
 
-absl::optional<UpdatesSuppressedTimes>
+std::optional<UpdatesSuppressedTimes>
 DMPolicyManager::GetUpdatesSuppressedTimes() const {
   if (!omaha_settings_.has_updates_suppressed())
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto& updates_suppressed = omaha_settings_.updates_suppressed();
   if (!updates_suppressed.has_start_hour() ||
       !updates_suppressed.has_start_minute() ||
       !updates_suppressed.has_duration_min())
-    return absl::nullopt;
+    return std::nullopt;
 
   UpdatesSuppressedTimes suppressed_times;
   suppressed_times.start_hour_ = updates_suppressed.start_hour();
@@ -119,38 +119,38 @@ DMPolicyManager::GetUpdatesSuppressedTimes() const {
   return suppressed_times;
 }
 
-absl::optional<std::string> DMPolicyManager::GetDownloadPreference() const {
+std::optional<std::string> DMPolicyManager::GetDownloadPreference() const {
   if (!omaha_settings_.has_download_preference())
-    return absl::nullopt;
+    return std::nullopt;
 
   return omaha_settings_.download_preference();
 }
 
-absl::optional<int> DMPolicyManager::GetPackageCacheSizeLimitMBytes() const {
-  return absl::nullopt;
+std::optional<int> DMPolicyManager::GetPackageCacheSizeLimitMBytes() const {
+  return std::nullopt;
 }
 
-absl::optional<int> DMPolicyManager::GetPackageCacheExpirationTimeDays() const {
-  return absl::nullopt;
+std::optional<int> DMPolicyManager::GetPackageCacheExpirationTimeDays() const {
+  return std::nullopt;
 }
 
-absl::optional<std::string> DMPolicyManager::GetProxyMode() const {
+std::optional<std::string> DMPolicyManager::GetProxyMode() const {
   if (!omaha_settings_.has_proxy_mode())
-    return absl::nullopt;
+    return std::nullopt;
 
   return omaha_settings_.proxy_mode();
 }
 
-absl::optional<std::string> DMPolicyManager::GetProxyPacUrl() const {
+std::optional<std::string> DMPolicyManager::GetProxyPacUrl() const {
   if (!omaha_settings_.has_proxy_pac_url())
-    return absl::nullopt;
+    return std::nullopt;
 
   return omaha_settings_.proxy_pac_url();
 }
 
-absl::optional<std::string> DMPolicyManager::GetProxyServer() const {
+std::optional<std::string> DMPolicyManager::GetProxyServer() const {
   if (!omaha_settings_.has_proxy_server())
-    return absl::nullopt;
+    return std::nullopt;
 
   return omaha_settings_.proxy_server();
 }
@@ -177,7 +177,7 @@ DMPolicyManager::GetAppSettings(const std::string& app_id) const {
   return nullptr;
 }
 
-absl::optional<int> DMPolicyManager::GetEffectivePolicyForAppInstalls(
+std::optional<int> DMPolicyManager::GetEffectivePolicyForAppInstalls(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
   if (app_settings && app_settings->has_install()) {
@@ -190,10 +190,10 @@ absl::optional<int> DMPolicyManager::GetEffectivePolicyForAppInstalls(
         omaha_settings_.install_default());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> DMPolicyManager::GetEffectivePolicyForAppUpdates(
+std::optional<int> DMPolicyManager::GetEffectivePolicyForAppUpdates(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
   if (app_settings && app_settings->has_update()) {
@@ -205,44 +205,44 @@ absl::optional<int> DMPolicyManager::GetEffectivePolicyForAppUpdates(
     return PolicyValueFromProtoUpdateValue(omaha_settings_.update_default());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> DMPolicyManager::GetTargetVersionPrefix(
+std::optional<std::string> DMPolicyManager::GetTargetVersionPrefix(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
   if (!app_settings || !app_settings->has_target_version_prefix())
-    return absl::nullopt;
+    return std::nullopt;
 
   return app_settings->target_version_prefix();
 }
 
-absl::optional<std::string> DMPolicyManager::GetTargetChannel(
+std::optional<std::string> DMPolicyManager::GetTargetChannel(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
   if (!app_settings || !app_settings->has_target_channel())
-    return absl::nullopt;
+    return std::nullopt;
 
   return app_settings->target_channel();
 }
 
-absl::optional<bool> DMPolicyManager::IsRollbackToTargetVersionAllowed(
+std::optional<bool> DMPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
   if (!app_settings || !app_settings->has_rollback_to_target_version())
-    return absl::nullopt;
+    return std::nullopt;
 
   return (app_settings->rollback_to_target_version() ==
           ::wireless_android_enterprise_devicemanagement::
               ROLLBACK_TO_TARGET_VERSION_ENABLED);
 }
 
-absl::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
+std::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
     const {
   std::vector<std::string> force_install_apps;
   for (const auto& app_settings_proto :
        omaha_settings_.application_settings()) {
-    const std::string app_id = [&app_settings_proto, this]() {
+    const std::string app_id = [&app_settings_proto, this] {
       if (app_settings_proto.install() != kPolicyForceInstallMachine &&
           omaha_settings_.install_default() != kPolicyForceInstallMachine) {
         return std::string();
@@ -259,11 +259,11 @@ absl::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
     }
   }
   return force_install_apps.empty()
-             ? absl::nullopt
-             : absl::optional<std::vector<std::string>>(force_install_apps);
+             ? std::nullopt
+             : std::optional<std::vector<std::string>>(force_install_apps);
 }
 
-absl::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
+std::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
     const {
   std::vector<std::string> apps_with_policy;
 
@@ -286,7 +286,7 @@ absl::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
 }
 
 scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager(
-    const absl::optional<bool>& override_is_managed_device) {
+    const std::optional<bool>& override_is_managed_device) {
   scoped_refptr<DMStorage> default_dm_storage = GetDefaultDMStorage();
   if (!default_dm_storage) {
     return nullptr;

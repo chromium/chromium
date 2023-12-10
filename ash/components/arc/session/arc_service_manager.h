@@ -67,7 +67,7 @@ class ArcServiceManager {
 
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
 
-  // This holds the pointer to the BrowserContext (practically Profile)
+  // This holds the unowned pointer to the BrowserContext (practically Profile)
   // which is allowed to use ARC.
   // This is set just before BrowserContextKeyedService classes are
   // instantiated.

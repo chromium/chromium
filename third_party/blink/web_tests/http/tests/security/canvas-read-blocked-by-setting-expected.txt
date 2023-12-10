@@ -1,9 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "getImageData", "toDataURL"
-[PASS] getImageData
-[PASS] toDataURL
-[PASS] getImageData
-[PASS] toDataURL
-[PASS] toBlob
 Harness: the test ran to completion.
 

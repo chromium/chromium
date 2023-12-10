@@ -19,8 +19,6 @@ enum GPUFeatureName {
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",
-    "chromium-experimental-dp4a",
-    "chromium-experimental-read-write-storage-texture",
     "chromium-experimental-subgroups",
     "chromium-experimental-subgroup-uniform-control-flow",
 };

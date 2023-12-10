@@ -190,12 +190,6 @@
   <message name="IDS_AUTOFILL_DONE" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
     Done
   </message>
-  <message name="IDS_AUTOFILL_FAILURE_BUBBLE_TITLE" desc="Title text for the Autofill credit card upload failure bubble.">
-    Can't save card
-  </message>
-  <message name="IDS_AUTOFILL_FAILURE_BUBBLE_EXPLANATION" desc="Explanation text for the Autofill credit card upload failure bubble main content. Shown as user-facing descripion.">
-    Your card can't be saved right now
-  </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
     Pay quickly on sites and apps across devices using cards you have saved with Google.
   </message>
@@ -538,8 +532,14 @@
 
   <!-- DeviceAuthentication titles-->
   <if expr="is_macosx">
-    <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling. Please note that on macOS the string 'Google Chrome is trying to' will always come before this string.">
-      verify it's you so it can fill in your payment info.
+    <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
+      verify it's you so it can fill in your payment info
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
+      modify settings for filling payment methods
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was successful, we would then show the edit card dialog. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
+      edit payment methods
     </message>
   </if>
   <if expr="is_win">
@@ -548,14 +548,32 @@
     </message>
   </if>
   <if expr="is_ios">
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL" desc="Label for a toggle that allows users to turn on mandatory authentication when managing credit cards. Title-Cased.">
+      Always Verify When Using Autofill
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to turn on mandatory authentication when managing credit cards. This sublabel explains when the toggle is turned off Autofill will still request authentication occasionally.">
+      When turned off, you may be asked occasionally to verify for security purposes
+    </message>
     <if expr="_google_chrome">
       <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
-        Verify it's you so Google Chrome can fill in your payment info.
+        Verify it's you so Chrome can fill in your payment info.
+      </message>
+      <message name="IDS_PAYMENTS_AUTOFILL_SETTINGS_TOGGLE_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel when users try to switch the mandatory reauth settings page toggle, asking the user to authenticate using biometric or device unlock before the toggle is switched.">
+        Google Chrome is trying to modify settings for filling payment methods.
+      </message>
+      <message name="IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel when users try to edit cards in the settings page, asking the user to authenticate using biometric or device unlock first.">
+        Google Chrome is trying to edit payment methods.
       </message>
     </if>
     <if expr="not _google_chrome">
       <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
         Verify it's you so Chromium can fill in your payment info.
+      </message>
+      <message name="IDS_PAYMENTS_AUTOFILL_SETTINGS_TOGGLE_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel when users try to switch the mandatory reauth settings page toggle, asking the user to authenticate using biometric or device unlock before the toggle is switched.">
+        Chromium is trying to modify settings for filling payment methods.
+      </message>
+      <message name="IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel when users try to edit cards in the settings page, asking the user to authenticate using biometric or device unlock first.">
+        Chromium is trying to edit payment methods.
       </message>
     </if>
   </if>
@@ -764,6 +782,19 @@
       Copied
     </message>
   </if>
+  <!--TODO(crbug.com/1493361): Align with writers about related strings and remove translateable=false-->
+  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card number" translateable="false">
+    Card number
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry date" translateable="false">
+    Expiry date
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry year" translateable="false">
+    Expiry year
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry month" translateable="false">
+    Expiry month
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for the virtual card option in the suggestion dropdown bubble.">
       Use your virtual card for added security
   </message>
@@ -950,6 +981,16 @@
   <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Negative button label for the OTP verification dialog." formatter_data="android_java">
     Cancel
   </message>
+
+  <!-- Autofill credit card delete dialog -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CREDIT_CARD_DELETE_CONFIRMATION_TITLE" desc="Title for the confirmation dialog displayed when the user clicks on the delete button while editing card information." formatter_data="android_java">
+      Delete card
+    </message>
+    <message name="IDS_AUTOFILL_CREDIT_CARD_DELETE_CONFIRMATION_DESCRIPTION" desc="Description for the confirmation dialog displayed when the user clicks on the delete button while editing card information." formatter_data="android_java">
+      This payment method will be deleted from this device
+    </message>
+  </if>
 
   <!-- Autofill credit card preferences -->
   <if expr="is_android">

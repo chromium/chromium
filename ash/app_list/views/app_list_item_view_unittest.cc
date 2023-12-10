@@ -43,7 +43,7 @@ class ProgressIndicatorWaiter {
   // Waits for `progress_indicator` to reach the specified `progress`. If the
   // `progress_indicator` is already at `progress`, this method no-ops.
   void WaitForProgress(ProgressIndicator* progress_indicator,
-                       const absl::optional<float>& progress) {
+                       const std::optional<float>& progress) {
     if (progress_indicator->progress() == progress) {
       return;
     }
@@ -481,7 +481,7 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
 
   // Change app status to installing and send a progress update. Verify that the
   // progress indicator correctly reflects the progress.
-  item->UpdateAppStatusForTesting(AppStatus::kInstalling);
+  item->SetAppStatus(AppStatus::kInstalling);
   item->SetProgress(0.3f);
   EXPECT_EQ(view->item()->progress(), 0.3f);
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.3f);
@@ -489,7 +489,7 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   // Change app status back to pending state. Verify that even if the item had
   // progress previously associated to it, the progress indicator reflects as
   // 0 progress since it is pending.
-  item->UpdateAppStatusForTesting(AppStatus::kPending);
+  item->SetAppStatus(AppStatus::kPending);
   EXPECT_EQ(view->item()->progress(), 0.3f);
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
@@ -501,7 +501,7 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
 
   // Set the last status update to kInstallSuccess as if the app had finished
   // installing.
-  item->UpdateAppStatusForTesting(AppStatus::kInstallSuccess);
+  item->SetAppStatus(AppStatus::kInstallSuccess);
 
   // No crash.
 }
@@ -516,7 +516,7 @@ TEST_P(AppListItemViewTest, UpdateProgressOnPromiseIcon) {
   AppListItemView* view = apps_grid_view->GetItemViewAt(0);
 
   // Start install progress bar.
-  item->UpdateAppStatusForTesting(AppStatus::kInstalling);
+  item->SetAppStatus(AppStatus::kInstalling);
   item->SetProgress(0.f);
   ProgressIndicator* progress_indicator = view->GetProgressIndicatorForTest();
 

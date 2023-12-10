@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
-<translation id="2558806128245168542">ወደ ኋላ አሰስ</translation>
-<translation id="3523426587027570423">«ይህን ገፅ አዳምጥ» የሚለውን ለመዝጋት መታ ያድርጉ።</translation>
+<translation id="1921351128855867012">በ<ph name="NUMBER_OF_SECONDS" /> ሰከንዶች በፍጥነት ወደፊት አስተላልፍ</translation>
+<translation id="1984328900355667246">መልሶ ማጫወት አይገኝም</translation>
+<translation id="3023502830214299618">በሚያሳዝን ሁኔታ፣ በዚህ ገጽ ላይ መልሶ ማጫወት በአሁኑ ጊዜ አይገኝም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="3807208219231826020">መልሶ ማጫወትን ያፅዱ</translation>
+<translation id="385051799172605136">ተመለስ</translation>
 <translation id="4431240646217225907">ጽሁፍን አድምቅ እና በራስ-ሠር ሸብልል</translation>
 <translation id="4654641641922242357">«ይህን ገፅ አዳምጥ» አጫዋች።</translation>
-<translation id="4731877163452936634">የመልሶ ማጫወት ፍጥነት፦ <ph name="PLAYBACK_SPEED" />. ለመለወጥ ጠቅ ያድርጉ።</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> ሰከንዶች ወደ ኋላ ተመለስ</translation>
 <translation id="5234971936051226002">«ይህን ገፅ አዳምጥ» አጫዋች እንዲያንስ ተደርጓል።</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="6315170314923504164">ድምፅ</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6846298663435243399">በመጫን ላይ…</translation>
 <translation id="7587250070160020374">Chrome አሁን በመጫወት ላይ</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> ሰከንዶች ወደፊት</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> ሰከንዶች ወደኋላ</translation>
 <translation id="8136852699834914183">ለዚህ ገፅ መልሶ ማጫወት አይገኝም።</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x ፍጥነት መጨመር / መቀነስ።</translation>
+<translation id="8407011429883244666">ማጫወቻን ይዝጉ።</translation>
 <translation id="8953618380150219653">«ይህን ገፅ አዳምጥ» አጫዋች በሙሉ ቀመት ተከፍቷል።</translation>
 </translationbundle>

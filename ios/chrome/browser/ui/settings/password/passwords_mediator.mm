@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_mediator+Testing.h"
 
 #import "base/memory/raw_ptr.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -11,7 +12,6 @@
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -19,12 +19,11 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/passwords/model/save_passwords_consumer.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
@@ -38,11 +37,18 @@
 #import "url/gurl.h"
 
 using password_manager::WarningType;
-using password_manager::features::IsPasswordCheckupEnabled;
 
 @interface PasswordsMediator () <PasswordCheckObserver,
                                  SavedPasswordsPresenterObserver,
                                  SyncObserverModelBridge>
+
+// Whether or not the Feature Engagement Tracker should be notified that the
+// Password Manager widget promo is not displayed anymore. Will be `true` when
+// the Password Manager view controller is dismissed while presenting the
+// promo.
+@property(nonatomic, assign)
+    BOOL shouldNotifyFETToDismissPasswordManagerWidgetPromo;
+
 @end
 
 @implementation PasswordsMediator {
@@ -78,21 +84,16 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
   // Service to know whether passwords are synced.
   raw_ptr<syncer::SyncService> _syncService;
-
-  // The user pref service.
-  raw_ptr<PrefService> _prefService;
 }
 
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
                                faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService
-                                 prefService:(PrefService*)prefService {
+                                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _syncService = syncService;
-    _prefService = prefService;
     _faviconLoader = faviconLoader;
 
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
@@ -138,7 +139,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
   _passwordCheckManager.reset();
   _savedPasswordsPresenter = nullptr;
   _faviconLoader = nullptr;
-  _prefService = nullptr;
   _syncService = nullptr;
 }
 
@@ -163,23 +163,12 @@ using password_manager::features::IsPasswordCheckupEnabled;
 }
 
 - (NSString*)formattedElapsedTimeSinceLastCheck {
-  absl::optional<base::Time> lastCompletedCheck =
+  std::optional<base::Time> lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
   return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
-  // When the Password Checkup feature is disabled and a password check error
-  // occured, we want to show the result of the last successful check instead of
-  // showing the error if there were any compromised passwords. With the
-  // Password Checkup feature enabled, we want to show the error message (and
-  // therefore the error info also) no matter the result of the last successful
-  // check.
-  if (!IsPasswordCheckupEnabled() &&
-      !_passwordCheckManager->GetInsecureCredentials().empty()) {
-    return nil;
-  }
-
   NSString* message;
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
@@ -195,25 +184,15 @@ using password_manager::features::IsPasswordCheckupEnabled;
       return nil;
     case PasswordCheckState::kSignedOut:
       message =
-          IsPasswordCheckupEnabled()
-              ? l10n_util::GetNSString(
-                    IDS_IOS_PASSWORD_CHECKUP_ERROR_SIGNED_OUT)
-              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT);
+          l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_SIGNED_OUT);
       break;
     case PasswordCheckState::kOffline:
-      message =
-          IsPasswordCheckupEnabled()
-              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OFFLINE)
-              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE);
+      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OFFLINE);
       break;
     case PasswordCheckState::kQuotaLimit:
       if ([self canUseAccountPasswordCheckup]) {
-        message =
-            IsPasswordCheckupEnabled()
-                ? l10n_util::GetNSString(
-                      IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT_VISIT_GOOGLE)
-                : l10n_util::GetNSString(
-                      IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
+        message = l10n_util::GetNSString(
+            IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
         NSDictionary* linkAttributes = @{
           NSLinkAttributeName :
               net::NSURLWithGURL(password_manager::GetPasswordCheckupURL(
@@ -223,18 +202,12 @@ using password_manager::features::IsPasswordCheckupEnabled;
         return AttributedStringFromStringWithLink(message, textAttributes,
                                                   linkAttributes);
       } else {
-        message = IsPasswordCheckupEnabled()
-                      ? l10n_util::GetNSString(
-                            IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT)
-                      : l10n_util::GetNSString(
-                            IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
+        message =
+            l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT);
       }
       break;
     case PasswordCheckState::kOther:
-      message =
-          IsPasswordCheckupEnabled()
-              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER)
-              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
+      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER);
       break;
   }
   return [[NSMutableAttributedString alloc] initWithString:message
@@ -311,9 +284,7 @@ using password_manager::features::IsPasswordCheckupEnabled;
                         insecureCredentials:insecureCredentials];
   WarningType warningType = GetWarningOfHighestPriority(insecureCredentials);
   NSInteger insecurePasswordsCount =
-      IsPasswordCheckupEnabled()
-          ? GetPasswordCountForWarningType(warningType, insecureCredentials)
-          : insecureCredentials.size();
+      GetPasswordCountForWarningType(warningType, insecureCredentials);
   [self.consumer setPasswordCheckUIState:passwordCheckUIState
                   insecurePasswordsCount:insecurePasswordsCount];
 }
@@ -333,27 +304,17 @@ using password_manager::features::IsPasswordCheckupEnabled;
     case PasswordCheckState::kNoPasswords:
       return PasswordCheckStateDisabled;
     case PasswordCheckState::kSignedOut:
-      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
-        return PasswordCheckStateUnmutedCompromisedPasswords;
-      }
       return PasswordCheckStateSignedOut;
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:
-      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
-        return PasswordCheckStateUnmutedCompromisedPasswords;
-      }
       return PasswordCheckStateError;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
-        return PasswordCheckStateUnmutedCompromisedPasswords;
-      } else if (_currentState == PasswordCheckState::kIdle && wasRunning) {
+      if (_currentState == PasswordCheckState::kIdle && wasRunning) {
         PasswordCheckUIState insecureState =
-            IsPasswordCheckupEnabled()
-                ? [self passwordCheckUIStateFromHighestPriorityWarningType:
-                            insecureCredentials]
-                : PasswordCheckStateUnmutedCompromisedPasswords;
+            [self passwordCheckUIStateFromHighestPriorityWarningType:
+                      insecureCredentials];
         return insecureCredentials.empty() ? PasswordCheckStateSafe
                                            : insecureState;
       }
@@ -383,8 +344,7 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                          _syncService) &&
+  return password_manager::sync_util::GetAccountForSaving(_syncService) &&
          !_syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 

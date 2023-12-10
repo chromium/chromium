@@ -20,9 +20,17 @@ public final class PaymentAddressTypeConverter {
     @Nullable
     public static Address convertPaymentAddressFromMojo(PaymentAddress address) {
         if (address == null) return null;
-        return new Address(address.country, address.addressLine, address.region, address.city,
-                address.dependentLocality, address.postalCode, address.sortingCode,
-                address.organization, address.recipient, address.phone);
+        return new Address(
+                address.country,
+                address.addressLine,
+                address.region,
+                address.city,
+                address.dependentLocality,
+                address.postalCode,
+                address.sortingCode,
+                address.organization,
+                address.recipient,
+                address.phone);
     }
 
     /**

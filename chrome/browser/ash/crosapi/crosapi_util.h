@@ -56,7 +56,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<browser_util::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Creates a memory backed file containing the serialized |params|,
@@ -68,7 +68,7 @@ base::ScopedFD CreateStartupData(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<browser_util::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Serializes and writes post-login parameters into the given FD.

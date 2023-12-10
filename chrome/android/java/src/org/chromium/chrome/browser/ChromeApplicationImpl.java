@@ -21,9 +21,11 @@ import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
 import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
@@ -41,8 +43,8 @@ import org.chromium.url.GURL;
 public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     /** Lock on creation of sComponent. */
     private static final Object sLock = new Object();
-    @Nullable
-    private static volatile ChromeAppComponent sComponent;
+
+    @Nullable private static volatile ChromeAppComponent sComponent;
 
     public ChromeApplicationImpl() {}
 
@@ -52,6 +54,12 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
         if (SplitCompatApplication.isBrowserProcess()) {
             FontPreloader.getInstance().load(getApplication());
+
+            // TODO(crbug.com/1442347): Remove this after code changes allow for //components to
+            // access cached flags.
+            BrowserUiUtilsCachedFlags.getInstance()
+                    .setVerticalAutomotiveBackButtonToolbarFlag(
+                            ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled());
 
             // Only load the native library early for bundle builds since some tests use the
             // "--disable-native-initialization" switch, and the CommandLine is not initialized at
@@ -110,7 +118,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         // The conditions are expressed using ranges to capture intermediate levels possibly added
         // to the API in the future.
         return (level >= Application.TRIM_MEMORY_RUNNING_LOW
-                       && level < Application.TRIM_MEMORY_UI_HIDDEN)
+                        && level < Application.TRIM_MEMORY_UI_HIDDEN)
                 || level >= Application.TRIM_MEMORY_MODERATE;
     }
 

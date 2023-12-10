@@ -953,11 +953,6 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
   SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
 }
 
-void NativeInputMethodEngineObserver::OnTouch(
-    ui::EventPointerType pointerType) {
-  ime_base_observer_->OnTouch(pointerType);
-}
-
 void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
                                              int context_id) {
   // Always hide the candidates window when there's no focus.

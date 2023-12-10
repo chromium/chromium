@@ -98,7 +98,8 @@ base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
 // Loads optimized WebState's state from `path` and converts it to
 // CRWSessionStorage*.
 [[nodiscard]] CRWSessionStorage* LoadSessionStorageFromOptimized(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    web::WebStateID web_state_id) {
   // Load the data and metadata.
   web::proto::WebStateStorage storage;
   if (!ParseProto(path.Append(kWebStateStorageFilename), storage)) {
@@ -110,10 +111,9 @@ base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
     return nil;
   }
 
-  CRWSessionStorage* session =
-      [[CRWSessionStorage alloc] initWithProto:storage];
-  session.stableIdentifier = [[NSUUID UUID] UUIDString];
-  return session;
+  return [[CRWSessionStorage alloc] initWithProto:storage
+                                 uniqueIdentifier:web_state_id
+                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
 }
 
 // Loads optimized session from `path` and converts it to SessionWindowIOS.
@@ -135,7 +135,8 @@ base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
     const auto ident = web::WebStateID::FromSerializedValue(item.identifier());
     const base::FilePath item_dir = OptimizedWebStateDirectory(path, ident);
 
-    CRWSessionStorage* session = LoadSessionStorageFromOptimized(item_dir);
+    CRWSessionStorage* session =
+        LoadSessionStorageFromOptimized(item_dir, ident);
     if (!session) {
       return nil;
     }
@@ -372,7 +373,7 @@ void MigrateSessionToOptimizedWithCleanup(
     const base::FilePath& dest,
     const base::FilePath& web_sessions,
     ::sessions::TabRestoreService* restore_service) {
-  MigrationResult result =
+  const MigrationResult result =
       MigrateSessionToOptimizedInternal(from, dest, web_sessions);
 
   switch (result.status) {

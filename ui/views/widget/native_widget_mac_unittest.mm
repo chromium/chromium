@@ -27,6 +27,8 @@
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #import "ui/base/cocoa/tool_tip_base_view.h"
 #import "ui/base/cocoa/window_size_constants.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/compositor/layer.h"
@@ -250,6 +252,8 @@ class WidgetChangeObserver : public TestWidgetObserver {
 // This class gives public access to the protected ctor of
 // BubbleDialogDelegateView.
 class SimpleBubbleView : public BubbleDialogDelegateView {
+  METADATA_HEADER(SimpleBubbleView, BubbleDialogDelegateView)
+
  public:
   SimpleBubbleView() = default;
 
@@ -259,7 +263,12 @@ class SimpleBubbleView : public BubbleDialogDelegateView {
   ~SimpleBubbleView() override = default;
 };
 
+BEGIN_METADATA(SimpleBubbleView)
+END_METADATA
+
 class CustomTooltipView : public View {
+  METADATA_HEADER(CustomTooltipView, View)
+
  public:
   CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler)
       : tooltip_(tooltip), tooltip_handler_(tooltip_handler) {}
@@ -280,6 +289,9 @@ class CustomTooltipView : public View {
   std::u16string tooltip_;
   raw_ptr<View, DanglingUntriaged> tooltip_handler_;  // Weak
 };
+
+BEGIN_METADATA(CustomTooltipView)
+END_METADATA
 
 // A Widget subclass that exposes counts to calls made to OnMouseEvent().
 class MouseTrackingWidget : public Widget {
@@ -418,6 +430,8 @@ TEST_F(NativeWidgetMacTest, WindowFrameTitlebarHeight) {
 
 // A view that counts calls to OnPaint().
 class PaintCountView : public View {
+  METADATA_HEADER(PaintCountView, View)
+
  public:
   PaintCountView() { SetBounds(0, 0, 100, 100); }
 
@@ -451,6 +465,8 @@ class PaintCountView : public View {
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
+BEGIN_METADATA(PaintCountView)
+END_METADATA
 
 // Test that a child widget is only added to its parent NSWindow when the
 // parent is on the active space. Otherwise, it may cause a space transition.
@@ -673,6 +689,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {
 
 // Simple view for the SetCursor test that overrides View::GetCursor().
 class CursorView : public View {
+  METADATA_HEADER(CursorView, View)
+
  public:
   CursorView(int x, const ui::Cursor& cursor) : cursor_(cursor) {
     SetBounds(x, 0, 100, 300);
@@ -687,6 +705,9 @@ class CursorView : public View {
  private:
   ui::Cursor cursor_;
 };
+
+BEGIN_METADATA(CursorView)
+END_METADATA
 
 // Test for Widget::SetCursor(). There is no Widget::GetCursor(), so this uses
 // -[NSCursor currentCursor] to validate expectations. Note that currentCursor
@@ -2453,6 +2474,35 @@ TEST_F(NativeWidgetMacTest, FocusManagerChangeOnReparentNativeView) {
   EXPECT_EQ(child->GetFocusManager(), target_toplevel->GetFocusManager());
   EXPECT_NE(child->GetFocusManager(), toplevel->GetFocusManager());
   EXPECT_EQ(GetFocusManager(child_native_widget), child->GetFocusManager());
+}
+
+TEST_F(NativeWidgetMacTest,
+       CorrectZOrderForMenuTypeWhenParamsZOrderHasNoValue) {
+  NativeWidgetMacTestWindow* parent_window;
+  NativeWidgetMacTestWindow* child_window;
+
+  Widget::InitParams init_params_parent =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(init_params_parent), &parent_window);
+
+  Widget::InitParams init_params_child =
+      CreateParams(Widget::InitParams::TYPE_MENU);
+  init_params_child.parent = parent->GetNativeView();
+  Widget* child =
+      CreateWidgetWithTestWindow(std::move(init_params_child), &child_window);
+
+  EXPECT_NE(nil, child_window.parentWindow);
+  EXPECT_EQ(parent_window, child_window.parentWindow);
+
+  parent->Show();
+  child->Show();
+
+  // Ensure that the child widget has kFloatingWindow z_order, when
+  // params.z_order is not specified for a widget of menu type.
+  EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, child->GetZOrderLevel());
+
+  parent->CloseNow();
 }
 
 }  // namespace views::test

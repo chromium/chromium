@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>wychen@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <summary>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Editing.Commands" enum="MappedEditingCommands"
-    expires_after="2023-12-04">
+    expires_after="2024-06-04">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <summary>
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.FindInPage.DurationBetweenKeystrokes" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>jarhar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>

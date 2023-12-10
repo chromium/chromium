@@ -134,7 +134,7 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
   StyleColor style_color(color);
   switch (property.PropertyID()) {
     case CSSPropertyID::kAccentColor:
-      builder.SetAccentColor(StyleAutoColor(color));
+      builder.SetAccentColor(StyleAutoColor(std::move(style_color)));
       return;
     case CSSPropertyID::kBackgroundColor:
       builder.SetBackgroundColor(style_color);
@@ -152,7 +152,7 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       builder.SetBorderTopColor(style_color);
       return;
     case CSSPropertyID::kCaretColor:
-      builder.SetCaretColor(StyleAutoColor(color));
+      builder.SetCaretColor(StyleAutoColor(std::move(style_color)));
       return;
     case CSSPropertyID::kColor:
       builder.SetColor(style_color);
@@ -211,7 +211,8 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       builder.SetInternalVisitedBorderTopColor(style_color);
       return;
     case CSSPropertyID::kCaretColor:
-      builder.SetInternalVisitedCaretColor(StyleAutoColor(color));
+      builder.SetInternalVisitedCaretColor(
+          StyleAutoColor(std::move(style_color)));
       return;
     case CSSPropertyID::kColor:
       builder.SetInternalVisitedColor(style_color);

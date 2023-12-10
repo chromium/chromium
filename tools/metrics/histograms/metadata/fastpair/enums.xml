@@ -1,0 +1,93 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="FastPairGattConnectionSteps">
+  <int value="0" label="Connection started"/>
+  <int value="1" label="Connection ready"/>
+  <int value="2" label="Found key-based pairing characteristic"/>
+  <int value="3"
+      label="Notifications enabled for key-based pairing characteristic"/>
+  <int value="4" label="Connection established"/>
+</enum>
+
+<enum name="FastPairInitializePairingProcessEvent">
+  <int value="0" label="Initialization started"/>
+  <int value="1" label="Already pairing failure"/>
+  <int value="2" label="Passed to pairing dialog"/>
+  <int value="3" label="Exhausted retries failure"/>
+  <int value="4" label="Handshake reused"/>
+  <int value="5" label="Initialization complete"/>
+</enum>
+
+<enum name="FastPairInitialSuccessFunnelEvent">
+  <int value="0" label="Notification clicked"/>
+  <int value="1" label="V1 device detected"/>
+  <int value="2" label="Initialization started"/>
+  <int value="3" label="Pairing started"/>
+  <int value="4" label="Pairing complete"/>
+  <int value="5" label="Guest mode detected"/>
+  <int value="6" label="Device already associated to account"/>
+  <int value="7" label="Preparing to write the account key"/>
+  <int value="8" label="Account key written"/>
+  <int value="9" label="Process complete"/>
+</enum>
+
+<enum name="FastPairProtocolPairingSteps">
+  <int value="0" label="Pairing started"/>
+  <int value="1" label="Exhausted retries"/>
+  <int value="2" label="Device already paired"/>
+  <int value="3" label="Bond successful"/>
+  <int value="4" label="Passkey negotiated"/>
+  <int value="5" label="Recieved passkey response"/>
+  <int value="6" label="Passkey validated"/>
+  <int value="7" label="Passkey confirmed"/>
+  <int value="8" label="Pairing complete"/>
+</enum>
+
+<enum name="FastPairRetroactiveSuccessFunnelEvent">
+  <int value="0" label="Device detected"/>
+  <int value="1" label="Initialization started"/>
+  <int value="2" label="Writing account key"/>
+  <int value="3" label="Timed out writing account key"/>
+  <int value="4" label="Account key written to device"/>
+  <int value="5" label="BLE address rotated"/>
+  <int value="6" label="Notification displayed"/>
+  <int value="7" label="Save requested by user"/>
+  <int value="8" label="Save to Footprints complete"/>
+</enum>
+
+<enum name="FastPairSubsequentSuccessFunnelEvent">
+  <int value="0" label="Notification clicked"/>
+  <int value="1" label="Initialization started"/>
+  <int value="2" label="Pairing started"/>
+  <int value="3" label="Process complete"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

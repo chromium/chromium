@@ -138,7 +138,7 @@ if (regenerate_x11_protos) {
 }
 
 source_set("build_xprotos") {
-  visibility = [ ":xproto" ]
+  visibility = [ ":x" ]
   deps = [
     ":gen_xprotos",
     "//base",
@@ -150,21 +150,41 @@ source_set("build_xprotos") {
   ]
 }
 
-source_set("xproto") {
-  visibility = [ ":x" ]
+component("x") {
+  output_name = "gfx_x11"
+
   sources = [
+    "atom_cache.cc",
+    "atom_cache.h",
     "connection.cc",
     "connection.h",
     "error.cc",
     "error.h",
     "event.cc",
     "event.h",
+    "event_observer.h",
     "future.cc",
     "future.h",
+    "geometry_cache.cc",
+    "geometry_cache.h",
     "keyboard_state.cc",
     "keyboard_state.h",
+    "property_cache.cc",
+    "property_cache.h",
     "ref_counted_fd.cc",
     "ref_counted_fd.h",
+    "visual_manager.cc",
+    "visual_manager.h",
+    "visual_picker_glx.cc",
+    "visual_picker_glx.h",
+    "window_cache.cc",
+    "window_cache.h",
+    "window_event_manager.cc",
+    "window_event_manager.h",
+    "wm_sync.cc",
+    "wm_sync.h",
+    "x11_path.cc",
+    "x11_path.h",
     "xlib_support.cc",
     "xlib_support.h",
     "xproto_internal.cc",
@@ -176,9 +196,12 @@ source_set("xproto") {
     ":xlib_loader",
     ":xlib_xcb_loader",
     "//base",
+    "//base",
     "//base:i18n",
+    "//skia",
     "//ui/events/platform",
     "//ui/gfx:gfx_switches",
+    "//ui/gfx/geometry",
   ]
   public_deps = [
     ":build_xprotos",
@@ -188,38 +211,14 @@ source_set("xproto") {
   libs = [ "xcb" ]
 }
 
-component("x") {
-  output_name = "gfx_x11"
-
-  sources = [
-    "property_cache.cc",
-    "property_cache.h",
-    "window_cache.cc",
-    "window_cache.h",
-    "x11_atom_cache.cc",
-    "x11_atom_cache.h",
-    "x11_path.cc",
-    "x11_path.h",
-    "x11_window_event_manager.cc",
-    "x11_window_event_manager.h",
-  ]
-
-  configs += [ ":x11_private_config" ]
-
-  deps = [
-    "//base",
-    "//skia",
-    "//ui/gfx/geometry",
-  ]
-  public_deps = [ ":xproto" ]
-}
-
 source_set("unit_test") {
   testonly = true
   sources = [
     "connection_unittest.cc",
+    "geometry_cache_unittest.cc",
     "property_cache_unittest.cc",
     "window_cache_unittest.cc",
+    "wm_sync_unittest.cc",
   ]
   deps = [
     "//base",

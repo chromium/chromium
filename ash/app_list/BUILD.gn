@@ -253,6 +253,7 @@ source_set("test_support") {
   deps = [
     ":app_list",
     "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//ui/base",
     "//ui/compositor:test_support",
     "//ui/events",

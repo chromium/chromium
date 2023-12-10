@@ -4,6 +4,7 @@
 
 import './trace_report.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
@@ -112,6 +113,10 @@ export class TraceReportListElement extends PolymerElement {
       default:
         return '';
     }
+  }
+
+  private hasTraces_(traces: ClientTraceReport[]): boolean {
+    return traces.length > 0;
   }
 }
 

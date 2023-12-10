@@ -791,6 +791,18 @@ void DisplayConfigurator::ForceInitialConfigure() {
   configuration_task_->Run();
 }
 
+void DisplayConfigurator::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const ColorTemperatureAdjustment& cta) {
+  native_display_delegate_->SetColorTemperatureAdjustment(display_id, cta);
+}
+
+void DisplayConfigurator::SetColorCalibration(
+    int64_t display_id,
+    const ColorCalibration& calibration) {
+  native_display_delegate_->SetColorCalibration(display_id, calibration);
+}
+
 bool DisplayConfigurator::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {
@@ -799,14 +811,13 @@ bool DisplayConfigurator::SetColorMatrix(
   return native_display_delegate_->SetColorMatrix(display_id, color_matrix);
 }
 
-bool DisplayConfigurator::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<GammaRampRGBEntry>& degamma_lut,
-    const std::vector<GammaRampRGBEntry>& gamma_lut) {
+bool DisplayConfigurator::SetGammaCorrection(int64_t display_id,
+                                             const GammaCurve& degamma,
+                                             const GammaCurve& gamma) {
   if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_))
     return false;
-  return native_display_delegate_->SetGammaCorrection(display_id, degamma_lut,
-                                                      gamma_lut);
+  return native_display_delegate_->SetGammaCorrection(display_id, degamma,
+                                                      gamma);
 }
 
 void DisplayConfigurator::SetPrivacyScreen(int64_t display_id,
@@ -1156,24 +1167,21 @@ bool DisplayConfigurator::HasPendingFullConfiguration() const {
   if (has_pending_power_state_)
     return true;
 
-  // Schedule if there is a request to change the VRR enabled state.
-  if (ShouldConfigureVrr()) {
-    return true;
-  }
-
-  // TODO(b/221220344): Remove after seamless modesets are fixed.
-  // Schedule if the conditions for seamless configuration are met and VRR is
-  // currently enabled on the internal display.
-  if (HasPendingSeamlessConfiguration() && IsVrrEnabledOnInternalDisplay()) {
-    return true;
-  }
-
   return false;
 }
 
 bool DisplayConfigurator::HasPendingSeamlessConfiguration() const {
   // Schedule if there is a pending request to change the refresh rate.
-  return pending_refresh_rate_throttle_state_.has_value();
+  if (pending_refresh_rate_throttle_state_.has_value()) {
+    return true;
+  }
+
+  // Schedule if there is a request to change the VRR enabled state.
+  if (ShouldConfigureVrr()) {
+    return true;
+  }
+
+  return false;
 }
 
 void DisplayConfigurator::CallAndClearInProgressCallbacks(bool success) {
@@ -1239,20 +1247,6 @@ bool DisplayConfigurator::ShouldConfigureVrr() const {
   }
 
   return false;
-}
-
-bool DisplayConfigurator::IsVrrEnabledOnInternalDisplay() const {
-  const DisplaySnapshot* internal_display;
-  for (const auto* display : cached_displays_) {
-    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-      internal_display = display;
-      break;
-    }
-  }
-
-  return internal_display != nullptr &&
-         internal_display->current_mode() != nullptr &&
-         internal_display->IsVrrEnabled();
 }
 
 }  // namespace display

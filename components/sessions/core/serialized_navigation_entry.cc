@@ -18,12 +18,6 @@ namespace sessions {
 // The previous referrer policy value corresponding to |Never|.
 const int kObsoleteReferrerPolicyNever = 2;
 
-size_t
-SerializedNavigationEntry::ReplacedNavigationEntryData::EstimateMemoryUsage()
-    const {
-  return base::trace_event::EstimateMemoryUsage(first_committed_url);
-}
-
 SerializedNavigationEntry::SerializedNavigationEntry() {
   referrer_policy_ =
       SerializedNavigationDriver::Get()->GetDefaultReferrerPolicy();
@@ -291,8 +285,6 @@ size_t SerializedNavigationEntry::EstimateMemoryUsage() const {
          EstimateMemoryUsage(original_request_url_) +
          EstimateMemoryUsage(favicon_url_) +
          EstimateMemoryUsage(redirect_chain_) +
-         EstimateMemoryUsage(
-             replaced_entry_data_.value_or(ReplacedNavigationEntryData())) +
          EstimateMemoryUsage(extended_info_map_);
 }
 

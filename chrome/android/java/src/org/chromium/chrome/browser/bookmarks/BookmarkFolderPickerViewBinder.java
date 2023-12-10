@@ -22,11 +22,13 @@ public class BookmarkFolderPickerViewBinder {
         } else if (key == BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER) {
             View cancelButton = view.findViewById(R.id.cancel_button);
             cancelButton.setOnClickListener(
-                    model.get(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER));
+                    (ignored) ->
+                            model.get(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER).run());
         } else if (key == BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER) {
             View moveButton = view.findViewById(R.id.move_button);
             moveButton.setOnClickListener(
-                    model.get(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER));
+                    (ignored) ->
+                            model.get(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER).run());
         } else if (key == BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED) {
             View moveButton = view.findViewById(R.id.move_button);
             moveButton.setEnabled(model.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));

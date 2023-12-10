@@ -60,8 +60,13 @@ public class PaymentRequestBottomBar extends ViewGroup {
         int secondaryButtonWidth = mSecondaryButton.getMeasuredWidth();
 
         MarginLayoutParams layoutParams = (MarginLayoutParams) getLayoutParams();
-        int totalWidthWithoutLogo = primaryButtonWidth + secondaryButtonWidth + getPaddingLeft()
-                + getPaddingRight() + layoutParams.leftMargin + layoutParams.rightMargin;
+        int totalWidthWithoutLogo =
+                primaryButtonWidth
+                        + secondaryButtonWidth
+                        + getPaddingLeft()
+                        + getPaddingRight()
+                        + layoutParams.leftMargin
+                        + layoutParams.rightMargin;
 
         int blankSpaceWidth;
         int maxTotalWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -76,23 +81,34 @@ public class PaymentRequestBottomBar extends ViewGroup {
         } else {
             mLogo.setVisibility(View.GONE);
             mLogoWithName.setVisibility(View.GONE);
-            blankSpaceWidth = maxTotalWidth < totalWidthWithoutLogo
-                    ? 0
-                    : maxTotalWidth - totalWidthWithoutLogo;
+            blankSpaceWidth =
+                    maxTotalWidth < totalWidthWithoutLogo
+                            ? 0
+                            : maxTotalWidth - totalWidthWithoutLogo;
             assert maxTotalWidth >= totalWidthWithoutLogo
                     : "Screen width is expected to fit the two buttons at least.";
         }
 
         // Sets the blank space width.
         mSpace.getLayoutParams().width = blankSpaceWidth;
-        measureChild(mSpace, MeasureSpec.makeMeasureSpec(blankSpaceWidth, MeasureSpec.EXACTLY),
+        measureChild(
+                mSpace,
+                MeasureSpec.makeMeasureSpec(blankSpaceWidth, MeasureSpec.EXACTLY),
                 heightMeasureSpec);
 
         // Note that mLogoWithName and mLogo must have the same height.
-        int maxMeasuredHeight = Math.max(mLogoWithName.getMeasuredHeight(),
-                Math.max(mPrimaryButton.getMeasuredHeight(), mSecondaryButton.getMeasuredHeight()));
-        int totalHeightWithPadding = maxMeasuredHeight + getPaddingTop() + getPaddingBottom()
-                + layoutParams.topMargin + layoutParams.bottomMargin;
+        int maxMeasuredHeight =
+                Math.max(
+                        mLogoWithName.getMeasuredHeight(),
+                        Math.max(
+                                mPrimaryButton.getMeasuredHeight(),
+                                mSecondaryButton.getMeasuredHeight()));
+        int totalHeightWithPadding =
+                maxMeasuredHeight
+                        + getPaddingTop()
+                        + getPaddingBottom()
+                        + layoutParams.topMargin
+                        + layoutParams.bottomMargin;
         int measuredHeightSpec =
                 MeasureSpec.makeMeasureSpec(totalHeightWithPadding, MeasureSpec.EXACTLY);
         setMeasuredDimension(widthMeasureSpec, measuredHeightSpec);

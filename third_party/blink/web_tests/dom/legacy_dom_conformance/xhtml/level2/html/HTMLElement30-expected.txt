@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLElement30
-Status	failure
-Message	titleLink: assertEquals failed, actual , expected HEAD Element.

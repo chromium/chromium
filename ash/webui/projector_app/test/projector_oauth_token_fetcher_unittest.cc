@@ -43,7 +43,7 @@ class ProjectorOAuthTokenFetcherTest : public testing::Test {
 
   void VerifyOAuthTokenFetchResult(
       OnOAuthTokenFetchFuture& future,
-      const absl::optional<std::string>& email = absl::nullopt) {
+      const std::optional<std::string>& email = std::nullopt) {
     const auto& expected_email = email ? email : kTestUserEmail;
     EXPECT_EQ(expected_email, future.Get<0>());
     EXPECT_EQ(GoogleServiceAuthError::State::NONE, future.Get<1>().state());

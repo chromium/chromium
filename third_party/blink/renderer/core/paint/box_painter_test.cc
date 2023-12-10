@@ -279,11 +279,11 @@ size_t CountDrawImagesWithConstraint(const cc::PaintRecord& record,
                                      SkCanvas::SrcRectConstraint constraint) {
   size_t count = 0;
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::kDrawimagerect) {
+    if (op.GetType() == cc::PaintOpType::kDrawImageRect) {
       const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
       if (image_op.constraint == constraint)
         ++count;
-    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       count += CountDrawImagesWithConstraint(record_op.record, constraint);
     }

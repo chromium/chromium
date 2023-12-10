@@ -129,7 +129,7 @@ bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element) {
 // overflows.
 gfx::Rect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   Vector<PhysicalRect> rects = layout_object.OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
   return ToEnclosingRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 

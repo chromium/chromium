@@ -5,21 +5,23 @@
 import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, SafeBrowsingState, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy, TestIconLoader} from './test_support.js';
 
 suite('item tests', function() {
   let item: DownloadsItemElement;
+  let testDownloadsProxy: TestDownloadsProxy;
   let testIconLoader: TestIconLoader;
   let toastManager: CrToastManagerElement;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    // This isn't strictly necessary, but is a probably good idea.
-    BrowserProxy.setInstance(new TestDownloadsProxy());
+    testDownloadsProxy = new TestDownloadsProxy();
+
+    BrowserProxy.setInstance(testDownloadsProxy);
 
     testIconLoader = new TestIconLoader();
     IconLoaderImpl.setInstance(testIconLoader);
@@ -154,7 +156,7 @@ suite('item tests', function() {
   test(
       'icon overridden by display type for improvedDownloadWarningsUX',
       async () => {
-        loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+        loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
         const item = document.createElement('downloads-item');
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         document.body.appendChild(item);
@@ -267,7 +269,7 @@ suite('item tests', function() {
   test(
       'description color set by display type for improvedDownloadWarningsUX',
       async () => {
-        loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+        loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
         const item = document.createElement('downloads-item');
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         document.body.appendChild(item);
@@ -358,7 +360,7 @@ suite('item tests', function() {
   test(
       'icon aria-hidden determined by display type for improvedDownloadWarningsUX',
       () => {
-        loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+        loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
         const item = document.createElement('downloads-item');
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         document.body.appendChild(item);
@@ -393,8 +395,65 @@ suite('item tests', function() {
         assertEquals('true', iconWrapper!.ariaHidden);
       });
 
+  test('save dangerous click fires event for dangerous', () => {
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               filePath: 'unique1',
+               hideDate: false,
+               state: State.kDangerous,
+               dangerType: DangerType.kDangerousUrl,
+             }));
+    flush();
+    const whenFired = eventToPromise('save-dangerous-click', item);
+    item.getMoreActionsButton().click();
+    const saveDangerousButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
+    assertTrue(!!saveDangerousButton);
+    assertTrue(isVisible(saveDangerousButton));
+    saveDangerousButton.click();
+    flush();
+    return whenFired;
+  });
+
+  test('save dangerous click does not fire event for suspicious', async () => {
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               id: 'itemId',
+               filePath: 'unique1',
+               hideDate: false,
+               state: State.kDangerous,
+               // Uncommon content is suspicious, not dangerous, so no dialog
+               // event should be fired.
+               dangerType: DangerType.kUncommonContent,
+             }));
+    flush();
+
+    // The event should never be fired.
+    item.addEventListener('save-dangerous-click', () => {
+      assertNotReached('Unexpected event fired');
+    });
+
+    item.getMoreActionsButton().click();
+    const saveDangerousButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
+    assertTrue(!!saveDangerousButton);
+    assertTrue(isVisible(saveDangerousButton));
+    saveDangerousButton.click();
+    flush();
+    // The mojo handler is called directly, no event for the dialog is fired.
+    const id = await testDownloadsProxy.handler.whenCalled(
+        'saveDangerousRequiringGesture');
+    assertEquals('itemId', id);
+  });
+
   test('deep scan dropdown buttons shown on correct state', () => {
-    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -434,7 +493,7 @@ suite('item tests', function() {
   });
 
   test('open anyway dropdown button shown on failed deep scan', () => {
-    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -451,7 +510,7 @@ suite('item tests', function() {
   });
 
   test('undo is shown in toast', () => {
-    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -470,7 +529,7 @@ suite('item tests', function() {
   });
 
   test('undo is not shown in toast when item is dangerous', () => {
-    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -489,7 +548,7 @@ suite('item tests', function() {
   });
 
   test('undo is not shown in toast when item is insecure', () => {
-    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);

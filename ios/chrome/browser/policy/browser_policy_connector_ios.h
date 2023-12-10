@@ -5,13 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_BROWSER_POLICY_CONNECTOR_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_BROWSER_POLICY_CONNECTOR_IOS_H_
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/memory/ref_counted.h"
-#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/local_test_policy_provider.h"
+#import "base/containers/flat_set.h"
+#import "base/memory/ref_counted.h"
+#import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#import "components/policy/core/browser/browser_policy_connector.h"
+#import "components/policy/core/common/local_test_policy_provider.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -46,6 +47,9 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   // be overridden for testing via
   // BrowserPolicyConnectorBase::SetPolicyProviderForTesting().
   policy::ConfigurationPolicyProvider* GetPlatformProvider();
+
+  // Returns the device affiliations IDs associated with the browser.
+  base::flat_set<std::string> GetDeviceAffiliationIds();
 
   policy::LocalTestPolicyProvider* local_test_policy_provider() {
     return local_test_provider_.get();

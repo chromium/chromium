@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] RemoteContextHelper navigation using BFCache
+  assert_equals: expected "no" but got "yes"
+Harness: the test ran to completion.

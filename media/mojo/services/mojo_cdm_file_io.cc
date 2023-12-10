@@ -25,6 +25,14 @@ using StorageStatus = media::mojom::CdmStorage::Status;
 // hundreds of bytes. This value should match what is in CdmFileImpl.
 const int64_t kMaxFileSizeBytes = 512 * 1024;
 
+
+// Constants for UMA reporting of file size (in KB) via
+// UMA_HISTOGRAM_CUSTOM_COUNTS. Note that the histogram is log-scaled (rather
+// than linear).
+constexpr int kSizeKBMin = 1;
+const int64_t kMaxFileSizeKB = 512;
+constexpr int kSizeKBBuckets = 100;
+
 const char* ConvertStorageStatus(StorageStatus status) {
   switch (status) {
     case StorageStatus::kSuccess:
@@ -201,6 +209,10 @@ void MojoCdmFileIO::Write(const uint8_t* data, uint32_t data_size) {
     OnError(ErrorType::kWriteError);
     return;
   }
+
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Media.EME.CdmFileIO.WriteFile.DataSizeKB",
+                              data_size / 1024, kSizeKBMin, kMaxFileSizeKB,
+                              kSizeKBBuckets);
 
   TRACE_EVENT_ASYNC_BEGIN2("media", "MojoCdmFileIO::Write", this, "file_name",
                            file_name_, "bytes_to_write", data_size);

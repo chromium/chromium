@@ -14,13 +14,11 @@
 #include <linux/videodev2.h>
 
 #include "base/containers/queue.h"
-#include "base/containers/small_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/decoder_status.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
@@ -121,24 +119,20 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
                             v4l2_memory input_memory_type,
                             v4l2_memory output_memory_type,
                             OutputMode output_mode,
-                            size_t num_buffers,
                             ErrorCB error_cb);
   ~V4L2ImageProcessorBackend() override;
   void Destroy() override;
   // Stop all processing on |poll_task_runner_|.
   void DestroyOnPollSequence();
 
-  // Initialize on |backend_task_runner_|. After finished, call |init_cb|
-  // with the result whether initialization is successful or not
-  void Initialize(InitCB init_cb);
   void EnqueueInput(const JobRecord* job_record, V4L2WritableBufferRef buffer);
   void EnqueueOutput(JobRecord* job_record, V4L2WritableBufferRef buffer);
   void Dequeue();
   bool EnqueueInputRecord(const JobRecord* job_record,
                           V4L2WritableBufferRef buffer);
   bool EnqueueOutputRecord(JobRecord* job_record, V4L2WritableBufferRef buffer);
-  bool CreateInputBuffers();
-  bool CreateOutputBuffers();
+  bool CreateInputBuffers(size_t num_buffers);
+  bool CreateOutputBuffers(size_t num_buffers);
   // Reconfigure the |type| queue for |size|.
   bool ReconfigureV4L2Format(const gfx::Size& size, enum v4l2_buf_type type);
 
@@ -154,42 +148,38 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   void NotifyError();
 
   // ImageProcessor implementation.
-  void ProcessJobsTask();
-  void ServiceDeviceTask();
+  void ProcessJobs();
+  void ServiceDevice();
 
+  void TriggerPoll(bool poll_device);
   // Ran on |poll_task_runner_| to wait for device events.
   void DevicePollTask(bool poll_device);
 
   const v4l2_memory input_memory_type_;
   const v4l2_memory output_memory_type_;
 
-  // V4L2 device in use.
-  scoped_refptr<V4L2Device> device_;
+  // V4L2 device in use. Accessed from both the main task runner and
+  // |poll_task_runner_|.
+  // TODO(mcasas): Unclear whether that's racy.
+  scoped_refptr<V4L2Device> device_ GUARDED_BY_FIXME(sequence_checker_);
 
-  // All the below members are to be accessed from |device_task_runner_| only
-  // (if it's running).
-  base::queue<std::unique_ptr<JobRecord>> input_job_queue_;
-  base::queue<std::unique_ptr<JobRecord>> running_jobs_;
+  base::queue<std::unique_ptr<JobRecord>> input_job_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::queue<std::unique_ptr<JobRecord>> running_jobs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  scoped_refptr<V4L2Queue> input_queue_;
-  scoped_refptr<V4L2Queue> output_queue_;
-
-  // The number of input or output buffers.
-  const size_t num_buffers_;
+  scoped_refptr<V4L2Queue> input_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<V4L2Queue> output_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Sequence and its checker used to poll the V4L2 for events only.
   scoped_refptr<base::SingleThreadTaskRunner> poll_task_runner_;
   SEQUENCE_CHECKER(poll_sequence_checker_);
 
-  base::small_map<std::map<base::TimeDelta, std::unique_ptr<ScopedDecodeTrace>>>
-      buffer_tracers_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // WeakPtr bound to |backend_task_runner_|.
-  base::WeakPtr<V4L2ImageProcessorBackend> backend_weak_this_;
-  // WeakPtr bound to |poll_task_runner_|.
+  base::WeakPtr<V4L2ImageProcessorBackend> weak_this_;
   base::WeakPtr<V4L2ImageProcessorBackend> poll_weak_this_;
-  base::WeakPtrFactory<V4L2ImageProcessorBackend> backend_weak_this_factory_{
-      this};
+  base::WeakPtrFactory<V4L2ImageProcessorBackend> weak_this_factory_{this};
   base::WeakPtrFactory<V4L2ImageProcessorBackend> poll_weak_this_factory_{this};
 };
 

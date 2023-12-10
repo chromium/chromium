@@ -58,7 +58,7 @@ FakeDeviceInformationCustomPairingWinrt::
     FakeDeviceInformationCustomPairingWinrt(
         Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
         DevicePairingKinds pairing_kind,
-        base::StringPiece display_pin)
+        std::string_view display_pin)
     : pairing_(std::move(pairing)),
       pairing_kind_(pairing_kind),
       display_pin_(display_pin) {}

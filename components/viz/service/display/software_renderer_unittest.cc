@@ -20,6 +20,7 @@
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -52,8 +53,12 @@ class SoftwareRendererTest : public testing::Test {
     output_surface_->BindToClient(&output_surface_client_);
 
     shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
+    shared_image_manager_ = std::make_unique<gpu::SharedImageManager>();
+    sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
+
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        shared_bitmap_manager_.get());
+        shared_bitmap_manager_.get(), shared_image_manager_.get(),
+        sync_point_manager_.get());
     renderer_ = std::make_unique<SoftwareRenderer>(
         &settings_, &debug_settings_, output_surface_.get(),
         resource_provider(), nullptr);
@@ -93,8 +98,8 @@ class SoftwareRendererTest : public testing::Test {
 
     // Makes a resource id that refers to the registered SharedBitmapId.
     return child_resource_provider_->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, size,
-                                           SinglePlaneFormat::kRGBA_8888),
+        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
+                                           size, SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
   }
 
@@ -138,6 +143,8 @@ class SoftwareRendererTest : public testing::Test {
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<FakeSoftwareOutputSurface> output_surface_;
   std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
+  std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
+  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
   std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<SoftwareRenderer> renderer_;

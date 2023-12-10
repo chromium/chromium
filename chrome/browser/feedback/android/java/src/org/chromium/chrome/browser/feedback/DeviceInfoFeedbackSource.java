@@ -33,7 +33,7 @@ class DeviceInfoFeedbackSource implements FeedbackSource {
         if (BuildInfo.getInstance().isAutomotive) {
             type = TYPE_AUTO;
         } else if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                           ContextUtils.getApplicationContext())) {
+                ContextUtils.getApplicationContext())) {
             type = TYPE_TABLET;
         } else {
             type = TYPE_PHONE;

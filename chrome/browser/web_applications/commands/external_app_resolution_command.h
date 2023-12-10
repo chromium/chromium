@@ -16,6 +16,8 @@
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/jobs/install_from_info_job.h"
 #include "chrome/browser/web_applications/jobs/install_placeholder_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -23,12 +25,14 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class Browser;
 class Profile;
 
 namespace content {
@@ -70,6 +74,8 @@ class ExternalAppResolutionCommand
   void SetOnLockUpgradedCallbackForTesting(base::OnceClosure callback);
 
  private:
+  WebAppProvider& provider() const;
+
   void Abort(webapps::InstallResultCode code);
 
   // This function loads the URL and based on the result branches off to try
@@ -102,9 +108,15 @@ class ExternalAppResolutionCommand
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
   void OnUninstallAndReplaceCompletedUninstallPlaceholder(
-      webapps::AppId app_id,
-      webapps::InstallResultCode code,
       bool uninstall_triggered);
+  void OnAllAppsLockGrantedRemovePlaceholder(std::unique_ptr<AllAppsLock> lock);
+  void OnPlaceholderUninstalledMaybeRelaunch(
+      webapps::UninstallResultCode result);
+
+  void OnLaunch(base::WeakPtr<Browser> browser,
+                base::WeakPtr<content::WebContents> web_contents,
+                apps::LaunchContainer container,
+                base::Value debug_value);
 
   // Placeholder installation path:
   void OnPlaceHolderAppLockAcquired(
@@ -120,8 +132,6 @@ class ExternalAppResolutionCommand
                                   webapps::InstallResultCode code,
                                   OsHooksErrors os_hook_errors);
   void OnUninstallAndReplaceCompleted(bool is_offline_install,
-                                      webapps::AppId app_id,
-                                      webapps::InstallResultCode code,
                                       bool uninstall_triggered);
 
   void TryAppInfoFactoryOnFailure(
@@ -130,8 +140,6 @@ class ExternalAppResolutionCommand
   ExternallyManagedAppManager::InstallResult PrepareResult(
       bool is_offline_install,
       ExternallyManagedAppManager::InstallResult result);
-  void OnInstallationJobsCompleted(bool success,
-                                   base::OnceClosure result_closure);
 
   // SharedWebContentsLock is held while loading the app contents (and manifest,
   // if possible).
@@ -146,7 +154,14 @@ class ExternalAppResolutionCommand
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
       apps_lock_description_;
 
-  absl::optional<webapps::AppId> app_id_;
+  std::unique_ptr<AllAppsLock> all_apps_lock_;
+  std::unique_ptr<AllAppsLockDescription> all_apps_lock_description_;
+
+  // Populated after an install completes.
+  webapps::AppId app_id_;
+  webapps::InstallResultCode install_code_;
+  bool uninstalled_for_replace_ = false;
+  bool relaunch_app_after_placeholder_uninstall_ = false;
 
   // `this` must be owned by `profile_`.
   raw_ref<Profile> profile_;
@@ -168,6 +183,7 @@ class ExternalAppResolutionCommand
   absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
   absl::optional<InstallPlaceholderJob> install_placeholder_job_;
   absl::optional<InstallFromInfoJob> install_from_info_job_;
+  absl::optional<RemoveInstallSourceJob> remove_placeholder_job_;
 
   base::Value::List error_log_;
   base::Value::Dict debug_value_;

@@ -178,8 +178,10 @@ FencedFrameReporter::PendingEvent& FencedFrameReporter::PendingEvent::operator=(
 FencedFrameReporter::PendingEvent::~PendingEvent() = default;
 
 FencedFrameReporter::ReportingDestinationInfo::ReportingDestinationInfo(
+    absl::optional<url::Origin> reporting_url_declarer_origin,
     absl::optional<ReportingUrlMap> reporting_url_map)
-    : reporting_url_map(std::move(reporting_url_map)) {}
+    : reporting_url_declarer_origin(reporting_url_declarer_origin),
+      reporting_url_map(std::move(reporting_url_map)) {}
 
 FencedFrameReporter::ReportingDestinationInfo::ReportingDestinationInfo(
     ReportingDestinationInfo&&) = default;
@@ -194,6 +196,7 @@ FencedFrameReporter::ReportingDestinationInfo::operator=(
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     BrowserContext* browser_context,
+    const absl::optional<url::Origin>& reporting_url_declarer_origin,
     ReportingUrlMap reporting_url_map,
     const url::Origin& main_frame_origin) {
   // `private_aggregation_manager_` and `winner_origin_`
@@ -205,7 +208,8 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
           std::move(url_loader_factory), browser_context, main_frame_origin);
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
-      ReportingDestinationInfo(std::move(reporting_url_map)));
+      ReportingDestinationInfo(reporting_url_declarer_origin,
+                               std::move(reporting_url_map)));
   return reporter;
 }
 
@@ -216,6 +220,7 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
     const url::Origin& winner_origin,
+    const absl::optional<url::Origin>& aggregation_coordinator_origin,
     const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins) {
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
@@ -223,7 +228,7 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
           PrivacySandboxInvokingAPI::kProtectedAudience,
           std::move(url_loader_factory), browser_context, main_frame_origin,
           private_aggregation_manager, winner_origin,
-          allowed_reporting_origins);
+          aggregation_coordinator_origin, allowed_reporting_origins);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -245,6 +250,7 @@ FencedFrameReporter::FencedFrameReporter(
     const url::Origin& main_frame_origin,
     PrivateAggregationManager* private_aggregation_manager,
     const absl::optional<url::Origin>& winner_origin,
+    const absl::optional<url::Origin>& winner_aggregation_coordinator_origin,
     const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins)
     : url_loader_factory_(std::move(url_loader_factory)),
       attribution_manager_(
@@ -253,6 +259,8 @@ FencedFrameReporter::FencedFrameReporter(
       main_frame_origin_(main_frame_origin),
       private_aggregation_manager_(private_aggregation_manager),
       winner_origin_(winner_origin),
+      winner_aggregation_coordinator_origin_(
+          winner_aggregation_coordinator_origin),
       allowed_reporting_origins_(allowed_reporting_origins),
       invoking_api_(invoking_api) {
   DCHECK(url_loader_factory_);
@@ -275,6 +283,7 @@ FencedFrameReporter::~FencedFrameReporter() {
 
 void FencedFrameReporter::OnUrlMappingReady(
     blink::FencedFrame::ReportingDestination reporting_destination,
+    const absl::optional<url::Origin>& reporting_url_declarer_origin,
     ReportingUrlMap reporting_url_map,
     absl::optional<ReportingMacros> reporting_ad_macros) {
   auto it = reporting_metadata_.find(reporting_destination);
@@ -282,6 +291,7 @@ void FencedFrameReporter::OnUrlMappingReady(
   DCHECK(!it->second.reporting_url_map);
   DCHECK(!it->second.reporting_ad_macros);
 
+  it->second.reporting_url_declarer_origin = reporting_url_declarer_origin;
   it->second.reporting_url_map = std::move(reporting_url_map);
   it->second.reporting_ad_macros = std::move(reporting_ad_macros);
   auto pending_events = std::exchange(it->second.pending_events, {});
@@ -392,10 +402,12 @@ bool FencedFrameReporter::SendReportInternal(
     blink::mojom::ConsoleMessageLevel& console_message_level,
     const std::string& devtools_request_id) {
   // The URL map should not be pending at this point.
-  DCHECK(reporting_destination_info.reporting_url_map);
+  CHECK(reporting_destination_info.reporting_url_map.has_value());
 
-  // Compute the destination url for the report.
+  // Compute the destination url for the report, and the origin that we will
+  // use as the initiator for the report's network request.
   GURL destination_url;
+  url::Origin network_request_initiator = request_initiator;
   if (absl::holds_alternative<DestinationEnumEvent>(event_variant) ||
       absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
     std::string event_type;
@@ -431,6 +443,17 @@ bool FencedFrameReporter::SendReportInternal(
       console_message_level = blink::mojom::ConsoleMessageLevel::kError;
       NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
       return false;
+    }
+
+    // Because the destination URL was chosen by the worklet and is unknown to
+    // the reportEvent caller, set `network_request_initiator` to the worklet's
+    // origin to prevent CSRF.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesAutomaticBeaconCredentials)) {
+      CHECK(
+          reporting_destination_info.reporting_url_declarer_origin.has_value());
+      network_request_initiator =
+          reporting_destination_info.reporting_url_declarer_origin.value();
     }
   } else {
     // Since the event references a destination URL, use it directly.
@@ -544,7 +567,7 @@ bool FencedFrameReporter::SendReportInternal(
         InvokingAPIAsString(invoking_api_),
         "'",
         (base::FeatureList::IsEnabled(
-             blink::features::kFencedFramesM120FeaturesPart2) &&
+             blink::features::kFencedFramesReportingAttestationsChanges) &&
          invoking_api_ == PrivacySandboxInvokingAPI::kProtectedAudience)
             ? " or 'Attribution Reporting'."
             : ".",
@@ -559,7 +582,7 @@ bool FencedFrameReporter::SendReportInternal(
 
   request->url = destination_url;
   request->mode = network::mojom::RequestMode::kCors;
-  request->request_initiator = request_initiator;
+  request->request_initiator = network_request_initiator;
 
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   // Allow cookies on automatic beacons while third party cookies are enabled
@@ -768,7 +791,9 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
 
   SplitContributionsIntoBatchesThenSendToHost(
       /*requests=*/std::move(it->second), *private_aggregation_manager_,
-      /*reporting_origin=*/winner_origin_.value(), main_frame_origin_);
+      /*reporting_origin=*/winner_origin_.value(),
+      /*aggregation_coordinator_origin=*/winner_aggregation_coordinator_origin_,
+      main_frame_origin_);
 
   // Remove the entry of key `pa_event_type` from
   // `private_aggregation_event_map_` to avoid possibly sending the same
@@ -788,6 +813,18 @@ FencedFrameReporter::ReportingDestinations() {
     if (!reporting_metadata.second.reporting_url_map ||
         !reporting_metadata.second.reporting_url_map->empty()) {
       out.emplace_back(reporting_metadata.first);
+    }
+  }
+  return out;
+}
+
+base::flat_map<blink::FencedFrame::ReportingDestination, url::Origin>
+FencedFrameReporter::GetReportingUrlDeclarerOriginsForTesting() {
+  base::flat_map<blink::FencedFrame::ReportingDestination, url::Origin> out;
+  for (const auto& reporting_metadata : reporting_metadata_) {
+    if (reporting_metadata.second.reporting_url_declarer_origin) {
+      out.emplace(reporting_metadata.first,
+                  *reporting_metadata.second.reporting_url_declarer_origin);
     }
   }
   return out;

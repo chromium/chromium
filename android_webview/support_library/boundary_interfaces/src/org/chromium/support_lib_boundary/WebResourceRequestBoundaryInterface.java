@@ -4,7 +4,7 @@
 
 package org.chromium.support_lib_boundary;
 
-/**
- * Boundary interface for WebResourceRequest.
- */
-public interface WebResourceRequestBoundaryInterface { boolean isRedirect(); }
+/** Boundary interface for WebResourceRequest. */
+public interface WebResourceRequestBoundaryInterface {
+    boolean isRedirect();
+}

@@ -495,7 +495,7 @@ bool X509Certificate::VerifyHostname(
   SplitOnChar(reference_name, '.', &reference_host, &reference_domain);
   bool allow_wildcards = false;
   if (!reference_domain.empty()) {
-    DCHECK(base::StartsWith(reference_domain, "."));
+    DCHECK(reference_domain.starts_with("."));
 
     // Do not allow wildcards for public/ICANN registry controlled domains -
     // that is, prevent *.com or *.co.uk as valid presented names, but do not

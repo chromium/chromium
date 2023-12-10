@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Паменшыце колькасць сімвалаў у гэтым тэксце значэння, не большага за <ph name="MAX_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трэк <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Камера і мікрафон дазволены</translation>
 <translation id="2393030564806080191">Шаснаццатковае значэнне колеру</translation>
 <translation id="2398813069815436052">дыялогавае акно адкрыта.</translation>
 <translation id="245932805758469625">колькі секунд відэа засталося</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">У частцы перад "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
+<translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4103419683916926126">Мілісекунды</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
+<translation id="4663373278480897665">Камера дазволена</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>
 <translation id="4748357248530471599">уключэнне і выключэнне поўнаэкраннага рэжыму для выраза экрана</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">спампаваць мультымедыя</translation>
 <translation id="698788488269350478">– разгорнута.</translation>
 <translation id="6989848892321993519">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас 1 сімвал).</translation>
+<translation id="7080893216867146095">Абагульванне геаданых дазволена</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
 <translation id="7102274145889307184">бягучае месцазнаходжанне</translation>
 <translation id="7263440858009898357">Выберыце пункт са спіса</translation>

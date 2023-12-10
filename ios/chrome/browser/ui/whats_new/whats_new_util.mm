@@ -25,9 +25,7 @@ bool IsSixDaysAfterFre() {
   // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
   // solution to update existing user defaults for future versions of What's
   // New.
-  NSString* const daysAfterFre = IsWhatsNewM116Enabled()
-                                     ? kWhatsNewM116DaysAfterFre
-                                     : kWhatsNewDaysAfterFre;
+  NSString* const daysAfterFre = kWhatsNewM116DaysAfterFre;
   NSDate* startDate =
       [[NSUserDefaults standardUserDefaults] objectForKey:daysAfterFre];
   if (!startDate) {
@@ -49,9 +47,7 @@ bool IsSixLaunchAfterFre() {
   // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
   // solution to update existing user defaults for future versions of What's
   // New.
-  NSString* const launchesAfterFre = IsWhatsNewM116Enabled()
-                                         ? kWhatsNewM116LaunchesAfterFre
-                                         : kWhatsNewLaunchesAfterFre;
+  NSString* const launchesAfterFre = kWhatsNewM116LaunchesAfterFre;
 
   NSInteger num =
       [[NSUserDefaults standardUserDefaults] integerForKey:launchesAfterFre];
@@ -68,35 +64,23 @@ bool IsSixLaunchAfterFre() {
 
 // Returns whether What's New promo has been registered in the promo manager.
 bool IsWhatsNewPromoRegistered() {
-  if (IsWhatsNewM116Enabled()) {
-    return [[NSUserDefaults standardUserDefaults]
-        boolForKey:kWhatsNewM116PromoRegistrationKey];
-  }
-
-  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
-  // solution to update existing user defaults for future versions of What's
-  // New.
   return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kWhatsNewPromoRegistrationKey];
+      boolForKey:kWhatsNewM116PromoRegistrationKey];
+}
+
+void CleanUpWhatsNewUserDefaults() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  [defaults removeObjectForKey:kWhatsNewPromoRegistrationKey];
+  [defaults removeObjectForKey:kWhatsNewDaysAfterFre];
+  [defaults removeObjectForKey:kWhatsNewLaunchesAfterFre];
 }
 
 }  // namespace
 
-BASE_FEATURE(kWhatsNewIOSM116,
-             "WhatsNewIOSM116",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool WasWhatsNewUsed() {
-  if (IsWhatsNewM116Enabled()) {
-    return [[NSUserDefaults standardUserDefaults]
-        boolForKey:kWhatsNewM116UsageEntryKey];
-  }
-
-  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
-  // solution to update existing user defaults for future versions of What's
-  // New.
-  return
-      [[NSUserDefaults standardUserDefaults] boolForKey:kWhatsNewUsageEntryKey];
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kWhatsNewM116UsageEntryKey];
 }
 
 void SetWhatsNewUsed(PromosManager* promosManager) {
@@ -107,35 +91,20 @@ void SetWhatsNewUsed(PromosManager* promosManager) {
   // Deregister What's New promo.
   DCHECK(promosManager);
   promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
-
-  if (IsWhatsNewM116Enabled()) {
-    [[NSUserDefaults standardUserDefaults] setBool:YES
-                                            forKey:kWhatsNewM116UsageEntryKey];
-  } else {
-    [[NSUserDefaults standardUserDefaults] setBool:YES
-                                            forKey:kWhatsNewUsageEntryKey];
-  }
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:kWhatsNewM116UsageEntryKey];
 }
 
 void setWhatsNewPromoRegistration() {
-  if (IsWhatsNewM116Enabled()) {
-    [[NSUserDefaults standardUserDefaults]
-        setBool:YES
-         forKey:kWhatsNewM116PromoRegistrationKey];
-    return;
-  }
-
-  [[NSUserDefaults standardUserDefaults] setBool:YES
-                                          forKey:kWhatsNewPromoRegistrationKey];
+  [[NSUserDefaults standardUserDefaults]
+      setBool:YES
+       forKey:kWhatsNewM116PromoRegistrationKey];
 }
 
 bool ShouldRegisterWhatsNewPromo() {
+  CleanUpWhatsNewUserDefaults();
   return !IsWhatsNewPromoRegistered() &&
          (IsSixLaunchAfterFre() || IsSixDaysAfterFre());
-}
-
-bool IsWhatsNewM116Enabled() {
-  return base::FeatureList::IsEnabled(kWhatsNewIOSM116);
 }
 
 // Please do not modify this method. The content is updated by script. For more
@@ -167,23 +136,6 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
     case WhatsNewType::kMiniMaps:
       return "MiniMaps";
     case WhatsNewType::kError:
-      return nil;
-  };
-}
-
-const char* WhatsNewTypeToStringM116(WhatsNewType type) {
-  switch (type) {
-    case WhatsNewType::kIncognitoTabsFromOtherApps:
-      return "IncognitoTabsFromOtherApps";
-    case WhatsNewType::kIncognitoLock:
-      return "IncognitoLock";
-    case WhatsNewType::kCalendarEvent:
-      return "CalendarEvent";
-    case WhatsNewType::kChromeActions:
-      return "ChromeActions";
-    case WhatsNewType::kMiniMaps:
-      return "MiniMaps";
-    default:
       return nil;
   };
 }

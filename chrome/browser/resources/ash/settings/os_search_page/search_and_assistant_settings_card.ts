@@ -76,12 +76,32 @@ export class SearchAndAssistantSettingsCardElement extends
         },
         readOnly: true,
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              searchEngine: 'os-settings:explore',
+              assistant: 'os-settings:assistant',
+              contentRecommendations: 'os-settings:content-recommend',
+            };
+          }
+
+          return {
+            searchEngine: 'os-settings:google-drive',
+            assistant: '',
+            contentRecommendations: '',
+          };
+        },
+      },
     };
   }
 
   prefs: PrefsState;
   private isAssistantAllowed_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
+  private readonly isRevampWayfindingEnabled_: boolean;
+  private rowIcons_: Record<string, string>;
   private shouldShowQuickAnswersSettings_: boolean;
 
   constructor() {

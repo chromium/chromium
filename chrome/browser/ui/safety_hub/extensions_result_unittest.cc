@@ -55,7 +55,7 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult) {
   safety_hub_test_util::CreateMockExtensions(profile());
   std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
       cws_info_service = safety_hub_test_util::GetMockCWSInfoService(profile());
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
       SafetyHubExtensionsResult::GetResult(cws_info_service.get(), profile(),
                                            false);
   ASSERT_TRUE(sh_result.has_value());
@@ -65,7 +65,7 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult) {
   // Reset the same mock calls, of which two are unpublished extensions
   // (including one where this is combined with malware).
   cws_info_service = safety_hub_test_util::GetMockCWSInfoService(profile());
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> sh_menu_result =
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_menu_result =
       SafetyHubExtensionsResult::GetResult(cws_info_service.get(), profile(),
                                            true);
   ASSERT_TRUE(sh_menu_result.has_value());

@@ -141,14 +141,14 @@ void LogCardUnmaskDurationAfterWebauthn(
 // verifiable.
 void LogCardUnmaskPreflightInitiated();
 
-// Logs the count of calls to PaymentsClient::GetUnmaskDetails() (aka
+// Logs the count of calls to PaymentsNetworkInterface::GetUnmaskDetails() (aka
 // GetDetailsForGetRealPan). If `is_user_opted_in` is true, then the user is
 // opted-in to FIDO auth, and if the user is not opted-in to FIDO auth then
 // `is_user_opted_in` is false.
 void LogCardUnmaskPreflightCalled(bool is_user_opted_in);
 
-// Logs the duration of the PaymentsClient::GetUnmaskDetails() call (aka
-// GetDetailsForGetRealPan).
+// Logs the duration of the PaymentsNetworkInterface::GetUnmaskDetails() call
+// (aka GetDetailsForGetRealPan).
 void LogCardUnmaskPreflightDuration(const base::TimeDelta& duration);
 
 // Logs which unmask type was used for a user with FIDO authentication
@@ -174,7 +174,7 @@ void LogUserPerceivedLatencyOnCardSelectionTimedOut(bool did_time_out);
 // extremely quick IPC.
 void LogUserVerifiabilityCheckDuration(const base::TimeDelta& duration);
 
-// Logs the count of calls to PaymentsClient::OptChange() (aka
+// Logs the count of calls to PaymentsNetworkInterface::OptChange() (aka
 // UpdateAutofillUserPreference).
 void LogWebauthnOptChangeCalled(bool request_to_opt_in,
                                 bool is_checkout_flow,

@@ -61,8 +61,7 @@ import java.util.concurrent.TimeoutException;
 public class LoadUrlTest extends AwParameterizedTest {
     private static final String ASSET_FILE_URL = "file:///android_asset/asset_file.html";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private AwEmbeddedTestServer mTestServer;
 

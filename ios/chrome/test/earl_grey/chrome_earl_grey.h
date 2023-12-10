@@ -616,10 +616,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Cache-Control response header says otherwise.
 - (void)purgeCachedWebViewPages;
 
-// Simulators background, killing, and restoring the app within the limitations
-// of EG1, by simply doing a tab grid close all / undo / done.
-- (void)triggerRestoreViaTabGridRemoveAllUndo;
-
 // Returns YES if the current WebState's web view uses the content inset to
 // correctly align the top of the content with the bottom of the top bar.
 - (BOOL)webStateWebViewUsesContentInset;
@@ -719,9 +715,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Web Channels feature is enabled.
 - (BOOL)isWebChannelsEnabled;
 
-// Returns whether UIButtonConfiguration changes are enabled.
-- (BOOL)isUIButtonConfigurationEnabled;
-
 // Returns whether the bottom omnibox steady state feature is enabled.
 - (BOOL)isBottomOmniboxSteadyStateEnabled;
 
@@ -800,6 +793,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Sets the value of a user pref in the original browser state.
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
+
+// Returns true if the Preference is currently using its default value,
+// and has not been set by any higher-priority source (even with the same
+// value).
+- (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
+
+// Clears the user pref of `prefName` in the original browser state.
+- (void)clearUserPrefWithName:(const std::string&)prefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.

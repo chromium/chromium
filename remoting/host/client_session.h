@@ -276,6 +276,12 @@ class ClientSession : public protocol::HostStub,
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
 
+  // Sets the fallback geometry on `fractional_input_filter_` according to the
+  // current display-layout and selected display index. This is only used for
+  // single-stream mode, when the client provides fractional-coordinates without
+  // any screen_id.
+  void UpdateFractionalFilterFallback();
+
   raw_ptr<EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.

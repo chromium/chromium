@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_CREATOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_creator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -49,7 +49,7 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
   // CryptAuthKeyCreator:
   void CreateKeys(const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
                       keys_to_create,
-                  const absl::optional<CryptAuthKey>& server_ephemeral_dh,
+                  const std::optional<CryptAuthKey>& server_ephemeral_dh,
                   CreateKeysCallback create_keys_callback) override;
 
  private:
@@ -63,8 +63,7 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
   // The Diffie-Hellman handshake secret, derived from the ephemeral server and
   // client keys, is null if no symmetric keys need to be created or if there
   // was an error deriving the handshake secret.
-  void StartKeyCreation(
-      const absl::optional<CryptAuthKey>& dh_handshake_secret);
+  void StartKeyCreation(const std::optional<CryptAuthKey>& dh_handshake_secret);
 
   void OnAsymmetricKeyPairGenerated(CryptAuthKeyBundle::Name bundle_name,
                                     const std::string& public_key,
@@ -74,9 +73,9 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
 
   size_t num_keys_to_create_ = 0;
   base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData> keys_to_create_;
-  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, std::optional<CryptAuthKey>>
       new_keys_;
-  absl::optional<CryptAuthKey> client_ephemeral_dh_;
+  std::optional<CryptAuthKey> client_ephemeral_dh_;
   CreateKeysCallback create_keys_callback_;
 
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;

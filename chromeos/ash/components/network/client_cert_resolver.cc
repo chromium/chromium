@@ -9,6 +9,7 @@
 #include <pk11pub.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -36,7 +37,6 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -108,7 +108,7 @@ base::flat_map<std::string, std::string> GetSubstitutionsForCert(
   return substitutions;
 }
 
-absl::optional<ResolvedCert> GetResolvedCert(CERTCertificate* cert) {
+std::optional<ResolvedCert> GetResolvedCert(CERTCertificate* cert) {
   int slot_id = -1;
   std::string pkcs11_id =
       NetworkCertLoader::GetPkcs11IdAndSlotForCert(cert, &slot_id);
@@ -161,15 +161,15 @@ namespace {
 // Returns the nickname of the private key for certificate |cert|, if such a
 // private key is installed. Note that this is not a cheap operation: it
 // iterates all tokens and attempts to look up the private key.
-// A return value of |absl::nullopt| means that no private key could be found
+// A return value of |std::nullopt| means that no private key could be found
 // for |cert|.
 // If a private key could be found for |cert| but it did not have a nickname,
 // will return the empty string.
-absl::optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
+std::optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
   crypto::ScopedSECKEYPrivateKey key(
       PK11_FindKeyByAnyCert(cert, /*wincx=*/nullptr));
   if (!key)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string key_nickname;
   char* nss_key_nickname = PK11_GetPrivateKeyNickname(key.get());
@@ -341,7 +341,7 @@ void CreateSortedCertAndIssuerList(
     }
     // GetPrivateKeyNickname should be invoked after the checks above for
     // performance reasons.
-    absl::optional<std::string> private_key_nickname =
+    std::optional<std::string> private_key_nickname =
         GetPrivateKeyNickname(cert);
     if (!private_key_nickname.has_value()) {
       // No private key has been found for this certificate.
@@ -408,7 +408,7 @@ std::vector<NetworkAndMatchingCert> FindCertificateMatches(
       continue;
     }
 
-    absl::optional<ResolvedCert> resolved_cert =
+    std::optional<ResolvedCert> resolved_cert =
         GetResolvedCert(cert_it->cert.get());
     if (!resolved_cert) {
       LOG(ERROR) << "Couldn't determine PKCS#11 ID.";

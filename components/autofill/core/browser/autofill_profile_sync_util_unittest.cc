@@ -35,9 +35,10 @@ const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructCompleteSpecifics().
-AutofillProfile ConstructCompleteProfile() {
+AutofillProfile ConstructCompleteProfile(
+    AddressCountryCode country_code = AddressCountryCode("ES")) {
   AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
-                          AddressCountryCode("ES"));
+                          country_code);
 
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
@@ -74,14 +75,13 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
       u"123 Fake St. Premise Marcos y Oliva\n"
-      u"Apt. 10 Floor 2 Red tree",
+      u"Apt. 10 Floor 2",
       VerificationStatus::kObserved);
 
   // Set testing values and statuses for the address.
   EXPECT_EQ(u"123 Fake St. Premise Marcos y Oliva",
             profile.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(u"Apt. 10 Floor 2 Red tree",
-            profile.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(u"Apt. 10 Floor 2", profile.GetRawInfo(ADDRESS_HOME_LINE2));
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Mountain View",
                                            VerificationStatus::kObserved);
@@ -91,13 +91,6 @@ AutofillProfile ConstructCompleteProfile() {
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
                                            VerificationStatus::kObserved);
-
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
-                                           VerificationStatus::kParsed);
-
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
-                                           u"Marcos y Oliva",
-                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
@@ -133,6 +126,111 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
   profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
 
+  return profile;
+}
+
+AutofillProfile ConstructCompleteProfileBR() {
+  AutofillProfile profile = ConstructCompleteProfile(AddressCountryCode("BR"));
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Belo Horizonte",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"Minas Gerais",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                           u"Lourdes",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                           u"Av. Bias Fortes, 382\n"
+                                           u"apto. 1501, Top Hill Tower\n"
+                                           u"30170-011 Belo Horizonte - MG",
+                                           VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
+                                           u"Av. Bias Fortes",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"382",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                           u"Av. Bias Fortes 382",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LANDMARK, u"Top Hill Tower", VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW, u"apto. 1501",
+                                           VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                                           u"apto. 1501, Top Hill Tower",
+                                           VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_SUBPREMISE, u"apto. 1501", VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"apto. 1501",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_NUM, u"1501",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_TYPE, u"apto.",
+                                           VerificationStatus::kParsed);
+
+  // Reset unused tokens from the default profile.
+  profile.ClearFields({ADDRESS_HOME_FLOOR, ADDRESS_HOME_ADMIN_LEVEL2,
+                       ADDRESS_HOME_SORTING_CODE});
+  return profile;
+}
+
+AutofillProfile ConstructCompleteProfileMX() {
+  AutofillProfile profile = ConstructCompleteProfile(AddressCountryCode("MX"));
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"Ciudad de México", VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"CDMX",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                           u"Lomas de Chapultepec",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2,
+                                           u"Miguel Hidalgo",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      u"C. Montes Urales 445\n"
+      u"Piso 4 - 34. Entre calles Paseo de la Reforma y Avenida Juarez - "
+      u"Edificio azul",
+      VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                           u"C. Montes Urales 445",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
+                                           u"C. Montes Urales",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"445",
+                                           VerificationStatus::kParsed);
+
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LANDMARK, u"Edificio azul", VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_OVERFLOW,
+      u"Entre Calles Paseo de la Reforma y Avenida Juarez - Edificio azul",
+      VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+      u"Entre Calles Paseo de la Reforma y Avenida Juarez - Edificio azul",
+      VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_BETWEEN_STREETS, u"Paseo de la Reforma y Avenida Juarez",
+      VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS_1,
+                                           u"Paseo de la Reforma",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS_2,
+                                           u"Avenida Juarez",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_SUBPREMISE, u"Piso 4 - 34", VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"34",
+                                           VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_NUM, u"34",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_FLOOR, u"4",
+                                           VerificationStatus::kParsed);
+
+  // Reset unused tokens from the default profile.
+  profile.ClearFields({ADDRESS_HOME_SORTING_CODE});
   return profile;
 }
 
@@ -204,10 +302,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   // Address lines are derived from the home street address and do not have an
   // independent status.
   specifics.set_address_home_line1("123 Fake St. Premise Marcos y Oliva");
-  specifics.set_address_home_line2("Apt. 10 Floor 2 Red tree");
+  specifics.set_address_home_line2("Apt. 10 Floor 2");
   specifics.set_address_home_street_address(
       "123 Fake St. Premise Marcos y Oliva\n"
-      "Apt. 10 Floor 2 Red tree");
+      "Apt. 10 Floor 2");
   specifics.set_address_home_street_address_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -252,14 +350,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_country_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_landmark("Red tree");
-  specifics.set_address_home_landmark_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
-
-  specifics.set_address_home_between_streets("Marcos y Oliva");
-  specifics.set_address_home_between_streets_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
-
   specifics.set_address_home_admin_level_2("Oxaca");
   specifics.set_address_home_admin_level_2_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -279,10 +369,248 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_birthdate_month(3);
   specifics.set_birthdate_year(1997);
 
+  // All of the following types are not part of the default address model, but
+  // rather belong to a model customized for a particular country. Nevertheless
+  // they should be listed here for completeness. Note that these fields are
+  // always set during `ContactInfoSpecificsFromAutofillProfile()`, potentially
+  // with empty values. If these are not set explicitly on the tests (even with
+  // empty values), the serialized values won't match.
+
+  specifics.set_address_home_landmark("");
+  specifics.set_address_home_landmark_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_between_streets("");
+  specifics.set_address_home_between_streets_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_between_streets_1("");
+  specifics.set_address_home_between_streets_1_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_between_streets_2("");
+  specifics.set_address_home_between_streets_2_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+  specifics.set_address_home_overflow("");
+  specifics.set_address_home_overflow_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+  specifics.set_address_home_between_streets_or_landmark("");
+  specifics.set_address_home_between_streets_or_landmark_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_overflow_and_landmark("");
+  specifics.set_address_home_overflow_and_landmark_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_apt("");
+  specifics.set_address_home_apt_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_apt_type("");
+  specifics.set_address_home_apt_type_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
   return specifics;
 }
 
-class AutofillProfileSyncUtilTest : public testing::Test {
+AutofillProfileSpecifics ConstructCompleteSpecificsBR() {
+  AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
+
+  specifics.set_address_home_country("BR");
+  specifics.set_address_home_country_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_address_home_city("Belo Horizonte");
+  specifics.set_address_home_city_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_address_home_state("Minas Gerais");
+  specifics.set_address_home_state_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_dependent_locality("Lourdes");
+  specifics.set_address_home_dependent_locality_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_street_address(
+      "Av. Bias Fortes, 382\n"
+      "apto. 1501, Top Hill Tower\n"
+      "30170-011 Belo Horizonte - MG");
+  specifics.set_address_home_line1("Av. Bias Fortes, 382");
+  specifics.set_address_home_line2("apto. 1501, Top Hill Tower");
+
+  specifics.set_address_home_street_address_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_thoroughfare_name("Av. Bias Fortes");
+  specifics.set_address_home_thoroughfare_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_thoroughfare_number("382");
+  specifics.set_address_home_thoroughfare_number_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_street_location("Av. Bias Fortes 382");
+  specifics.set_address_home_street_location_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_landmark("Top Hill Tower");
+  specifics.set_address_home_landmark_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_overflow("apto. 1501");
+  specifics.set_address_home_overflow_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_overflow_and_landmark(
+      "apto. 1501, Top Hill Tower");
+  specifics.set_address_home_overflow_and_landmark_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_subpremise_name("apto. 1501");
+  specifics.set_address_home_subpremise_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_apt("apto. 1501");
+  specifics.set_address_home_apt_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_apt_num("1501");
+  specifics.set_address_home_apt_num_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_apt_type("apto.");
+  specifics.set_address_home_apt_type_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  // Reset unused tokens from the default info.
+  specifics.set_address_home_floor("");
+  specifics.set_address_home_floor_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+  specifics.set_address_home_admin_level_2("");
+  specifics.set_address_home_admin_level_2_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  return specifics;
+}
+
+AutofillProfileSpecifics ConstructCompleteSpecificsMX() {
+  AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
+
+  specifics.set_address_home_country("MX");
+  specifics.set_address_home_country_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_address_home_city("Ciudad de México");
+  specifics.set_address_home_city_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_address_home_state("CDMX");
+  specifics.set_address_home_state_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_address_home_dependent_locality("Lomas de Chapultepec");
+  specifics.set_address_home_dependent_locality_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_address_home_admin_level_2("Miguel Hidalgo");
+  specifics.set_address_home_admin_level_2_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_street_address(
+      "C. Montes Urales 445\n"
+      "Piso 4 - 34. Entre calles Paseo de la Reforma y Avenida Juarez - "
+      "Edificio azul");
+
+  specifics.set_address_home_line1("C. Montes Urales 445");
+  specifics.set_address_home_line2(
+      "Piso 4 - 34. Entre calles Paseo de la Reforma y Avenida Juarez - "
+      "Edificio azul");
+
+  specifics.set_address_home_street_address_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_street_location("C. Montes Urales 445");
+  specifics.set_address_home_street_location_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_thoroughfare_name("C. Montes Urales");
+  specifics.set_address_home_thoroughfare_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_thoroughfare_number("445");
+  specifics.set_address_home_thoroughfare_number_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_landmark("Edificio azul");
+  specifics.set_address_home_landmark_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_overflow(
+      "Entre Calles Paseo de la Reforma y Avenida Juarez - Edificio azul");
+  specifics.set_address_home_overflow_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_between_streets_or_landmark(
+      "Entre Calles Paseo de la Reforma y Avenida Juarez - Edificio azul");
+  specifics.set_address_home_between_streets_or_landmark_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_between_streets(
+      "Paseo de la Reforma y Avenida Juarez");
+  specifics.set_address_home_between_streets_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_between_streets_1("Paseo de la Reforma");
+  specifics.set_address_home_between_streets_1_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_between_streets_2("Avenida Juarez");
+  specifics.set_address_home_between_streets_2_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_subpremise_name("Piso 4 - 34");
+  specifics.set_address_home_subpremise_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_apt("34");
+  specifics.set_address_home_apt_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_apt_num("34");
+  specifics.set_address_home_apt_num_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_floor("4");
+  specifics.set_address_home_floor_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  return specifics;
+}
+
+enum class I18nCountryModel { kLegacy = 0, kBR = 1, kMX = 2 };
+
+// The tests are parametrized with a country to assert that all custom address
+// models are supported.
+class AutofillProfileSyncUtilTest
+    : public testing::Test,
+      public testing::WithParamInterface<I18nCountryModel> {
  public:
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
@@ -290,10 +618,36 @@ class AutofillProfileSyncUtilTest : public testing::Test {
     features_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
          features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers},
         {});
+  }
+
+  AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {
+    switch (country_model) {
+      case I18nCountryModel::kLegacy:
+        return ConstructCompleteProfile();
+      case I18nCountryModel::kBR:
+        return ConstructCompleteProfileBR();
+      case I18nCountryModel::kMX:
+        return ConstructCompleteProfileMX();
+    }
+  }
+
+  AutofillProfileSpecifics GetAutofillProfileSpecificsForCountry(
+      I18nCountryModel country_model) {
+    switch (country_model) {
+      case I18nCountryModel::kLegacy:
+        return ConstructCompleteSpecifics();
+      case I18nCountryModel::kBR:
+        return ConstructCompleteSpecificsBR();
+      case I18nCountryModel::kMX:
+        return ConstructCompleteSpecificsMX();
+    }
   }
 
  private:
@@ -303,7 +657,7 @@ class AutofillProfileSyncUtilTest : public testing::Test {
 
 // Ensure that all profile fields are able to be synced up from the client to
 // the server.
-TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
+TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   base::test::ScopedFeatureList structured_names_feature;
   // With this feature enabled, the AutofillProfile supports all tokens
   // and statuses assignable in the specifics. If this feature is
@@ -313,9 +667,9 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   structured_names_feature.InitAndEnableFeature(
       features::kAutofillEnableSupportForHonorificPrefixes);
 
-  AutofillProfile profile = ConstructCompleteProfile();
-  AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
-
+  AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
+  AutofillProfileSpecifics specifics =
+      GetAutofillProfileSpecificsForCountry(GetParam());
   std::unique_ptr<EntityData> entity_data =
       CreateEntityDataFromAutofillProfile(profile);
   // The non-unique name should be set to the guid of the profile.
@@ -384,13 +738,14 @@ TEST_F(AutofillProfileSyncUtilTest,
 
 // Ensure that all profile fields are able to be synced down from the server to
 // the client (and nothing gets uploaded back).
-TEST_F(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
+TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
   // Fix a time for implicitly constructed use_dates in AutofillProfile.
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
 
-  AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
-  AutofillProfile profile = ConstructCompleteProfile();
+  AutofillProfileSpecifics specifics =
+      GetAutofillProfileSpecificsForCountry(GetParam());
+  AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
   std::unique_ptr<AutofillProfile> converted_profile =
       CreateAutofillProfileFromSpecifics(specifics);
@@ -482,6 +837,12 @@ TEST_F(AutofillProfileSyncUtilTest,
   EXPECT_EQ(std::string(),
             GetStorageKeyFromAutofillProfileSpecifics(specifics));
 }
+
+INSTANTIATE_TEST_SUITE_P(AutofillI18nModels,
+                         AutofillProfileSyncUtilTest,
+                         testing::Values(I18nCountryModel::kLegacy,
+                                         I18nCountryModel::kBR,
+                                         I18nCountryModel::kMX));
 
 }  // namespace
 }  // namespace autofill

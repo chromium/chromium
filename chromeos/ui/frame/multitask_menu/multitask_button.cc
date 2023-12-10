@@ -5,7 +5,9 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -26,6 +28,14 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
   SetAccessibleName(name);
+}
+
+void MultitaskButton::StateChanged(views::Button::ButtonState old_state) {
+  if (GetState() == views::Button::STATE_HOVERED) {
+    haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kSnap,
+        ui::HapticTouchpadEffectStrength::kMedium);
+  }
 }
 
 void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {

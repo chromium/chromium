@@ -8,36 +8,36 @@
 // Enum representing the existing set of menu scenarios. Current values should
 // not be renumbered. Please keep in sync with "IOSMenuScenario" in
 // src/tools/metrics/histograms/enums.xml.
-enum class MenuScenarioHistogram {
-  kBookmarkEntry = 0,
-  kBookmarkFolder = 1,
-  kReadingListEntry = 2,
-  kRecentTabsHeader = 3,
-  kRecentTabsEntry = 4,
-  kHistoryEntry = 5,
-  kMostVisitedEntry = 6,
-  kContextMenuImage = 7,
-  kContextMenuImageLink = 8,
-  kContextMenuLink = 9,
-  kTabGridEntry = 10,
-  kTabGridAddTo = 11,
-  kTabGridEdit = 12,
-  kToolbarMenu = 13,
-  kTabGridSearchResult = 14,
-  kThumbStrip = 15,
-  kOmniboxMostVisitedEntry = 16,
-  kPinnedTabsEntry = 17,
-  kTabStripEntry =
-      18,  // TODO(crbug.com/1428071): Currently not recorded. With the current
-           // tabStrip implementation we can't display context menus.
-  kInactiveTabsEntry = 19,
-  kMaxValue = kInactiveTabsEntry,
+// LINT.IfChange
+enum MenuScenarioHistogram {
+  kMenuScenarioHistogramBookmarkEntry = 0,
+  kMenuScenarioHistogramBookmarkFolder = 1,
+  kMenuScenarioHistogramReadingListEntry = 2,
+  kMenuScenarioHistogramRecentTabsHeader = 3,
+  kMenuScenarioHistogramRecentTabsEntry = 4,
+  kMenuScenarioHistogramHistoryEntry = 5,
+  kMenuScenarioHistogramMostVisitedEntry = 6,
+  kMenuScenarioHistogramContextMenuImage = 7,
+  kMenuScenarioHistogramContextMenuImageLink = 8,
+  kMenuScenarioHistogramContextMenuLink = 9,
+  kMenuScenarioHistogramTabGridEntry = 10,
+  kMenuScenarioHistogramTabGridAddTo = 11,
+  kMenuScenarioHistogramTabGridEdit = 12,
+  kMenuScenarioHistogramToolbarMenu = 13,
+  kMenuScenarioHistogramTabGridSearchResult = 14,
+  kMenuScenarioHistogramThumbStrip = 15,
+  kMenuScenarioHistogramOmniboxMostVisitedEntry = 16,
+  kMenuScenarioHistogramPinnedTabsEntry = 17,
+  kMenuScenarioHistogramTabStripEntry = 18,
+  kMenuScenarioHistogramInactiveTabsEntry = 19,
+  kMenuScenarioHistogramCount,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Records a menu shown histogram metric for the `scenario`.
-void RecordMenuShown(MenuScenarioHistogram scenario);
+void RecordMenuShown(enum MenuScenarioHistogram scenario);
 
 // Retrieves a histogram name for the given menu `scenario`'s actions.
-const char* GetActionsHistogramName(MenuScenarioHistogram scenario);
+const char* GetActionsHistogramName(enum MenuScenarioHistogram scenario);
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_HISTOGRAMS_H_

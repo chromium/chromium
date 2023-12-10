@@ -42,7 +42,6 @@ bool WebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 absl::optional<std::string>
 WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
@@ -96,7 +95,11 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
     const url::Origin& caller_origin) {
   return nullptr;
 }
-#endif  // !IS_ANDROID
+
+bool WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    BrowserContext* browser_context) {
+  return false;
+}
 
 #if BUILDFLAG(IS_MAC)
 absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
@@ -113,15 +116,6 @@ WebAuthenticationDelegate::GetGenerateRequestIdCallback(
   return base::NullCallback();
 }
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
-WebAuthenticationDelegate::GetIntentSender(WebContents* web_contents) {
-  return nullptr;
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
     default;
@@ -164,6 +158,7 @@ void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
+    bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
 
 void AuthenticatorRequestClientDelegate::SelectAccount(
@@ -239,7 +234,5 @@ void AuthenticatorRequestClientDelegate::FinishCollectToken() {}
 
 void AuthenticatorRequestClientDelegate::OnRetryUserVerification(int attempts) {
 }
-
-#endif  // !IS_ANDROID
 
 }  // namespace content

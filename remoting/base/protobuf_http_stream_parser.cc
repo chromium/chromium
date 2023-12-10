@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 #include "remoting/base/protobuf_http_status.h"
@@ -34,7 +35,7 @@ ProtobufHttpStreamParser::ProtobufHttpStreamParser(
 
 ProtobufHttpStreamParser::~ProtobufHttpStreamParser() = default;
 
-void ProtobufHttpStreamParser::Append(base::StringPiece data) {
+void ProtobufHttpStreamParser::Append(std::string_view data) {
   int required_remaining_capacity = data.size() + kReadBufferSpareCapacity;
   if (!read_buffer_) {
     read_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
@@ -117,7 +118,9 @@ bool ProtobufHttpStreamParser::ParseOneField(
   int field_number = WireFormatLite::GetTagFieldNumber(message_tag);
   switch (field_number) {
     case protobufhttpclient::StreamBody::kMessagesFieldNumber: {
-      DCHECK_EQ(WireFormatLite::WireType::WIRETYPE_LENGTH_DELIMITED, wire_type);
+      if (!ValidateWireType(field_number, wire_type)) {
+        break;
+      }
       std::string message;
       if (!WireFormatLite::ReadBytes(input_stream, &message)) {
         VLOG(1) << "Can't read stream message yet.";
@@ -129,7 +132,9 @@ bool ProtobufHttpStreamParser::ParseOneField(
     }
 
     case protobufhttpclient::StreamBody::kStatusFieldNumber: {
-      DCHECK_EQ(WireFormatLite::WireType::WIRETYPE_LENGTH_DELIMITED, wire_type);
+      if (!ValidateWireType(field_number, wire_type)) {
+        break;
+      }
       protobufhttpclient::Status status;
       if (!WireFormatLite::ReadMessage(input_stream, &status)) {
         VLOG(1) << "Can't read status yet.";
@@ -155,6 +160,21 @@ bool ProtobufHttpStreamParser::ParseOneField(
       break;
   }
   return true;
+}
+
+bool ProtobufHttpStreamParser::ValidateWireType(
+    int field_number,
+    WireFormatLite::WireType wire_type) {
+  if (wire_type == WireFormatLite::WireType::WIRETYPE_LENGTH_DELIMITED) {
+    return true;
+  }
+  auto error_message = base::StringPrintf(
+      "Invalid wire type %d for field number %d", wire_type, field_number);
+  LOG(WARNING) << error_message;
+  std::move(stream_closed_callback_)
+      .Run(
+          ProtobufHttpStatus(ProtobufHttpStatus::Code::UNKNOWN, error_message));
+  return false;
 }
 
 }  // namespace remoting

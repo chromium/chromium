@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+[FAIL] tspan1 contains point at (579, 46)
+  assert_true: expected true got false
+[FAIL] bbox of text1 contains point at (435, 32)
+  assert_true: expected true got false
+[FAIL] tspan2 contains point at (568, 283)
+  assert_true: expected true got false
+[FAIL] bbox of text2 contains point at (444, 222)
+  assert_true: expected true got false
+[FAIL] text3 contains point at (286, 301)
+  assert_true: expected true got false
+Harness: the test ran to completion.

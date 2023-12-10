@@ -67,6 +67,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
   crash_keys::SetCurrentHorizontalSizeClass(2);
   crash_keys::SetCurrentUserInterfaceStyle(2);
   crash_keys::SetRegularTabCount(999);
+  crash_keys::SetInactiveTabCount(999);
   crash_keys::SetIncognitoTabCount(999);
   crash_keys::SetForegroundScenesCount(999);
   crash_keys::SetConnectedScenesCount(999);
@@ -75,6 +76,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
       @"to_view_controller", @"presenting_view_controller",
       @"presented_view_controller", @"parent_view_controller");
   crash_keys::MediaStreamPlaybackDidStart();
+  crash_keys::SetVoiceOverRunning(true);
 
   // Set a max-length breadcrumbs string.
   std::string breadcrumbs(breadcrumbs::kMaxDataLength, 'A');
@@ -96,11 +98,11 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
   EXPECT_NSEQ(reportParameters[@"memory_warning_count"], @"2");
   EXPECT_NSEQ(reportParameters[@"crashed_in_background"], @"yes");
   EXPECT_NSEQ(reportParameters[@"free_memory_in_kb"], @"1234");
-  EXPECT_NSEQ(
-      reportParameters[@"user_application_state"],
-      @"{\"OTRTabs\":999,\"avplay\":1,\"destroyingAndRebuildingOTR\":1,"
-      @"\"fgScenes\":999,\"orient\":37,\"pdf\":1,\"regTabs\":999,\"scenes\":"
-      @"999,\"signIn\":1,\"sizeclass\":2,\"user_interface_style\":2}");
+  EXPECT_NSEQ(reportParameters[@"user_application_state"],
+              @"{\"OTRTabs\":999,\"avplay\":1,\"destroyingAndRebuildingOTR\":1,"
+              @"\"fgScenes\":999,\"inactiveTabs\":999,\"orient\":37,\"pdf\":1,"
+              @"\"regTabs\":999,\"scenes\":999,\"signIn\":1,\"sizeclass\":2,"
+              @"\"user_interface_style\":2,\"voiceOver\":1}");
   EXPECT_NSEQ(reportParameters[@"free_disk_in_kb"], @"12345");
   EXPECT_NSEQ(reportParameters[@"memory_warning_in_progress"], @"yes");
 }

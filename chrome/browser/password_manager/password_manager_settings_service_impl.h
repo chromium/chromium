@@ -36,4 +36,4 @@ class PasswordManagerSettingsServiceImpl
   raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_SETTINGS_SERVICE_IMPL_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_SETTINGS_SERVICE_IMPL_H_

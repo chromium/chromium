@@ -625,6 +625,10 @@ class AuthenticatorRequestDialogModel
     is_non_webauthn_request_ = is_non_webauthn_request;
   }
 
+  void set_is_enclave_authenticator_available(bool available) {
+    is_enclave_authenticator_available_ = available;
+  }
+
   void set_cable_transport_info(
       absl::optional<bool> extension_is_v2,
       std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
@@ -772,9 +776,6 @@ class AuthenticatorRequestDialogModel
   // Mechanism that should be triggered immediately, if any.
   absl::optional<size_t> IndexOfPriorityMechanism();
 
-  std::vector<device::DiscoverableCredentialMetadata> RecognizedCredentialsFor(
-      device::AuthenticatorType source);
-
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
@@ -798,6 +799,9 @@ class AuthenticatorRequestDialogModel
 
   // started_ records whether |StartFlow| has been called.
   bool started_ = false;
+
+  // True when the cloud enclave authenticator is available for use.
+  bool is_enclave_authenticator_available_ = false;
 
   // pending_step_ holds requested steps until the UI is shown. The UI is only
   // shown once the TransportAvailabilityInfo is available, but authenticators

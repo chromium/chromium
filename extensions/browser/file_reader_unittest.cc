@@ -5,7 +5,7 @@
 #include "extensions/browser/file_reader.h"
 
 #include <limits>
-
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -18,7 +18,6 @@
 #include "extensions/common/extension_resource.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -64,7 +63,7 @@ class Receiver {
     return string_data;
   }
 
-  const absl::optional<std::string>& error() const { return error_; }
+  const std::optional<std::string>& error() const { return error_; }
   bool succeeded() const { return !error_; }
   const std::vector<std::unique_ptr<std::string>>& data() const {
     return data_;
@@ -72,13 +71,13 @@ class Receiver {
 
  private:
   void DidReadFile(std::vector<std::unique_ptr<std::string>> data,
-                   absl::optional<std::string> error) {
+                   std::optional<std::string> error) {
     error_ = std::move(error);
     data_ = std::move(data);
     run_loop_.QuitWhenIdle();
   }
 
-  absl::optional<std::string> error_;
+  std::optional<std::string> error_;
   std::vector<std::unique_ptr<std::string>> data_;
   scoped_refptr<FileReader> file_reader_;
   base::RunLoop run_loop_;

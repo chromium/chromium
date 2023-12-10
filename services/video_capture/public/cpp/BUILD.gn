@@ -4,6 +4,8 @@
 
 source_set("cpp") {
   sources = [
+    "features.cc",
+    "features.h",
     "receiver_media_to_mojo_adapter.cc",
     "receiver_media_to_mojo_adapter.h",
     "receiver_mojo_to_media_adapter.cc",

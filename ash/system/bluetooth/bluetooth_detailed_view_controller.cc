@@ -4,6 +4,8 @@
 
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 
+#include <optional>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
@@ -18,7 +20,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -122,7 +123,7 @@ void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
 void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
   tray_controller_->CloseBubble();  // Deletes |this|.
   Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
-      /*device_address=*/absl::nullopt);
+      /*device_address=*/std::nullopt);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();

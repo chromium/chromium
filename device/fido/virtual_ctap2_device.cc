@@ -159,7 +159,6 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
     AuthenticatorData authenticator_data,
     bool enterprise_attestation_requested,
     absl::optional<LargeBlobSupportType> large_blob_type,
-    const absl::optional<std::vector<uint8_t>>& dpk_signature,
     bool prf_enabled,
     absl::optional<std::vector<uint8_t>> prf_results) {
   std::unique_ptr<OpaqueAttestationStatement> attestation_statement;
@@ -188,8 +187,6 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
   make_credential_response.enterprise_attestation_returned =
       enterprise_attestation_requested;
   make_credential_response.large_blob_type = large_blob_type;
-  make_credential_response.device_public_key_signature =
-      std::move(dpk_signature);
   make_credential_response.prf_enabled = prf_enabled;
   make_credential_response.prf_results = std::move(prf_results);
   return AsCTAPStyleCBORBytes(make_credential_response);
@@ -450,11 +447,6 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
   }
 
   cbor::Value::MapValue unsigned_extension_outputs;
-  if (response.device_public_key_signature) {
-    unsigned_extension_outputs.emplace(
-        kExtensionDevicePublicKey,
-        cbor::Value(*response.device_public_key_signature));
-  }
   if (response.hmac_secret) {
     // This is actually the output of the PRF extension because the hmac-secret
     // output is carried in the authenticator data.
@@ -714,10 +706,6 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.min_pin_length_extension_support) {
     extensions.emplace_back(device::kExtensionMinPINLength);
-  }
-
-  if (config.device_public_key_support) {
-    extensions.emplace_back(device::kExtensionDevicePublicKey);
   }
 
   if (!extensions.empty()) {
@@ -1112,61 +1100,6 @@ VirtualCtap2Device::CheckUserVerification(
   return CtapDeviceResponseCode::kSuccess;
 }
 
-absl::optional<cbor::Value> VirtualCtap2Device::HandleDevicePublicKey(
-    const DevicePublicKeyRequest& request,
-    const std::string& rp_id,
-    const uint32_t primary_credential_cose_algorithm,
-    absl::optional<std::unique_ptr<PrivateKey>>* const private_key) {
-  if (!private_key->has_value()) {
-    switch (primary_credential_cose_algorithm) {
-      case static_cast<uint32_t>(CoseAlgorithmIdentifier::kEs256):
-        *private_key = PrivateKey::FreshP256Key();
-        break;
-      case static_cast<uint32_t>(CoseAlgorithmIdentifier::kRs256):
-        *private_key = PrivateKey::FreshRSAKey();
-        break;
-      case static_cast<uint32_t>(CoseAlgorithmIdentifier::kEdDSA):
-        *private_key = PrivateKey::FreshEd25519Key();
-        break;
-      default:
-        CHECK(false) << "Unknown primary credential algorithm";
-        break;
-    }
-  }
-
-  const bool attestation =
-      config_.device_public_key_always_return_attestation ||
-      (request.attestation != AttestationConveyancePreference::kNone &&
-       config_.device_public_key_support_attestation);
-  const bool enterprise_attestation =
-      attestation &&
-      (config_.device_public_key_always_return_enterprise_attestation ||
-       (config_.device_public_key_support_enterprise_attestation &&
-        (request.attestation ==
-             AttestationConveyancePreference::kEnterpriseApprovedByBrowser ||
-         (request.attestation == AttestationConveyancePreference::
-                                     kEnterpriseIfRPListedOnAuthenticator &&
-          base::Contains(config_.enterprise_attestation_rps, rp_id)))));
-
-  static const uint8_t kAAGUID[16] = {0};
-  cbor::Value::MapValue output;
-  output.emplace(
-      kDevicePublicKeyAAGUIDKey,
-      attestation ? kDeviceAaguid : base::span<const uint8_t>(kAAGUID));
-  output.emplace(kDevicePublicKeyDPKKey,
-                 private_key->value()->GetPublicKey()->cose_key_bytes);
-  output.emplace(kDevicePublicKeyScopeKey, 0);
-  output.emplace(kDevicePublicKeyNonceKey, base::span<const uint8_t>());
-  output.emplace(kFormatKey, attestation ? "packed" : "none");
-  output.emplace(kAttestationStatementKey, cbor::Value::MapValue());
-  if (enterprise_attestation) {
-    output.emplace(kDevicePublicKeyEPKey, true);
-  }
-
-  return cbor::Value(
-      cbor::Writer::Write(cbor::Value(std::move(output))).value());
-}
-
 absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     base::span<const uint8_t> request_bytes,
     std::vector<uint8_t>* response) {
@@ -1381,24 +1314,6 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
                            static_cast<int>(mutable_state()->min_pin_length));
   }
 
-  absl::optional<std::unique_ptr<PrivateKey>> device_key;
-  if (request.device_public_key) {
-    if (!config_.device_public_key_support) {
-      DLOG(ERROR) << "Rejecting makeCredential due to unexpected devicePubKey "
-                     "extension";
-      return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
-    }
-    absl::optional<cbor::Value> dpk_result = HandleDevicePublicKey(
-        *request.device_public_key, request.rp.id,
-        private_key->GetPublicKey()->algorithm, &device_key);
-    if (!dpk_result) {
-      return CtapDeviceResponseCode::kCtap2ErrInvalidOption;
-    }
-    if (!config_.device_public_key_drop_extension_response) {
-      extensions_map.emplace(kExtensionDevicePublicKey, std::move(*dpk_result));
-    }
-  }
-
   if (config_.add_extra_extension) {
     extensions_map.emplace(cbor::Value("unsolicited"), cbor::Value(42));
   }
@@ -1410,17 +1325,14 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   AuthenticatorData authenticator_data(
       rp_id_hash, !mutable_state()->unset_up_bit,
       mutable_state()->unset_uv_bit ? false : user_verified,
-      config_.backup_eligible, 01ul,
+      mutable_state()->default_backup_eligibility,
+      mutable_state()->default_backup_state,
+      /*sign_counter=*/01ul,
       ConstructAttestedCredentialData(key_handle, std::move(public_key)),
       std::move(extensions));
 
   std::vector<uint8_t> sign_buffer =
       ConstructSignatureBuffer(authenticator_data, request.client_data_hash);
-
-  absl::optional<std::vector<uint8_t>> dpk_sig;
-  if (device_key && !config_.device_public_key_drop_signature) {
-    dpk_sig = device_key.value()->Sign(sign_buffer);
-  }
 
   // Sign with attestation key.
   // Note: Non-deterministic, you need to mock this out if you rely on
@@ -1494,10 +1406,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
     registration.is_resident = true;
   }
+  registration.backup_eligible = mutable_state()->default_backup_eligibility;
+  registration.backup_state = mutable_state()->default_backup_state;
   registration.user = request.user;
   registration.rp = request.rp;
   registration.protection = cred_protect;
-  registration.device_key = std::move(device_key);
   registration.cred_blob = std::move(request.cred_blob);
 
   absl::optional<std::vector<uint8_t>> prf_results;
@@ -1526,8 +1439,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   *response = ConstructMakeCredentialResponse(
       std::move(attestation_cert), sig, std::move(authenticator_data),
-      enterprise_attestation_requested, supports_large_blob, dpk_sig,
-      prf_enabled, std::move(prf_results));
+      enterprise_attestation_requested, supports_large_blob, prf_enabled,
+      std::move(prf_results));
   return CtapDeviceResponseCode::kSuccess;
 }
 
@@ -1784,25 +1697,6 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
           registration.second->cred_blob.value_or(std::vector<uint8_t>()));
     }
 
-    if (request.device_public_key) {
-      if (!config_.device_public_key_support) {
-        DLOG(ERROR) << "Rejecting getAssertion due to unexpected devicePubKey "
-                       "extension";
-        return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
-      }
-      absl::optional<cbor::Value> dpk_result = HandleDevicePublicKey(
-          *request.device_public_key, request.rp_id,
-          registration.second->private_key->GetPublicKey()->algorithm,
-          &registration.second->device_key);
-      if (!dpk_result) {
-        return CtapDeviceResponseCode::kCtap2ErrInvalidOption;
-      }
-      if (!config_.device_public_key_drop_extension_response) {
-        extensions_map.emplace(kExtensionDevicePublicKey,
-                               std::move(*dpk_result));
-      }
-    }
-
     absl::optional<cbor::Value> extensions;
     if (!extensions_map.empty()) {
       extensions.emplace(std::move(extensions_map));
@@ -1812,8 +1706,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
         rp_id_hash,
         mutable_state()->unset_up_bit ? false : request.user_presence_required,
         mutable_state()->unset_uv_bit ? false : user_verified,
-        config_.backup_eligible, registration.second->counter,
-        std::move(opt_attested_cred_data), std::move(extensions));
+        registration.second->backup_eligible, registration.second->backup_state,
+        registration.second->counter, std::move(opt_attested_cred_data),
+        std::move(extensions));
 
     std::vector<uint8_t> signature_buffer;
     if (config_.always_uv && !user_verified) {
@@ -1904,12 +1799,6 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
             EvaluateHMAC(registration.second->hmac_key->second,
                          selected_input->salt1, selected_input->salt2);
       }
-    }
-
-    if (request.device_public_key &&
-        !config_.device_public_key_drop_signature) {
-      assertion.device_public_key_signature =
-          registration.second->device_key.value()->Sign(signature_buffer);
     }
 
     if (!done_first) {

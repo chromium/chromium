@@ -41,14 +41,24 @@ public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChange
     private ButtonCompat mButton;
 
     @CalledByNative
-    private static InfoBar show(int iconId, String message, String oKButtonText,
-            String reloadButtonText, String toggleText, String followUpMessage) {
+    private static InfoBar show(
+            int iconId,
+            String message,
+            String oKButtonText,
+            String reloadButtonText,
+            String toggleText,
+            String followUpMessage) {
         return new AdsBlockedInfoBar(
                 iconId, message, oKButtonText, reloadButtonText, toggleText, followUpMessage);
     }
 
-    private AdsBlockedInfoBar(int iconDrawbleId, String message, String oKButtonText,
-            String reloadButtonText, String toggleText, String followUpMessage) {
+    private AdsBlockedInfoBar(
+            int iconDrawbleId,
+            String message,
+            String oKButtonText,
+            String reloadButtonText,
+            String toggleText,
+            String followUpMessage) {
         super(iconDrawbleId, R.color.infobar_icon_drawable_color, null, message, null, null, null);
         mFollowUpMessage = followUpMessage;
         mMessage = message;
@@ -73,7 +83,10 @@ public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChange
 
             NoUnderlineClickableSpan clickableSpan =
                     new NoUnderlineClickableSpan(layout.getContext(), (view) -> onLinkClicked());
-            description.setSpan(clickableSpan, spanStart, description.length(),
+            description.setSpan(
+                    clickableSpan,
+                    spanStart,
+                    description.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             layout.getMessageLayout().addDescription(description);
 
@@ -81,8 +94,9 @@ public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChange
             InfoBarControlLayout controlLayout = layout.addControlLayout();
 
             // Add a toggle button and ensure the button text is changed when the toggle changes.
-            View switchView = controlLayout.addSwitch(
-                    0, 0, mToggleText, R.id.subresource_filter_infobar_toggle, false);
+            View switchView =
+                    controlLayout.addSwitch(
+                            0, 0, mToggleText, R.id.subresource_filter_infobar_toggle, false);
             SwitchCompat toggle =
                     (SwitchCompat) switchView.findViewById(R.id.subresource_filter_infobar_toggle);
             toggle.setOnCheckedChangeListener(this);

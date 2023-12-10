@@ -1,0 +1,2613 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ApnAuthenticationType">
+  <int value="0" label="Automatic"/>
+  <int value="1" label="PAP"/>
+  <int value="2" label="CHAP"/>
+</enum>
+
+<enum name="ApnIpType">
+  <int value="0" label="Automatic"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+  <int value="3" label="IPv4 or IPv6"/>
+</enum>
+
+<enum name="ApnTypes">
+  <int value="0" label="Default"/>
+  <int value="1" label="Attach"/>
+  <int value="2" label="Default and Attach"/>
+</enum>
+
+<enum name="BooleanEverConnected">
+  <int value="0" label="Never connected"/>
+  <int value="1" label="Previously connected"/>
+</enum>
+
+<enum name="BooleanManaged">
+  <int value="0" label="Unmanaged"/>
+  <int value="1" label="Managed"/>
+</enum>
+
+<enum name="BooleanOriginHeaderSameAsRequestOrigin">
+  <int value="0" label="Headers differ"/>
+  <int value="1" label="Headers match"/>
+</enum>
+
+<enum name="CaptivePortalNetworkState">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="ONLINE"/>
+  <int value="2" label="PORTAL_SUSPECTED"/>
+  <int value="3" label="PORTAL"/>
+  <int value="4" label="PROXY_AUTH_REQUIRED"/>
+  <int value="5" label="NO_INTERNET"/>
+</enum>
+
+<enum name="CellularCarrierLockConfigurationResult">
+  <int value="0" label="ModemLocked"/>
+  <int value="1" label="ModemNotLocked"/>
+  <int value="2" label="ModemUnlocked"/>
+  <int value="3" label="ModemRelocked"/>
+</enum>
+
+<enum name="CellularCarrierLockError">
+  <int value="1" label="Invalid signature in configuration"/>
+  <int value="2" label="Invalid IMEI in configuration"/>
+  <int value="3" label="Invalid timestamp in configuration"/>
+  <int value="4" label="Configuration network list too large"/>
+  <int value="5" label="Configuration algorithm not supported"/>
+  <int value="6" label="Configuration feature not supported"/>
+  <int value="7" label="Configuration decode or parsing error"/>
+  <int value="8" label="Modem handler not initialized"/>
+  <int value="9" label="Modem operation not supported"/>
+  <int value="10" label="Modem internal error"/>
+  <int value="11" label="Network handler not initialized"/>
+  <int value="12" label="Modem 3gpp handler not initialized"/>
+  <int value="13" label="Auxiliary classes not initialized"/>
+  <int value="14" label="Modem not found or invalid"/>
+  <int value="15" label="Failed to get serial number"/>
+  <int value="16" label="Handler busy"/>
+  <int value="17" label="Request failed"/>
+  <int value="18" label="Initialization failed"/>
+  <int value="19" label="Connection interrupted"/>
+  <int value="20" label="Invalid input parameters"/>
+  <int value="21" label="Server internal error"/>
+  <int value="22" label="Response invalid"/>
+  <int value="23" label="Failed to create PSM client"/>
+  <int value="24" label="Failed to create OPRF request"/>
+  <int value="25" label="Invalid reply to OPRF request"/>
+  <int value="26" label="Failed to create Query request"/>
+  <int value="27" label="Invalid reply to Query request"/>
+  <int value="28" label="Lock configuration not found"/>
+  <int value="29" label="Lock configuration invalid"/>
+  <int value="30" label="Locked configuration without topic"/>
+  <int value="31" label="Signed configuration not provided"/>
+</enum>
+
+<enum name="CellularCarrierLockFcmNotification">
+  <int value="0" label="UpdateProfile"/>
+  <int value="1" label="UnlockDevice"/>
+</enum>
+
+<enum name="CellularCarrierLockFcmResult">
+  <int value="0" label="Registered"/>
+  <int value="1" label="Subscribed"/>
+</enum>
+
+<enum name="CellularCarrierLockInitialState">
+  <int value="0" label="FirstConfiguration"/>
+  <int value="1" label="ObsoleteConfiguration"/>
+  <int value="2" label="ModemImeiChanged"/>
+  <int value="3" label="AlreadyConfigured"/>
+  <int value="4" label="EmptySignedConfig"/>
+</enum>
+
+<enum name="CellularCarrierLockLockState">
+  <int value="0" label="NotConfigured"/>
+  <int value="1" label="CompatibleSim"/>
+  <int value="2" label="IncompatibleSim"/>
+  <int value="3" label="ProperlyUnlocked"/>
+  <int value="4" label="IncorrectlyLocked"/>
+</enum>
+
+<enum name="CellularCarrierLockOobeResult">
+  <int value="0" label="DevModeCarrierLocked"/>
+  <int value="1" label="DevModeLocked"/>
+  <int value="2" label="DevModeUnlocked"/>
+</enum>
+
+<enum name="CellularCarrierLockProvisioningResult">
+  <int value="0" label="ConfigLocked"/>
+  <int value="1" label="ConfigUnlocked"/>
+  <int value="2" label="ConfigTempUnlocked"/>
+  <int value="3" label="ConfigInvalid"/>
+</enum>
+
+<enum name="CellularCarrierLockPsmResult">
+  <int value="0" label="DeviceUnlocked"/>
+  <int value="1" label="DeviceLocked"/>
+</enum>
+
+<enum name="CellularConfigurationFailureType">
+  <int value="0" label="Failed to get shill properties"/>
+  <int value="1" label="Fetched shill properties with no type"/>
+  <int value="2" label="Failed to set shill properties"/>
+</enum>
+
+<enum name="ConnectionDiagnosticsIssue">
+  <int value="0" label="IP collision detected."/>
+  <int value="1" label="Routing problem detected."/>
+  <int value="2" label="HTTP issues or broken portal."/>
+  <int value="3"
+      label="DNS servers sending invalid responses -- might be misconfigured."/>
+  <int value="4" label="DNS servers pingable but not responding to requests."/>
+  <int value="5" label="No DNS servers configured for this connection."/>
+  <int value="6" label="All configured DNS server addresses are invalid."/>
+  <int value="7" label="No connection issue detected."/>
+  <int value="8" label="Trapped in captive portal."/>
+  <int value="9" label="Gateway issue or upstream connectivity problem."/>
+  <int value="10"
+      label="Gateway appears to be on network, but is not pingable."/>
+  <int value="11"
+      label="Web server appears to be on network, but is not pingable."/>
+  <int value="12" label="No ARP entry for the gateway."/>
+  <int value="13" label="No ARP entry for the webserver."/>
+  <int value="14" label="Internal failure in connection diagnostics."/>
+  <int value="15" label="No neighbor table entry for the gateway."/>
+  <int value="16" label="No neighbor table entry for the web server."/>
+  <int value="17"
+      label="Neighbor table entry for the gateway not in a connected state."/>
+  <int value="18"
+      label="Neighbor table entry for the web server not in a connected
+             state."/>
+  <int value="19" label="Placeholder 1."/>
+  <int value="20" label="Placeholder 2."/>
+  <int value="21" label="Placeholder 3."/>
+  <int value="22" label="Placeholder 4."/>
+</enum>
+
+<enum name="ConnectionFailureReason">
+  <int value="0" label="Unknown (deprecated)"/>
+  <int value="1" label="Bad Passphrase"/>
+  <int value="2" label="Bad WEP Key"/>
+  <int value="3" label="Failed to Connect"/>
+  <int value="4" label="DHCP Failure"/>
+  <int value="5" label="DNS Lookup Failure"/>
+  <int value="6" label="EAP Authentication"/>
+  <int value="7" label="EAP Local TLS"/>
+  <int value="8" label="EAP Remote TLS"/>
+  <int value="9" label="Out-of-range"/>
+  <int value="10" label="Pin Missing"/>
+  <int value="11" label="Unknown"/>
+  <int value="12" label="No failure"/>
+  <int value="13" label="Not Associated"/>
+  <int value="14" label="Not Authenticated"/>
+  <int value="15" label="Too Many STAs"/>
+  <int value="16" label="NeedHomeNetwork"/>
+  <int value="17" label="OTASP Failed"/>
+  <int value="18" label="Out Of Range"/>
+  <int value="19" label="PPP Auth"/>
+  <int value="20" label="Pin Missing."/>
+  <int value="21" label="Unknown."/>
+  <int value="22" label="Not Associated."/>
+  <int value="23" label="Not Authenticated."/>
+  <int value="24" label="Too Many STAs."/>
+  <int value="25" label="Disconnect"/>
+  <int value="26" label="Sim Locked"/>
+  <int value="27" label="Not Registered"/>
+</enum>
+
+<enum name="ConnectionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Aborted"/>
+</enum>
+
+<enum name="DnsProxy.DnsOverHttpsMode">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Off"/>
+  <int value="2" label="Automatic"/>
+  <int value="3" label="Always on"/>
+</enum>
+
+<enum name="DnsProxy.HttpError">
+  <int value="0" label="None"/>
+  <int value="1" label="Any redirect"/>
+  <int value="2" label="Bad request"/>
+  <int value="3" label="Payload too large"/>
+  <int value="4" label="URI too long"/>
+  <int value="5" label="Unsupported media type"/>
+  <int value="6" label="Too many requests"/>
+  <int value="7" label="Other client error"/>
+  <int value="8" label="Not implemented"/>
+  <int value="9" label="Bad gateway"/>
+  <int value="10" label="Other server error"/>
+</enum>
+
+<enum name="DnsProxy.NameserverType">
+  <int value="0" label="None"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+  <int value="3" label="Both IPv4 and IPv6"/>
+</enum>
+
+<enum name="DnsProxy.ProcessEvent">
+  <int value="0" label="Proxy subprocess launch succeeded"/>
+  <int value="1" label="Proxy subprocess launch failed"/>
+  <int value="2" label="Attempt to kill proxy subprocess failed"/>
+  <int value="3" label="Proxy subprocess crash detected"/>
+  <int value="4" label="Proxy subprocess stop detected"/>
+  <int value="5" label="Proxy subprocess continuation detected"/>
+  <int value="6" label="Untracked proxy subprocess crash detected"/>
+  <int value="7" label="Failed to preserve process capability"/>
+  <int value="8" label="Patchpanel DBus client not initialized"/>
+  <int value="9" label="Patchpanel DBus service not available"/>
+  <int value="10" label="Patchpanel DBus service reset detected"/>
+  <int value="11" label="Patchpanel DBus service shutdown detected"/>
+  <int value="12" label="Failed to acquire private connected namespace"/>
+  <int value="13" label="Failed to start DNS redirection"/>
+  <int value="14" label="Shill DBus service not available"/>
+  <int value="15" label="Shill DBus service reset detected"/>
+  <int value="16" label="Shill DBus service shutdown detected"/>
+  <int value="17" label="Failed to send system proxy IP address to shill"/>
+  <int value="18" label="Chrome Features DBus service not available"/>
+  <int value="19" label="Resolver failed to listen on UDP"/>
+  <int value="20" label="Resolver failed to listen on TCP"/>
+</enum>
+
+<enum name="DnsProxy.QueryError">
+  <int value="0" label="None"/>
+  <int value="1" label="Domain not found"/>
+  <int value="2" label="No data"/>
+  <int value="3" label="Bad query"/>
+  <int value="4" label="Query refused"/>
+  <int value="5" label="Query timed out"/>
+  <int value="6" label="Query canceled"/>
+  <int value="7" label="Connection refused"/>
+  <int value="8" label="Connection failed"/>
+  <int value="9" label="Unsupported protocol"/>
+  <int value="10" label="Operation not supported"/>
+  <int value="11" label="Invalid URL"/>
+  <int value="12" label="Failed to resolve host"/>
+  <int value="13" label="Too many redirects"/>
+  <int value="14" label="Send error"/>
+  <int value="15" label="Receive error"/>
+  <int value="16" label="Other client error"/>
+  <int value="17" label="Other server error"/>
+  <int value="18" label="Empty nameservers"/>
+  <int value="19" label="Empty DoH providers"/>
+  <int value="20" label="Client initialization error"/>
+</enum>
+
+<enum name="DnsProxy.QueryResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+</enum>
+
+<enum name="EAPInnerProtocol">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="NONE"/>
+  <int value="2" label="PEAP-MD5"/>
+  <int value="3" label="PEAP-MSCHAPV2"/>
+  <int value="4" label="TTLS-EAP-MD5"/>
+  <int value="5" label="TTLS-EAP-MSCHAPV2"/>
+  <int value="6" label="TTLS-MSCHAPV2"/>
+  <int value="7" label="TTLS-MSCHAP"/>
+  <int value="8" label="TTLS-PAP"/>
+  <int value="9" label="TTLS-CHAP"/>
+</enum>
+
+<enum name="EAPOuterProtocol">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="LEAP"/>
+  <int value="2" label="PEAP"/>
+  <int value="3" label="TLS"/>
+  <int value="4" label="TTLS"/>
+</enum>
+
+<enum name="ESimOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes failed"/>
+</enum>
+
+<enum name="ESimPolicyInstallMethod">
+  <int value="0" label="ViaSmdp"/>
+  <int value="1" label="ViaSmds"/>
+</enum>
+
+<enum name="ESimSetupFlowResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="INSTALL_FAIL"/>
+  <int value="2" label="CANCELLED_NEEDS_CONFIRMATION_CODE"/>
+  <int value="3" label="CANCELLED_INVALID_ACTIVATION_CODE"/>
+  <int value="4" label="ERROR_FETCHING_PROFILES"/>
+  <int value="5" label="CANCELLED_WITHOUT_ERROR"/>
+  <int value="6" label="CANCELLED_NO_PROFILES"/>
+  <int value="7" label="NO_NETWORK"/>
+</enum>
+
+<enum name="ESimUserInstallMethod">
+  <int value="0" label="ViaSmds"/>
+  <int value="1" label="ViaQrCodeAfterSmds"/>
+  <int value="2" label="ViaQrCodeSkippedSmds"/>
+  <int value="3" label="ViaActivationCodeAfterSmds"/>
+  <int value="4" label="ViaActivationCodeSkippedSmds"/>
+</enum>
+
+<enum name="EthernetDriver">
+  <int value="0" label="unknown"/>
+  <int value="1" label="alx"/>
+  <int value="2" label="aqc111"/>
+  <int value="3" label="asix"/>
+  <int value="4" label="atlantic"/>
+  <int value="5" label="ax88179_178a"/>
+  <int value="6" label="cdc_eem"/>
+  <int value="7" label="cdc_ether"/>
+  <int value="8" label="cdc_mbim"/>
+  <int value="9" label="cdc_ncm"/>
+  <int value="10" label="dm9601"/>
+  <int value="11" label="e100"/>
+  <int value="12" label="e1000"/>
+  <int value="13" label="e1000e"/>
+  <int value="14" label="igb"/>
+  <int value="15" label="igbvf"/>
+  <int value="16" label="igc"/>
+  <int value="17" label="ipheth"/>
+  <int value="18" label="jme"/>
+  <int value="19" label="mcs7830"/>
+  <int value="20" label="pegasus"/>
+  <int value="21" label="r8152"/>
+  <int value="22" label="r8169"/>
+  <int value="23" label="rtl8150"/>
+  <int value="24" label="smsc75xx"/>
+  <int value="25" label="smsc95xx"/>
+  <int value="26" label="tg3"/>
+  <int value="27" label="error"/>
+  <int value="28" label="rndis_host"/>
+  <int value="29" label="atl1c"/>
+  <int value="30" label="sky2"/>
+</enum>
+
+<enum name="FallbackDNSTestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+</enum>
+
+<enum name="HermesResponseStatus">
+  <summary>
+    Statuses returned by Hermes, the Chrome OS daemon process which configures
+    eSIM profiles a device's hardware.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Already disabled"/>
+  <int value="2" label="Error: Already enabled"/>
+  <int value="3" label="Error: Invalid activation code"/>
+  <int value="4" label="Error: Invalid ICCID"/>
+  <int value="5" label="Error: Invalid parameter"/>
+  <int value="6" label="Error: Need confirmation code"/>
+  <int value="7" label="Error: Send notification failure"/>
+  <int value="8" label="Error: Test profile in prod"/>
+  <int value="9" label="Error: Unknown"/>
+  <int value="10" label="Error: Unsupported"/>
+  <int value="11" label="Error: Wrong state"/>
+  <int value="12" label="Error: Invalid response"/>
+  <int value="13" label="Error: No response"/>
+  <int value="14" label="Error: Malformed response"/>
+  <int value="15" label="Error: Internal LPA failure"/>
+  <int value="16" label="Error: Bad request"/>
+  <int value="17" label="Error: Bad notification"/>
+  <int value="18" label="Error: Pending profile"/>
+  <int value="19" label="Error: Send APDU failure"/>
+  <int value="20" label="Error: Send HTTPS failure"/>
+  <int value="21" label="Error: Unexpected modem manager state"/>
+  <int value="22" label="Error: Modem message processing"/>
+  <int value="23" label="Error: Empty error response"/>
+  <int value="24" label="Error: Unknown response"/>
+</enum>
+
+<enum name="HotspotAllowStatus">
+  <int value="0" label="kAllowed: Device can start a hotspot."/>
+  <int value="1"
+      label="kDisallowedWiFiDownstreamNotSupported: Hotspot is not allowed
+             because the downstream WiFi is not supported."/>
+  <int value="2"
+      label="kDisallowedNoWiFiSecurityModes: Hotspot is not allowed because
+             no WiFi security modes are supported"/>
+  <int value="3"
+      label="kDisallowedNoMobileData: Hotspot is not allowed because upstream
+             cellular network is not connected."/>
+  <int value="4"
+      label="kDisallowedReadinessCheckFail: Hotspot is not allowed because
+             readiness check is failed, usually means the mobile data doesn't
+             support hotspot."/>
+  <int value="5"
+      label="kDisallowedByPolicy: Hotspot is not allowed because it is
+             prohibited by the enterprise policy."/>
+</enum>
+
+<enum name="HotspotCheckReadinessResult">
+  <int value="0"
+      label="kReady: Readiness check pass and the current mobile data support
+             hotspot."/>
+  <int value="1"
+      label="kNotAllowed: Readiness check doesn't pass because the current
+             mobile data doesn't support hotspot."/>
+  <int value="2"
+      label="kUpstreamNetworkNotAvailable: Readiness check failed because
+             upstream network is not connected."/>
+  <int value="3"
+      label="kShillOperationFailed: Readiness check failed because of shill
+             operation error."/>
+  <int value="4"
+      label="kUnknownResult: Readiness check doesn't pass because of unknown
+             result code."/>
+  <int value="5"
+      label="kNotAllowedByCarrier: Readiness check doesn't pass because the
+             carrier doesn't allow."/>
+  <int value="6"
+      label="kNotAllowedOnFw: Readiness check doesn't pass because the
+             outdated firmware."/>
+  <int value="7"
+      label="kNotAllowedOnVariant: Readiness check doesn't pass because of
+             the hardware limitations."/>
+  <int value="8"
+      label="kNotAllowedUserNotEntitled: Readiness check doesn't pass because
+             user's data plan is not entitled."/>
+</enum>
+
+<enum name="HotspotDisableReason">
+  <int value="0"
+      label="kAutoDisabled: Hotspot disabled due to fixed time of no
+             connected device."/>
+  <int value="1"
+      label="kInternalError: Hotspot disabled due to internal error."/>
+  <int value="2"
+      label="kUserInitiated: Hotspot disabled due to user initiated
+             operation."/>
+  <int value="3" label="kWifiEnabled: Hotspot disabled due to WiFi enabled."/>
+  <int value="4"
+      label="kProhibitedByPolicy: Hotspot disabled due to policy restriction."/>
+  <int value="5"
+      label="kUpstreamNetworkNotAvailable: Hotspot disabled due to no
+             available upstream network."/>
+  <int value="6" label="kSuspended: Hotspot disabled due to device suspend."/>
+  <int value="7"
+      label="kRestart: Hotspot disabled due to hotspot restart process."/>
+</enum>
+
+<enum name="HotspotSetConfigResult">
+  <int value="0" label="kSuccess: The operation completes successfully."/>
+  <int value="1"
+      label="kFailedNotLogin: The operation failed because user is not login."/>
+  <int value="2"
+      label="kFailedInvalidConfiguration: The operation failed because of
+             invalid hotspot configuration."/>
+  <int value="3" label="kFailedIllegalOperation"/>
+  <int value="4" label="kFailedPermissionDenied"/>
+  <int value="5" label="kFailedInvalidArgument"/>
+  <int value="6" label="kFailedShillOperation"/>
+  <int value="7" label="kFailedUnknownShillError"/>
+</enum>
+
+<enum name="HotspotSetEnabledResult">
+  <int value="0" label="kSuccess: The operation completes successfully."/>
+  <int value="1"
+      label="kNotAllowed: The operation failed because it is not allowed."/>
+  <int value="2"
+      label="kReadinessCheckFailure: The operation failed because tethering
+             readiness check is failed."/>
+  <int value="3"
+      label="kDisableWifiFailure: The operation failed because it failed to
+             disable Wifi first."/>
+  <int value="4"
+      label="kInvalidConfiguration: The operation failed because of invalid
+             hotspot configuration."/>
+  <int value="5"
+      label="kUpstreamNotAvailable: The operation failed because upstream
+             network is not connected."/>
+  <int value="6"
+      label="kNetworkSetupFailure: The operation failed because of network
+             setup failure."/>
+  <int value="7"
+      label="kDownstreamWifiFailure: The operation failed because of
+             downstream WiFi operation failure."/>
+  <int value="8"
+      label="kUpstreamFailure: The operation failed because of upstream
+             network operation failure."/>
+  <int value="9"
+      label="kShillOperationFailure: The operation failed because of shill
+             operation error."/>
+  <int value="10"
+      label="kUnknownFailure: The operation is failed because of unknown
+             error."/>
+  <int value="11"
+      label="kAlreadyFulfilled: The hotspot's current state is the same as
+             the enable/disable operation requested."/>
+  <int value="12"
+      label="kAborted: The enable hotspot operation has been aborted by the
+             user."/>
+  <int value="13"
+      label="kInvalid: The enable hotspot operation is invalid due to an
+             ongoing disable operation."/>
+</enum>
+
+<enum name="HotspotSupport">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Invalid version"/>
+  <int value="2" label="Version 1"/>
+  <int value="3" label="Version 2"/>
+  <int value="4" label="Version 3"/>
+</enum>
+
+<enum name="HotspotUpstreamStatus">
+  <int value="0" label="kWifiWithCellularConnected"/>
+  <int value="1" label="kWifiWithCellularNotConnected"/>
+</enum>
+
+<enum name="IpProtectionProxyLayer">
+  <int value="0" label="Proxy A"/>
+  <int value="1" label="Proxy B"/>
+</enum>
+
+<enum name="IpProtectionTokenBatchRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - No Account"/>
+  <int value="2" label="Failed - Not Eligible"/>
+  <int value="3" label="Deprecated"/>
+  <int value="4" label="Failed - BSA Error 400"/>
+  <int value="5" label="Failed - BSA Error 401"/>
+  <int value="6" label="Failed - BSA Error 403"/>
+  <int value="7" label="Failed - BSA Error Other"/>
+  <int value="8" label="Transient OAuth Token Failure"/>
+  <int value="9" label="Persistent OAuth Token Failure"/>
+</enum>
+
+<enum name="ManagedApnMigrationType">
+  <int value="0" label="Matches selected APN"/>
+  <int value="1" label="Does not match selected APN"/>
+</enum>
+
+<enum name="MBOSupport">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Supported"/>
+</enum>
+
+<enum name="MdnsQueryType">
+  <int value="0" label="Initial"/>
+  <int value="1" label="Refresh"/>
+</enum>
+
+<enum name="MdnsResponderServiceError">
+  <int value="0" label="Fail to start manager"/>
+  <int value="1" label="Fail to create responder"/>
+  <int value="2" label="Fatal socket handler error"/>
+  <int value="3" label="Invalid IP to register name"/>
+  <int value="4" label="Conflicting name resolution"/>
+</enum>
+
+<enum name="NeighborLinkMonitorFailureType">
+  <int value="0" label="Unknown type of failure"/>
+  <int value="1" label="IPv4 gateway neighbor lost"/>
+  <int value="2" label="IPv4 DNS server neighbor lost"/>
+  <int value="3" label="IPv4 gateway and DNS server neighbor lost"/>
+  <int value="4" label="IPv6 gateway neighbor lost"/>
+  <int value="5" label="IPv6 DNS server neighbor lost"/>
+  <int value="6" label="IPv6 gateway and DNS server neighbor lost"/>
+</enum>
+
+<enum name="NetworkBlockNonManagedCellularBehavior">
+  <int value="0" label="Admin allowed only managed cellular networks"/>
+  <int value="1"
+      label="Admin allowed both managed and unmanaged cellular networks"/>
+</enum>
+
+<enum name="NetworkCellular3GPPRegistrationDelayedDrop">
+  <int value="0" label="Delayed drop posted">
+    A signal loss in the cellular service was detected and a delayed connection
+    drop request was posted. This request causes the cellular connection to be
+    dropped if it is not cancelled within the delay provided.
+  </int>
+  <int value="1" label="Delayed drop canceled">
+    Signal strength returned to normal soon after a delayed drop request was
+    made, causing the request to be canceled. This indicates a flaky network.
+  </int>
+</enum>
+
+<enum name="NetworkCellularConnectionState">
+  <int value="0" label="Connected"/>
+  <int value="1" label="Disconnected"/>
+</enum>
+
+<enum name="NetworkCellularEntitlementCheck">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="In progress"/>
+  <int value="2" label="Failed to build payload"/>
+  <int value="3" label="Failed to parse IP address"/>
+  <int value="4" label="Unexpected request ID"/>
+  <int value="5" label="User not allowed to tether"/>
+  <int value="6" label="HTTP Syntax Error code returned by server"/>
+  <int value="7" label="Unrecognized user"/>
+  <int value="8" label="Internal Error code returned by server"/>
+  <int value="9" label="Unrecognized error code"/>
+  <int value="10" label="Unrecognized HTTP status code"/>
+  <int value="11" label="HTTP request error"/>
+  <int value="12" label="Illegal request while another is in progress"/>
+  <int value="13" label="Not allowed by MODB"/>
+  <int value="14" label="Not allowed because carrier is not known"/>
+  <int value="15" label="Cellular device has no IP address"/>
+  <int value="16" label="Cellular device doesn't exist"/>
+</enum>
+
+<enum name="NetworkCellularESimInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes install failed"/>
+</enum>
+
+<enum name="NetworkCellularESimProfileStatus">
+  <int value="0" label="Active"/>
+  <int value="1" label="ActiveWithPendingProfiles"/>
+  <int value="2" label="PendingProfilesOnly"/>
+  <int value="3" label="NoProfiles"/>
+</enum>
+
+<enum name="NetworkCellularESimRequestPendingProfilesResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes request failed"/>
+</enum>
+
+<enum name="NetworkCellularESimUninstallOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Disconnect failed"/>
+  <int value="3" label="Inhibit failed"/>
+  <int value="4" label="Refresh profiles failed"/>
+  <int value="5" label="Disable profile failed"/>
+  <int value="6" label="Uninstall profile failed"/>
+  <int value="7" label="Remove service failed"/>
+</enum>
+
+<enum name="NetworkCellularInhibitResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UninhibitTimeout"/>
+  <int value="2" label="SetInhibitFailed"/>
+  <int value="3" label="SetInhibitTimeout"/>
+  <int value="4" label="SetInhibitNoDevice"/>
+</enum>
+
+<enum name="NetworkCellularPrepareForConnectionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Inhibit failed"/>
+  <int value="3" label="EUICC not found"/>
+  <int value="4" label="Refresh profiles failed"/>
+  <int value="5" label="eSIM profile not found"/>
+  <int value="6" label="Enable profile failed"/>
+  <int value="7" label="Timeout waiting for connectable"/>
+</enum>
+
+<enum name="NetworkCellularPSimActivationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already activated (activation not needed)"/>
+  <int value="2" label="Failed"/>
+</enum>
+
+<enum name="NetworkCellularPSimActivationState">
+  <int value="0" label="Activated"/>
+  <int value="1" label="Activating"/>
+  <int value="2" label="NotActivated"/>
+  <int value="3" label="PartiallyActivated"/>
+  <int value="4" label="Unknown"/>
+</enum>
+
+<enum name="NetworkCellularResetEuiccResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes reset failed"/>
+</enum>
+
+<enum name="NetworkCellularTechnology">
+  <int value="0" label="1XRTT"/>
+  <int value="1" label="EDGE"/>
+  <int value="2" label="EVDO"/>
+  <int value="3" label="GPRS"/>
+  <int value="4" label="GSM"/>
+  <int value="5" label="HSPA"/>
+  <int value="6" label="HSPA_PLUS"/>
+  <int value="7" label="LTE"/>
+  <int value="8" label="UMTS"/>
+  <int value="9" label="Unknown"/>
+  <int value="10" label="5GNR"/>
+</enum>
+
+<enum name="NetworkCellularUsage">
+  <int value="0" label="ConnectAndOnlyNetwork"/>
+  <int value="1" label="ConnectWithOtherNetwork"/>
+  <int value="2" label="NotConnected"/>
+</enum>
+
+<enum name="NetworkChannelType">
+  <int value="0" label="UNDEF"/>
+  <int value="1" label="2412"/>
+  <int value="2" label="2417"/>
+  <int value="3" label="2422"/>
+  <int value="4" label="2427"/>
+  <int value="5" label="2432"/>
+  <int value="6" label="2437"/>
+  <int value="7" label="2442"/>
+  <int value="8" label="2447"/>
+  <int value="9" label="2452"/>
+  <int value="10" label="2457"/>
+  <int value="11" label="2462"/>
+  <int value="12" label="2467"/>
+  <int value="13" label="2472"/>
+  <int value="14" label="2484"/>
+  <int value="15" label="5180"/>
+  <int value="16" label="5200"/>
+  <int value="17" label="5220"/>
+  <int value="18" label="5240"/>
+  <int value="19" label="5260"/>
+  <int value="20" label="5280"/>
+  <int value="21" label="5300"/>
+  <int value="22" label="5320"/>
+  <int value="23" label="5500"/>
+  <int value="24" label="5520"/>
+  <int value="25" label="5540"/>
+  <int value="26" label="5560"/>
+  <int value="27" label="5580"/>
+  <int value="28" label="5600"/>
+  <int value="29" label="5620"/>
+  <int value="30" label="5640"/>
+  <int value="31" label="5660"/>
+  <int value="32" label="5680"/>
+  <int value="33" label="5700"/>
+  <int value="34" label="5745"/>
+  <int value="35" label="5765"/>
+  <int value="36" label="5785"/>
+  <int value="37" label="5805"/>
+  <int value="38" label="5825"/>
+  <int value="39" label="5170"/>
+  <int value="40" label="5190"/>
+  <int value="41" label="5210"/>
+  <int value="42" label="5230"/>
+  <int value="43" label="5955"/>
+  <int value="44" label="5975"/>
+  <int value="45" label="5995"/>
+  <int value="46" label="6015"/>
+  <int value="47" label="6035"/>
+  <int value="48" label="6055"/>
+  <int value="49" label="6075"/>
+  <int value="50" label="6095"/>
+  <int value="51" label="6115"/>
+  <int value="52" label="6135"/>
+  <int value="53" label="6155"/>
+  <int value="54" label="6175"/>
+  <int value="55" label="6195"/>
+  <int value="56" label="6215"/>
+  <int value="57" label="6235"/>
+  <int value="58" label="6255"/>
+  <int value="59" label="6275"/>
+  <int value="60" label="6295"/>
+  <int value="61" label="6315"/>
+  <int value="62" label="6335"/>
+  <int value="63" label="6355"/>
+  <int value="64" label="6375"/>
+  <int value="65" label="6395"/>
+  <int value="66" label="6415"/>
+  <int value="67" label="6435"/>
+  <int value="68" label="6455"/>
+  <int value="69" label="6475"/>
+  <int value="70" label="6495"/>
+  <int value="71" label="6515"/>
+  <int value="72" label="6535"/>
+  <int value="73" label="6555"/>
+  <int value="74" label="6575"/>
+  <int value="75" label="6595"/>
+  <int value="76" label="6615"/>
+  <int value="77" label="6635"/>
+  <int value="78" label="6655"/>
+  <int value="79" label="6675"/>
+  <int value="80" label="6695"/>
+  <int value="81" label="6715"/>
+  <int value="82" label="6735"/>
+  <int value="83" label="6755"/>
+  <int value="84" label="6775"/>
+  <int value="85" label="6795"/>
+  <int value="86" label="6815"/>
+  <int value="87" label="6835"/>
+  <int value="88" label="6855"/>
+  <int value="89" label="6875"/>
+  <int value="90" label="6895"/>
+  <int value="91" label="6915"/>
+  <int value="92" label="6935"/>
+  <int value="93" label="6955"/>
+  <int value="94" label="6975"/>
+  <int value="95" label="6995"/>
+  <int value="96" label="7015"/>
+  <int value="97" label="7035"/>
+  <int value="98" label="7055"/>
+  <int value="99" label="7075"/>
+  <int value="100" label="7095"/>
+  <int value="101" label="7115"/>
+</enum>
+
+<enum name="NetworkConnectionIPType">
+  <int value="0" label="IPv4"/>
+  <int value="1" label="IPv6"/>
+</enum>
+
+<enum name="NetworkConnectionState">
+  <int value="0" label="Connected"/>
+  <int value="1" label="Disconnected without explicit user action"/>
+</enum>
+
+<enum name="NetworkDisconnectType">
+  <int value="0" label="System Disconnect"/>
+  <int value="1" label="User Disconnect"/>
+</enum>
+
+<enum name="NetworkEligibilityStatus">
+  <int value="0" label="Network Is Eligible"/>
+  <int value="1" label="No Metedata"/>
+  <int value="2" label="Prohibited By Policy"/>
+  <int value="3" label="Invalid Password"/>
+  <int value="4" label="Not Connectable"/>
+  <int value="5" label="Not Configured By User"/>
+  <int value="6" label="Unsupported Security Type"/>
+  <int value="7" label="No Wifi Networks Available"/>
+  <int value="8" label="Hidden SSID"/>
+</enum>
+
+<enum name="NetworkESimPolicyStatusAtLogin">
+  <int value="0" label="No cellular networks installed"/>
+  <int value="1" label="Installed only unmanaged cellular networks"/>
+  <int value="2" label="Installed only managed cellular networks"/>
+  <int value="3"
+      label="Installed both managed and unmanaged cellular networks"/>
+</enum>
+
+<enum name="NetworkIPType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+  <int value="3" label="Dual-stack"/>
+</enum>
+
+<enum name="NetworkPatchpanelArcEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Start"/>
+  <int value="2" label="Start success"/>
+  <int value="3" label="Start without Stop"/>
+  <int value="4" label="Stop"/>
+  <int value="5" label="Stop Success"/>
+  <int value="6" label="Stop before Start"/>
+  <int value="7" label="AddDevice"/>
+  <int value="8" label="AddDevice success"/>
+  <int value="10" label="SetVethMtu error"/>
+  <int value="11" label="OneTimeContainerSetup error"/>
+</enum>
+
+<enum name="NetworkPatchpanelDbusEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ARC startup"/>
+  <int value="2" label="ARC startup success"/>
+  <int value="3" label="ARC shutdown"/>
+  <int value="4" label="ARC shutdown success"/>
+  <int value="5" label="ARCVM startup"/>
+  <int value="6" label="ARCVM startup success"/>
+  <int value="7" label="ARCVM shutdown"/>
+  <int value="8" label="ARCVM shutdown success"/>
+  <int value="9" label="Termina startup"/>
+  <int value="10" label="Termina startup success"/>
+  <int value="11" label="Termina shutdown"/>
+  <int value="12" label="Termina shutdown success"/>
+  <int value="13" label="PluginVM startup"/>
+  <int value="14" label="PluginVM startup success"/>
+  <int value="15" label="PluginVM shutdown"/>
+  <int value="16" label="PluginVM shutdown success"/>
+  <int value="17" label="SetVpnIntent"/>
+  <int value="18" label="SetVpnIntent success"/>
+  <int value="19" label="ConnectNamespace"/>
+  <int value="20" label="ConnectNamespace success"/>
+  <int value="21" label="GetTrafficCounters"/>
+  <int value="22" label="GetTrafficCounters success"/>
+  <int value="23" label="ModifyPortRule"/>
+  <int value="24" label="ModifyPortRule success"/>
+  <int value="25" label="GetDevices"/>
+  <int value="26" label="GetDevices success"/>
+  <int value="27" label="SetVpnLockdown"/>
+  <int value="28" label="SetVpnLockdown success"/>
+  <int value="29" label="SetDnsRedirectionRule"/>
+  <int value="30" label="SetDnsRedirectionRule success"/>
+  <int value="31" label="CreateLocalOnlyNetwork"/>
+  <int value="32" label="CreateLocalOnlyNetworkSuccess"/>
+  <int value="33" label="CreateTetheredNetwork"/>
+  <int value="34" label="CreateTetheredNetworkSuccess"/>
+  <int value="35" label="GetDownstreamNetworkInfo"/>
+  <int value="36" label="GetDownstreamNetworkInfoSuccess"/>
+  <int value="37" label="BruschettaVmStartup"/>
+  <int value="38" label="BruschettaVmStartupSuccess"/>
+  <int value="39" label="BruschettaVmShutdown"/>
+  <int value="40" label="BruschettaVmShutdownSuccess"/>
+</enum>
+
+<enum name="NetworkPatchpanelDHCPServerEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="DHCP server start"/>
+  <int value="2" label="DHCP server successful start"/>
+  <int value="3" label="DHCP server stop"/>
+  <int value="4" label="DHCP server successful stop"/>
+  <int value="5" label="DHCP REQUEST received"/>
+  <int value="6" label="DHCP ACK sent"/>
+  <int value="7" label="DHCP NAK sent"/>
+  <int value="8" label="DHCP DECLINE received"/>
+</enum>
+
+<enum name="NetworkPatchpanelDownstreamNetworkResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Internal error"/>
+  <int value="3" label="Invalid request"/>
+  <int value="4" label="Invalid argument"/>
+  <int value="5" label="Downstream network already in use"/>
+  <int value="6" label="Upstream network unknown"/>
+  <int value="7" label="DHCP server setup failure"/>
+  <int value="8" label="Datapath setup error"/>
+</enum>
+
+<enum name="NetworkPhyModeType">
+  <int value="0" label="UNDEF"/>
+  <int value="1" label="802.11a"/>
+  <int value="2" label="802.11b"/>
+  <int value="3" label="802.11g"/>
+  <int value="4" label="802.11n"/>
+  <int value="5" label="PSB 10MHz-wide"/>
+  <int value="6" label="PSB 5MHz-wide"/>
+  <int value="7" label="802.11ac"/>
+  <int value="8" label="802.11ax"/>
+</enum>
+
+<enum name="NetworkPortalResult">
+  <summary>
+    The portal result types come from PortalResult in shill/metrics.h
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="DNS Failure"/>
+  <int value="2" label="DNS Timeout"/>
+  <int value="3" label="Connection Failure"/>
+  <int value="4" label="Connection Timeout"/>
+  <int value="5" label="HTTP Failure"/>
+  <int value="6" label="HTTP Timeout"/>
+  <int value="7" label="Content Failure"/>
+  <int value="8" label="Content Timeout"/>
+  <int value="9" label="Unknown"/>
+  <int value="10" label="Redirect Found"/>
+</enum>
+
+<enum name="NetworkPortalSigninMode">
+  <summary>
+    Corresponds to NetworkPortalSigninController::SigninMode used to determine
+    how to display captive portal signin UI.
+  </summary>
+  <int value="1" label="Dialog using the signin Profile"/>
+  <int value="2"
+      label="DEPRECATED: Singleton tab using the active user Profile"/>
+  <int value="3" label="Browser tab using the active user Profile"/>
+  <int value="4" label="Browser tab using an OTR Profile"/>
+  <int value="5" label="Dialog using an incognito Profile (deprecated)"/>
+  <int value="6" label="Normal browser tab (OTR policy disabled)"/>
+  <int value="7" label="Normal browser tab (Parental controls)"/>
+</enum>
+
+<enum name="NetworkPortalSigninSource">
+  <summary>
+    Corresponds to NetworkPortalSigninController::SigninSource used to determine
+    how the signin UI was shown.
+  </summary>
+  <int value="1" label="Notification"/>
+  <int value="2" label="Settings"/>
+  <int value="3" label="Quick Settings"/>
+  <int value="4" label="Error Page"/>
+</enum>
+
+<enum name="NetworkPortalStatus">
+  <summary>
+    The portal status types from NetworkPortalDetector::CaptivePortalStatus
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Offline"/>
+  <int value="2" label="Online"/>
+  <int value="3" label="Portal"/>
+  <int value="4" label="ProxyAuthRequired"/>
+</enum>
+
+<enum name="NetworkProblemType">
+  <int value="0" label="Congested TCP Queue"/>
+  <int value="1" label="DNS Failure"/>
+</enum>
+
+<enum name="NetworkSecurityChange">
+  <summary>
+    Possible instances of WiFi security changes that happen after initial
+    connection. These are not all possible security changes but a subset that is
+    interesting: downgrades plus &quot;WPA1/2 to WPA1/2/3&quot; change which
+    could trigger splitting of a network into two services.
+  </summary>
+  <int value="0" label="WPA3 to WPA2/3"/>
+  <int value="1" label="WPA3 to WPA1/2/3"/>
+  <int value="2" label="WPA2/3 to WPA1/2/3"/>
+  <int value="3" label="WPA2 to WPA1/2"/>
+  <int value="4" label="EAP-WPA3 to EAP-WPA2/3"/>
+  <int value="5" label="EAP-WPA3 to EAP-WPA1/2/3"/>
+  <int value="6" label="EAP-WPA2/3 to EAP-WPA1/2/3"/>
+  <int value="7" label="EAP-WPA2 to EAP-WPA1/2"/>
+  <int value="8" label="WPA1/2 to WPA1/2/3"/>
+  <int value="9" label="EAP-WPA1/2 to EAP-WPA1/2/3"/>
+</enum>
+
+<enum name="NetworkSecurityType">
+  <summary>Shill's WiFi security types.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="WEP"/>
+  <int value="3" label="WPA"/>
+  <int value="4" label="802.11i/RSN"/>
+  <int value="5" label="802.1X"/>
+  <int value="6" label="PSK"/>
+  <int value="7" label="WPA 3"/>
+  <int value="8" label="WPA 1/2"/>
+  <int value="9" label="WPA 2"/>
+  <int value="10" label="WPA 2/3"/>
+  <int value="11" label="Enterprise WPA"/>
+  <int value="12" label="Enterprise WPA 1/2"/>
+  <int value="13" label="Enterprise WPA 2"/>
+  <int value="14" label="Enterprise WPA 2/3"/>
+  <int value="15" label="Enterprise WPA 3"/>
+  <int value="16" label="WPA 1/2/3"/>
+  <int value="17" label="Enterprise WPA 1/2/3"/>
+  <int value="18" label="Enterprise WEP"/>
+  <int value="19" label="Transitional OWE"/>
+  <int value="20" label="OWE"/>
+</enum>
+
+<enum name="NetworkServiceCorsPreflightMethodAllowed">
+  <int value="0" label="Both Disallowed"/>
+  <int value="1" label="Only normalized_method allowed"/>
+  <int value="2" label="Only method allowed"/>
+  <int value="3" label="Both Allowed"/>
+</enum>
+
+<enum name="NetworkServiceError">
+  <int value="0" label="NONE"/>
+  <int value="1" label="AAA_FAILED"/>
+  <int value="2" label="ACTIVATION_FAILED"/>
+  <int value="3" label="BAD_PASSPHRASE"/>
+  <int value="4" label="BAD_WEPKEY"/>
+  <int value="5" label="CONNECT_FAILED"/>
+  <int value="6" label="DHCP_FAILED"/>
+  <int value="7" label="DNS_LOOKUP_FAILED"/>
+  <int value="8" label="EAP_AUTHENTICATION_FAILED"/>
+  <int value="9" label="EAP_LOCAL_TLS_FAILED"/>
+  <int value="10" label="EAP_REMOTE_TLS_FAILED"/>
+  <int value="11" label="HTTP_GET_FAILED"/>
+  <int value="12" label="IPSEC_CERT_AUTH_FAILED"/>
+  <int value="13" label="IPSEC_PSK_AUTH_FAILED"/>
+  <int value="14" label="INTERNAL"/>
+  <int value="15" label="NEED_EVDO"/>
+  <int value="16" label="NEED_HOME_NETWORK"/>
+  <int value="17" label="OTASP_FAILED"/>
+  <int value="18" label="OUT_OF_RANGE"/>
+  <int value="19" label="PPP_AUTH_FAILED"/>
+  <int value="20" label="PIN_MISSING"/>
+  <int value="21" label="UNKNOWN"/>
+  <int value="22" label="NOT_ASSOCIATED"/>
+  <int value="23" label="NOT_AUTHENTICATED"/>
+  <int value="24" label="TOO_MANY_STAS"/>
+  <int value="25" label="DISCONNECT_FAILURE"/>
+  <int value="26" label="SIM_LOCKED"/>
+  <int value="27" label="NOT_REGISTERED"/>
+  <int value="28" label="INVALID_APN"/>
+</enum>
+
+<enum name="NetworkServiceSandboxGrantResult">
+  <int value="0" label="kSuccess">A data migration was successful.</int>
+  <int value="1" label="kFailedToCreateCacheDirectory">
+    Failed to create cache directory.
+  </int>
+  <int value="2" label="kFailedToCreateDataDirectory">
+    Failed to create data directory.
+  </int>
+  <int value="3" label="kFailedToCopyData">Failed to copy data.</int>
+  <int value="4" label="kFailedToDeleteOldData">Failed to delete old data.</int>
+  <int value="5" label="kFailedToGrantSandboxAccessToCache">
+    Failed to grant sandbox access to cache directory.
+  </int>
+  <int value="6" label="kFailedToGrantSandboxAccessToData">
+    Failed to grant sandbox access to data directory.
+  </int>
+  <int value="7" label="kDidNotAttemptToGrantSandboxAccess">
+    The operation was not attempted because granting sandbox access was not
+    supported on the current platform configuration, no data paths were
+    specified (e.g. in-memory) or no unsandboxed_data_path was specified to
+    migrate from.
+  </int>
+  <int value="8" label="kFailedToCreateCheckpointFile">
+    Failed to create checkpoint file.
+  </int>
+  <int value="9" label="kNoMigrationRequested">
+    A valid unsandboxed_data_path was specified but no migration was requested.
+  </int>
+  <int value="10" label="kMigrationAlreadySucceeded">
+    Migration has already succeeded previously.
+  </int>
+  <int value="11" label="kMigrationAlreadySucceededWithNoAccess">
+    Migration has already succeeded but it was not possible to grant the sandbox
+    access to the data directory.
+  </int>
+</enum>
+
+<enum name="NetworkTechnology">
+  <int value="0" label="Cellular"/>
+  <int value="1" label="Ethernet"/>
+  <int value="2" label="Ethernet EAP"/>
+  <int value="3" label="WiFi"/>
+  <int value="4" label="Tether"/>
+  <int value="5" label="VPN"/>
+  <int value="6" label="Unknown"/>
+</enum>
+
+<enum name="NotificationSuppressionState">
+  <int value="0" label="NotSuppressed"/>
+  <int value="1" label="UserSuppressed"/>
+  <int value="2" label="PolicySuppressed"/>
+</enum>
+
+<enum name="OncRecommendedFieldsWorkaroundAction">
+  <int value="0"
+      label="Enabled by feature, ONC NetworkConfiguration not affected"/>
+  <int value="1" label="Enabled by feature, ONC NetworkConfiguration affected"/>
+  <int value="2"
+      label="Disabled by feature, ONC NetworkConfiguration not affected"/>
+  <int value="3"
+      label="Disabled by feature, ONC NetworkConfiguration affected"/>
+</enum>
+
+<enum name="PasspointMatch">
+  <int value="0" label="No match"/>
+  <int value="1" label="Service not found"/>
+  <int value="2" label="Prior higher tier Passpoint match"/>
+  <int value="3" label="Prior non-Passpoint credentials"/>
+  <int value="4" label="Upgrade match to Home match"/>
+  <int value="5" label="Upgrade match to Roaming match"/>
+  <int value="6" label="First match as Home match"/>
+  <int value="7" label="First match as Roaming match"/>
+  <int value="8" label="First match (other)"/>
+</enum>
+
+<enum name="PasspointMeteredness">
+  <int value="0" label="Not metered"/>
+  <int value="1" label="Metered"/>
+</enum>
+
+<enum name="PasspointOrigin">
+  <int value="0" label="Other"/>
+  <int value="1" label="Android"/>
+  <int value="2" label="Policy"/>
+  <int value="3" label="Carrier"/>
+</enum>
+
+<enum name="PasspointProvisioningResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No or invalid FQDN"/>
+  <int value="2" label="No or invalid realm"/>
+  <int value="3" label="Invalid EAP method"/>
+  <int value="4" label="Invalid EAP properties"/>
+  <int value="5" label="Invalid Organization Identifier"/>
+  <int value="6" label="Invalid expiration time"/>
+  <int value="7" label="Shill Profile error"/>
+  <int value="8" label="Credentials already exist"/>
+</enum>
+
+<enum name="PasspointRemovalResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Passpoint Profile not found"/>
+  <int value="2" label="No active user profile"/>
+  <int value="3" label="Internal error"/>
+</enum>
+
+<enum name="PasspointSecurity">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TLS"/>
+  <int value="2" label="TTLS+Unknown"/>
+  <int value="3" label="TTLS+PAP"/>
+  <int value="4" label="TTLS+MSCHAP"/>
+  <int value="5" label="TTLS+MSCHAPv2"/>
+</enum>
+
+<enum name="PlatformCellularConnectResult">
+  <summary>
+    The return status as a result of a call to connect to a cellular device at
+    the shill layer.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Wrong State"/>
+  <int value="3" label="Operation Failed"/>
+  <int value="4" label="Already Connected"/>
+  <int value="5" label="Not Registered"/>
+  <int value="6" label="Not On Home Network"/>
+  <int value="7" label="Incorrect Pin"/>
+  <int value="8" label="Pin Required"/>
+  <int value="9" label="Pin Blocked"/>
+  <int value="10" label="Invalid APN"/>
+  <int value="11" label="Internal Error"/>
+</enum>
+
+<enum name="PolicyTextMessageSuppressionState">
+  <int value="0" label="Unset"/>
+  <int value="1" label="Allow"/>
+  <int value="2" label="Suppress"/>
+</enum>
+
+<enum name="PortalDetectorAggregateResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No Connectivity"/>
+  <int value="2" label="Partial Connectivity"/>
+  <int value="3" label="Redirect"/>
+  <int value="4" label="Internet After Partial Connectivity"/>
+  <int value="5" label="Internet After Redirect"/>
+  <int value="6" label="Internet"/>
+</enum>
+
+<enum name="PortalDetectorResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Connection Failure"/>
+  <int value="2" label="DNS Failure"/>
+  <int value="3" label="DNS Timeout"/>
+  <int value="4" label="HTTP Failure"/>
+  <int value="5" label="HTTP Timeout"/>
+  <int value="6" label="Content Failure"/>
+  <int value="7" label="Content Timeout"/>
+  <int value="8" label="Redirect Found"/>
+  <int value="9" label="Redirect No Url"/>
+  <int value="10" label="HTTPS Failure"/>
+  <int value="11" label="No Connectivity"/>
+  <int value="12" label="Online"/>
+</enum>
+
+<enum name="PSimSetupFlowResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="CANCELLED"/>
+  <int value="2" label="CANCELLED_NO_SIM"/>
+  <int value="3" label="CANCELLED_COLD_SIM_DEFER"/>
+  <int value="4" label="CANCELLED_CARRIER_PORTAL"/>
+  <int value="5" label="CANCELLED_PORTAL_ERROR"/>
+  <int value="6" label="CARRIER_PORTAL_TIMEOUT"/>
+  <int value="7" label="TIMEOUT_FINISH_ACTIVATION"/>
+  <int value="8" label="NETWORK_ERROR"/>
+</enum>
+
+<enum name="RegulatoryDomain">
+  <int value="1" label="00"/>
+  <int value="2" label="AA (unused)"/>
+  <int value="3" label="AB (unused)"/>
+  <int value="4" label="AC (unused)"/>
+  <int value="5" label="Andorra"/>
+  <int value="6" label="United Arab Emirates"/>
+  <int value="7" label="Afghanistan"/>
+  <int value="8" label="AG (unused)"/>
+  <int value="9" label="AH (unused)"/>
+  <int value="10" label="Anguilla"/>
+  <int value="11" label="AJ (unused)"/>
+  <int value="12" label="AK (unused)"/>
+  <int value="13" label="Albania"/>
+  <int value="14" label="Armenia"/>
+  <int value="15" label="Netherlands Antilles"/>
+  <int value="16" label="AO (unused)"/>
+  <int value="17" label="AP (unused)"/>
+  <int value="18" label="AQ (unused)"/>
+  <int value="19" label="Argentina"/>
+  <int value="20" label="American Samoa"/>
+  <int value="21" label="Austria"/>
+  <int value="22" label="Australia"/>
+  <int value="23" label="AV (unused)"/>
+  <int value="24" label="Aruba"/>
+  <int value="25" label="AX (unused)"/>
+  <int value="26" label="AY (unused)"/>
+  <int value="27" label="Azerbaijan"/>
+  <int value="28" label="Bosnia and Herzegovina"/>
+  <int value="29" label="Barbados"/>
+  <int value="30" label="BC (unused)"/>
+  <int value="31" label="Bangladesh"/>
+  <int value="32" label="Belgium"/>
+  <int value="33" label="Burkina Faso"/>
+  <int value="34" label="Bulgaria"/>
+  <int value="35" label="Bahrain"/>
+  <int value="36" label="BI (unused)"/>
+  <int value="37" label="BJ (unused)"/>
+  <int value="38" label="BK (unused)"/>
+  <int value="39" label="Saint Barthelemy"/>
+  <int value="40" label="Bermuda"/>
+  <int value="41" label="Brunei Darussalam"/>
+  <int value="42" label="Bolivia"/>
+  <int value="43" label="BP (unused)"/>
+  <int value="44" label="BQ (unused)"/>
+  <int value="45" label="Brazil"/>
+  <int value="46" label="Bahamas"/>
+  <int value="47" label="Bhutan"/>
+  <int value="48" label="BU (unused)"/>
+  <int value="49" label="BV (unused)"/>
+  <int value="50" label="BW (unused)"/>
+  <int value="51" label="BX (unused)"/>
+  <int value="52" label="Belarus"/>
+  <int value="53" label="Belize"/>
+  <int value="54" label="Canada"/>
+  <int value="55" label="CB (unused)"/>
+  <int value="56" label="CC (unused)"/>
+  <int value="57" label="CD (unused)"/>
+  <int value="58" label="CE (unused)"/>
+  <int value="59" label="Central African Republic"/>
+  <int value="60" label="CG (unused)"/>
+  <int value="61" label="Switzerland"/>
+  <int value="62" label="Cote d'Ivoire"/>
+  <int value="63" label="CJ (unused)"/>
+  <int value="64" label="CK (unused)"/>
+  <int value="65" label="Chile"/>
+  <int value="66" label="CM (unused)"/>
+  <int value="67" label="China"/>
+  <int value="68" label="Colombia"/>
+  <int value="69" label="CP (unused)"/>
+  <int value="70" label="CQ (unused)"/>
+  <int value="71" label="Costa Rica"/>
+  <int value="72" label="CS (unused)"/>
+  <int value="73" label="CT (unused)"/>
+  <int value="74" label="Cuba"/>
+  <int value="75" label="CV (unused)"/>
+  <int value="76" label="CW (unused)"/>
+  <int value="77" label="Christmas Island"/>
+  <int value="78" label="Cyprus"/>
+  <int value="79" label="Czech Republic"/>
+  <int value="80" label="DA (unused)"/>
+  <int value="81" label="DB (unused)"/>
+  <int value="82" label="DC (unused)"/>
+  <int value="83" label="DD (unused)"/>
+  <int value="84" label="Germany"/>
+  <int value="85" label="DF (unused)"/>
+  <int value="86" label="DG (unused)"/>
+  <int value="87" label="DH (unused)"/>
+  <int value="88" label="DI (unused)"/>
+  <int value="89" label="DJ (unused)"/>
+  <int value="90" label="Denmark"/>
+  <int value="91" label="DL (unused)"/>
+  <int value="92" label="Dominica"/>
+  <int value="93" label="DN (unused)"/>
+  <int value="94" label="Dominican Republic"/>
+  <int value="95" label="DP (unused)"/>
+  <int value="96" label="DQ (unused)"/>
+  <int value="97" label="DR (unused)"/>
+  <int value="98" label="DS (unused)"/>
+  <int value="99" label="DT (unused)"/>
+  <int value="100" label="DU (unused)"/>
+  <int value="101" label="DV (unused)"/>
+  <int value="102" label="DW (unused)"/>
+  <int value="103" label="DX (unused)"/>
+  <int value="104" label="DY (unused)"/>
+  <int value="105" label="Algeria"/>
+  <int value="106" label="EA (unused)"/>
+  <int value="107" label="EB (unused)"/>
+  <int value="108" label="Ecuador"/>
+  <int value="109" label="ED (unused)"/>
+  <int value="110" label="Estonia"/>
+  <int value="111" label="EF (unused)"/>
+  <int value="112" label="Egypt"/>
+  <int value="113" label="EH (unused)"/>
+  <int value="114" label="EI (unused)"/>
+  <int value="115" label="EJ (unused)"/>
+  <int value="116" label="EK (unused)"/>
+  <int value="117" label="EL (unused)"/>
+  <int value="118" label="EM (unused)"/>
+  <int value="119" label="EN (unused)"/>
+  <int value="120" label="EO (unused)"/>
+  <int value="121" label="EP (unused)"/>
+  <int value="122" label="EQ (unused)"/>
+  <int value="123" label="ER (unused)"/>
+  <int value="124" label="Spain"/>
+  <int value="125" label="Ethiopia"/>
+  <int value="126" label="EU (unused)"/>
+  <int value="127" label="EV (unused)"/>
+  <int value="128" label="EW (unused)"/>
+  <int value="129" label="EX (unused)"/>
+  <int value="130" label="EY (unused)"/>
+  <int value="131" label="EZ (unused)"/>
+  <int value="132" label="FA (unused)"/>
+  <int value="133" label="FB (unused)"/>
+  <int value="134" label="FC (unused)"/>
+  <int value="135" label="FD (unused)"/>
+  <int value="136" label="FE (unused)"/>
+  <int value="137" label="FF (unused)"/>
+  <int value="138" label="FG (unused)"/>
+  <int value="139" label="FH (unused)"/>
+  <int value="140" label="Finland"/>
+  <int value="141" label="FJ (unused)"/>
+  <int value="142" label="FK (unused)"/>
+  <int value="143" label="FL (unused)"/>
+  <int value="144" label="Federated States of Micronesia"/>
+  <int value="145" label="FN (unused)"/>
+  <int value="146" label="FO (unused)"/>
+  <int value="147" label="FP (unused)"/>
+  <int value="148" label="FQ (unused)"/>
+  <int value="149" label="France"/>
+  <int value="150" label="FS (unused)"/>
+  <int value="151" label="FT (unused)"/>
+  <int value="152" label="FU (unused)"/>
+  <int value="153" label="FV (unused)"/>
+  <int value="154" label="FW (unused)"/>
+  <int value="155" label="FX (unused)"/>
+  <int value="156" label="FY (unused)"/>
+  <int value="157" label="FZ (unused)"/>
+  <int value="158" label="GA (unused)"/>
+  <int value="159" label="United Kingdom"/>
+  <int value="160" label="GC (unused)"/>
+  <int value="161" label="Grenada"/>
+  <int value="162" label="Georgia"/>
+  <int value="163" label="French Guiana"/>
+  <int value="164" label="GG (unused)"/>
+  <int value="165" label="Ghana"/>
+  <int value="166" label="GI (unused)"/>
+  <int value="167" label="GJ (unused)"/>
+  <int value="168" label="GK (unused)"/>
+  <int value="169" label="Greenland"/>
+  <int value="170" label="GM (unused)"/>
+  <int value="171" label="GN (unused)"/>
+  <int value="172" label="GO (unused)"/>
+  <int value="173" label="Guadeloupe"/>
+  <int value="174" label="GQ (unused)"/>
+  <int value="175" label="Greece"/>
+  <int value="176" label="GS (unused)"/>
+  <int value="177" label="Guatemala"/>
+  <int value="178" label="Guam"/>
+  <int value="179" label="GV (unused)"/>
+  <int value="180" label="GW (unused)"/>
+  <int value="181" label="GX (unused)"/>
+  <int value="182" label="Guyana"/>
+  <int value="183" label="GZ (unused)"/>
+  <int value="184" label="HA (unused)"/>
+  <int value="185" label="HB (unused)"/>
+  <int value="186" label="HC (unused)"/>
+  <int value="187" label="HD (unused)"/>
+  <int value="188" label="HE (unused)"/>
+  <int value="189" label="HF (unused)"/>
+  <int value="190" label="HG (unused)"/>
+  <int value="191" label="HH (unused)"/>
+  <int value="192" label="HI (unused)"/>
+  <int value="193" label="HJ (unused)"/>
+  <int value="194" label="Hong Kong"/>
+  <int value="195" label="HL (unused)"/>
+  <int value="196" label="HM (unused)"/>
+  <int value="197" label="Honduras"/>
+  <int value="198" label="HO (unused)"/>
+  <int value="199" label="HP (unused)"/>
+  <int value="200" label="HQ (unused)"/>
+  <int value="201" label="Croatia (Hrvatska)"/>
+  <int value="202" label="HS (unused)"/>
+  <int value="203" label="Haiti"/>
+  <int value="204" label="Hungary"/>
+  <int value="205" label="HV (unused)"/>
+  <int value="206" label="HW (unused)"/>
+  <int value="207" label="HX (unused)"/>
+  <int value="208" label="HY (unused)"/>
+  <int value="209" label="HZ (unused)"/>
+  <int value="210" label="IA (unused)"/>
+  <int value="211" label="IB (unused)"/>
+  <int value="212" label="IC (unused)"/>
+  <int value="213" label="Indonesia"/>
+  <int value="214" label="Ireland"/>
+  <int value="215" label="IF (unused)"/>
+  <int value="216" label="IG (unused)"/>
+  <int value="217" label="IH (unused)"/>
+  <int value="218" label="II (unused)"/>
+  <int value="219" label="IJ (unused)"/>
+  <int value="220" label="IK (unused)"/>
+  <int value="221" label="Israel"/>
+  <int value="222" label="IM (unused)"/>
+  <int value="223" label="India"/>
+  <int value="224" label="IO (unused)"/>
+  <int value="225" label="IP (unused)"/>
+  <int value="226" label="IQ (unused)"/>
+  <int value="227" label="Islamic Republic of Iran"/>
+  <int value="228" label="Iceland"/>
+  <int value="229" label="Italy"/>
+  <int value="230" label="IU (unused)"/>
+  <int value="231" label="IV (unused)"/>
+  <int value="232" label="IW (unused)"/>
+  <int value="233" label="IX (unused)"/>
+  <int value="234" label="IY (unused)"/>
+  <int value="235" label="IZ (unused)"/>
+  <int value="236" label="JA (unused)"/>
+  <int value="237" label="JB (unused)"/>
+  <int value="238" label="JC (unused)"/>
+  <int value="239" label="JD (unused)"/>
+  <int value="240" label="JE (unused)"/>
+  <int value="241" label="JF (unused)"/>
+  <int value="242" label="JG (unused)"/>
+  <int value="243" label="JH (unused)"/>
+  <int value="244" label="JI (unused)"/>
+  <int value="245" label="JJ (unused)"/>
+  <int value="246" label="JK (unused)"/>
+  <int value="247" label="JL (unused)"/>
+  <int value="248" label="Jamaica"/>
+  <int value="249" label="JN (unused)"/>
+  <int value="250" label="Jordan"/>
+  <int value="251" label="Japan"/>
+  <int value="252" label="JQ (unused)"/>
+  <int value="253" label="JR (unused)"/>
+  <int value="254" label="JS (unused)"/>
+  <int value="255" label="JT (unused)"/>
+  <int value="256" label="JU (unused)"/>
+  <int value="257" label="JV (unused)"/>
+  <int value="258" label="JW (unused)"/>
+  <int value="259" label="JX (unused)"/>
+  <int value="260" label="JY (unused)"/>
+  <int value="261" label="JZ (unused)"/>
+  <int value="262" label="KA (unused)"/>
+  <int value="263" label="KB (unused)"/>
+  <int value="264" label="KC (unused)"/>
+  <int value="265" label="KD (unused)"/>
+  <int value="266" label="Kenya"/>
+  <int value="267" label="KF (unused)"/>
+  <int value="268" label="KG (unused)"/>
+  <int value="269" label="Cambodia"/>
+  <int value="270" label="KI (unused)"/>
+  <int value="271" label="KJ (unused)"/>
+  <int value="272" label="KK (unused)"/>
+  <int value="273" label="KL (unused)"/>
+  <int value="274" label="KM (unused)"/>
+  <int value="275" label="Saint Kitts and Nevis"/>
+  <int value="276" label="KO (unused)"/>
+  <int value="277" label="Democratic People's Republic of Korea"/>
+  <int value="278" label="KQ (unused)"/>
+  <int value="279" label="Republic of Korea"/>
+  <int value="280" label="KS (unused)"/>
+  <int value="281" label="KT (unused)"/>
+  <int value="282" label="KU (unused)"/>
+  <int value="283" label="KV (unused)"/>
+  <int value="284" label="Kuwait"/>
+  <int value="285" label="KX (unused)"/>
+  <int value="286" label="Cayman Islands"/>
+  <int value="287" label="Kazakhstan"/>
+  <int value="288" label="LA (unused)"/>
+  <int value="289" label="Lebanon"/>
+  <int value="290" label="Saint Lucia"/>
+  <int value="291" label="LD (unused)"/>
+  <int value="292" label="LE (unused)"/>
+  <int value="293" label="LF (unused)"/>
+  <int value="294" label="LG (unused)"/>
+  <int value="295" label="LH (unused)"/>
+  <int value="296" label="Liechtenstein"/>
+  <int value="297" label="LJ (unused)"/>
+  <int value="298" label="Sri Lanka"/>
+  <int value="299" label="LL (unused)"/>
+  <int value="300" label="LM (unused)"/>
+  <int value="301" label="LN (unused)"/>
+  <int value="302" label="LO (unused)"/>
+  <int value="303" label="LP (unused)"/>
+  <int value="304" label="LQ (unused)"/>
+  <int value="305" label="LR (unused)"/>
+  <int value="306" label="Lesotho"/>
+  <int value="307" label="Lithuania"/>
+  <int value="308" label="Luxembourg"/>
+  <int value="309" label="Latvia"/>
+  <int value="310" label="LW (unused)"/>
+  <int value="311" label="LX (unused)"/>
+  <int value="312" label="LY (unused)"/>
+  <int value="313" label="LZ (unused)"/>
+  <int value="314" label="Morocco"/>
+  <int value="315" label="MB (unused)"/>
+  <int value="316" label="Monaco"/>
+  <int value="317" label="Republic of Moldova"/>
+  <int value="318" label="Montenegro"/>
+  <int value="319" label="Saint Martin"/>
+  <int value="320" label="MG (unused)"/>
+  <int value="321" label="Marshall Islands"/>
+  <int value="322" label="MI (unused)"/>
+  <int value="323" label="MJ (unused)"/>
+  <int value="324" label="The Former Yugoslav Republic of Macedonia"/>
+  <int value="325" label="ML (unused)"/>
+  <int value="326" label="MM (unused)"/>
+  <int value="327" label="Mongolia"/>
+  <int value="328" label="Macau"/>
+  <int value="329" label="Northern Mariana Islands"/>
+  <int value="330" label="Martinique"/>
+  <int value="331" label="Mauritania"/>
+  <int value="332" label="MS (unused)"/>
+  <int value="333" label="Malta"/>
+  <int value="334" label="Mauritius"/>
+  <int value="335" label="Maldives"/>
+  <int value="336" label="Malawi"/>
+  <int value="337" label="Mexico"/>
+  <int value="338" label="Malaysia"/>
+  <int value="339" label="MZ (unused)"/>
+  <int value="340" label="NA (unused)"/>
+  <int value="341" label="NB (unused)"/>
+  <int value="342" label="NC (unused)"/>
+  <int value="343" label="ND (unused)"/>
+  <int value="344" label="NE (unused)"/>
+  <int value="345" label="NF (unused)"/>
+  <int value="346" label="Nigeria"/>
+  <int value="347" label="NH (unused)"/>
+  <int value="348" label="Nicaragua"/>
+  <int value="349" label="NJ (unused)"/>
+  <int value="350" label="NK (unused)"/>
+  <int value="351" label="Netherlands"/>
+  <int value="352" label="NM (unused)"/>
+  <int value="353" label="NN (unused)"/>
+  <int value="354" label="Norway"/>
+  <int value="355" label="Nepal"/>
+  <int value="356" label="NQ (unused)"/>
+  <int value="357" label="NR (unused)"/>
+  <int value="358" label="NS (unused)"/>
+  <int value="359" label="NT (unused)"/>
+  <int value="360" label="NU (unused)"/>
+  <int value="361" label="NV (unused)"/>
+  <int value="362" label="NW (unused)"/>
+  <int value="363" label="NX (unused)"/>
+  <int value="364" label="NY (unused)"/>
+  <int value="365" label="New Zealand"/>
+  <int value="366" label="OA (unused)"/>
+  <int value="367" label="OB (unused)"/>
+  <int value="368" label="OC (unused)"/>
+  <int value="369" label="OD (unused)"/>
+  <int value="370" label="OE (unused)"/>
+  <int value="371" label="OF (unused)"/>
+  <int value="372" label="OG (unused)"/>
+  <int value="373" label="OH (unused)"/>
+  <int value="374" label="OI (unused)"/>
+  <int value="375" label="OJ (unused)"/>
+  <int value="376" label="OK (unused)"/>
+  <int value="377" label="OL (unused)"/>
+  <int value="378" label="Oman"/>
+  <int value="379" label="ON (unused)"/>
+  <int value="380" label="OO (unused)"/>
+  <int value="381" label="OP (unused)"/>
+  <int value="382" label="OQ (unused)"/>
+  <int value="383" label="OR (unused)"/>
+  <int value="384" label="OS (unused)"/>
+  <int value="385" label="OT (unused)"/>
+  <int value="386" label="OU (unused)"/>
+  <int value="387" label="OV (unused)"/>
+  <int value="388" label="OW (unused)"/>
+  <int value="389" label="OX (unused)"/>
+  <int value="390" label="OY (unused)"/>
+  <int value="391" label="OZ (unused)"/>
+  <int value="392" label="Panama"/>
+  <int value="393" label="PB (unused)"/>
+  <int value="394" label="PC (unused)"/>
+  <int value="395" label="PD (unused)"/>
+  <int value="396" label="Peru"/>
+  <int value="397" label="French Polynesia"/>
+  <int value="398" label="Papua New Guinea"/>
+  <int value="399" label="Philippines"/>
+  <int value="400" label="PI (unused)"/>
+  <int value="401" label="PJ (unused)"/>
+  <int value="402" label="Pakistan"/>
+  <int value="403" label="Poland"/>
+  <int value="404" label="St. Pierre and Miquelon"/>
+  <int value="405" label="PN (unused)"/>
+  <int value="406" label="PO (unused)"/>
+  <int value="407" label="PP (unused)"/>
+  <int value="408" label="PQ (unused)"/>
+  <int value="409" label="Puerto Rico"/>
+  <int value="410" label="PS (unused)"/>
+  <int value="411" label="Portugal"/>
+  <int value="412" label="PU (unused)"/>
+  <int value="413" label="PV (unused)"/>
+  <int value="414" label="Palau"/>
+  <int value="415" label="PX (unused)"/>
+  <int value="416" label="Paraguay"/>
+  <int value="417" label="PZ (unused)"/>
+  <int value="418" label="Qatar"/>
+  <int value="419" label="QB (unused)"/>
+  <int value="420" label="QC (unused)"/>
+  <int value="421" label="QD (unused)"/>
+  <int value="422" label="QE (unused)"/>
+  <int value="423" label="QF (unused)"/>
+  <int value="424" label="QG (unused)"/>
+  <int value="425" label="QH (unused)"/>
+  <int value="426" label="QI (unused)"/>
+  <int value="427" label="QJ (unused)"/>
+  <int value="428" label="QK (unused)"/>
+  <int value="429" label="QL (unused)"/>
+  <int value="430" label="QM (unused)"/>
+  <int value="431" label="QN (unused)"/>
+  <int value="432" label="QO (unused)"/>
+  <int value="433" label="QP (unused)"/>
+  <int value="434" label="QQ (unused)"/>
+  <int value="435" label="QR (unused)"/>
+  <int value="436" label="QS (unused)"/>
+  <int value="437" label="QT (unused)"/>
+  <int value="438" label="QU (unused)"/>
+  <int value="439" label="QV (unused)"/>
+  <int value="440" label="QW (unused)"/>
+  <int value="441" label="QX (unused)"/>
+  <int value="442" label="QY (unused)"/>
+  <int value="443" label="QZ (unused)"/>
+  <int value="444" label="RA (unused)"/>
+  <int value="445" label="RB (unused)"/>
+  <int value="446" label="RC (unused)"/>
+  <int value="447" label="RD (unused)"/>
+  <int value="448" label="Reunion"/>
+  <int value="449" label="RF (unused)"/>
+  <int value="450" label="RG (unused)"/>
+  <int value="451" label="RH (unused)"/>
+  <int value="452" label="RI (unused)"/>
+  <int value="453" label="RJ (unused)"/>
+  <int value="454" label="RK (unused)"/>
+  <int value="455" label="RL (unused)"/>
+  <int value="456" label="RM (unused)"/>
+  <int value="457" label="RN (unused)"/>
+  <int value="458" label="Romania"/>
+  <int value="459" label="RP (unused)"/>
+  <int value="460" label="RQ (unused)"/>
+  <int value="461" label="RR (unused)"/>
+  <int value="462" label="Serbia"/>
+  <int value="463" label="RT (unused)"/>
+  <int value="464" label="Russian Federation"/>
+  <int value="465" label="RV (unused)"/>
+  <int value="466" label="Rwanda"/>
+  <int value="467" label="RX (unused)"/>
+  <int value="468" label="RY (unused)"/>
+  <int value="469" label="RZ (unused)"/>
+  <int value="470" label="Saudi Arabia"/>
+  <int value="471" label="SB (unused)"/>
+  <int value="472" label="SC (unused)"/>
+  <int value="473" label="SD (unused)"/>
+  <int value="474" label="Sweden"/>
+  <int value="475" label="SF (unused)"/>
+  <int value="476" label="Singapore"/>
+  <int value="477" label="SH (unused)"/>
+  <int value="478" label="Slovenia"/>
+  <int value="479" label="SJ (unused)"/>
+  <int value="480" label="Slovakia"/>
+  <int value="481" label="SL (unused)"/>
+  <int value="482" label="SM (unused)"/>
+  <int value="483" label="Senegal"/>
+  <int value="484" label="SO (unused)"/>
+  <int value="485" label="SP (unused)"/>
+  <int value="486" label="SQ (unused)"/>
+  <int value="487" label="Suriname"/>
+  <int value="488" label="SS (unused)"/>
+  <int value="489" label="ST (unused)"/>
+  <int value="490" label="SU (unused)"/>
+  <int value="491" label="El Salvador"/>
+  <int value="492" label="SW (unused)"/>
+  <int value="493" label="SX (unused)"/>
+  <int value="494" label="Syrian Arab Republic"/>
+  <int value="495" label="SZ (unused)"/>
+  <int value="496" label="TA (unused)"/>
+  <int value="497" label="TB (unused)"/>
+  <int value="498" label="Turks and Caicos Islands"/>
+  <int value="499" label="Chad"/>
+  <int value="500" label="TE (unused)"/>
+  <int value="501" label="TF (unused)"/>
+  <int value="502" label="Togo"/>
+  <int value="503" label="Thailand"/>
+  <int value="504" label="TI (unused)"/>
+  <int value="505" label="TJ (unused)"/>
+  <int value="506" label="TK (unused)"/>
+  <int value="507" label="TL (unused)"/>
+  <int value="508" label="TM (unused)"/>
+  <int value="509" label="Tunisia"/>
+  <int value="510" label="TO (unused)"/>
+  <int value="511" label="TP (unused)"/>
+  <int value="512" label="TQ (unused)"/>
+  <int value="513" label="Turkey"/>
+  <int value="514" label="TS (unused)"/>
+  <int value="515" label="Trinidad and Tobago"/>
+  <int value="516" label="TU (unused)"/>
+  <int value="517" label="TV (unused)"/>
+  <int value="518" label="Taiwan"/>
+  <int value="519" label="TX (unused)"/>
+  <int value="520" label="TY (unused)"/>
+  <int value="521" label="United Republic of Tanzania"/>
+  <int value="522" label="Ukraine"/>
+  <int value="523" label="UB (unused)"/>
+  <int value="524" label="UC (unused)"/>
+  <int value="525" label="UD (unused)"/>
+  <int value="526" label="UE (unused)"/>
+  <int value="527" label="UF (unused)"/>
+  <int value="528" label="Uganda"/>
+  <int value="529" label="UH (unused)"/>
+  <int value="530" label="UI (unused)"/>
+  <int value="531" label="UJ (unused)"/>
+  <int value="532" label="UK (unused)"/>
+  <int value="533" label="UL (unused)"/>
+  <int value="534" label="UM (unused)"/>
+  <int value="535" label="UN (unused)"/>
+  <int value="536" label="UO (unused)"/>
+  <int value="537" label="UP (unused)"/>
+  <int value="538" label="UQ (unused)"/>
+  <int value="539" label="UR (unused)"/>
+  <int value="540" label="United States of America"/>
+  <int value="541" label="UT (unused)"/>
+  <int value="542" label="UU (unused)"/>
+  <int value="543" label="UV (unused)"/>
+  <int value="544" label="UW (unused)"/>
+  <int value="545" label="UX (unused)"/>
+  <int value="546" label="Uruguay"/>
+  <int value="547" label="Uzbekistan"/>
+  <int value="548" label="VA (unused)"/>
+  <int value="549" label="VB (unused)"/>
+  <int value="550" label="Saint Vincent and the Grenadines"/>
+  <int value="551" label="VD (unused)"/>
+  <int value="552" label="Venezuela"/>
+  <int value="553" label="VF (unused)"/>
+  <int value="554" label="VG (unused)"/>
+  <int value="555" label="VH (unused)"/>
+  <int value="556" label="Virgin Islands (U.S.A.)"/>
+  <int value="557" label="VJ (unused)"/>
+  <int value="558" label="VK (unused)"/>
+  <int value="559" label="VL (unused)"/>
+  <int value="560" label="VM (unused)"/>
+  <int value="561" label="Viet Nam"/>
+  <int value="562" label="VO (unused)"/>
+  <int value="563" label="VP (unused)"/>
+  <int value="564" label="VQ (unused)"/>
+  <int value="565" label="VR (unused)"/>
+  <int value="566" label="VS (unused)"/>
+  <int value="567" label="VT (unused)"/>
+  <int value="568" label="Vanuatu"/>
+  <int value="569" label="VV (unused)"/>
+  <int value="570" label="VW (unused)"/>
+  <int value="571" label="VX (unused)"/>
+  <int value="572" label="VY (unused)"/>
+  <int value="573" label="VZ (unused)"/>
+  <int value="574" label="WA (unused)"/>
+  <int value="575" label="WB (unused)"/>
+  <int value="576" label="WC (unused)"/>
+  <int value="577" label="WD (unused)"/>
+  <int value="578" label="WE (unused)"/>
+  <int value="579" label="Wallis and Futuna"/>
+  <int value="580" label="WG (unused)"/>
+  <int value="581" label="WH (unused)"/>
+  <int value="582" label="WI (unused)"/>
+  <int value="583" label="WJ (unused)"/>
+  <int value="584" label="WK (unused)"/>
+  <int value="585" label="WL (unused)"/>
+  <int value="586" label="WM (unused)"/>
+  <int value="587" label="WN (unused)"/>
+  <int value="588" label="WO (unused)"/>
+  <int value="589" label="WP (unused)"/>
+  <int value="590" label="WQ (unused)"/>
+  <int value="591" label="WR (unused)"/>
+  <int value="592" label="Samoa"/>
+  <int value="593" label="WT (unused)"/>
+  <int value="594" label="WU (unused)"/>
+  <int value="595" label="WV (unused)"/>
+  <int value="596" label="WW (unused)"/>
+  <int value="597" label="WX (unused)"/>
+  <int value="598" label="WY (unused)"/>
+  <int value="599" label="WZ (unused)"/>
+  <int value="600" label="XA (unused)"/>
+  <int value="601" label="XB (unused)"/>
+  <int value="602" label="XC (unused)"/>
+  <int value="603" label="XD (unused)"/>
+  <int value="604" label="XE (unused)"/>
+  <int value="605" label="XF (unused)"/>
+  <int value="606" label="XG (unused)"/>
+  <int value="607" label="XH (unused)"/>
+  <int value="608" label="XI (unused)"/>
+  <int value="609" label="XJ (unused)"/>
+  <int value="610" label="XK (unused)"/>
+  <int value="611" label="XL (unused)"/>
+  <int value="612" label="XM (unused)"/>
+  <int value="613" label="XN (unused)"/>
+  <int value="614" label="XO (unused)"/>
+  <int value="615" label="XP (unused)"/>
+  <int value="616" label="XQ (unused)"/>
+  <int value="617" label="XR (unused)"/>
+  <int value="618" label="XS (unused)"/>
+  <int value="619" label="XT (unused)"/>
+  <int value="620" label="XU (unused)"/>
+  <int value="621" label="XV (unused)"/>
+  <int value="622" label="XW (unused)"/>
+  <int value="623" label="XX (unused)"/>
+  <int value="624" label="XY (unused)"/>
+  <int value="625" label="XZ (unused)"/>
+  <int value="626" label="YA (unused)"/>
+  <int value="627" label="YB (unused)"/>
+  <int value="628" label="YC (unused)"/>
+  <int value="629" label="YD (unused)"/>
+  <int value="630" label="Yemen"/>
+  <int value="631" label="YF (unused)"/>
+  <int value="632" label="YG (unused)"/>
+  <int value="633" label="YH (unused)"/>
+  <int value="634" label="YI (unused)"/>
+  <int value="635" label="YJ (unused)"/>
+  <int value="636" label="YK (unused)"/>
+  <int value="637" label="YL (unused)"/>
+  <int value="638" label="YM (unused)"/>
+  <int value="639" label="YN (unused)"/>
+  <int value="640" label="YO (unused)"/>
+  <int value="641" label="YP (unused)"/>
+  <int value="642" label="YQ (unused)"/>
+  <int value="643" label="YR (unused)"/>
+  <int value="644" label="YS (unused)"/>
+  <int value="645" label="Mayotte"/>
+  <int value="646" label="YU (unused)"/>
+  <int value="647" label="YV (unused)"/>
+  <int value="648" label="YW (unused)"/>
+  <int value="649" label="YX (unused)"/>
+  <int value="650" label="YY (unused)"/>
+  <int value="651" label="YZ (unused)"/>
+  <int value="652" label="South Africa"/>
+  <int value="653" label="ZB (unused)"/>
+  <int value="654" label="ZC (unused)"/>
+  <int value="655" label="ZD (unused)"/>
+  <int value="656" label="ZE (unused)"/>
+  <int value="657" label="ZF (unused)"/>
+  <int value="658" label="ZG (unused)"/>
+  <int value="659" label="ZH (unused)"/>
+  <int value="660" label="ZI (unused)"/>
+  <int value="661" label="ZJ (unused)"/>
+  <int value="662" label="ZK (unused)"/>
+  <int value="663" label="ZL (unused)"/>
+  <int value="664" label="ZM (unused)"/>
+  <int value="665" label="ZN (unused)"/>
+  <int value="666" label="ZO (unused)"/>
+  <int value="667" label="ZP (unused)"/>
+  <int value="668" label="ZQ (unused)"/>
+  <int value="669" label="ZR (unused)"/>
+  <int value="670" label="ZS (unused)"/>
+  <int value="671" label="ZT (unused)"/>
+  <int value="672" label="ZU (unused)"/>
+  <int value="673" label="ZV (unused)"/>
+  <int value="674" label="Zimbabwe"/>
+  <int value="675" label="ZX (unused)"/>
+  <int value="676" label="ZY (unused)"/>
+  <int value="677" label="ZZ (unused)"/>
+  <int value="678" label="countryCodeInvalid"/>
+  <int value="679" label="99"/>
+  <int value="680" label="98"/>
+  <int value="681" label="97"/>
+</enum>
+
+<enum name="SharedDictionaryEncodingType">
+  <int value="0" label="Not Used"/>
+  <int value="1" label="Shared Brotli"/>
+  <int value="2" label="Shared Zstd"/>
+</enum>
+
+<enum name="ShillCellularConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Failed to connect"/>
+  <int value="3" label="DHCP Failure"/>
+  <int value="4" label="DNS Lookup Failure"/>
+  <int value="5" label="EAP Authentication"/>
+  <int value="6" label="Eap Local Tls"/>
+  <int value="7" label="Eap Remote Tls"/>
+  <int value="8" label="Out of Range"/>
+  <int value="9" label="Pin Missing"/>
+  <int value="10" label="No failure"/>
+  <int value="11" label="Not Associated"/>
+  <int value="12" label="Not Authenticated"/>
+  <int value="13" label="Too Many STAs"/>
+  <int value="14" label="Bad Passphrase"/>
+  <int value="15" label="Bad Wep Key"/>
+  <int value="16" label="Sim Locked"/>
+  <int value="17" label="Not registered"/>
+</enum>
+
+<enum name="ShillConnectResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Aaa Failed"/>
+  <int value="3" label="Activation Failed"/>
+  <int value="4" label="Bad Passphrase"/>
+  <int value="5" label="Bad WEP Key"/>
+  <int value="6" label="Connect Failed"/>
+  <int value="7" label="DNS Lookup Failed"/>
+  <int value="8" label="Dhcp Failed"/>
+  <int value="9" label="HTTP Get Failed"/>
+  <int value="10" label="Internal"/>
+  <int value="11" label="Invalid Failure"/>
+  <int value="12" label="Ipsec Cert Auth Failed"/>
+  <int value="13" label="Ipsec Psk Auth Failed"/>
+  <int value="14" label="Need Evdo"/>
+  <int value="15" label="Need Home Network"/>
+  <int value="16" label="No Failure"/>
+  <int value="17" label="Not Associated"/>
+  <int value="18" label="Not Authenticated"/>
+  <int value="19" label="Otasp Failed"/>
+  <int value="20" label="Out Of Range"/>
+  <int value="21" label="Pin Missing"/>
+  <int value="22" label="Ppp Auth Failed"/>
+  <int value="23" label="Sim Locked"/>
+  <int value="24" label="Not Registered"/>
+  <int value="25" label="Too Many STAs"/>
+  <int value="26" label="Disconnect"/>
+  <int value="27" label="Unknown Failure"/>
+  <int value="28" label="Result Failure"/>
+  <int value="29" label="Result Already Connected"/>
+  <int value="30" label="Result Already Exists"/>
+  <int value="31" label="Result IncorrectPin"/>
+  <int value="32" label="Result In Progress"/>
+  <int value="33" label="Result Internal"/>
+  <int value="34" label="Result Invalid Apn"/>
+  <int value="35" label="Result Invalid Arguments"/>
+  <int value="36" label="Result Invalid NetworkName"/>
+  <int value="37" label="Result Invalid Passphrase"/>
+  <int value="38" label="Result Invalid Property"/>
+  <int value="39" label="Result No Carrier"/>
+  <int value="40" label="Result Not Connected"/>
+  <int value="41" label="Result Not Found"/>
+  <int value="42" label="Result Not Implemented"/>
+  <int value="43" label="Result Not On Home Network"/>
+  <int value="44" label="Result Not Registered"/>
+  <int value="45" label="Result Not Supported"/>
+  <int value="46" label="Result Operation Aborted"/>
+  <int value="47" label="Result Operation Initiated"/>
+  <int value="48" label="Result Operation Timeout"/>
+  <int value="49" label="Result Passphrase Required"/>
+  <int value="50" label="Result Permission Denied"/>
+  <int value="51" label="Result Pin Blocked"/>
+  <int value="52" label="Result Pin Required"/>
+  <int value="53" label="Result Wrong State"/>
+  <int value="54" label="Eap Authentication Failed"/>
+  <int value="55" label="Eap Local Tls Failed"/>
+  <int value="56" label="Eap Remote Tls Failed"/>
+  <int value="57" label="WEP networks are not supported"/>
+  <int value="58" label="Disable Hotspot Failed"/>
+  <int value="59" label="Invalid APN"/>
+  <int value="60" label="Sim Carrier Locked"/>
+  <int value="61" label="Delayed Connect Failed"/>
+</enum>
+
+<enum name="SimLockNotificationEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Clicked"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<enum name="SimPinLockType">
+  <int value="0" label="PIN Locked"/>
+  <int value="1" label="PUK Locked"/>
+  <int value="2" label="Unlocked"/>
+</enum>
+
+<enum name="SimPinOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error Device Missing"/>
+  <int value="2" label="Error Failure"/>
+  <int value="3" label="Error Incorrect Pin"/>
+  <int value="4" label="Error Not Found"/>
+  <int value="5" label="Error Not Supported"/>
+  <int value="6" label="Error Pin Blocked"/>
+  <int value="7" label="Error Pin Required"/>
+  <int value="8" label="Error Timeout"/>
+  <int value="9" label="Error Unknown"/>
+  <int value="10" label="Error Wrong State"/>
+</enum>
+
+<enum name="SlopBucketDisabledReason">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="LowEnd"/>
+  <int value="2" label="MemoryPressure"/>
+</enum>
+
+<enum name="UnmanagedApnMigrationType">
+  <int value="0"
+      label="No last connected attach or default APN, but matches last good
+             APN"/>
+  <int value="1"
+      label="No last connected attach or default APN, and does not match last
+             good APN"/>
+  <int value="2" label="Matches last connected attach and default APN"/>
+  <int value="3"
+      label="Matches last connected attach APN, but not the connected default
+             APN; last connected default APN matches a database APN
+             (deprecated)"/>
+  <int value="4"
+      label="Matches last connected attach APN, but not the connected default
+             APN; last connected default APN does not match a database APN
+             (deprecated)"/>
+  <int value="5"
+      label="No last connected attach APN, but matches last connected default
+             APN"/>
+  <int value="6" label="Default case where there is no matching connected APN"/>
+  <int value="7" label="Matches last connected attach APN but not default APN"/>
+  <int value="8" label="Matches last connected default APN but not attach APN"/>
+</enum>
+
+<enum name="UserInitiatedCellularConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Invalid GUID"/>
+  <int value="3" label="Invalid State"/>
+  <int value="4" label="Canceled"/>
+  <int value="5" label="Not configured"/>
+  <int value="6" label="Blocked"/>
+  <int value="7" label="Cellular Inhibit Failure"/>
+  <int value="8" label="ESim profile issue"/>
+  <int value="9" label="Cellular out of credits"/>
+  <int value="10" label="Sim locked"/>
+  <int value="11" label="Connect failed"/>
+  <int value="12" label="Not connected"/>
+  <int value="13" label="Activate Failed"/>
+  <int value="14" label="Enabled or disabled when not available"/>
+  <int value="15" label="Cellular device busy"/>
+  <int value="16" label="Error Connect Timeout"/>
+  <int value="17" label="Cellular waiting for connectable timeout"/>
+</enum>
+
+<enum name="UserInitiatedNetworkConnectResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Not Found"/>
+  <int value="3" label="Invalid state: Connected"/>
+  <int value="4" label="Invalid state: Connecting"/>
+  <int value="5" label="Passphrase Required"/>
+  <int value="6" label="Bad Passphrase"/>
+  <int value="7" label="Certificate Required"/>
+  <int value="8" label="Authentication Required"/>
+  <int value="9" label="Configuration Required"/>
+  <int value="10" label="Configure Failed"/>
+  <int value="11" label="Connect Failed"/>
+  <int value="12" label="Disconnect Failed"/>
+  <int value="13" label="Connect Canceled"/>
+  <int value="14" label="Invalid state: Not Connected"/>
+  <int value="15" label="Cert Load Timeout"/>
+  <int value="16" label="Blocked By Policy"/>
+  <int value="17" label="Hex Ssid Required"/>
+  <int value="18" label="Activate Failed"/>
+  <int value="19" label="Enabled Or Disabled When Not Available"/>
+  <int value="20" label="Tether Attempt With No Delegate"/>
+  <int value="21" label="Cellular Inhibit Failure"/>
+  <int value="22" label="Cellular Out Of Credits"/>
+  <int value="23" label="ESim Profile Issue"/>
+  <int value="24" label="Sim Locked"/>
+  <int value="25" label="Cellular Device Busy"/>
+  <int value="26" label="Connect Timeout"/>
+  <int value="27" label="Connectable Cellular Timeout"/>
+  <int value="28" label="Aaa Failed"/>
+  <int value="29" label="Bad WEP Key"/>
+  <int value="30" label="DNS Lookup Failed"/>
+  <int value="31" label="Dhcp Failed"/>
+  <int value="32" label="HTTP Get Failed"/>
+  <int value="33" label="Internal"/>
+  <int value="34" label="Invalid Failure"/>
+  <int value="35" label="Ipsec Cert Auth Failed"/>
+  <int value="36" label="Ipsec Psk Auth Failed"/>
+  <int value="37" label="Need Evdo"/>
+  <int value="38" label="Need Home Network"/>
+  <int value="39" label="No Failure"/>
+  <int value="40" label="Not Associated"/>
+  <int value="41" label="Not Authenticated"/>
+  <int value="42" label="Otasp Failed"/>
+  <int value="43" label="Out Of Range"/>
+  <int value="44" label="Pin Missing"/>
+  <int value="45" label="Ppp Auth Failed"/>
+  <int value="46" label="Not Registered"/>
+  <int value="47" label="Too Many STAs"/>
+  <int value="48" label="Disconnect"/>
+  <int value="49" label="Unknown Failure"/>
+  <int value="50" label="Invalid APN"/>
+  <int value="51" label="Sim Carrier Locked"/>
+  <int value="52" label="Eap Authentication Failed"/>
+  <int value="53" label="Eap Local Tls Failed"/>
+  <int value="54" label="Eap Remote Tls Failed"/>
+  <int value="55" label="WEP networks are not supported"/>
+  <int value="56" label="Delayed Connect Failed"/>
+</enum>
+
+<enum name="UserTextMessageSuppressionState">
+  <int value="0" label="Allow"/>
+  <int value="1" label="Suppress"/>
+</enum>
+
+<enum name="VPNConfigurationSource">
+  <int value="0" label="Configured manually"/>
+  <int value="1" label="Configured by policy"/>
+</enum>
+
+<enum name="VPNDriver">
+  <int value="0" label="OpenVPN"/>
+  <int value="1" label="L2TP/IPSec"/>
+  <int value="2" label="Third Party (CrOS)"/>
+  <int value="3" label="Third Party (Android)"/>
+  <int value="4" label="PPTP"/>
+  <int value="5" label="WireGuard"/>
+  <int value="6" label="IKEv2"/>
+</enum>
+
+<enum name="VPNIPsecAuthenticationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="PSK"/>
+  <int value="2" label="EAP"/>
+  <int value="3" label="User certificate"/>
+</enum>
+
+<enum name="VPNIPsecDHGroup">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ECP_256"/>
+  <int value="2" label="ECP_384"/>
+  <int value="3" label="ECP_521"/>
+  <int value="4" label="ECP_256_BP"/>
+  <int value="5" label="ECP_384_BP"/>
+  <int value="6" label="ECP_512_BP"/>
+  <int value="7" label="CURVE_25519"/>
+  <int value="8" label="CURVE_448"/>
+  <int value="9" label="MODP_1024"/>
+  <int value="10" label="MODP_1536"/>
+  <int value="11" label="MODP_2048"/>
+  <int value="12" label="MODP_3072"/>
+  <int value="13" label="MODP_4096"/>
+  <int value="14" label="MODP_6144"/>
+  <int value="15" label="MODP_8192"/>
+</enum>
+
+<enum name="VPNIPsecEncryptionAlgorithm">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AES_CBC_128"/>
+  <int value="2" label="AES_CBC_192"/>
+  <int value="3" label="AES_CBC_256"/>
+  <int value="4" label="CAMELLIA_CBC_128"/>
+  <int value="5" label="CAMELLIA_CBC_192"/>
+  <int value="6" label="CAMELLIA_CBC_256"/>
+  <int value="7" label="3DES_CBC"/>
+  <int value="8" label="AES_GCM_16_128"/>
+  <int value="9" label="AES_GCM_16_192"/>
+  <int value="10" label="AES_GCM_16_256"/>
+  <int value="11" label="AES_GCM_12_128"/>
+  <int value="12" label="AES_GCM_12_192"/>
+  <int value="13" label="AES_GCM_12_256"/>
+  <int value="14" label="AES_GCM_8_128"/>
+  <int value="15" label="AES_GCM_8_192"/>
+  <int value="16" label="AES_GCM_8_256"/>
+</enum>
+
+<enum name="VPNIPsecIntegrirtyAlgorithm">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="HMAC_SHA2_256_128"/>
+  <int value="2" label="HMAC_SHA2_384_192"/>
+  <int value="3" label="HMAC_SHA2_512_256"/>
+  <int value="4" label="HMAC_SHA1_96"/>
+  <int value="5" label="AES_XCBC_96"/>
+  <int value="6" label="AES_CMAC_96"/>
+</enum>
+
+<enum name="VPNL2TPIPsecTunnelGroupUsage">
+  <int value="0" label="Tunnel group is not used"/>
+  <int value="1" label="Tunnel group is used"/>
+</enum>
+
+<enum name="VPNOpenVPNCipher">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="BF-CBC"/>
+  <int value="2" label="AES-256-GCM"/>
+  <int value="3" label="AES-128-GCM"/>
+</enum>
+
+<enum name="VPNRemoteAuthenticationType">
+  <int value="0" label="OpenVPN Default"/>
+  <int value="1" label="OpenVPN Certificate"/>
+  <int value="2" label="L2TP/IPsec Default"/>
+  <int value="3" label="L2TP/IPsec Certificate"/>
+  <int value="4" label="L2TP/IPsec PSK"/>
+</enum>
+
+<enum name="VPNUserAuthenticationType">
+  <int value="0" label="OpenVPN None"/>
+  <int value="1" label="OpenVPN Certificate"/>
+  <int value="2" label="OpenVPN Username/Password"/>
+  <int value="3" label="OpenVPN Username/Password/OTP"/>
+  <int value="4" label="L2TP/IPsec None"/>
+  <int value="5" label="L2TP/IPsec Certificate"/>
+  <int value="6" label="L2TP/IPsec Username/Password"/>
+  <int value="7" label="OpenVPN Username/Token"/>
+</enum>
+
+<enum name="VPNWireGuardAllowedIPsType">
+  <int value="0" label="0.0.0.0/0 is set in in at least one of the peers"/>
+  <int value="1" label="No peer contains 0.0.0.0/0 in its AllowedIPs"/>
+</enum>
+
+<enum name="VPNWireGuardKeyPairSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Input by user"/>
+  <int value="2" label="Generated inside shill"/>
+</enum>
+
+<enum name="WiFiAdapterInAllowlist">
+  <int value="0" label="Adapter is not in the allowlist"/>
+  <int value="1" label="Adapter in AVL"/>
+  <int value="2" label="Adapter in allowlist but not in AVL"/>
+</enum>
+
+<enum name="WiFiAp80211kSupport">
+  <int value="0" label="Does not support 802.11k"/>
+  <int value="1" label="Supports 802.11k neighbor lists"/>
+</enum>
+
+<enum name="WiFiAp80211rSupport">
+  <int value="0" label="Does not support 802.11r"/>
+  <int value="1" label="Supports Over-the-Air FT Roaming"/>
+  <int value="2" label="Supports Over-the-DS FT Roaming"/>
+</enum>
+
+<enum name="WiFiAp80211vBSSMaxIdlePeriodSupport">
+  <int value="0" label="Does not support 802.11v BSS Max idle period"/>
+  <int value="1" label="Supports BSS Max idle period"/>
+</enum>
+
+<enum name="WiFiAp80211vBSSTransitionSupport">
+  <int value="0" label="Does not support 802.11v BSS transition"/>
+  <int value="1" label="Supports BSS transition"/>
+</enum>
+
+<enum name="WiFiAp80211vDMSSupport">
+  <int value="0" label="Does not support 802.11v DMS"/>
+  <int value="1" label="Supports DMS"/>
+</enum>
+
+<enum name="WiFiApAlternateEDCASupport">
+  <int value="0" label="Does not support alternate EDCA"/>
+  <int value="1" label="Supports alternate EDCA"/>
+</enum>
+
+<enum name="WiFiApChannelSwitch">
+  <int value="0" label="Unknown frequency range"/>
+  <int value="1" label="2.4GHz -&gt; 2.4GHz"/>
+  <int value="2" label="2.4GHz -&gt; 5GHz"/>
+  <int value="3" label="5GHz -&gt; 2.4GHz"/>
+  <int value="4" label="5GHz -&gt; 5GHz"/>
+</enum>
+
+<enum name="WiFiApSCSupport">
+  <int value="0" label="Does not support stream classification"/>
+  <int value="1" label="Supports only SCS"/>
+  <int value="2" label="Supports only MSCS"/>
+  <int value="3" label="Supports both SCS and MSCS"/>
+</enum>
+
+<enum name="WiFiBadPassphraseServiceType">
+  <int value="0"
+      label="Not user-initiated connection; not previously connected"/>
+  <int value="1" label="Not user-initiated connection; previously connected"/>
+  <int value="2" label="User-initiated connection; not previously connected"/>
+  <int value="3" label="User-initiated connection; previously connected"/>
+</enum>
+
+<enum name="WiFiBSSTransitionManagementSupport">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Reject unspecified"/>
+  <int value="2" label="Reject insufficient beacon"/>
+  <int value="3" label="Reject insufficient capability"/>
+  <int value="4" label="Reject undesired"/>
+  <int value="5" label="Reject delay request"/>
+  <int value="6" label="Reject STA candidate list provided"/>
+  <int value="7" label="Reject no suitable candidates"/>
+  <int value="8" label="Reject leaving ESS"/>
+</enum>
+
+<enum name="WiFiCiscoAdaptiveFTSupport">
+  <int value="0" label="Does not support Adaptive FT"/>
+  <int value="1" label="Supports Adaptive FT"/>
+</enum>
+
+<enum name="WiFiCQMNotificationType">
+  <int value="0" label="Packet loss"/>
+  <int value="1" label="Beacon loss"/>
+</enum>
+
+<enum name="WiFiReasonCode">
+  <int value="0" label="kReasonReserved0"/>
+  <int value="1" label="kReasonCodeUnspecified"/>
+  <int value="2" label="kReasonCodePreviousAuthenticationInvalid"/>
+  <int value="3" label="kReasonCodeSenderHasLeft"/>
+  <int value="4" label="kReasonCodeInactivity"/>
+  <int value="5" label="kReasonCodeTooManySTAs"/>
+  <int value="6" label="kReasonCodeNonAuthenticated"/>
+  <int value="7" label="kReasonCodeNonAssociated"/>
+  <int value="8" label="kReasonCodeDisassociatedHasLeft"/>
+  <int value="9" label="kReasonCodeReassociationNotAuthenticated"/>
+  <int value="10" label="kReasonCodeUnacceptablePowerCapability"/>
+  <int value="11" label="kReasonCodeUnacceptableSupportedChannelInfo"/>
+  <int value="12" label="kReasonReserved12"/>
+  <int value="13" label="kReasonCodeInvalidInfoElement"/>
+  <int value="14" label="kReasonCodeMICFailure"/>
+  <int value="15" label="kReasonCode4WayTimeout"/>
+  <int value="16" label="kReasonCodeGroupKeyHandshakeTimeout"/>
+  <int value="17" label="kReasonCodeDifferenIE"/>
+  <int value="18" label="kReasonCodeGroupCipherInvalid"/>
+  <int value="19" label="kReasonCodePairwiseCipherInvalid"/>
+  <int value="20" label="kReasonCodeAkmpInvalid"/>
+  <int value="21" label="kReasonCodeUnsupportedRsnIeVersion"/>
+  <int value="22" label="kReasonCodeInvalidRsnIeCaps"/>
+  <int value="23" label="kReasonCode8021XAuth"/>
+  <int value="24" label="kReasonCodeCipherSuiteRejected"/>
+  <int value="25" label="kReasonReserved25"/>
+  <int value="26" label="kReasonReserved26"/>
+  <int value="27" label="kReasonReserved27"/>
+  <int value="28" label="kReasonReserved28"/>
+  <int value="29" label="kReasonReserved29"/>
+  <int value="30" label="kReasonReserved30"/>
+  <int value="31" label="kReasonReserved31"/>
+  <int value="32" label="kReasonCodeUnspecifiedQoS"/>
+  <int value="33" label="kReasonCodeQoSBandwidth"/>
+  <int value="34" label="kReasonCodeiPoorConditions"/>
+  <int value="35" label="kReasonCodeOutsideTxop"/>
+  <int value="36" label="kReasonCodeStaLeaving"/>
+  <int value="37" label="kReasonCodeUnacceptableMechanism"/>
+  <int value="38" label="kReasonCodeSetupRequired"/>
+  <int value="39" label="kReasonCodeTimeout"/>
+  <int value="45" label="kReasonCodeCipherSuiteNotSupported"/>
+</enum>
+
+<enum name="WiFiRestartReason">
+  <int value="0" label="kRestartReasonCannotAssoc"/>
+</enum>
+
+<enum name="WiFiRoamComplete">
+  <int value="0" label="Roam success"/>
+  <int value="1" label="Roam failure"/>
+</enum>
+
+<enum name="WiFiScanResult">
+  <int value="0" label="ProgressiveScan connected"/>
+  <int value="1" label="ProgressiveScan error then FullScan didn't connect"/>
+  <int value="2" label="ProgressiveScan error then FullScan connected"/>
+  <int value="3"
+      label="ProgressiveScan didn't connect then FullScan didn't connect"/>
+  <int value="4"
+      label="ProgressiveScan didn't connect then FullScan connected"/>
+  <int value="5" label="FullScan didn't connect"/>
+  <int value="6" label="FullScan connected"/>
+  <int value="7" label="Internal error"/>
+</enum>
+
+<enum name="WiFiSessionTagState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unexpected"/>
+  <int value="2" label="Expected"/>
+</enum>
+
+<enum name="WiFiStatusCode">
+  <int value="0" label="kStatusCodeSuccessful"/>
+  <int value="1" label="kStatusCodeFailure"/>
+  <int value="2" label="kStatusCodeTdlsRejectWithAlternative"/>
+  <int value="3" label="kStatusCodeTdlsReject"/>
+  <int value="5" label="kStatusCodeSecurityDisabled"/>
+  <int value="6" label="kStatusCodeUnacceptableLifetime"/>
+  <int value="7" label="kStatusCodeNotInSameBSS"/>
+  <int value="10" label="kStatusCodeAllCapabilitiesNotSupported"/>
+  <int value="11" label="kStatusCodeCantConfirmAssociation"/>
+  <int value="12" label="kStatusCodeAssociationDenied"/>
+  <int value="13" label="kStatusCodeAuthenticationUnsupported"/>
+  <int value="14" label="kStatusCodeOutOfSequence"/>
+  <int value="15" label="kStatusCodeChallengeFailure"/>
+  <int value="16" label="kStatusCodeFrameTimeout"/>
+  <int value="17" label="kStatusCodeMaxSta"/>
+  <int value="18" label="kStatusCodeDataRateUnsupported"/>
+  <int value="19" label="kStatusCodeShortPreambleUnsupported"/>
+  <int value="20" label="kStatusCodePbccUnsupported"/>
+  <int value="21" label="kStatusCodeChannelAgilityUnsupported"/>
+  <int value="22" label="kStatusCodeNeedSpectrumManagement"/>
+  <int value="23" label="kStatusCodeUnacceptablePowerCapability"/>
+  <int value="24" label="kStatusCodeUnacceptableSupportedChannelInfo"/>
+  <int value="25" label="kStatusCodeShortTimeSlotRequired"/>
+  <int value="26" label="kStatusCodeDssOfdmRequired"/>
+  <int value="27" label="kStatusCodeNoHtSupport"/>
+  <int value="28" label="kStatusCodeR0khUnreachable"/>
+  <int value="29" label="kStatusCodePcoNotSupported"/>
+  <int value="30" label="kStatusCodeTemporaryRefusal"/>
+  <int value="31" label="kStatusCodeRobustManagementViolation"/>
+  <int value="32" label="kStatusCodeQosFailure"/>
+  <int value="33" label="kStatusCodeInsufficientBandwithForQsta"/>
+  <int value="34" label="kStatusCodePoorConditions"/>
+  <int value="35" label="kStatusCodeQosNotSupported"/>
+  <int value="37" label="kStatusCodeDeclined"/>
+  <int value="38" label="kStatusCodeInvalidParameterValues"/>
+  <int value="39" label="kStatusCodeCannotBeHonored"/>
+  <int value="40" label="kStatusCodeInvalidInfoElement"/>
+  <int value="41" label="kStatusCodeGroupCipherInvalid"/>
+  <int value="42" label="kStatusCodePairwiseCipherInvalid"/>
+  <int value="43" label="kStatusCodeAkmpInvalid"/>
+  <int value="44" label="kStatusCodeUnsupportedRsnIeVersion"/>
+  <int value="45" label="kStatusCodeInvalidRsnIeCaps"/>
+  <int value="46" label="kStatusCodeCipherSuiteRejected"/>
+  <int value="47" label="kStatusCodeTsDelayNotMet"/>
+  <int value="48" label="kStatusCodeDirectLinkIllegal"/>
+  <int value="49" label="kStatusCodeStaNotInBss"/>
+  <int value="50" label="kStatusCodeStaNotInQsta"/>
+  <int value="51" label="kStatusCodeExcessiveListenInterval"/>
+  <int value="52" label="kStatusCodeInvalidFtActionFrameCount"/>
+  <int value="53" label="kStatusCodeInvalidPmkid"/>
+  <int value="54" label="kStatusCodeInvalidMde"/>
+  <int value="55" label="kStatusCodeInvalidFte"/>
+  <int value="56" label="kStatusCodeRequestedAPTclasNotSupported"/>
+  <int value="57" label="kStatusCodeInsufficientTclasResources"/>
+  <int value="58" label="kStatusCodeTryAnotherBss"/>
+  <int value="59" label="kStatusCodeGasAdvertisementNotSupported"/>
+  <int value="60" label="kStatusCodeNoOutstandingGasRequest"/>
+  <int value="61" label="kStatusCodeGasResponseNotReceived"/>
+  <int value="62" label="kStatusCodeGasQueryTimeout"/>
+  <int value="63" label="kStatusCodeGasResponseTooLarge"/>
+  <int value="64" label="kStatusCodeHomeRejected"/>
+  <int value="65" label="kStatusCodeAdvertisementServerUnreachable"/>
+  <int value="67" label="kStatusCodeRejectedSspnPermissions"/>
+  <int value="68" label="kStatusCodeRefusedUnauthenticatedAccess"/>
+  <int value="72" label="kStatusCodeInvalidRsne"/>
+  <int value="73" label="kStatusCodeUapsdCoexNotSupported"/>
+  <int value="74" label="kStatusCodeUapsdCoexModeNotSupported"/>
+  <int value="75" label="kStatusCodeBadIntervalWithUApsdCoex"/>
+  <int value="76" label="kStatusCodeAntiCloggingTokenRequired"/>
+  <int value="77" label="kStatusCodeUnsupportedFiniteCyclicGroup"/>
+  <int value="78" label="kStatusCodeCannotFindAlternativeTbtt"/>
+  <int value="79" label="kStatusCodeTransmissionFailure"/>
+  <int value="80" label="kStatusCodeRequestedTclasNotSupported"/>
+  <int value="81" label="kStatusCodeTclasResourcesExhausted"/>
+  <int value="82" label="kStatusCodeRejectedWithSuggestedBss"/>
+  <int value="83" label="kStatusCodeRejectWithSchedule"/>
+  <int value="84" label="kStatusCodeNoWakeupSpecified"/>
+  <int value="85" label="kStatusCodeSuccessPowerSaveMode"/>
+  <int value="86" label="kStatusCodePendingAdmittingFstSession"/>
+  <int value="87" label="kStatusCodePerformingFst"/>
+  <int value="88" label="kStatusCodePendingGapInBaWindow"/>
+  <int value="89" label="kStatusCodeRejectedUpidSetting"/>
+  <int value="92" label="kStatusCodeExternalReason"/>
+  <int value="93" label="kStatusCodeApOutOfMemory"/>
+  <int value="94" label="kStatusCodeEmergencyServicesNotSupported"/>
+  <int value="95" label="kStatusCodeQueryResponseOutstanding"/>
+  <int value="96" label="kStatusCodeRejectDseBand"/>
+  <int value="97" label="kStatusCodeTclasProcessingTerminated"/>
+  <int value="98" label="kStatusCodeTsScheduleConflict"/>
+  <int value="99" label="kStatusCodeDeniedWithSuggestedBand"/>
+  <int value="100" label="kStatusCodeMccaopReservationConflict"/>
+  <int value="101" label="kStatusCodeMafLimitExceeded"/>
+  <int value="102" label="kStatusCodeMccaTrackLimitExceeded"/>
+  <int value="103" label="kStatusCodeDeniedSpectrumManagement"/>
+  <int value="104" label="kStatusCodeVhtNotSupported"/>
+  <int value="105" label="kStatusCodeEnablementDenied"/>
+  <int value="106" label="kStatusCodeRestrictionFromAuthorizedGdb"/>
+  <int value="107" label="kStatusCodeAuthorizationDeenabled"/>
+</enum>
+
+<enum name="WiFiStatusType">
+  <int value="0" label="kStatusCodeTypeByAp"/>
+  <int value="1" label="kStatusCodeTypeByClient"/>
+  <int value="2" label="kStatusCodeTypeByUser"/>
+  <int value="3" label="kStatusCodeTypeConsideredDead"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

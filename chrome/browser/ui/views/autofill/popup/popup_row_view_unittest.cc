@@ -14,14 +14,17 @@
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -52,34 +55,6 @@ using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
 
-class MockPopupCellView : public PopupCellView {
- public:
-  MOCK_METHOD(bool,
-              HandleKeyPressEvent,
-              (const content::NativeWebKeyboardEvent& event),
-              (override));
-};
-
-class MockingTestPopupRowStrategy : public TestPopupRowStrategy {
- public:
-  explicit MockingTestPopupRowStrategy(int line_number)
-      : TestPopupRowStrategy(line_number) {}
-  ~MockingTestPopupRowStrategy() override = default;
-
-  std::unique_ptr<PopupCellView> CreateContent() override {
-    auto content_cell = std::make_unique<NiceMock<MockPopupCellView>>();
-    last_created_mock_content_cell_ = content_cell.get();
-    return content_cell;
-  }
-
-  MockPopupCellView* last_created_content_cell() {
-    return last_created_mock_content_cell_;
-  }
-
- private:
-  raw_ptr<MockPopupCellView> last_created_mock_content_cell_ = nullptr;
-};
-
 }  // namespace
 
 class PopupRowViewTest : public ChromeViewsTestBase {
@@ -90,6 +65,11 @@ class PopupRowViewTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    ON_CALL(mock_controller_, GetWebContents())
+        .WillByDefault(Return(web_contents_.get()));
   }
 
   void ShowView(int line_number, bool has_control) {
@@ -104,25 +84,24 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 
   void ShowView(int line_number, std::vector<Suggestion> suggestions) {
     mock_controller_.set_suggestions(suggestions);
-    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
+    ShowView(line_number);
   }
 
   void ShowView(int line_number, std::vector<PopupItemId> suggestions) {
     mock_controller_.set_suggestions(suggestions);
-    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
+    ShowView(line_number);
   }
 
-  void ShowView(std::unique_ptr<TestPopupRowStrategy> strategy) {
-    row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
-        mock_a11y_selection_delegate_, mock_selection_delegate_,
-        mock_controller_.GetWeakPtr(), strategy->GetLineNumber(),
-        strategy->CreateContent()));
+  void ShowView(int line_number) {
+    row_view_ = widget_->SetContentsView(CreatePopupRowView(
+        mock_controller_.GetWeakPtr(), mock_a11y_selection_delegate_,
+        mock_selection_delegate_, line_number));
     ON_CALL(mock_selection_delegate_, SetSelectedCell)
-        .WillByDefault([this](absl::optional<CellIndex> cell,
-                              PopupCellSelectionSource) {
-          row_view().SetSelectedCell(
-              cell ? absl::optional<CellType>{cell->second} : absl::nullopt);
-        });
+        .WillByDefault(
+            [this](std::optional<CellIndex> cell, PopupCellSelectionSource) {
+              row_view().SetSelectedCell(
+                  cell ? std::optional<CellType>{cell->second} : std::nullopt);
+            });
     widget_->Show();
   }
 
@@ -165,6 +144,9 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   PopupRowView& row_view() { return *row_view_; }
 
  private:
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;
@@ -183,19 +165,19 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
 
   EXPECT_CALL(
       selection_delegate(),
-      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kContent),
+      SetSelectedCell(std::make_optional<CellIndex>(2u, CellType::kContent),
                       PopupCellSelectionSource::kMouse));
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
 
   // Moving from one cell to another triggers two events, one with
-  // `absl::nullopt` as argument and the other with the control cell.
+  // `std::nullopt` as argument and the other with the control cell.
   EXPECT_CALL(selection_delegate(),
-              SetSelectedCell(absl::optional<CellIndex>(),
+              SetSelectedCell(std::optional<CellIndex>(),
                               PopupCellSelectionSource::kMouse));
   EXPECT_CALL(
       selection_delegate(),
-      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kControl),
+      SetSelectedCell(std::make_optional<CellIndex>(2u, CellType::kControl),
                       PopupCellSelectionSource::kMouse));
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
   generator().MoveMouseTo(row_view()
@@ -204,7 +186,7 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
                               .CenterPoint());
 
   EXPECT_CALL(selection_delegate(),
-              SetSelectedCell(absl::optional<CellIndex>(),
+              SetSelectedCell(std::optional<CellIndex>(),
                               PopupCellSelectionSource::kMouse));
   generator().MoveMouseTo(kOutOfBounds);
 }
@@ -218,7 +200,7 @@ TEST_F(PopupRowViewTest, GestureEvents) {
 
   EXPECT_CALL(
       selection_delegate(),
-      SetSelectedCell(absl::make_optional<CellIndex>(0u, CellType::kContent),
+      SetSelectedCell(std::make_optional<CellIndex>(0u, CellType::kContent),
                       PopupCellSelectionSource::kMouse));
   EXPECT_CALL(controller(), AcceptSuggestion);
   generator().GestureTapAt(
@@ -248,13 +230,13 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
               NotifyAXSelection(Ref(row_view().GetContentView())));
   row_view().SetSelectedCell(CellType::kContent);
   EXPECT_EQ(row_view().GetSelectedCell(),
-            absl::make_optional<CellType>(CellType::kContent));
+            std::make_optional<CellType>(CellType::kContent));
 
   // Selecting it again leads to no notification.
   EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
   row_view().SetSelectedCell(CellType::kContent);
   EXPECT_EQ(row_view().GetSelectedCell(),
-            absl::make_optional<CellType>(CellType::kContent));
+            std::make_optional<CellType>(CellType::kContent));
 
   // Setting the cell type to control leads to no selected cell when there is no
   // control surface.
@@ -282,13 +264,13 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
   EXPECT_CALL(a11y_callback, Run(_, ax::mojom::Event::kFocus));
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_EQ(row_view().GetSelectedCell(),
-            absl::make_optional<CellType>(CellType::kControl));
+            std::make_optional<CellType>(CellType::kControl));
 
   // Selecting it again leads to no notification.
   EXPECT_CALL(a11y_callback, Run).Times(0);
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_EQ(row_view().GetSelectedCell(),
-            absl::make_optional<CellType>(CellType::kControl));
+            std::make_optional<CellType>(CellType::kControl));
 }
 
 TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
@@ -296,7 +278,7 @@ TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
   ASSERT_FALSE(row_view().GetSelectedCell().has_value());
 
-  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
+  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>(0)));
   row_view().SetSelectedCell(CellType::kContent);
 
   // No selection triggering if trying to set already selected content.
@@ -304,10 +286,10 @@ TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
   row_view().SetSelectedCell(CellType::kContent);
 
   // Deselection of selected content.
-  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
+  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>()));
   row_view().SetSelectedCell(CellType::kControl);
 
-  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
+  EXPECT_CALL(controller(), SelectSuggestion(std::optional<size_t>(0)));
   row_view().SetSelectedCell(CellType::kContent);
 }
 
@@ -406,15 +388,16 @@ TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
 
   EXPECT_CALL(
       selection_delegate(),
-      SetSelectedCell(absl::make_optional<CellIndex>(0u, CellType::kContent),
+      SetSelectedCell(std::make_optional<CellIndex>(0u, CellType::kContent),
                       PopupCellSelectionSource::kKeyboard));
 
   row_view().GetContentView().RequestFocus();
 }
 
 TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
-  ShowView(/*line_number=*/0, {Suggestion("dummy_value", "dummy_label", "",
-                                          PopupItemId::kAddressEntry)});
+  ShowView(/*line_number=*/0,
+           {Suggestion("dummy_value", "dummy_label", Suggestion::Icon::kNoIcon,
+                       PopupItemId::kAddressEntry)});
 
   views::ViewAccessibility& accessibility =
       row_view().GetContentView().GetViewAccessibility();

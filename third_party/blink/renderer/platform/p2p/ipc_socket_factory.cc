@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/async_dns_resolver.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
-#include "third_party/webrtc/rtc_base/voucher.h"
+#include "third_party/webrtc/rtc_base/network/received_packet.h"
 
 namespace blink {
 
@@ -102,16 +102,11 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   // send. The information tracked here will be used to match with the
   // P2PSendPacketMetrics from the underneath system socket.
   struct InFlightPacketRecord {
-    InFlightPacketRecord(uint64_t packet_id,
-                         size_t packet_size,
-                         webrtc::Voucher::Ptr voucher)
-        : packet_id(packet_id),
-          packet_size(packet_size),
-          voucher(std::move(voucher)) {}
+    InFlightPacketRecord(uint64_t packet_id, size_t packet_size)
+        : packet_id(packet_id), packet_size(packet_size) {}
 
     uint64_t packet_id;
     size_t packet_size;
-    webrtc::Voucher::Ptr voucher;
   };
 
   typedef std::list<InFlightPacketRecord> InFlightPacketList;
@@ -475,8 +470,8 @@ int IpcPacketSocket::SendToInternal(const void* data,
   // Ensure packet_id is not 0. It can't be the case according to
   // P2PSocketClientImpl::Send().
   DCHECK_NE(packet_id, 0uL);
-  in_flight_packet_records_.emplace_back(packet_id, data_size,
-                                         webrtc::Voucher::Current());
+  in_flight_packet_records_.push_back(
+      InFlightPacketRecord(packet_id, data_size));
   TraceSendThrottlingState();
 
   // Fake successful send. The caller ignores result anyway.
@@ -633,7 +628,7 @@ void IpcPacketSocket::OnSendComplete(
 
   CHECK(!in_flight_packet_records_.empty());
 
-  InFlightPacketRecord& record = in_flight_packet_records_.front();
+  const InFlightPacketRecord& record = in_flight_packet_records_.front();
 
   // Tracking is not turned on for TCP so it's always 0. For UDP, this will
   // cause a crash when the packet ids don't match.
@@ -642,8 +637,6 @@ void IpcPacketSocket::OnSendComplete(
 
   send_bytes_available_ = std::min(send_bytes_available_ + record.packet_size,
                                    max_in_flight_bytes_);
-
-  webrtc::Voucher::ScopedSetter setter(std::move(record.voucher));
 
   in_flight_packet_records_.pop_front();
   TraceSendThrottlingState();
@@ -691,10 +684,9 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
       return;
     }
   }
-
-  SignalReadPacket(this, reinterpret_cast<const char*>(data.data()),
-                   data.size(), address_lj,
-                   timestamp.since_origin().InMicroseconds());
+  NotifyPacketReceived(rtc::ReceivedPacket(
+      data, address_lj,
+      webrtc::Timestamp::Micros(timestamp.since_origin().InMicroseconds())));
 }
 
 AsyncDnsAddressResolverImpl::AsyncDnsAddressResolverImpl(

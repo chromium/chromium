@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -56,13 +56,6 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_NO_BUTTON);
   builder->Add("recoveryOptInEnableButton",
                IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_ENABLE_BUTTON);
-}
-
-void GaiaPasswordChangedScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* dict) {
-  dict->Set("isCryptohomeRecoveryUIFlowEnabled",
-            features::IsCryptohomeRecoveryEnabled());
-  BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
 void GaiaPasswordChangedScreenHandler::Show(const std::string& email,

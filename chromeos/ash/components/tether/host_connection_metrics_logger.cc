@@ -23,110 +23,122 @@ HostConnectionMetricsLogger::~HostConnectionMetricsLogger() {
 
 void HostConnectionMetricsLogger::RecordConnectionToHostResult(
     ConnectionToHostResult result,
-    const std::string& device_id) {
-  // Persist this value for later use in RecordConnectionResultSuccess(). It
-  // will be cleared once used.
-  active_host_device_id_ = device_id;
+    const std::string& device_id,
+    std::optional<ConnectionToHostInternalError> internal_error) {
+  if (!active_host_device_id_.empty()) {
+    active_host_device_id_.clear();
+  }
 
-  switch (result) {
-    case ConnectionToHostResult::CONNECTION_RESULT_PROVISIONING_FAILED:
-      RecordConnectionResultProvisioningFailure(
-          ConnectionToHostResult_ProvisioningFailureEventType::
-              PROVISIONING_FAILED);
-      break;
-    case ConnectionToHostResult::CONNECTION_RESULT_SUCCESS:
-      RecordConnectionResultSuccess(
-          ConnectionToHostResult_SuccessEventType::SUCCESS);
-      break;
-    case ConnectionToHostResult::CONNECTION_RESULT_FAILURE_UNKNOWN_ERROR:
+  if (result == ConnectionToHostResult::INTERNAL_ERROR) {
+    CHECK(internal_error.has_value());
+    RecordInternalError(internal_error.value());
+  } else {
+    CHECK(!internal_error.has_value());
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "InstantTethering.ConnectionToHostResult.EndResult", result,
+      ConnectionToHostResult::CONNECTION_TO_HOST_RESULT_MAX);
+
+  // Preserve legacy
+  // InstantTethering.ConnectionToHostResult.ProvisioningFailureRate metric by
+  // counting the PROVISIONING_FAILED result as a provisioning failure, and
+  // other results as "other"
+  if (result == ConnectionToHostResult::PROVISIONING_FAILURE) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "InstantTethering.ConnectionToHostResult.ProvisioningFailureRate",
+        ConnectionToHostResult_ProvisioningFailureEventType::
+            PROVISIONING_FAILED,
+        ConnectionToHostResult_ProvisioningFailureEventType::
+            PROVISIONING_FAILURE_MAX);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "InstantTethering.ConnectionToHostResult.ProvisioningFailureRate",
+        ConnectionToHostResult_ProvisioningFailureEventType::OTHER,
+        ConnectionToHostResult_ProvisioningFailureEventType::
+            PROVISIONING_FAILURE_MAX);
+
+    // Preserve InstantTethering.ConnectionToHostResult.SuccessRate.Background
+    // by counting "success" as success, and all other results as failures.
+    if (result == ConnectionToHostResult::SUCCESS) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "InstantTethering.ConnectionToHostResult.SuccessRate.Background",
+          ConnectionToHostResult_SuccessEventType::SUCCESS,
+          ConnectionToHostResult_SuccessEventType::SUCCESS_MAX);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "InstantTethering.ConnectionToHostResult.SuccessRate.Background",
+          ConnectionToHostResult_SuccessEventType::FAILURE,
+          ConnectionToHostResult_SuccessEventType::SUCCESS_MAX);
+    }
+  }
+}
+
+void HostConnectionMetricsLogger::RecordInternalError(
+    ConnectionToHostInternalError internal_error) {
+  switch (internal_error) {
+    case ConnectionToHostInternalError::UNKNOWN_ERROR:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::UNKNOWN_ERROR);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_TIMEOUT:
-      RecordConnectionResultFailureClientConnection(
-          ConnectionToHostResult_FailureClientConnectionEventType::TIMEOUT);
-      break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_CANCELED_BY_USER:
-      RecordConnectionResultFailureClientConnection(
-          ConnectionToHostResult_FailureClientConnectionEventType::
-              CANCELED_BY_USER);
-      break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_INTERNAL_ERROR:
+    case ConnectionToHostInternalError::CLIENT_CONNECTION_INTERNAL_ERROR:
       RecordConnectionResultFailureClientConnection(
           ConnectionToHostResult_FailureClientConnectionEventType::
               INTERNAL_ERROR);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_REQUIRED:
+    case ConnectionToHostInternalError::CLIENT_CONNECTION_TIMEOUT:
+      RecordConnectionResultFailureClientConnection(
+          ConnectionToHostResult_FailureClientConnectionEventType::TIMEOUT);
+      break;
+    case ConnectionToHostInternalError::
+        TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED:
       RecordConnectionResultFailureTetheringTimeout(
           ConnectionToHostResult_FailureTetheringTimeoutEventType::
               FIRST_TIME_SETUP_WAS_REQUIRED);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_NOT_REQUIRED:
+    case ConnectionToHostInternalError::
+        TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED:
       RecordConnectionResultFailureTetheringTimeout(
           ConnectionToHostResult_FailureTetheringTimeoutEventType::
               FIRST_TIME_SETUP_WAS_NOT_REQUIRED);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_TETHERING_UNSUPPORTED:
-      RecordConnectionResultFailure(
-          ConnectionToHostResult_FailureEventType::TETHERING_UNSUPPORTED);
-      break;
-    case ConnectionToHostResult::CONNECTION_RESULT_FAILURE_NO_CELL_DATA:
-      RecordConnectionResultFailure(
-          ConnectionToHostResult_FailureEventType::NO_CELL_DATA);
-      break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_FAILED:
+    case ConnectionToHostInternalError::ENABLING_HOTSPOT_FAILED:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::ENABLING_HOTSPOT_FAILED);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_TIMEOUT:
+    case ConnectionToHostInternalError::ENABLING_HOTSPOT_TIMEOUT:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::ENABLING_HOTSPOT_TIMEOUT);
       break;
-    case ConnectionToHostResult::CONNECTION_RESULT_FAILURE_NO_RESPONSE:
+    case ConnectionToHostInternalError::NO_RESPONSE:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::NO_RESPONSE);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_INVALID_HOTSPOT_CREDENTIALS:
+    case ConnectionToHostInternalError::INVALID_HOTSPOT_CREDENTIALS:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::INVALID_HOTSPOT_CREDENTIALS);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_SUCCESSFUL_REQUEST_BUT_NO_RESPONSE:
+    case ConnectionToHostInternalError::SUCCESSFUL_REQUEST_BUT_NO_RESPONSE:
       RecordConnectionResultFailure(ConnectionToHostResult_FailureEventType::
                                         SUCCESSFUL_REQUEST_BUT_NO_RESPONSE);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_UNRECOGNIZED_RESPONSE_ERROR:
+    case ConnectionToHostInternalError::UNRECOGNIZED_RESPONSE_ERROR:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::UNRECOGNIZED_RESPONSE_ERROR);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG:
+    case ConnectionToHostInternalError::INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG:
       RecordConnectionResultFailure(ConnectionToHostResult_FailureEventType::
                                         INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG:
+    case ConnectionToHostInternalError::INVALID_NEW_SOFT_AP_CONFIG:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::INVALID_NEW_SOFT_AP_CONFIG);
       break;
-    case ConnectionToHostResult::
-        CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG:
+    case ConnectionToHostInternalError::INVALID_WIFI_AP_CONFIG:
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::INVALID_WIFI_AP_CONFIG);
       break;
-    default:
-      NOTREACHED();
-  };
+  }
 }
 
 void HostConnectionMetricsLogger::OnActiveHostChanged(
@@ -139,37 +151,11 @@ void HostConnectionMetricsLogger::OnActiveHostChanged(
   }
 }
 
-void HostConnectionMetricsLogger::RecordConnectionResultProvisioningFailure(
-    ConnectionToHostResult_ProvisioningFailureEventType event_type) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "InstantTethering.ConnectionToHostResult.ProvisioningFailureRate",
-      event_type,
-      ConnectionToHostResult_ProvisioningFailureEventType::
-          PROVISIONING_FAILURE_MAX);
-}
-
-void HostConnectionMetricsLogger::RecordConnectionResultSuccess(
-    ConnectionToHostResult_SuccessEventType event_type) {
-  DCHECK(!active_host_device_id_.empty());
-
-  active_host_device_id_.clear();
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "InstantTethering.ConnectionToHostResult.SuccessRate.Background",
-      event_type, ConnectionToHostResult_SuccessEventType::SUCCESS_MAX);
-
-  RecordConnectionResultProvisioningFailure(
-      ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
-}
-
 void HostConnectionMetricsLogger::RecordConnectionResultFailure(
     ConnectionToHostResult_FailureEventType event_type) {
   UMA_HISTOGRAM_ENUMERATION(
       "InstantTethering.ConnectionToHostResult.Failure", event_type,
       ConnectionToHostResult_FailureEventType::FAILURE_MAX);
-
-  RecordConnectionResultSuccess(
-      ConnectionToHostResult_SuccessEventType::FAILURE);
 }
 
 void HostConnectionMetricsLogger::RecordConnectionResultFailureClientConnection(

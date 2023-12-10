@@ -11,10 +11,6 @@
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/web_state_observer.h"
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace web {
 
 WebStateImpl::SerializedData::SerializedData(
@@ -52,14 +48,12 @@ void WebStateImpl::SerializedData::TearDown() {
 }
 
 CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
-  DCHECK(!features::UseSessionSerializationOptimizations());
   DCHECK(session_storage_);
   return session_storage_;
 }
 
 void WebStateImpl::SerializedData::SetSessionStorage(
     CRWSessionStorage* storage) {
-  DCHECK(!features::UseSessionSerializationOptimizations());
   session_storage_ = storage;
   DCHECK(session_storage_);
 }

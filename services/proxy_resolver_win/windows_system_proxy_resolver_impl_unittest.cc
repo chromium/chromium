@@ -428,7 +428,7 @@ class WindowsSystemProxyResolverImplTest : public testing::Test {
     std::wstring proxy;
     if (!proxy_config.proxy_rules().single_proxies.IsEmpty()) {
       proxy = base::UTF8ToWide(
-          proxy_config.proxy_rules().single_proxies.ToPacString());
+          proxy_config.proxy_rules().single_proxies.ToDebugString());
     }
 
     std::wstring proxy_bypass;

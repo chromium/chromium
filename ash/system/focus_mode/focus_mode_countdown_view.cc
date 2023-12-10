@@ -10,6 +10,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
@@ -83,8 +84,9 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
 
   // TODO(b/286931547): Timer Progress Bar.
   progress_bar_ =
-      timer_container->AddChildView(std::make_unique<views::ProgressBar>(
-          /*preferred_height=*/kBarHeight, /*allow_round_corner*/ true));
+      timer_container->AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kBarHeight);
+  progress_bar_->SetPreferredCornerRadii(gfx::RoundedCornersF(kBarHeight / 2));
   progress_bar_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   progress_bar_->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
   progress_bar_->SetBorder(views::CreateEmptyBorder(
@@ -116,7 +118,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       AddChildView(std::make_unique<views::BoxLayoutView>());
   button_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   button_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
+      views::BoxLayout::MainAxisAlignment::kCenter);
   button_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
@@ -137,7 +139,8 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
                               base::Unretained(focus_mode_controller)),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
-          PillButton::Type::kSecondaryWithoutIcon,
+          include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
+                              : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
 }
 
@@ -148,7 +151,7 @@ void FocusModeCountdownView::UpdateUI() {
   const base::TimeDelta time_remaining =
       controller->end_time() - base::Time::Now();
   time_remaining_label_->SetText(focus_mode_util::GetDurationString(
-      time_remaining, focus_mode_util::TimeFormatType::kFull));
+      time_remaining, focus_mode_util::TimeFormatType::kDigital));
 
   const base::TimeDelta session_duration = controller->session_duration();
   time_total_label_->SetText(focus_mode_util::GetDurationString(
@@ -163,5 +166,8 @@ void FocusModeCountdownView::UpdateUI() {
   extend_session_duration_button_->SetEnabled(
       session_duration < focus_mode_util::kMaximumDuration);
 }
+
+BEGIN_METADATA(FocusModeCountdownView)
+END_METADATA
 
 }  // namespace ash

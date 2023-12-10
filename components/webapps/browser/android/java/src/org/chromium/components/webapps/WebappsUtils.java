@@ -16,6 +16,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
 
@@ -28,24 +29,27 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.List;
 
-/**
- * Contains utilities for Web Apps and homescreen shortcuts.
- */
+/** Contains utilities for Web Apps and homescreen shortcuts. */
 public class WebappsUtils {
     private static final String TAG = "WebappsUtils";
 
     private static final String INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT";
 
     // True when Android O's ShortcutManager.requestPinShortcut() is supported.
-    private static boolean sIsRequestPinShortcutSupported;
+    private static volatile boolean sIsRequestPinShortcutSupported;
 
     // True when it is already checked if ShortcutManager.requestPinShortcut() is supported.
-    private static boolean sCheckedIfRequestPinShortcutSupported;
+    private static volatile boolean sCheckedIfRequestPinShortcutSupported;
+
+    // Synchronization locks for thread-safe access to variables
+    // sCheckedIfRequestPinShortcutSupported and sIsRequestPinShortcutSupported.
+    private static final Object sLock = new Object();
 
     /**
      * Creates an intent that will add a shortcut to the home screen.
-     * @param title          Title of the shortcut.
-     * @param icon           Image that represents the shortcut.
+     *
+     * @param title Title of the shortcut.
+     * @param icon Image that represents the shortcut.
      * @param shortcutIntent Intent to fire when the shortcut is activated.
      * @return Intent for the shortcut.
      */
@@ -59,6 +63,7 @@ public class WebappsUtils {
 
     /**
      * Request Android to add a shortcut to the home screen.
+     *
      * @param id The generated GUID of the shortcut.
      * @param title Title of the shortcut.
      * @param icon Image that represents the shortcut.
@@ -86,28 +91,30 @@ public class WebappsUtils {
             Log.e(TAG, "Failed to find an icon for " + title + ", not adding.");
             return;
         }
-        Icon icon = isMaskableIcon ? Icon.createWithAdaptiveBitmap(bitmap)
-                                   : Icon.createWithBitmap(bitmap);
+        Icon icon =
+                isMaskableIcon
+                        ? Icon.createWithAdaptiveBitmap(bitmap)
+                        : Icon.createWithBitmap(bitmap);
 
-        ShortcutInfo shortcutInfo = new ShortcutInfo.Builder(context, id)
-                                            .setShortLabel(title)
-                                            .setLongLabel(title)
-                                            .setIcon(icon)
-                                            .setIntent(shortcutIntent)
-                                            .build();
+        ShortcutInfo shortcutInfo =
+                new ShortcutInfo.Builder(context, id)
+                        .setShortLabel(title)
+                        .setLongLabel(title)
+                        .setIcon(icon)
+                        .setIntent(shortcutIntent)
+                        .build();
         try {
             ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
             shortcutManager.requestPinShortcut(shortcutInfo, null);
         } catch (IllegalStateException e) {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     "Could not create pinned shortcut: device is locked, or "
                             + "activity is backgrounded.");
         }
     }
 
-    /**
-     * Show toast to alert user that the shortcut was added to the home screen.
-     */
+    /** Show toast to alert user that the shortcut was added to the home screen. */
     private static void showAddedToHomescreenToast(final String title) {
         Context applicationContext = ContextUtils.getApplicationContext();
         String toastText = applicationContext.getString(R.string.added_to_homescreen, title);
@@ -138,6 +145,7 @@ public class WebappsUtils {
 
     /**
      * Utility method to check if a shortcut can be added to the home screen.
+     *
      * @return if a shortcut can be added to the home screen under the current profile.
      */
     @SuppressLint("WrongConstant")
@@ -150,13 +158,30 @@ public class WebappsUtils {
         return !receivers.isEmpty();
     }
 
+    /** Prepares whether Android O's ShortcutManager.requestPinShortcut() is supported. */
+    @WorkerThread
+    public static void prepareIsRequestPinShortcutSupported() {
+        isRequestPinShortcutSupported();
+    }
+
     /** Returns whether Android O's ShortcutManager.requestPinShortcut() is supported. */
     public static boolean isRequestPinShortcutSupported() {
         if (!sCheckedIfRequestPinShortcutSupported) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                checkIfRequestPinShortcutSupported();
+            synchronized (sLock) {
+                if (!sCheckedIfRequestPinShortcutSupported) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        ShortcutManager shortcutManager =
+                                ContextUtils.getApplicationContext()
+                                        .getSystemService(ShortcutManager.class);
+                        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                            sIsRequestPinShortcutSupported =
+                                    shortcutManager != null
+                                            && shortcutManager.isRequestPinShortcutSupported();
+                        }
+                    }
+                    sCheckedIfRequestPinShortcutSupported = true;
+                }
             }
-            sCheckedIfRequestPinShortcutSupported = true;
         }
         return sIsRequestPinShortcutSupported;
     }
@@ -170,18 +195,9 @@ public class WebappsUtils {
         return WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private static void checkIfRequestPinShortcutSupported() {
-        ShortcutManager shortcutManager =
-                ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            sIsRequestPinShortcutSupported =
-                    shortcutManager != null && shortcutManager.isRequestPinShortcutSupported();
-        }
-    }
-
     /**
      * Override whether shortcuts are considered supported for testing.
+     *
      * @param supported Whether shortcuts are supported. Pass null to reset.
      */
     public static void setAddToHomeIntentSupportedForTesting(Boolean supported) {

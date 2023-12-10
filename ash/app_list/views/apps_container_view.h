@@ -180,7 +180,7 @@ class ASH_EXPORT AppsContainerView
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list container.
   void UpdateForNewSortingOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure,
       base::OnceClosure animation_done_closure);
@@ -300,7 +300,7 @@ class ASH_EXPORT AppsContainerView
   // Called when the animation to fade out app list items is completed.
   // `aborted` indicates whether the fade out animation is aborted.
   void OnAppsGridViewFadeOutAnimationEnded(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool aborted);
 
   // Called when the animation to fade in app list items is completed.

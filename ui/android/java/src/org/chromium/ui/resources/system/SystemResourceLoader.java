@@ -15,9 +15,7 @@ import org.chromium.ui.resources.SystemUIResourceType;
 import org.chromium.ui.resources.async.AsyncPreloadResourceLoader;
 import org.chromium.ui.resources.statics.StaticResource;
 
-/**
- * Handles loading system specific resources like overscroll and edge glows.
- */
+/** Handles loading system specific resources like overscroll and edge glows. */
 public class SystemResourceLoader extends AsyncPreloadResourceLoader {
     private static final float SIN_PI_OVER_6 = 0.5f;
     private static final float COS_PI_OVER_6 = 0.866f;
@@ -31,12 +29,15 @@ public class SystemResourceLoader extends AsyncPreloadResourceLoader {
      */
     public SystemResourceLoader(
             int resourceType, ResourceLoaderCallback callback, final int minScreenSideLengthPx) {
-        super(resourceType, callback, new ResourceCreator() {
-            @Override
-            public Resource create(int resId) {
-                return createResource(minScreenSideLengthPx, resId);
-            }
-        });
+        super(
+                resourceType,
+                callback,
+                new ResourceCreator() {
+                    @Override
+                    public Resource create(int resId) {
+                        return createResource(minScreenSideLengthPx, resId);
+                    }
+                });
     }
 
     private static Resource createResource(int minScreenSideLengthPx, int resId) {
@@ -58,8 +59,8 @@ public class SystemResourceLoader extends AsyncPreloadResourceLoader {
         float arcRectY = -arcWidth - y;
         float arcRectWidth = arcWidth * 2.f;
         float arcRectHeight = arcWidth * 2.f;
-        RectF arcRect = new RectF(
-                arcRectX, arcRectY, arcRectX + arcRectWidth, arcRectY + arcRectHeight);
+        RectF arcRect =
+                new RectF(arcRectX, arcRectY, arcRectX + arcRectWidth, arcRectY + arcRectHeight);
 
         Paint arcPaint = new Paint();
         arcPaint.setAntiAlias(true);

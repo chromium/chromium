@@ -72,7 +72,6 @@ class CORE_EXPORT SpeculationRuleSet final
     const absl::optional<KURL> GetSourceURL() const;
     const absl::optional<uint64_t>& GetRequestId() const;
 
-    // Has a value iff IsFromRequest() or IsFromBrowserInjected() is true.
     KURL GetBaseURL() const;
 
     bool IsFromInlineScript() const;

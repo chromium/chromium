@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Տեսախցիկի ու խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="2393030564806080191">Գույնի տասնվեցական կոդը</translation>
 <translation id="2398813069815436052">երկխոսության պատուհան է բացվել։</translation>
 <translation id="245932805758469625">տեսանյութի ավարտին մնացած ժամանակը վայրկյաններով</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Ընդլայնեք այս տեքստը մինչև <ph name="MIN_CHARACTERS" /> կամ ավելի գրանշան (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="383465348367842624">«<ph name="ATSIGN" />»-ին հետևող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
+<translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4103419683916926126">Միլիվայրկյաններ</translation>
 <translation id="4201051445878709314">Ցուցադրել նախորդ ամիսը</translation>
 <translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
+<translation id="4663373278480897665">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="4664250907885839816">«<ph name="ATSIGN" />»-ին հաջորդող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="4718048029184481307">Նվագարկվում է «նկար նկարի մեջ» ռեժիմում</translation>
 <translation id="4748357248530471599">կտրվածքով տարածքը փոխարկել լիաէկրան ռեժիմի</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">ներբեռնել ֆայլը</translation>
 <translation id="698788488269350478">ծավալվեց։</translation>
 <translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
+<translation id="7080893216867146095">Տեղադրության մասին տվյալների փոխանցումը թույլատրված է</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
 <translation id="7102274145889307184">ընթացիկ տեղադրությունը</translation>
 <translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>

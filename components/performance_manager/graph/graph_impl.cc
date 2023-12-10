@@ -655,8 +655,8 @@ void GraphImpl::BeforeProcessPidChange(ProcessNodeImpl* process,
   // one process node to have the same PID. To handle this, the second and
   // subsequent registration override earlier registrations, while
   // unregistration will only unregister the current holder of the PID.
-  if (process->process_id() != base::kNullProcessId) {
-    auto it = processes_by_pid_.find(process->process_id());
+  if (process->GetProcessId() != base::kNullProcessId) {
+    auto it = processes_by_pid_.find(process->GetProcessId());
     if (it != processes_by_pid_.end() && it->second == process)
       processes_by_pid_.erase(it);
   }

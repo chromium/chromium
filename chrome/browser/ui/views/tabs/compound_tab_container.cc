@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/compound_tab_container.h"
+
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -42,10 +43,10 @@ class PinnedTabContainerController final : public TabContainerController {
            index < NumPinnedTabsInModel();
   }
 
-  absl::optional<int> GetActiveIndex() const override {
-    const absl::optional<int> active_index = base_controller_->GetActiveIndex();
+  std::optional<int> GetActiveIndex() const override {
+    const std::optional<int> active_index = base_controller_->GetActiveIndex();
     if (active_index.has_value() && !IsValidModelIndex(active_index.value()))
-      return absl::nullopt;
+      return std::nullopt;
     return base_controller_->GetActiveIndex();
   }
 
@@ -53,7 +54,7 @@ class PinnedTabContainerController final : public TabContainerController {
     return base_controller_->NumPinnedTabsInModel();
   }
 
-  void OnDropIndexUpdate(const absl::optional<int> index,
+  void OnDropIndexUpdate(const std::optional<int> index,
                          const bool drop_before) override {
     base_controller_->OnDropIndexUpdate(index, drop_before);
   }
@@ -62,7 +63,7 @@ class PinnedTabContainerController final : public TabContainerController {
     NOTREACHED_NORETURN();  // Pinned container can't have groups.
   }
 
-  absl::optional<int> GetFirstTabInGroup(
+  std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
     NOTREACHED_NORETURN();  // Pinned container can't have groups.
   }
@@ -109,22 +110,22 @@ class UnpinnedTabContainerController final : public TabContainerController {
     return ContainerToModelIndex(index).has_value();
   }
 
-  absl::optional<int> GetActiveIndex() const override {
-    const absl::optional<int> base_model_active_index =
+  std::optional<int> GetActiveIndex() const override {
+    const std::optional<int> base_model_active_index =
         base_controller_->GetActiveIndex();
     if (base_model_active_index.has_value())
       return ModelToContainerIndex(base_model_active_index.value());
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int NumPinnedTabsInModel() const override { return 0; }
 
-  void OnDropIndexUpdate(const absl::optional<int> index,
+  void OnDropIndexUpdate(const std::optional<int> index,
                          const bool drop_before) override {
     // We can't use ContainerIndexToModelIndex here because `index` might be
     // after the last tab (i.e. the drop would open a new tab at the end of the
     // tabstrip).
-    absl::optional<int> model_index = absl::nullopt;
+    std::optional<int> model_index = std::nullopt;
     if (index.has_value() && index > 0) {
       model_index = index.value() + base_controller_->NumPinnedTabsInModel();
       // The adjusted index must be either a valid index in the model, or be the
@@ -140,12 +141,12 @@ class UnpinnedTabContainerController final : public TabContainerController {
     return base_controller_->IsGroupCollapsed(group);
   }
 
-  absl::optional<int> GetFirstTabInGroup(
+  std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
-    const absl::optional<int> model_index =
+    const std::optional<int> model_index =
         base_controller_->GetFirstTabInGroup(group);
     if (!model_index)
-      return absl::nullopt;
+      return std::nullopt;
     return ModelToContainerIndex(model_index.value());
   }
 
@@ -175,20 +176,20 @@ class UnpinnedTabContainerController final : public TabContainerController {
   }
 
  private:
-  absl::optional<int> ModelToContainerIndex(int model_index) const {
+  std::optional<int> ModelToContainerIndex(int model_index) const {
     if (model_index < base_controller_->NumPinnedTabsInModel() ||
         !base_controller_->IsValidModelIndex(model_index))
-      return absl::nullopt;
+      return std::nullopt;
     return model_index - base_controller_->NumPinnedTabsInModel();
   }
 
-  absl::optional<int> ContainerToModelIndex(int container_index) const {
+  std::optional<int> ContainerToModelIndex(int container_index) const {
     if (container_index < 0)
-      return absl::nullopt;
+      return std::nullopt;
     const int model_index =
         container_index + base_controller_->NumPinnedTabsInModel();
     if (!base_controller_->IsValidModelIndex(model_index))
-      return absl::nullopt;
+      return std::nullopt;
     return model_index;
   }
 
@@ -209,7 +210,7 @@ class PinUnpinAnimationDelegate : public TabSlotAnimationDelegate {
 
   void AnimationEnded(const gfx::Animation* animation) override {
     TabSlotAnimationDelegate::AnimationEnded(animation);
-    tab_container()->ReturnTabSlotView(base::to_address(slot_view()));
+    tab_container()->ReturnTabSlotView(std::to_address(slot_view()));
   }
 };
 }  // namespace
@@ -251,8 +252,8 @@ CompoundTabContainer::~CompoundTabContainer() {
   // Ensure that happens now so we aren't in a half-destructed state when they
   // do so.
   CancelAnimation();
-  RemoveChildViewT(base::to_address(pinned_tab_container_));
-  RemoveChildViewT(base::to_address(unpinned_tab_container_));
+  RemoveChildViewT(std::to_address(pinned_tab_container_));
+  RemoveChildViewT(std::to_address(unpinned_tab_container_));
 }
 
 void CompoundTabContainer::SetAvailableWidthCallback(
@@ -320,12 +321,12 @@ void CompoundTabContainer::SetTabPinned(int model_index, TabPinned pinned) {
 }
 
 void CompoundTabContainer::SetActiveTab(
-    absl::optional<size_t> prev_active_index,
-    absl::optional<size_t> new_active_index) {
-  absl::optional<size_t> prev_pinned_active_index;
-  absl::optional<size_t> new_pinned_active_index;
-  absl::optional<size_t> prev_unpinned_active_index;
-  absl::optional<size_t> new_unpinned_active_index;
+    std::optional<size_t> prev_active_index,
+    std::optional<size_t> new_active_index) {
+  std::optional<size_t> prev_pinned_active_index;
+  std::optional<size_t> new_pinned_active_index;
+  std::optional<size_t> prev_unpinned_active_index;
+  std::optional<size_t> new_unpinned_active_index;
   if (prev_active_index.has_value()) {
     if (prev_active_index < static_cast<size_t>(NumPinnedTabs())) {
       prev_pinned_active_index = prev_active_index;
@@ -368,7 +369,7 @@ void CompoundTabContainer::ScrollTabToVisible(int model_index) {
 }
 
 void CompoundTabContainer::ScrollTabContainerByOffset(int offset) {
-  absl::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
+  std::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
   if (!visible_content_rect.has_value() || offset == 0)
     return;
 
@@ -431,9 +432,9 @@ void CompoundTabContainer::NotifyTabGroupEditorBubbleClosed() {
   unpinned_tab_container_->NotifyTabGroupEditorBubbleClosed();
 }
 
-absl::optional<int> CompoundTabContainer::GetModelIndexOf(
+std::optional<int> CompoundTabContainer::GetModelIndexOf(
     const TabSlotView* slot_view) const {
-  const absl::optional<int> unpinned_index =
+  const std::optional<int> unpinned_index =
       unpinned_tab_container_->GetModelIndexOf(slot_view);
   if (unpinned_index.has_value()) {
     return unpinned_index.value() + NumPinnedTabs();
@@ -454,10 +455,10 @@ int CompoundTabContainer::GetTabCount() const {
          unpinned_tab_container_->GetTabCount();
 }
 
-absl::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
+std::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
     Tab* tab) const {
   if (tab->data().pinned) {
-    const absl::optional<int> pinned_index =
+    const std::optional<int> pinned_index =
         pinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
 
     // If there are no non-closing pinned tabs after `tab`, return the first
@@ -469,11 +470,11 @@ absl::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
     }
     return pinned_index;
   } else {
-    const absl::optional<int> unpinned_index =
+    const std::optional<int> unpinned_index =
         unpinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
     if (unpinned_index.has_value())
       return unpinned_index.value() + NumPinnedTabs();
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -506,22 +507,22 @@ void CompoundTabContainer::HandleLongTap(ui::GestureEvent* const event) {
 
 bool CompoundTabContainer::IsRectInContentArea(const gfx::Rect& rect) {
   if (pinned_tab_container_->IsRectInContentArea(ToEnclosingRect(
-          ConvertRectToTarget(this, base::to_address(pinned_tab_container_),
+          ConvertRectToTarget(this, std::to_address(pinned_tab_container_),
                               gfx::RectF(rect))))) {
     return true;
   }
 
   return unpinned_tab_container_->IsRectInContentArea(
       ToEnclosingRect(ConvertRectToTarget(
-          this, base::to_address(unpinned_tab_container_), gfx::RectF(rect))));
+          this, std::to_address(unpinned_tab_container_), gfx::RectF(rect))));
 }
 
-absl::optional<ZOrderableTabContainerElement>
+std::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetLeadingElementForZOrdering() const {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
   NOTREACHED_NORETURN();
 }
-absl::optional<ZOrderableTabContainerElement>
+std::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetTrailingElementForZOrdering() const {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
   NOTREACHED_NORETURN();
@@ -553,7 +554,7 @@ void CompoundTabContainer::AnimateToIdealBounds() {
     if (!tab)
       continue;
 
-    const absl::optional<int> model_index = GetModelIndexOf(tab);
+    const std::optional<int> model_index = GetModelIndexOf(tab);
     // The tab may have been closed during a pin/unpin animation, in which case
     // it a) has no model index and b) is already animating to its correct
     // bounds because that will have been updated in `UpdateAnimationTarget()`.
@@ -593,7 +594,7 @@ int CompoundTabContainer::GetAvailableWidthForTabContainer() const {
 }
 
 void CompoundTabContainer::EnterTabClosingMode(
-    absl::optional<int> override_width,
+    std::optional<int> override_width,
     CloseTabSource source) {
   if (override_width.has_value()) {
     override_width = override_width.value() -
@@ -662,12 +663,12 @@ gfx::Size CompoundTabContainer::GetMinimumSize() const {
 
 views::SizeBounds CompoundTabContainer::GetAvailableSize(
     const views::View* child) const {
-  if (child == base::to_address(pinned_tab_container_)) {
+  if (child == std::to_address(pinned_tab_container_)) {
     return views::SizeBounds(GetAvailableWidthForTabContainer(),
                              views::SizeBound());
   }
 
-  CHECK_EQ(child, base::to_address(unpinned_tab_container_));
+  CHECK_EQ(child, std::to_address(unpinned_tab_container_));
   return views::SizeBounds(GetAvailableWidthForUnpinnedTabContainer(),
                            views::SizeBound());
 }
@@ -717,9 +718,9 @@ void CompoundTabContainer::PaintChildren(const views::PaintInfo& paint_info) {
   // N.B. if either are nullopt, it doesn't matter what order we paint in
   // because that whole container must be empty and therefore won't paint
   // anything at all.
-  absl::optional<ZOrderableTabContainerElement> trailing_pinned_element =
+  std::optional<ZOrderableTabContainerElement> trailing_pinned_element =
       pinned_tab_container_->GetTrailingElementForZOrdering();
-  absl::optional<ZOrderableTabContainerElement> leading_unpinned_element =
+  std::optional<ZOrderableTabContainerElement> leading_unpinned_element =
       unpinned_tab_container_->GetLeadingElementForZOrdering();
   if (trailing_pinned_element < leading_unpinned_element) {
     pinned_tab_container_->Paint(paint_info);
@@ -763,7 +764,7 @@ BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
       event.data(), gfx::PointF(loc_in_sub_target),
       gfx::PointF(loc_in_sub_target), event.source_operations());
 
-  if (sub_drop_target == base::to_address(pinned_tab_container_)) {
+  if (sub_drop_target == std::to_address(pinned_tab_container_)) {
     // Pinned tab container shares an index and coordinate space, so no
     // adjustments needed.
     return sub_drop_target->GetDropIndex(adjusted_event);
@@ -795,13 +796,13 @@ views::View* CompoundTabContainer::GetViewForDrop() {
 }
 
 void CompoundTabContainer::HandleDragUpdate(
-    const absl::optional<BrowserRootView::DropIndex>& index) {
+    const std::optional<BrowserRootView::DropIndex>& index) {
   // Update `current_text_drop_target_`.
   TabContainer* next_drop_target = nullptr;
   if (index.has_value()) {
-    next_drop_target = base::to_address(index.value().value < NumPinnedTabs()
-                                            ? pinned_tab_container_
-                                            : unpinned_tab_container_);
+    next_drop_target = std::to_address(index.value().value < NumPinnedTabs()
+                                           ? pinned_tab_container_
+                                           : unpinned_tab_container_);
   }
   if (next_drop_target != current_text_drop_target_) {
     if (current_text_drop_target_) {
@@ -815,7 +816,7 @@ void CompoundTabContainer::HandleDragUpdate(
   }
 
   // Forward to `current_text_drop_target_`, adjusting if needed.
-  if (current_text_drop_target_ == base::to_address(pinned_tab_container_)) {
+  if (current_text_drop_target_ == std::to_address(pinned_tab_container_)) {
     pinned_tab_container_->HandleDragUpdate(index);
   } else {
     BrowserRootView::DropIndex adjusted_index = {
@@ -973,9 +974,9 @@ TabContainer* CompoundTabContainer::GetTabContainerForDrop(
                        2;
 
   if (point_in_local_coords.x() < cutoff_x) {
-    return base::to_address(pinned_tab_container_);
+    return std::to_address(pinned_tab_container_);
   }
-  return base::to_address(unpinned_tab_container_);
+  return std::to_address(unpinned_tab_container_);
 }
 
 TabContainer* CompoundTabContainer::GetTabContainerAt(
@@ -990,14 +991,14 @@ TabContainer* CompoundTabContainer::GetTabContainerAt(
                           unpinned_tab_container_->bounds().x()) /
                          2;
     if (point_in_local_coords.x() < cutoff_x)
-      return base::to_address(pinned_tab_container_);
-    return base::to_address(unpinned_tab_container_);
+      return std::to_address(pinned_tab_container_);
+    return std::to_address(unpinned_tab_container_);
   }
 
   if (in_pinned)
-    return base::to_address(pinned_tab_container_);
+    return std::to_address(pinned_tab_container_);
   if (in_unpinned)
-    return base::to_address(unpinned_tab_container_);
+    return std::to_address(unpinned_tab_container_);
 
   // `point_in_local_coords` might be in neither sub container if our layout is
   // (transiently) stale, e.g. during window creation.
@@ -1030,11 +1031,11 @@ gfx::Size CompoundTabContainer::GetCombinedSizeForTabContainerSizes(
                    largest_container.height());
 }
 
-absl::optional<gfx::Rect> CompoundTabContainer::GetVisibleContentRect() const {
+std::optional<gfx::Rect> CompoundTabContainer::GetVisibleContentRect() const {
   const views::ScrollView* const scroll_container =
       views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
   if (!scroll_container)
-    return absl::nullopt;
+    return std::nullopt;
 
   return scroll_container->GetVisibleRect();
 }

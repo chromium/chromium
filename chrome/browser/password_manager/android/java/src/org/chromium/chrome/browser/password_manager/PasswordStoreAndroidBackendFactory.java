@@ -54,7 +54,8 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return An implementation of the {@link PasswordStoreAndroidBackend} if one exists.
      */
     protected PasswordStoreAndroidBackend doCreateBackend() throws BackendException {
-        throw new BackendException("Downstream implementation is not present.",
+        throw new BackendException(
+                "Downstream implementation is not present.",
                 AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 

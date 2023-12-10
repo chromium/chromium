@@ -190,6 +190,7 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   void DidUpdateInterestGroupsOfOwnerNetFetch(
       UrlLoadersList::iterator simple_url_loader,
       blink::InterestGroupKey group_key,
+      base::TimeTicks start_time,
       std::unique_ptr<std::string> fetch_body);
   void DidUpdateInterestGroupsOfOwnerJsonParse(
       blink::InterestGroupKey group_key,

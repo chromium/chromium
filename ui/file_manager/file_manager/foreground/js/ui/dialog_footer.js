@@ -4,10 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {DialogType} from '../../../common/js/dialog_type.js';
 import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {getFileTypeForName} from '../../../common/js/file_types_base.js';
 import {str} from '../../../common/js/translations.js';
+import {DialogType} from '../../../externs/ts/state.js';
 import {FileListModel} from '../file_list_model.js';
 
 /**
@@ -357,8 +357,8 @@ export class DialogFooter {
 
   /**
    * Fills the file type list or hides it.
-   * @param {!Array<{extensions: Array<string>, description: string}>} fileTypes
-   *     List of file type.
+   * @param {!Array<import('../../../common/js/files_app_state.js').TypeList>}
+   *     fileTypes List of file type.
    * @param {boolean} includeAllFiles Whether the filter includes the 'all
    *     files' item or not.
    */

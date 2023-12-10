@@ -33,7 +33,7 @@ class Time;
 // possible to pass a non-empty path via `legacyPath`. If present, then it
 // will be moved to `storagePath`.
 //
-// TODO(crbug.com/1383087): Remove when the storage for all users has been
+// TODO(crbug.com/1501850): Remove when the storage for all users has been
 // migrated.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
                          legacyPath:(const base::FilePath&)legacyPath
@@ -42,9 +42,6 @@ class Time;
 // Convenience initializer that pass an empty `legacyPath`.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath;
 - (instancetype)init NS_UNAVAILABLE;
-
-// The scale that should be used for snapshots.
-- (CGFloat)snapshotScaleForDevice;
 
 // Retrieves a cached snapshot for the `snapshotID` and return it via the
 // callback if it exists. The callback is guaranteed to be called synchronously

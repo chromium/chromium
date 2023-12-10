@@ -1,5 +1,7 @@
 include_rules = [
   "+components/grit",
+  "+components/ukm/ios",
   "+ios/web/public",
+  "+services/data_decoder/public/cpp",
   "+ui/base",
 ]

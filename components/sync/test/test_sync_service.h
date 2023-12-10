@@ -131,6 +131,7 @@ class TestSyncService : public SyncService {
       const std::string& histogram_name) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
   void GetLocalDataDescriptions(
       ModelTypeSet types,
@@ -140,9 +141,6 @@ class TestSyncService : public SyncService {
 
   // KeyedService implementation.
   void Shutdown() override;
-
- protected:
-  bool IsSyncFeatureConsideredRequested() const override;
 
  private:
   TestSyncUserSettings user_settings_;

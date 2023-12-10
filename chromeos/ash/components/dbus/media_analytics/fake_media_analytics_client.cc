@@ -62,7 +62,7 @@ void FakeMediaAnalyticsClient::RemoveObserver(Observer* observer) {
 void FakeMediaAnalyticsClient::GetState(
     chromeos::DBusMethodCallback<mri::State> callback) {
   if (!process_running_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -75,7 +75,7 @@ void FakeMediaAnalyticsClient::SetState(
     const mri::State& state,
     chromeos::DBusMethodCallback<mri::State> callback) {
   if (!process_running_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   DCHECK(state.has_status()) << "Trying to set state without status.";
@@ -109,7 +109,7 @@ void FakeMediaAnalyticsClient::GetDiagnostics(
     chromeos::DBusMethodCallback<mri::Diagnostics> callback) {
   if (!process_running_) {
     LOG(ERROR) << "Fake media analytics process not running.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

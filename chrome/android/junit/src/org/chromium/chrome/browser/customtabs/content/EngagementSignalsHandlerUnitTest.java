@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -124,5 +125,15 @@ public class EngagementSignalsHandlerUnitTest {
                         .orElseThrow();
         verify(mTabObserverRegistrar).unregisterActivityTabObserver(tabObserverInHandler);
         assertNull(mEngagementSignalsHandler.getEngagementSignalsObserverForTesting());
+    }
+
+    @Test
+    public void testNotifyTabWillCloseAndReopenWithSessionReuse() {
+        mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        mEngagementSignalsHandler.notifyTabWillCloseAndReopenWithSessionReuse();
+        var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
+        // #notifyTabWillCloseAndReopenWithSessionReuse should suspend #onSessionEnded signals.
+        assertTrue(observer.getSuspendSessionEndedForTesting());
     }
 }

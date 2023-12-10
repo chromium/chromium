@@ -62,13 +62,13 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
                         "from kAvailableButNotGranted to kAccessGranted.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kPhoneHubNotifications, /*enabled=*/true,
-            /*auth_token=*/absl::nullopt, base::DoNothing());
+            /*auth_token=*/std::nullopt, base::DoNothing());
       } else if (IsWaitingForAccessToInitiallyEnableNotifications()) {
         PA_LOG(INFO) << "Enabling PhoneHubNotifications for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kPhoneHubNotifications, /*enabled=*/true,
-            /*auth_token=*/absl::nullopt, base::DoNothing());
+            /*auth_token=*/std::nullopt, base::DoNothing());
       }
       break;
 
@@ -80,7 +80,7 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
       PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
       multidevice_setup_client_->SetFeatureEnabledState(
           Feature::kPhoneHubNotifications, /*enabled=*/false,
-          /*auth_token=*/absl::nullopt, base::DoNothing());
+          /*auth_token=*/std::nullopt, base::DoNothing());
       break;
   }
 }
@@ -99,13 +99,13 @@ void MultideviceSetupStateUpdater::OnCameraRollAccessChanged() {
                         "from kAvailableButNotGranted to kAccessGranted.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kPhoneHubCameraRoll, /*enabled=*/true,
-            /*auth_token=*/absl::nullopt, base::DoNothing());
+            /*auth_token=*/std::nullopt, base::DoNothing());
       } else if (IsWaitingForAccessToInitiallyEnableCameraRoll()) {
         PA_LOG(INFO) << "Enabling PhoneHubCameraRoll for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kPhoneHubCameraRoll, /*enabled=*/true,
-            /*auth_token=*/absl::nullopt, base::DoNothing());
+            /*auth_token=*/std::nullopt, base::DoNothing());
       }
       break;
 
@@ -117,7 +117,7 @@ void MultideviceSetupStateUpdater::OnCameraRollAccessChanged() {
       PA_LOG(INFO) << "Disabling PhoneHubCameraRoll feature.";
       multidevice_setup_client_->SetFeatureEnabledState(
           Feature::kPhoneHubCameraRoll, /*enabled=*/false,
-          /*auth_token=*/absl::nullopt, base::DoNothing());
+          /*auth_token=*/std::nullopt, base::DoNothing());
       break;
   }
 }
@@ -179,7 +179,7 @@ void MultideviceSetupStateUpdater::EnablePhoneHubIfAwaitingVerifiedHost() {
   if (is_awaiting_verified_host && host_status == HostStatus::kHostVerified &&
       feature_state == FeatureState::kDisabledByUser) {
     multidevice_setup_client_->SetFeatureEnabledState(
-        Feature::kPhoneHub, /*enabled=*/true, /*auth_token=*/absl::nullopt,
+        Feature::kPhoneHub, /*enabled=*/true, /*auth_token=*/std::nullopt,
         base::DoNothing());
     util::LogFeatureOptInEntryPoint(util::OptInEntryPoint::kSetupFlow);
   }

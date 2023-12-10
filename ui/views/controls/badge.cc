@@ -33,7 +33,7 @@ void Badge::OnPaint(gfx::Canvas* canvas) {
                            Label::GetDefaultFontList());
 }
 
-BEGIN_METADATA(Badge, View)
+BEGIN_METADATA(Badge)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
 

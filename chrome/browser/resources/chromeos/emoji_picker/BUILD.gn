@@ -22,6 +22,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
+    "app.ts",
     "emoji_button.ts",
     "emoji_category_button.ts",
     "emoji_error.ts",
@@ -29,7 +30,6 @@ build_webui("build") {
     "emoji_group.ts",
     "emoji_group_button.ts",
     "emoji_image.ts",
-    "emoji_picker.ts",
     "emoji_search.ts",
     "emoji_variants.ts",
     "text_group_button.ts",
@@ -37,6 +37,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "constants.ts",
+    "emoji_picker.ts",
     "emoji_picker_api_proxy.ts",
     "events.ts",
     "metadata_extension.ts",
@@ -78,6 +79,12 @@ build_webui("build") {
     "$target_gen_dir/fuse_resources.grdp",
     "emoji_ordering.grdp",
   ]
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "emoji-picker"
+    optimize_webui_in_files = [ "emoji_picker.js" ]
+    optimize_webui_excludes = [ "fuse.js" ]
+  }
 }
 
 generate_grd("build_fuse_grdp") {

@@ -4,9 +4,9 @@ Resources Tree:
 Frames
     top
         resource-tree-non-unique-url-iframe.html
-            Images
+            CSS
                 styles-non-unique-url.css
-            Stylesheets
+            Image
                 styles-non-unique-url.css
             resource-tree-non-unique-url-iframe.html
         inspected-page.html

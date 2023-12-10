@@ -19,6 +19,8 @@ NSString* const kAutofillCreditCardManagedViewId =
     @"kAutofillCreditCardManagedViewId";
 NSString* const kAutofillPaymentMethodsToolbarId =
     @"kAutofillPaymentMethodsToolbarId";
+NSString* const kAutofillMandatoryReauthSwitchViewId =
+    @"kAutofillMandatoryReauthSwitchViewId";
 
 NSString* const kAutofillCreditCardEditTableViewId =
     @"kAutofillCreditCardEditTableViewId";

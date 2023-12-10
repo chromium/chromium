@@ -5,8 +5,9 @@
 #ifndef ASH_CONSTANTS_ASH_SWITCHES_H_
 #define ASH_CONSTANTS_ASH_SWITCHES_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -35,6 +36,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcAvailable[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcBlockKeyMint[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDataCleanupOnStart[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableAppSync[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableDexOptCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableDownloadProvider[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableGmsCoreCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableLocaleSync[];
@@ -125,6 +127,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableArcOptInVerification[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDemoMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDeviceDisabling[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDriveFsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableFineGrainedTimeZoneDetection[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableGaiaServices[];
@@ -175,6 +178,8 @@ extern const char kEnterpriseForceManualEnrollmentInTestBuilds[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableForcedReEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnterpriseEnableForcedReEnrollmentOnFlex[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableUnifiedStateDetermination[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableInitialEnrollment[];
@@ -200,6 +205,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFakeDriveFsLauncherChrootPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFakeDriveFsLauncherSocketPath[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRestoreKeyOnLockScreen[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFingerprintSensorLocation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFirstExecAfterBoot[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -209,6 +215,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceHWIDCheckResultForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceHappinessTrackingSystem[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kForceLacrosLaunchAtLoginScreenForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceLaunchBrowser[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceLoginManagerInTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceShowCursor[];
@@ -296,6 +304,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHiddenNetworkMigrationInterval[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHiddenNetworkMigrationAge[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPickerFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrintingPpdChannel[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPrintingPpdChannelProduction[];
@@ -316,6 +325,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRlzPingDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRmaNotAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSafeMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSamlPasswordChangeUrl[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSealKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kScheduledRebootGracePeriodInSecondsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
@@ -327,7 +337,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipForceOnlineSignInForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipReorderNudgeShowThresholdDurationForTest[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwCursorOnWideDisplays[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kStabilizeTimeDependentViewForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -370,6 +379,10 @@ extern const char kForceRefreshRateThrottle[];
 // Returns true if flag if AuthSession should be used to communicate with
 // cryptohomed instead of explicitly authorizing each operation.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthSessionCryptohomeEnabled();
+
+// Returns true if the cryptohome filesystem keyset is evicted and needs to be
+// restored on lock screen.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldRestoreKeyOnLockScreen();
 
 // Returns true if this is a Cellular First device.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularFirstDevice();
@@ -455,7 +468,7 @@ bool IsDeviceRequisitionConfigurable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsInstallAllowed();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
-absl::optional<base::TimeDelta> ContextualNudgesInterval();
+std::optional<base::TimeDelta> ContextualNudgesInterval();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ContextualNudgesResetShownCount();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUsingShelfAutoDim();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldClearFastInkBuffer();

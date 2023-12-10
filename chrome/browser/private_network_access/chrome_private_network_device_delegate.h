@@ -83,4 +83,4 @@ class ChromePrivateNetworkDeviceDelegate
   std::unique_ptr<ChromePrivateNetworkDeviceChooser> chooser_;
 };
 
-#endif  // CHROME_BROWSER_PRIVATE_NETWORK_DEVICE_DELEGATE_H_
+#endif  // CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_DELEGATE_H_

@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1178581264944972037">Pozastavit</translation>
-<translation id="2558806128245168542">Přejít zpět</translation>
-<translation id="3523426587027570423">Klepnutím zavřete přehrávač „Poslechnout si tuto stránku“.</translation>
+<translation id="1921351128855867012">Posunout vpřed o <ph name="NUMBER_OF_SECONDS" /> s</translation>
+<translation id="1984328900355667246">Přehrání není k dispozici</translation>
+<translation id="3023502830214299618">Tuto stránku momentálně bohužel přehrát nelze. Zkuste to znovu později.</translation>
+<translation id="3807208219231826020">Procházet přehrávání</translation>
+<translation id="385051799172605136">Zpět</translation>
 <translation id="4431240646217225907">Zvýraznění textu a automatické posouvání</translation>
 <translation id="4654641641922242357">Přehrávač „Poslechnout si tuto stránku“.</translation>
-<translation id="4731877163452936634">Rychlost přehrávání: <ph name="PLAYBACK_SPEED" /> Kliknutím změníte.</translation>
+<translation id="4872475766448853257">Vrátit zpět o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="5234971936051226002">Přehrávač „Poslechnout si tuto stránku“ byl minimalizován.</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="6315170314923504164">Hlas</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6846298663435243399">Načítání…</translation>
 <translation id="7587250070160020374">V Chromu teď hraje</translation>
-<translation id="7945822420239537236">O <ph name="NUMBER_OF_SECONDS" /> s vpřed</translation>
-<translation id="7972866381678406344">O <ph name="NUMBER_OF_SECONDS" /> s zpět</translation>
 <translation id="8136852699834914183">Přehrávání není pro tuto stránku dostupné.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />× zvýšit/snížit rychlost</translation>
+<translation id="8407011429883244666">Zavřít přehrávač</translation>
 <translation id="8953618380150219653">Přehrávač „Poslechnout si tuto stránku“ byl otevřen na celou výšku.</translation>
 </translationbundle>

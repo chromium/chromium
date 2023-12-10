@@ -175,7 +175,6 @@ class CORE_EXPORT HTMLElement : public Element {
   // origin trial is over.
   virtual bool IsHTMLFencedFrameElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
-  virtual bool IsHTMLPortalElement() const { return false; }
   virtual bool IsHTMLUnknownElement() const { return false; }
   virtual bool IsPluginElement() const { return false; }
 
@@ -311,7 +310,8 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
 
  protected:
-  bool SupportsFocus() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
 
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };

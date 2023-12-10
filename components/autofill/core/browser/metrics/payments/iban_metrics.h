@@ -76,6 +76,20 @@ enum class IbanSuggestionBlockListStatus {
   kMaxValue = kBlocklistIsNotAvailable,
 };
 
+// Log all the scenarios that contribute to the decision of whether IBAN
+// upload is enabled or not.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IbanUploadEnabledStatus {
+  kSyncServiceNull = 0,
+  kSyncServicePaused = 1,
+  kSyncServiceMissingAutofillWalletDataActiveType = 2,
+  kUsingExplicitSyncPassphrase = 3,
+  kLocalSyncEnabled = 4,
+  kEnabled = 5,
+  kMaxValue = kEnabled,
+};
+
 // Logs various metrics about the local IBANs associated with a profile. This
 // should be called each time a new Chrome profile is launched.
 // `disused_data_threshold` is the time threshold to mark an IBAN as disused.
@@ -107,6 +121,16 @@ void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event);
 // from being shown, or if the blocklist was not accessible at all.
 void LogIbanSuggestionBlockListStatusMetric(
     IbanSuggestionBlockListStatus event);
+
+// Records the fact that the server IBAN link was clicked with information
+// about the current sync state.
+void LogServerIbanLinkClicked(AutofillMetrics::PaymentsSigninState sync_state);
+
+// Records the reason for why (or why not) IBAN upload was enabled for the
+// user.
+void LogIbanUploadEnabledMetric(
+    IbanUploadEnabledStatus metric,
+    AutofillMetrics::PaymentsSigninState sync_state);
 
 }  // namespace autofill::autofill_metrics
 

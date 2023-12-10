@@ -114,12 +114,12 @@ class TrustSafetySentimentService
     kPrivacySettings = 1,
     kTrustedSurface = 2,
     kTransactions = 3,
-    kPrivacySandbox3ConsentAccept = 4,
-    kPrivacySandbox3ConsentDecline = 5,
-    kPrivacySandbox3NoticeDismiss = 6,
-    kPrivacySandbox3NoticeOk = 7,
-    kPrivacySandbox3NoticeSettings = 8,
-    kPrivacySandbox3NoticeLearnMore = 9,
+    // kPrivacySandbox3ConsentAccept = 4, // DEPRECATED.
+    // kPrivacySandbox3ConsentDecline = 5, // DEPRECATED.
+    // kPrivacySandbox3NoticeDismiss = 6, // DEPRECATED.
+    // kPrivacySandbox3NoticeOk = 7, // DEPRECATED.
+    // kPrivacySandbox3NoticeSettings = 8, // DEPRECATED.
+    // kPrivacySandbox3NoticeLearnMore = 9, // DEPRECATED.
     kSafetyCheck = 10,
     kPasswordCheck = 11,
     kBrowsingData = 12,
@@ -135,10 +135,8 @@ class TrustSafetySentimentService
     kMaxValue = kPasswordProtectionUI,
   };
 
-  // Called when the user interacts with Privacy Sandbox 3, |feature_area|
+  // Called when the user interacts with Privacy Sandbox 4, `feature_area`
   // specifies what type of interaction occurred.
-  virtual void InteractedWithPrivacySandbox3(FeatureArea feature_area);
-
   virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
 
   // Called when the user interacts with a safe browsing blocking page.
@@ -193,8 +191,6 @@ class TrustSafetySentimentService
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, RanSafetyCheck);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            PrivacySettingsProductSpecificData);
-  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
-                           InteractedWithPrivacySandbox3ConsentAccept);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            Eligibility_V1FeatureWhileV2Enabled);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_SafetyCheck);

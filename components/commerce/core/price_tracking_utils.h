@@ -131,8 +131,8 @@ bool CanTrackPrice(const absl::optional<ProductInfo>& info);
 bool CanTrackPrice(const power_bookmarks::ShoppingSpecifics& specifics);
 
 // If `url` is bookmarked, returns the name of the parent folder; otherwise
-// returns the name of the Other Bookmarks folder.
-const std::u16string& GetBookmarkParentNameOrDefault(
+// returns an empty string.
+absl::optional<std::u16string> GetBookmarkParentName(
     bookmarks::BookmarkModel* model,
     const GURL& url);
 
@@ -144,6 +144,13 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
 
 // Returns whether the provided node is the shopping collection folder.
 bool IsShoppingCollectionBookmarkFolder(const bookmarks::BookmarkNode* node);
+
+// Gets the product cluster ID for the bookmark represented by the provided URL.
+// If there is no bookmark or the bookmark doesn't have a cluster ID,
+// absl::nullopt is returned.
+absl::optional<uint64_t> GetProductClusterIdFromBookmark(
+    const GURL& url,
+    bookmarks::BookmarkModel* model);
 
 }  // namespace commerce
 

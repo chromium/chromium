@@ -14,20 +14,20 @@ import android.view.View;
  * See CompositorSurfaceManagerImpl for the standard implementation of this class.
  */
 public interface CompositorSurfaceManager {
-    /**
-     * Delivers Surface lifecycle events to the target of this CompositorSurfaceManager.
-     */
+    /** Delivers Surface lifecycle events to the target of this CompositorSurfaceManager. */
     public interface SurfaceManagerCallbackTarget {
         public void surfaceRedrawNeededAsync(Runnable drawingFinished);
+
         public void surfaceChanged(Surface surface, int format, int width, int height);
+
         public void surfaceCreated(Surface surface);
+
         public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed);
+
         public void unownedSurfaceDestroyed();
     }
 
-    /**
-     * Turn off everything.
-     */
+    /** Turn off everything. */
     void shutDown();
 
     /**
@@ -50,28 +50,18 @@ public interface CompositorSurfaceManager {
      */
     void doneWithUnownedSurface();
 
-    /**
-     * Destroy and re-create the surface.
-     */
+    /** Destroy and re-create the surface. */
     void recreateSurface();
 
-    /**
-     * Update the background drawable on all surfaces.
-     */
+    /** Update the background drawable on all surfaces. */
     void setBackgroundDrawable(Drawable background);
 
-    /**
-     * Set |willNotDraw| on all surfaces.
-     */
+    /** Set |willNotDraw| on all surfaces. */
     void setWillNotDraw(boolean willNotDraw);
 
-    /**
-     * Set the visibility of the Managed SurfaceViews.
-     */
+    /** Set the visibility of the Managed SurfaceViews. */
     void setVisibility(int visibility);
 
-    /**
-     * Gets the active {@link SurfaceView}.
-     */
+    /** Gets the active {@link SurfaceView}. */
     View getActiveSurfaceView();
 }

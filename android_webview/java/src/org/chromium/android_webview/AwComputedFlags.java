@@ -7,9 +7,7 @@ package org.chromium.android_webview;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 
-/**
- * Feature flags computed from system capabilities.
- */
+/** Feature flags computed from system capabilities. */
 public final class AwComputedFlags {
     // Do not instantiate this class.
     private AwComputedFlags() {}

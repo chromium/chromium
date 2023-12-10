@@ -104,7 +104,9 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -125,6 +127,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -368,7 +371,18 @@ Node* Node::PseudoAwarePreviousSibling() const {
   if (!parent || HasPreviousSibling()) {
     return previousSibling();
   }
+
+  // Note the [[fallthrough]] attributes, the order of the cases matters and
+  // corresponds to the ordering of pseudo elements in a traversal:
+  // ::marker, ::before, non-pseudo Elements, ::after, ::view-transition.
+  // The fallthroughs ensure this ordering by checking for each kind of node
+  // in-turn.
   switch (GetPseudoId()) {
+    case kPseudoIdViewTransition:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdAfter)) {
+        return previous;
+      }
+      [[fallthrough]];
     case kPseudoIdAfter:
       if (Node* previous = parent->lastChild())
         return previous;
@@ -378,15 +392,42 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker))
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
+      }
       [[fallthrough]];
     case kPseudoIdMarker:
-      break;
+      return nullptr;
+    // The pseudos of the view transition subtree have a known structure and
+    // cannot create other pseudos so these are handled separately of the above
+    // fallthrough cases. For details on view-transition pseudo ordering, see
+    // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/view_transition/README.md#pseudo-element-traversal
+    case kPseudoIdViewTransitionNew:
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
+      return parent->GetPseudoElement(
+          kPseudoIdViewTransitionOld,
+          To<PseudoElement>(this)->view_transition_name());
+    case kPseudoIdViewTransitionGroup: {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      wtf_size_t found_index =
+          names.Find(To<PseudoElement>(this)->view_transition_name());
+      CHECK_NE(found_index, kNotFound);
+      if (found_index == 0) {
+        return nullptr;
+      }
+
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransition);
+      return parent->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                      names[found_index - 1]);
+    }
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+      return nullptr;
     default:
       NOTREACHED();
+      return nullptr;
   }
-  return nullptr;
 }
 
 Node* Node::PseudoAwareNextSibling() const {
@@ -394,6 +435,8 @@ Node* Node::PseudoAwareNextSibling() const {
   if (!parent || HasNextSibling()) {
     return nextSibling();
   }
+
+  // See comments in PseudoAwarePreviousSibling.
   switch (GetPseudoId()) {
     case kPseudoIdMarker:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
@@ -408,22 +451,79 @@ Node* Node::PseudoAwareNextSibling() const {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
-      break;
+      if (Node* next = parent->GetPseudoElement(kPseudoIdViewTransition)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdViewTransition:
+      return nullptr;
+    case kPseudoIdViewTransitionOld:
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
+      return parent->GetPseudoElement(
+          kPseudoIdViewTransitionNew,
+          To<PseudoElement>(this)->view_transition_name());
+    case kPseudoIdViewTransitionGroup: {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      wtf_size_t found_index =
+          names.Find(To<PseudoElement>(this)->view_transition_name());
+      CHECK_NE(found_index, kNotFound);
+      if (found_index == names.size() - 1) {
+        return nullptr;
+      }
+
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransition);
+      return parent->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                      names[found_index + 1]);
+    }
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionNew:
+      return nullptr;
     default:
       NOTREACHED();
+      return nullptr;
   }
-  return nullptr;
 }
 
 Node* Node::PseudoAwareFirstChild() const {
   if (const auto* current_element = DynamicTo<Element>(this)) {
+    // See comments in PseudoAwarePreviousSibling for details on view-transition
+    // pseudo traversal.
+    if (GetPseudoId() == kPseudoIdViewTransition) {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      if (names.empty()) {
+        return nullptr;
+      }
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                               names.front());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionGroup) {
+      return current_element->GetPseudoElement(
+          kPseudoIdViewTransitionImagePair,
+          To<PseudoElement>(this)->view_transition_name());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionImagePair) {
+      const AtomicString& name =
+          To<PseudoElement>(this)->view_transition_name();
+      if (Node* first = current_element->GetPseudoElement(
+              kPseudoIdViewTransitionOld, name)) {
+        return first;
+      }
+
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionNew,
+                                               name);
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
       return first;
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
       return first;
     if (Node* first = current_element->firstChild())
       return first;
-    return current_element->GetPseudoElement(kPseudoIdAfter);
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+      return first;
+    }
+    return current_element->GetPseudoElement(kPseudoIdViewTransition);
   }
 
   return firstChild();
@@ -431,6 +531,37 @@ Node* Node::PseudoAwareFirstChild() const {
 
 Node* Node::PseudoAwareLastChild() const {
   if (const auto* current_element = DynamicTo<Element>(this)) {
+    // See comments in PseudoAwarePreviousSibling for details on view-transition
+    // pseudo traversal.
+    if (GetPseudoId() == kPseudoIdViewTransition) {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      if (names.empty()) {
+        return nullptr;
+      }
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                               names.back());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionGroup) {
+      return current_element->GetPseudoElement(
+          kPseudoIdViewTransitionImagePair,
+          To<PseudoElement>(this)->view_transition_name());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionImagePair) {
+      const AtomicString& name =
+          To<PseudoElement>(this)->view_transition_name();
+      if (Node* last = current_element->GetPseudoElement(
+              kPseudoIdViewTransitionNew, name)) {
+        return last;
+      }
+
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionOld,
+                                               name);
+    }
+    if (Node* last =
+            current_element->GetPseudoElement(kPseudoIdViewTransition)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
       return last;
     if (Node* last = current_element->lastChild())
@@ -995,12 +1126,19 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
   if (Element* parent = GetStyleRecalcParent()) {
     return !parent->GetComputedStyle();
   }
-  // If this is the root element, and it does not have a computed style, we
-  // still need to mark it for style recalc since it may change from
-  // display:none. Otherwise, the node is not in the flat tree, and we can
-  // skip marking it dirty.
-  return !GetComputedStyle() && GetDocument().documentElement() &&
-         this != GetDocument().documentElement();
+  if (const Element* element = DynamicTo<Element>(this)) {
+    const Element* root_element = GetDocument().documentElement();
+    if (!root_element || element == root_element) {
+      // This is the root element, or we are about to insert the root element.
+      // Should always allow marking it dirty.
+      return false;
+    }
+    // This is an element outside the flat tree without a parent. Should only
+    // mark dirty if it has an ensured style.
+    return !element->GetComputedStyle();
+  }
+  // Text nodes outside the flat tree do not need to be marked for style recalc.
+  return true;
 }
 
 void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
@@ -1028,14 +1166,15 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
     return;
   // If we are outside the flat tree we should not update the recalc root
   // because we should not traverse those nodes from StyleEngine::RecalcStyle().
-  if (const ComputedStyle* current_style = GetComputedStyle()) {
-    if (current_style->IsEnsuredOutsideFlatTree())
-      return;
-  } else if (style_parent) {
-    if (const auto* parent_style = style_parent->GetComputedStyle()) {
-      if (parent_style->IsEnsuredOutsideFlatTree())
-        return;
-    }
+  const ComputedStyle* current_style = nullptr;
+  if (Element* element = DynamicTo<Element>(this)) {
+    current_style = element->GetComputedStyle();
+  }
+  if (!current_style && style_parent) {
+    current_style = style_parent->GetComputedStyle();
+  }
+  if (current_style && current_style->IsEnsuredOutsideFlatTree()) {
+    return;
   }
   // If we're in a locked subtree, then we should not update the style recalc
   // roots. These would be updated when we commit the lock. If we have locked
@@ -1192,6 +1331,13 @@ bool Node::InActiveDocument() const {
 bool Node::ShouldHaveFocusAppearance() const {
   DCHECK(IsFocused());
   return true;
+}
+
+void Node::FocusabilityLost() {
+  if (IsA<HTMLFormElement>(this) || IsA<HTMLFormControlElement>(this)) {
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        DynamicTo<HTMLElement>(this), WebFormRelatedChangeType::kHide);
+  }
 }
 
 LinkHighlightCandidate Node::IsLinkHighlightCandidate() const {
@@ -1399,11 +1545,18 @@ void Node::DetachLayoutTree(bool performing_reattach) {
          GetDocument().GetStyleEngine().InRebuildLayoutTree());
   DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
 
-  if (performing_reattach)
-    ReattachHookScope::NotifyDetach(*this);
+  // Review: under what conditions should we call this?
+  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->RemoveAXObjectsInLayoutSubtree(this);
+  }
 
-  if (GetLayoutObject())
+  if (performing_reattach) {
+    ReattachHookScope::NotifyDetach(*this);
+  }
+
+  if (GetLayoutObject()) {
     GetLayoutObject()->DestroyAndCleanupAnonymousWrappers(performing_reattach);
+  }
   SetLayoutObject(nullptr);
   if (!performing_reattach) {
     // We are clearing the ComputedStyle for elements, which means we should not
@@ -1991,15 +2144,17 @@ uint16_t Node::compareDocumentPosition(const Node* other_node,
         return Node::kDocumentPositionPreceding | connection;
       }
 
-      if (!child2->nextSibling())
+      if (!child2->PseudoAwareNextSibling()) {
         return kDocumentPositionFollowing | connection;
-      if (!child1->nextSibling())
+      }
+      if (!child1->PseudoAwareNextSibling()) {
         return kDocumentPositionPreceding | connection;
+      }
 
       // Otherwise we need to see which node occurs first.  Crawl backwards from
       // child2 looking for child1.
-      for (const Node* child = child2->previousSibling(); child;
-           child = child->previousSibling()) {
+      for (const Node* child = child2->PseudoAwarePreviousSibling(); child;
+           child = child->PseudoAwarePreviousSibling()) {
         if (child == child1)
           return kDocumentPositionFollowing | connection;
       }
@@ -2099,7 +2254,12 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 String Node::DebugName() const {
   StringBuilder name;
   name.Append(nodeName());
-  if (const auto* this_element = DynamicTo<Element>(this)) {
+  if (const auto* vt_pseudo =
+          DynamicTo<ViewTransitionPseudoElementBase>(this)) {
+    name.Append("(");
+    name.Append(vt_pseudo->view_transition_name());
+    name.Append(")");
+  } else if (const auto* this_element = DynamicTo<Element>(this)) {
     if (this_element->HasID()) {
       name.Append(" id=\'");
       name.Append(this_element->GetIdAttribute());
@@ -2164,6 +2324,11 @@ String Node::ToString() const {
     builder.Append(" ");
     builder.Append(nodeValue().EncodeForDebugging());
     return builder.ReleaseString();
+  } else if (const auto* vt_pseudo =
+                 DynamicTo<ViewTransitionPseudoElementBase>(this)) {
+    builder.Append("(");
+    builder.Append(vt_pseudo->view_transition_name());
+    builder.Append(")");
   } else if (const auto* element = DynamicTo<Element>(this)) {
     const AtomicString& pseudo = element->ShadowPseudoId();
     if (!pseudo.empty()) {
@@ -2683,21 +2848,6 @@ void Node::HandleLocalEvents(Event& event) {
     return;
   }
 
-  if (IsDisabledFormControl(this) && IsA<MouseEvent>(event) &&
-      !RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
-    if (HasEventListeners(event.type())) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDispatchMouseEventOnDisabledFormControl);
-      if (event.type() == event_type_names::kMousedown ||
-          event.type() == event_type_names::kMouseup) {
-        UseCounter::Count(
-            GetDocument(),
-            WebFeature::kDispatchMouseUpDownEventOnDisabledFormControl);
-      }
-    }
-    return;
-  }
-
   FireEventListeners(event);
 }
 
@@ -2829,8 +2979,7 @@ void Node::UpdateHadKeyboardEvent(const Event& event) {
   if (GetLayoutObject()) {
     InvalidateIfHasEffectiveAppearance();
 
-    auto* this_element = DynamicTo<Element>(this);
-    if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled() && this_element) {
+    if (auto* this_element = DynamicTo<Element>(this)) {
       this_element->FocusVisibleStateChanged();
     }
   }
@@ -3097,17 +3246,19 @@ bool Node::HasMediaControlAncestor() const {
 }
 
 void Node::FlatTreeParentChanged() {
-  if (!isConnected())
+  if (!isConnected()) {
     return;
+  }
   DCHECK(IsSlotable());
-
-  const ComputedStyle* style = GetComputedStyle();
+  const ComputedStyle* style =
+      IsElementNode() ? To<Element>(this)->GetComputedStyle() : nullptr;
   bool detach = false;
   if (ShouldSkipMarkingStyleDirty()) {
     // If we should not mark the node dirty in the new flat tree position,
     // detach to make sure all computes styles, layout objects, and dirty
     // flags are cleared.
-    detach = IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style;
+    detach = IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style ||
+             GetLayoutObject();
   }
   if (!detach) {
     // We are moving a node with ensured computed style into the flat tree.

@@ -53,12 +53,10 @@ public class CoordinatorLayoutForPointer extends CoordinatorLayout {
         return super.onInterceptTouchEvent(ev);
     }
 
-    /**
-     * Set a callback that is run for every intercepted touch event on this view and its children.
-     */
+    /** Set a callback that is run for every intercepted touch event on this view and its children. */
     public void setTouchEventCallback(Runnable touchEventCallback) {
-        assert mTouchEventCallback == null
-                || touchEventCallback == null : "Another touchEventCallback is already set.";
+        assert mTouchEventCallback == null || touchEventCallback == null
+                : "Another touchEventCallback is already set.";
         mTouchEventCallback = touchEventCallback;
     }
 }

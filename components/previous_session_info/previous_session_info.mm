@@ -111,7 +111,7 @@ class FieldTrialListObserverBridge : public base::FieldTrialList::Observer {
       delete;
 
   // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
+  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override {
     dispatch_async(dispatch_get_main_queue(), ^{
       variations::ExperimentListInfo info = variations::GetExperimentListInfo();
@@ -147,6 +147,8 @@ NSString* const kPreviousSessionInfoParamsPrefix =
 NSString* const kPreviousSessionInfoMemoryFootprint =
     @"PreviousSessionInfoMemoryFootprint";
 NSString* const kPreviousSessionInfoTabCount = @"PreviousSessionInfoTabCount";
+NSString* const kPreviousSessionInfoInactiveTabCount =
+    @"PreviousSessionInfoInactiveTabCount";
 NSString* const kPreviousSessionInfoOTRTabCount =
     @"PreviousSessionInfoOTRTabCount";
 NSString* const kPreviousSessionInfoWarmStartCount =
@@ -186,6 +188,7 @@ NSString* const kPreviousSessionInfoWarmStartCount =
 @property(nonatomic, assign) NSInteger memoryFootprint;
 @property(nonatomic, assign) BOOL applicationWillTerminateWasReceived;
 @property(nonatomic, assign) NSInteger tabCount;
+@property(nonatomic, assign) NSInteger inactiveTabCount;
 @property(nonatomic, assign) NSInteger OTRTabCount;
 @property(atomic, strong) NSString* breadcrumbs;
 @property(nonatomic, assign) NSInteger warmStartCount;
@@ -290,6 +293,9 @@ static PreviousSessionInfo* gSharedInstance = nil;
     gSharedInstance.tabCount =
         [defaults integerForKey:previous_session_info_constants::
                                     kPreviousSessionInfoTabCount];
+    gSharedInstance.inactiveTabCount =
+        [defaults integerForKey:previous_session_info_constants::
+                                    kPreviousSessionInfoInactiveTabCount];
     gSharedInstance.OTRTabCount =
         [defaults integerForKey:previous_session_info_constants::
                                     kPreviousSessionInfoOTRTabCount];
@@ -639,6 +645,14 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [NSUserDefaults.standardUserDefaults
       setInteger:count
           forKey:previous_session_info_constants::kPreviousSessionInfoTabCount];
+  [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)updateCurrentSessionInactiveTabCount:(NSInteger)count {
+  [NSUserDefaults.standardUserDefaults
+      setInteger:count
+          forKey:previous_session_info_constants::
+                     kPreviousSessionInfoInactiveTabCount];
   [NSUserDefaults.standardUserDefaults synchronize];
 }
 

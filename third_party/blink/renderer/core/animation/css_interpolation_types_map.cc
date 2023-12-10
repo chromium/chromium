@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/animation/css_custom_transform_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_display_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_dynamic_range_limit_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_palette_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_size_adjust_interpolation_type.h"
@@ -202,18 +203,22 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         break;
       case CSSPropertyID::kGridTemplateColumns:
       case CSSPropertyID::kGridTemplateRows:
-        if (RuntimeEnabledFeatures::
-                CSSGridTemplatePropertyInterpolationEnabled()) {
-          applicable_types->push_back(
-              std::make_unique<CSSGridTemplatePropertyInterpolationType>(
-                  used_property));
-        }
+        applicable_types->push_back(
+            std::make_unique<CSSGridTemplatePropertyInterpolationType>(
+                used_property));
         break;
       case CSSPropertyID::kContainIntrinsicWidth:
       case CSSPropertyID::kContainIntrinsicHeight:
         applicable_types->push_back(
             std::make_unique<CSSIntrinsicLengthInterpolationType>(
                 used_property));
+        break;
+      case CSSPropertyID::kDynamicRangeLimit:
+        if (RuntimeEnabledFeatures::CSSDynamicRangeLimitEnabled()) {
+          applicable_types->push_back(
+              std::make_unique<CSSDynamicRangeLimitInterpolationType>(
+                  used_property));
+        }
         break;
       case CSSPropertyID::kFlexGrow:
       case CSSPropertyID::kFlexShrink:
@@ -447,7 +452,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
                 used_property));
         break;
       case CSSPropertyID::kOverlay:
-        DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
         applicable_types->push_back(
             std::make_unique<CSSOverlayInterpolationType>(used_property));
         break;

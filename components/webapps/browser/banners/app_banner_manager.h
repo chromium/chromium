@@ -177,7 +177,7 @@ class AppBannerManager : public content::WebContentsObserver,
   bool MaybeConsumeInstallAnimation();
 
   // Requests an app banner.
-  virtual void RequestAppBanner(const GURL& validated_url);
+  virtual void RequestAppBanner();
 
   // Informs the page that it has been installed with appinstalled event and
   // performs logging related to the app installation. Appinstalled event is
@@ -361,7 +361,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Callback invoked by the InstallableManager once it has finished checking
   // all other installable properties.
   virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
-  void OnDidPerformPromotableWebAppCheck(const InstallableData& data);
 
   // Records that a banner was shown.
   void RecordDidShowBanner();
@@ -401,8 +400,6 @@ class AppBannerManager : public content::WebContentsObserver,
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void DidActivatePortal(content::WebContents* predecessor_contents,
-                         base::TimeTicks activation_time) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* target_frame,
                                const GURL& manifest_url) override;
   void MediaStartedPlaying(const MediaPlayerInfo& media_info,
@@ -435,6 +432,8 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // The URL of the manifest.
   GURL manifest_url_;
+
+  GURL manifest_id_;
 
   // The URL of the primary icon.
   GURL primary_icon_url_;

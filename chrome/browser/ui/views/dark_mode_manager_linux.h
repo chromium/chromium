@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_DARK_MODE_MANAGER_LINUX_H_
 
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 namespace dbus {

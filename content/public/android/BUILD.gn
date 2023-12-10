@@ -35,6 +35,7 @@ android_resources("content_java_resources") {
     "java/res/drawable-xxhdpi/ic_search.png",
     "java/res/drawable-xxxhdpi/ic_search.png",
     "java/res/drawable/floating_popup_background.xml",
+    "java/res/drawable/ic_paste_as_plain_text.xml",
     "java/res/layout-land/date_time_picker_dialog.xml",
     "java/res/layout/date_time_picker_dialog.xml",
     "java/res/layout/date_time_suggestion.xml",
@@ -191,6 +192,8 @@ android_library("content_full_java") {
     "//third_party/blink/public/mojom:mojom_core_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/accessibility:accessibility_features_java",
+    "//ui/accessibility:accessibility_features_native_map_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
@@ -252,7 +255,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/WindowEventObserver.java",
     "java/src/org/chromium/content/browser/WindowEventObserverManager.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityActionAndEventTracker.java",
-    "java/src/org/chromium/content/browser/accessibility/AccessibilityAutofillHelper.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityDelegate.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityEventDispatcher.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityHistogramRecorder.java",
@@ -399,12 +401,11 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/WebContentsInternals.java",
     "java/src/org/chromium/content_public/browser/WebContentsObserver.java",
     "java/src/org/chromium/content_public/browser/WebContentsStatics.java",
+    "java/src/org/chromium/content_public/browser/selection/SelectionActionMenuDelegate.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
   ]
 
   public_deps = [ ":identity_credentials_java" ]
-
-  proguard_configs = [ "proguard.flags" ]
 }
 
 # TODO(crbug.com/1475970) simplify these build targets once GMSCore publishes identity-credentials.
@@ -576,6 +577,7 @@ android_library("content_javatests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:accessibility_features_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
@@ -696,6 +698,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/remoteobjects/RemoteObjectImplTest.java",
     "junit/src/org/chromium/content/browser/remoteobjects/RemoteObjectRegistryTest.java",
     "junit/src/org/chromium/content/browser/selection/MagnifierAnimatorTest.java",
+    "junit/src/org/chromium/content/browser/selection/SelectActionMenuHelperTest.java",
     "junit/src/org/chromium/content/browser/selection/SelectionPopupControllerTest.java",
     "junit/src/org/chromium/content/browser/selection/SmartSelectionEventProcessorTest.java",
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",

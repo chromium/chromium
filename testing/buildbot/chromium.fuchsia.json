@@ -3,7 +3,7 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "fuchsia-arm64-cast-receiver-rel": {
     "additional_compile_targets": [
-      "all"
+      "cast_test_lists"
     ],
     "gtest_tests": [
       {
@@ -149,6 +149,22 @@
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "blink_unittests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
       },
       {
         "merge": {
@@ -1110,6 +1126,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_unittests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "boringssl_crypto_tests",
         "swarming": {
           "dimensions": {
@@ -1915,7 +1947,7 @@
   },
   "fuchsia-x64-cast-receiver-rel": {
     "additional_compile_targets": [
-      "all"
+      "cast_test_lists"
     ],
     "gtest_tests": [
       {
@@ -2061,6 +2093,22 @@
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "blink_unittests_v2",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
       },
       {
         "isolate_profile_data": true,
@@ -3359,6 +3407,21 @@
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "blink_unittests_v2",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
       },
       {
         "merge": {

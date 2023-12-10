@@ -69,11 +69,11 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
   }
 
  private:
-  absl::optional<ui::ElementContext> GetUiElementContext() {
+  std::optional<ui::ElementContext> GetUiElementContext() {
     if (browser_) {
       return browser_->window()->GetElementContext();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   user_education::TutorialService* GetTutorialService() {
@@ -101,10 +101,10 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
 }  // namespace
 
 StartTutorialInPage::Params::Params() = default;
-StartTutorialInPage::Params::~Params() = default;
-StartTutorialInPage::Params::Params(Params&& other) = default;
+StartTutorialInPage::Params::Params(Params&& other) noexcept = default;
 StartTutorialInPage::Params& StartTutorialInPage::Params::operator=(
-    Params&& other) = default;
+    Params&& other) noexcept = default;
+StartTutorialInPage::Params::~Params() = default;
 
 StartTutorialInPage::StartTutorialInPage() = default;
 StartTutorialInPage::~StartTutorialInPage() = default;

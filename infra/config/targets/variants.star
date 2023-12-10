@@ -575,7 +575,7 @@ targets.variant(
         "--binary",
         "Chromium.app/Contents/MacOS/Chromium",
     ],
-    win64_args = [
+    win_args = [
         "--chromedriver",
         "chromedriver.exe",
         "--binary",

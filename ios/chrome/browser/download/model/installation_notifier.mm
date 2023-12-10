@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/model/installation_notifier.h"
+#import "ios/chrome/browser/download/model/installation_notifier+Testing.h"
 
 #import <UIKit/UIKit.h>
-#import <stdint.h>
 
+#import <stdint.h>
 #import <memory>
 
 #import "base/check_op.h"
 #import "base/metrics/histogram_macros.h"
-#import "ios/chrome/browser/download/model/installation_notifier+private.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/backoff_entry.h"
 #import "url/gurl.h"

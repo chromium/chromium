@@ -29,9 +29,7 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
  */
 public class IncognitoCookieControlsManager
         implements CookieControlsServiceObserver, OnCheckedChangeListener, View.OnClickListener {
-    /**
-     * Interface for a class that wants to receive updates from this manager.
-     */
+    /** Interface for a class that wants to receive updates from this manager. */
     public interface Observer {
         /**
          * Notifies that this manager has received an update.
@@ -54,9 +52,7 @@ public class IncognitoCookieControlsManager
     private @CookieControlsEnforcement int mSnapshotEnforcement =
             CookieControlsEnforcement.NO_ENFORCEMENT;
 
-    /**
-     * Initializes the IncognitoCookieControlsManager explicitly.
-     */
+    /** Initializes the IncognitoCookieControlsManager explicitly. */
     public void initialize() {
         if (mIsInitialized) return;
 
@@ -78,9 +74,7 @@ public class IncognitoCookieControlsManager
         mObservers.removeObserver(observer);
     }
 
-    /**
-     * Tells the bridge to update itself if necessary.
-     */
+    /** Tells the bridge to update itself if necessary. */
     public void updateIfNecessary() {
         if (mIsInitialized) mServiceBridge.updateServiceIfNecessary();
     }
@@ -108,9 +102,10 @@ public class IncognitoCookieControlsManager
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        boolean isCookieToggle = ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
-                ? buttonView.getId() == R.id.revamped_cookie_controls_card_toggle
-                : buttonView.getId() == R.id.cookie_controls_card_toggle;
+        boolean isCookieToggle =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
+                        ? buttonView.getId() == R.id.revamped_cookie_controls_card_toggle
+                        : buttonView.getId() == R.id.cookie_controls_card_toggle;
         if (isChecked != mChecked && isCookieToggle) {
             mServiceBridge.handleCookieControlsToggleChanged(isChecked);
         }
@@ -120,8 +115,10 @@ public class IncognitoCookieControlsManager
     public void onClick(View v) {
         if (v.getId() == R.id.cookie_controls_card_managed_icon) {
             Bundle fragmentArguments = new Bundle();
-            fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
-                    SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.COOKIES));
+            fragmentArguments.putString(
+                    SingleCategorySettings.EXTRA_CATEGORY,
+                    SiteSettingsCategory.preferenceKey(
+                            SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(
                     v.getContext(), SingleCategorySettings.class, fragmentArguments);

@@ -6,31 +6,27 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/scoped_observation.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/views/view.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -38,48 +34,16 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the path of the downloads mount point for the given `profile`.
-base::FilePath GetDownloadsPath(Profile* profile) {
-  base::FilePath result;
-  EXPECT_TRUE(
-      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          file_manager::util::GetDownloadsMountPointName(profile), &result));
-  return result;
-}
-
-// Creates a file at the root of the downloads mount point with the specified
-// `extension`, returning the path of the created file.
-base::FilePath CreateFile(Profile* profile, const std::string& extension) {
-  const base::FilePath file_path =
-      GetDownloadsPath(profile).Append(base::StringPrintf(
-          "%s.%s", base::UnguessableToken::Create().ToString().c_str(),
-          extension.c_str()));
-
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!base::CreateDirectory(file_path.DirName())) {
-      ADD_FAILURE() << "Failed to create parent directory.";
-      return base::FilePath();
-    }
-    if (!base::WriteFile(file_path, /*content=*/std::string())) {
-      ADD_FAILURE() << "Filed to write file contents.";
-      return base::FilePath();
-    }
-  }
-
-  return file_path;
-}
-
 // Creates a .txt file at the root of the downloads mount point and returns the
 // path of the created file.
 base::FilePath CreateTextFile(Profile* profile) {
-  return CreateFile(profile, "txt");
+  return test::CreateFile(profile);
 }
 
 // Creates a .png file at the root of the downloads mount point and returns the
 // path of the created file.
 base::FilePath CreateImageFile(Profile* profile) {
-  return CreateFile(profile, "png");
+  return test::CreateFile(profile, /*extension=*/"png");
 }
 
 }  // namespace
@@ -170,8 +134,8 @@ void HoldingSpaceBrowserTestBase::RemoveItem(const HoldingSpaceItem* item) {
 }
 
 base::FilePath HoldingSpaceBrowserTestBase::CreateFile(
-    const absl::optional<std::string>& extension) {
-  return ::ash::CreateFile(GetProfile(), extension.value_or("txt"));
+    const std::optional<std::string>& extension) {
+  return test::CreateFile(GetProfile(), extension.value_or("txt"));
 }
 
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
@@ -180,6 +144,31 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
 
   SessionManagerClient::Get()->RequestLockScreen();
   SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
+}
+
+// HoldingSpaceUiBrowserTestBase -----------------------------------------------
+
+void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
+  HoldingSpaceBrowserTestBase::SetUpOnMainThread();
+
+  if (!features::IsHoldingSpacePredictabilityEnabled()) {
+    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+    // The holding space tray will not show until the user has added a file to
+    // holding space. Holding space UI browser tests don't need to assert that
+    // behavior since it is already asserted in ash_unittests. As a convenience,
+    // add and remove a holding space item so that the holding space tray will
+    // already be showing during test execution.
+    ASSERT_FALSE(test_api().IsShowingInShelf());
+    RemoveItem(AddDownloadFile());
+  }
+
+  // Confirm that the holding space tray is showing in the shelf.
+  ASSERT_TRUE(test_api().IsShowingInShelf());
+
+  // Confirm that holding space model has been emptied for test execution.
+  ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
 }
 
 }  // namespace ash

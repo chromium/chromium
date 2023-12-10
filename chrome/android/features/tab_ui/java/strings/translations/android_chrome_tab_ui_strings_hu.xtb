@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
+<translation id="1155815720264022949">Szeretné bezárni a régi lapokat?</translation>
 <translation id="1215127405478249895">Lapok áttekintése</translation>
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
 <translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
 <translation id="5082793167783849073">Csoport kialakításával gyorsan összehasonlíthat oldalakat. A kezdéshez tartsa lenyomva ujját a kívánt linken.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> olyan lapja van, amelyet nem használt mostanában}other{<ph name="TABS_COUNT_MANY" /> olyan lapja van, amelyet nem használt mostanában}}</translation>
 <translation id="5339733443032484186">A legutóbbi lap</translation>
 <translation id="5490235265819901748">Lapcsoport kibontva</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
+<translation id="5545379293264651575">Bezárás ellenőrzés nélkül</translation>
 <translation id="5556417849629758491">Az üzlet adatainak megtekintése; a lehetőség a képernyő tetején található</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport bezárása</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> lap csoportosítva</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Lap mozgatása jobbra</translation>
 <translation id="7966321538264951561">Javaslatok elvetése.</translation>
 <translation id="8029301326595421733">Az üzlettel kapcsolatos információs panel teljes magasságban meg van nyitva</translation>
-<translation id="814503310257431685">Összes megtekintése</translation>
 <translation id="8205266828577616993">Lap mozgatása felfelé</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap bezárása}}</translation>
 <translation id="8398929769197326728">Új mappa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

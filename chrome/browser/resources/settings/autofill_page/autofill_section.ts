@@ -236,8 +236,7 @@ export class SettingsAutofillSectionElement extends
       return false;
     }
 
-    if (!loadTimeData.getBoolean('autofillAccountProfileStorage') ||
-        !loadTimeData.getBoolean(
+    if (!loadTimeData.getBoolean(
             'syncEnableContactInfoDataTypeInTransportMode')) {
       return false;
     }

@@ -5,13 +5,18 @@
 #ifndef UI_VIEWS_EXAMPLES_ACTIONS_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_ACTIONS_EXAMPLE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/actions/actions.h"
+#include "ui/views/action_view_controller.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 
 namespace views {
 
@@ -20,7 +25,6 @@ class Checkbox;
 class Combobox;
 class Textarea;
 class Textfield;
-class View;
 
 namespace examples {
 
@@ -50,6 +54,7 @@ class VIEWS_EXAMPLES_EXPORT ActionsExample : public ExampleBase {
   void TooltipTextChanged();
   void VisibleChanged();
 
+  ActionViewController action_view_controller_ = ActionViewController();
   std::vector<base::CallbackListSubscription> subscriptions_;
   raw_ptr<actions::ActionItem> example_actions_ = nullptr;
   raw_ptr<View> action_panel_ = nullptr;

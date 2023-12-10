@@ -15,10 +15,17 @@ AXMediaAppHandlerFactory* AXMediaAppHandlerFactory::GetInstance() {
 AXMediaAppHandlerFactory::AXMediaAppHandlerFactory() = default;
 AXMediaAppHandlerFactory::~AXMediaAppHandlerFactory() = default;
 
-std::unique_ptr<AXMediaAppHandler>
-AXMediaAppHandlerFactory::CreateAXMediaAppHandler(AXMediaApp* media_app) {
-  CHECK(media_app);
-  return std::make_unique<AXMediaAppHandler>(media_app);
+std::unique_ptr<AXMediaAppUntrustedHandler>
+AXMediaAppHandlerFactory::CreateAXMediaAppUntrustedHandler(
+    content::BrowserContext& context,
+    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+        receiver,
+    mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
+  auto ax_media_app_handler =
+      std::make_unique<AXMediaAppUntrustedHandler>(context, std::move(page));
+  media_app_receivers_.Add(std::move(ax_media_app_handler),
+                           std::move(receiver));
+  return ax_media_app_handler;
 }
 
 }  // namespace ash

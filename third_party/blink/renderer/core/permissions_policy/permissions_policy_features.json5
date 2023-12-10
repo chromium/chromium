@@ -275,7 +275,6 @@
     {
       name: "IdleDetection",
       permissions_policy_name: "idle-detection",
-      depends_on: ["IdleDetection"],
     },
     {
       name: "JoinAdInterestGroup",
@@ -398,6 +397,11 @@
       name: "Usb",
       permissions_policy_name: "usb",
       depends_on: ["WebUSB"],
+    },
+    {
+      name: "UsbUnrestricted",
+      permissions_policy_name: "usb-unrestricted",
+      depends_on: ["UnrestrictedUsb"],
     },
     {
       // Unload is special and can default to being disabled by default based

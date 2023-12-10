@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<title>View Transitions: @view-transitions opt-out programmatically.</title>
+<title>View Transitions: @view-transition opt-out programmatically.</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-@view-transitions {
-    navigation-trigger: cross-document-same-origin;
+@view-transition {
+    navigation: auto;
 }
 </style>
 <script>
@@ -15,7 +15,7 @@ const is_new_page = params.has('new');
 
 if (!is_new_page) {
   onload = () => requestAnimationFrame(() => requestAnimationFrame(() => {
-      document.styleSheets[0].rules[0].navigationTrigger = 'none';
+      document.styleSheets[0].rules[0].navigation = 'none';
       location.replace(location.href + '?new');
   }));
 } else {

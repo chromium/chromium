@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -21,7 +22,6 @@
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/browser/first_party_sets/first_party_sets_site_data_remover.h"
-#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -31,6 +31,8 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -190,7 +192,7 @@ FirstPartySetsHandlerImplInstance::GetSets(
 
 void FirstPartySetsHandlerImplInstance::Init(
     const base::FilePath& user_data_dir,
-    const LocalSetDeclaration& local_set) {
+    const net::LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialized_) {
     return;
@@ -529,12 +531,7 @@ FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 
-  return parsed.has_value()
-             ? global_sets_.value().ComputeConfig(
-                   /*replacement_sets=*/parsed.value().replacements,
-                   /*addition_sets=*/
-                   parsed.value().additions)
-             : net::FirstPartySetsContextConfig();
+  return global_sets_->ComputeConfig(parsed.value_or(net::SetsMutation()));
 }
 
 bool FirstPartySetsHandlerImplInstance::ForEachEffectiveSetEntry(

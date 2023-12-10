@@ -12,7 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus
+#             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -137,7 +137,8 @@ crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateContro
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_copyTo_hw_decoder [ Failure ]
+
+crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -480,7 +480,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
   const base::Value::Dict* event = wrapper.FindDict(
       SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
   EXPECT_NE(nullptr, event);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1501186): To fix the tests for ChromeOS.
   EXPECT_EQ("malware.exe",
+#else
+  EXPECT_EQ("/path/to/malware.exe",
+#endif  // BUILDFLAG(IS_CHROMEOS)
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ("exe", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
@@ -594,7 +600,12 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
   const base::Value::Dict* event = wrapper.FindDict(
       SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
   EXPECT_NE(nullptr, event);
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1163303): To fix the tests for ChromeOS.
   EXPECT_EQ("warning.exe",
+#else
+  EXPECT_EQ("/path/to/warning.exe",
+#endif  // BUILDFLAG(IS_CHROMEOS)
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ("exe", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
@@ -632,7 +643,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   const base::Value::Dict* event = wrapper.FindDict(
       SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
   EXPECT_NE(nullptr, event);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1163303): To fix the tests for ChromeOS.
   EXPECT_EQ("bypass.exe",
+#else
+  EXPECT_EQ("/path/to/bypass.exe",
+#endif  // BUILDFLAG(IS_CHROMEOS)
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ("exe", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));

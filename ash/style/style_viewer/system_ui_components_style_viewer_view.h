@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -36,6 +37,8 @@ class SystemUIComponentsGridView;
 // +----------------------+---------------------------------------+
 class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
                                           public views::WidgetObserver {
+  METADATA_HEADER(SystemUIComponentsStyleViewerView, views::WidgetDelegateView)
+
  public:
   // A view factory of `SystemUIComponentsGridView` that shows the UI component
   // instances in a m x n grids.

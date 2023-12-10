@@ -242,7 +242,12 @@ class ChromeBrowsingDataRemoverDelegate
   std::unique_ptr<WebappRegistry> webapp_registry_;
 #endif
 
-  bool should_clear_password_account_storage_settings_ = false;
+#if !BUILDFLAG(IS_ANDROID)
+  // On desktop, some per-account sync settings must be cleared when cookies are
+  // deleted. This flag is used to defer the process until after sync uploads
+  // deletions of any other data.
+  bool should_clear_sync_account_settings_ = false;
+#endif
 
   std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;
 

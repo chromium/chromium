@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -69,7 +70,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -142,34 +142,6 @@ TabWebContentsDelegateAndroid::TabWebContentsDelegateAndroid(JNIEnv* env,
 }
 
 TabWebContentsDelegateAndroid::~TabWebContentsDelegateAndroid() = default;
-
-void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
-    content::WebContents* portal_contents) {
-  WebContentsDelegateAndroid::PortalWebContentsCreated(portal_contents);
-
-  Profile* profile =
-      Profile::FromBrowserContext(portal_contents->GetBrowserContext());
-
-  // This is a subset of the tab helpers that would be attached by
-  // TabAndroid::AttachTabHelpers.
-  //
-  // TODO(jbroman): This doesn't adequately handle all of the tab helpers that
-  // might be wanted here, and there are also likely to be issues with tab
-  // helpers that are unprepared for portal activation to transition them.
-  // See https://crbug.com/1042323
-  autofill::ChromeAutofillClient::CreateForWebContents(portal_contents);
-  ChromePasswordManagerClient::CreateForWebContents(portal_contents);
-  HistoryTabHelper::CreateForWebContents(portal_contents);
-  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
-      portal_contents);
-  infobars::ContentInfoBarManager::CreateForWebContents(portal_contents);
-  PrefsTabHelper::CreateForWebContents(portal_contents);
-  safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
-      portal_contents, HostContentSettingsMapFactory::GetForProfile(profile),
-      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-          GetForBrowserContext(profile),
-      profile->GetPrefs(), g_browser_process->safe_browsing_service());
-}
 
 void TabWebContentsDelegateAndroid::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
@@ -274,7 +246,7 @@ void TabWebContentsDelegateAndroid::RequestMediaAccessPermission(
 
 bool TabWebContentsDelegateAndroid::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
@@ -441,17 +413,6 @@ TabWebContentsDelegateAndroid::IsPrerender2Supported(
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
   return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
-}
-
-std::unique_ptr<content::WebContents>
-TabWebContentsDelegateAndroid::ActivatePortalWebContents(
-    content::WebContents* predecessor_contents,
-    std::unique_ptr<content::WebContents> portal_contents) {
-  const bool is_loading = portal_contents->IsLoading();
-  return TabAndroid::FromWebContents(predecessor_contents)
-      ->SwapWebContents(std::move(portal_contents),
-                        /* did_start_load */ true,
-                        /* did_finish_load */ !is_loading);
 }
 
 device::mojom::GeolocationContext*

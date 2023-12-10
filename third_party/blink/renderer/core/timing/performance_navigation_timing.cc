@@ -112,6 +112,7 @@ AtomicString PerformanceNavigationTiming::GetNavigationTimingType(
       return AtomicString("reload");
     case kWebNavigationTypeBackForward:
     case kWebNavigationTypeFormResubmittedBackForward:
+    case kWebNavigationTypeRestore:
       return AtomicString("back_forward");
     case kWebNavigationTypeLinkClicked:
     case kWebNavigationTypeFormSubmitted:

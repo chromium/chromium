@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] SPC authentication ceremony in cross-origin iframe
+  promise_test: Unhandled rejection with value: "error: Action set_spc_transaction_mode not implemented"
+[FAIL] SPC authentication ceremony in cross-origin iframe without payment permission
+  promise_test: Unhandled rejection with value: "error: Action set_spc_transaction_mode not implemented"
+Harness: the test ran to completion.

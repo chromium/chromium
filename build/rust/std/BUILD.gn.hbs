@@ -7,8 +7,8 @@
 import("//build/rust/cargo_crate.gni")
 
 {{#each rules}}
-cargo_crate("{{this.0}}") {
-  {{#with this.1.concrete}}
+{{#with this.detail}}
+cargo_crate("{{../name}}") {
   crate_type = "{{crate_type}}"
   crate_root = "{{crate_root}}"
   sources = [

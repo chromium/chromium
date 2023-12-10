@@ -25,14 +25,18 @@ source_set("data_controls") {
     "data_controls_policy_handler.h",
     "dlp_histogram_helper.cc",
     "dlp_histogram_helper.h",
+    "dlp_rules_manager_base.h",
     "prefs.cc",
     "prefs.h",
     "rule.cc",
     "rule.h",
+    "verdict.cc",
+    "verdict.h",
   ]
 
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
@@ -56,11 +60,13 @@ source_set("unit_tests") {
     "and_condition_unittest.cc",
     "attributes_condition_unittest.cc",
     "rule_unittest.cc",
+    "verdict_unittest.cc",
   ]
 
   deps = [
     ":data_controls",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }

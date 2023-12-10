@@ -10,9 +10,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import javax.inject.Inject;
 
-/**
- * Records SharedPreferences related to the browserservices module.
- */
+/** Records SharedPreferences related to the browserservices module. */
 @ActivityScope
 public class BrowserServicesStore {
     private final SharedPreferencesManager mManager;

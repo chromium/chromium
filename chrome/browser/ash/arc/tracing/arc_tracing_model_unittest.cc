@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -190,9 +191,9 @@ TEST_F(ArcTracingModelTest, TopLevel) {
   // Continue in this test to avoid heavy calculations for building base model.
   // Make sure we can create graphics model.
   ArcTracingGraphicsModel graphics_model;
-  TraceTimestamps timestamps;
-  timestamps.AddCommit(base::TimeTicks::FromUptimeMillis(42));
-  ASSERT_TRUE(graphics_model.Build(model, timestamps));
+  PresentFramesTracer present_frames;
+  present_frames.AddCommit(base::TimeTicks::FromUptimeMillis(42));
+  ASSERT_TRUE(graphics_model.Build(model, present_frames));
 
   EXPECT_EQ(1U, graphics_model.chrome_top_level().buffer_events().size());
   for (const auto& chrome_top_level_band :

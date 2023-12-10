@@ -96,12 +96,15 @@ public final class UiUtils {
         calendar2.setTime(date);
 
         if (CalendarUtils.isSameDay(calendar1, calendar2)) {
-            int hours = (int) MathUtils.clamp(
-                    (calendar1.getTimeInMillis() - calendar2.getTimeInMillis())
-                            / DateUtils.HOUR_IN_MILLIS,
-                    1, 23);
-            return context.getResources().getQuantityString(
-                    R.plurals.download_manager_n_hours, hours, hours);
+            int hours =
+                    (int)
+                            MathUtils.clamp(
+                                    (calendar1.getTimeInMillis() - calendar2.getTimeInMillis())
+                                            / DateUtils.HOUR_IN_MILLIS,
+                                    1,
+                                    23);
+            return context.getResources()
+                    .getQuantityString(R.plurals.download_manager_n_hours, hours, hours);
         } else {
             return DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_SHOW_YEAR);
         }
@@ -116,8 +119,9 @@ public final class UiUtils {
     public static CharSequence generatePrefetchCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
         String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
-        String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String displayUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return context.getString(
                 R.string.download_manager_prefetch_caption, displayUrl, displaySize);
     }
@@ -130,8 +134,9 @@ public final class UiUtils {
      */
     public static CharSequence generateGenericCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
-        String displayUrl = DownloadUtils.formatUrlForDisplayInNotification(
-                item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
+        String displayUrl =
+                DownloadUtils.formatUrlForDisplayInNotification(
+                        item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
 
         if (item.totalSizeBytes == 0) {
             return context.getString(
@@ -209,8 +214,9 @@ public final class UiUtils {
      * @return           The {@link CharSequence} representing the caption.
      */
     public static CharSequence generateInProgressCaption(OfflineItem item, boolean abbreviate) {
-        return abbreviate ? generateInProgressShortCaption(item)
-                          : generateInProgressLongCaption(item);
+        return abbreviate
+                ? generateInProgressShortCaption(item)
+                : generateInProgressLongCaption(item);
     }
 
     /**
@@ -229,8 +235,7 @@ public final class UiUtils {
                 indeterminate ? CircularProgressView.INDETERMINATE : determinateProgress;
         final int inactiveProgress = indeterminate ? 0 : determinateProgress;
 
-        @UiState
-        int shownState;
+        @UiState int shownState;
         int shownProgress;
 
         switch (item.state) {
@@ -246,8 +251,10 @@ public final class UiUtils {
                 shownState = CircularProgressView.UiState.PAUSED;
                 break;
             case OfflineItemState.INTERRUPTED:
-                shownState = item.isResumable ? CircularProgressView.UiState.RUNNING
-                                              : CircularProgressView.UiState.RETRY;
+                shownState =
+                        item.isResumable
+                                ? CircularProgressView.UiState.RUNNING
+                                : CircularProgressView.UiState.RETRY;
                 break;
             case OfflineItemState.COMPLETE: // Intentional fallthrough.
             default:
@@ -299,8 +306,9 @@ public final class UiUtils {
         // message.
         if (progress == null) {
             if (item.totalSizeBytes > 0) {
-                progress = new OfflineItem.Progress(
-                        0, item.totalSizeBytes, OfflineItemProgressUnit.BYTES);
+                progress =
+                        new OfflineItem.Progress(
+                                0, item.totalSizeBytes, OfflineItemProgressUnit.BYTES);
             } else {
                 progress = new OfflineItem.Progress(0, 100L, OfflineItemProgressUnit.PERCENTAGE);
             }
@@ -385,8 +393,9 @@ public final class UiUtils {
 
     /** @return The domain associated with the given {@link OfflineItem}. */
     public static String getDomainForItem(OfflineItem offlineItem) {
-        String formattedUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                offlineItem.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String formattedUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        offlineItem.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return formattedUrl;
     }
 }

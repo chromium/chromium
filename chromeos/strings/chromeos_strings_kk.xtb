@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1003363546227723021">Экран пайдаланылмай тұрғанда, фотосуреттерді, уақытты, ауа райын және медиа-ақпарат көрсетеді.</translation>
 <translation id="1014750484722996375">Жұмыс үстелдері</translation>
 <translation id="1018219910092211213">DNS-ті анықтау мүмкін емес.</translation>
 <translation id="1018656279737460067">Бас тартылды</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1175951029573070619">Орташа (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Өшіру</translation>
+<translation id="1191518099344003522">APN қосылды.</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1196959502276349371">Нұсқасы: <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Ойнату/кідірту</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">браузердің негізгі экраны</translation>
 <translation id="1526389707933164996">Скринсейвер анимациясы</translation>
 <translation id="152892567002884378">Дыбысты арттыру</translation>
+<translation id="1539242642795599947">APN әдепкі және тіркеуге арналған.</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="155865706765934889">Сенсорлық тақта</translation>
 <translation id="1561927818299383735">жарық түсі</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">ChromeOS Flex-ті орнату</translation>
 <translation id="1856388568474281774">Төмен бағыт пернесі</translation>
 <translation id="1858620243986915808">Скриншот тіркеу</translation>
+<translation id="1871413952174074704">APN көп дегенде <ph name="CHAR_LIMIT" /> таңбадан тұруы керек.</translation>
 <translation id="1871569928317311284">Қараңғы режимді өшіру</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Қараңғы режимді өшіру</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2873483161362553159">Браузер навигациясы</translation>
 <translation id="2874939134665556319">Алдыңғы аудиотрек</translation>
+<translation id="2875812231449496375">Бұл тұсқағазбен қажетті нәтиже алу үшін осы параметрді қосыңыз. Оны кез келген уақытта өшіруге болады.</translation>
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
 <translation id="2880569433548999039">Бұлттар қозғалысы бейнеленген скринсейвер</translation>
 <translation id="2926057806159140518">Пайдаланушы аты мен құпия сөзді енгізіңіз немесе QR кодын сканерлеңіз.</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Сигнал күші аз. Wi-Fi сигнал көзіне жақындап көріңіз.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> — <ph name="APN_NAME" /> үшін пайдалануға ыңғайлы атау.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
 <translation id="3600339377155080675">Экран көшірмесін көрсету</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сурет</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> пернесі басылды.</translation>
 <translation id="4354430579665871434">перне</translation>
-<translation id="435692326371619097">Желінің APN параметрлерін басқарыңыз. APN аттары ұялы желі мен интернет арасында байланысты орнатады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN әдепкі.</translation>
 <translation id="437294888293595148">Барлық таңбашаны қайта орнату</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
 <translation id="4378551569595875038">Қосылуда…</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">Есепті жасыру</translation>
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Экран пайдаланылмай тұрғанда, фотосуреттерді, уақытты, ауа райын және медиа ақпаратын көрсетеді.</translation>
 <translation id="5035083460461104704">Тақырып түсі</translation>
 <translation id="5038292761217083259">пернетақтаны көп түсті ету</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Толық</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
+<translation id="5145081769226915336">Қараңғы режимді автоматты түрде қосу қажет пе?</translation>
 <translation id="5154917547274118687">Жад</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> құрылғыңызға кіріңіз</translation>
 <translation id="5166918508782100047">Жылдам жауаптар параметрлері</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5757187557809630523">келесі трек</translation>
 <translation id="5760715441271661976">Портал күйі</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" /> қайта іске қосылып, жаңартылып жатыр</translation>
 <translation id="576835345334454681">Дисплей жарықтығын арттыру</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">Сіз әлі қосылмағансыз. Мобильдік оператор басқа APN ұсынса, "+ Жаңа APN" опциясын таңдау арқылы APN туралы ақпаратты енгізіңіз.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Әдепкі тұсқағаз</translation>
+<translation id="6001235009374883388">APN тіркеуге арналған.</translation>
 <translation id="6017514345406065928">Жасыл</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Ай сайын автоматты түрде бастапқы күйге қайтаруды қосу</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7180865173735832675">Реттеу</translation>
 <translation id="7184043045742675738">Түймені бейімдеу үшін кез келген пернені басыңыз. Тінтуір немесе бағыт пернелері көмегімен перне орнын өзгертіңіз.</translation>
+<translation id="7212547870105584639">Желінің APN параметрлерін басқаруға арналған. APN аттары ұялы желі мен интернет арасында байланыс орнатады. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Сыртқы құрылғыларға арналған микробағдарламаның жаңа нұсқалары</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="725133483556299729">Электрондық поштаны таңдау</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
 <translation id="7297226631177386107">Брандмауэр арқылы HTTPS веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="7297726121602187087">Қою жасыл</translation>
+<translation id="7301262279595293068">Бұл қолданба жаңартылғанша күте тұрыңыз.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook анықтама форумындағы мамандардан сұраңыз.</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">Ашық қызғылт</translation>
 <translation id="982713511914535780">Зарядтың азаюы тексерісін іске қосу</translation>
 <translation id="987264212798334818">Жалпы</translation>
+<translation id="995062385528875723">Екпін белгісі бар әріптерді, латыннан басқа алфавитті немесе таңбаларды пайдалануға болмайды.</translation>
 </translationbundle>

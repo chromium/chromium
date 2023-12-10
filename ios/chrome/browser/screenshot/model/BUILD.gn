@@ -11,7 +11,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/main",
     "//ios/web",
@@ -32,7 +32,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

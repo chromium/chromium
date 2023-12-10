@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 62
+version_id: 63
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -1447,7 +1447,7 @@ file_types {
 file_types {
   extension: "pdf"
   uma_value: 14
-  ping_setting: FULL_PING
+  ping_setting: SAMPLED_PING
 }
 file_types {
   extension: "pot"

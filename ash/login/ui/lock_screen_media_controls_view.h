@@ -108,14 +108,14 @@ class ASH_EXPORT LockScreenMediaControlsView
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override;
+      const std::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   // media_session::mojom::MediaControllerImageObserver:
   void MediaControllerImageChanged(
@@ -164,7 +164,7 @@ class ASH_EXPORT LockScreenMediaControlsView
 
   // Sets the media artwork to |img|. If |img| is nullopt, the default artwork
   // is set instead.
-  void SetArtwork(absl::optional<gfx::ImageSkia> img);
+  void SetArtwork(std::optional<gfx::ImageSkia> img);
 
   // Returns the rounded rectangle clip path for the current artwork.
   SkPath GetArtworkClipPath() const;
@@ -211,10 +211,10 @@ class ASH_EXPORT LockScreenMediaControlsView
 
   // The id of the current media session. It will be null if there is not
   // a current session.
-  absl::optional<base::UnguessableToken> media_session_id_;
+  std::optional<base::UnguessableToken> media_session_id_;
 
   // The MediaPosition associated with the current media session.
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
 
   // Automatically hides the controls a few seconds if no media playing.
   std::unique_ptr<base::OneShotTimer> hide_controls_timer_ =
@@ -232,7 +232,7 @@ class ASH_EXPORT LockScreenMediaControlsView
   raw_ptr<views::View, ExperimentalAsh> contents_view_ = nullptr;
 
   // Whether the controls were shown or not and the reason why.
-  absl::optional<Shown> shown_;
+  std::optional<Shown> shown_;
 
   // Container views attached to |contents_view_|.
   raw_ptr<MediaControlsHeaderView, ExperimentalAsh> header_row_ = nullptr;

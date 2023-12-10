@@ -46,10 +46,6 @@ namespace chrome {
 void AddMetricsExtraParts(ChromeBrowserMainParts* main_parts);
 }
 
-namespace ui {
-class InputDeviceEventObserver;
-}  // namespace ui
-
 class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
                                            public display::DisplayObserver,
                                            public ProfileManagerObserver {
@@ -123,10 +119,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   int display_count_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-#if BUILDFLAG(IS_OZONE)
-  std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
-#endif  // BUILDFLAG(IS_OZONE)
 
 #if !BUILDFLAG(IS_ANDROID)
   // The process monitor instance. Allows collecting metrics about every child

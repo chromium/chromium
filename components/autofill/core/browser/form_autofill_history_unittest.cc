@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -38,6 +39,7 @@ class FormAutofillHistoryTest : public testing::Test {
     AutofillField autofill_field(field);
     autofill_field.SetTypeTo(AutofillType(field_type));
     autofill_field.set_autofill_source_profile_guid(kGuid);
+    autofill_field.set_autofilled_type(std::nullopt);
     filled_autofill_fields_.push_back(std::move(autofill_field));
     return field.global_id();
   }
@@ -50,7 +52,8 @@ class FormAutofillHistoryTest : public testing::Test {
     for (const AutofillField& autofill_field : filled_autofill_fields_) {
       autofill_fields.push_back(&autofill_field);
     }
-    form_autofill_history_.AddFormFillEntry(fields, autofill_fields, is_refill);
+    form_autofill_history_.AddFormFillEntry(fields, autofill_fields,
+                                            FillingProduct::kNone, is_refill);
   }
 
   std::vector<FormFieldData> filled_fields_;
@@ -72,7 +75,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
   EXPECT_EQ(
       form_autofill_history_.GetLastFillingOperationForField(first_name_id)
           .GetFieldFillingEntry(first_name_id),
-      FormAutofillHistory::FieldFillingEntry(u"some-value", false, kGuid));
+      FormAutofillHistory::FieldFillingEntry(
+          u"some-value", false, kGuid, /*field_autofilled_type=*/std::nullopt));
 
   form_autofill_history_.Reset();
   EXPECT_FALSE(form_autofill_history_.HasHistory(first_name_id));
@@ -103,13 +107,16 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
   EXPECT_EQ(
       form_autofill_history_.GetLastFillingOperationForField(first_name_id)
           .GetFieldFillingEntry(first_name_id),
-      FormAutofillHistory::FieldFillingEntry(u"some-first-name", false, kGuid));
+      FormAutofillHistory::FieldFillingEntry(
+          u"some-first-name", false, kGuid,
+          /*field_autofilled_type=*/std::nullopt));
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(last_name_id));
   EXPECT_EQ(form_autofill_history_.GetLastFillingOperationForField(last_name_id)
                 .GetFieldFillingEntry(last_name_id),
-            FormAutofillHistory::FieldFillingEntry(u"some-other-last-name",
-                                                   true, kGuid));
+            FormAutofillHistory::FieldFillingEntry(
+                u"some-other-last-name", true, kGuid,
+                /*field_autofilled_type=*/std::nullopt));
 
   form_autofill_history_.EraseFormFillEntry(
       form_autofill_history_.GetLastFillingOperationForField(first_name_id));

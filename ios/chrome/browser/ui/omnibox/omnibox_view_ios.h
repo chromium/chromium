@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <optional>
 
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
 class GURL;
@@ -52,7 +52,7 @@ class OmniboxViewIOS : public OmniboxView,
       const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
-      absl::optional<GURL> optional_gurl);
+      std::optional<GURL> optional_gurl);
 
   void OnReceiveClipboardTextForOpenMatch(
       const AutocompleteMatch& match,
@@ -61,7 +61,7 @@ class OmniboxViewIOS : public OmniboxView,
       const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
-      absl::optional<std::u16string> optional_text);
+      std::optional<std::u16string> optional_text);
 
   void OnReceiveClipboardImageForOpenMatch(
       const AutocompleteMatch& match,
@@ -70,7 +70,7 @@ class OmniboxViewIOS : public OmniboxView,
       const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
-      absl::optional<gfx::Image> optional_image);
+      std::optional<gfx::Image> optional_image);
 
   void OnReceiveImageMatchForOpenMatch(
       WindowOpenDisposition disposition,
@@ -78,7 +78,7 @@ class OmniboxViewIOS : public OmniboxView,
       const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
-      absl::optional<AutocompleteMatch> optional_match);
+      std::optional<AutocompleteMatch> optional_match);
 
   // OmniboxView implementation.
   std::u16string GetText() const override;

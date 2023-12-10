@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediarecorder/key_frame_request_processor.h"
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -25,10 +26,12 @@ class KeyFrameRequestProcessorClockTest : public ::testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   base::TimeTicks now_;
 };
 
 TEST(KeyFrameRequestProcessorTest, DefaultConfigurationIsUnconfigured) {
+  test::TaskEnvironment task_environment;
   KeyFrameRequestProcessor::Configuration config;
   ASSERT_TRUE(
       absl::get_if<KeyFrameRequestProcessor::NotConfiguredTag>(&config));
@@ -52,7 +55,7 @@ TEST_F(KeyFrameRequestProcessorClockTest,
 
 TEST_F(KeyFrameRequestProcessorClockTest,
        CountIntervalSuggestsKeyframesPeriodically) {
-  KeyFrameRequestProcessor processor(2);
+  KeyFrameRequestProcessor processor(2u);
   OnKeyFrame(processor);
   ASSERT_FALSE(OnFrameAndShouldRequestKeyFrame(processor));
   ASSERT_FALSE(OnFrameAndShouldRequestKeyFrame(processor));

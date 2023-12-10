@@ -28,17 +28,6 @@
 
 namespace extensions {
 
-namespace {
-
-void NotifyWithExtensionSafe(
-    scoped_refptr<const Extension> extension,
-    void (RulesRegistry::*notification_callback)(const Extension*),
-    scoped_refptr<RulesRegistry> registry) {
-  (registry.get()->*notification_callback)(extension.get());
-}
-
-}  // namespace
-
 const int RulesRegistryService::kDefaultRulesRegistryID = 0;
 const int RulesRegistryService::kInvalidRulesRegistryID = -1;
 
@@ -60,6 +49,11 @@ int RulesRegistryService::GetNextRulesRegistryID() {
 }
 
 void RulesRegistryService::Shutdown() {
+  // Notify the registries.
+  for (const auto& [_, registry] : rule_registries_) {
+    registry->OnShutdown();
+  }
+
   // Release the references to all registries, and remove the default registry
   // from ExtensionWebRequestEventRouter.
   rule_registries_.clear();
@@ -189,8 +183,8 @@ RulesRegistryService::RegisterWebRequestRulesRegistry(
       RulesRegistryKey(declarative_webrequest_constants::kOnRequest,
                        rules_registry_id)));
 
-  auto web_request_cache_delegate = std::make_unique<RulesCacheDelegate>(
-      cache_delegate_type, true /* log_storage_init_delay */);
+  auto web_request_cache_delegate =
+      std::make_unique<RulesCacheDelegate>(cache_delegate_type);
   auto web_request_rules_registry =
       base::MakeRefCounted<WebRequestRulesRegistry>(
           browser_context_, web_request_cache_delegate.get(),
@@ -227,8 +221,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
   // Create the ContentRulesRegistry.
   DCHECK(!content_rules_registry_);
   auto content_rules_cache_delegate = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent,
-      false /* log_storage_init_delay */);
+      RulesCacheDelegate::Type::kPersistent);
   scoped_refptr<ContentRulesRegistry> content_rules_registry =
       ExtensionsAPIClient::Get()->CreateContentRulesRegistry(
           browser_context_, content_rules_cache_delegate.get());
@@ -246,15 +239,7 @@ void RulesRegistryService::NotifyRegistriesHelper(
   RulesRegistryMap::iterator i;
   for (i = rule_registries_.begin(); i != rule_registries_.end(); ++i) {
     scoped_refptr<RulesRegistry> registry = i->second;
-    if (content::BrowserThread::CurrentlyOn(registry->owner_thread())) {
-      (registry.get()->*notification_callback)(extension);
-    } else {
-      content::BrowserThread::GetTaskRunnerForThread(registry->owner_thread())
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&NotifyWithExtensionSafe,
-                                    base::WrapRefCounted(extension),
-                                    notification_callback, registry));
-    }
+    (registry.get()->*notification_callback)(extension);
   }
 }
 

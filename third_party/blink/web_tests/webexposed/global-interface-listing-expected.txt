@@ -640,6 +640,7 @@ interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
     attribute @@toStringTag
     method constructor
     method cropTo
+    method restrictTo
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -741,6 +742,7 @@ interface CSSImportRule : CSSRule
     getter layerName
     getter media
     getter styleSheet
+    getter supportsText
     method constructor
     setter media
 interface CSSKeyframeRule : CSSRule
@@ -1404,6 +1406,7 @@ interface CredentialsContainer
     method create
     method get
     method preventSilentAccess
+    method requestIdentity
     method store
 interface CropTarget
     static method fromElement
@@ -1921,6 +1924,7 @@ interface Document : Node
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2142,6 +2146,7 @@ interface Document : Node
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -2799,6 +2804,7 @@ interface FileSystemObserver
     method unobserve
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
+    getter mode
     method constructor
     method seek
     method truncate
@@ -2947,7 +2953,6 @@ interface GPUCommandEncoder
     method popDebugGroup
     method pushDebugGroup
     method resolveQuerySet
-    method writeTimestamp
     setter label
 interface GPUCompilationInfo
     attribute @@toStringTag
@@ -3713,6 +3718,7 @@ interface HTMLElement : Element
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -3849,6 +3855,7 @@ interface HTMLElement : Element
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -4074,6 +4081,7 @@ interface HTMLHtmlElement : HTMLElement
     setter version
 interface HTMLIFrameElement : HTMLElement
     attribute @@toStringTag
+    getter adAuctionHeaders
     getter align
     getter allow
     getter allowFullscreen
@@ -4101,6 +4109,7 @@ interface HTMLIFrameElement : HTMLElement
     getter width
     method constructor
     method getSVGDocument
+    setter adAuctionHeaders
     setter align
     setter allow
     setter allowFullscreen
@@ -5248,8 +5257,7 @@ interface IIRFilterNode : AudioNode
     method constructor
     method getFrequencyResponse
 interface IdentityCredential : Credential
-    static method logoutRPs
-    static method revoke
+    static method disconnect
     attribute @@toStringTag
     getter isAutoSelected
     getter token
@@ -5615,7 +5623,9 @@ interface MLGraphBuilder
     method abs
     method add
     method averagePool2d
+    method batchNormalization
     method build
+    method cast
     method ceil
     method clamp
     method concat
@@ -5623,13 +5633,27 @@ interface MLGraphBuilder
     method constructor
     method conv2d
     method convTranspose2d
+    method cos
     method div
     method elu
+    method equal
+    method erf
+    method exp
+    method expand
     method floor
+    method gather
     method gemm
+    method greater
     method hardSwish
+    method identity
     method input
+    method instanceNormalization
+    method layerNormalization
     method leakyRelu
+    method lesser
+    method linear
+    method log
+    method logicalNot
     method matmul
     method max
     method maxPool2d
@@ -5639,6 +5663,7 @@ interface MLGraphBuilder
     method pad
     method pow
     method prelu
+    method reciprocal
     method reduceL1
     method reduceL2
     method reduceLogSum
@@ -5653,12 +5678,17 @@ interface MLGraphBuilder
     method resample2d
     method reshape
     method sigmoid
+    method sin
     method slice
     method softmax
+    method softsign
     method split
+    method sqrt
     method sub
+    method tan
     method tanh
     method transpose
+    method where
 interface MLModelLoader
     attribute @@toStringTag
     method constructor
@@ -5666,6 +5696,8 @@ interface MLModelLoader
 interface MLOperand
     attribute @@toStringTag
     method constructor
+    method dataType
+    method shape
 interface Magnetometer : Sensor
     attribute @@toStringTag
     getter x
@@ -5763,6 +5795,7 @@ interface MathMLElement : Element
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -5875,6 +5908,7 @@ interface MathMLElement : Element
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -6185,12 +6219,14 @@ interface MessageEvent : Event
     method initMessageEvent
 interface MessagePort : EventTarget
     attribute @@toStringTag
+    getter onclose
     getter onmessage
     getter onmessageerror
     method close
     method constructor
     method postMessage
     method start
+    setter onclose
     setter onmessage
     setter onmessageerror
 interface MimeType
@@ -6379,6 +6415,7 @@ interface NavigateEvent : Event
     method scroll
 interface Navigation : EventTarget
     attribute @@toStringTag
+    getter activation
     getter canGoBack
     getter canGoForward
     getter currentEntry
@@ -6399,6 +6436,12 @@ interface Navigation : EventTarget
     setter onnavigate
     setter onnavigateerror
     setter onnavigatesuccess
+interface NavigationActivation
+    attribute @@toStringTag
+    getter entry
+    getter from
+    getter navigationType
+    method constructor
 interface NavigationCurrentEntryChangeEvent : Event
     attribute @@toStringTag
     getter from
@@ -7054,7 +7097,6 @@ interface PerformanceEventTiming : PerformanceEntry
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     attribute @@toStringTag
     getter blockingDuration
-    getter desiredRenderStart
     getter firstUIEventTimestamp
     getter renderStart
     getter scripts
@@ -7147,7 +7189,6 @@ interface PerformanceResourceTiming : PerformanceEntry
     method toJSON
 interface PerformanceScriptTiming : PerformanceEntry
     attribute @@toStringTag
-    getter desiredExecutionStart
     getter executionStart
     getter forcedStyleAndLayoutDuration
     getter pauseDuration
@@ -7862,6 +7903,10 @@ interface Response
     method formData
     method json
     method text
+interface RestrictionTarget
+    static method fromElement
+    attribute @@toStringTag
+    method constructor
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
@@ -8102,6 +8147,7 @@ interface SVGElement : Element
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -8216,6 +8262,7 @@ interface SVGElement : Element
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -9336,6 +9383,19 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
+interface SpeechSynthesis : EventTarget
+    attribute @@toStringTag
+    getter onvoiceschanged
+    getter paused
+    getter pending
+    getter speaking
+    method cancel
+    method constructor
+    method getVoices
+    method pause
+    method resume
+    method speak
+    setter onvoiceschanged
 interface SpeechSynthesisErrorEvent : SpeechSynthesisEvent
     attribute @@toStringTag
     getter error
@@ -9377,6 +9437,14 @@ interface SpeechSynthesisUtterance : EventTarget
     setter text
     setter voice
     setter volume
+interface SpeechSynthesisVoice
+    attribute @@toStringTag
+    getter default
+    getter lang
+    getter localService
+    getter name
+    getter voiceURI
+    method constructor
 interface StaticRange : AbstractRange
     attribute @@toStringTag
     method constructor
@@ -9474,7 +9542,9 @@ interface SubmitEvent : Event
     method constructor
 interface Subscriber
     attribute @@toStringTag
+    getter active
     getter signal
+    method addTeardown
     method complete
     method constructor
     method error
@@ -9831,6 +9901,7 @@ interface URL
 interface URLPattern
     static method compareComponent
     attribute @@toStringTag
+    getter hasRegExpGroups
     getter hash
     getter hostname
     getter password
@@ -12577,6 +12648,7 @@ namespace console
     getter onselectstart
     getter onslotchange
     getter onsnapchanged
+    getter onsnapchanging
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -12806,6 +12878,7 @@ namespace console
     setter onselectstart
     setter onslotchange
     setter onsnapchanged
+    setter onsnapchanging
     setter onstalled
     setter onstorage
     setter onsubmit

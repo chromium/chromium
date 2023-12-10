@@ -104,7 +104,6 @@ found in the LICENSE file.
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
     <!-- Slop value for allowing slight misses on the compositor button. -->
     <dimen name="compositor_button_slop">10dp</dimen>
-    <dimen name="compositor_background_tab_elevation">@dimen/default_elevation_4</dimen>
 
     <!-- First Run Experience dimensions -->
     <dimen name="fre_tos_image_height">110dp</dimen>
@@ -150,7 +149,7 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
-    <dimen name="mvt_container_lateral_margin_polish">16dp</dimen>
+    <dimen name="mvt_container_lateral_margin_polish">@dimen/signin_promo_lateral_paddings</dimen>
     <dimen name="search_box_lateral_margin_polish">16dp</dimen>
     <dimen name="mvt_container_top_padding_polish">17dp</dimen>
     <dimen name="mvt_container_bottom_padding_polish">22dp</dimen>

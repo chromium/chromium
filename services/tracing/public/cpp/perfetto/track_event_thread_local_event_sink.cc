@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
@@ -719,7 +720,7 @@ void TrackEventThreadLocalEventSink::EmitThreadTrackDescriptor(
         base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
   }
   if (maybe_new_name && *maybe_new_name &&
-      base::StringPiece(thread_name_) != maybe_new_name) {
+      std::string_view(thread_name_) != maybe_new_name) {
     thread_name_ = maybe_new_name;
     thread_type_ = GetThreadType(maybe_new_name);
   }

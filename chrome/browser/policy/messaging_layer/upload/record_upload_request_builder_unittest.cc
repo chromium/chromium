@@ -20,6 +20,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -325,8 +326,8 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptRequestId) {
   ASSERT_TRUE(request_payload.has_value());
   EXPECT_THAT(request_payload.value(),
               IsEncryptionKeyRequestUploadRequestValid(need_encryption_key()));
-  auto* payload_request_id = request_payload->FindString(
-      UploadEncryptedReportingRequestBuilder::kRequestId);
+  auto* payload_request_id =
+      request_payload->FindString(reporting::json_keys::kRequestId);
   EXPECT_THAT(*payload_request_id, ::testing::StrEq(request_id));
 }
 

@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -17,14 +18,20 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/time/time.h"
+#include "components/app_restore/window_properties.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
@@ -194,8 +201,9 @@ const char* GetSnapActionSourceMetricComponent(
 }
 
 void AppendUIModeToHistogram(std::string& histogram_name) {
-  histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                       : ".ClamshellMode");
+  histogram_name.append(display::Screen::GetScreen()->InTabletMode()
+                            ? ".TabletMode"
+                            : ".ClamshellMode");
 }
 
 }  // namespace
@@ -366,9 +374,8 @@ void DoSplitviewClipRectAnimation(
 // make everything works with `kSnapGroup` enabled.
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   const bool should_restore =
-      ShouldAllowSplitView() &&
-      (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-       SnapGroupController::Get());
+      ShouldAllowSplitView() && (display::Screen::GetScreen()->InTabletMode() ||
+                                 SnapGroupController::Get());
   if (!should_restore) {
     return;
   }
@@ -404,7 +411,7 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
         case WindowStateType::kPrimarySnapped:
           if (!split_view_controller->primary_window()) {
             split_view_controller->SnapWindow(
-                window, SplitViewController::SnapPosition::kPrimary,
+                window, SnapPosition::kPrimary,
                 WindowSnapActionSource::kSnapByDeskOrSessionChange);
           }
           break;
@@ -412,7 +419,7 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
         case WindowStateType::kSecondarySnapped:
           if (!split_view_controller->secondary_window()) {
             split_view_controller->SnapWindow(
-                window, SplitViewController::SnapPosition::kSecondary,
+                window, SnapPosition::kSecondary,
                 WindowSnapActionSource::kSnapByDeskOrSessionChange);
           }
           break;
@@ -463,55 +470,51 @@ void ShowAppCannotSnapToast() {
                 /*has_dismiss_button=*/true));
 }
 
-SplitViewController::SnapPosition GetSnapPositionForLocation(
+SnapPosition GetSnapPositionForLocation(
     aura::Window* root_window,
     const gfx::Point& location_in_screen,
-    const absl::optional<gfx::Point>& initial_location_in_screen,
+    const std::optional<gfx::Point>& initial_location_in_screen,
     int snap_distance_from_edge,
     int minimum_drag_distance,
     int horizontal_edge_inset,
     int vertical_edge_inset) {
   if (!ShouldAllowSplitView())
-    return SplitViewController::SnapPosition::kNone;
+    return SnapPosition::kNone;
 
-  const bool horizontal = SplitViewController::IsLayoutHorizontal(root_window);
-  const bool right_side_up = SplitViewController::IsLayoutPrimary(root_window);
+  const bool horizontal = IsLayoutHorizontal(root_window);
+  const bool right_side_up = IsLayoutPrimary(root_window);
 
   // Check to see if the current event location |location_in_screen| is within
   // the drag indicators bounds.
   const gfx::Rect work_area(
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window));
-  SplitViewController::SnapPosition snap_position =
-      SplitViewController::SnapPosition::kNone;
+  SnapPosition snap_position = SnapPosition::kNone;
   if (horizontal) {
     gfx::Rect area(work_area);
     area.Inset(gfx::Insets::VH(0, horizontal_edge_inset));
     if (location_in_screen.x() <= area.x()) {
-      snap_position = right_side_up
-                          ? SplitViewController::SnapPosition::kPrimary
-                          : SplitViewController::SnapPosition::kSecondary;
+      snap_position =
+          right_side_up ? SnapPosition::kPrimary : SnapPosition::kSecondary;
     } else if (location_in_screen.x() >= area.right() - 1) {
-      snap_position = right_side_up
-                          ? SplitViewController::SnapPosition::kSecondary
-                          : SplitViewController::SnapPosition::kPrimary;
+      snap_position =
+          right_side_up ? SnapPosition::kSecondary : SnapPosition::kPrimary;
     }
   } else {
     gfx::Rect area(work_area);
     area.Inset(gfx::Insets::VH(vertical_edge_inset, 0));
     if (location_in_screen.y() <= area.y()) {
-      snap_position = right_side_up
-                          ? SplitViewController::SnapPosition::kPrimary
-                          : SplitViewController::SnapPosition::kSecondary;
+      snap_position =
+          right_side_up ? SnapPosition::kPrimary : SnapPosition::kSecondary;
     } else if (location_in_screen.y() >= area.bottom() - 1) {
-      snap_position = right_side_up
-                          ? SplitViewController::SnapPosition::kSecondary
-                          : SplitViewController::SnapPosition::kPrimary;
+      snap_position =
+          right_side_up ? SnapPosition::kSecondary : SnapPosition::kPrimary;
     }
   }
 
-  if (snap_position == SplitViewController::SnapPosition::kNone)
+  if (snap_position == SnapPosition::kNone) {
     return snap_position;
+  }
 
   // To avoid accidental snap, the window needs to be dragged inside
   // |snap_distance_from_edge| from edge or dragged toward the edge for at least
@@ -533,31 +536,29 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
     // Check how far the window has been dragged.
     const auto distance = location_in_screen - *initial_location_in_screen;
     const int primary_axis_distance = horizontal ? distance.x() : distance.y();
-    const bool is_left_or_top =
-        SplitViewController::IsPhysicalLeftOrTop(snap_position, root_window);
+    const bool is_left_or_top = IsPhysicalLeftOrTop(snap_position, root_window);
     if ((is_left_or_top && primary_axis_distance > -minimum_drag_distance) ||
         (!is_left_or_top && primary_axis_distance < minimum_drag_distance)) {
-      snap_position = SplitViewController::SnapPosition::kNone;
+      snap_position = SnapPosition::kNone;
     }
   }
 
   return snap_position;
 }
 
-SplitViewController::SnapPosition GetSnapPosition(
-    aura::Window* root_window,
-    aura::Window* window,
-    const gfx::Point& location_in_screen,
-    const gfx::Point& initial_location_in_screen,
-    int snap_distance_from_edge,
-    int minimum_drag_distance,
-    int horizontal_edge_inset,
-    int vertical_edge_inset) {
+SnapPosition GetSnapPosition(aura::Window* root_window,
+                             aura::Window* window,
+                             const gfx::Point& location_in_screen,
+                             const gfx::Point& initial_location_in_screen,
+                             int snap_distance_from_edge,
+                             int minimum_drag_distance,
+                             int horizontal_edge_inset,
+                             int vertical_edge_inset) {
   if (!SplitViewController::Get(root_window)->CanSnapWindow(window)) {
-    return SplitViewController::SnapPosition::kNone;
+    return SnapPosition::kNone;
   }
 
-  absl::optional<gfx::Point> initial_location_in_current_screen = absl::nullopt;
+  std::optional<gfx::Point> initial_location_in_current_screen = std::nullopt;
   if (window->GetRootWindow() == root_window)
     initial_location_in_current_screen = initial_location_in_screen;
 
@@ -567,13 +568,177 @@ SplitViewController::SnapPosition GetSnapPosition(
       vertical_edge_inset);
 }
 
-bool IsSnapGroupEnabledInClamshellMode() {
-  auto* snap_group_controller = SnapGroupController::Get();
+bool IsInTabletMode() {
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
-  const bool in_tablet_mode =
-      tablet_mode_controller && tablet_mode_controller->InTabletMode();
-  return snap_group_controller && !in_tablet_mode;
+  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
+}
+
+bool IsLayoutHorizontal(aura::Window* window) {
+  return IsLayoutHorizontal(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+}
+
+bool IsLayoutHorizontal(const display::Display& display) {
+  if (IsInTabletMode()) {
+    return IsCurrentScreenOrientationLandscape();
+  }
+
+  // TODO(crbug.com/1233192): add DCHECK to avoid square size display.
+  DCHECK(display.is_valid());
+  return chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display));
+}
+
+bool IsLayoutPrimary(aura::Window* window) {
+  return IsLayoutPrimary(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+}
+
+bool IsLayoutPrimary(const display::Display& display) {
+  if (IsInTabletMode()) {
+    return IsCurrentScreenOrientationPrimary();
+  }
+
+  DCHECK(display.is_valid());
+  return chromeos::IsPrimaryOrientation(GetSnapDisplayOrientation(display));
+}
+
+bool IsPhysicalLeftOrTop(SnapPosition position, aura::Window* window) {
+  DCHECK_NE(SnapPosition::kNone, position);
+  return position == (IsLayoutPrimary(window) ? SnapPosition::kPrimary
+                                              : SnapPosition::kSecondary);
+}
+
+bool IsPhysicalLeftOrTop(SnapPosition position,
+                         const display::Display& display) {
+  DCHECK_NE(SnapPosition::kNone, position);
+  return position == (IsLayoutPrimary(display) ? SnapPosition::kPrimary
+                                               : SnapPosition::kSecondary);
+}
+
+int GetDividerPositionUpperLimit(aura::Window* root_window) {
+  const gfx::Rect work_area_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window);
+  return IsLayoutHorizontal(root_window) ? work_area_bounds.width()
+                                         : work_area_bounds.height();
+}
+
+// Returns the minimum length of the window according to the screen orientation.
+int GetMinimumWindowLength(aura::Window* window, bool horizontal) {
+  int minimum_width = 0;
+  if (window && window->delegate()) {
+    gfx::Size minimum_size = window->delegate()->GetMinimumSize();
+    minimum_width = horizontal ? minimum_size.width() : minimum_size.height();
+  }
+  return minimum_width;
+}
+
+gfx::Rect CalculateSnappedWindowBoundsInScreen(
+    SnapPosition snap_position,
+    aura::Window* window_for_minimum_size,
+    int divider_position,
+    int divider_width,
+    bool is_resizing_with_divider) {
+  aura::Window* root_window = window_for_minimum_size->GetRootWindow();
+  const gfx::Rect work_area_bounds_in_screen =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window);
+  const bool horizontal = IsLayoutHorizontal(root_window);
+  const bool snap_left_or_top = IsPhysicalLeftOrTop(snap_position, root_window);
+  const bool in_tablet_mode = IsInTabletMode();
+  const int work_area_size = GetDividerPositionUpperLimit(root_window);
+
+  // Edit `divider_position` if window restore is currently restoring a snapped
+  // window; take into account the snap percentage saved by the window. Only do
+  // this for clamshell mode; in tablet mode we are OK with restoring to the
+  // default half snap state.
+  if (divider_position < 0 && !in_tablet_mode) {
+    if (auto* window = WindowRestoreController::Get()->to_be_snapped_window()) {
+      app_restore::WindowInfo* window_info =
+          window->GetProperty(app_restore::kWindowInfoKey);
+      if (window_info && window_info->snap_percentage) {
+        const int snap_percentage = *window_info->snap_percentage;
+        divider_position = snap_percentage * work_area_size / 100;
+        if (!snap_left_or_top) {
+          divider_position = work_area_size - divider_position;
+        }
+      }
+    }
+  }
+
+  int window_size;
+  if (snap_left_or_top) {
+    // If there is a divider widget, `divider_position` will have already been
+    // subtracted to account for the divider width.
+    // TODO(sophiewen): Consolidate subtracting `divider_width` for both
+    // primary and secondary windows.
+    window_size = divider_position;
+  } else {
+    window_size = work_area_size - divider_position - divider_width;
+  }
+
+  const int minimum =
+      GetMinimumWindowLength(window_for_minimum_size, horizontal);
+  DCHECK(window_for_minimum_size || minimum == 0);
+  if (window_size < minimum) {
+    if (in_tablet_mode && !is_resizing_with_divider) {
+      // If window with `window_for_minimum_size` gets snapped, the
+      // `split_view_divider_` will then be adjusted to its default position and
+      // `window_size` will be computed accordingly.
+      window_size = work_area_size / 2 - kSplitviewDividerShortSideLength / 2;
+      // If `work_area_size` is odd, then the default divider position is
+      // rounded down, toward the left or top, but then if `snap_left_or_top` is
+      // false, that means `window_size` should now be rounded up.
+      if (!snap_left_or_top && work_area_size % 2 == 1) {
+        ++window_size;
+      }
+    } else {
+      window_size = minimum;
+    }
+  }
+
+  if (window_for_minimum_size && !in_tablet_mode) {
+    // Apply the unresizable snapping constraint to the snapped bounds if we're
+    // in the clamshell mode.
+    const gfx::Size* preferred_size =
+        window_for_minimum_size->GetProperty(kUnresizableSnappedSizeKey);
+    if (preferred_size &&
+        !WindowState::Get(window_for_minimum_size)->CanResize()) {
+      if (horizontal && preferred_size->width() > 0) {
+        window_size = preferred_size->width();
+      }
+      if (!horizontal && preferred_size->height() > 0) {
+        window_size = preferred_size->height();
+      }
+    }
+  }
+
+  // Get the parameter values for which `gfx::Rect::SetByBounds` would recreate
+  // `work_area_bounds_in_screen`.
+  int left = work_area_bounds_in_screen.x();
+  int top = work_area_bounds_in_screen.y();
+  int right = work_area_bounds_in_screen.right();
+  int bottom = work_area_bounds_in_screen.bottom();
+
+  // Make `snapped_window_bounds_in_screen` by modifying one of the above four
+  // values: the one that represents the inner edge of the snapped bounds.
+  int& left_or_top = horizontal ? left : top;
+  int& right_or_bottom = horizontal ? right : bottom;
+  if (snap_left_or_top) {
+    right_or_bottom = left_or_top + window_size;
+  } else {
+    left_or_top = right_or_bottom - window_size;
+  }
+
+  gfx::Rect snapped_window_bounds_in_screen;
+  snapped_window_bounds_in_screen.SetByBounds(left, top, right, bottom);
+  return snapped_window_bounds_in_screen;
+}
+
+bool IsSnapGroupEnabledInClamshellMode() {
+  auto* snap_group_controller = SnapGroupController::Get();
+  return snap_group_controller && !display::Screen::GetScreen()->InTabletMode();
 }
 
 int GetWindowComponentForResize(aura::Window* window) {

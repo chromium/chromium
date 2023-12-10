@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
@@ -141,7 +140,6 @@ class MockContextProviderCommandBuffer
             content::kGpuStreamPriorityDefault,
             gpu::kNullSurfaceHandle,
             GURL(),
-            false,
             false,
             true,
             gpu::SharedMemoryLimits(),
@@ -384,7 +382,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
     ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_context_provider_));
     ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_context_gl_));
     ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_gpu_channel_));
-    delete gpu_command_buffer_proxy_;
+    gpu_command_buffer_proxy_.reset();
     mock_context_provider_.reset();
     gpu_channel_host_.reset();
   }
@@ -420,7 +418,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
     ON_CALL(*mock_context_provider_, ContextGL())
         .WillByDefault(Return(&mock_context_gl_));
 
-    gpu_command_buffer_proxy_ = new gpu::CommandBufferProxyImpl(
+    gpu_command_buffer_proxy_ = std::make_unique<gpu::CommandBufferProxyImpl>(
         gpu_channel_host_, content::kGpuStreamIdDefault,
         task_environment_.GetMainThreadTaskRunner());
     gpu_command_buffer_proxy_->Initialize(
@@ -495,8 +493,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   scoped_refptr<MockContextProviderCommandBuffer> mock_context_provider_;
-  raw_ptr<gpu::CommandBufferProxyImpl, DanglingUntriaged>
-      gpu_command_buffer_proxy_;
+  std::unique_ptr<gpu::CommandBufferProxyImpl> gpu_command_buffer_proxy_;
 
   FakeVEAProviderImpl fake_vea_provider_;
 

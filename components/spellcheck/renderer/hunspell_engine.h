@@ -30,9 +30,11 @@ class HunspellEngine : public SpellingEngine {
 
   bool InitializeIfNeeded() override;
   bool IsEnabled() override;
-  bool CheckSpelling(const std::u16string& word_to_check, int tag) override;
+  bool CheckSpelling(const std::u16string& word_to_check,
+                     spellcheck::mojom::SpellCheckHost& host) override;
   void FillSuggestionList(
       const std::u16string& wrong_word,
+      spellcheck::mojom::SpellCheckHost& host,
       std::vector<std::u16string>* optional_suggestions) override;
 
  private:

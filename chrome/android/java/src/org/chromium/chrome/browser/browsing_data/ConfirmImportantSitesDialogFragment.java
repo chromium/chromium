@@ -55,8 +55,8 @@ import java.util.Set;
  * method) and onActivityResult return conventions.
  */
 public class ConfirmImportantSitesDialogFragment extends DialogFragment {
-    private class ClearBrowsingDataAdapter
-            extends ArrayAdapter<String> implements AdapterView.OnItemClickListener {
+    private class ClearBrowsingDataAdapter extends ArrayAdapter<String>
+            implements AdapterView.OnItemClickListener {
         private final String[] mDomains;
         private final int mFaviconSize;
         private RoundedIconGenerator mIconGenerator;
@@ -114,16 +114,26 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         }
 
         private void loadFavicon(final ViewAndFaviconHolder viewHolder, final String url) {
-            viewHolder.imageCallback = new LargeIconCallback() {
-                @Override
-                public void onLargeIconAvailable(Bitmap icon, int fallbackColor,
-                        boolean isFallbackColorDefault, @IconType int iconType) {
-                    if (this != viewHolder.imageCallback) return;
-                    Drawable image = FaviconUtils.getIconDrawableWithoutFilter(
-                            icon, url, fallbackColor, mIconGenerator, getResources(), mFaviconSize);
-                    viewHolder.imageView.setImageDrawable(image);
-                }
-            };
+            viewHolder.imageCallback =
+                    new LargeIconCallback() {
+                        @Override
+                        public void onLargeIconAvailable(
+                                Bitmap icon,
+                                int fallbackColor,
+                                boolean isFallbackColorDefault,
+                                @IconType int iconType) {
+                            if (this != viewHolder.imageCallback) return;
+                            Drawable image =
+                                    FaviconUtils.getIconDrawableWithoutFilter(
+                                            icon,
+                                            url,
+                                            fallbackColor,
+                                            mIconGenerator,
+                                            getResources(),
+                                            mFaviconSize);
+                            viewHolder.imageView.setImageDrawable(image);
+                        }
+                    };
             mLargeIconBridge.getLargeIconForStringUrl(url, mFaviconSize, viewHolder.imageCallback);
         }
     }
@@ -166,10 +176,13 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
 
     /** The tag for the string array of deselected domains. These are meant to NOT be cleared. */
     public static final String DESELECTED_DOMAINS_TAG = "DeselectedDomains";
+
     /** The tag for the int array of reasons the deselected domains were important. */
     public static final String DESELECTED_DOMAIN_REASONS_TAG = "DeselectedDomainReasons";
+
     /** The tag for the string array of ignored domains, which whill be cleared. */
     public static final String IGNORED_DOMAINS_TAG = "IgnoredDomains";
+
     /** The tag for the int array of reasons the ignored domains were important. */
     public static final String IGNORED_DOMAIN_REASONS_TAG = "IgnoredDomainReasons";
 
@@ -178,6 +191,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
 
     /** The tag used to store the important domains in the bundle. */
     private static final String IMPORTANT_DOMAINS_TAG = "ImportantDomains";
+
     /** The tag used to store the important domain reasons in the bundle. */
     private static final String IMPORTANT_DOMAIN_REASONS_TAG = "ImportantDomainReasons";
 
@@ -186,14 +200,19 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
 
     /** Array of important registerable domains we're showing to the user. */
     private String[] mImportantDomains;
+
     /** Map of the reasons the above important domains were chosen. */
     private Map<String, Integer> mImportantDomainsReasons;
+
     /** Array of favicon urls to use for each important domain above. */
     private String[] mFaviconURLs;
+
     /** The map of domains to the checked state, where true is checked. */
     private Map<String, Boolean> mCheckedState;
+
     /** The alert dialog shown to the user. */
     private AlertDialog mDialog;
+
     /** Our adapter that we use with the list view in the dialog. */
     private ClearBrowsingDataAdapter mAdapter;
 
@@ -260,47 +279,64 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         mProfile = Profile.getLastUsedRegularProfile();
         mLargeIconBridge = new LargeIconBridge(mProfile);
         ActivityManager activityManager =
-                ((ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE));
-        int maxSize = Math.min(
-                activityManager.getMemoryClass() / 16 * 25 * ConversionUtils.BYTES_PER_KILOBYTE,
-                FAVICON_MAX_CACHE_SIZE_BYTES);
+                ((ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE));
+        int maxSize =
+                Math.min(
+                        activityManager.getMemoryClass()
+                                / 16
+                                * 25
+                                * ConversionUtils.BYTES_PER_KILOBYTE,
+                        FAVICON_MAX_CACHE_SIZE_BYTES);
         mLargeIconBridge.createCache(maxSize);
 
         mAdapter = new ClearBrowsingDataAdapter(mImportantDomains, mFaviconURLs, getResources());
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == AlertDialog.BUTTON_POSITIVE) {
-                    Intent data = new Intent();
-                    List<String> deselectedDomains = new ArrayList<>();
-                    List<Integer> deselectedDomainReasons = new ArrayList<>();
-                    List<String> ignoredDomains = new ArrayList<>();
-                    List<Integer> ignoredDomainReasons = new ArrayList<>();
-                    for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
-                        Integer reason = mImportantDomainsReasons.get(entry.getKey());
-                        if (entry.getValue()) {
-                            ignoredDomains.add(entry.getKey());
-                            ignoredDomainReasons.add(reason);
+        DialogInterface.OnClickListener listener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == AlertDialog.BUTTON_POSITIVE) {
+                            Intent data = new Intent();
+                            List<String> deselectedDomains = new ArrayList<>();
+                            List<Integer> deselectedDomainReasons = new ArrayList<>();
+                            List<String> ignoredDomains = new ArrayList<>();
+                            List<Integer> ignoredDomainReasons = new ArrayList<>();
+                            for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
+                                Integer reason = mImportantDomainsReasons.get(entry.getKey());
+                                if (entry.getValue()) {
+                                    ignoredDomains.add(entry.getKey());
+                                    ignoredDomainReasons.add(reason);
+                                } else {
+                                    deselectedDomains.add(entry.getKey());
+                                    deselectedDomainReasons.add(reason);
+                                }
+                            }
+                            data.putExtra(
+                                    DESELECTED_DOMAINS_TAG,
+                                    deselectedDomains.toArray(new String[0]));
+                            data.putExtra(
+                                    DESELECTED_DOMAIN_REASONS_TAG,
+                                    CollectionUtil.integerCollectionToIntArray(
+                                            deselectedDomainReasons));
+                            data.putExtra(
+                                    IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
+                            data.putExtra(
+                                    IGNORED_DOMAIN_REASONS_TAG,
+                                    CollectionUtil.integerCollectionToIntArray(
+                                            ignoredDomainReasons));
+                            getTargetFragment()
+                                    .onActivityResult(
+                                            getTargetRequestCode(), Activity.RESULT_OK, data);
                         } else {
-                            deselectedDomains.add(entry.getKey());
-                            deselectedDomainReasons.add(reason);
+                            getTargetFragment()
+                                    .onActivityResult(
+                                            getTargetRequestCode(),
+                                            Activity.RESULT_CANCELED,
+                                            getActivity().getIntent());
                         }
                     }
-                    data.putExtra(DESELECTED_DOMAINS_TAG, deselectedDomains.toArray(new String[0]));
-                    data.putExtra(DESELECTED_DOMAIN_REASONS_TAG,
-                            CollectionUtil.integerCollectionToIntArray(deselectedDomainReasons));
-                    data.putExtra(IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
-                    data.putExtra(IGNORED_DOMAIN_REASONS_TAG,
-                            CollectionUtil.integerCollectionToIntArray(ignoredDomainReasons));
-                    getTargetFragment().onActivityResult(
-                            getTargetRequestCode(), Activity.RESULT_OK, data);
-                } else {
-                    getTargetFragment().onActivityResult(getTargetRequestCode(),
-                            Activity.RESULT_CANCELED, getActivity().getIntent());
-                }
-            }
-        };
+                };
 
         Set<String> originsWithApps = WebappRegistry.getInstance().getOriginsWithInstalledApp();
         boolean includesApp = false;
@@ -311,13 +347,18 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
             }
         }
 
-        int titleResource = includesApp ? R.string.important_sites_title_with_app
-                                        : R.string.important_sites_title;
-        int messageResource = includesApp
-                ? R.string.clear_browsing_data_important_dialog_text_with_app
-                : R.string.clear_browsing_data_important_dialog_text;
-        View messageAndListView = getActivity().getLayoutInflater().inflate(
-                R.layout.clear_browsing_important_dialog_listview, null);
+        int titleResource =
+                includesApp
+                        ? R.string.important_sites_title_with_app
+                        : R.string.important_sites_title;
+        int messageResource =
+                includesApp
+                        ? R.string.clear_browsing_data_important_dialog_text_with_app
+                        : R.string.clear_browsing_data_important_dialog_text;
+        View messageAndListView =
+                getActivity()
+                        .getLayoutInflater()
+                        .inflate(R.layout.clear_browsing_important_dialog_listview, null);
         mSitesListView = (ListView) messageAndListView.findViewById(R.id.select_dialog_listview);
         mSitesListView.setAdapter(mAdapter);
         mSitesListView.setOnItemClickListener(mAdapter);

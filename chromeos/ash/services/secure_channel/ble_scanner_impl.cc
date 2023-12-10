@@ -265,7 +265,7 @@ void BleScannerImpl::OnDeviceLost(
 
 void BleScannerImpl::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
-    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+    std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
   is_initializing_discovery_session_ = false;
 

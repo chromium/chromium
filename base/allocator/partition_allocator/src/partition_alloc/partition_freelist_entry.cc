@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.h"
+#include "partition_alloc/partition_freelist_entry.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_base/immediate_crash.h"
+#include "partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
 

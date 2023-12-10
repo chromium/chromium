@@ -39,7 +39,7 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
 using extensions::SafeBrowsingPrivateEventRouter;
@@ -329,7 +329,7 @@ class ContentAnalysisDelegateBrowserTestBase
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         kBrowserDMToken);
 #else
-        machine_scope_ ? kBrowserDMToken : kProfileDMToken);
+        machine_scope() ? kBrowserDMToken : kProfileDMToken);
 #endif
     if (machine_scope_) {
       RealtimeReportingClientFactory::GetForProfile(browser()->profile())
@@ -355,6 +355,8 @@ class ContentAnalysisDelegateBrowserTestBase
     // The test is over once the views are destroyed.
     CallQuitClosure();
   }
+
+  bool machine_scope() const { return machine_scope_; }
 
   policy::MockCloudPolicyClient* client() { return client_.get(); }
 
@@ -481,9 +483,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   test::EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "bad.exe",
+      /*filename*/
+      machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "bad.exe",
       // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
@@ -597,6 +601,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // equal to the length of the concatenated texts (2 * 100 * 'a').
   validator.ExpectSensitiveDataEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "Text data",
@@ -914,12 +919,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   test::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvents(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       {
-          created_file_paths()[0].BaseName().AsUTF8Unsafe(),
-          created_file_paths()[1].BaseName().AsUTF8Unsafe(),
-          created_file_paths()[2].BaseName().AsUTF8Unsafe(),
+          machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "a.exe",
+          machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "b.exe",
+          machine_scope() ? created_file_paths()[2].AsUTF8Unsafe() : "c.exe",
       },
       {
           // printf "a content" | sha256sum | tr '[:lower:]' '[:upper:]'
@@ -985,7 +991,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
 // - block_until_verdict
 // - block_password_protected
 // - block_large_files
-// - block_unsupported_file_types
 class ContentAnalysisDelegateBlockingSettingBrowserTest
     : public ContentAnalysisDelegateBrowserTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -1059,9 +1064,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   test::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "encrypted.zip",
+      /*filename*/ machine_scope() ? test_zip.AsUTF8Unsafe() : "encrypted.zip",
       // sha256sum < chrome/test/data/safe_browsing/download_protection/\
       // encrypted.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1149,9 +1155,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   test::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "large.doc",
+      /*filename*/
+      machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "large.doc",
       // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
       // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1323,9 +1331,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       kScanId1, ContentAnalysisAcknowledgement::BLOCK);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "foo.doc",
+      /*filename*/
+      machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "foo.doc",
       // printf "foo content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "B3A2E2EDBAA3C798B4FC267792B1641B94793DE02D870124E5CBE663750B4CFC",
@@ -1378,6 +1388,105 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // file in all cases.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
+}
+
+// This class tests if ContentAnalysisDelegate handles the settings
+// `default_action` from Connector policies correctly, specifically for cloud
+// analysis.
+class ContentAnalysisDelegateDefaultActionSettingBrowserTest
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<safe_browsing::BinaryUploadService::Result, bool>> {
+ public:
+  ContentAnalysisDelegateDefaultActionSettingBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(/*machine_scope=*/true) {}
+
+  safe_browsing::BinaryUploadService::Result upload_result() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool setting_param() const { return std::get<1>(GetParam()); }
+
+  // Use a string since the setting value is inserted into a JSON policy.
+  const char* default_action_setting_value() const {
+    return setting_param() ? "block" : "allow";
+  }
+
+  bool expected_result() const { return !setting_param(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentAnalysisDelegateDefaultActionSettingBrowserTest,
+    testing::Combine(
+        testing::Values(
+            safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE,
+            safe_browsing::BinaryUploadService::Result::TIMEOUT,
+            safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
+            safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS,
+            safe_browsing::BinaryUploadService::Result::UNKNOWN),
+        testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDefaultActionSettingBrowserTest,
+                       DefaultAction) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+  constexpr char kDefaultActionPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "default_action": "%s"
+  })";
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), BULK_DATA_ENTRY,
+      base::StringPrintf(kDefaultActionPref, default_action_setting_value()),
+      /*machine_scope=*/true);
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  // Create test data.
+  ContentAnalysisDelegate::Data data;
+  data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+  ContentAnalysisResponse text_response;
+  FakeBinaryUploadServiceStorage()->SetResponseForText(upload_result(),
+                                                       text_response);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [this, &called](const ContentAnalysisDelegate::Data& data,
+                          ContentAnalysisDelegate::Result& result) {
+            ASSERT_EQ(result.text_results[0], expected_result());
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();

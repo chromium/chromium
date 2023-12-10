@@ -757,8 +757,8 @@ class HashTable final
 
   ValueType** GetBufferSlot() { return &table_; }
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected;
 
 #if DCHECK_IS_ON()
   void EnterAccessForbiddenScope() {
@@ -786,10 +786,8 @@ class HashTable final
 #endif
 
  protected:
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> TraceTable(
-      VisitorDispatcher,
-      const ValueType* table) const;
+  void TraceTable(auto visitor, const ValueType* table) const
+    requires Allocator::kIsGarbageCollected;
 
  private:
   static ValueType* AllocateTable(unsigned size);
@@ -1520,9 +1518,8 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::AllocateTable(
       "empty value cannot be zero for things with a vtable");
   static_assert(
       Allocator::kIsGarbageCollected ||
-          ((!IsDisallowNew<KeyType>::value || !IsTraceable<KeyType>::value) &&
-           (!IsDisallowNew<ValueType>::value ||
-            !IsTraceable<ValueType>::value)),
+          ((!IsDisallowNew<KeyType> || !IsTraceable<KeyType>::value) &&
+           (!IsDisallowNew<ValueType> || !IsTraceable<ValueType>::value)),
       "Cannot put DISALLOW_NEW objects that "
       "have trace methods into an off-heap HashTable");
 
@@ -1961,10 +1958,10 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
-    VisitorDispatcher visitor) const {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
+    auto visitor) const
+  requires Allocator::kIsGarbageCollected
+{
   static_assert(WTF::IsWeak<ValueType>::value ||
                     IsTraceableInCollectionTrait<Traits>::value,
                 "Value should not be traced");
@@ -1977,11 +1974,11 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
-    VisitorDispatcher visitor,
-    const ValueType* table) const {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
+    auto visitor,
+    const ValueType* table) const
+  requires Allocator::kIsGarbageCollected
+{
   if (!WTF::IsWeak<ValueType>::value) {
     // Strong HashTable.
     Allocator::template TraceHashTableBackingStrongly<ValueType, HashTable>(
@@ -1995,8 +1992,8 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
     // weakly multiple times.
     Allocator::template TraceHashTableBackingWeakly<ValueType, HashTable>(
         visitor, table, &table_,
-        WeakProcessingHashTableHelper<WeakHandlingTrait<ValueType>::value, Key,
-                                      Value, Extractor, Traits, KeyTraits,
+        WeakProcessingHashTableHelper<kWeakHandlingTrait<ValueType>, Key, Value,
+                                      Extractor, Traits, KeyTraits,
                                       Allocator>::Process,
         this);
   }

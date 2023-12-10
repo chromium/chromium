@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/components/local_search_service/index.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::local_search_service {
 

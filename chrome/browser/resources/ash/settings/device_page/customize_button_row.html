@@ -118,19 +118,10 @@
     </cr-icon-button>
   </div>
   <div id="dropdownContainer" class="text-field-container">
-    <select id="remappingActionDropdown" class="md-select"
-        on-change="onSelectChange_"
-        disabled="[[isDropdownDisabled_(isBeingDragged_)]]"
-        aria-label="[[getDropdownAriaLabel_(buttonRemappingName_, fakePref_.*)]]">
-      <template is="dom-repeat" items="[[buttonMapTargets_]]"
-          as="buttonMapping">
-        <option value$="[[buttonMapping.value]]">
-          [[buttonMapping.name]]
-        </option>
-      </template>
-      <option id="keyCombination" value="[[keyCombinationOptionValue_]]">
-        [[keyCombinationLabel_]]
-      </option>
-    </select>
+    <customize-button-select id="remappingActionDropdown"
+        action-list="[[actionList]]"
+        button-remapping-list="{{buttonRemappingList}}"
+        remapping-index="[[remappingIndex]]">
+    </customize-button-select>
   </div>
 </div>

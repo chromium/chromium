@@ -5,6 +5,7 @@
 #include "device/fido/hid/fido_hid_device.h"
 
 #include <limits>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
@@ -618,7 +618,7 @@ void FidoHidDevice::DiscoverSupportedProtocolAndDeviceInfo(
     base::OnceClosure done) {
   // The following devices cannot handle GetInfo messages.
   static constexpr auto kForceU2fCompatibilitySet =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "10c4:8acf",  // U2F Zero
           "20a0:4287",  // Nitrokey FIDO U2F
       });

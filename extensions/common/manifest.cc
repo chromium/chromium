@@ -325,11 +325,11 @@ const base::Value* Manifest::FindPath(base::StringPiece path) const {
   return available_values_.FindByDottedPath(path);
 }
 
-absl::optional<bool> Manifest::FindBoolPath(base::StringPiece path) const {
+std::optional<bool> Manifest::FindBoolPath(base::StringPiece path) const {
   return available_values_.FindBoolByDottedPath(path);
 }
 
-absl::optional<int> Manifest::FindIntPath(base::StringPiece path) const {
+std::optional<int> Manifest::FindIntPath(base::StringPiece path) const {
   return available_values_.FindIntByDottedPath(path);
 }
 

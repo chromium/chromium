@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/redirect_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 
 namespace net {
+class IsolationInfo;
 class SiteForCookies;
 }  // namespace net
 
@@ -231,18 +233,11 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   // URLLoader instance backed by a request interceptor or the network service.
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
-  // URLLoader instance for handling a response received from the default
-  // network loader. This can be provided by an interceptor.
-  mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
-  mojo::Receiver<network::mojom::URLLoaderClient> response_url_loader_receiver_{
-      this};
-
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::mojom::URLResponseHeadPtr> redirect_response_heads_;
-  network::mojom::URLResponseHeadPtr response_head_;
 
   base::WeakPtrFactory<WorkerScriptFetcher> weak_factory_{this};
 };

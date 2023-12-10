@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -74,10 +75,10 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/box_reflection_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -85,7 +86,6 @@
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -140,7 +140,7 @@ ASSERT_SIZE(PaintLayer, SameSizeAsPaintLayer);
 inline PhysicalRect PhysicalVisualOverflowRectAllowingUnset(
     const LayoutBoxModelObject& layout_object) {
 #if DCHECK_IS_ON()
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+  InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
   return layout_object.VisualOverflowRect();
 }
@@ -454,7 +454,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
       }
     }
-    GetLayoutObject().InvalidateIntersectionObserverCachedRects();
+    GetLayoutObject().DeprecatedInvalidateIntersectionObserverCachedRects();
     needs_visual_overflow_recalc_ = false;
   }
 
@@ -1636,7 +1636,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
 
 bool PaintLayer::HitTestFragmentWithPhase(
     HitTestResult& result,
-    const NGPhysicalBoxFragment* physical_fragment,
+    const PhysicalBoxFragment* physical_fragment,
     const PhysicalOffset& fragment_offset,
     const HitTestLocation& hit_test_location,
     HitTestPhase phase) const {
@@ -1649,7 +1649,7 @@ bool PaintLayer::HitTestFragmentWithPhase(
       did_hit = false;
     } else {
       did_hit =
-          NGBoxFragmentPainter(*physical_fragment)
+          BoxFragmentPainter(*physical_fragment)
               .NodeAtPoint(result, hit_test_location, fragment_offset, phase);
     }
   } else {
@@ -1814,7 +1814,19 @@ gfx::RectF PaintLayer::FilterReferenceBox() const {
 }
 
 gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
-  return gfx::RectF(GetLayoutObject().BorderBoundingBox());
+  if (const auto* layout_inline = DynamicTo<LayoutInline>(GetLayoutObject())) {
+    return RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
+               ? gfx::RectF(
+                     gfx::SizeF(layout_inline->PhysicalLinesBoundingBox().size))
+               : gfx::RectF(
+                     ToEnclosingRect(layout_inline->PhysicalLinesBoundingBox())
+                         .size());
+  }
+
+  const auto* layout_box = GetLayoutBox();
+  return RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
+             ? gfx::RectF(layout_box->PhysicalBorderBoxRect())
+             : gfx::RectF(layout_box->DeprecatedPixelSnappedBorderBoxRect());
 }
 
 gfx::RRectF PaintLayer::BackdropFilterBounds() const {

@@ -31,7 +31,6 @@ BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
 BASE_DECLARE_FEATURE(kAmbientBadgeSuppressFirstVisit);
 extern const base::FeatureParam<base::TimeDelta>
     kAmbientBadgeSuppressFirstVisit_Period;
-BASE_DECLARE_FEATURE(kInstallableAmbientBadgeInfoBar);
 BASE_DECLARE_FEATURE(kInstallableAmbientBadgeMessage);
 extern const base::FeatureParam<int>
     kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity;
@@ -65,9 +64,8 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage;
 
 BASE_DECLARE_FEATURE(kUniversalInstallManifest);
 BASE_DECLARE_FEATURE(kUniversalInstallIcon);
+BASE_DECLARE_FEATURE(kUniversalInstallRootScopeNoManifest);
 extern const base::FeatureParam<int> kMinimumFaviconSize;
-
-BASE_DECLARE_FEATURE(kWebAppSystemMediaControlsWin);
 
 }  // namespace features
 }  // namespace webapps

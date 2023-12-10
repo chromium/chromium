@@ -110,6 +110,12 @@ void ContentBrowserTest::SetUp() {
 
   ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
 
+// Enable this switch to prevent undesired viewport resizing for the scaling
+// issue addressed in https://crrev.com/c/4615623.
+#if BUILDFLAG(IS_IOS)
+  command_line->AppendSwitch(switches::kPreventResizingContentsForTesting);
+#endif
+
   BrowserTestBase::SetUp();
 }
 

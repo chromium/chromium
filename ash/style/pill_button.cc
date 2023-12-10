@@ -84,8 +84,8 @@ bool MaybeUpdateColorVariant(PillButton::ColorVariant& target_color_variant,
   return true;
 }
 
-absl::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
-  absl::optional<ui::ColorId> color_id;
+std::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
+  std::optional<ui::ColorId> color_id;
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
@@ -124,9 +124,9 @@ absl::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
   return color_id;
 }
 
-absl::optional<ui::ColorId> GetDefaultButtonTextIconColorId(
+std::optional<ui::ColorId> GetDefaultButtonTextIconColorId(
     PillButton::Type type) {
-  absl::optional<ui::ColorId> color_id;
+  std::optional<ui::ColorId> color_id;
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
@@ -437,9 +437,9 @@ void PillButton::UpdateIconColor() {
   // If custom icon color is set, use it to set icon color.
   if (IsAssignedColorVariant(icon_color_)) {
     if (absl::holds_alternative<SkColor>(icon_color_)) {
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(*icon_, kIconSize,
-                                     absl::get<SkColor>(icon_color_)));
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(
+                        *icon_, absl::get<SkColor>(icon_color_), kIconSize));
     } else {
       SetImageModel(
           views::Button::STATE_NORMAL,

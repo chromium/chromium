@@ -8,6 +8,9 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace base {
+class FilePath;
+}
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -29,12 +32,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs);
 // time, long deprecated prefs should be removed as new ones are added, but this
 // call should never go away (even if it becomes an empty call for some time) as
 // it should remain *the* place to drop deprecated browser state's prefs at.
-void MigrateObsoleteBrowserStatePrefs(PrefService* prefs);
+void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
+                                      PrefService* prefs);
 
 // Migrate/cleanup deprecated prefs from the standard NSUserDefault store. Over
 // time, long deprecated prefs should be removed as new ones are added, but this
 // call should never go away (even if it becomes an empty call for some time) as
 // it should remain *the* place to drop deprecated NSUserDefault at.
-void MigrateObsoleteUserDefault(void);
+void MigrateObsoleteUserDefault();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_BROWSER_PREFS_H_

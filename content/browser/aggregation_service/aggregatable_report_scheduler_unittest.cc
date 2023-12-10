@@ -5,13 +5,16 @@
 #include "content/browser/aggregation_service/aggregatable_report_scheduler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
@@ -26,7 +29,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -59,12 +61,22 @@ class AggregatableReportSchedulerTest : public testing::Test {
   }
 
  protected:
+  void VerifyHistograms(base::HistogramBase::Count timer_fired_count) {
+    histograms_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.Scheduler.TimerFireDelay",
+        timer_fired_count);
+    histograms_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.Storage.RequestsRetrievalTime",
+        timer_fired_count);
+  }
+
   base::test::TaskEnvironment task_environment_;
   TestAggregationServiceStorageContext storage_context_;
   base::MockRepeatingCallback<void(
       std::vector<AggregationServiceStorage::RequestAndId>)>
       mock_callback_;
   std::unique_ptr<AggregatableReportScheduler> scheduler_;
+  base::HistogramTester histograms_;
 };
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -86,7 +98,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -122,7 +134,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -142,7 +154,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -156,6 +168,8 @@ TEST_F(AggregatableReportSchedulerTest,
   checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -183,7 +197,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -202,7 +216,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -212,6 +226,8 @@ TEST_F(AggregatableReportSchedulerTest,
 
     run_loop.Run();
   }
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -239,7 +255,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -260,7 +276,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -270,6 +286,8 @@ TEST_F(AggregatableReportSchedulerTest,
 
     run_loop.Run();
   }
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -332,7 +350,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -362,6 +380,8 @@ TEST_F(AggregatableReportSchedulerTest,
   // It should not retry anymore
   EXPECT_FALSE(scheduler_->NotifyInProgressRequestFailed(
       AggregationServiceStorage::RequestId(1), /*previous_failed_attempts=*/2));
+
+  VerifyHistograms(/*timer_fired_count=*/3);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -417,7 +437,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .WithArgs(base::Time::Max(), /*limit=*/std::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -435,6 +455,8 @@ TEST_F(AggregatableReportSchedulerTest,
   checkpoint.Call(2);
 
   task_environment_.FastForwardBy(base::Hours(1));
+
+  VerifyHistograms(/*timer_fired_count=*/2);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -502,6 +524,8 @@ TEST_F(AggregatableReportSchedulerTest,
   // request.
   task_environment_.AdvanceClock(base::Hours(2));
   task_environment_.RunUntilIdle();
+
+  VerifyHistograms(/*timer_fired_count=*/2);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -545,6 +569,8 @@ TEST_F(AggregatableReportSchedulerTest,
   // through that delay to trigger the report.
   task_environment_.FastForwardBy(
       AggregatableReportScheduler::kOfflineReportTimeMaximumDelay);
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -591,6 +617,8 @@ TEST_F(AggregatableReportSchedulerTest,
   // report was only delayed by 0 or 1 microsecond, but this flake is rare
   // enough to ignore (1 in 30 million runs).
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -617,6 +645,8 @@ TEST_F(AggregatableReportSchedulerTest,
       Run(Property(&std::vector<AggregationServiceStorage::RequestAndId>::size,
                    AggregationService::kMaxStoredReportsPerReportingOrigin)));
   task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 class AggregatableReportSchedulerDeveloperModeTest
@@ -668,6 +698,8 @@ TEST_F(AggregatableReportSchedulerDeveloperModeTest,
   // With the developer mode flag, the report should be sent immediately, so all
   // we need to do is run any pending tasks.
   task_environment_.RunUntilIdle();
+
+  VerifyHistograms(/*timer_fired_count=*/1);
 }
 
 }  // namespace content

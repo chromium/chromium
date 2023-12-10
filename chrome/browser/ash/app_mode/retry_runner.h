@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_RETRY_RUNNER_H_
 
 #include <memory>
+#include <optional>
 #include <variant>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -64,9 +64,9 @@ template <typename Result>
     RetryResultCallback<Result> on_done);
 
 // Returns a predicate suitable for `RunUpToNTimes()` jobs that return an
-// `absl::optional` and should retry when the result is `absl::nullopt`.
+// `std::optional` and should retry when the result is `std::nullopt`.
 template <typename T>
-base::RepeatingCallback<bool(const absl::optional<T>&)> RetryIfNullopt();
+base::RepeatingCallback<bool(const std::optional<T>&)> RetryIfNullopt();
 
 namespace internal {
 
@@ -175,21 +175,21 @@ template <typename Result>
 template <typename Result>
 [[nodiscard]] std::unique_ptr<CancellableJob> RunUpToNTimes(
     int n,
-    VoidRetryJob<absl::optional<Result>> job,
-    RetryResultCallback<absl::optional<Result>> on_done) {
-  return RunUpToNTimes<absl::optional<Result>>(
+    VoidRetryJob<std::optional<Result>> job,
+    RetryResultCallback<std::optional<Result>> on_done) {
+  return RunUpToNTimes<std::optional<Result>>(
       n, job,
       /*should_retry=*/
-      base::BindRepeating([](const absl::optional<Result>& result) {
+      base::BindRepeating([](const std::optional<Result>& result) {
         return !result.has_value();
       }),
       std::move(on_done));
 }
 
 template <typename T>
-base::RepeatingCallback<bool(const absl::optional<T>&)> RetryIfNullopt() {
+base::RepeatingCallback<bool(const std::optional<T>&)> RetryIfNullopt() {
   return base::BindRepeating(
-      [](const absl::optional<T>& optional) { return !optional.has_value(); });
+      [](const std::optional<T>& optional) { return !optional.has_value(); });
 }
 
 }  // namespace ash

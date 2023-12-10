@@ -90,6 +90,7 @@ class ReadingListManagerImpl : public ReadingListManager,
 
   // Whether |reading_list_model_| is in batch update mode.
   bool performing_batch_update_;
+  bool changes_applied_during_batch_;
 
   base::ObserverList<Observer> observers_;
 };

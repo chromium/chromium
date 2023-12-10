@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -31,7 +32,6 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
@@ -143,7 +143,7 @@ struct PassthroughResources {
     std::unique_ptr<GLTexturePassthroughImageRepresentation> representation_;
     std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
         scoped_access_;
-    absl::optional<GLenum> access_mode_;
+    std::optional<GLenum> access_mode_;
   };
   // Mapping of client texture IDs to GLTexturePassthroughImageRepresentations.
   // TODO(ericrk): Remove this once TexturePassthrough holds a reference to

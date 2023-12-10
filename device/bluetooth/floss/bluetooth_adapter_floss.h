@@ -240,6 +240,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                        DBusResult<Void> ret);
   // Called when all device properties have been initialized
   void OnInitializeDeviceProperties(BluetoothDeviceFloss* device_ptr);
+  // Called when the UUIDs property changed and fetched.
+  void OnDeviceUuidsChanged(BluetoothDeviceFloss* device_ptr);
   void OnGetConnectionState(const FlossDeviceId& device_id,
                             DBusResult<uint32_t> ret);
   void OnGetBondState(const FlossDeviceId& device_id, DBusResult<uint32_t> ret);
@@ -258,8 +260,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterPresent(int adapter, bool present) override;
   void AdapterEnabledChanged(int adapter, bool enabled) override;
 
-  // Complete adapter power changes after adapter clients are ready.
-  void OnAdapterClientsReady(bool enabled);
+  // Complete adapter present/enabled changes after adapter clients are ready.
+  // Invoke PresentChanged to the observers only when |is_newly_present| is
+  // true.
+  void OnAdapterClientsReady(bool enabled, bool is_newly_present);
 
   // Initialize observers for adapter dependent clients. We need to add + remove
   // these observers whenever we get a powered notification.

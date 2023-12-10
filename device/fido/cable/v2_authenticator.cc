@@ -4,6 +4,8 @@
 
 #include "device/fido/cable/v2_authenticator.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -96,7 +98,6 @@ struct MakeCredRequest {
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* cred_params;
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* excluded_credentials;
   RAW_PTR_EXCLUSION const bool* resident_key;
-  RAW_PTR_EXCLUSION const std::string* device_public_key_attestation;
   RAW_PTR_EXCLUSION const cbor::Value* prf;
 };
 
@@ -134,16 +135,6 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
 
     Map<MakeCredRequest>(Is::kOptional),
     IntKey<MakeCredRequest>(6),
-      Map<MakeCredRequest>(Is::kOptional),
-      StringKey<MakeCredRequest>(), 'd', 'e', 'v', 'i', 'c', 'e',
-                                    'P', 'u', 'b', 'K', 'e', 'y', '\0',
-        // The presence of the attestation type is used to detect when DPK is
-        // requested.
-        ELEMENT(Is::kRequired, MakeCredRequest, device_public_key_attestation),
-        StringKey<MakeCredRequest>(), 'a', 't', 't', 'e', 's', 't', 'a', 't',
-                                      'i', 'o', 'n', '\0',
-      Stop<MakeCredRequest>(),
-
       ELEMENT(Is::kOptional, MakeCredRequest, prf),
       StringKey<MakeCredRequest>(), 'p', 'r', 'f', '\0',
     Stop<MakeCredRequest>(),
@@ -189,7 +180,6 @@ struct GetAssertionRequest {
   RAW_PTR_EXCLUSION const std::string* rp_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* allowed_credentials;
-  RAW_PTR_EXCLUSION const std::string* device_public_key_attestation;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* prf_eval_first;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* prf_eval_second;
   RAW_PTR_EXCLUSION const cbor::Value* prf_eval_by_cred;
@@ -208,16 +198,6 @@ static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
 
     Map<GetAssertionRequest>(Is::kOptional),
     IntKey<GetAssertionRequest>(4),
-      Map<GetAssertionRequest>(Is::kOptional),
-      StringKey<GetAssertionRequest>(), 'd', 'e', 'v', 'i', 'c', 'e',
-                                        'P', 'u', 'b', 'K', 'e', 'y', '\0',
-        // The presence of the attestation type is used to detect when DPK is
-        // requested.
-        ELEMENT(Is::kRequired, GetAssertionRequest, device_public_key_attestation),
-        StringKey<GetAssertionRequest>(), 'a', 't', 't', 'e', 's', 't', 'a', 't',
-                                          'i', 'o', 'n', '\0',
-      Stop<GetAssertionRequest>(),
-
       Map<GetAssertionRequest>(Is::kOptional),
       StringKey<GetAssertionRequest>(), 'p', 'r', 'f', '\0',
         Map<GetAssertionRequest>(Is::kOptional),
@@ -259,7 +239,6 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   transports.emplace_back("internal");
 
   cbor::Value::ArrayValue extensions;
-  extensions.emplace_back("devicePubKey");
   extensions.emplace_back("prf");
 
   cbor::Value::MapValue response_map;
@@ -772,13 +751,6 @@ class CTAP2Processor : public Transaction {
                : device::ResidentKeyRequirement::kDiscouraged,
             device::UserVerificationRequirement::kRequired);
 
-        if (make_cred_request.device_public_key_attestation) {
-          // Play Services doesn't support any of the devicePubKey parameters so
-          // this code doesn't bother parsing them nor passing them on.
-          params->device_public_key =
-              blink::mojom::DevicePublicKeyRequest::New();
-        }
-
         if (make_cred_request.prf) {
           params->prf_enable = true;
         }
@@ -850,13 +822,6 @@ class CTAP2Processor : public Transaction {
         if (!CopyCredIds(get_assertion_request.allowed_credentials,
                          &params->allow_credentials)) {
           return Platform::Error::INTERNAL_ERROR;
-        }
-
-        if (get_assertion_request.device_public_key_attestation) {
-          // Play Services doesn't support any of the devicePubKey parameters so
-          // this code doesn't bother parsing them nor passing them on.
-          params->extensions->device_public_key =
-              blink::mojom::DevicePublicKeyRequest::New();
         }
 
         if (get_assertion_request.prf_eval_first) {
@@ -937,7 +902,6 @@ class CTAP2Processor : public Transaction {
       bool was_discoverable_credential_request,
       uint32_t ctap_status,
       base::span<const uint8_t> attestation_object_bytes,
-      absl::optional<base::span<const uint8_t>> device_public_key_signature,
       bool prf_enabled) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
@@ -961,16 +925,12 @@ class CTAP2Processor : public Transaction {
       }
 
       cbor::Value::MapValue response_map;
-      response_map.emplace(1, base::StringPiece(*attestation_object.fmt));
+      response_map.emplace(1, std::string_view(*attestation_object.fmt));
       response_map.emplace(
           2, base::span<const uint8_t>(*attestation_object.auth_data));
       response_map.emplace(3, attestation_object.statement->Clone());
 
       cbor::Value::MapValue unsigned_extension_outputs;
-      if (device_public_key_signature) {
-        unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
-                                           *device_public_key_signature);
-      }
       if (prf_enabled) {
         cbor::Value::MapValue prf;
         prf.emplace(kExtensionPRFEnabled, true);
@@ -1056,11 +1016,6 @@ class CTAP2Processor : public Transaction {
       }
 
       cbor::Value::MapValue unsigned_extension_outputs;
-      if (auth_response->extensions->device_public_key) {
-        unsigned_extension_outputs.emplace(
-            kExtensionDevicePublicKey,
-            auth_response->extensions->device_public_key->signature);
-      }
       if (auth_response->extensions->prf_results) {
         cbor::Value::MapValue prf, results;
         results.emplace(kExtensionPRFFirst,

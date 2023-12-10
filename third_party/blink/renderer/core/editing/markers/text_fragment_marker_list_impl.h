@@ -22,6 +22,8 @@ class CORE_EXPORT TextFragmentMarkerListImpl final
 
   // DocumentMarkerList implementations
   DocumentMarker::MarkerType MarkerType() const final;
+
+  void MergeOverlappingMarkers() final;
 };
 
 template <>

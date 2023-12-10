@@ -23,11 +23,13 @@ export class TestDownloadsProxy {
 
 class FakePageHandler implements PageHandlerInterface {
   private callbackRouterRemote_: PageRemote;
-  private callTracker_: TestBrowserProxy = new TestBrowserProxy(['remove']);
+  private callTracker_: TestBrowserProxy =
+      new TestBrowserProxy(['remove', 'saveDangerousRequiringGesture']);
 
   constructor(callbackRouterRemote: PageRemote) {
     this.callbackRouterRemote_ = callbackRouterRemote;
-    this.callTracker_ = new TestBrowserProxy(['remove']);
+    this.callTracker_ =
+        new TestBrowserProxy(['remove', 'saveDangerousRequiringGesture']);
   }
 
   whenCalled(methodName: string): Promise<void> {
@@ -40,10 +42,13 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('remove', id);
   }
 
+  saveDangerousRequiringGesture(id: string) {
+    this.callTracker_.methodCalled('saveDangerousRequiringGesture', id);
+  }
+
   getDownloads(_searchTerms: string[]) {}
   openFileRequiringGesture(_id: string) {}
   drag(_id: string) {}
-  saveDangerousRequiringGesture(_id: string) {}
   acceptIncognitoWarning(_id: string) {}
   discardDangerous(_id: string) {}
   retryDownload(_id: string) {}

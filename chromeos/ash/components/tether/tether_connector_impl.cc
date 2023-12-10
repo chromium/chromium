@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -26,6 +25,11 @@
 namespace ash {
 
 namespace tether {
+
+using ConnectionToHostResult =
+    HostConnectionMetricsLogger::ConnectionToHostResult;
+using ConnectionToHostInternalError =
+    HostConnectionMetricsLogger::ConnectionToHostInternalError;
 
 namespace {
 
@@ -144,10 +148,11 @@ bool TetherConnectorImpl::CancelConnectionAttempt(
   disconnect_tethering_request_sender_->SendDisconnectRequestToDevice(
       device_id);
 
-  SetConnectionFailed(
-      NetworkConnectionHandler::kErrorConnectCanceled,
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_CANCELED_BY_USER);
+  host_connection_metrics_logger_->RecordConnectionToHostResult(
+      ConnectionToHostResult::USER_CANCELLATION, device_id_pending_connection_,
+      std::nullopt);
+
+  SetConnectionFailed(NetworkConnectionHandler::kErrorConnectCanceled);
   return true;
 }
 
@@ -229,14 +234,14 @@ void TetherConnectorImpl::OnConnectTetheringFailure(
 
   connect_tethering_operation_->RemoveObserver(this);
   connect_tethering_operation_.reset();
-  SetConnectionFailed(
-      NetworkConnectionHandler::kErrorConnectFailed,
-      GetConnectionToHostResultFromErrorCode(device_id_copy, error_code));
+  RecordConnectTetheringOperationResult(device_id_pending_connection_,
+                                        error_code);
+  SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
 }
 
 void TetherConnectorImpl::OnTetherHostToConnectFetched(
     const std::string& device_id,
-    absl::optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
+    std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
   if (device_id_pending_connection_ != device_id) {
     PA_LOG(VERBOSE) << "Device to connect to has changed while device with ID "
                     << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
@@ -250,10 +255,10 @@ void TetherConnectorImpl::OnTetherHostToConnectFetched(
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          device_id)
                   << ". Cannot connect.";
-    SetConnectionFailed(
-        NetworkConnectionHandler::kErrorConnectFailed,
-        HostConnectionMetricsLogger::ConnectionToHostResult::
-            CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_INTERNAL_ERROR);
+    host_connection_metrics_logger_->RecordConnectionToHostResult(
+        ConnectionToHostResult::INTERNAL_ERROR, device_id_pending_connection_,
+        ConnectionToHostInternalError::CLIENT_CONNECTION_INTERNAL_ERROR);
+    SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
     return;
   }
 
@@ -270,10 +275,7 @@ void TetherConnectorImpl::OnTetherHostToConnectFetched(
   connect_tethering_operation_->Initialize();
 }
 
-void TetherConnectorImpl::SetConnectionFailed(
-    const std::string& error_name,
-    HostConnectionMetricsLogger::ConnectionToHostResult
-        connection_to_host_result) {
+void TetherConnectorImpl::SetConnectionFailed(const std::string& error_name) {
   DCHECK(!device_id_pending_connection_.empty());
   DCHECK(!error_callback_.is_null());
 
@@ -291,9 +293,6 @@ void TetherConnectorImpl::SetConnectionFailed(
   std::move(error_callback).Run(error_name);
   active_host_->SetActiveHostDisconnected();
 
-  host_connection_metrics_logger_->RecordConnectionToHostResult(
-      connection_to_host_result, failed_connection_device_id);
-
   if (error_name == NetworkConnectionHandler::kErrorConnectFailed) {
     // Only show notification if the error is kErrorConnectFailed. Other error
     // names (e.g., kErrorConnectCanceled) are a result of user interaction and
@@ -310,9 +309,8 @@ void TetherConnectorImpl::SetConnectionSucceeded(
   DCHECK(!success_callback_.is_null());
 
   host_connection_metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_SUCCESS,
-      device_id);
+      HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS, device_id,
+      std::nullopt);
 
   notification_presenter_->RemoveSetupRequiredNotification();
 
@@ -367,79 +365,92 @@ void TetherConnectorImpl::OnWifiConnection(
                          device_id)
                   << ".";
 
-    SetConnectionFailed(
-        NetworkConnectionHandler::kErrorConnectFailed,
-        HostConnectionMetricsLogger::ConnectionToHostResult::
-            CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_TIMEOUT);
+    host_connection_metrics_logger_->RecordConnectionToHostResult(
+        ConnectionToHostResult::INTERNAL_ERROR, device_id,
+        ConnectionToHostInternalError::CLIENT_CONNECTION_TIMEOUT);
+    SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
     return;
   }
 
   SetConnectionSucceeded(device_id, wifi_network_guid);
 }
 
-HostConnectionMetricsLogger::ConnectionToHostResult
-TetherConnectorImpl::GetConnectionToHostResultFromErrorCode(
+void TetherConnectorImpl::RecordConnectTetheringOperationResult(
     const std::string& device_id,
     ConnectTetheringOperation::HostResponseErrorCode error_code) {
+  std::optional<ConnectionToHostResult> result =
+      ConnectionToHostResult::INTERNAL_ERROR;
+  std::optional<ConnectionToHostInternalError> internal_error = std::nullopt;
+
   switch (error_code) {
     case ConnectTetheringOperation::HostResponseErrorCode::PROVISIONING_FAILED:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_PROVISIONING_FAILED;
+      result = ConnectionToHostResult::PROVISIONING_FAILURE;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::TETHERING_TIMEOUT:
       if (host_scan_cache_->DoesHostRequireSetup(
               device_id_tether_network_guid_map_
                   ->GetTetherNetworkGuidForDeviceId(device_id))) {
-        return HostConnectionMetricsLogger::ConnectionToHostResult::
-            CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_REQUIRED;
+        internal_error = ConnectionToHostInternalError::
+            TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED;
       } else {
-        return HostConnectionMetricsLogger::ConnectionToHostResult::
-            CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_NOT_REQUIRED;
+        internal_error = ConnectionToHostInternalError::
+            TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED;
       }
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         TETHERING_UNSUPPORTED:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_TETHERING_UNSUPPORTED;
+      result = ConnectionToHostResult::TETHERING_UNSUPPORTED;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::NO_CELL_DATA:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_NO_CELL_DATA;
+      result = ConnectionToHostResult::NO_CELLULAR_DATA;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         ENABLING_HOTSPOT_FAILED:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_FAILED;
+      internal_error = ConnectionToHostInternalError::ENABLING_HOTSPOT_FAILED;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         ENABLING_HOTSPOT_TIMEOUT:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_TIMEOUT;
+      internal_error = ConnectionToHostInternalError::ENABLING_HOTSPOT_TIMEOUT;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::UNKNOWN_ERROR:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_UNKNOWN_ERROR;
+      internal_error = ConnectionToHostInternalError::UNKNOWN_ERROR;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         INVALID_HOTSPOT_CREDENTIALS:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_HOTSPOT_CREDENTIALS;
+      internal_error =
+          ConnectionToHostInternalError::INVALID_HOTSPOT_CREDENTIALS;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::NO_RESPONSE:
       if (did_send_successful_request_) {
-        return HostConnectionMetricsLogger::ConnectionToHostResult::
-            CONNECTION_RESULT_FAILURE_SUCCESSFUL_REQUEST_BUT_NO_RESPONSE;
+        internal_error =
+            ConnectionToHostInternalError::SUCCESSFUL_REQUEST_BUT_NO_RESPONSE;
       } else {
-        return HostConnectionMetricsLogger::ConnectionToHostResult::
-            CONNECTION_RESULT_FAILURE_NO_RESPONSE;
+        internal_error = ConnectionToHostInternalError::NO_RESPONSE;
       }
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG;
+      internal_error =
+          ConnectionToHostInternalError::INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         INVALID_NEW_SOFT_AP_CONFIG:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG;
+      internal_error =
+          ConnectionToHostInternalError::INVALID_NEW_SOFT_AP_CONFIG;
+      break;
     case ConnectTetheringOperation::HostResponseErrorCode::
         INVALID_WIFI_AP_CONFIG:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG;
+      internal_error = ConnectionToHostInternalError::INVALID_WIFI_AP_CONFIG;
+      break;
     default:
-      return HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_UNRECOGNIZED_RESPONSE_ERROR;
+      internal_error =
+          ConnectionToHostInternalError::UNRECOGNIZED_RESPONSE_ERROR;
+      break;
+  }
+
+  if (result.has_value()) {
+    host_connection_metrics_logger_->RecordConnectionToHostResult(
+        result.value(), device_id, internal_error);
   }
 }
 

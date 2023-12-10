@@ -11,10 +11,11 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -143,8 +144,11 @@ class CreditCard : public AutofillDataModel {
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   static std::u16string NetworkForDisplay(const std::string& network);
 
-  // The ResourceBundle ID for the appropriate card issuer network image.
-  static int IconResourceId(const std::string& network);
+  // The ResourceBundle ID for the appropriate card issuer icon.
+  static int IconResourceId(Suggestion::Icon icon);
+
+  // Converts icon_str to Suggestion::Icon and calls the method above.
+  static int IconResourceId(std::string_view icon_str);
 
   // Returns the internal representation of card issuer network corresponding to
   // the given |number|.  The card issuer network is determined purely according
@@ -357,9 +361,11 @@ class CreditCard : public AutofillDataModel {
   // several fields.
   std::u16string ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields()
       const;
-  // The string used to represent the icon to be used for the autofill
-  // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
-  std::string CardIconStringForAutofillSuggestion() const;
+
+  // The icon to be used for the autofill suggestion. For example, icon for:
+  // visa, american express, etc.
+  Suggestion::Icon CardIconForAutofillSuggestion() const;
+
   // A label for this card formatted as 'IssuerNetwork ****2345'. By default,
   // the `obfuscation_length` is set to 4 which would add **** to the last four
   // digits of the card.
@@ -434,6 +440,10 @@ class CreditCard : public AutofillDataModel {
   void set_card_art_url(const GURL& card_art_url) {
     card_art_url_ = card_art_url;
   }
+
+  // Returns true when the card has rich card art, excluding any static card art
+  // image.
+  bool HasRichCardArtImageFromMetadata() const;
 
   const std::u16string& product_description() const {
     return product_description_;

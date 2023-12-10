@@ -373,14 +373,14 @@ ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
   return GetWindowAppIcon();
 }
 
-absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
+std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System App popups (settings pages) always use default theme.
   if (system_app() && browser()->is_type_app_popup())
-    return absl::nullopt;
+    return std::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  absl::optional<SkColor> web_theme_color =
+  std::optional<SkColor> web_theme_color =
       AppBrowserController::GetThemeColor();
   if (web_theme_color)
     return web_theme_color;
@@ -388,7 +388,7 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
       ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -402,7 +402,7 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
-    absl::optional<SkColor> dark_mode_color =
+    std::optional<SkColor> dark_mode_color =
         registrar().GetAppDarkModeThemeColor(app_id());
 
     if (dark_mode_color) {
@@ -413,22 +413,22 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   return registrar().GetAppThemeColor(app_id());
 }
 
-absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
-  absl::optional<SkColor> web_contents_color =
+std::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
+  std::optional<SkColor> web_contents_color =
       AppBrowserController::GetBackgroundColor();
-  absl::optional<SkColor> manifest_color = GetResolvedManifestBackgroundColor();
+  std::optional<SkColor> manifest_color = GetResolvedManifestBackgroundColor();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
       ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
-    manifest_color = absl::nullopt;
+    manifest_color = std::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Prefer an available web contents color but when such a color is
   // unavailable (i.e. in the time between when a window launches and it's web
   // content loads) attempt to pull the background color from the manifest.
-  absl::optional<SkColor> result =
+  std::optional<SkColor> result =
       web_contents_color ? web_contents_color : manifest_color;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -477,7 +477,7 @@ bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
     return false;
   }
 
-  absl::optional<GURL> pinned_home_url =
+  std::optional<GURL> pinned_home_url =
       registrar().GetAppPinnedHomeTabUrl(app_id());
   if (!pinned_home_url) {
     return false;
@@ -712,7 +712,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   asset_link_handler_ = std::make_unique<
       content_relationship_verification::DigitalAssetLinksHandler>(
       browser->profile()->GetURLLoaderFactory());
-  is_verified_ = absl::nullopt;
+  is_verified_ = std::nullopt;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -721,9 +721,9 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id()))
     return;
 
-  const absl::optional<std::string> package_name =
+  const std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id());
-  const absl::optional<std::string> fingerprint =
+  const std::optional<std::string> fingerprint =
       apk_web_app_service->GetCertificateSha256Fingerprint(app_id());
 
   // Any web-only TWA should have an associated package name and fingerprint.
@@ -750,7 +750,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 #endif
 }
 
-absl::optional<SkColor>
+std::optional<SkColor>
 WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
   if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     auto dark_mode_color = registrar().GetAppDarkModeBackgroundColor(app_id());
@@ -760,11 +760,10 @@ WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
   return registrar().GetAppBackgroundColor(app_id());
 }
 
-absl::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope()
-    const {
+std::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope() const {
   const WebApp* web_app = registrar().GetAppById(app_id());
   if (!web_app) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   TabStrip tab_strip = web_app->tab_strip().value();
   if (const auto* params =
@@ -786,7 +785,7 @@ absl::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope()
       return scope_set;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace web_app

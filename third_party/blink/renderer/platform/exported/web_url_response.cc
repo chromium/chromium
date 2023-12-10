@@ -43,12 +43,14 @@
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-blink.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -148,6 +150,9 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasFetchedViaServiceWorker(head.was_fetched_via_service_worker);
   response.SetDidUseSharedDictionary(head.did_use_shared_dictionary);
   response.SetServiceWorkerResponseSource(head.service_worker_response_source);
+  if (!head.service_worker_router_info.is_null()) {
+    response.SetServiceWorkerRouterInfo(*head.service_worker_router_info);
+  }
   response.SetType(head.response_type);
   response.SetPadding(head.padding);
   WebVector<KURL> url_list_via_service_worker(
@@ -200,10 +205,10 @@ WebURLResponse WebURLResponse::Create(
   response.SetRequestId(request_id);
   response.SetIsSignedExchangeInnerResponse(
       head.is_signed_exchange_inner_response);
+  response.SetIsWebBundleInnerResponse(head.is_web_bundle_inner_response);
   response.SetWasInPrefetchCache(head.was_in_prefetch_cache);
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
-  response.SetWebBundleURL(KURL(head.web_bundle_url));
   response.SetTriggerVerifications(head.trigger_verifications);
 
   SetSecurityStyleAndDetails(GURL(KURL(url)), head, &response,
@@ -499,13 +504,16 @@ void WebURLResponse::SetWasFetchedViaServiceWorker(bool value) {
   resource_response_->SetWasFetchedViaServiceWorker(value);
 }
 
-void WebURLResponse::SetArrivalTimeAtRenderer(base::TimeTicks value) {
-  resource_response_->SetArrivalTimeAtRenderer(value);
-}
-
 network::mojom::FetchResponseSource
 WebURLResponse::GetServiceWorkerResponseSource() const {
   return resource_response_->GetServiceWorkerResponseSource();
+}
+
+void WebURLResponse::SetServiceWorkerRouterInfo(
+    const network::mojom::ServiceWorkerRouterInfo& value) {
+  auto info = ServiceWorkerRouterInfo::Create();
+  info->SetRuleIdMatched(value.rule_id_matched);
+  resource_response_->SetServiceWorkerRouterInfo(std::move(info));
 }
 
 void WebURLResponse::SetServiceWorkerResponseSource(
@@ -631,6 +639,11 @@ void WebURLResponse::SetIsSignedExchangeInnerResponse(
       is_signed_exchange_inner_response);
 }
 
+void WebURLResponse::SetIsWebBundleInnerResponse(
+    bool is_web_bundle_inner_response) {
+  resource_response_->SetIsWebBundleInnerResponse(is_web_bundle_inner_response);
+}
+
 void WebURLResponse::SetWasInPrefetchCache(bool was_in_prefetch_cache) {
   resource_response_->SetWasInPrefetchCache(was_in_prefetch_cache);
 }
@@ -684,12 +697,12 @@ void WebURLResponse::SetWasAlternateProtocolAvailable(
       was_alternate_protocol_available);
 }
 
-net::HttpResponseInfo::ConnectionInfo WebURLResponse::ConnectionInfo() const {
+net::HttpConnectionInfo WebURLResponse::ConnectionInfo() const {
   return resource_response_->ConnectionInfo();
 }
 
 void WebURLResponse::SetConnectionInfo(
-    net::HttpResponseInfo::ConnectionInfo connection_info) {
+    net::HttpConnectionInfo connection_info) {
   resource_response_->SetConnectionInfo(connection_info);
 }
 
@@ -710,14 +723,6 @@ void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
   base::ranges::transform(aliases, dns_aliases.begin(),
                           &WebString::operator WTF::String);
   resource_response_->SetDnsAliases(std::move(dns_aliases));
-}
-
-WebURL WebURLResponse::WebBundleURL() const {
-  return resource_response_->WebBundleURL();
-}
-
-void WebURLResponse::SetWebBundleURL(const WebURL& url) {
-  resource_response_->SetWebBundleURL(url);
 }
 
 void WebURLResponse::SetAuthChallengeInfo(

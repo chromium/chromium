@@ -58,7 +58,7 @@ public class DseNewTabUrlManager {
         if (isIncognito()
                 || !shouldSwapOutNtp()
                 || isDefaultSearchEngineGoogle()
-                || !UrlUtilities.isNTPUrl(gurl)) {
+                || !UrlUtilities.isNtpUrl(gurl)) {
             return gurl;
         }
 
@@ -66,9 +66,7 @@ public class DseNewTabUrlManager {
         return newTabUrl != null ? new GURL(newTabUrl) : gurl;
     }
 
-    /**
-     * Returns the new Tab URL of the default search engine.
-     */
+    /** Returns the new Tab URL of the default search engine. */
     @Nullable
     public String getDSENewTabUrl() {
         return getDSENewTabUrl(mTemplateUrlService);
@@ -97,7 +95,7 @@ public class DseNewTabUrlManager {
         if ((profile != null && profile.isOffTheRecord())
                 || !shouldSwapOutNtp()
                 || isDefaultSearchEngineGoogle()
-                || !UrlUtilities.isNTPUrl(gurl)) {
+                || !UrlUtilities.isNtpUrl(gurl)) {
             return gurl;
         }
 
@@ -107,9 +105,7 @@ public class DseNewTabUrlManager {
         return newTabUrl != null ? new GURL(newTabUrl) : gurl;
     }
 
-    /**
-     * Returns whether the feature NewTabSearchEngineUrlAndroid is enabled.
-     */
+    /** Returns whether the feature NewTabSearchEngineUrlAndroid is enabled. */
     public static boolean isNewTabSearchEngineUrlAndroidEnabled() {
         return ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()
                 && (!EEA_COUNTRY_ONLY.getValue()
@@ -121,8 +117,8 @@ public class DseNewTabUrlManager {
      * Returns cached value of {@link ChromePreferenceKeys.IS_DSE_GOOGLE} in the SharedPreference.
      */
     public static boolean isDefaultSearchEngineGoogle() {
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
     }
 
     /**
@@ -136,8 +132,8 @@ public class DseNewTabUrlManager {
     @Nullable
     public static String getDSENewTabUrl(TemplateUrlService templateUrlService) {
         if (templateUrlService == null) {
-            return ChromeSharedPreferences.getInstance().readString(
-                    ChromePreferenceKeys.DSE_NEW_TAB_URL, null);
+            return ChromeSharedPreferences.getInstance()
+                    .readString(ChromePreferenceKeys.DSE_NEW_TAB_URL, null);
         }
 
         if (templateUrlService.isDefaultSearchEngineGoogle()) return null;
@@ -166,8 +162,8 @@ public class DseNewTabUrlManager {
 
     private void onTemplateURLServiceChanged() {
         boolean isDSEGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.IS_DSE_GOOGLE, isDSEGoogle);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, isDSEGoogle);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY,
@@ -175,8 +171,10 @@ public class DseNewTabUrlManager {
         if (isDSEGoogle) {
             ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.DSE_NEW_TAB_URL);
         } else {
-            ChromeSharedPreferences.getInstance().writeString(
-                    ChromePreferenceKeys.DSE_NEW_TAB_URL, getDSENewTabUrl(mTemplateUrlService));
+            ChromeSharedPreferences.getInstance()
+                    .writeString(
+                            ChromePreferenceKeys.DSE_NEW_TAB_URL,
+                            getDSENewTabUrl(mTemplateUrlService));
         }
     }
 

@@ -2,10 +2,6 @@
   :host {
     --gap-between-sections_: 16px;
     --padding_: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-between-sections_);
-    padding: var(--padding_) 0;
   }
 
   a {
@@ -14,6 +10,62 @@
 
   :host-context([chrome-refresh-2023]) a {
     color: var(--color-compose-dialog-link);
+  }
+
+  .dialog {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-between-sections_);
+    padding: var(--padding_) 0;
+  }
+
+  #consentHeading {
+    display: flex;
+    height: 48px;
+    align-items: start;
+    padding: 0 var(--padding_);
+  }
+
+  #consentIconContainer {
+    margin-inline-end: var(--gap-between-sections_);
+    min-width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(
+        136deg,  rgb(211, 227, 253) 1.59%, rgb(231, 248, 237) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #consentIconContainer {
+      background: linear-gradient(
+          136deg,  rgb(8, 66, 160) 1.59%, rgb(15, 82, 35) 100%);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #consentIconContainer {
+    background: linear-gradient(136deg,
+        var(--color-sys-gradient-primary) 1.59%,
+        var(--color-sys-gradient-tertiary) 100%);
+  }
+
+  #consentHeading iron-icon {
+    --iron-icon-width: 20px;
+    --iron-icon-height: 20px;
+  }
+
+  #consentContainer {
+    color: var(--cr-secondary-text-color);
+    font: inherit;
+    font-size: 13px;
+    line-height: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    overflow: auto;
+    padding: 0 20px;
   }
 
   #heading {
@@ -40,8 +92,13 @@
   }
 
   cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
     margin: 0;
     margin-inline-end: -6px;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-icon-button {
+    --cr-icon-button-fill-color: var(--color-compose-dialog-foreground-subtle);
   }
 
   #bodyAndFooter {
@@ -67,7 +124,7 @@
 
   @media (prefers-color-scheme: dark) {
     #body {
-      --results-background_: rgb(56, 58, 62);
+      --results-background_: rgb(60, 64, 67);
     }
   }
 
@@ -132,6 +189,11 @@
     line-height: 16px;
   }
 
+  #resultText {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
   #resultOptions {
     display: flex;
     align-items: flex-end;
@@ -141,7 +203,7 @@
 
   #resultOptions .md-select {
     --md-select-bg-color: transparent;
-    width: 82px;
+    width: auto;
   }
 
   :host-context(html:not([chrome-refresh-2023])) #resultOptions .md-select {
@@ -209,6 +271,19 @@
     visibility: hidden;
   }
 
+  :host-context([is-editing-submitted-input_]) #bodyAndFooter {
+    /* Ensure there's always enough height to show the edit flow. The edit flow
+    * overlays over the existing content, and sometimes, the existing content
+    * is not tall enough to show the textarea and buttons (eg. the error
+    * state). */
+    min-height: 153px;
+  }
+
+  :host-context([chrome-refresh-2023], [is-editing-submitted-input_])
+      #bodyAndFooter {
+    min-height: 141px;
+  }
+
   #editContainer {
     box-sizing: border-box;
     display: flex;
@@ -229,119 +304,155 @@
   }
 </style>
 
-<div id="heading">
-  <h1>$i18n{dialogTitle}</h1>
-  <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_">
-  </cr-icon-button>
+<div id="consentDialog" class="dialog" hidden="[[showMainAppDialog_]]">
+  <div id="consentHeading">
+    <div id="consentIconContainer">
+      <iron-icon icon="compose:compose"></iron-icon>
+    </div>
+    <h1>$i18n{consentTitle}</h1>
+    <cr-icon-button id="closeButtonConsent" iron-icon="cr:close"
+        on-click="onClose_" aria-label="$i18n{close}">
+    </cr-icon-button>
+  </div>
+
+  <div id="consentContainer">
+    <div id="consentTopText" on-click="onConsentTopTextClick_">
+      $i18nRaw{consentMainTop}
+    </div>
+    <div id="consentBottomText">
+      $i18n{consentMainBottom}
+    </div>
+  </div>
+
+  <div id="consentFooter" class="footer" hidden="[[showDisclaimerFooter_]]">
+    <cr-button id="consentNoThanksButton" class="tonal-button"
+      on-click="onConsentNoThanksButtonClick_">
+      $i18n{consentNoButton}
+    </cr-button>
+    <cr-button id="consentYesButton" class="action-button"
+      on-click="onConsentYesButtonClick_">
+      $i18n{consentYesButton}
+    </cr-button>
+  </div>
+  <div id="disclaimerFooter" class="footer"
+    hidden="[[!showDisclaimerFooter_]]">
+    <cr-button id="disclaimerLetsGoButton" class="action-button"
+      on-click="onDisclaimerLetsGoButtonClick_">
+      $i18n{disclaimerLetsGoButton}
+    </cr-button>
+  </div>
 </div>
 
-<div id="bodyAndFooter">
-  <div id="body" scrollable>
-    <compose-textarea id="textarea"
-        value="{{input_}}"
-        readonly="[[submitted_]]"
-        allow-exiting-readonly-mode="[[!loading_]]"
-        on-edit-click="onEditClick_">
-    </compose-textarea>
+<div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
+  <div id="heading">
+    <h1>$i18n{dialogTitle}</h1>
+    <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_"
+        aria-label="$i18n{close}">
+    </cr-icon-button>
+  </div>
 
-    <div id="loading" hidden="[[!loading_]]">
-      <cr-loading-gradient>
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
-          <clipPath>
-            <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
-            <rect x="0" y="16" width="100%" height="10.8333" rx="4"></rect>
-            <rect x="0" y="32" width="75%" height="11" rx="4"></rect>
-          </clipPath>
-        </svg>
-      </cr-loading-gradient>
-    </div>
+  <div id="bodyAndFooter">
+    <div id="body" scrollable>
+      <compose-textarea id="textarea" value="{{input_}}"
+        readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
+        on-edit-click="onEditClick_" input-params="[[inputParams_]]">
+      </compose-textarea>
 
-    <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
-      [[response_.result]]
+      <div id="loading" hidden="[[!loading_]]">
+        <cr-loading-gradient>
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
+            <clipPath>
+              <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
+              <rect x="0" y="16" width="100%" height="10.8333" rx="4"></rect>
+              <rect x="0" y="32" width="75%" height="11" rx="4"></rect>
+            </clipPath>
+          </svg>
+        </cr-loading-gradient>
+      </div>
 
-      <div id="resultOptions">
-        <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-            on-change="onLengthChanged_">
-          <template is="dom-repeat" items="[[lengthOptions_]]">
-            <option value="[[item.value]]" hidden$="[[item.hidden]]">
-              [[item.label]]
-            </option>
-          </template>
-        </select>
-        <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-            on-change="onToneChanged_">
-          <template is="dom-repeat" items="[[toneOptions_]]">
-            <option value="[[item.value]]" hidden$="[[item.hidden]]">
-              [[item.label]]
-            </option>
-          </template>
-        </select>
+      <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
+        <div id="resultText">[[getTrimmedResult_(response_.result)]]</div>
 
-        <div class="icon-buttons-row">
-          <cr-icon-button id="undoButton" iron-icon="compose:undo"
-              disabled="[[!undoEnabled_]]"
+        <div id="resultOptions">
+          <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
+              aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
+            <template is="dom-repeat" items="[[lengthOptions_]]">
+              <option value="[[item.value]]" hidden$="[[item.hidden]]">
+                [[item.label]]
+              </option>
+            </template>
+          </select>
+          <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+              aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
+            <template is="dom-repeat" items="[[toneOptions_]]">
+              <option value="[[item.value]]" hidden$="[[item.hidden]]">
+                [[item.label]]
+              </option>
+            </template>
+          </select>
+
+          <div class="icon-buttons-row">
+            <cr-icon-button id="undoButton" iron-icon="compose:undo"
+              title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
               on-click="onUndoClick_">
-          </cr-icon-button>
-          <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-              on-click="onSubmit_">
-          </cr-icon-button>
+            </cr-icon-button>
+            <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
+              title="$i18n{resubmit}" on-click="onSubmit_">
+            </cr-icon-button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
-    <div class="footer-text">
-      <div>
-        $i18nRaw{inputFooter}
-        <a href="#" role="button" on-click="onFileBugClick_">
-          $i18nRaw{fileBugText}
-        </a>
+    <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
+      <div class="footer-text">
+        <div on-click="onFooterClick_">
+          $i18nRaw{inputFooter}
+        </div>
       </div>
-    </div>
-    <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
+      <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
         disabled="[[!isSubmitEnabled_]]">
-      $i18n{submitButton}
-    </cr-button>
-  </div>
-
-  <div id="resultFooter" class="footer"
-      hidden="[[!hasSuccessfulResponse_(response_)]]">
-    <div class="footer-text">
-      <div>
-        $i18nRaw{resultFooter}
-        <a href="#" role="button" on-click="onFileBugClick_">
-          $i18nRaw{fileBugText}
-        </a>
-      </div>
-      <div class="icon-buttons-row">
-        <cr-icon-button iron-icon="cr:thumbs-up"></cr-icon-button>
-        <cr-icon-button iron-icon="cr:thumbs-down" on-click="onFileBugClick_">
-        </cr-icon-button>
-      </div>
+        <iron-icon slot="prefix-icon" icon="compose:compose"></iron-icon>
+        $i18n{submitButton}
+      </cr-button>
     </div>
-    <cr-button id="insertButton" class="action-button" on-click="onAccept_">
-      $i18n{insertButton}
-    </cr-button>
-  </div>
 
-  <div id="errorFooter" class="footer"
+    <div id="resultFooter" class="footer"
+      hidden="[[!hasSuccessfulResponse_(response_)]]">
+      <div class="footer-text">
+        <div on-click="onFooterClick_">
+          $i18nRaw{resultFooter}
+        </div>
+        <cr-feedback-buttons
+            on-selected-option-changed="onFeedbackSelectedOptionChanged_"
+            selected-option="[[feedbackState_]]">
+        </cr-feedback-buttons>
+      </div>
+      <cr-button id="insertButton" class="action-button" on-click="onAccept_">
+        $i18n{insertButton}
+      </cr-button>
+    </div>
+
+    <div id="errorFooter" class="footer"
       hidden="[[!hasFailedResponse_(response_)]]">
-    <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
-  </div>
+      <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
+    </div>
 
-  <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
-    <compose-textarea id="editTextarea" value="{{editedInput_}}">
-    </compose-textarea>
-    <div class="footer">
-      <cr-button id="cancelEditButton" class="tonal-button"
+    <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
+      <compose-textarea id="editTextarea" value="{{editedInput_}}"
+        input-params="[[inputParams_]]">
+      </compose-textarea>
+      <div class="footer">
+        <cr-button id="cancelEditButton" class="tonal-button"
           on-click="onCancelEditClick_">
-        $i18n{editCancelButton}
-      </cr-button>
-      <cr-button id="submitEditButton" class="action-button"
-          on-click="onSubmitEdit_" disabled$="[[!isEditSubmitEnabled_]]">
-        $i18n{editUpdateButton}
-      </cr-button>
+          $i18n{editCancelButton}
+        </cr-button>
+        <cr-button id="submitEditButton" class="action-button"
+          on-click="onSubmitEdit_"
+          disabled$="[[!isEditSubmitEnabled_]]">
+          $i18n{editUpdateButton}
+        </cr-button>
+      </div>
     </div>
   </div>
 </div>

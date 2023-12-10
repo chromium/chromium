@@ -112,7 +112,6 @@ source_set("crw_context_menu_controller") {
     ":wk_web_view_configuration_provider",
     "//base",
     "//ios/web/common",
-    "//ios/web/common:features",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",

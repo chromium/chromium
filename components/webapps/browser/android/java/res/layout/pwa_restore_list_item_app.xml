@@ -7,6 +7,7 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -14,7 +15,7 @@ found in the LICENSE file.
         android:id="@+id/app_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
+        android:layout_margin="16dp"
         android:importantForAccessibility="no" />
 
     <TextView
@@ -22,13 +23,14 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="22dp"
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-    <CheckBox android:id="@+id/checkbox"
+    <CheckBox
+        android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="24dp" />
+        android:layout_marginEnd="19dp"
+        android:layout_marginTop="22dp" />
 </LinearLayout>

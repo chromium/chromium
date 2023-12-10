@@ -48,14 +48,10 @@ public abstract class ExperimentalUrlRequest extends UrlRequest {
          */
         public static final int DEFAULT_IDEMPOTENCY = 0;
 
-        /**
-         * Request is idempotent. Passed to {@link #setIdempotency}.
-         */
+        /** Request is idempotent. Passed to {@link #setIdempotency}. */
         public static final int IDEMPOTENT = 1;
 
-        /**
-         * Request is not idempotent. Passed to {@link #setIdempotency}.
-         */
+        /** Request is not idempotent. Passed to {@link #setIdempotency}. */
         public static final int NOT_IDEMPOTENT = 2;
 
         /**

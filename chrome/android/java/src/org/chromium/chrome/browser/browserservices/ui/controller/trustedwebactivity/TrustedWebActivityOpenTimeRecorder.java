@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 
 import javax.inject.Inject;
 
-/**
- * Records how long Trusted Web Activities are used for.
- */
+/** Records how long Trusted Web Activities are used for. */
 @ActivityScope
 public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNativeObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
@@ -34,8 +32,10 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
     private boolean mTwaOpenedRecorded;
 
     @Inject
-    TrustedWebActivityOpenTimeRecorder(ActivityLifecycleDispatcher lifecycleDispatcher,
-            CurrentPageVerifier currentPageVerifier, TrustedWebActivityUmaRecorder recorder,
+    TrustedWebActivityOpenTimeRecorder(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            CurrentPageVerifier currentPageVerifier,
+            TrustedWebActivityUmaRecorder recorder,
             ActivityTabProvider provider) {
         mCurrentPageVerifier = currentPageVerifier;
         mRecorder = recorder;
@@ -83,8 +83,9 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
         if (mLastStateChangeTimestampMs == 0) {
             return;
         }
-        long timeInCurrentState = SystemClock.elapsedRealtime()
-                - Math.max(mLastStateChangeTimestampMs, mOnResumeTimestampMs);
+        long timeInCurrentState =
+                SystemClock.elapsedRealtime()
+                        - Math.max(mLastStateChangeTimestampMs, mOnResumeTimestampMs);
         if (mInVerifiedOrigin) {
             mRecorder.recordTimeInVerifiedOrigin(timeInCurrentState);
         } else {

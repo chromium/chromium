@@ -20,7 +20,7 @@ items:
   caption: Do not restore the last session.
   value: 3
 owners:
-- mbid@google.com
+- aninak@chromium.org
 - imprivata-eng@google.com
 schema:
   enum:
@@ -28,7 +28,7 @@ schema:
   - 2
   - 3
   type: integer
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:121-
 tags: []
 type: int-enum

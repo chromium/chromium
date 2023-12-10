@@ -135,7 +135,8 @@ class LoadStreamTask : public offline_pages::Task {
   void QueryApiRequestComplete(
       FeedNetwork::ApiResult<feedwire::Response> result);
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
-  void ProcessNetworkResponse(std::unique_ptr<feedwire::Response> response,
+  template <typename Response>
+  void ProcessNetworkResponse(std::unique_ptr<Response> response,
                               NetworkResponseInfo response_info);
   void RequestFinished(LaunchResult result);
   void Done(LaunchResult result);

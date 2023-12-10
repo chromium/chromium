@@ -24,8 +24,9 @@ public class AwMetricsServiceClient {
      */
     public static void setConsentSetting(boolean userConsent) {
         ThreadUtils.assertOnUiThread();
-        AwMetricsServiceClientJni.get().setHaveMetricsConsent(
-                userConsent, !ManifestMetadataUtil.isAppOptedOutFromMetricsCollection());
+        AwMetricsServiceClientJni.get()
+                .setHaveMetricsConsent(
+                        userConsent, !ManifestMetadataUtil.isAppOptedOutFromMetricsCollection());
     }
 
     public static void setFastStartupForTesting(boolean fastStartupForTesting) {
@@ -36,26 +37,19 @@ public class AwMetricsServiceClient {
         AwMetricsServiceClientJni.get().setUploadIntervalForTesting(uploadIntervalMs);
     }
 
-    /**
-     * Sets a callback to run each time after final metrics have been collected.
-     */
+    /** Sets a callback to run each time after final metrics have been collected. */
     public static void setOnFinalMetricsCollectedListenerForTesting(Runnable listener) {
         AwMetricsServiceClientJni.get().setOnFinalMetricsCollectedListenerForTesting(listener);
-    }
-
-    public static void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs) {
-        ThreadUtils.assertOnUiThread();
-        AwMetricsServiceClientJni.get()
-                .setAppPackageNameLoggingRuleForTesting(version, expiryDateMs);
     }
 
     @NativeMethods
     interface Natives {
         void setHaveMetricsConsent(boolean userConsent, boolean appConsent);
-        void setFastStartupForTesting(boolean fastStartupForTesting);
-        void setUploadIntervalForTesting(long uploadIntervalMs);
-        void setOnFinalMetricsCollectedListenerForTesting(Runnable listener);
 
-        void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs);
+        void setFastStartupForTesting(boolean fastStartupForTesting);
+
+        void setUploadIntervalForTesting(long uploadIntervalMs);
+
+        void setOnFinalMetricsCollectedListenerForTesting(Runnable listener);
     }
 }

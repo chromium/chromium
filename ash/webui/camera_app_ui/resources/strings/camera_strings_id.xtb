@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Hapus halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode kamera</translation>
 <translation id="1153190633558910465">Petak nonaktif</translation>
-<translation id="1175958423215084756">Link terdeteksi. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Halaman <ph name="PAGE_NUMBER" /> dihapus</translation>
 <translation id="1258009455399840361">Putar 90 derajat searah jarum jam</translation>
 <translation id="1417314334557041815">Edit halaman <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Memproses video...</translation>
 <translation id="3789724198583203151">Putar 90 derajat berlawanan arah jarum jam</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Salin teks</translation>
 <translation id="4060608699153044055">Anda tidak dapat merekam karena ruang penyimpanan perangkat hampir penuh. Untuk mulai merekam, Anda perlu mengosongkan ruang penyimpanan di perangkat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Jeda rekaman</translation>
 <translation id="4121305183798804752">Dokumen terdeteksi</translation>
 <translation id="414641094616694804">Kamera ini tidak dapat mengubah resolusi</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
-<translation id="4269820728363426813">Salin URL</translation>
 <translation id="428234092390943511">Thumbnail halaman</translation>
 <translation id="4349714250734879769">Skalakan frame di Chrome</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
@@ -144,7 +141,6 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="7726641833034062494">Rekam video normal</translation>
 <translation id="7748344063862150053">Pojok kanan atas dokumen</translation>
 <translation id="7933675232020478311">Berpindah ke arah kanan bawah</translation>
-<translation id="7983668134180549431">Teks terdeteksi.</translation>
 <translation id="8079255378695216066">Tidak dapat memulai perekaman</translation>
 <translation id="8120146556401698679">Geser, miringkan, perbesar/perkecil</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
@@ -163,6 +159,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8870695351537079478">Tidak dapat memulai rekaman</translation>
 <translation id="8880167521484863515">4 banding 3</translation>
 <translation id="8903921497873541725">Perbesar</translation>
+<translation id="8926890870105777777">Gabung ke Jaringan "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Tempatkan semua sisi dokumen ke dalam bingkai</translation>
 <translation id="9045155556724273246">10 detik</translation>
 <translation id="906331135292332864">Memproses gambar ...</translation>

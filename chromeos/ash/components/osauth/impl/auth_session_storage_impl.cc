@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -116,6 +116,11 @@ void AuthSessionStorageImpl::BorrowAsync(const base::Location& location,
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }
+  if (data_it->second->withdraw_callback) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
   data_it->second->borrow_queue.emplace(location, std::move(callback));
 }
 
@@ -143,9 +148,26 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
 
   if (data_it->second->invalidate_on_return) {
     data_it->second->invalidate_on_return = false;
-    Invalidate(token, absl::nullopt);
+    Invalidate(token, std::nullopt);
     return;
   }
+
+  if (data_it->second->withdraw_callback) {
+    CHECK(data_it->second->context);
+    auto stored_context = std::move(data_it->second->context);
+    auto callback = std::move(data_it->second->withdraw_callback.value());
+    // Invalidation queue should be handled by condition above,
+    // and borrow queue should be empty per invariant
+    // in BorrowAsync/Withdraw methods.
+    CHECK(data_it->second->borrow_queue.empty());
+    CHECK(data_it->second->invalidation_queue.empty());
+    tokens_.erase(data_it);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(stored_context)));
+    return;
+  }
+
   if (data_it->second->keep_alive_counter > 0) {
     HandleSessionRefresh(token);
     auto check_still_alive = tokens_.find(token);
@@ -167,9 +189,50 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
   }
 }
 
+void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
+                                      BorrowCallback callback) {
+  auto data_it = tokens_.find(token);
+  if (data_it == std::end(tokens_)) {
+    LOG(ERROR) << "Accessing expired token";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+  if (data_it->second->state == TokenState::kOwned) {
+    CHECK(data_it->second->context);
+    auto context = std::move(data_it->second->context);
+    // As context is owned, there should be no waiting borrow/invalidate
+    // callbacks.
+    CHECK(data_it->second->borrow_queue.empty());
+    CHECK(data_it->second->invalidation_queue.empty());
+    tokens_.erase(data_it);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(context)));
+    return;
+  }
+
+  if (data_it->second->state == TokenState::kInvalidating ||
+      data_it->second->invalidate_on_return) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+  CHECK_EQ(data_it->second->state, TokenState::kBorrowed);
+  // Drain borrow queue.
+  while (!data_it->second->borrow_queue.empty()) {
+    std::pair<base::Location, BorrowCallback> pending_borrow =
+        std::move(data_it->second->borrow_queue.front());
+    data_it->second->borrow_queue.pop();
+    std::move(pending_borrow.second).Run(nullptr);
+  }
+
+  CHECK(!data_it->second->withdraw_callback) << "There can be only one!";
+  data_it->second->withdraw_callback = std::move(callback);
+}
+
 void AuthSessionStorageImpl::Invalidate(
     const AuthProofToken& token,
-    absl::optional<InvalidationCallback> on_invalidated) {
+    std::optional<InvalidationCallback> on_invalidated) {
   auto data_it = tokens_.find(token);
   // If token was already invalidated, just call a callback.
   if (data_it == std::end(tokens_)) {
@@ -221,7 +284,7 @@ std::unique_ptr<ScopedSessionRefresher> AuthSessionStorageImpl::KeepAlive(
 void AuthSessionStorageImpl::OnSessionInvalidated(
     const AuthProofToken& token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR)
         << "There was an error during attempt to invalidate auth session:"
@@ -267,7 +330,7 @@ void AuthSessionStorageImpl::HandleSessionRefresh(const AuthProofToken& token) {
   if (remaining_lifetime.is_negative()) {
     // Too late.
     LOG(ERROR) << "Could not extend authsession lifetime before it timed out.";
-    Invalidate(token, absl::nullopt);
+    Invalidate(token, std::nullopt);
     return;
   }
   if (data_it->second->keep_alive_counter <= 0) {
@@ -311,7 +374,7 @@ void AuthSessionStorageImpl::ExtendAuthSession(const AuthProofToken& token) {
 void AuthSessionStorageImpl::OnExtendAuthSession(
     const AuthProofToken& token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR)
         << "There was an error during attempt to extend auth session lifetime "
@@ -326,7 +389,7 @@ void AuthSessionStorageImpl::OnExtendAuthSession(
 
   if (data_it->second->invalidate_on_return) {
     data_it->second->invalidate_on_return = false;
-    Invalidate(token, absl::nullopt);
+    Invalidate(token, std::nullopt);
     return;
   }
   // Schedule next refresh if needed.

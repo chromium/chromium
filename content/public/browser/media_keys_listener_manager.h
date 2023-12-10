@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MEDIA_KEYS_LISTENER_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_MEDIA_KEYS_LISTENER_MANAGER_H_
 
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -32,17 +33,27 @@ class MediaKeysListenerManager {
   // Note: Delegates *must* call |StopWatchingMediaKey()| for each key code
   // they're listening to before destruction in order to prevent the
   // MediaKeysListenerManager from holding invalid pointers.
-  virtual bool StartWatchingMediaKey(
-      ui::KeyboardCode key_code,
-      ui::MediaKeysListener::Delegate* delegate) = 0;
+  // For instanced web apps that are beginning to listen for media keys,
+  // the request_id of the media session that is associated with the web app
+  // needs to be provided via |web_app_request_id|. Otherwise, this param can
+  // be ignored.
+  virtual bool StartWatchingMediaKey(ui::KeyboardCode key_code,
+                                     ui::MediaKeysListener::Delegate* delegate,
+                                     base::UnguessableToken web_app_request_id =
+                                         base::UnguessableToken::Null()) = 0;
 
   // Stop listening for a given media key. This will free the key to be handled
   // by the HardwareKeyMediaController. Delegates must stop watching all keys
   // before they are destroyed in order to prevent the MediaKeysListenerManager
   // from holding invalid pointers.
-  virtual void StopWatchingMediaKey(
-      ui::KeyboardCode key_code,
-      ui::MediaKeysListener::Delegate* delegate) = 0;
+  // For instanced web apps that are beginning to listen for media keys,
+  // the request_id of the media session that is associated with the web app
+  // needs to be provided via |web_app_request_id|. Otherwise, this param can
+  // be ignored.
+  virtual void StopWatchingMediaKey(ui::KeyboardCode key_code,
+                                    ui::MediaKeysListener::Delegate* delegate,
+                                    base::UnguessableToken web_app_request_id =
+                                        base::UnguessableToken::Null()) = 0;
 
   // Prevent the browser from using media key presses to control the active
   // media session. This allows a caller to prevent the media key handling

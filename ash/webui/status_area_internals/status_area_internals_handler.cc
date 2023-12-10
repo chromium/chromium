@@ -4,6 +4,7 @@
 
 #include "ash/webui/status_area_internals/status_area_internals_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -13,9 +14,12 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/model/scoped_fake_system_tray_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,7 +29,12 @@ namespace ash {
 
 StatusAreaInternalsHandler::StatusAreaInternalsHandler(
     mojo::PendingReceiver<mojom::status_area_internals::PageHandler> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)) {
+  // When the web UI is in used, we will use a fake system tray model to mock
+  // the data shown in the system tray, then  switch back to use the real model
+  // when the web UI is destructed using the scoped setter.
+  scoped_fake_model_ = std::make_unique<ScopedFakeSystemTrayModel>();
+}
 
 StatusAreaInternalsHandler::~StatusAreaInternalsHandler() = default;
 
@@ -111,6 +120,12 @@ void StatusAreaInternalsHandler::TriggerPrivacyIndicators(
       app_id, base::UTF8ToUTF16(app_name), is_camera_used, is_microphone_used,
       base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(),
       PrivacyIndicatorsSource::kApps);
+}
+
+void StatusAreaInternalsHandler::SetActiveDirectoryManaged(bool managed) {
+  DeviceEnterpriseInfo info;
+  info.active_directory_managed = managed;
+  scoped_fake_model_->fake_model()->SetDeviceEnterpriseInfo(info);
 }
 
 }  // namespace ash

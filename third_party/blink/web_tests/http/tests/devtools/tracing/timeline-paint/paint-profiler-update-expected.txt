@@ -1,5 +1,0 @@
-Tests that paint profiler is properly update when an event is selected in Flame Chart
-
-Paint 0 log size: >0
-Paint 1 log size: >0
-

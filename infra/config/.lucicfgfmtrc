@@ -39,6 +39,7 @@ rules {
         arg: "builder_spec"
         arg: "mirrors"
         arg: "try_settings"
+        arg: "gn_args"
         arg: "pool"
         arg: "builderless"
         arg: "cores"
@@ -94,7 +95,6 @@ rules {
 
         # tests
         arg: "test"
-        arg: "override_compile_targets"
         arg: "results_handler"
         arg: "telemetry_test_name"
         arg: "tast_expr"
@@ -111,6 +111,7 @@ rules {
         arg: "lacros_args"
         arg: "linux_args"
         arg: "mac_args"
+        arg: "win_args"
         arg: "win64_args"
         arg: "ci_only"
         arg: "swarming"

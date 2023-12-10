@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] SourceBuffer#abort() (video/webm; codecs="vorbis,vp8"): Check the values of appendWindowStart and appendWindowEnd.
 [FAIL] SourceBuffer#abort() (video/mp4): Check the values of appendWindowStart and appendWindowEnd.
   assert_true: Browser doesn't support the MIME used in this test: video/mp4 expected true got false
 Harness: the test ran to completion.

@@ -35,7 +35,6 @@ class TabResumptionPageHandler
   TabResumptionPageHandler(
       mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
           pending_page_handler,
-      Profile* profile,
       content::WebContents* web_contents);
 
   TabResumptionPageHandler(const TabResumptionPageHandler&) = delete;
@@ -43,11 +42,12 @@ class TabResumptionPageHandler
 
   ~TabResumptionPageHandler() override;
 
+  // tab_resumption::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
 
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
-  std::vector<history::mojom::SessionPtr> GetForeignSessions();
+  std::vector<history::mojom::TabPtr> GetForeignTabs();
 
  protected:
  private:

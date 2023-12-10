@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"

@@ -88,10 +88,11 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
     const base::Value& value,
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
-  std::unique_ptr<ExternallyConnectable> externally_connectable =
-      ExternallyConnectable::FromValueDeprecated(value, error);
-  if (!externally_connectable)
+  auto externally_connectable = ExternallyConnectable::FromValue(value);
+  if (!externally_connectable.has_value()) {
+    *error = std::move(externally_connectable).error();
     return nullptr;
+  }
 
   URLPatternSet matches;
 

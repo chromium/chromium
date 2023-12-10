@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadDocumentTime" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -92,21 +92,6 @@ chromium-metrics-reviews@google.com.
     The type of navigation of Side Search. Recorded when user clicks on a link
     from side search panel. It either navigates the link within the side search
     panel or redirects to the tab.
-  </summary>
-</histogram>
-
-<histogram name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney"
-    units="navigations" expires_after="2023-12-13">
-  <obsolete>
-    Removed in M107
-  </obsolete>
-  <owner>yuhengh@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
-  <summary>
-    Number of navigations committed within the side search panel in the same
-    side panel web contents for a given search journey. Recorded when the
-    current search journey ends.
   </summary>
 </histogram>
 

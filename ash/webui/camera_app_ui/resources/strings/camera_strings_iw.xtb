@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">מחיקת דף מס' <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">מצב מצלמה</translation>
 <translation id="1153190633558910465">הסתרת הרשת</translation>
-<translation id="1175958423215084756">זוהה קישור. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">דף מס' <ph name="PAGE_NUMBER" /> נמחק</translation>
 <translation id="1258009455399840361">סיבוב ב-90 מעלות בכיוון השעון</translation>
 <translation id="1417314334557041815">עריכת דף מס' <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">הסרטון בעיבוד…</translation>
 <translation id="3789724198583203151">סיבוב ב-90 מעלות נגד כיוון השעון</translation>
 <translation id="3810838688059735925">סרטון</translation>
-<translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="4060608699153044055">לא ניתן לצלם כי אין מספיק מקום אחסון במכשיר. כדי לצלם סרטון, עליך לפנות מקום במכשיר.</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">השהיית ההקלטה</translation>
 <translation id="4121305183798804752">זוהה מסמך</translation>
 <translation id="414641094616694804">המצלמה הזו לא יכולה לשנות את הרזולוציה</translation>
 <translation id="4176463684765177261">מושבת</translation>
-<translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="428234092390943511">תמונה ממוזערת של הדף</translation>
 <translation id="4349714250734879769">‏התאמת גודל הפריים ב-Chrome</translation>
 <translation id="4383571725254449280">הדפסת יומני ביצועים</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">צילום סרטון רגיל</translation>
 <translation id="7748344063862150053">הפינה השמאלית העליונה במסמך</translation>
 <translation id="7933675232020478311">מתבצעת תזוזה לימין למטה</translation>
-<translation id="7983668134180549431">זוהה טקסט.</translation>
 <translation id="8079255378695216066">לא ניתן להתחיל את צילום הסרטון</translation>
 <translation id="8120146556401698679">הזזה הטיה זום</translation>
 <translation id="8131740175452115882">אישור</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">לא ניתן להתחיל בצילום סרטון</translation>
 <translation id="8880167521484863515">4 על 3</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
+<translation id="8926890870105777777">הצטרפות לרשת "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">צריך למקם את כל קצות המסמך בתוך המסגרת</translation>
 <translation id="9045155556724273246">10 שניות</translation>
 <translation id="906331135292332864">התמונה עוברת עיבוד…</translation>

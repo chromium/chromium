@@ -78,8 +78,7 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
                               paint_offset);
   ScopedImageRenderingSettings image_rendering_settings_scope(
       context, InterpolationQualityForCanvas(layout_html_canvas_.StyleRef()),
-      static_cast<cc::PaintFlags::DynamicRangeLimit>(
-          layout_html_canvas_.StyleRef().DynamicRangeLimit()));
+      layout_html_canvas_.StyleRef().GetDynamicRangeLimit());
   canvas->Paint(context, paint_rect, paint_info.ShouldOmitCompositingInfo());
 }
 

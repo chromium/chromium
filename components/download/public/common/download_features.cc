@@ -9,10 +9,6 @@
 namespace download {
 namespace features {
 
-BASE_FEATURE(kUseDownloadOfflineContentProvider,
-             "UseDownloadOfflineContentProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kParallelDownloading,
              "ParallelDownloading",
 #if BUILDFLAG(IS_ANDROID)

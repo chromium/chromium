@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -288,8 +289,7 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
   // (i.e. not CSSOM, where we just get a string), we know we can't
   // have unfinished comments, so consider piping that knowledge all
   // the way through here.
-  if (text.Is8Bit() &&
-      memchr(text.Characters8(), '/', text.length()) == nullptr) {
+  if (text.Is8Bit() && !base::Contains(text.Span8(), '/')) {
     // No comments, so we can strip whitespace only.
     while (!text.empty() && IsHTMLSpace(text[text.length() - 1])) {
       text = StringView(text, 0, text.length() - 1);

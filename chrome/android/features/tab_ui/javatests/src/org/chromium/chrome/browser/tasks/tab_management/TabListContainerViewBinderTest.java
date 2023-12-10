@@ -449,24 +449,6 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @UiThreadTest
-    public void testSetInitialScrollIndex_Carousel() {
-        setUpLinearLayoutManager();
-        mRecyclerView.layout(0, 0, 1000, 100);
-
-        mContainerModel.set(
-                TabListContainerProperties.MODE, TabListCoordinator.TabListMode.CAROUSEL);
-        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 3);
-
-        // Offset will be view width (1000) / 2 - tab card width calculated from dp dimension / 2.
-        verify(mLinearLayoutManager, times(1))
-                .scrollToPositionWithOffset(
-                        eq(3),
-                        intThat(allOf(lessThan(mRecyclerView.getWidth() / 2), greaterThan(0))));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
     public void testSetInitialScrollIndex_Grid() {
         setUpGridLayoutManager();
         mRecyclerView.layout(0, 0, 100, 500);

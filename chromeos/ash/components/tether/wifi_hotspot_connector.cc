@@ -24,24 +24,23 @@
 
 namespace ash::tether {
 
-WifiHotspotConnector::WifiHotspotConnector(
-    NetworkStateHandler* network_state_handler,
-    TechnologyStateController* technology_state_controller,
-    NetworkConnect* network_connect)
-    : network_state_handler_(network_state_handler),
-      technology_state_controller_(technology_state_controller),
-      network_connect_(network_connect),
+WifiHotspotConnector::WifiHotspotConnector(NetworkHandler* network_handler,
+                                           NetworkConnect* network_connect)
+    : network_connect_(network_connect),
+      network_handler_(network_handler),
       timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  network_state_handler_observer_.Observe(network_state_handler_.get());
+  network_state_handler_observer_.Observe(
+      network_handler->network_state_handler());
 }
 
 WifiHotspotConnector::~WifiHotspotConnector() {
   // If a connection attempt is active when this class is destroyed, the attempt
   // has no time to finish successfully, so it is considered a failure.
-  if (!wifi_network_guid_.empty())
+  if (!wifi_network_guid_.empty()) {
     CompleteActiveConnectionAttempt(false /* success */);
+  }
 }
 
 void WifiHotspotConnector::ConnectToWifiHotspot(
@@ -60,8 +59,9 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
     // passing an empty string to signal that the connection did not complete
     // successfully.
     bool successful_disassociation =
-        network_state_handler_->DisassociateTetherNetworkStateFromWifiNetwork(
-            tether_network_guid_);
+        network_handler_->network_state_handler()
+            ->DisassociateTetherNetworkStateFromWifiNetwork(
+                tether_network_guid_);
     if (successful_disassociation) {
       PA_LOG(VERBOSE) << "Wi-Fi network (ID \"" << wifi_network_guid_ << "\") "
                       << "successfully disassociated from Tether network (ID "
@@ -88,7 +88,8 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
   // If Wi-Fi is enabled, continue with creating the configuration of the
   // hotspot. Otherwise, request that Wi-Fi be enabled and wait; see
   // UpdateWaitingForWifi.
-  if (network_state_handler_->IsTechnologyEnabled(NetworkTypePattern::WiFi())) {
+  if (network_handler_->network_state_handler()->IsTechnologyEnabled(
+          NetworkTypePattern::WiFi())) {
     // Ensure that a possible previous pending callback to UpdateWaitingForWifi
     // won't result in a second call to CreateWifiConfiguration().
     is_waiting_for_wifi_to_enable_ = false;
@@ -98,7 +99,7 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
     is_waiting_for_wifi_to_enable_ = true;
 
     // Once Wi-Fi is enabled, UpdateWaitingForWifi will be called.
-    technology_state_controller_->SetTechnologiesEnabled(
+    network_handler_->technology_state_controller()->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), true /*enabled */,
         base::BindRepeating(&WifiHotspotConnector::OnEnableWifiError,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -106,7 +107,8 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
 }
 
 void WifiHotspotConnector::RequestWifiScan() {
-  network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
+  network_handler_->network_state_handler()->RequestScan(
+      NetworkTypePattern::WiFi());
 }
 
 void WifiHotspotConnector::OnEnableWifiError(const std::string& error_name) {
@@ -143,7 +145,14 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
     return;
   }
 
-  if (network->connectable() && !has_initiated_connection_to_current_network_) {
+  // We use "visible" to determine if the network can be connected to, rather
+  // than "connectable". In the aftermath of b/302621170, it was discovered
+  // "connectable" only refers to the service having a SSID and password set.
+  // As the service is configured earlier, that check will always pass, even
+  // if the service wasn't discovered by a scan. "Visible", by contrast, is
+  // used by the UI to determine if the service should be shown. If it's shown,
+  // we know it has been discovered by a fresh scan.
+  if (network->visible() && !has_initiated_connection_to_current_network_) {
     // Set |has_initiated_connection_to_current_network_| to true to ensure that
     // this code path is only run once per connection attempt. Without this
     // field, the association and connection code below would be re-run multiple
@@ -163,8 +172,9 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
 }
 
 void WifiHotspotConnector::DevicePropertiesUpdated(const DeviceState* device) {
-  if (device->Matches(NetworkTypePattern::WiFi()))
+  if (device->Matches(NetworkTypePattern::WiFi())) {
     UpdateWaitingForWifi();
+  }
 }
 
 void WifiHotspotConnector::OnShuttingDown() {
@@ -173,15 +183,16 @@ void WifiHotspotConnector::OnShuttingDown() {
 
 void WifiHotspotConnector::UpdateWaitingForWifi() {
   if (!is_waiting_for_wifi_to_enable_ ||
-      !network_state_handler_->IsTechnologyEnabled(
+      !network_handler_->network_state_handler()->IsTechnologyEnabled(
           NetworkTypePattern::WiFi())) {
     return;
   }
 
   is_waiting_for_wifi_to_enable_ = false;
 
-  if (ssid_.empty())
+  if (ssid_.empty()) {
     return;
+  }
 
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WifiHotspotConnector::CreateWifiConfiguration,
@@ -200,8 +211,9 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
   // ASAP so that the correct icon will be displayed in the tray while the
   // network is connecting.
   bool successful_association =
-      network_state_handler_->AssociateTetherNetworkStateWithWifiNetwork(
-          tether_network_guid_, wifi_network_guid_);
+      network_handler_->network_state_handler()
+          ->AssociateTetherNetworkStateWithWifiNetwork(tether_network_guid_,
+                                                       wifi_network_guid_);
   if (successful_association) {
     PA_LOG(VERBOSE) << "Wi-Fi network (ID \"" << wifi_network_guid_ << "\") "
                     << "successfully associated with Tether network (ID \""
@@ -235,8 +247,9 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
   // so DisconnectFromNetworkId() is called here instead. Without this, it would
   // be possible for the connection to complete after the Tether component had
   // already shut down. See crbug.com/761569.
-  if (!success && has_initiated_connection_to_current_network_)
+  if (!success && has_initiated_connection_to_current_network_) {
     network_connect_->DisconnectFromNetworkId(wifi_network_guid_);
+  }
 
   ssid_.clear();
   password_.clear();
@@ -272,9 +285,8 @@ void WifiHotspotConnector::CreateWifiConfiguration() {
 base::Value::Dict WifiHotspotConnector::CreateWifiPropertyDictionary(
     const std::string& ssid,
     const std::string& password) {
-  PA_LOG(VERBOSE) << "Creating network configuration. "
-                  << "SSID: " << ssid << ", "
-                  << "Password: " << password << ", "
+  PA_LOG(VERBOSE) << "Creating network configuration. " << "SSID: " << ssid
+                  << ", " << "Password: " << password << ", "
                   << "Wi-Fi network GUID: " << wifi_network_guid_;
 
   base::Value::Dict properties;

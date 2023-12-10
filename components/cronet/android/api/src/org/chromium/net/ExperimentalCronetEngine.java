@@ -206,8 +206,11 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
         }
 
         @Override
-        public Builder addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-                boolean includeSubdomains, Date expirationDate) {
+        public Builder addPublicKeyPins(
+                String hostName,
+                Set<byte[]> pinsSha256,
+                boolean includeSubdomains,
+                Date expirationDate) {
             super.addPublicKeyPins(hostName, pinsSha256, includeSubdomains, expirationDate);
             return this;
         }

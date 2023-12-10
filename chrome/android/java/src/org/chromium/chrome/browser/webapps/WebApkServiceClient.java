@@ -69,6 +69,7 @@ public class WebApkServiceClient {
 
     @VisibleForTesting
     public static final String CATEGORY_WEBAPK_API = "android.intent.category.WEBAPK_API";
+
     private static final String TAG = "WebApkServiceClient";
 
     // An intent extra for a {@link Messenger}.
@@ -90,8 +91,9 @@ public class WebApkServiceClient {
     }
 
     private WebApkServiceClient() {
-        mConnectionManager = new WebApkServiceConnectionManager(
-                TaskTraits.UI_DEFAULT, CATEGORY_WEBAPK_API, null /* action */);
+        mConnectionManager =
+                new WebApkServiceConnectionManager(
+                        TaskTraits.UI_DEFAULT, CATEGORY_WEBAPK_API, /* action= */ null);
     }
 
     /**
@@ -101,11 +103,27 @@ public class WebApkServiceClient {
      */
     public void checkNotificationPermission(
             String webApkPackage, Callback<Integer> permissionCallback) {
-        connect(webApkPackage, api -> {
-            @ContentSettingValues
-            int settingValue = toContentSettingValue(api.checkNotificationPermission());
-            permissionCallback.onResult(settingValue);
-        });
+        connect(
+                webApkPackage,
+                api -> {
+                    @ContentSettingValues
+                    int settingValue = toContentSettingValue(api.checkNotificationPermission());
+                    permissionCallback.onResult(settingValue);
+                });
+    }
+
+    private static Handler createPermissionHandler(Callback<Integer> permissionCallback) {
+        return new Handler(
+                Looper.getMainLooper(),
+                message -> {
+                    @ContentSettingValues
+                    int settingValue =
+                            toContentSettingValue(
+                                    message.getData()
+                                            .getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK));
+                    permissionCallback.onResult(settingValue);
+                    return true;
+                });
     }
 
     /**
@@ -119,35 +137,40 @@ public class WebApkServiceClient {
             Log.w(TAG, "Requesting notification permission is not supported before T.");
             return;
         }
-        connect(webApkPackage, api -> {
-            String channelName = ContextUtils.getApplicationContext().getString(
-                    R.string.webapk_notification_channel_name);
+        connect(
+                webApkPackage,
+                api -> {
+                    String channelName =
+                            ContextUtils.getApplicationContext()
+                                    .getString(R.string.webapk_notification_channel_name);
 
-            PendingIntent permissionRequestIntent = api.requestNotificationPermission(
-                    channelName, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-            if (permissionRequestIntent == null) {
-                permissionCallback.onResult(ContentSettingValues.ASK);
-                return;
-            }
+                    PendingIntent permissionRequestIntent =
+                            api.requestNotificationPermission(
+                                    channelName, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                    if (permissionRequestIntent == null) {
+                        permissionCallback.onResult(ContentSettingValues.ASK);
+                        return;
+                    }
 
-            Handler handler = new Handler(Looper.getMainLooper(), message -> {
-                @ContentSettingValues
-                int settingValue = toContentSettingValue(
-                        message.getData().getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK));
-                permissionCallback.onResult(settingValue);
-                return true;
-            });
-            Intent extraIntent = new Intent();
-            extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
-            try {
-                ActivityOptions options = ActivityOptions.makeBasic();
-                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
-                permissionRequestIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent,
-                        null, null, null, options.toBundle());
-            } catch (PendingIntent.CanceledException e) {
-                Log.e(TAG, "The PendingIntent was canceled.", e);
-            }
-        });
+                    Handler handler = createPermissionHandler(permissionCallback);
+                    Intent extraIntent = new Intent();
+                    extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
+                    try {
+                        ActivityOptions options = ActivityOptions.makeBasic();
+                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
+                                options);
+                        permissionRequestIntent.send(
+                                ContextUtils.getApplicationContext(),
+                                0,
+                                extraIntent,
+                                null,
+                                null,
+                                null,
+                                options.toBundle());
+                    } catch (PendingIntent.CanceledException e) {
+                        Log.e(TAG, "The PendingIntent was canceled.", e);
+                    }
+                });
     }
 
     /**
@@ -155,55 +178,73 @@ public class WebApkServiceClient {
      * to display. Handing over the notification makes the notification look like it originated from
      * the WebAPK - not Chrome - in the Android UI.
      */
-    public void notifyNotification(final String originString, final String webApkPackage,
-            final NotificationBuilderBase notificationBuilder, final String platformTag,
+    public void notifyNotification(
+            final String originString,
+            final String webApkPackage,
+            final NotificationBuilderBase notificationBuilder,
+            final String platformTag,
             final int platformID) {
-        connect(webApkPackage, api -> {
-            fallbackToWebApkIconIfNecessary(
-                    notificationBuilder, webApkPackage, api.getSmallIconId());
+        connect(
+                webApkPackage,
+                api -> {
+                    fallbackToWebApkIconIfNecessary(
+                            notificationBuilder, webApkPackage, api.getSmallIconId());
 
-            @ContentSettingValues
-            int settingValue = toContentSettingValue(api.checkNotificationPermission());
+                    @ContentSettingValues
+                    int settingValue = toContentSettingValue(api.checkNotificationPermission());
 
-            // See http://crbug.com/1340854. Temporary fallback in case the shell has not yet been
-            // updated to support checkNotificationPermission(). Delete this after shell v154 has
-            // been fully launched.
-            if (settingValue != ContentSettingValues.ALLOW && api.notificationPermissionEnabled()) {
-                Log.d(TAG, "Fallback to notificationPermissionEnabled().");
-                settingValue = ContentSettingValues.ALLOW;
-            }
+                    // See http://crbug.com/1340854. Temporary fallback in case the shell has not
+                    // yet been updated to support checkNotificationPermission(). Delete this
+                    // after shell v154 has been fully launched.
+                    if (settingValue != ContentSettingValues.ALLOW
+                            && api.notificationPermissionEnabled()) {
+                        Log.d(TAG, "Fallback to notificationPermissionEnabled().");
+                        settingValue = ContentSettingValues.ALLOW;
+                    }
 
-            WebApkUmaRecorder.recordNotificationPermissionStatus(settingValue);
+                    WebApkUmaRecorder.recordNotificationPermissionStatus(settingValue);
 
-            if (settingValue != ContentSettingValues.ALLOW) {
-                Origin origin = Origin.create(originString);
-                if (origin == null) {
-                    Log.w(TAG, "String (%s) could not be parsed as Origin.", originString);
-                    return;
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    InstalledWebappPermissionManager.get().updatePermission(
-                            origin, webApkPackage, ContentSettingsType.NOTIFICATIONS, settingValue);
-                }
-                return;
-            }
+                    if (settingValue != ContentSettingValues.ALLOW) {
+                        Origin origin = Origin.create(originString);
+                        if (origin == null) {
+                            Log.w(TAG, "String (%s) could not be parsed as Origin.", originString);
+                            return;
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            InstalledWebappPermissionManager.get()
+                                    .updatePermission(
+                                            origin,
+                                            webApkPackage,
+                                            ContentSettingsType.NOTIFICATIONS,
+                                            settingValue);
+                        }
+                        return;
+                    }
 
-            String channelName = null;
-            if (webApkTargetsAtLeastO(webApkPackage)) {
-                notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-                channelName = ContextUtils.getApplicationContext().getString(
-                        R.string.webapk_notification_channel_name);
-            }
-            NotificationMetadata metadata = new NotificationMetadata(
-                    NotificationUmaTracker.SystemNotificationType.WEBAPK, platformTag, platformID);
+                    String channelName = null;
+                    if (webApkTargetsAtLeastO(webApkPackage)) {
+                        notificationBuilder.setChannelId(
+                                ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                        channelName =
+                                ContextUtils.getApplicationContext()
+                                        .getString(R.string.webapk_notification_channel_name);
+                    }
+                    NotificationMetadata metadata =
+                            new NotificationMetadata(
+                                    NotificationUmaTracker.SystemNotificationType.WEBAPK,
+                                    platformTag,
+                                    platformID);
 
-            api.notifyNotificationWithChannel(platformTag, platformID,
-                    notificationBuilder.build(metadata).getNotification(), channelName);
-        });
+                    api.notifyNotificationWithChannel(
+                            platformTag,
+                            platformID,
+                            notificationBuilder.build(metadata).getNotification(),
+                            channelName);
+                });
     }
 
-    private void fallbackToWebApkIconIfNecessary(NotificationBuilderBase builder,
-            String webApkPackage, int iconId) {
+    private void fallbackToWebApkIconIfNecessary(
+            NotificationBuilderBase builder, String webApkPackage, int iconId) {
         Bitmap icon = decodeImageResourceFromPackage(webApkPackage, iconId);
         if (!builder.hasSmallIconForContent()) {
             builder.setContentSmallIconForRemoteApp(icon);
@@ -221,15 +262,17 @@ public class WebApkServiceClient {
 
     /** Finishes and removes the WebAPK's task. */
     public void finishAndRemoveTaskSdk23(final Activity activity, WebApkExtras webApkExtras) {
-        connect(webApkExtras.webApkPackageName, api -> {
-            if (activity.isFinishing() || activity.isDestroyed()) return;
+        connect(
+                webApkExtras.webApkPackageName,
+                api -> {
+                    if (activity.isFinishing() || activity.isDestroyed()) return;
 
-            if (!api.finishAndRemoveTaskSdk23()) {
-                // If |activity| is not the root of the task, hopefully the activities below
-                // this one will close themselves.
-                activity.finish();
-            }
-        });
+                    if (!api.finishAndRemoveTaskSdk23()) {
+                        // If |activity| is not the root of the task, hopefully the activities below
+                        // this one will close themselves.
+                        activity.finish();
+                    }
+                });
     }
 
     /** Returns whether there are any WebAPK service API calls in progress. */
@@ -248,8 +291,9 @@ public class WebApkServiceClient {
     private boolean webApkTargetsAtLeastO(String webApkPackage) {
         try {
             ApplicationInfo info =
-                    ContextUtils.getApplicationContext().getPackageManager().getApplicationInfo(
-                            webApkPackage, 0);
+                    ContextUtils.getApplicationContext()
+                            .getPackageManager()
+                            .getApplicationInfo(webApkPackage, 0);
             return info.targetSdkVersion >= Build.VERSION_CODES.O;
         } catch (PackageManager.NameNotFoundException e) {
         }

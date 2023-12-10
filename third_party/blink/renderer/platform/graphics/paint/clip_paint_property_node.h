@@ -49,6 +49,10 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
       PaintPropertyChangeType change,
       const PropertyTreeState& relative_to_state,
       const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
+  bool ChangedExceptScroll(
+      PaintPropertyChangeType change,
+      const PropertyTreeState& relative_to_state,
+      const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 
   void ClearChangedToRoot(int sequence_number) const;
 
@@ -60,6 +64,15 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
 
  protected:
   using PaintPropertyNode::PaintPropertyNode;
+
+ private:
+  template <bool (TransformPaintPropertyNodeOrAlias::*ChangedMethod)(
+      PaintPropertyChangeType,
+      const TransformPaintPropertyNodeOrAlias&) const>
+  bool ChangedInternal(
+      PaintPropertyChangeType change,
+      const PropertyTreeState& relative_to_state,
+      const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 };
 
 class ClipPaintPropertyNodeAlias : public ClipPaintPropertyNodeOrAlias {

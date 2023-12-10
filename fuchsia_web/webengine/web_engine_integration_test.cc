@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
@@ -29,7 +30,6 @@
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -74,7 +74,7 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
   void RunPermissionTest(bool grant);
 
  private:
-  absl::optional<ContextProviderForTest> context_provider_;
+  std::optional<ContextProviderForTest> context_provider_;
 };
 
 class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
@@ -361,7 +361,7 @@ class FakeAudioRenderer
     binding_.AddBinding(this, std::move(request));
   }
 
-  const absl::optional<fuchsia::media::AudioRenderUsage>& usage() const {
+  const std::optional<fuchsia::media::AudioRenderUsage>& usage() const {
     return usage_;
   }
 
@@ -376,7 +376,7 @@ class FakeAudioRenderer
  private:
   fidl::BindingSet<fuchsia::media::AudioRenderer> binding_;
   base::OnceClosure on_set_usage_callback_;
-  absl::optional<fuchsia::media::AudioRenderUsage> usage_;
+  std::optional<fuchsia::media::AudioRenderUsage> usage_;
 };
 
 class FakeAudio : public fuchsia::media::testing::Audio_TestBase {
@@ -448,9 +448,8 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
   }
 
   media::FakeAudioConsumerService fake_audio_consumer_service_;
-  absl::optional<media::FakeAudioDeviceEnumerator>
-      fake_audio_device_enumerator_;
-  absl::optional<FakeAudio> fake_audio_;
+  std::optional<media::FakeAudioDeviceEnumerator> fake_audio_device_enumerator_;
+  std::optional<FakeAudio> fake_audio_;
 
   size_t num_audio_connections_ = 0;
 };

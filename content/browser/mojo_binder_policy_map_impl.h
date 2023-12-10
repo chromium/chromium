@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 

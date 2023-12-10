@@ -162,8 +162,8 @@ TEST_F(UserPerformanceTuningNotifierTest, TestMemoryAvailableTriggered) {
   EXPECT_EQ(1, receiver_->memory_refreshed_count_);
 
   std::vector<uint64_t> expected_pmf_kb{
-      frame1->private_footprint_kb_estimate(),
-      frame2->private_footprint_kb_estimate()};
+      frame1->GetPrivateFootprintKbEstimate(),
+      frame2->GetPrivateFootprintKbEstimate()};
   EXPECT_EQ(std::size(expected_pmf_kb), receiver_->pages_pmf_kb_.size());
   EXPECT_THAT(expected_pmf_kb,
               testing::UnorderedElementsAreArray(receiver_->pages_pmf_kb_));

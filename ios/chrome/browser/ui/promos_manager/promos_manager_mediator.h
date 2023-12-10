@@ -6,11 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMOS_MANAGER_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+
 #import <map>
+#import <optional>
 
 #import "base/containers/small_map.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 // Data used and cached to know what promo to show.
 struct PromoDisplayData {
@@ -39,7 +40,7 @@ struct PromoDisplayData {
 // Queries the PromosManager for the next promo (promos_manager::Promo) to
 // display, if any. Allows for special behavior if this is the first promo
 // shown.
-- (absl::optional<PromoDisplayData>)nextPromoForDisplay:(BOOL)isFirstShownPromo;
+- (std::optional<PromoDisplayData>)nextPromoForDisplay:(BOOL)isFirstShownPromo;
 
 // The Promos Manager used for deciding which promo should be displayed, if any.
 @property(nonatomic, assign) PromosManager* promosManager;

@@ -64,6 +64,9 @@
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPY_TOOLTIP_LABEL" desc="Tooltip label that describes the build details copy button.">
     Copy build details to clipboard
   </message>
+  <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPIED_TO_CLIPBOARD_A11Y_LABEL" desc="A11y label that describes the ChromeOS build details were copied to the clipboard.">
+    Copied build details
+  </message>
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_ENTERPRISE_ENNROLLED_TITLE" desc="The title label for whether a device is enterprise enrolled.">
     Enterprise Enrolled
   </message>
@@ -73,7 +76,7 @@
   <message name="IDS_OS_SETTINGS_ABOUT_DEVELOPER_MODE" desc="The title label for developer mode.">
     Developer Mode
   </message>
-    <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
+  <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
     Restart
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_POWERWASH" desc="The label for the button that relaunches and powerwashes the browser once update is complete">
@@ -940,11 +943,11 @@
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
     Set your wallpaper &amp; style
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
-    Personalize wallpaper, screen saver, accent colors, and more
-  </message>
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
     Personalize wallpaper, screen saver, accent colors, and more
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
+    Personalize wallpaper, screen saver, dark theme, and more
   </message>
 
   <!-- Search and Assistant section. -->
@@ -1209,6 +1212,9 @@
   </message>
 
   <!-- A11y (OS Settings) -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MENU_ITEM_DESCRIPTION" desc="Description for the Accessibility menu item in the left menu.">
+    Screen reader, magnification
+  </message>
   <message name="IDS_SETTINGS_OPTIONS_IN_MENU_LABEL" desc="Label for checkbox which enables showing accessibility options in the system menu.">
     Show accessibility options in Quick Settings
   </message>
@@ -2451,6 +2457,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE" desc="Message shown when an upgrade to Debian 11 (codenamed Bullseye) is available.">
     An upgrade to Debian 11 (Bullseye) is available
+  </message>
+  <message name="IDS_OS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BOOKWORM_MESSAGE" desc="Message shown when an upgrade to Debian 12 (codenamed Bookworm) is available.">
+    An upgrade to Debian 12 (Bookworm) is available
   </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT" desc="The current version the user has.">
     Current version is <ph name="CURRENT_VERSION">$1<ex>Debian GNU/Linux 9 (stretch)</ex></ph>
@@ -3912,6 +3921,12 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Internet page (OS settings) -->
+  <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_WIFI_ONLY" desc="Description for the Internet menu item in the left menu when no networks are connected and mobile data is not supported.">
+    Wi-Fi
+  </message>
+  <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_WIFI_AND_MOBILE_DATA" desc="Description for the Internet menu item in the left menu when no networks are connected but mobile data is supported.">
+    Wi-Fi, mobile data
+  </message>
   <message name="IDS_SETTINGS_INTERNET_ADD_CELLULAR" desc="The accessibility label for the add cellular icon at Settings > Internet > Add Cellular label. This text will not be visible, but will be announced when ChromeVox is on and the user navigates to the icon. Clicking this icon will show a dialog that allows the user to activate a physical SIM or set up eSIM.">
     Add Cellular...
   </message>
@@ -3947,6 +3962,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_DETAILS" desc="Name of the settings page which displays details about a cellular network (e.g., an LTE network).">
     Cellular details
+    </message>
+    <message name="IDS_SETTINGS_INTERNET_CELLULAR_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the cellular subpage which explains the behavior of a carrier locked Chromebook.">
+    This device can only connect to a specific mobile network. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS" desc="Name of the settings page which displays details about an Instant Tethering network (i.e., using a phone's internet through the Instant Tethering feature).">
     Instant Tethering details
@@ -4065,8 +4083,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_MOBILE_DATA_NETWORKS" desc="Name of the settings page which displays a list of mobile data networks which the user can choose to connect to.">
     Mobile data networks
   </message>
-  <message name="IDS_SETTINGS_INTERNET_DEVICE_ENABLING" desc="Settings > Internet > Message when a device (e.g a Cellular modem) is enabling.">
-    Enabling
+  <message name="IDS_SETTINGS_NETWORK_DEVICE_TURNING_ON" desc="Settings > Network > Message when a device (e.g a Cellular modem) is turning on.">
+    Turning on...
   </message>
   <message name="IDS_SETTINGS_INTERNET_DEVICE_BUSY" desc="Settings > Internet > Message when the cellular modem is busy applying updates (e.g., installing an eSIM profile).">
     Applying changes...
@@ -4361,6 +4379,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared with you (by another user or configured before login).">
     This network is shared with you
+    </message>
+    <message name="IDS_SETTINGS_INTERNET_NETWORK_CARRIER_LOCKED_WITH_LEARN_MORE_LINK" desc="Settings > Internet > Network details: Text to show when a network is carrier locked">
+      Your device can't connect to this network. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_NOT_SYNCED" desc="Settings > Internet > Network details: Text to show when a network is not synced to the user's account.">
     This network is not synced to your account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
@@ -4373,6 +4394,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE" desc="Text shown when viewing the Wi-Fi network detail page when the currently-viewed Wi-Fi network has been lost (e.g., has gone out of range).">
     Network out of range
+    </message>
+    <message name="IDS_SETTINGS_INTERNET_MOBILE_PROVIDER_LOCKED" desc="Text shown when viewing network detail page when the mobile provider is locked due to carrier lock">
+    Mobile network provider is locked
   </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE" desc="The title text of the cellular setup dialog that allows users set up a new cellular network by activating a physical SIM card or setting up the device's built in eSIM.">
     Set up new network
@@ -4450,10 +4474,10 @@ Press an assigned switch or key to remove assignment.
     Instant Tethering
   </message>
   <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP" desc="Text shown when viewing the Mobile data page and no eSIM profile is available">
-    No available eSIM profiles
+    No mobile networks set up
   </message>
   <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK" desc="Text shown with a download eSIM profile link when viewing the Mobile data page and no eSIM profile is available">
-    No available eSIM profiles. Download a new <ph name="BEGIN_LINK">&lt;a href="#" id="cellularEsimLink"&gt;</ph>profile.<ph name="END_LINK">&lt;/a&gt;</ph>
+    No mobile networks set up. Download a new <ph name="BEGIN_LINK">&lt;a href="#" id="cellularEsimLink"&gt;</ph>profile.<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_PSIM_NOT_INSERTED_LABEL" desc="Text shown when viewing the Mobile data page and no physical SIM card is inserted">
     No SIM card inserted
@@ -4618,6 +4642,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION" desc="Description for the Multidevice menu item in the left menu when no phone connected.">
     Phone Hub, Nearby Share
   </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PH" desc="Feature name placeholder: Description for the Multidevice menu item in the left menu when no phone connected.">
+    Phone Hub, <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PHONE_CONNECTED" desc="Description for the Multidevice menu item in the left menu when there is a phone connected.">
     Connected to <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
   </message>
@@ -4647,6 +4674,21 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_DISABLED" desc="Text to tell user multidevice features are turned off">
     Disabled
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_ALL_CONTACTS" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to all contacts.">
+    Visible to all contacts
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_SELECTED_CONTACTS" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to selected contacts only.">
+    Visible to some contacts
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_YOUR_DEVICES" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to your devices.">
+    Visible to your devices
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_HIDDEN" desc="Description for the nearby share settings row when nearby share is enabled and selected to be hidden.">
+    Hidden
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF" desc="Description for the nearby share settings row when nearby share setting is disabled.">
+    Share files and more with nearby devices
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL" desc="Label for the top level toggle button on the Connected Devices details subpage">
     Connect to your phone
@@ -5375,7 +5417,7 @@ Press an assigned switch or key to remove assignment.
     Default to using voice instead of keyboard
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_SCREEN_CONTEXT_DESCRIPTION" desc="Sub label for context-enable toggle.">
-    To get responses that are more tailored to you, let Google Assistant access a screenshot of what’s on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.
+    When you ask questions, Google Assistant provides tailored responses based on your screen
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_SETTINGS" desc="Title for a button that opens the Google Assistant app settings.">
     Google Assistant settings
@@ -5426,6 +5468,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE" desc="In Device Settings > Displays, the label of the option to set the automatic schedule of the Night Light feature to turn on at sunset and off at sunrise.">
     Sunset to sunrise
+  </message>
+  <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT" translateable="false" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
+    Current schedule is set to 6am - 6pm. To automatically update the sunset and sunrise schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT" desc="In Device Settings > Displays, text describing the Night Light feature.">
     Make it easier to look at your screen or read in dim light
@@ -5655,6 +5700,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers. Default means that this is the default time zone detection mode.">
     Use your IP address to determine location (default)
   </message>
+  <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" translateable="false" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
+    Time Zone is currently set to (UTC+/-X:XX). Location access is needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
     Use your IP address to determine location
   </message>
@@ -5679,16 +5727,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SET_DATE_TIME" desc="Label for the button that shows the dialog for setting the system date and time.">
     Set date and time
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_TITLE" desc="Title for the dialog, that pops up when user wants to access precise location for better time zone resolution, but the system geoocation access is disabled. This dialog asks if the user wants to enable the system geolocation access.">
-    Turn on precise location access?
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_TITLE" translateable="false" desc="Title for the dialog, that enables users to grant the system geolocation permission for system services. This pop-up is used in few places (e.g. Automatic Time Zone) to let users conveniently enable geolocation and make the underlying feature fucntional, without navigating to the settings page.">
+    Allow system services to use your location?
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_BODY" desc="Description text of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes, if the user accepts the dialog.">
-    This allows apps and websites with the location permission and ChromeOS to use the location determined by your Wi-Fi or mobile networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_BODY" translateable="false" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
+    This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_CANCEL_BUTTON" desc="Label of the cancel button, that dismisses the geolocation dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
+    Allow
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CANCEL_BUTTON" translateable="false"  desc="Label of the cancel button, that dismisses the geolocation dialog.">
     Cancel
   </message>
-
   <!-- Per Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
     Built-in Keyboard
@@ -5993,6 +6043,24 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_APP_DETAILS_TITLE" desc="The title of app details subpage, which displays details about a specific app.">
     App details
   </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL" desc="The label to select or display app language as system default in app language selection of OS Settings.">
+    Device language
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_TITLE" desc="The dialog title to display list of selected and selectable app language.">
+    Change app language
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SEARCH_PLACEHOLDER_TEXT" desc="The dialog search box placeholder indicating acceptable search query for app language.">
+    Search by countries, language, or input names
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SUGGESTED_LABEL" desc="The dialog label to indicate suggested languages for app language selection.">
+    Suggested
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_ALL_LANGUAGES_LABEL" desc="The dialog label to indicate all available languages for app language selection.">
+    All languages
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_UPDATE_BUTTON_TEXT" desc="The dialog confirm button to update app language with selected locale.">
+    Update
+  </message>
 
    <!-- Apps > Manage your apps > Borealis -->
   <message name="IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT" desc="Description in Steam (name of app, manages other apps) settings page.">
@@ -6045,6 +6113,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
     Apps and extensions
+  </message>
+  <message name="IDS_OS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
+    Apps
   </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_OFFLINE" desc="In Device Settings > Storage, label for the total size of pinned files in Google Drive.">
     Offline files
@@ -6259,6 +6330,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_DESCRIPTION" desc="The description of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page. Displays the system overivew for geolocation usage.">
     Allow apps, websites, and system services to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_ALLOWED" translateable="false" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. ">
+    Allowed
+  </message>
+    <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_ONLY_ALLOWED_FOR_SYSTEM" translateable="false" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks access to all clients but system-services (such as PWAs or Android apps).">
+    Only allowed for system services
+  </message>
+    <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DISALLOWED" translateable="false" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks geolocation access to every geolocation client (including system services).">
+    Blocked for all
+  </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability
   </message>
@@ -6268,8 +6348,14 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE" translateable="false" desc="The title of the Websites section of the privacy hub sensor subpages.">
     Websites
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
+    Manage site camera permissions in Chrome
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
     Manage site microphone permissions in Chrome
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT" translateable="false" desc="The text displayed in the Websites section of the camera subpage when camera is not allowed.">
+    No website is allowed to use your camera
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
     No website is allowed to use your microphone
@@ -6277,8 +6363,14 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Apps section of the privacy hub sensor subpages.">
     Apps
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT" translateable="false" desc="The text displayed in the Apps section of the camera subpage when camera is not allowed.">
+    No app is allowed to use your camera
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Apps section of the microphone subpage when microphone is not allowed.">
     No app is allowed to use your microphone
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_BLOCKED_FOR_ALL_TEXT" translateable="false" desc="The text displayed as a sublabel in privacy hub page and in sensor subpages when sensor access is disabled.">
+    Blocked for all
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
     Encrypt URLs entered into the browser

@@ -22,7 +22,6 @@
 #include "components/download/public/common/download_source.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/network_change_notifier.h"
-#include "net/http/http_response_info.h"
 #include "url/gurl.h"
 
 namespace base {

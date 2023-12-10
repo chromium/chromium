@@ -10,13 +10,11 @@ if ($location!="") {
 ?>
 
 <script src='redirect-updates-history-item.js'></script>
+<script src="/resources/prevent-bfcache.js"></script>
 <script>
-onunload = function() {
-    // no page cache
-}
-
 onload = function() {
     setTimeout(function() {
+        preventBFCache();
         // This code inserts a new history item using pushState, and then it
         // replaces that history item with a navigation to a page that just
         // navigates us back to this page.  However, we set the "location"

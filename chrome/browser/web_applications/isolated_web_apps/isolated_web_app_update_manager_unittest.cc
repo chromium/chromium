@@ -154,9 +154,7 @@ class MockCommandScheduler : public WebAppCommandScheduler {
 #if BUILDFLAG(ENABLE_NACL)
 class ScopedNaClBrowserDelegate {
  public:
-  ~ScopedNaClBrowserDelegate() {
-    nacl::NaClBrowser::ClearAndDeleteDelegateForTest();
-  }
+  ~ScopedNaClBrowserDelegate() { nacl::NaClBrowser::ClearAndDeleteDelegate(); }
 
   void Init(ProfileManager* profile_manager) {
     nacl::NaClBrowser::SetDelegate(

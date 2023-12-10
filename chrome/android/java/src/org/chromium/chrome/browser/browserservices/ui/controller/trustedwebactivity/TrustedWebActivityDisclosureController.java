@@ -23,9 +23,12 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
     @Inject
-    TrustedWebActivityDisclosureController(BrowserServicesStore browserServicesStore,
-            TrustedWebActivityModel model, ActivityLifecycleDispatcher lifecycleDispatcher,
-            CurrentPageVerifier currentPageVerifier, TrustedWebActivityUmaRecorder recorder,
+    TrustedWebActivityDisclosureController(
+            BrowserServicesStore browserServicesStore,
+            TrustedWebActivityModel model,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            CurrentPageVerifier currentPageVerifier,
+            TrustedWebActivityUmaRecorder recorder,
             ClientPackageNameProvider clientPackageNameProvider) {
         super(model, lifecycleDispatcher, currentPageVerifier, clientPackageNameProvider.get());
         mBrowserServicesStore = browserServicesStore;

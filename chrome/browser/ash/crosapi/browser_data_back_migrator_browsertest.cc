@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -154,13 +155,9 @@ class BrowserDataBackMigratorForKiosk : public KioskBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorForKiosk, MigrateOnKioskLaunch) {
-  // Register the test app with `KioskAppManager` so that the `AccountId` can be
-  // retrieved.
+  // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
-  KioskAppManager::App app;
-  CHECK(KioskAppManager::Get());
-  CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
-  CreateLacrosDirectoryForProfile(app.account_id);
+  CreateLacrosDirectoryForProfile(test_kiosk_app().id().account_id);
 
   base::test::TestFuture<void> waiter;
   ScopedBackMigratorRestartAttemptForTesting

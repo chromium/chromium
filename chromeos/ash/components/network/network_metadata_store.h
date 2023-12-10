@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // Sets the day of the month on which traffic counters are automatically
   // reset.
   void SetDayOfTrafficCountersAutoReset(const std::string& network_guid,
-                                        const absl::optional<int>& day);
+                                        const std::optional<int>& day);
 
   // Returns whether traffic counters should be automatically reset. Returns
   // nullptr if no pref exists for |network_guid|.

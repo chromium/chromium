@@ -8,12 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
-#include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -23,21 +20,15 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/paint_context.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -50,12 +41,11 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -64,45 +54,27 @@
 namespace ash {
 namespace {
 
-// The index of the horizontal rule below the title row.
-const int kTitleRowSeparatorIndex = 1;
-
-constexpr int kQsItemBetweenSpacing = 8;
-
-constexpr int kQsScrollViewCornerRadius = 16;
-
-constexpr int kQsTriViewRightPadding = 16;
-
-// If there's no back button then less padding is required.
-// TODO(b/285280977): Remove when CalendarView is out of TrayDetailedView as
-// this is only used there.
-constexpr int kNoBackButtonLeftPadding = 8;
+constexpr int kScrollViewCornerRadius = 16;
 
 // Inset the scroll bar to avoid the rounded corners at top and bottom.
-constexpr auto kQsScrollBarInsets =
-    gfx::Insets::VH(kQsScrollViewCornerRadius, 0);
+constexpr auto kScrollBarInsets = gfx::Insets::VH(kScrollViewCornerRadius, 0);
 
 // Configures the TriView used for the title in a detailed view.
-void ConfigureTitleTriView(TriView* tri_view,
-                           TriView::Container container,
-                           bool create_back_button) {
+void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
   std::unique_ptr<views::BoxLayout> layout;
 
   switch (container) {
     case TriView::Container::START:
     case TriView::Container::END: {
       const int left_padding = container == TriView::Container::START
-                                   ? create_back_button
-                                         ? kUnifiedBackButtonLeftPadding
-                                         : kNoBackButtonLeftPadding
+                                   ? kUnifiedBackButtonLeftPadding
                                    : 0;
       const int right_padding =
-          container == TriView::Container::END ? kQsTriViewRightPadding : 0;
+          container == TriView::Container::END ? kTitleRightPadding : 0;
       layout = std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
           gfx::Insets::TLBR(0, left_padding, 0, right_padding),
-          features::IsQsRevampEnabled() ? kQsItemBetweenSpacing
-                                        : kUnifiedTopShortcutSpacing);
+          kTitleItemBetweenSpacing);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
       layout->set_cross_axis_alignment(
@@ -116,13 +88,8 @@ void ConfigureTitleTriView(TriView* tri_view,
           views::BoxLayout::Orientation::kVertical);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
-      if (features::IsQsRevampEnabled() && create_back_button) {
-        layout->set_cross_axis_alignment(
-            views::BoxLayout::CrossAxisAlignment::kCenter);
-        break;
-      }
       layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kStretch);
+          views::BoxLayout::CrossAxisAlignment::kCenter);
       break;
   }
 
@@ -130,259 +97,6 @@ void ConfigureTitleTriView(TriView* tri_view,
   tri_view->SetMinSize(container,
                        gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
 }
-
-// A view that is used as ScrollView contents. It supports designating some of
-// the children as sticky header rows. The sticky header rows are not scrolled
-// above the top of the visible viewport until the next one "pushes" it up and
-// are painted above other children. To indicate that a child is a sticky header
-// row use SetID(VIEW_ID_STICKY_HEADER).
-class ScrollContentsView : public views::View {
- public:
-  ScrollContentsView() {
-    box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-    // NOTE: Pre-QsRevamp, insets are added in ViewHierarchyChanged().
-  }
-
-  ScrollContentsView(const ScrollContentsView&) = delete;
-  ScrollContentsView& operator=(const ScrollContentsView&) = delete;
-
-  ~ScrollContentsView() override = default;
-
- protected:
-  // views::View:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    PositionHeaderRows();
-  }
-
-  void PaintChildren(const views::PaintInfo& paint_info) override {
-    // No sticky header and no shadow for the revamped view.
-    if (features::IsQsRevampEnabled()) {
-      views::View::PaintChildren(paint_info);
-      return;
-    }
-
-    int sticky_header_height = 0;
-    for (const auto& header : headers_) {
-      // Sticky header is at the top.
-      if (header.view->y() != header.natural_offset) {
-        sticky_header_height = header.view->bounds().height();
-        DCHECK_EQ(VIEW_ID_STICKY_HEADER, header.view->GetID());
-        break;
-      }
-    }
-    // Paint contents other than sticky headers. If sticky header is at the top,
-    // it clips the header's height so that nothing is shown behind the header.
-    {
-      ui::ClipRecorder clip_recorder(paint_info.context());
-      gfx::Rect clip_rect = gfx::Rect(paint_info.paint_recording_size()) -
-                            paint_info.offset_from_parent();
-      auto clip_insets = gfx::Insets::TLBR(sticky_header_height, 0, 0, 0);
-      clip_rect.Inset(gfx::ScaleToFlooredInsets(
-          clip_insets, paint_info.paint_recording_scale_x(),
-          paint_info.paint_recording_scale_y()));
-      clip_recorder.ClipRect(clip_rect);
-      for (auto* child : children()) {
-        if (child->GetID() != VIEW_ID_STICKY_HEADER && !child->layer()) {
-          child->Paint(paint_info);
-        }
-      }
-    }
-    // Paint sticky headers.
-    for (auto* child : children()) {
-      if (child->GetID() == VIEW_ID_STICKY_HEADER && !child->layer()) {
-        child->Paint(paint_info);
-      }
-    }
-
-    bool did_draw_shadow = false;
-    // Paint header row separators.
-    for (auto& header : headers_) {
-      did_draw_shadow =
-          PaintDelineation(header, paint_info.context()) || did_draw_shadow;
-    }
-
-    // Draw a shadow at the top of the viewport when scrolled, but only if a
-    // header didn't already draw one. Overlap the shadow with the separator
-    // that's below the header view so we don't get both a separator and a full
-    // shadow.
-    if (y() != 0 && !did_draw_shadow) {
-      DrawShadow(paint_info.context(),
-                 gfx::Rect(0, 0, width(), -y() - kTraySeparatorWidth));
-    }
-  }
-
-  void Layout() override {
-    views::View::Layout();
-
-    // No sticky headers for the revamped view.
-    if (features::IsQsRevampEnabled()) {
-      return;
-    }
-
-    headers_.clear();
-    for (auto* child : children()) {
-      if (child->GetID() == VIEW_ID_STICKY_HEADER) {
-        headers_.emplace_back(child);
-      }
-    }
-    PositionHeaderRows();
-  }
-
-  const char* GetClassName() const override { return "ScrollContentsView"; }
-
-  View::Views GetChildrenInZOrder() override {
-    // Place sticky headers last in the child order so that they wind up on top
-    // in Z order.
-    View::Views children_in_z_order = children();
-    std::stable_partition(children_in_z_order.begin(),
-                          children_in_z_order.end(), [](const View* child) {
-                            return child->GetID() != VIEW_ID_STICKY_HEADER;
-                          });
-    return children_in_z_order;
-  }
-
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override {
-    // No sticky headers or border insets in the revamped view.
-    if (features::IsQsRevampEnabled()) {
-      return;
-    }
-
-    if (!details.is_add && details.parent == this) {
-      base::EraseIf(headers_, [details](const Header& header) {
-          return header.view.get() == details.child;
-      });
-    } else if (details.is_add && details.parent == this &&
-               details.child == children().front()) {
-      // We always want padding on the bottom of the scroll contents.
-      // We only want padding on the top of the scroll contents if the first
-      // child is not a header (in that case, the padding is built into the
-      // header).
-      DCHECK_EQ(box_layout_, GetLayoutManager());
-      box_layout_->set_inside_border_insets(
-          gfx::Insets::TLBR(details.child->GetID() == VIEW_ID_STICKY_HEADER
-                                ? 0
-                                : kMenuSeparatorVerticalPadding,
-                            0, kMenuSeparatorVerticalPadding, 0));
-    }
-  }
-
- private:
-  const int kShadowOffsetY = 2;
-  const int kShadowBlur = 2;
-
-  // A structure that keeps the original offset of each header between the
-  // calls to Layout() to allow keeping track of which view should be sticky.
-  struct Header {
-    explicit Header(views::View* view)
-        : view(view), natural_offset(view->y()), draw_separator_below(false) {}
-
-    // A header View that can be decorated as sticky.
-    raw_ptr<views::View, ExperimentalAsh> view;
-
-    // Offset from the top of ScrollContentsView to |view|'s original vertical
-    // position.
-    int natural_offset;
-
-    // True when a separator needs to be painted below the header when another
-    // header is pushing |this| header up.
-    bool draw_separator_below;
-  };
-
-  // Adjusts y-position of header rows allowing one or two rows to stick to the
-  // top of the visible viewport.
-  void PositionHeaderRows() {
-    const int scroll_offset = -y();
-    Header* previous_header = nullptr;
-    for (auto& header : base::Reversed(headers_)) {
-      views::View* header_view = header.view;
-      bool draw_separator_below = false;
-      if (header.natural_offset >= scroll_offset) {
-        previous_header = &header;
-        header_view->SetY(header.natural_offset);
-      } else {
-        if (previous_header && previous_header->view->y() <=
-                                   scroll_offset + header_view->height()) {
-          // Lower header displacing the header above.
-          draw_separator_below = true;
-          header_view->SetY(previous_header->view->y() - header_view->height());
-        } else {
-          // A header becomes sticky.
-          header_view->SetY(scroll_offset);
-          header_view->Layout();
-          header_view->SchedulePaint();
-        }
-      }
-      if (header.draw_separator_below != draw_separator_below) {
-        header.draw_separator_below = draw_separator_below;
-        ShowStickyHeaderSeparator(header_view, draw_separator_below);
-      }
-      if (header.natural_offset < scroll_offset) {
-        break;
-      }
-    }
-  }
-
-  // Configures `view` to have a visible separator below.
-  void ShowStickyHeaderSeparator(views::View* view, bool show_separator) {
-    if (show_separator) {
-      view->SetBorder(views::CreatePaddedBorder(
-          views::CreateSolidSidedBorder(
-              gfx::Insets::TLBR(0, 0, kTraySeparatorWidth, 0),
-              AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kSeparatorColor)),
-          gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
-                            kMenuSeparatorVerticalPadding - kTraySeparatorWidth,
-                            0)));
-    } else {
-      view->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
-    }
-    view->SchedulePaint();
-  }
-
-  // Paints a separator for a header view. The separator can be a horizontal
-  // rule or a horizontal shadow, depending on whether the header is sticking to
-  // the top of the scroll viewport. The return value indicates whether a shadow
-  // was drawn.
-  bool PaintDelineation(const Header& header, const ui::PaintContext& context) {
-    const View* view = header.view;
-
-    // If the header is where it normally belongs or If the header is pushed by
-    // a header directly below it, draw nothing.
-    if (view->y() == header.natural_offset || header.draw_separator_below) {
-      return false;
-    }
-
-    // Otherwise, draw a shadow below.
-    DrawShadow(context,
-               gfx::Rect(0, 0, view->width(), view->bounds().bottom()));
-    return true;
-  }
-
-  // Draws a drop shadow below |shadowed_area|.
-  void DrawShadow(const ui::PaintContext& context,
-                  const gfx::Rect& shadowed_area) {
-    ui::PaintRecorder recorder(context, size());
-    gfx::Canvas* canvas = recorder.canvas();
-    cc::PaintFlags flags;
-    gfx::ShadowValues shadow;
-    shadow.emplace_back(
-        gfx::Vector2d(0, kShadowOffsetY), kShadowBlur,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kSeparatorColor));
-    flags.setLooper(gfx::CreateShadowDrawLooper(shadow));
-    flags.setAntiAlias(true);
-    canvas->ClipRect(shadowed_area, SkClipOp::kDifference);
-    canvas->DrawRect(shadowed_area, flags);
-  }
-
-  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
-
-  // Header child views that stick to the top of visible viewport when scrolled.
-  std::vector<Header> headers_;
-};
 
 }  // namespace
 
@@ -393,10 +107,6 @@ TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
     : delegate_(delegate) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-
-  if (features::IsQsRevampEnabled()) {
-    IgnoreSeparator();
-  }
 }
 
 TrayDetailedView::~TrayDetailedView() = default;
@@ -411,35 +121,23 @@ void TrayDetailedView::OverrideProgressBarAccessibleName(
   progress_bar_accessible_name_ = name;
 }
 
-void TrayDetailedView::CreateTitleRow(int string_id, bool create_back_button) {
+void TrayDetailedView::CreateTitleRow(int string_id) {
   DCHECK(!tri_view_);
 
-  tri_view_ =
-      AddChildViewAt(CreateTitleTriView(string_id, create_back_button), 0);
-  if (create_back_button) {
-    back_button_ = delegate_->CreateBackButton(base::BindRepeating(
-        &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
-    back_button_->SetID(VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON);
-    tri_view_->AddView(TriView::Container::START, back_button_);
-  }
+  tri_view_ = AddChildViewAt(CreateTitleTriView(string_id), 0);
 
-  // If this view doesn't have a separator, adds an empty view as a placeholder
-  // so that the views below won't move up when the `progress_bar_` becomes
-  // invisible.
-  if (!has_separator_) {
-    auto buffer_view = std::make_unique<views::View>();
-    buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
-    AddChildViewAt(std::move(buffer_view), kTitleRowSeparatorIndex);
-  } else {
-    AddChildViewAt(CreateTitleSeparator(), kTitleRowSeparatorIndex);
-  }
+  back_button_ = delegate_->CreateBackButton(base::BindRepeating(
+      &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
+  back_button_->SetID(VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON);
+  tri_view_->AddView(TriView::Container::START, back_button_);
 
+  // Adds an empty view as a placeholder so that the views below won't move up
+  // when the `progress_bar_` becomes invisible.
+  auto buffer_view = std::make_unique<views::View>();
+  buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+  AddChildViewAt(std::move(buffer_view), kTitleRowProgressBarIndex);
   CreateExtraTitleRowButtons();
 
-  if (!features::IsQsRevampEnabled() || !create_back_button) {
-    Layout();
-    return;
-  }
   // Makes the `tri_view_`'s `START` and `END`container have the same width,
   // so the header text will be in the center of the `QuickSettingsView`
   // horizontally.
@@ -465,27 +163,24 @@ void TrayDetailedView::CreateTitleRow(int string_id, bool create_back_button) {
 
 void TrayDetailedView::CreateScrollableList() {
   DCHECK(!scroller_);
-  auto scroll_content = std::make_unique<ScrollContentsView>();
+  auto scroll_content = std::make_unique<views::BoxLayoutView>();
+  scroll_content->SetOrientation(views::BoxLayout::Orientation::kVertical);
   scroller_ = AddChildView(std::make_unique<views::ScrollView>());
   scroller_->SetDrawOverflowIndicator(false);
   scroll_content_ = scroller_->SetContents(std::move(scroll_content));
-  // TODO(varkha): Make the sticky rows work with EnableViewPortLayer().
 
-  if (features::IsQsRevampEnabled()) {
-    auto vertical_scroll = std::make_unique<RoundedScrollBar>(
-        /*horizontal=*/false);
-    vertical_scroll->SetInsets(kQsScrollBarInsets);
-    scroller_->SetVerticalScrollBar(std::move(vertical_scroll));
-    scroller_->SetProperty(views::kMarginsKey,
-                           delegate_->GetScrollViewMargin());
-    scroller_->SetPaintToLayer();
-    scroller_->layer()->SetFillsBoundsOpaquely(false);
-    scroller_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kQsScrollViewCornerRadius));
-  }
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(
+      /*horizontal=*/false);
+  vertical_scroll->SetInsets(kScrollBarInsets);
+  scroller_->SetVerticalScrollBar(std::move(vertical_scroll));
+  scroller_->SetProperty(views::kMarginsKey, delegate_->GetScrollViewMargin());
+  scroller_->SetPaintToLayer();
+  scroller_->layer()->SetFillsBoundsOpaquely(false);
+  scroller_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kScrollViewCornerRadius));
 
   // Override the default theme-based color to remove the background.
-  scroller_->SetBackgroundColor(absl::nullopt);
+  scroller_->SetBackgroundColor(std::nullopt);
 
   box_layout_->SetFlexForView(scroller_, 1);
 }
@@ -499,27 +194,16 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
   if (icon.is_empty()) {
     item->AddLabelRow(text);
   } else {
-    if (chromeos::features::IsJellyEnabled()) {
-      item->AddIconAndLabel(
-          ui::ImageModel::FromVectorIcon(icon, cros_tokens::kCrosSysOnSurface),
-          text);
-    } else {
-      item->AddIconAndLabel(
-          gfx::CreateVectorIcon(
-              icon, AshColorProvider::Get()->GetContentLayerColor(
-                        AshColorProvider::ContentLayerType::kIconColorPrimary)),
-          text);
-    }
+    item->AddIconAndLabel(
+        ui::ImageModel::FromVectorIcon(icon, cros_tokens::kCrosSysOnSurface),
+        text);
   }
-
-  if (features::IsQsRevampEnabled()) {
-    views::FocusRing::Install(item);
-    views::InstallRoundRectHighlightPathGenerator(item, gfx::Insets(2),
-                                                  /*corner_radius=*/0);
-    views::FocusRing::Get(item)->SetColorId(cros_tokens::kCrosSysFocusRing);
-    // Unset the focus painter set by `HoverHighlightView`.
-    item->SetFocusPainter(nullptr);
-  }
+  views::FocusRing::Install(item);
+  views::InstallRoundRectHighlightPathGenerator(item, gfx::Insets(2),
+                                                /*corner_radius=*/0);
+  views::FocusRing::Get(item)->SetColorId(cros_tokens::kCrosSysFocusRing);
+  // Unset the focus painter set by `HoverHighlightView`.
+  item->SetFocusPainter(nullptr);
 
   return item;
 }
@@ -539,43 +223,6 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
   return item;
 }
 
-TriView* TrayDetailedView::AddScrollListSubHeader(views::View* container,
-                                                  const gfx::VectorIcon& icon,
-                                                  int text_id) {
-  TriView* header = TrayPopupUtils::CreateSubHeaderRowView(true);
-  TrayPopupUtils::ConfigureAsStickyHeader(header);
-
-  auto* sub_header_label = TrayPopupUtils::CreateDefaultLabel();
-  sub_header_label->SetText(l10n_util::GetStringUTF16(text_id));
-
-  if (chromeos::features::IsJellyEnabled()) {
-    sub_header_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
-                                               *sub_header_label);
-  } else {
-    sub_header_label->SetEnabledColorId(kColorAshTextColorPrimary);
-    TrayPopupUtils::SetLabelFontList(sub_header_label,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
-  }
-
-  header->AddView(TriView::Container::CENTER, sub_header_label);
-
-  auto* sub_header_image_view =
-      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
-  if (chromeos::features::IsJellyEnabled()) {
-    sub_header_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        icon, cros_tokens::kCrosSysOnSurfaceVariant));
-  } else {
-    sub_header_image_view->SetImage(
-        ui::ImageModel::FromVectorIcon(icon, kColorAshIconColorPrimary));
-  }
-
-  header->AddView(TriView::Container::START, sub_header_image_view);
-
-  container->AddChildView(header);
-  return header;
-}
-
 void TrayDetailedView::Reset() {
   RemoveAllChildViews();
   scroller_ = nullptr;
@@ -588,9 +235,9 @@ void TrayDetailedView::Reset() {
 void TrayDetailedView::ShowProgress(double value, bool visible) {
   DCHECK(tri_view_);
   if (!progress_bar_) {
-    progress_bar_ = AddChildViewAt(
-        std::make_unique<views::ProgressBar>(kTitleRowProgressBarHeight),
-        kTitleRowSeparatorIndex + 1);
+    progress_bar_ = AddChildViewAt(std::make_unique<views::ProgressBar>(),
+                                   kTitleRowProgressBarIndex + 1);
+    progress_bar_->SetPreferredHeight(kTitleRowProgressBarHeight);
     progress_bar_->GetViewAccessibility().OverrideName(
         progress_bar_accessible_name_.value_or(l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)));
@@ -602,7 +249,7 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
 
   progress_bar_->SetValue(value);
   progress_bar_->SetVisible(visible);
-  children()[size_t{kTitleRowSeparatorIndex}]->SetVisible(!visible);
+  children()[size_t{kTitleRowProgressBarIndex}]->SetVisible(!visible);
 }
 
 views::Button* TrayDetailedView::CreateInfoButton(
@@ -628,42 +275,22 @@ void TrayDetailedView::HandleViewClicked(views::View* view) {
   NOTREACHED();
 }
 
-std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(
-    int string_id,
-    bool create_back_button) {
+std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
   auto tri_view = std::make_unique<TriView>(kUnifiedTopShortcutSpacing);
 
-  ConfigureTitleTriView(tri_view.get(), TriView::Container::START,
-                        create_back_button);
-  ConfigureTitleTriView(tri_view.get(), TriView::Container::CENTER,
-                        create_back_button);
-  ConfigureTitleTriView(tri_view.get(), TriView::Container::END,
-                        create_back_button);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::START);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::CENTER);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::END);
 
   auto* title_label = TrayPopupUtils::CreateDefaultLabel();
   title_label->SetText(l10n_util::GetStringUTF16(string_id));
-  if (chromeos::features::IsJellyEnabled()) {
-    title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosTitle1, *title_label);
-  } else {
-    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
-    TrayPopupUtils::SetLabelFontList(title_label,
-                                     TrayPopupUtils::FontStyle::kTitle);
-  }
-
+  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
+                                             *title_label);
   tri_view->AddView(TriView::Container::CENTER, title_label);
   tri_view->SetContainerVisible(TriView::Container::END, false);
 
   return tri_view;
-}
-
-std::unique_ptr<views::Separator> TrayDetailedView::CreateTitleSeparator() {
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      kTitleRowProgressBarHeight - views::Separator::kThickness, 0, 0, 0)));
-  return separator;
 }
 
 void TrayDetailedView::CreateExtraTitleRowButtons() {}
@@ -683,10 +310,6 @@ void TrayDetailedView::CloseBubble() {
     return;
   }
   delegate_->CloseBubble();
-}
-
-void TrayDetailedView::IgnoreSeparator() {
-  has_separator_ = false;
 }
 
 void TrayDetailedView::Layout() {

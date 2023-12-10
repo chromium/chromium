@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 
 namespace crosapi {
 

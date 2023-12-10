@@ -157,7 +157,7 @@ Copier::Copier(storage::AsyncFileUtil& async_file_util,
       dest_url_(dest_url),
       temp_url_(CreateTempURL(dest_url)),
       temp_url_needs_deleting_(false),
-      io_buffer_(base::MakeRefCounted<net::IOBuffer>(kBufferSize)),
+      io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize)),
       fs_writer_(nullptr),
       file_(base::File::FILE_ERROR_FAILED) {}
 
@@ -335,7 +335,7 @@ void Copier::OnFlush(int result) {
 
   async_file_util_->GetFileInfo(
       DuplicateFileSystemOperationContext(*context_), dest_url_,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&Copier::OnGetFileInfo,
                      // base::Unretained is safe as callback_ owns this.
                      base::Unretained(this)));

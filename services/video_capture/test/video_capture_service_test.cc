@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_switches.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "services/video_capture/public/cpp/mock_producer.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 
@@ -35,10 +36,15 @@ void VideoCaptureServiceTest::SetUp() {
       switches::kUseFakeMjpegDecodeAccelerator);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kUseFakeDeviceForMediaStream, "device-count=3");
+#if BUILDFLAG(IS_MAC)
+  scoped_feature_list_.InitWithFeatures(
+      {video_capture::features::kCameraMonitoringInVideoCaptureService}, {});
+#endif
 
   service_impl_ = std::make_unique<VideoCaptureServiceImpl>(
       service_remote_.BindNewPipeAndPassReceiver(),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      /*create_system_monitor=*/true);
 
   // Note, that we explicitly do *not* call
   // |service_remote_->InjectGpuDependencies()| here. Test case

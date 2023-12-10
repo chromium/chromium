@@ -63,7 +63,10 @@ class ZWPTextInputWrapperClient {
   // Notify when a key event was sent. Key events should not be used
   // for normal text input operations, which should be done with
   // commit_string, delete_surrounding_text, etc.
-  virtual void OnKeysym(uint32_t key, uint32_t state, uint32_t modifiers) = 0;
+  virtual void OnKeysym(uint32_t key,
+                        uint32_t state,
+                        uint32_t modifiers,
+                        uint32_t time) = 0;
 
   // Called when a new preedit region is specified. The region is specified
   // by |index| and |length| on the surrounding text sent do wayland compositor

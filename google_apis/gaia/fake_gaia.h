@@ -9,11 +9,11 @@
 #include <set>
 #include <string>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -339,7 +339,7 @@ class FakeGaia {
 
   // Returns saml redirect based on given `request_url`. Returns empty object if
   // it fails to determine appropriate redirect url.
-  absl::optional<GURL> GetSamlRedirectUrl(const GURL& request_url) const;
+  std::optional<GURL> GetSamlRedirectUrl(const GURL& request_url) const;
 
   Configuration configuration_;
   EmailToGaiaIdMap email_to_gaia_id_map_;

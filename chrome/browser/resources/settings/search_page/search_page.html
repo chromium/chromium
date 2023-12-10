@@ -1,4 +1,8 @@
 <style include="cr-shared-style iron-flex settings-shared md-select">
+  :host {
+    --favicon-size: 0;
+  }
+
   #search-wrapper {
     align-items: center;
     display: flex;
@@ -21,8 +25,12 @@
 
   site-favicon {
     --site-favicon-border-radius: 4px;
-    --site-favicon-height: 24px;
-    --site-favicon-width: 24px;
+    --site-favicon-height: var(--favicon-size);
+    --site-favicon-width: var(--favicon-size);
+  }
+
+  settings-search-engine-list-dialog {
+    --search-engine-icon-size: var(--favicon-size);
   }
 
 </style>

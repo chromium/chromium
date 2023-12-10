@@ -71,6 +71,8 @@ source_set("permissions") {
     "permission_context_base.h",
     "permission_decision_auto_blocker.cc",
     "permission_decision_auto_blocker.h",
+    "permission_hats_trigger_helper.cc",
+    "permission_hats_trigger_helper.h",
     "permission_manager.cc",
     "permission_manager.h",
     "permission_prompt.h",
@@ -139,7 +141,7 @@ source_set("permissions") {
       "contexts/geolocation_permission_context_system.h",
     ]
   }
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     deps += [ "//components/guest_view/browser" ]
   }
   if (is_android) {
@@ -198,8 +200,6 @@ source_set("permissions") {
       "bluetooth_scanning_prompt_controller.h",
       "bluetooth_scanning_prompt_desktop.cc",
       "bluetooth_scanning_prompt_desktop.h",
-      "permission_hats_trigger_helper.cc",
-      "permission_hats_trigger_helper.h",
       "permission_prompt_impl.cc",
     ]
   }

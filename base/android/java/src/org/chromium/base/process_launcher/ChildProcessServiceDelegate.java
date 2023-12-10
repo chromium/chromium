@@ -12,9 +12,7 @@ import android.util.SparseArray;
 
 import java.util.List;
 
-/**
- * The interface that embedders should implement to specialize child service creation.
- */
+/** The interface that embedders should implement to specialize child service creation. */
 public interface ChildProcessServiceDelegate {
     /** Invoked when the service was created. This is the first method invoked on the delegate. */
     void onServiceCreated();

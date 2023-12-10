@@ -4,6 +4,8 @@
 
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
@@ -170,7 +172,7 @@ void CheckBlocklistEntry(
 
 // Returns true if the passed string is exactly |digits| digits long and only
 // contains valid hexadecimal characters (no leading 0x).
-bool IsHexComponent(base::StringPiece string, size_t digits) {
+bool IsHexComponent(std::string_view string, size_t digits) {
   if (string.length() != digits)
     return false;
 
@@ -190,7 +192,7 @@ bool IsHexComponent(base::StringPiece string, size_t digits) {
 
 // Returns true if the passed string is "I" (input report), "O" (output report),
 // "F" (feature report), or "" (any report type).
-bool IsReportTypeComponent(base::StringPiece string) {
+bool IsReportTypeComponent(std::string_view string) {
   return string.empty() ||
          (string.length() == 1 &&
           (string[0] == 'I' || string[0] == 'O' || string[0] == 'F'));
@@ -275,7 +277,7 @@ void HidBlocklist::PopulateWithServerProvidedValues() {
   for (const auto& blocklist_rule :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<base::StringPiece> components = base::SplitStringPiece(
+    std::vector<std::string_view> components = base::SplitStringPiece(
         blocklist_rule, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (components.size() != 6) {
       DLOG(WARNING) << "Wrong number of components in HID blocklist rule: "

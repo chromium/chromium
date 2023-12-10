@@ -42,19 +42,25 @@ import org.chromium.content_public.browser.WebContents;
      * @param toolbarView The view of the Payment Handler toolbar.
      * @param thinWebView The view that shows the WebContents of the payment app.
      */
-    /* package */ PaymentHandlerView(Context context, WebContents webContents, View toolbarView,
-            View thinWebView, InputProtector inputProtector) {
+    /* package */ PaymentHandlerView(
+            Context context,
+            WebContents webContents,
+            View toolbarView,
+            View thinWebView,
+            InputProtector inputProtector) {
         mWebContents = webContents;
         mToolbarView = toolbarView;
         mThinWebView = thinWebView;
         mToolbarHeightPx =
                 context.getResources().getDimensionPixelSize(R.dimen.sheet_tab_toolbar_height);
-        mContentView = (PaymentHandlerContentFrameLayout) LayoutInflater.from(context).inflate(
-                R.layout.payment_handler_content, null);
+        mContentView =
+                (PaymentHandlerContentFrameLayout)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.payment_handler_content, null);
         mContentView.setInputProtector(inputProtector);
         mContentView.setPadding(
-                /*left=*/0, /*top=*/mToolbarHeightPx, /*right=*/0, /*bottom=*/0);
-        mContentView.addView(thinWebView, /*index=*/0);
+                /* left= */ 0, /* top= */ mToolbarHeightPx, /* right= */ 0, /* bottom= */ 0);
+        mContentView.addView(thinWebView, /* index= */ 0);
         mBackPressStateChangedSupplier.set(true);
     }
 

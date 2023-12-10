@@ -62,21 +62,21 @@ LockScreenReauthDialogTestHelper& LockScreenReauthDialogTestHelper::operator=(
     LockScreenReauthDialogTestHelper&& other) = default;
 
 // static
-absl::optional<LockScreenReauthDialogTestHelper>
+std::optional<LockScreenReauthDialogTestHelper>
 LockScreenReauthDialogTestHelper::ShowDialogAndWait() {
   LockScreenReauthDialogTestHelper dialog_test_helper;
   if (!dialog_test_helper.ShowDialogAndWaitImpl())
-    return absl::nullopt;
+    return std::nullopt;
   return dialog_test_helper;
 }
 
 // static
-absl::optional<LockScreenReauthDialogTestHelper>
+std::optional<LockScreenReauthDialogTestHelper>
 LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   if (!reauth_dialog_helper.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   reauth_dialog_helper->ForceSamlRedirect();

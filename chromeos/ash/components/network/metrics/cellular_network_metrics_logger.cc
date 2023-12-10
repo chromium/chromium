@@ -20,10 +20,10 @@ namespace {
 
 using ApnType = chromeos::network_config::mojom::ApnType;
 
-absl::optional<CellularNetworkMetricsLogger::ApnTypes> GetApnTypes(
+std::optional<CellularNetworkMetricsLogger::ApnTypes> GetApnTypes(
     std::vector<ApnType> apn_types) {
   if (apn_types.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   bool is_default = false;
   bool is_attach = false;
@@ -176,7 +176,7 @@ void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
                                 apn->authentication);
   base::UmaHistogramEnumeration(kCreateCustomApnIpTypeHistogram, apn->ip_type);
 
-  absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types =
+  std::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types =
       GetApnTypes(apn->apn_types);
   if (!apn_types.has_value()) {
     NET_LOG(DEBUG) << "CreateCustomApn.ApnTypes not logged for APN because it "
@@ -197,7 +197,7 @@ void CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
   if (!success)
     return;
 
-  absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types_enum =
+  std::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types_enum =
       GetApnTypes(apn_types);
   if (!apn_types_enum.has_value()) {
     NET_LOG(DEBUG) << "RemoveCustomApn.ApnTypes not logged for APN because it "
@@ -212,8 +212,8 @@ void CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
 void CellularNetworkMetricsLogger::LogModifyCustomApnResult(
     bool success,
     std::vector<chromeos::network_config::mojom::ApnType> old_apn_types,
-    absl::optional<chromeos::network_config::mojom::ApnState> apn_state,
-    absl::optional<chromeos::network_config::mojom::ApnState> old_apn_state) {
+    std::optional<chromeos::network_config::mojom::ApnState> apn_state,
+    std::optional<chromeos::network_config::mojom::ApnState> old_apn_state) {
   using ApnState = chromeos::network_config::mojom::ApnState;
   base::UmaHistogramBoolean(kModifyCustomApnResultHistogram, success);
 
@@ -236,7 +236,7 @@ void CellularNetworkMetricsLogger::LogModifyCustomApnResult(
     return;
   }
 
-  absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types_enum =
+  std::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types_enum =
       GetApnTypes(old_apn_types);
   if (!apn_types_enum.has_value()) {
     NET_LOG(DEBUG) << "ApnTypes not logged for APN because it "
@@ -346,7 +346,7 @@ void CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
 // static
 void CellularNetworkMetricsLogger::LogSmdsScanResult(
     const std::string& smds_activation_code,
-    absl::optional<HermesResponseStatus> status) {
+    std::optional<HermesResponseStatus> status) {
   const bool is_user_error =
       status.has_value() &&
       CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(*status);
@@ -368,7 +368,7 @@ void CellularNetworkMetricsLogger::LogSmdsScanResult(
 // static
 CellularNetworkMetricsLogger::ESimOperationResult
 CellularNetworkMetricsLogger::ComputeESimOperationResult(
-    absl::optional<HermesResponseStatus> status) {
+    std::optional<HermesResponseStatus> status) {
   if (status.has_value()) {
     return *status == HermesResponseStatus::kSuccess
                ? ESimOperationResult::kSuccess
@@ -481,7 +481,7 @@ void CellularNetworkMetricsLogger::CellularNetworkMetricsLogger::
 
 void CellularNetworkMetricsLogger::OnConnectionResult(
     const std::string& guid,
-    const absl::optional<std::string>& shill_error) {
+    const std::optional<std::string>& shill_error) {
   DCHECK(network_metadata_store_)
       << "OnConnectionResult() called with no NetworkMetadataStore.";
 

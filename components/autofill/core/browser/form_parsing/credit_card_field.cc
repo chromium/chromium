@@ -16,12 +16,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
@@ -398,10 +398,10 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 
   // We set |ignore_whitespace| to true on these calls because this is actually
   // a pretty common mistake; e.g., "Master card" instead of "Mastercard".
-  bool isSelect = (FieldFiller::FindShortestSubstringMatchInSelect(
+  bool isSelect = (FindShortestSubstringMatchInSelect(
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA), true,
                        field->options) >= 0) ||
-                  (FieldFiller::FindShortestSubstringMatchInSelect(
+                  (FindShortestSubstringMatchInSelect(
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD),
                        true, field->options) >= 0);
   return isSelect;

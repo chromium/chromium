@@ -4,8 +4,94 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/blob/blob.mojom";
+
+enum WebPrintingMultipleDocumentHandling {
+  kSeparateDocumentsCollatedCopies,
+  kSeparateDocumentsUncollatedCopies
+};
+
+enum WebPrintingSides {
+  kOneSided,
+  kTwoSidedLongEdge,
+  kTwoSidedShortEdge
+};
+
+// Basic description of a single printer.
+struct WebPrinterInfo {
+  string printer_name;
+  pending_remote<WebPrinter> printer_remote;
+};
+
+struct WebPrintingRange {
+  uint32 from;
+  uint32 to;
+};
+
+// Detailed description of a single printer.
+struct WebPrinterAttributes {
+  uint32 copies_default;
+  WebPrintingRange copies_supported;
+
+  WebPrintingMultipleDocumentHandling multiple_document_handling_default;
+  array<WebPrintingMultipleDocumentHandling> multiple_document_handling_supported;
+
+  WebPrintingSides? sides_default;
+  array<WebPrintingSides> sides_supported;
+};
+
+struct WebPrintJobTemplateAttributes {
+  string job_name;
+
+  uint32 copies;
+  WebPrintingMultipleDocumentHandling? multiple_document_handling;
+  WebPrintingSides? sides;
+};
+
+enum WebPrintJobState {
+  kPending,
+  kProcessing,
+  kCompleted,
+  kCanceled,
+  kAborted,
+};
+
+// Informs the renderer of changes to a particular print job.
+interface WebPrintJobStateObserver {
+  // Dispatches a state change notification.
+  OnWebPrintJobStateChanged(WebPrintJobState state);
+};
+
+struct WebPrintJobInfo {
+  string job_name;
+  pending_receiver<WebPrintJobStateObserver> observer;
+};
+
+enum WebPrintError {
+  kPrinterUnreachable,
+  kDocumentMalformed,
+  kPrintJobTemplateAttributesMismatch,
+};
+
+union WebPrintResult {
+  WebPrintJobInfo print_job_info;
+  WebPrintError error;
+};
+
+// Interface for interactions with a particular printer from the render process.
+// The implementation is responsible for checking access permissions.
+interface WebPrinter {
+  // Fetches full attributes of this printer.
+  FetchAttributes() => (WebPrinterAttributes? attributes);
+
+  // Sends a print job to a printer.
+  Print(pending_remote<blink.mojom.Blob> document,
+        WebPrintJobTemplateAttributes attributes) => (WebPrintResult result);
+};
+
 // Interface for accessing printers from the render process.
 // The implementation is responsible for checking access permissions.
 interface WebPrintingService {
-  // TODO(b/302505962): Add necessary methods.
+  // Returns a list of local printers for this device.
+  GetPrinters() => (array<WebPrinterInfo> printers);
 };

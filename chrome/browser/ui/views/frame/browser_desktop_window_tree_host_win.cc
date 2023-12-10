@@ -93,7 +93,7 @@ class VirtualDesktopHelper
   // last we checked. This is used to tell if the window has moved to a
   // different desktop, and notify listeners. It will only be set if
   // we created |virtual_desktop_helper_|.
-  absl::optional<std::string> workspace_;
+  std::optional<std::string> workspace_;
 
   bool initial_workspace_remembered_ = false;
 

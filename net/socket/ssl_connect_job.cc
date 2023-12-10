@@ -386,6 +386,8 @@ int SSLConnectJob::DoSSLConnect() {
   endpoint_result_ = nested_connect_job_->GetHostResolverEndpointResult();
 
   SSLConfig ssl_config = params_->ssl_config();
+  ssl_config.ignore_certificate_errors =
+      *common_connect_job_params()->ignore_certificate_errors;
   ssl_config.network_anonymization_key = params_->network_anonymization_key();
   ssl_config.privacy_mode = params_->privacy_mode();
   // We do the fallback in both cases here to ensure we separate the effect of

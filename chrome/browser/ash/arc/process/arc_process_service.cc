@@ -476,14 +476,14 @@ void ArcProcessService::ContinueAppProcessListRequest(
   // but the user has not opted into ARC. This redundant check avoids that
   // logspam.
   if (!connection_ready_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   mojom::ProcessInstance* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->process(), RequestProcessList);
   if (!process_instance) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -113,6 +113,17 @@ if (enable_vulkan) {
   }
 }
 
+source_set("webgpu_blocklist_impl") {
+  sources = [
+    "webgpu_blocklist_impl.cc",
+    "webgpu_blocklist_impl.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = [ "//third_party/dawn/include/dawn:headers" ]
+}
+
 source_set("config_sources") {
   # External code should depend on this via //gpu/config above rather than
   # depending on this directly or the component build will break.
@@ -205,6 +216,10 @@ source_set("config_sources") {
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]
+  }
+
+  if (use_dawn) {
+    deps += [ ":webgpu_blocklist_impl" ]
   }
 
   # GpuPreferences is using its own mojo bindings which creates a

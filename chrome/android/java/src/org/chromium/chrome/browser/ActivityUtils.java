@@ -45,8 +45,9 @@ public final class ActivityUtils {
     /** @return the theme ID to use. */
     public static int getThemeId() {
         boolean useLowEndTheme = SysUtils.isLowEndDevice();
-        return (useLowEndTheme ? R.style.Theme_Chromium_WithWindowAnimation_LowEnd
-                               : R.style.Theme_Chromium_WithWindowAnimation);
+        return (useLowEndTheme
+                ? R.style.Theme_Chromium_WithWindowAnimation_LowEnd
+                : R.style.Theme_Chromium_WithWindowAnimation);
     }
 
     /**
@@ -74,7 +75,8 @@ public final class ActivityUtils {
             return;
         }
         if (component.getClassName() != null
-                && TextUtils.equals(component.getClassName(),
+                && TextUtils.equals(
+                        component.getClassName(),
                         ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME)) {
             // Keep in sync with the activities that the .Main alias points to in
             // AndroidManifest.xml.

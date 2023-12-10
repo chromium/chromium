@@ -4,6 +4,12 @@
 
 module blink.test.mojom;
 
+enum DialogButton {
+  kConfirmIdpLoginContinue,
+  kErrorGotIt,
+  kErrorMoreDetails,
+};
+
 // Provides a way for tests without chromedriver support to execute certain FedCM commands.
 // See https://fedidcg.github.io/FedCM/#automation.
 interface FederatedAuthRequestAutomation {
@@ -19,6 +25,6 @@ interface FederatedAuthRequestAutomation {
   // Dismisses the current dialog, if one is open.
   DismissFedCmDialog() => (bool success);
 
-  // Accepts the IDP login confirmation dialog, if one is open.
-  ConfirmIdpLogin() => (bool success);
+  // Clicks on a button in the current dialog, if one is open.
+  ClickFedCmDialogButton(DialogButton dialog_button) => (bool success);
 };

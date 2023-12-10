@@ -43,6 +43,7 @@
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -453,9 +454,8 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
       ExtensionTabUtil::CreateWindowValueForExtension(
           *browser, extension(), ExtensionTabUtil::kPopulateTabs,
           source_context_type());
-  std::unique_ptr<api::windows::Window> window =
-      api::windows::Window::FromValueDeprecated(
-          base::Value(std::move(window_value)));
+  absl::optional<api::windows::Window> window =
+      api::windows::Window::FromValue(window_value);
   DCHECK(window);
   return ArgumentList(Restore::Results::Create(
       CreateSessionModelHelper(base::Time::Now().ToTimeT(), absl::nullopt,
@@ -566,9 +566,11 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
   }
 
   // Restoring a full window.
-  std::vector<const sessions::SessionWindow*> windows;
-  if (!open_tabs->GetForeignSession(session_id.session_tag(), &windows))
+  std::vector<const sessions::SessionWindow*> windows =
+      open_tabs->GetForeignSession(session_id.session_tag());
+  if (windows.empty()) {
     return Error(kInvalidSessionIdError, session_id.ToString());
+  }
 
   std::vector<const sessions::SessionWindow*>::const_iterator window =
       windows.begin();

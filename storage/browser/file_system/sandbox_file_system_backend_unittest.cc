@@ -266,7 +266,7 @@ TEST_P(SandboxFileSystemBackendTest, EnumerateOrigins) {
   size_t temporary_actual_size = 0;
   size_t persistent_actual_size = 0;
 
-  absl::optional<blink::StorageKey> current;
+  std::optional<blink::StorageKey> current;
   while ((current = enumerator->Next()).has_value()) {
     SCOPED_TRACE(testing::Message()
                  << "EnumerateOrigin " << current->origin().Serialize());

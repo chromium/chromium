@@ -11,15 +11,12 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span_rust.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/qr_code_generator/features.h"
-
-#if BUILDFLAG(ENABLE_RUST_QR)
-#include "base/containers/span_rust.h"
 #include "components/qr_code_generator/qr_code_generator_ffi_glue.rs.h"
-#endif
 
 namespace qr_code_generator {
 
@@ -575,16 +572,18 @@ size_t SegmentSpanLength(base::span<const QRCodeGenerator::Segment> segments) {
   return sum;
 }
 
-#if BUILDFLAG(ENABLE_RUST_QR)
 absl::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
     base::span<const uint8_t> in,
     absl::optional<int> min_version) {
   rust::Slice<const uint8_t> rs_in = base::SpanToRustSlice(in);
+
+  // `min_version` might come from a fuzzer and therefore we use a lenient
+  // `saturated_cast` instead of a `checked_cast`.
   int16_t rs_min_version =
-      base::checked_cast<int16_t>(min_version.value_or(-1));
+      base::saturated_cast<int16_t>(min_version.value_or(0));
 
   std::vector<uint8_t> result_pixels;
-  size_t result_width;
+  size_t result_width = 0;
   bool result_is_success = generate_qr_code_using_rust(
       rs_in, rs_min_version, result_pixels, result_width);
 
@@ -597,7 +596,6 @@ absl::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
   CHECK_EQ(code.data.size(), static_cast<size_t>(code.qr_size * code.qr_size));
   return code;
 }
-#endif
 
 }  // namespace
 
@@ -620,11 +618,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
 
   if (IsRustyQrCodeGeneratorFeatureEnabled()) {
-#if BUILDFLAG(ENABLE_RUST_QR)
     return GenerateQrCodeUsingRust(in, min_version);
-#else
-    CHECK(false);  // The `if` condition guarantees `ENABLE_RUST_QR`.
-#endif
   }
 
   std::vector<Segment> segments;

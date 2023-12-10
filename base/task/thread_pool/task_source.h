@@ -79,7 +79,7 @@ struct BASE_EXPORT ExecutionEnvironment {
 // Note: there is a known refcounted-ownership cycle in the ThreadPool
 // architecture: TaskSource -> TaskRunner -> TaskSource -> ... This is okay so
 // long as the other owners of TaskSource (PriorityQueue and WorkerThread in
-// alternation and ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork()
+// alternation and ThreadGroup::WorkerThreadDelegateImpl::GetWork()
 // temporarily) keep running it (and taking Tasks from it as a result). A
 // dangling reference cycle would only occur should they release their reference
 // to it while it's not empty. In other words, it is only correct for them to
@@ -227,7 +227,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // The implementation needs to support this being called multiple times;
   // unless it guarantees never to hand-out multiple RegisteredTaskSources that
   // are concurrently ready.
-  virtual Task Clear(TaskSource::Transaction* transaction) = 0;
+  virtual absl::optional<Task> Clear(TaskSource::Transaction* transaction) = 0;
 
   // Sets TaskSource priority to |priority|.
   void UpdatePriority(TaskPriority priority);
@@ -324,7 +324,8 @@ class BASE_EXPORT RegisteredTaskSource {
   // Returns a task that clears this TaskSource to make it empty. |transaction|
   // is optional and should only be provided if this operation is already part
   // of a transaction.
-  [[nodiscard]] Task Clear(TaskSource::Transaction* transaction = nullptr);
+  [[nodiscard]] absl::optional<Task> Clear(
+      TaskSource::Transaction* transaction = nullptr);
 
  private:
   friend class TaskTracker;

@@ -357,16 +357,23 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         // prior context.
         if (i || prior_context.length) {
           if (TextBreakIterator* break_iterator = GetIterator(prior_context)) {
-            // Adjust the offset by |start_offset_| because |break_iterator| has
-            // text after |start_offset_|.
-            DCHECK_GE(i + prior_context.length, start_offset_);
-            next_break = i - 1 + prior_context.length - start_offset_;
-            do {
-              next_break = break_iterator->following(next_break);
-            } while (UNLIKELY(disable_soft_hyphen_ && next_break > 0 &&
-                              str[next_break - 1] == kSoftHyphenCharacter));
-            if (next_break >= 0) {
-              next_break = next_break + start_offset_ - prior_context.length;
+            next_break = i - 1;
+            for (;;) {
+              // Adjust the offset by |start_offset_| because |break_iterator|
+              // has text after |start_offset_|.
+              // TODO(crbug.com/1500931): `+1` below shouldn't be there, but it
+              // was so before and removing it hits. This is to be investigated.
+              DCHECK_GE(next_break + prior_context.length + 1, start_offset_);
+              next_break = break_iterator->following(
+                  next_break + prior_context.length - start_offset_);
+              if (next_break >= 0) {
+                next_break = next_break + start_offset_ - prior_context.length;
+                if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
+                    UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
+                  continue;
+                }
+              }
+              break;
             }
           }
         }

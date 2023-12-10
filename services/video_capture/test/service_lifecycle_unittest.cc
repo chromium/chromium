@@ -47,7 +47,8 @@ class VideoCaptureServiceLifecycleTest : public ::testing::Test {
         switches::kUseFakeDeviceForMediaStream);
     service_impl_ = std::make_unique<VideoCaptureServiceImpl>(
         service_remote_.BindNewPipeAndPassReceiver(),
-        task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(),
+        /*create_system_monitor=*/true);
     service_remote_.set_idle_handler(
         base::TimeDelta(),
         base::BindRepeating(&VideoCaptureServiceLifecycleTest::OnServiceIdle,

@@ -18,9 +18,7 @@ import java.util.List;
 
 /** Interface used for interacting with the Stream library in order to render a stream of cards. */
 public interface Stream {
-    /**
-     * The mediator of multiple Streams.
-     */
+    /** The mediator of multiple Streams. */
     public interface StreamsMediator {
         /**
          * Allows the switching to another Stream.
@@ -28,16 +26,13 @@ public interface Stream {
          */
         default void switchToStreamKind(@StreamKind int streamKind) {}
 
-        /**
-         * Request the immediate refresh of the contents of the active stream.
-         */
+        /** Request the immediate refresh of the contents of the active stream. */
         default void refreshStream() {}
 
-        /**
-         * Disable the follow button, used in case of an error scenario.
-         */
+        /** Disable the follow button, used in case of an error scenario. */
         default void disableFollowButton() {}
     }
+
     /** Called when the Stream is no longer needed. */
     default void destroy() {}
 
@@ -82,9 +77,7 @@ public interface Stream {
      */
     boolean isPlaceholderShown();
 
-    /**
-     * Called when the placeholder is shown and the first batch of articles are about to show.
-     */
+    /** Called when the placeholder is shown and the first batch of articles are about to show. */
     void hidePlaceholder();
 
     /** Whether activity logging is enabled for this feed. */
@@ -117,9 +110,14 @@ public interface Stream {
      * @param reliabilityLogger Logger for feed reliability.
      * @param headerCount The number of headers in the RecyclerView that the feed shouldn't touch.
      */
-    void bind(RecyclerView view, FeedListContentManager manager, FeedScrollState savedInstanceState,
-            FeedSurfaceScope surfaceScope, HybridListRenderer renderer,
-            @Nullable FeedReliabilityLogger reliabilityLogger, int headerCount);
+    void bind(
+            RecyclerView view,
+            FeedListContentManager manager,
+            FeedScrollState savedInstanceState,
+            FeedSurfaceScope surfaceScope,
+            HybridListRenderer renderer,
+            @Nullable FeedReliabilityLogger reliabilityLogger,
+            int headerCount);
 
     /**
      * Unbinds the feed. Stops this feed from updating the RecyclerView.
@@ -130,9 +128,7 @@ public interface Stream {
      */
     void unbind(boolean shouldPlaceSpacer, boolean switchingStream);
 
-    /**
-     * Whether this stream supports alternate sort options.
-     */
+    /** Whether this stream supports alternate sort options. */
     default boolean supportsOptions() {
         return false;
     }

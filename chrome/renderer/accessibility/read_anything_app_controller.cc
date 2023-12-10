@@ -15,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "components/language/core/common/locale_util.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -40,6 +39,7 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "url/url_util.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
@@ -339,6 +339,24 @@ bool GetSelectable(const GURL& url) {
   return true;
 }
 
+bool GetIsGoogleDocs(const GURL& url) {
+  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
+  // "https://docs.sandbox.google.com/document*".
+  constexpr const char* kDocsURLDomain[] = {"docs.google.com",
+                                            "docs.sandbox.google.com"};
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    for (const std::string& google_docs_url : kDocsURLDomain) {
+      if (url.DomainIs(google_docs_url) && url.has_path() &&
+          url.path().starts_with("/document") &&
+          !url.ExtractFileName().empty()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -378,7 +396,7 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
-    : render_frame_id_(render_frame->GetRoutingID()) {
+    : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
   distiller_ = std::make_unique<AXTreeDistiller>(
       render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
@@ -428,8 +446,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppController::ExecuteJavaScript(std::string script) {
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromRoutingID(render_frame_id_);
+  content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
   }
@@ -450,6 +467,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetActiveUkmSourceId(ukm_source_id);
   model_.SetActiveTreeSelectable(GetSelectable(url));
   model_.SetIsPdf(url);
+  model_.set_is_google_docs(GetIsGoogleDocs(url));
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
@@ -508,6 +526,11 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // Update Read Aloud state.
+  ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
+  previously_spoken_ids_.clear();
+  current_text_index_ = 0;
+
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
   model_.Reset(content_node_ids);
@@ -660,6 +683,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("speechSynthesisLanguageCode",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
+      .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
       .SetMethod("getTextDirection",
                  &ReadAnythingAppController::GetTextDirection)
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
@@ -668,6 +692,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
+      .SetMethod("isLeafNode", &ReadAnythingAppController::IsLeafNode)
+      .SetMethod("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onFontSizeChanged",
@@ -717,8 +743,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetThemeForTesting)
       .SetMethod("setLanguageForTesting",
                  &ReadAnythingAppController::SetLanguageForTesting)
-      .SetMethod("getNextSentence",
-                 &ReadAnythingAppController::GetNextSentence);
+      .SetMethod("initAXPositionWithNode",
+                 &ReadAnythingAppController::InitAXPositionWithNode)
+      .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
+      .SetMethod("getPreviousText",
+                 &ReadAnythingAppController::GetPreviousText);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -853,10 +882,27 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   return child_ids;
 }
 
+std::string ReadAnythingAppController::GetDataFontCss(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+
+  std::string data_font_css;
+  ax_node->GetHtmlAttribute("data-font-css", &data_font_css);
+  return data_font_css;
+}
+
 std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
+
+  std::string html_tag =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+
+  if (model_.is_pdf()) {
+    return GetHtmlTagForPDF(ax_node, html_tag);
+  }
 
   if (ui::IsTextField(ax_node->GetRole())) {
     return "div";
@@ -865,22 +911,93 @@ std::string ReadAnythingAppController::GetHtmlTag(
   // Some divs are marked with role=heading and aria-level=# to indicate
   // the heading level, so use the <h#> tag directly.
   if (ax_node->GetRole() == ax::mojom::Role::kHeading) {
-    std::string aria_level;
-    ax_node->GetHtmlAttribute("aria-level", &aria_level);
+    std::string aria_level = GetAriaLevel(ax_node);
     if (!aria_level.empty()) {
       return "h" + aria_level;
     }
   }
 
-  // Replace embedded objects with div to display PDF content.
-  if (ax_node->GetRole() == ax::mojom::Role::kEmbeddedObject) {
-    return "div";
+  if (html_tag == ui::ToString(ax::mojom::Role::kMark)) {
+    // Replace mark element with bold element for readability.
+    html_tag = "b";
+  } else if (IsGoogleDocs()) {
+    // Change HTML tags for SVG elements to allow Reading Mode to render text
+    // for the Annotated Canvas elements in a Google Doc.
+    if (html_tag == "svg") {
+      html_tag = "div";
+    }
+    if (html_tag == "g" && ax_node->GetRole() == ax::mojom::Role::kParagraph) {
+      html_tag = "p";
+    }
   }
 
-  // Replace mark element with bold element for readability
-  std::string html_tag =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-  return html_tag == ui::ToString(ax::mojom::Role::kMark) ? "b" : html_tag;
+  return html_tag;
+}
+
+std::string ReadAnythingAppController::GetAriaLevel(ui::AXNode* ax_node) const {
+  std::string aria_level;
+  ax_node->GetHtmlAttribute("aria-level", &aria_level);
+  return aria_level;
+}
+
+std::string ReadAnythingAppController::GetHtmlTagForPDF(
+    ui::AXNode* ax_node,
+    std::string html_tag) const {
+  ax::mojom::Role role = ax_node->GetRole();
+
+  // Some nodes in PDFs don't have an HTML tag so use role instead.
+  switch (role) {
+    case ax::mojom::Role::kEmbeddedObject:
+    case ax::mojom::Role::kRegion:
+    case ax::mojom::Role::kPdfRoot:
+    case ax::mojom::Role::kRootWebArea:
+      return "span";
+    case ax::mojom::Role::kParagraph:
+      return "p";
+    case ax::mojom::Role::kLink:
+      return "a";
+    case ax::mojom::Role::kStaticText:
+      return "";
+    case ax::mojom::Role::kHeading:
+      return GetHeadingHtmlTagForPDF(ax_node, html_tag);
+    // Add a line break after each page of an inaccessible PDF for readability
+    // since there is no other formatting included in the OCR output.
+    case ax::mojom::Role::kContentInfo:
+      if (ax_node->GetTextContentUTF8() == string_constants::kPDFPageEnd) {
+        return "br";
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    default:
+      return html_tag;
+  }
+}
+
+std::string ReadAnythingAppController::GetHeadingHtmlTagForPDF(
+    ui::AXNode* ax_node,
+    std::string html_tag) const {
+  // Sometimes whole paragraphs can be formatted as a heading. If the text is
+  // longer than 2 lines, assume it was meant to be a paragragh,
+  if (ax_node->GetTextContentUTF8().length() > (2 * kMaxLineWidth)) {
+    return "p";
+  }
+
+  // A single block of text could be incorrectly formatted with multiple heading
+  // nodes (one for each line of text) instead of a single paragraph node. This
+  // case should be detected to improve readability. If there are multiple
+  // consecutive nodes with the same heading level, assume that they are all a
+  // part of one paragraph.
+  ui::AXNode* next = ax_node->GetNextUnignoredSibling();
+  ui::AXNode* prev = ax_node->GetPreviousUnignoredSibling();
+
+  if ((next && next->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
+                   html_tag) ||
+      (prev && prev->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
+                   html_tag)) {
+    return "span";
+  }
+
+  std::string aria_level = GetAriaLevel(ax_node);
+  return !aria_level.empty() ? "h" + aria_level : html_tag;
 }
 
 std::string ReadAnythingAppController::GetLanguage(
@@ -893,10 +1010,35 @@ std::string ReadAnythingAppController::GetLanguage(
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
 }
 
+std::string ReadAnythingAppController::GetNameAttributeText(
+    ui::AXNode* ax_node) const {
+  DCHECK(ax_node);
+  std::string node_text;
+  if (ax_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    node_text = ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+
+  for (auto it = ax_node->UnignoredChildrenBegin();
+       it != ax_node->UnignoredChildrenEnd(); ++it) {
+    if (node_text.empty()) {
+      node_text = GetNameAttributeText(it.get());
+    } else {
+      node_text += " " + GetNameAttributeText(it.get());
+    }
+  }
+  return node_text;
+}
+
 std::string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
+  if ((ax_node->GetTextContentUTF8()).empty() && IsGoogleDocs()) {
+    // For Google Docs, we distill text from the aria-labels of annotated
+    // canvas's rect elements. Therefore, we need to explicitly read the name
+    // attribute to get the text.
+    return GetNameAttributeText(ax_node);
+  }
   return ax_node->GetTextContentUTF8();
 }
 
@@ -928,7 +1070,18 @@ std::string ReadAnythingAppController::GetTextDirection(
 std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+  const char* url =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl).c_str();
+
+  // Prevent XSS from href attribute, which could be set to a script instead of
+  // a valid website.
+  if (url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "http",
+                                nullptr) ||
+      url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "https",
+                                nullptr)) {
+    return url;
+  }
+  return "";
 }
 
 bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
@@ -946,6 +1099,12 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
   return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
 }
 
+bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  return ax_node->IsLeaf();
+}
+
 bool ReadAnythingAppController::IsSelectable() const {
   return model_.active_tree_selectable();
 }
@@ -956,6 +1115,10 @@ bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
+}
+
+bool ReadAnythingAppController::IsGoogleDocs() const {
+  return model_.is_docs();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
@@ -975,8 +1138,7 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_factory_->CreateUntrustedPageHandler(
       receiver_.BindNewPipeAndPassRemote(),
       page_handler_.BindNewPipeAndPassReceiver());
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromRoutingID(render_frame_id_);
+  content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
   }
@@ -1173,6 +1335,151 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 void ReadAnythingAppController::OnCollapseSelection() const {
   page_handler_->OnCollapseSelection();
 }
+void ReadAnythingAppController::InitAXPositionWithNode(
+    const ui::AXNodeID starting_node_id) {
+  ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
+
+  // If instance is Null or Empty, create the next AxPosition
+  if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {
+    ax_position_ =
+        ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
+    previously_spoken_ids_.clear();
+    current_text_index_ = 0;
+  }
+}
+
+// TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
+// nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
+// AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
+std::vector<std::vector<int>> ReadAnythingAppController::GetNextText(
+    int max_text_length) {
+  std::vector<std::vector<int>> next_nodes;
+
+  // Make sure we're adequately returning at the end of content.
+  if (!ax_position_ || ax_position_->AtEndOfAXTree() ||
+      ax_position_->IsNullPosition()) {
+    return next_nodes;
+  }
+
+  // Look at the current node and the text position within it. If we're at
+  // the end of the node, move to the next node.
+  ui::AXNode* anchor_node = GetNodeFromCurrentPosition();
+
+  std::u16string text = anchor_node->GetTextContentUTF16();
+  int prev_index = current_text_index_;
+
+  std::u16string text_substr = text.substr(current_text_index_);
+  int nextSentenceIndex =
+      GetNextSentence(text_substr, max_text_length) + prev_index;
+
+  // If the current text index is greater than the current size or the
+  // remaining text in the node, move to the next node.
+  if (((size_t)current_text_index_ >= text.size()) ||
+      (current_text_index_ == nextSentenceIndex)) {
+    ax_position_ = GetNextValidPositionFromCurrentPosition();
+    if (ax_position_->IsNullPosition()) {
+      return next_nodes;
+    }
+
+    // Since we've updated the position, update our state in order to calculate
+    // the next sentence.
+    current_text_index_ = 0;
+    anchor_node = GetNodeFromCurrentPosition();
+    text = anchor_node->GetTextContentUTF16();
+    prev_index = current_text_index_;
+    text_substr = text.substr(current_text_index_);
+  }
+
+  int new_current_text_index =
+      GetNextSentence(text_substr, max_text_length) + prev_index;
+  current_text_index_ = new_current_text_index;
+  next_nodes.push_back({anchor_node->id(), prev_index, current_text_index_});
+  previously_spoken_ids_.push_back(anchor_node->id());
+
+  return next_nodes;
+}
+
+std::vector<std::vector<int>> ReadAnythingAppController::GetPreviousText(
+    int max_text_length) {
+  // TODO(crbug.com/1474951): Reset AXPosition to the previous position before
+  // getting the next spoken text. Use MoveDirection to move backwards in the
+  // tree.
+  // If the current text index is 0, go back to the previous node and return
+  // the last sentence in that node.
+  // Otherwise, return the previous sentence.
+  return GetNextText(max_text_length);
+}
+
+// Returns either the node or the lowest platform ancestor of the node, if it's
+// a leaf.
+ui::AXNode* ReadAnythingAppController::GetNodeFromCurrentPosition() {
+  if (ax_position_->GetAnchor()->IsChildOfLeaf()) {
+    return ax_position_->GetAnchor()->GetLowestPlatformAncestor();
+  }
+
+  return ax_position_->GetAnchor();
+}
+
+// Gets the next valid position from our current position within AXPosition
+// AXPosition returns nodes that aren't supported by Reading Mode, so we
+// need to have a bit of extra logic to ensure we're only passing along valid
+// nodes.
+// Some of the checks here right now are probably unneeded.
+ui::AXNodePosition::AXPositionInstance
+ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
+  ui::AXNodePosition::AXPositionInstance new_position =
+      ui::AXNodePosition::CreateNullPosition();
+
+  ui::AXMovementOptions movement_options(
+      ui::AXBoundaryBehavior::kCrossBoundary,
+      ui::AXBoundaryDetection::kDontCheckInitialPosition);
+
+  new_position = ax_position_->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kSentenceStart,
+      ax::mojom::MoveDirection::kForward, movement_options);
+
+  if (new_position->IsNullPosition() || new_position->AtEndOfAXTree() ||
+      !new_position->GetAnchor()) {
+    return new_position;
+  }
+
+  bool is_leaf = new_position->GetAnchor()->IsChildOfLeaf();
+  // If the node is a leaf, use the parent node instead.
+  ui::AXNode* anchor_node =
+      is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
+              : new_position->GetAnchor();
+  bool was_previously_spoken =
+      base::Contains(previously_spoken_ids_, anchor_node->id());
+  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
+  bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
+                                               ? &model_.display_node_ids()
+                                               : &model_.selection_node_ids();
+  bool contains_node = base::Contains(*node_ids, anchor_node->id());
+
+  while (was_previously_spoken || !is_text_node || !contains_node) {
+    ui::AXNodePosition::AXPositionInstance possible_new_position =
+        new_position->CreateNextSentenceStartPosition(movement_options);
+    anchor_node = possible_new_position->GetAnchor();
+    if (!anchor_node) {
+      return new_position;
+    }
+
+    new_position =
+        new_position->CreateNextSentenceStartPosition(movement_options);
+
+    is_leaf = anchor_node->IsChildOfLeaf();
+    if (is_leaf) {
+      anchor_node = anchor_node->GetLowestPlatformAncestor();
+    }
+    was_previously_spoken =
+        base::Contains(previously_spoken_ids_, anchor_node->id());
+    is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+    contains_node = base::Contains(*node_ids, anchor_node->id());
+  }
+
+  return new_position;
+}
 
 int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
                                                int maxTextLength) {
@@ -1242,8 +1549,7 @@ void ReadAnythingAppController::SetDefaultLanguageCode(
 void ReadAnythingAppController::SetContentForTesting(
     v8::Local<v8::Value> v8_snapshot_lite,
     std::vector<ui::AXNodeID> content_node_ids) {
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromRoutingID(render_frame_id_);
+  content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
   }
@@ -1262,4 +1568,12 @@ void ReadAnythingAppController::SetContentForTesting(
   // Trigger a selection event (for testing selections).
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
                              {selectionEvent});
+}
+
+content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
+  auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token_);
+  if (!web_frame) {
+    return nullptr;
+  }
+  return content::RenderFrame::FromWebFrame(web_frame);
 }

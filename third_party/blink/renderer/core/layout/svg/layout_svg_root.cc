@@ -150,7 +150,7 @@ void LayoutSVGRoot::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  PhysicalSize old_size = Size();
+  PhysicalSize old_content_size = PhysicalContentBoxRect().size;
 
   // Whether we have a self-painting layer depends on whether there are
   // compositing descendants (see: |HasCompositingDescendants()| which is called
@@ -183,7 +183,8 @@ void LayoutSVGRoot::UpdateLayout() {
   // selfNeedsLayout() will cover changes to one (or more) of viewBox,
   // current{Scale,Translate}, decorations and 'overflow'.
   const bool viewport_may_have_changed =
-      SelfNeedsFullLayout() || old_size != SizeFromNG();
+      SelfNeedsFullLayout() ||
+      old_content_size != PhysicalContentBoxRectFromNG().size;
   is_layout_size_changed_ = viewport_may_have_changed;
 
   SVGContainerLayoutInfo layout_info;
@@ -200,8 +201,8 @@ void LayoutSVGRoot::UpdateLayout() {
     needs_boundaries_or_transform_update_ = false;
   }
 
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearLayoutOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearScrollableOverflow();
 
   // The scale of one or more of the SVG elements may have changed, content
   // (the entire SVG) could have moved or new content may have been exposed, so

@@ -77,13 +77,13 @@ bool IsBrowserSigninAllowed() {
 
 std::string GetManagedDeviceDisclaimer() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> manager = chrome::GetSessionManagerIdentity();
+  std::optional<std::string> manager = chrome::GetSessionManagerIdentity();
   int managed_id =
       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION;
   int managed_by_id =
       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION;
 #else
-  absl::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
+  std::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
   int managed_id =
       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION;
   int managed_by_id =

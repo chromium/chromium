@@ -19,6 +19,10 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
   ]
 
+  if (is_android) {
+    deps += [ "//chrome/test:toolbar_manager_test_helper_android" ]
+  }
+
   data = [ "//chrome/test/data/" ]
 }
 

@@ -21,9 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Model-to-View binder for most visited list. Handles view manipulations. */
 final class MostVisitedTilesViewBinder {
-    /**
-     * The view holder holds the most visited container layout and most visited tiles layout.
-     */
+    /** The view holder holds the most visited container layout and most visited tiles layout. */
     public static class ViewHolder {
         public final View mvContainerLayout;
         public final ViewGroup mvTilesLayout;

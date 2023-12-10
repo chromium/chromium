@@ -132,6 +132,10 @@ export class TabSearchItem extends TabSearchItemBase {
     switch (alert) {
       case TabAlertState.kMediaRecording:
         return 'media-recording';
+      case TabAlertState.kAudioRecording:
+        return 'audio-recording';
+      case TabAlertState.kVideoRecording:
+        return 'video-recording';
       case TabAlertState.kAudioPlaying:
         return 'audio-playing';
       case TabAlertState.kAudioMuting:

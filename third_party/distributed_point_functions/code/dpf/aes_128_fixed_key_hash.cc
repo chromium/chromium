@@ -16,7 +16,18 @@
 
 #include "dpf/aes_128_fixed_key_hash.h"
 
-#include <vector>
+#include <stdint.h>
+
+#include <algorithm>
+#include <array>
+#include <string>
+#include <utility>
+
+#include "absl/numeric/int128.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/types/span.h"
+#include "openssl/err.h"
 
 namespace distributed_point_functions {
 
@@ -53,6 +64,7 @@ absl::Status Aes128FixedKeyHash::Evaluate(absl::Span<const absl::uint128> in,
     // Nothing to do.
     return absl::OkStatus();
   }
+
   // Compute orthomorphism sigma for each element in `in`, `kBatchSize` elements
   // at a time.
   auto in_size = static_cast<int64_t>(in.size());
@@ -66,16 +78,18 @@ absl::Status Aes128FixedKeyHash::Evaluate(absl::Span<const absl::uint128> in,
                                 absl::Uint128Low64(in[start_block + i]),
                             absl::Uint128High64(in[start_block + i]));
     }
-    int out_len;
-    int openssl_status = EVP_EncryptUpdate(
+
+    // We use EVP_Cipher here instead of EVP_EncryptUpdate, since it doesn't
+    // mutate the context in ECB mode, and so this call is thread-safe.
+    int openssl_status = EVP_Cipher(
         cipher_ctx_.get(), reinterpret_cast<uint8_t*>(out.data() + start_block),
-        &out_len, reinterpret_cast<const uint8_t*>(sigma_in.data()),
+        reinterpret_cast<const uint8_t*>(sigma_in.data()),
         static_cast<int>(batch_size * sizeof(absl::uint128)));
     if (openssl_status != 1) {
-      return absl::InternalError("AES encryption failed");
-    }
-    if (out_len != static_cast<int>(sizeof(absl::uint128)) * batch_size) {
-      return absl::InternalError("OpenSSL output size does not match");
+      char buf[256];
+      ERR_error_string_n(ERR_get_error(), buf, sizeof(buf));
+      return absl::InternalError(
+          absl::StrCat("AES encryption failed: ", std::string(buf)));
     }
     for (int64_t i = 0; i < batch_size; ++i) {
       out[start_block + i] ^= sigma_in[i];

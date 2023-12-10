@@ -122,6 +122,8 @@ void DeviceCloudPolicyStoreAsh::InstallInitialPolicy(
   std::unique_ptr<DeviceCloudPolicyValidator> validator(
       CreateValidator(policy));
   validator->ValidateInitialKey(install_attributes_->GetDomain());
+  validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
+                              CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
   DeviceCloudPolicyValidator::StartValidation(
       std::move(validator),
       base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,

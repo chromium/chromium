@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -67,6 +68,7 @@ uint32_t CalculatePrivateFootprintKb(const mojom::RawOSMemDump& os_dump,
   return base::saturated_cast<int32_t>(
       os_dump.platform_private_footprint->private_bytes / 1024);
 #else
+  // TODO(crbug.com/1506552): Implement for iOS.
   return 0;
 #endif
 }
@@ -90,7 +92,7 @@ memory_instrumentation::mojom::OSMemDumpPtr CreatePublicOSDump(
 
 void NodeAsValueIntoRecursively(const GlobalNodeGraph::Node& node,
                                 TracedValue* value,
-                                std::vector<base::StringPiece>* path) {
+                                std::vector<std::string_view>* path) {
   // Don't dump the root node.
   if (!path->empty()) {
     std::string name = base::JoinString(*path, "/");

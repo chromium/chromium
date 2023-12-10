@@ -18,7 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "third_party/cros_system_api/proto/stack_sampled_metrics_status/stack_sampled_metrics_status.pb.h"
 
 namespace chromeos::tast_support {

@@ -1,0 +1,85 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+source_set("visual_query") {
+  sources = [
+    "visual_query_classification_and_eligibility.cc",
+    "visual_query_classification_and_eligibility.h",
+    "visual_query_classifier_agent.cc",
+    "visual_query_classifier_agent.h",
+    "visual_query_eligibility.cc",
+    "visual_query_eligibility.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_query:flags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/renderer",
+    "//skia",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+    "//ui/base",
+    "//ui/gfx/geometry:geometry",
+    "//v8",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "visual_query_classification_and_eligibility_unittest.cc",
+    "visual_query_eligibility_unittest.cc",
+  ]
+  deps = [
+    ":visual_query",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_query:flags",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+    "//ui/base",
+    "//ui/gfx:test_support",
+    "//v8",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "visual_query_classifier_agent_browsertest.cc" ]
+  deps = [
+    ":visual_query",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_query:flags",
+    "//chrome/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+    "//ui/base",
+    "//v8",
+  ]
+}

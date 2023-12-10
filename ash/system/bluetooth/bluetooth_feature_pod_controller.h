@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/quick_settings_catalogs.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
@@ -80,7 +80,7 @@ class ASH_EXPORT BluetoothFeaturePodController
       cros_system_properties_observer_receiver_{this};
 
   size_t connected_device_count_ = 0;
-  absl::optional<BluetoothDeviceNameAndBatteryInfo> first_connected_device_;
+  std::optional<BluetoothDeviceNameAndBatteryInfo> first_connected_device_;
   bluetooth_config::mojom::BluetoothModificationState modification_state_ =
       bluetooth_config::mojom::BluetoothModificationState::
           kCannotModifyBluetooth;

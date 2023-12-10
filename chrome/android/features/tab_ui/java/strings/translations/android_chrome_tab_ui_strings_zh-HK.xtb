@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
+<translation id="1155815720264022949">想關閉舊分頁嗎？</translation>
 <translation id="1215127405478249895">檢視分頁</translation>
 <translation id="125153950246128346">輕按即可查看另一個分頁</translation>
 <translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">隱藏全螢幕網格</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5082793167783849073">建立群組以快速比較多個頁面。輕觸並按住連結即可開始建立。</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{你有 <ph name="TABS_COUNT_ONE" /> 個最近未用過的分頁}other{你有 <ph name="TABS_COUNT_MANY" /> 個最近未用過的分頁}}</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
+<translation id="5545379293264651575">不查看直接關閉</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5558362125926932819">閂有 <ph name="NUMBER_OF_TABS" /> 個分頁嘅分頁群組</translation>
 <translation id="5580090775658607195">已將 <ph name="TAB_COUNT" /> 個分頁加入群組</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">移去右邊</translation>
 <translation id="7966321538264951561">閂建議。</translation>
 <translation id="8029301326595421733">關於呢間商店嘅資料宜家顯示喺成個畫面</translation>
-<translation id="814503310257431685">查看全部</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{閂 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁}other{閂 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁}}</translation>
 <translation id="8398929769197326728">新增資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

@@ -89,39 +89,34 @@ public class MultiInstanceMigrationTest {
                     MockTabModelSelector selector =
                             new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     TabbedModeTabPersistencePolicy persistencePolicy =
-                            new TabbedModeTabPersistencePolicy(
-                                    0,
-                                    false,
-                                    true,
-                                    TabWindowManagerSingleton.getInstance()
-                                            .getMaxSimultaneousSelectors());
+                            new TabbedModeTabPersistencePolicy(0, false, true);
                     TabPersistentStore store =
                             new TabPersistentStore(persistencePolicy, selector, null);
                     store.waitForMigrationToFinish();
                 });
     }
 
-    /** Tests that normal migration of multi-instance state files works. */
+    /** Tests that normal migration of multi-instance metadata files works. */
     @Test
     @MediumTest
     @Feature({"TabPersistentStore"})
     public void testMigrateData() throws IOException {
-        // Write old state files.
+        // Write old metadata files.
         File[] stateDirs = createOldStateDirs(TabWindowManager.MAX_SELECTORS_LEGACY, true);
-        File stateFile0 =
+        File metadataFile0 =
                 new File(stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
-        File stateFile1 =
+        File metadataFile1 =
                 new File(stateDirs[1], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
-        File stateFile2 =
+        File metadataFile2 =
                 new File(stateDirs[2], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
         File customTabsStateFile =
                 new File(stateDirs[3], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
 
-        Assert.assertTrue("Could not create state file 0", stateFile0.createNewFile());
-        Assert.assertTrue("Could not create state file 1", stateFile1.createNewFile());
-        Assert.assertTrue("Could not create state file 2", stateFile2.createNewFile());
+        Assert.assertTrue("Could not create metadata file 0", metadataFile0.createNewFile());
+        Assert.assertTrue("Could not create metadata file 1", metadataFile1.createNewFile());
+        Assert.assertTrue("Could not create metadata file 2", metadataFile2.createNewFile());
         Assert.assertTrue(
-                "Could not create custom tabs state file", customTabsStateFile.createNewFile());
+                "Could not create custom tabs metadata file", customTabsStateFile.createNewFile());
 
         // Create a couple of tabs for each tab state subdirectory.
         File tab0 = new File(stateDirs[0], TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "0");
@@ -157,27 +152,33 @@ public class MultiInstanceMigrationTest {
                                 false));
 
         // Check that all metadata files moved.
-        File newStateFile0 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(0));
-        File newStateFile1 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(1));
-        File newStateFile2 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(2));
+        File newMetadataFile0 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
+        File newMetadataFile1 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(1));
+        File newMetadataFile2 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(2));
         File newCustomTabsStateFile =
                 new File(
                         stateDirs[0],
-                        TabbedModeTabPersistencePolicy.getStateFileName(
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(
                                 TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX));
-        Assert.assertTrue("Could not find new state file 0", newStateFile0.exists());
-        Assert.assertTrue("Could not find new state file 1", newStateFile1.exists());
-        Assert.assertTrue("Could not find new state file 2", newStateFile2.exists());
+        Assert.assertTrue("Could not find new metadata file 0", newMetadataFile0.exists());
+        Assert.assertTrue("Could not find new metadata file 1", newMetadataFile1.exists());
+        Assert.assertTrue("Could not find new metadata file 2", newMetadataFile2.exists());
         Assert.assertTrue(
-                "Could not find new custom tabs state file", newCustomTabsStateFile.exists());
-        Assert.assertFalse("Could still find old state file 0", stateFile0.exists());
-        Assert.assertFalse("Could still find old state file 1", stateFile1.exists());
-        Assert.assertFalse("Could still find old state file 2", stateFile2.exists());
+                "Could not find new custom tabs metadata file", newCustomTabsStateFile.exists());
+        Assert.assertFalse("Could still find old metadata file 0", metadataFile0.exists());
+        Assert.assertFalse("Could still find old metadata file 1", metadataFile1.exists());
+        Assert.assertFalse("Could still find old metadata file 2", metadataFile2.exists());
         Assert.assertFalse(
-                "Could still find old custom tabs state file", customTabsStateFile.exists());
+                "Could still find old custom tabs metadata file", customTabsStateFile.exists());
 
         // Check that tab 0 and 1 did not move.
         Assert.assertTrue("Could not find tab 0 file", tab0.exists());
@@ -218,26 +219,26 @@ public class MultiInstanceMigrationTest {
     }
 
     /**
-     * Tests that the state file migration skips unrelated files. Also tests that migration works if
-     * the number of tab state subdirectories to migrate is less than {@code
+     * Tests that the metadata file migration skips unrelated files. Also tests that migration works
+     * if the number of tab state subdirectories to migrate is less than {@code
      * TabWindowManagerSingleton.getMaxSimultaneousSelectors()}
      */
     @Test
     @MediumTest
     @Feature({"TabPersistentStore"})
     public void testMigrationLeavesOtherFilesAlone() throws IOException {
-        // Write old state files and an extra file.
+        // Write old metadata files and an extra file.
         File[] stateDirs = createOldStateDirs(2, false);
-        File stateFile0 =
+        File metadataFile0 =
                 new File(stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
-        File stateFile1 =
+        File metadataFile1 =
                 new File(stateDirs[1], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
         File tab0 = new File(stateDirs[0], TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "0");
         File tab1 = new File(stateDirs[1], TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "1");
         File otherFile = new File(stateDirs[1], "other.file");
 
-        Assert.assertTrue("Could not create state file 0", stateFile0.createNewFile());
-        Assert.assertTrue("Could not create state file 1", stateFile1.createNewFile());
+        Assert.assertTrue("Could not create metadata file 0", metadataFile0.createNewFile());
+        Assert.assertTrue("Could not create metadata file 1", metadataFile1.createNewFile());
         Assert.assertTrue("Could not create tab 0 file", tab0.createNewFile());
         Assert.assertTrue("Could not create tab 1 file", tab1.createNewFile());
         Assert.assertTrue("Could not create other file", otherFile.createNewFile());
@@ -251,14 +252,18 @@ public class MultiInstanceMigrationTest {
         Assert.assertTrue("Could not find original other file", otherFile.exists());
 
         // Check that the metadata files were renamed and/or moved.
-        File newStateFile0 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(0));
-        File newStateFile1 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(1));
-        Assert.assertTrue("Could not find new state file 0", newStateFile0.exists());
-        Assert.assertTrue("Could not find new state file 1", newStateFile1.exists());
-        Assert.assertFalse("Could still find old state file 0", stateFile0.exists());
-        Assert.assertFalse("Could still find old state file 1", stateFile1.exists());
+        File newMetadataFile0 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
+        File newMetadataFile1 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(1));
+        Assert.assertTrue("Could not find new metadata file 0", newMetadataFile0.exists());
+        Assert.assertTrue("Could not find new metadata file 1", newMetadataFile1.exists());
+        Assert.assertFalse("Could still find old metadata file 0", metadataFile0.exists());
+        Assert.assertFalse("Could still find old metadata file 1", metadataFile1.exists());
 
         // Check that tab 0 did not move.
         Assert.assertTrue("Could not find tab 0 file", tab0.exists());
@@ -271,22 +276,22 @@ public class MultiInstanceMigrationTest {
     }
 
     /**
-     * Tests that migration of multi-instance state files works when tab files with the same name
+     * Tests that migration of multi-instance metadata files works when tab files with the same name
      * exists in both directories.
      */
     @Test
     @MediumTest
     @Feature({"TabPersistentStore"})
     public void testMigrateDataDuplicateTabFiles() throws IOException {
-        // Write old state files.
+        // Write old metadata files.
         File[] stateDirs = createOldStateDirs(2, false);
-        File stateFile0 =
+        File metadataFile0 =
                 new File(stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
-        File stateFile1 =
+        File metadataFile1 =
                 new File(stateDirs[1], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
 
-        Assert.assertTrue("Could not create state file 0", stateFile0.createNewFile());
-        Assert.assertTrue("Could not create state file 1", stateFile1.createNewFile());
+        Assert.assertTrue("Could not create metadata file 0", metadataFile0.createNewFile());
+        Assert.assertTrue("Could not create metadata file 1", metadataFile1.createNewFile());
 
         // Create duplicate "tab0" files and ensure tab0Dir1 has been modified more recently so that
         // it overwrites tab0Dir0.
@@ -351,20 +356,22 @@ public class MultiInstanceMigrationTest {
                                 TabWindowManagerSingleton.getInstance()
                                         .getMaxSimultaneousSelectors());
         File[] stateDirs = createOldStateDirs(maxCount, true);
-        File stateFile0 =
+        File metadataFile0 =
                 new File(stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
-        File stateFile1 =
+        File metadataFile1 =
                 new File(stateDirs[1], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
 
-        Assert.assertTrue("Could not create state file 0", stateFile0.createNewFile());
-        Assert.assertTrue("Could not create state file 1", stateFile1.createNewFile());
+        Assert.assertTrue("Could not create metadata file 0", metadataFile0.createNewFile());
+        Assert.assertTrue("Could not create metadata file 1", metadataFile1.createNewFile());
 
         // Create a new metadata file.
-        File newStateFile0 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(0));
-        Assert.assertTrue("Could not create new state file 0", newStateFile0.createNewFile());
-        long expectedLastModifiedTime = newStateFile0.lastModified() - 1000000;
-        if (!newStateFile0.setLastModified(expectedLastModifiedTime)) {
+        File newMetadataFile0 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
+        Assert.assertTrue("Could not create new metadata file 0", newMetadataFile0.createNewFile());
+        long expectedLastModifiedTime = newMetadataFile0.lastModified() - 1000000;
+        if (!newMetadataFile0.setLastModified(expectedLastModifiedTime)) {
             Assert.fail("Failed to set last modified time.");
         }
 
@@ -375,12 +382,14 @@ public class MultiInstanceMigrationTest {
         Assert.assertEquals(
                 "State file 0 unexpectedly overwritten",
                 expectedLastModifiedTime,
-                newStateFile0.lastModified());
+                newMetadataFile0.lastModified());
 
         // Check that migration of other files still occurred.
-        File newStateFile1 =
-                new File(stateDirs[0], TabbedModeTabPersistencePolicy.getStateFileName(1));
-        Assert.assertTrue("Could not find new state file 1", newStateFile1.exists());
+        File newMetadataFile1 =
+                new File(
+                        stateDirs[0],
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(1));
+        Assert.assertTrue("Could not find new metadata file 1", newMetadataFile1.exists());
     }
 
     /**

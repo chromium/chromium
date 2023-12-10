@@ -21,9 +21,7 @@ class PasswordCheckBridge {
     private long mNativePasswordCheckBridge;
     private final PasswordCheckObserver mPasswordCheckObserver;
 
-    /**
-     * Observer listening to all messages relevant to the password check.
-     */
+    /** Observer listening to all messages relevant to the password check. */
     interface PasswordCheckObserver {
         /**
          * Called when the compromised credentials found in a previous check are read from disk.
@@ -79,25 +77,43 @@ class PasswordCheckBridge {
     }
 
     @CalledByNative
-    private static void insertCredential(CompromisedCredential[] credentials, int index,
-            String signonRealm, GURL associatedUrl, String username, String displayOrigin,
-            String displayUsername, String password, String passwordChangeUrl, String associatedApp,
-            long creationTime, long lastUsedTime, boolean leaked, boolean phished) {
-        credentials[index] = new CompromisedCredential(signonRealm, associatedUrl, username,
-                displayOrigin, displayUsername, password, passwordChangeUrl, associatedApp,
-                creationTime, lastUsedTime, leaked, phished);
+    private static void insertCredential(
+            CompromisedCredential[] credentials,
+            int index,
+            String signonRealm,
+            GURL associatedUrl,
+            String username,
+            String displayOrigin,
+            String displayUsername,
+            String password,
+            String passwordChangeUrl,
+            String associatedApp,
+            long creationTime,
+            long lastUsedTime,
+            boolean leaked,
+            boolean phished) {
+        credentials[index] =
+                new CompromisedCredential(
+                        signonRealm,
+                        associatedUrl,
+                        username,
+                        displayOrigin,
+                        displayUsername,
+                        password,
+                        passwordChangeUrl,
+                        associatedApp,
+                        creationTime,
+                        lastUsedTime,
+                        leaked,
+                        phished);
     }
 
-    /**
-     * Starts the password check.
-     */
+    /** Starts the password check. */
     void startCheck() {
         PasswordCheckBridgeJni.get().startCheck(mNativePasswordCheckBridge);
     }
 
-    /**
-     * Stops the password check.
-     */
+    /** Stops the password check. */
     void stopCheck() {
         PasswordCheckBridgeJni.get().stopCheck(mNativePasswordCheckBridge);
     }
@@ -114,8 +130,8 @@ class PasswordCheckBridge {
      * @return The number of compromised credentials found in the last run password check.
      */
     int getCompromisedCredentialsCount() {
-        return PasswordCheckBridgeJni.get().getCompromisedCredentialsCount(
-                mNativePasswordCheckBridge);
+        return PasswordCheckBridgeJni.get()
+                .getCompromisedCredentialsCount(mNativePasswordCheckBridge);
     }
 
     /**
@@ -131,35 +147,32 @@ class PasswordCheckBridge {
      * @param credentials array to be populated with the compromised credentials.
      */
     void getCompromisedCredentials(CompromisedCredential[] credentials) {
-        PasswordCheckBridgeJni.get().getCompromisedCredentials(
-                mNativePasswordCheckBridge, credentials);
+        PasswordCheckBridgeJni.get()
+                .getCompromisedCredentials(mNativePasswordCheckBridge, credentials);
     }
 
-    /**
-     * Launch the password check in the Google Account.
-     */
+    /** Launch the password check in the Google Account. */
     void launchCheckupInAccount(Activity activity) {
         PasswordCheckBridgeJni.get().launchCheckupInAccount(mNativePasswordCheckBridge, activity);
     }
 
     void updateCredential(CompromisedCredential credential, String newPassword) {
-        PasswordCheckBridgeJni.get().updateCredential(
-                mNativePasswordCheckBridge, credential, newPassword);
+        PasswordCheckBridgeJni.get()
+                .updateCredential(mNativePasswordCheckBridge, credential, newPassword);
     }
 
     void onEditCredential(
             CompromisedCredential credential, Context context, SettingsLauncher settingsLauncher) {
-        PasswordCheckBridgeJni.get().onEditCredential(
-                mNativePasswordCheckBridge, credential, context, settingsLauncher);
+        PasswordCheckBridgeJni.get()
+                .onEditCredential(
+                        mNativePasswordCheckBridge, credential, context, settingsLauncher);
     }
 
     void removeCredential(CompromisedCredential credential) {
         PasswordCheckBridgeJni.get().removeCredential(mNativePasswordCheckBridge, credential);
     }
 
-    /**
-     * Destroys its C++ counterpart.
-     */
+    /** Destroys its C++ counterpart. */
     void destroy() {
         if (mNativePasswordCheckBridge != 0) {
             PasswordCheckBridgeJni.get().destroy(mNativePasswordCheckBridge);
@@ -167,25 +180,39 @@ class PasswordCheckBridge {
         }
     }
 
-    /**
-     * C++ method signatures.
-     */
+    /** C++ method signatures. */
     @NativeMethods
     interface Natives {
         long create(PasswordCheckBridge passwordCheckBridge);
+
         void startCheck(long nativePasswordCheckBridge);
+
         void stopCheck(long nativePasswordCheckBridge);
+
         long getLastCheckTimestamp(long nativePasswordCheckBridge);
+
         int getCompromisedCredentialsCount(long nativePasswordCheckBridge);
+
         int getSavedPasswordsCount(long nativePasswordCheckBridge);
+
         void getCompromisedCredentials(
                 long nativePasswordCheckBridge, CompromisedCredential[] credentials);
+
         void launchCheckupInAccount(long nativePasswordCheckBridge, Activity activity);
-        void updateCredential(long nativePasswordCheckBridge, CompromisedCredential credential,
+
+        void updateCredential(
+                long nativePasswordCheckBridge,
+                CompromisedCredential credential,
                 String newPassword);
-        void onEditCredential(long nativePasswordCheckBridge, CompromisedCredential credential,
-                Context context, SettingsLauncher settingsLauncher);
+
+        void onEditCredential(
+                long nativePasswordCheckBridge,
+                CompromisedCredential credential,
+                Context context,
+                SettingsLauncher settingsLauncher);
+
         void removeCredential(long nativePasswordCheckBridge, CompromisedCredential credentials);
+
         void destroy(long nativePasswordCheckBridge);
     }
 }

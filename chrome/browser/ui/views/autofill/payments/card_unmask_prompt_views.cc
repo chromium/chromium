@@ -23,7 +23,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -285,7 +284,6 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   if (!children().empty())
     return;
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 
   // The layout is a FillLayout that will contain the progress or error overlay
   // on top of the actual contents in |controls_container| (instructions, input
@@ -357,7 +355,8 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   cvc_input_ = input_row->AddChildView(std::move(cvc_input));
 
   auto cvc_image = std::make_unique<views::ImageView>();
-  cvc_image->SetImage(rb.GetImageSkiaNamed(controller_->GetCvcImageRid()));
+  cvc_image->SetImage(
+      ui::ImageModel::FromResourceId(controller_->GetCvcImageRid()));
   cvc_image->SetTooltipText(
       l10n_util::GetStringUTF16(controller_->GetCvcTooltipResourceId()));
   input_row->AddChildView(std::move(cvc_image));

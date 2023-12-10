@@ -18,12 +18,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ReducedModeNativeTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -102,54 +99,10 @@ public final class ServicificationDownloadTest {
                 });
     }
 
-    private static boolean useDownloadOfflineContentProvider() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-    }
-
     @Test
     @LargeTest
     @Feature({"Download"})
-    @DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
-    public void testResumeInterruptedDownload() {
-        if (useDownloadOfflineContentProvider()) return;
-        mNativeTestRule.assertMinimalBrowserStarted();
-
-        String tempFile =
-                InstrumentationRegistry.getInstrumentation()
-                                .getTargetContext()
-                                .getCacheDir()
-                                .getPath()
-                        + "/test.gzip";
-        TestFileUtil.deleteFile(tempFile);
-        DownloadItem item =
-                new DownloadItem(
-                        false,
-                        new DownloadInfo.Builder()
-                                .setDownloadGuid(DOWNLOAD_GUID)
-                                .setOTRProfileId(null)
-                                .build());
-        final String url = mEmbeddedTestServerRule.getServer().getURL(TEST_DOWNLOAD_FILE);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DownloadManagerService downloadManagerService =
-                            DownloadManagerService.getDownloadManagerService();
-                    downloadManagerService.disableAddCompletedDownloadToDownloadManager();
-                    ((SystemDownloadNotifier) downloadManagerService.getDownloadNotifier())
-                            .setDownloadNotificationService(mNotificationService);
-                    downloadManagerService.createInterruptedDownloadForTest(
-                            url, DOWNLOAD_GUID, tempFile);
-                    downloadManagerService.resumeDownload(
-                            new ContentId("download", DOWNLOAD_GUID), item, true);
-                });
-        mNotificationService.waitForDownloadCompletion();
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Download"})
-    @EnableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
     public void testResumeInterruptedDownloadUsingDownloadOfflineContentProvider() {
-        if (!useDownloadOfflineContentProvider()) return;
         mNativeTestRule.assertMinimalBrowserStarted();
 
         String tempFile =
@@ -171,7 +124,7 @@ public final class ServicificationDownloadTest {
                             url, DOWNLOAD_GUID, tempFile);
                     OfflineContentAggregatorFactory.get().addObserver(mDownloadUpdateObserver);
                     OfflineContentAggregatorFactory.get()
-                            .resumeDownload(new ContentId("LEGACY_DOWNLOAD", DOWNLOAD_GUID), true);
+                            .resumeDownload(new ContentId("LEGACY_DOWNLOAD", DOWNLOAD_GUID));
                 });
         mDownloadUpdateObserver.waitForDownloadCompletion();
     }

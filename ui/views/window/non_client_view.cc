@@ -155,7 +155,7 @@ int NonClientFrameView::GetSystemMenuY() const {
 }
 #endif
 
-BEGIN_METADATA(NonClientFrameView, View)
+BEGIN_METADATA(NonClientFrameView)
 END_METADATA
 
 NonClientView::NonClientView(views::ClientView* client_view)
@@ -339,7 +339,7 @@ View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
   return ViewTargeterDelegate::TargetForRect(root, rect);
 }
 
-BEGIN_METADATA(NonClientView, View)
+BEGIN_METADATA(NonClientView)
 END_METADATA
 
 }  // namespace views

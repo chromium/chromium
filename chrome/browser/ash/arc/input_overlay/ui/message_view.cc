@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -75,20 +76,21 @@ MessageView::MessageView(DisplayOverlayController* controller,
   image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   switch (message_type) {
     case MessageType::kInfo:
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(gfx::IconDescription(
-                   vector_icons::kInfoOutlineIcon, kIconSize, kInfoIconColor)));
+      SetImageModel(
+          views::Button::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineIcon,
+                                         kInfoIconColor, kIconSize));
       break;
     case MessageType::kError:
-      SetImage(
+      SetImageModel(
           views::Button::STATE_NORMAL,
-          gfx::CreateVectorIcon(gfx::IconDescription(
-              vector_icons::kErrorOutlineIcon, kIconSize, kErrorIconColor)));
+          ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
+                                         kErrorIconColor, kIconSize));
       break;
     case MessageType::kInfoLabelFocus:
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(gfx::IconDescription(
-                   vector_icons::kKeyboardIcon, kIconSize, kInfoIconColor)));
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(vector_icons::kKeyboardIcon,
+                                                   kInfoIconColor, kIconSize));
       break;
     default:
       NOTREACHED();
@@ -111,5 +113,8 @@ void MessageView::AddShadow() {
   view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
+
+BEGIN_METADATA(MessageView)
+END_METADATA
 
 }  // namespace arc::input_overlay

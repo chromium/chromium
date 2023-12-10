@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTO
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -44,6 +45,7 @@ public class HubPaneHostViewUnitTest {
 
     private Activity mActivity;
     private HubPaneHostView mPaneHost;
+    private Button mActionButton;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -57,6 +59,7 @@ public class HubPaneHostViewUnitTest {
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mPaneHost = (HubPaneHostView) inflater.inflate(R.layout.hub_pane_host_layout, null, false);
+        mActionButton = mPaneHost.findViewById(R.id.host_action_button);
         mActivity.setContentView(mPaneHost);
 
         mPropertyModel = new PropertyModel(HubPaneHostProperties.ALL_KEYS);
@@ -67,33 +70,34 @@ public class HubPaneHostViewUnitTest {
     @MediumTest
     public void testActionButtonVisibility() {
         DisplayButtonData displayButtonData =
-                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, mOnActionButton);
-        View button = mPaneHost.findViewById(R.id.action_button);
-        assertEquals(View.GONE, button.getVisibility());
+        assertEquals(View.GONE, mActionButton.getVisibility());
 
         mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
-        assertEquals(View.VISIBLE, button.getVisibility());
+        assertEquals(View.VISIBLE, mActionButton.getVisibility());
 
         mPropertyModel.set(ACTION_BUTTON_DATA, null);
-        assertEquals(View.GONE, button.getVisibility());
+        assertEquals(View.GONE, mActionButton.getVisibility());
     }
 
     @Test
     @MediumTest
     public void testActionButtonCallback() {
         DisplayButtonData displayButtonData =
-                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, mOnActionButton);
         mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
 
-        mPaneHost.findViewById(R.id.action_button).callOnClick();
+        mActionButton.callOnClick();
         verify(mOnActionButton).run();
 
         Mockito.reset(mOnActionButton);
         mPropertyModel.set(ACTION_BUTTON_DATA, null);
 
-        mPaneHost.findViewById(R.id.action_button).callOnClick();
+        mActionButton.callOnClick();
         verifyNoInteractions(mOnActionButton);
     }
 }

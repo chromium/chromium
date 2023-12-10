@@ -6,7 +6,7 @@
 
 namespace blink {
 
-FlexChildIterator::FlexChildIterator(const NGBlockNode node) {
+FlexChildIterator::FlexChildIterator(const BlockNode node) {
   bool is_deprecated_webkit_box = node.Style().IsDeprecatedWebkitBox();
   int initial_order = is_deprecated_webkit_box
                           ? ComputedStyleInitialValues::InitialBoxOrdinalGroup()
@@ -15,12 +15,12 @@ FlexChildIterator::FlexChildIterator(const NGBlockNode node) {
 
   // Collect all our children, and order them by either their
   // -webkit-box-ordinal-group/order property.
-  for (NGLayoutInputNode child = node.FirstChild(); child;
+  for (LayoutInputNode child = node.FirstChild(); child;
        child = child.NextSibling()) {
     int order = is_deprecated_webkit_box ? child.Style().BoxOrdinalGroup()
                                          : child.Style().Order();
     needs_sort |= order != initial_order;
-    children_.emplace_back(To<NGBlockNode>(child), order);
+    children_.emplace_back(To<BlockNode>(child), order);
   }
 
   // We only need to sort this vector if we encountered a non-initial

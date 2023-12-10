@@ -63,8 +63,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
     const AXTreeID& tree_id,
     const std::vector<AXTreeUpdate>& updates,
     const std::vector<AXEvent>& events,
-    gfx::Point mouse_location,
-    bool is_active_profile) {
+    gfx::Point mouse_location) {
   TRACE_EVENT0("accessibility",
                "AutomationAXTreeWrapper::OnAccessibilityEvents");
 
@@ -96,26 +95,18 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
       return false;
     }
 
-    if (is_active_profile) {
       owner_->SendNodesRemovedEvent(ax_tree(), deleted_node_ids_);
 
       if (update.nodes.size() && did_send_tree_change_during_unserialization_) {
         owner_->SendTreeChangeEvent(ax::mojom::Mutation::kSubtreeUpdateEnd,
                                     ax_tree(), ax_tree_->root());
       }
-    }
   }
 
   // Refresh child tree id  mappings.
   for (const AXTreeID& child_tree_id : ax_tree_->GetAllChildTreeIds()) {
     DCHECK(!base::Contains(child_tree_id_reverse_map, child_tree_id));
     child_tree_id_reverse_map.insert(std::make_pair(child_tree_id, this));
-  }
-
-  // Exit early if this isn't the active profile.
-  if (!is_active_profile) {
-    event_generator_.ClearEvents();
-    return true;
   }
 
   // Perform language detection first thing if we see a load complete event.
@@ -390,11 +381,9 @@ std::vector<AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
       continue;
 
     AXNode* node = wrapper->ax_tree()->GetFromId(app_node_info.node_id);
-    // We don't expect this to ever be null, however in b:269669313 we see that
-    // it is occasionally null. This DCHECK might help sus out what's going on,
-    // meanwhile don't add the node to the result if it is null to avoid
-    // crashes in non-debug builds.
-    DCHECK(node);
+    // TODO(b:269669313): We don't expect this to ever be null, however this
+    // case arises occasionally in the wild and consistently in Dictation C++
+    // tests running on Lacros.
     if (node != nullptr) {
       nodes.push_back(node);
     }

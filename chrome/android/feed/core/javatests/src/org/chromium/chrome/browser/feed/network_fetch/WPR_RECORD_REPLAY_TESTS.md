@@ -52,7 +52,7 @@ Here is an example.
     @WPRArchiveConfigFilePath("chrome/android/feed/core/javatests/src/org/chromium/chrome/"
             + "browser/feed/network_fetch/test_data.json")
     public void
-    launchNTP_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
+    launchNtp_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
     ...
     }
 ```

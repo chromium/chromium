@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_overlay_presentation_context.h",
+    "fake_overlay_presentation_context.mm",
+    "fake_overlay_request_callback_installer.cc",
+    "fake_overlay_request_callback_installer.h",
+    "fake_overlay_request_cancel_handler.cc",
+    "fake_overlay_request_cancel_handler.h",
+    "fake_overlay_user_data.cc",
+    "fake_overlay_user_data.h",
+    "overlay_test_macros.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -198,6 +198,30 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         },
         readOnly: true,
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              manageApps: 'os-settings:apps',
+              notifications: 'os-settings:apps-notifications',
+              googlePlayPreferences: 'os-settings:google-play-revamp',
+              androidSettings: 'os-settings:apps-android-settings',
+              manageIsolatedWebApps:
+                  'os-settings:apps-manage-isolated-web-apps',
+            };
+          }
+
+          return {
+            manageApps: '',
+            notifications: '',
+            googlePlayPreferences: '',
+            androidSettings: '',
+            manageIsolatedWebApps: '',
+          };
+        },
+      },
     };
   }
 
@@ -213,6 +237,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private isRevampWayfindingEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
+  private rowIcons_: Record<string, string>;
   private section_: Section;
   private showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;

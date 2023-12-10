@@ -1,1 +1,0 @@
-XPathResult_invalidIteratorState_FIRST_ORDERED_NODE_TYPE: Success

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 
+#include <optional>
 #include <utility>
 
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
@@ -11,7 +12,6 @@
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -35,7 +35,7 @@ void RemotingAsh::StartSupportSession(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   remoting::RemotingService::Get().GetSupportHost().StartSession(
-      *params.get(), absl::nullopt,
+      *params.get(), std::nullopt,
       base::BindOnce(
           [](StartSupportSessionCallback callback,
              remoting::mojom::StartSupportSessionResponsePtr response) {

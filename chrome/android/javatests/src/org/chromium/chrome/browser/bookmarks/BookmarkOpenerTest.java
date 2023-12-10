@@ -280,8 +280,7 @@ public class BookmarkOpenerTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkId bookmarkId =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> mBookmarkModel.addToReadingList(title, url));
-        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(url) != null);
+                        () -> mBookmarkModel.addToDefaultReadingList(title, url));
         return bookmarkId;
     }
 }

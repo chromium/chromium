@@ -4,6 +4,8 @@
 
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_parser_android.h"
 
+#include <string_view>
+
 #include "base/android/java_heap_dump_generator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -277,7 +279,7 @@ TEST(HprofParserTest, BasicResolveClassInstanceReferences) {
 }
 
 std::unique_ptr<ClassObject> GetClassObjectWith2Fields(int id,
-                                                       base::StringPiece name) {
+                                                       std::string_view name) {
   auto obj = std::make_unique<ClassObject>(id, std::string{name});
   obj->instance_fields = {Field(base::StrCat({name, "_f1"}), DataType::INT, 0),
                           Field(base::StrCat({name, "_f2"}), DataType::INT, 0)};

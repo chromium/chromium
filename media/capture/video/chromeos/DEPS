@@ -2,7 +2,6 @@ include_rules = [
   "+ash/constants/ash_features.h",
   "+ash/webui/camera_app_ui/document_scanner_service_client.h",
   "+chromeos/ash/components/mojo_service_manager",
-  "+chromeos/components/sensors",
   "+chromeos/dbus",
   "+components/chromeos_camera",
   "+third_party/cros_system_api",

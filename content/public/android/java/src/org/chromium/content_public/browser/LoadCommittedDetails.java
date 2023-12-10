@@ -23,8 +23,12 @@ public class LoadCommittedDetails {
     private final int mHttpStatusCode;
 
     @CalledByNative
-    public LoadCommittedDetails(int previousEntryIndex, GURL previousMainFrameUrl,
-            boolean didReplaceEntry, boolean isSameDocument, boolean isMainFrame,
+    public LoadCommittedDetails(
+            int previousEntryIndex,
+            GURL previousMainFrameUrl,
+            boolean didReplaceEntry,
+            boolean isSameDocument,
+            boolean isMainFrame,
             int httpStatusCode) {
         mPreviousEntryIndex = previousEntryIndex;
         mPreviousMainFrameUrl = previousMainFrameUrl;

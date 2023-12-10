@@ -29,8 +29,6 @@ MEDIA_EXPORT extern const char kAudioBufferSize[];
 MEDIA_EXPORT extern const char kAudioCodecsFromEDID[];
 #endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
-MEDIA_EXPORT extern const char kAudioServiceQuitTimeoutMs[];
-
 MEDIA_EXPORT extern const char kAutoplayPolicy[];
 
 MEDIA_EXPORT extern const char kDisableAudioInput[];
@@ -48,13 +46,6 @@ MEDIA_EXPORT extern const char kReportVp9AsAnUnsupportedMimeType[];
     BUILDFLAG(IS_SOLARIS)
 MEDIA_EXPORT extern const char kAlsaInputDevice[];
 MEDIA_EXPORT extern const char kAlsaOutputDevice[];
-#endif
-
-#if BUILDFLAG(IS_WIN)
-MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
-MEDIA_EXPORT extern const char kForceWaveAudio[];
-MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
-MEDIA_EXPORT extern const char kWaveOutBuffers[];
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -78,7 +69,6 @@ MEDIA_EXPORT extern const char kUseFileForFakeAudioCapture[];
 MEDIA_EXPORT extern const char kUseFakeMjpegDecodeAccelerator[];
 MEDIA_EXPORT extern const char kDisableAcceleratedMjpegDecode[];
 
-MEDIA_EXPORT extern const char kRequireAudioHardwareForTesting[];
 MEDIA_EXPORT extern const char kMuteAudio[];
 
 MEDIA_EXPORT extern const char kVideoUnderflowThresholdMs[];
@@ -112,7 +102,6 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
-MEDIA_EXPORT extern const char kChromeOSVideoDecoderTaskRunner[];
 #endif
 
 // NOTE: callers should always use the free functions in
@@ -170,9 +159,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayIgnoreWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayDisableSettings);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAVDColorSpaceChanges);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCameraMicEffects);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 // NOTE: callers should always use the free functions in
 // /media/cast/encoding/encoding_support.h instead of accessing these features
@@ -187,6 +177,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmHostVerification);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmProcessSiteIsolation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSaveVideoFrameAs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuCopyVideoFrame);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
 MEDIA_EXPORT extern const base::FeatureParam<bool>
@@ -253,12 +244,13 @@ MEDIA_EXPORT extern const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHideIncognitoMediaMetadata);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kInternalMediaSession);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kKeepRvfcFrameAlive);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kKeyPressMonitoring);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaption);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionAutomaticLanguageDownload);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionRightClick);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionLogFlickerRate);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionMultiLanguage);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionExperimentalLanguages);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionUseGreedyTextStabilizer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionUseWaitK);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionWebAudio);
@@ -284,8 +276,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningSmoothnessExperiment);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaOptimizer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaPowerExperiment);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMemoryPressureBasedSourceBufferGC);
-// TODO(https://crbug.com/1453388): Guard Cast Sender flags with !IS_ANDROID.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenCastStreamingSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseWritePixelsYUV);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMultiPlaneFormatForHardwareVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo);
@@ -294,6 +284,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMultiPlaneSoftwareVideoSharedImages);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMultiPlaneVideoCaptureSharedImages);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOverlayFullscreenVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundMutedAudio);
+#if !BUILDFLAG(IS_ANDROID)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureOcclusionTracking);
+#endif  // !BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableRtcpReporting);
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -318,15 +311,14 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kSuspendMutedAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUnifiedAutoplay);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAndroidOverlayForSecureOnly);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseDecoderStreamForWebRTC);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseElementInsteadOfRegionCapture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseFakeDeviceForMediaStream);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMediaHistoryStore);
 #if BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVideoDecodeLinux);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVideoDecodeLinuxGL);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVideoEncodeLinux);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiIgnoreDriverChecks);
 #endif  // BUILDFLAG(IS_LINUX)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiOnNvidiaGPUs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiLowPowerEncoderGen9x);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiEnforceVideoMinMaxResolution);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVideoMinResolutionForPerformance);
@@ -357,6 +349,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kForceHardwareAudioDecoders);
 
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowNonSecureOverlays);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableEncryptedAV1);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCodecCodedSizeGuessing);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaControlsExpandGesture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaDrmPersistentLicense);

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -45,7 +46,6 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 

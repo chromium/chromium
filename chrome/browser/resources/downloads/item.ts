@@ -224,7 +224,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.overrideCustomEquivalent = true;
   }
 
-  /** @override */
   override ready() {
     super.ready();
 
@@ -468,8 +467,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case State.kAsyncScanning:
         return loadTimeData.getString('asyncScanningDownloadDesc');
       case State.kPromptForScanning:
-      case State.kPromptForLocalPasswordScanning:  // Fallthrough.
         return loadTimeData.getString('promptForScanningDesc');
+      case State.kPromptForLocalPasswordScanning:
+        return loadTimeData.getString('promptForLocalPasswordScanningDesc');
       case State.kInProgress:
       case State.kPaused:  // Fallthrough.
         return data.progressStatusText;
@@ -922,11 +922,24 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
+  private notifySaveDangerousClick_() {
+    this.dispatchEvent(new CustomEvent('save-dangerous-click', {
+      bubbles: true,
+      composed: true,
+      detail: {id: this.data.id},
+    }));
+  }
+
   private onSaveDangerousClick_() {
-    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
     if (this.improvedDownloadWarningsUx_) {
       this.getMoreActionsMenu().close();
+      // TODO(crbug.com/1465966): Suspicious downloads should validate directly.
+      if (this.displayType_ === DisplayType.DANGEROUS) {
+        this.notifySaveDangerousClick_();
+        return;
+      }
     }
+    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
   }
 
   private onShowClick_() {

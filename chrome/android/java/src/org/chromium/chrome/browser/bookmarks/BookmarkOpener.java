@@ -138,7 +138,7 @@ public class BookmarkOpener {
 
     private void maybeMarkReadingListItemAsRead(@NonNull BookmarkItem item) {
         if (item.getId().getType() == BookmarkType.READING_LIST) {
-            mModel.setReadStatusForReadingList(item.getUrl(), true);
+            mModel.setReadStatusForReadingList(item.getId(), true);
         }
     }
 

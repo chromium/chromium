@@ -407,7 +407,7 @@ std::string BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(
 
 // static
 std::string BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(
-    base::StringPiece device_identifier) {
+    std::string_view device_identifier) {
   const size_t kCanonicalAddressNumberOfBytes = 6;
   char raw[kCanonicalAddressNumberOfBytes];
   crypto::SHA256HashString(device_identifier, raw, sizeof(raw));

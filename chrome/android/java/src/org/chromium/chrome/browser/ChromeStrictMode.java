@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Initialize application-level StrictMode reporting.
- */
+/** Initialize application-level StrictMode reporting. */
 public class ChromeStrictMode {
     private static final String TAG = "ChromeStrictMode";
     private static final double UPLOAD_PROBABILITY = 0.01;
@@ -72,38 +70,42 @@ public class ChromeStrictMode {
     @UiThread
     private static void initializeStrictModeWatch(
             ThreadStrictModeInterceptor.Builder threadInterceptor) {
-        threadInterceptor.setCustomPenalty(violation -> {
-            if (Math.random() < UPLOAD_PROBABILITY) {
-                // Ensure that we do not upload too many StrictMode violations in any single
-                // session. To prevent races, we allow sNumUploads to increase beyond the limit, but
-                // just skip actually uploading the stack trace then.
-                if (sNumUploads.getAndAdd(1) < MAX_UPLOADS_PER_SESSION) {
-                    sCachedViolations.add(violation);
-                }
-            }
-        });
+        threadInterceptor.setCustomPenalty(
+                violation -> {
+                    if (Math.random() < UPLOAD_PROBABILITY) {
+                        // Ensure that we do not upload too many StrictMode violations in any single
+                        // session. To prevent races, we allow sNumUploads to increase beyond the
+                        // limit, but just skip actually uploading the stack trace then.
+                        if (sNumUploads.getAndAdd(1) < MAX_UPLOADS_PER_SESSION) {
+                            sCachedViolations.add(violation);
+                        }
+                    }
+                });
 
         sNumUploads.set(0);
         // Delay handling StrictMode violations during initialization until the main loop is idle.
-        Looper.myQueue().addIdleHandler(() -> {
-            // Will retry if the native library has not been initialized.
-            if (!LibraryLoader.getInstance().isInitialized()) return true;
-            // Check again next time if no more cached stack traces to upload, and we have not
-            // reached the max number of uploads for this session.
-            if (sCachedViolations.isEmpty()) {
-                // TODO(wnwen): Add UMA count when this happens.
-                // In case of races, continue checking an extra time (equal condition).
-                return sNumUploads.get() <= MAX_UPLOADS_PER_SESSION;
-            }
-            // Since this is the only place we are removing elements, no need for additional
-            // synchronization to ensure it is still non-empty.
-            reportStrictModeViolation(sCachedViolations.remove(0));
-            return true;
-        });
+        Looper.myQueue()
+                .addIdleHandler(
+                        () -> {
+                            // Will retry if the native library has not been initialized.
+                            if (!LibraryLoader.getInstance().isInitialized()) return true;
+                            // Check again next time if no more cached stack traces to upload, and
+                            // we have not reached the max number of uploads for this session.
+                            if (sCachedViolations.isEmpty()) {
+                                // TODO(wnwen): Add UMA count when this happens.
+                                // In case of races, continue checking an extra time (equal
+                                // condition).
+                                return sNumUploads.get() <= MAX_UPLOADS_PER_SESSION;
+                            }
+                            // Since this is the only place we are removing elements, no need for
+                            // additional synchronization to ensure it is still non-empty.
+                            reportStrictModeViolation(sCachedViolations.remove(0));
+                            return true;
+                        });
     }
 
-    private static void turnOnDetection(StrictMode.ThreadPolicy.Builder threadPolicy,
-            StrictMode.VmPolicy.Builder vmPolicy) {
+    private static void turnOnDetection(
+            StrictMode.ThreadPolicy.Builder threadPolicy, StrictMode.VmPolicy.Builder vmPolicy) {
         threadPolicy.detectAll();
         // Do not enable detectUntaggedSockets(). It does not support native (the vast majority
         // of our sockets), and we have not bothered to tag our Java uses.
@@ -141,9 +143,7 @@ public class ChromeStrictMode {
         vmPolicy.penaltyDeath();
     }
 
-    /**
-     * Turn on StrictMode detection based on build and command-line switches.
-     */
+    /** Turn on StrictMode detection based on build and command-line switches. */
     @UiThread
     // FindBugs doesn't like conditionals with compile time results
     public static void configureStrictMode() {
@@ -159,16 +159,19 @@ public class ChromeStrictMode {
         if (!ChromeStrictModeSwitch.ALLOW_STRICT_MODE_CHECKING) return;
 
         CommandLine commandLine = CommandLine.getInstance();
-        boolean shouldApplyPenalties = BuildConfig.ENABLE_ASSERTS || VersionInfo.isLocalBuild()
-                || commandLine.hasSwitch(ChromeSwitches.STRICT_MODE);
+        boolean shouldApplyPenalties =
+                BuildConfig.ENABLE_ASSERTS
+                        || VersionInfo.isLocalBuild()
+                        || commandLine.hasSwitch(ChromeSwitches.STRICT_MODE);
 
         // Enroll 1% of dev sessions into StrictMode watch. This is done client-side rather than
         // through finch because this decision is as early as possible in the browser initialization
         // process. We need to detect early start-up StrictMode violations before loading native and
         // before warming the SharedPreferences (that is a violation in an of itself). We will
         // closely monitor this on dev channel.
-        boolean enableStrictModeWatch = (VersionInfo.isLocalBuild() && !BuildConfig.ENABLE_ASSERTS)
-                || (VersionInfo.isDevBuild() && Math.random() < UPLOAD_PROBABILITY);
+        boolean enableStrictModeWatch =
+                (VersionInfo.isLocalBuild() && !BuildConfig.ENABLE_ASSERTS)
+                        || (VersionInfo.isDevBuild() && Math.random() < UPLOAD_PROBABILITY);
         if (!shouldApplyPenalties && !enableStrictModeWatch) return;
 
         StrictMode.ThreadPolicy.Builder threadPolicy =
@@ -220,7 +223,8 @@ public class ChromeStrictMode {
 
         // crbug.com/1121181
         if (Build.MANUFACTURER.toLowerCase(Locale.US).equals("samsung")) {
-            threadInterceptor.ignoreExternalMethod(Violation.DETECT_DISK_READ,
+            threadInterceptor.ignoreExternalMethod(
+                    Violation.DETECT_DISK_READ,
                     "android.net.ConnectivityManager#registerDefaultNetworkCallback");
         }
     }

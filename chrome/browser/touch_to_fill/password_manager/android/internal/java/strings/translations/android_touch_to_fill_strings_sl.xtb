@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sl">
+<translation id="1220509181886849806">Želite uporabiti shranjeno geslo?</translation>
+<translation id="1435940442311036198">Uporaba gesla v drugi napravi</translation>
+<translation id="1717486229951421299">Seznam poverilnic, ki naj se izpolnijo ob dotiku, odprt pri polovični višini.</translation>
+<translation id="2359808026110333948">Naprej</translation>
+<translation id="2364266287022099258">Ali želite uporabiti shranjen ključ za dostop?</translation>
+<translation id="3399357656427473483">Seznam poverilnic, ki naj se izpolnijo ob dotiku.</translation>
+<translation id="3653689374478248324">Prijavili se boste na spletnem mestu <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Prijava</translation>
+<translation id="4553044860350038560">Več ključev za dostop</translation>
+<translation id="4598345735110653698">Upravljanje ključev za dostop</translation>
+<translation id="4722735765955348426">Geslo za uporabniško ime <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Uporabite zaklepanje zaslona.</translation>
+<translation id="5012523644916800014">Upravljanje gesel in ključev za dostop</translation>
+<translation id="5441504010984421144">Seznam poverilnic, ki naj se izpolnijo ob dotiku, odprt pri polni višini.</translation>
+<translation id="5591247451101092906">Ali želite uporabiti shranjen ključ za dostop ali geslo?</translation>
+<translation id="5624120631404540903">Upravljanje gesel</translation>
+<translation id="6560306912274274630">Ključ za dostop za uporabnika <ph name="USERNAME" />, uporabite zaklepanje zaslona</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Novo geslo za to spletno mesto}one{Nova gesla za to spletno mesto}two{Nova gesla za to spletno mesto}few{Nova gesla za to spletno mesto}other{Nova gesla za to spletno mesto}}</translation>
+<translation id="7286867818472074330">Izberi ključ za dostop</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Prejeli ste gesla za spletno mesto <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591">Oseba <ph name="SENDER_NAME" /> je z vami delila geslo za spletno mesto <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Seznam poverilnic je zaprt.</translation>
+</translationbundle>

@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 // A dev UI for testing the OnDeviceModelService.
@@ -29,12 +30,16 @@ class OnDeviceInternalsUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   on_device_model::mojom::OnDeviceModelService& GetService();
-  void OnModelAssetsLoaded(LoadModelCallback callback,
-                           on_device_model::ModelAssets assets);
+  void OnModelAssetsLoaded(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback,
+      on_device_model::ModelAssets assets);
 
   // mojom::OnDeviceInternalsPage:
-  void LoadModel(const base::FilePath& model_path,
-                 LoadModelCallback callback) override;
+  void LoadModel(
+      const base::FilePath& model_path,
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback) override;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 

@@ -17,7 +17,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 class BrowserNonClientFrameView;
@@ -238,8 +238,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // Store the number of virtual desks that currently exist and if the window
   // state is float state type. Used to determine  whether the system menu
   // should be reset.
-  absl::optional<int> num_desks_;
-  absl::optional<bool> is_float_state_type_;
+  std::optional<int> num_desks_;
+  std::optional<bool> is_float_state_type_;
 #endif
 };
 

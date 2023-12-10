@@ -79,8 +79,9 @@ void SetPrioritySignalsOverrideBindings::SetPrioritySignalsOverride(
   if (args_converter.is_success() && args.Length() >= 2 &&
       !args[1]->IsNullOrUndefined()) {
     double double_value;
-    args_converter.ConvertArg(1, "priority", double_value);
-    mojom_value = mojom::PrioritySignalsDouble::New(double_value);
+    if (args_converter.ConvertArg(1, "priority", double_value)) {
+      mojom_value = mojom::PrioritySignalsDouble::New(double_value);
+    }
   }
 
   if (args_converter.is_failed()) {

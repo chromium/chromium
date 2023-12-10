@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -121,6 +122,10 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
   const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
+
+  // TODO(crbug.com/1494120): Handle moving across mapping boundary.
+  DUMP_WILL_BE_CHECK_EQ(bookmark_model_->IsNodeSyncable(old_parent),
+                        bookmark_model_->IsNodeSyncable(new_parent));
 
   // We shouldn't see changes to the top-level nodes.
   DCHECK(!bookmark_model_->is_permanent_node(node));

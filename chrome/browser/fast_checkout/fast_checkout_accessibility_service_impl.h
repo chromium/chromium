@@ -21,4 +21,4 @@ class FastCheckoutAccessibilityServiceImpl
   void Announce(const std::u16string& text) override;
 };
 
-#endif
+#endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_ACCESSIBILITY_SERVICE_IMPL_H_

@@ -677,7 +677,7 @@ TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
 // |GetOwnerEmail| can retrieve it.
 TEST_F(UserManagerTest, RecordOwner) {
   // Initially `GetOwnerEmail` should return a nullopt.
-  absl::optional<std::string> owner =
+  std::optional<std::string> owner =
       user_manager::UserManager::Get()->GetOwnerEmail();
   EXPECT_FALSE(owner.has_value());
 

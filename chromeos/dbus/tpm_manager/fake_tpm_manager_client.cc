@@ -80,6 +80,13 @@ void FakeTpmManagerClient::ClearStoredOwnerPassword(
                     ::tpm_manager::ClearStoredOwnerPasswordReply());
 }
 
+void FakeTpmManagerClient::ClearTpm(
+    const ::tpm_manager::ClearTpmRequest& request,
+    ClearTpmCallback callback) {
+  ++clear_tpm_count_;
+  PostProtoResponse(std::move(callback), ::tpm_manager::ClearTpmReply());
+}
+
 void FakeTpmManagerClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -122,6 +129,10 @@ int FakeTpmManagerClient::take_ownership_count() const {
 
 int FakeTpmManagerClient::clear_stored_owner_password_count() const {
   return clear_stored_owner_password_count_;
+}
+
+int FakeTpmManagerClient::clear_tpm_count() const {
+  return clear_tpm_count_;
 }
 
 void FakeTpmManagerClient::EmitOwnershipTakenSignal() {

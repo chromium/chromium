@@ -5,12 +5,8 @@
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -18,9 +14,6 @@
 namespace autofill {
 
 namespace {
-
-using AddressImportRequirement =
-    autofill_metrics::AddressProfileImportRequirementMetric;
 
 bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
                                 const history::DeletionInfo& deletion_info) {
@@ -34,42 +27,6 @@ bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
 }
 
 }  // anonymous namespace
-
-bool IsValidLearnableProfile(const AutofillProfile& profile,
-                             LogBuffer* import_log_buffer) {
-  // Returns false if `profile` has invalid information for `type`.
-  auto ValidateAndLog = [&](ServerFieldType type,
-                            AddressImportRequirement valid,
-                            AddressImportRequirement invalid) {
-    if (profile.IsPresentButInvalid(type)) {
-      autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
-      LOG_AF(import_log_buffer)
-          << LogMessage::kImportAddressProfileFromFormFailed << "Invalid "
-          << FieldTypeToStringView(type) << "." << CTag{};
-      return false;
-    } else {
-      autofill_metrics::LogAddressFormImportRequirementMetric(valid);
-      return true;
-    }
-  };
-
-  // Reject profiles with invalid `EMAIL_ADDRESS`, `ADDRESS_HOME_STATE` or
-  // `ADDRESS_HOME_ZIP` entries and collect metrics on their validity.
-  bool all_requirements_satisfied = ValidateAndLog(
-      EMAIL_ADDRESS, AddressImportRequirement::kEmailValidRequirementFulfilled,
-      AddressImportRequirement::kEmailValidRequirementViolated);
-
-  all_requirements_satisfied &=
-      ValidateAndLog(ADDRESS_HOME_STATE,
-                     AddressImportRequirement::kStateValidRequirementFulfilled,
-                     AddressImportRequirement::kStateValidRequirementViolated);
-
-  all_requirements_satisfied &= ValidateAndLog(
-      ADDRESS_HOME_ZIP, AddressImportRequirement::kZipValidRequirementFulfilled,
-      AddressImportRequirement::kZipValidRequirementViolated);
-
-  return all_requirements_satisfied;
-}
 
 std::string GetPredictedCountryCode(
     const AutofillProfile& profile,
@@ -149,13 +106,9 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
   AutofillProfile completed_profile = profile;
   ProfileImportMetadata completed_metadata = import_metadata;
   // Merging might fail due to an incorrectly complemented country in one of the
-  // merge candidates. In this case, try removing the complemented country.
+  // merge candidates. In this case, multi-step imports are not offered.
   while (candidate != multistep_candidates_.end() &&
-         (comparator_.AreMergeable(completed_profile, candidate->profile) ||
-          MergeableByRemovingIncorrectlyComplementedCountry(
-              completed_profile, completed_metadata.did_complement_country,
-              candidate->profile,
-              candidate->import_metadata.did_complement_country))) {
+         comparator_.AreMergeable(completed_profile, candidate->profile)) {
     completed_profile.MergeDataFrom(candidate->profile, app_locale_);
     MergeImportMetadata(candidate->import_metadata, completed_metadata);
     candidate++;
@@ -173,38 +126,6 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     multistep_candidates_.erase(candidate, multistep_candidates_.end());
     return false;
   }
-}
-
-bool MultiStepImportMerger::MergeableByRemovingIncorrectlyComplementedCountry(
-    AutofillProfile& profile_a,
-    bool& complemented_profile_a,
-    AutofillProfile& profile_b,
-    bool& complemented_profile_b) const {
-  // Check if exactly one of the profiles has a complemented country.
-  if (complemented_profile_a == complemented_profile_b ||
-      profile_a.GetInfo(ADDRESS_HOME_COUNTRY, app_locale_) ==
-          profile_b.GetInfo(ADDRESS_HOME_COUNTRY, app_locale_)) {
-    return false;
-  }
-  AutofillProfile& complemented_profile =
-      complemented_profile_a ? profile_a : profile_b;
-  std::u16string complemented_country =
-      complemented_profile.GetInfo(ADDRESS_HOME_COUNTRY, app_locale_);
-  complemented_profile.ClearFields({ADDRESS_HOME_COUNTRY});
-  if (comparator_.AreMergeable(profile_a, profile_b)) {
-    if (complemented_profile_a)
-      complemented_profile_a = false;
-    else
-      complemented_profile_b = false;
-    return true;
-  }
-  // Even after removing the disagreeing country code, merging still failed.
-  // Reset the profile back to it's original state. Otherwise we might end up
-  // importing a country-less profile.
-  complemented_profile.SetInfoWithVerificationStatus(
-      AutofillType(ADDRESS_HOME_COUNTRY), complemented_country, app_locale_,
-      VerificationStatus::kObserved);
-  return false;
 }
 
 void MultiStepImportMerger::MergeImportMetadata(

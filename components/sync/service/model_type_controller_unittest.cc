@@ -6,19 +6,13 @@
 
 #include <utility>
 
-#include "base/check_op.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/sync/base/features.h"
-#include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
@@ -70,7 +64,7 @@ class MockDelegate : public ModelTypeControllerDelegate {
               (base::OnceCallback<void(const TypeEntitiesCount&)> callback),
               (const override));
   MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
-  MOCK_METHOD(void, ClearMetadataWhileStopped, (), (override));
+  MOCK_METHOD(void, ClearMetadataIfStopped, (), (override));
 };
 
 // Class used to expose ReportModelError() publicly.
@@ -298,10 +292,12 @@ TEST_F(ModelTypeControllerTest, StopWhileStopping) {
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
-// Test emulates disabling sync when datatype is not loaded yet. Metadata should
-// not be cleared as the delegate is potentially not ready to handle it.
+// Test emulates disabling sync when datatype is not loaded yet.
 TEST_F(ModelTypeControllerTest, StopBeforeLoadModels) {
-  EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA)).Times(0);
+  // OnSyncStopping() should not be called, since the delegate was never
+  // started. Instead, ClearMetadataIfStopped() should get called.
+  EXPECT_CALL(*delegate(), OnSyncStopping(_)).Times(0);
+  EXPECT_CALL(*delegate(), ClearMetadataIfStopped());
 
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
@@ -637,27 +633,27 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
 }
 
 TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeNotRunning) {
-  {
-    InSequence s;
-    EXPECT_CALL(*delegate(), OnSyncStopping(KEEP_METADATA));
-    EXPECT_CALL(*delegate(), ClearMetadataWhileStopped);
-  }
-
   // Start sync and then stop it(without clearing the metadata) to bring it
   // to NOT_RUNNING state.
   ASSERT_TRUE(LoadModels());
   controller()->Connect();
+
+  {
+    InSequence s;
+    EXPECT_CALL(*delegate(), OnSyncStopping(KEEP_METADATA));
+    EXPECT_CALL(*delegate(), ClearMetadataIfStopped);
+  }
   controller()->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
-  // ClearMetadataWhileStopped() should be called on Stop() even if state is
+  // ClearMetadataIfStopped() should be called on Stop() even if state is
   // NOT_RUNNING.
   controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
-TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeInFailedState) {
-  EXPECT_CALL(*delegate(), ClearMetadataWhileStopped);
+TEST_F(ModelTypeControllerTest,
+       ShouldNotClearMetadataWhenDatatypeInFailedState) {
   EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA)).Times(0);
 
   // Start sync and simulate an error to bring it to a FAILED state.
@@ -672,9 +668,10 @@ TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeInFailedState) {
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   base::RunLoop().RunUntilIdle();
 
-  // ClearMetadataWhileStopped() should be called on Stop() even if state is
+  // ClearMetadataIfStopped() should not be called on Stop() if the state is
   // FAILED.
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
+  EXPECT_CALL(*delegate(), ClearMetadataIfStopped).Times(0);
   controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 }

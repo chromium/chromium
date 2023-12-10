@@ -18,10 +18,12 @@ import java.lang.annotation.RetentionPolicy;
  * Both files must be kept in sync.
  */
 // LINT.IfChange
-@IntDef({ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_TRANSLATE,
-        ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_CHROME_INTERNAL,
-        ChromeIsolatedWorldIds.ISOLATED_WORLD_UNUSED_MAC,
-        ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_UNUSED_EXTENSIONS})
+@IntDef({
+    ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_TRANSLATE,
+    ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_CHROME_INTERNAL,
+    ChromeIsolatedWorldIds.ISOLATED_WORLD_UNUSED_MAC,
+    ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_UNUSED_EXTENSIONS
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ChromeIsolatedWorldIds {
     int ISOLATED_WORLD_ID_TRANSLATE = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 1;

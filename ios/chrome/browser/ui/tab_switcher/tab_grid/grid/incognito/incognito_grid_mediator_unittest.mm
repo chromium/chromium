@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -24,6 +26,7 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
     mediator_ = [[IncognitoGridMediator alloc] init];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
+    mediator_.toolbarsMutator = fake_toolbars_mediator_;
   }
 
   void TearDown() override {
@@ -82,4 +85,26 @@ TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
   EXPECT_EQ(4, browser_->GetWebStateList()->count())
       << "Can open an incognito tab by calling new tab button function when "
          "policy should disable incognito.";
+}
+
+// Ensures that when there is *no* web states in normal mode, the toolbar
+// configuration is correct.
+TEST_F(IncognitoGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ closeAllItems];
+  EXPECT_EQ(0UL, consumer_.items.size());
+
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
 }

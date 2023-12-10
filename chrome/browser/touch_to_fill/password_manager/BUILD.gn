@@ -1,0 +1,43 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+group("password_manager") {
+  public_deps = [
+    ":factory",
+    ":public",
+  ]
+}
+
+source_set("factory") {
+  if (is_android) {
+    sources = [
+      "touch_to_fill_view_factory.cc",
+      "touch_to_fill_view_factory.h",
+    ]
+
+    deps = [ "//chrome/browser/touch_to_fill/password_manager/android" ]
+  }
+
+  public_deps = [ ":public" ]
+}
+
+source_set("public") {
+  deps = [
+    "//base",
+    "//url",
+  ]
+
+  sources = [ "touch_to_fill_view.h" ]
+}
+
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ "./*" ]
+    sources = [ "touch_to_fill_controller_autofill_delegate.h" ]
+  }
+}

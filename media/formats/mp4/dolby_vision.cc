@@ -53,6 +53,10 @@ bool DOVIDecoderConfigurationRecord::Parse(BufferReader* reader,
   rpu_present_flag = (profile_track_indication >> 2) & 1;
   el_present_flag = (profile_track_indication >> 1) & 1;
   bl_present_flag = profile_track_indication & 1;
+  if (reader->HasBytes(1)) {
+    RCHECK(reader->Read1(&dv_bl_signal_compatibility_id));
+    dv_bl_signal_compatibility_id = (dv_bl_signal_compatibility_id >> 4) & 0x0F;
+  }
 
   switch (dv_profile) {
     case 0:
@@ -84,6 +88,8 @@ bool DOVIDecoderConfigurationRecord::Parse(BufferReader* reader,
            << " has_bl:" << static_cast<int>(bl_present_flag)
            << " has_el:" << static_cast<int>(el_present_flag)
            << " has_rpu:" << static_cast<int>(rpu_present_flag)
+           << " bl_signal_compatibility_id: "
+           << static_cast<int>(dv_bl_signal_compatibility_id)
            << " profile type:" << codec_profile;
 
   return true;

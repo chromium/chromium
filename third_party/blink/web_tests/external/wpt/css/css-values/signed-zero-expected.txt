@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] clamp(-1, 1 / sign(min( 0, -0)), 1) should be used-value-equivalent to -1
+  assert_equals: clamp(-1, 1 / sign(min( 0, -0)), 1) and -1 serialize to the same thing in used values. expected "-1" but got "1"
+[FAIL] clamp(-1, 1 / sign(max(-0,  0)), 1) should be used-value-equivalent to 1
+  assert_equals: clamp(-1, 1 / sign(max(-0,  0)), 1) and 1 serialize to the same thing in used values. expected "1" but got "-1"
+[FAIL] clamp(-1, 1 / sign(clamp(-0,  0, 0)), 1) should be used-value-equivalent to 1
+  assert_equals: clamp(-1, 1 / sign(clamp(-0,  0, 0)), 1) and 1 serialize to the same thing in used values. expected "1" but got "-1"
+[FAIL] clamp(-1, 1 / sign(clamp(-0,  1, 0)), 1) should be used-value-equivalent to 1
+  assert_equals: clamp(-1, 1 / sign(clamp(-0,  1, 0)), 1) and 1 serialize to the same thing in used values. expected "1" but got "-1"
+[FAIL] sign(mod(-1,  1)) should be used-value-equivalent to 0
+  assert_equals: sign(mod(-1,  1)) and 0 serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] sign(mod( 1, -1)) should be used-value-equivalent to 0
+  assert_equals: sign(mod( 1, -1)) and 0 serialize to the same thing in used values. expected "0" but got "-1"
+Harness: the test ran to completion.
+

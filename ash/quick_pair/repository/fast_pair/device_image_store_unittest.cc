@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 
+#include <optional>
+
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
@@ -16,7 +18,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -57,7 +58,7 @@ class DeviceImageStoreTest : public AshTestBase {
     mock_decoder_ = std::make_unique<MockFastPairImageDecoder>();
     // On call to DecodeImage, run the third argument callback with test_image_.
     ON_CALL(*mock_decoder_, DecodeImageFromUrl(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(test_image_));
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(test_image_));
 
     device_image_store_ =
         std::make_unique<DeviceImageStore>(mock_decoder_.get());
@@ -184,7 +185,7 @@ TEST_F(DeviceImageStoreTest, FetchDeviceImagesInvalidTrueWireless) {
 
   // Simulate an error during download/decode by returning an empty image.
   ON_CALL(*mock_decoder_, DecodeImageFromUrl(_, _, _))
-      .WillByDefault(RunOnceCallback<2>(gfx::Image()));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(gfx::Image()));
   device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
                                          callback.Get());
 }
@@ -248,7 +249,7 @@ TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelValid) {
   device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
                                          base::DoNothing());
 
-  absl::optional<DeviceImageInfo> images =
+  std::optional<DeviceImageInfo> images =
       device_image_store_->GetImagesForDeviceModel(kTestModelId);
   EXPECT_TRUE(images);
 
@@ -271,7 +272,7 @@ TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelValid) {
 
 TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelInvalidUninitialized) {
   // Don't initialize the dictionary with any results.
-  absl::optional<DeviceImageInfo> images =
+  std::optional<DeviceImageInfo> images =
       device_image_store_->GetImagesForDeviceModel(kTestModelId);
   EXPECT_FALSE(images);
 }
@@ -280,7 +281,7 @@ TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelInvalidNotAdded) {
   device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
                                          base::DoNothing());
   // Look for a model ID that wasn't added.
-  absl::optional<DeviceImageInfo> images =
+  std::optional<DeviceImageInfo> images =
       device_image_store_->GetImagesForDeviceModel("DEF456");
   EXPECT_FALSE(images);
 }
@@ -294,7 +295,7 @@ TEST_F(DeviceImageStoreTest, LoadPersistedImagesFromPrefs) {
   // A new/restarted DeviceImageStore instance should load persisted images
   // from prefs.
   DeviceImageStore new_device_image_store(mock_decoder_.get());
-  absl::optional<DeviceImageInfo> images =
+  std::optional<DeviceImageInfo> images =
       new_device_image_store.GetImagesForDeviceModel(kTestModelId);
   EXPECT_TRUE(images);
 

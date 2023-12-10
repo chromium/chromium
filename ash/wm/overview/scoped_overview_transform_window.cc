@@ -30,7 +30,6 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
@@ -45,7 +44,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -234,9 +232,9 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // activated.
   // TODO(sammiequon): This does not handle the case if either the snapped
   // window or this window is an always on top window.
-  auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  if (ShouldUseTabletModeGridLayout() &&
+  if (auto* split_view_controller =
+          SplitViewController::Get(Shell::GetPrimaryRootWindow());
+      ShouldUseTabletModeGridLayout() &&
       split_view_controller->InSplitViewMode()) {
     aura::Window* snapped_window =
         split_view_controller->GetDefaultSnappedWindow();
@@ -360,7 +358,12 @@ void ScopedOverviewTransformWindow::BeginScopedAnimation(
   for (auto* window : window_util::GetVisibleTransientTreeIterator(window_)) {
     auto settings = std::make_unique<ScopedOverviewAnimationSettings>(
         animation_type, window);
-    settings->DeferPaint();
+    // With rounded windows, we cannot defer painting since we want control over
+    // rounded corners in overview, so we want to remove the rounded windows
+    // rounding immediately.
+    if (!features::IsOverviewUpdatesEnabled()) {
+      settings->DeferPaint();
+    }
 
     // Create an EnterAnimationObserver if this is an enter overview layout
     // animation.
@@ -600,19 +603,12 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     return;
   }
 
-  const float scale = layer->transform().To2dScale().x();
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kLow);
-    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(radius / scale));
-    return;
-  }
-
   // Depending on the size of `backdrop_view`, we might not want to round the
   // window associated with `layer`.
   const bool has_rounding = window_util::ShouldRoundThumbnailWindow(
       overview_item_->GetBackDropView(), GetTransformedBounds());
 
+  const float scale = layer->transform().To2dScale().x();
   layer->SetRoundedCornerRadius(
       has_rounding ? GetRoundedCornersForTransformWindow(window_, scale)
                    : gfx::RoundedCornersF(0));
@@ -705,8 +701,9 @@ void ScopedOverviewTransformWindow::SetImmediateCloseForTests(bool immediate) {
 
 void ScopedOverviewTransformWindow::CloseWidget() {
   aura::Window* parent_window = wm::GetTransientRoot(window_);
-  if (parent_window)
+  if (parent_window) {
     window_util::CloseWidgetForWindow(parent_window);
+  }
 }
 
 void ScopedOverviewTransformWindow::AddHiddenTransientWindows(

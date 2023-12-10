@@ -5,9 +5,8 @@
 #ifndef CHROME_UPDATER_MAC_INSTALL_FROM_ARCHIVE_H_
 #define CHROME_UPDATER_MAC_INSTALL_FROM_ARCHIVE_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -55,16 +54,15 @@ enum class InstallErrors {
 // Choose which type of archive to install from. Possible types of archives are
 // DMG, Zip and just the App. From there, it calls the archive specific
 // installation method.
-int InstallFromArchive(
-    const base::FilePath& file_path,
-    const base::FilePath& existence_checker_path,
-    const std::string& ap,
-    const UpdaterScope& scope,
-    const base::Version& pv,
-    const std::string& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
-    bool usage_stats_enabled,
-    const base::TimeDelta& timeout);
+int InstallFromArchive(const base::FilePath& file_path,
+                       const base::FilePath& existence_checker_path,
+                       const std::string& ap,
+                       const UpdaterScope& scope,
+                       const base::Version& pv,
+                       const std::string& arguments,
+                       const std::optional<base::FilePath>& installer_data_file,
+                       bool usage_stats_enabled,
+                       const base::TimeDelta& timeout);
 
 }  // namespace updater
 

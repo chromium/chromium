@@ -17,9 +17,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A delegate responsible for taking actions based on context menu selections.
- */
+/** A delegate responsible for taking actions based on context menu selections. */
 public interface ContextMenuItemDelegate {
     // The type of the data to save to the clipboard.
     @IntDef({ClipboardType.LINK_URL, ClipboardType.LINK_TEXT, ClipboardType.IMAGE_URL})
@@ -30,9 +28,7 @@ public interface ContextMenuItemDelegate {
         int IMAGE_URL = 2;
     }
 
-    /**
-     * Called when this ContextMenuItemDelegate is about to be destroyed.
-     */
+    /** Called when this ContextMenuItemDelegate is about to be destroyed. */
     void onDestroy();
 
     /**
@@ -89,7 +85,10 @@ public interface ContextMenuItemDelegate {
      * @param additionalNavigationParams Additional information that needs to be passed to the
      * navigation request.
      */
-    void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab,
+    void onOpenInNewTab(
+            GURL url,
+            Referrer referrer,
+            boolean navigateToTab,
             @Nullable AdditionalNavigationParams additionalNavigationParams);
 
     /**

@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
-#include "chrome/browser/media_galleries/media_galleries_histograms.h"
 #include "chrome/browser/media_galleries/media_gallery_context_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -244,7 +243,6 @@ void MediaGalleriesPermissionController::DidToggleEntry(
 
 void MediaGalleriesPermissionController::DidForgetEntry(
     GalleryDialogId gallery_id) {
-  media_galleries::UsageCount(media_galleries::DIALOG_FORGET_GALLERY);
   if (!new_galleries_.erase(gallery_id)) {
     DCHECK(base::Contains(known_galleries_, gallery_id));
     forgotten_galleries_.insert(gallery_id);
@@ -416,30 +414,19 @@ void MediaGalleriesPermissionController::InitializePermissions() {
 
 void MediaGalleriesPermissionController::SavePermissions() {
   DCHECK(preferences_);
-  media_galleries::UsageCount(media_galleries::SAVE_DIALOG);
   for (GalleryPermissionsMap::const_iterator iter = known_galleries_.begin();
        iter != known_galleries_.end(); ++iter) {
     MediaGalleryPrefId pref_id = GetPrefId(iter->first);
     if (base::Contains(forgotten_galleries_, iter->first)) {
       preferences_->ForgetGalleryById(pref_id);
     } else {
-      bool changed = preferences_->SetGalleryPermissionForExtension(
-          *extension_, pref_id, iter->second.selected);
-      if (changed) {
-        if (iter->second.selected) {
-          media_galleries::UsageCount(
-              media_galleries::DIALOG_PERMISSION_ADDED);
-        } else {
-          media_galleries::UsageCount(
-              media_galleries::DIALOG_PERMISSION_REMOVED);
-        }
-      }
+      preferences_->SetGalleryPermissionForExtension(*extension_, pref_id,
+                                                     iter->second.selected);
     }
   }
 
   for (GalleryPermissionsMap::const_iterator iter = new_galleries_.begin();
        iter != new_galleries_.end(); ++iter) {
-    media_galleries::UsageCount(media_galleries::DIALOG_GALLERY_ADDED);
     // If the user added a gallery then unchecked it, forget about it.
     if (!iter->second.selected)
       continue;

@@ -54,24 +54,24 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionView:
   void Show(
       const std::string& top_frame_etld_plus_one,
-      const absl::optional<std::string>& iframe_etld_plus_one,
+      const std::optional<std::string>& iframe_etld_plus_one,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(
       const std::string& top_frame_etld_plus_one,
-      const absl::optional<std::string>& iframe_etld_plus_one,
+      const std::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
       const blink::mojom::RpContext& rp_context,
       const content::IdentityProviderMetadata& idp_metadata) override;
   void ShowErrorDialog(const std::string& top_frame_etld_plus_one,
-                       const absl::optional<std::string>& iframe_etld_plus_one,
+                       const std::optional<std::string>& iframe_etld_plus_one,
                        const std::string& idp_etld_plus_one,
                        const blink::mojom::RpContext& rp_context,
                        const content::IdentityProviderMetadata& idp_metadata,
-                       const absl::optional<TokenError>& error) override;
+                       const std::optional<TokenError>& error) override;
   std::string GetTitle() const override;
-  absl::optional<std::string> GetSubtitle() const override;
+  std::optional<std::string> GetSubtitle() const override;
 
   // FedCmModalDialogView::Observer
   void OnPopupWindowDestroyed() override;
@@ -102,8 +102,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // model.
   virtual views::Widget* CreateBubbleWithAccessibleTitle(
       const std::u16string& top_frame_etld_plus_one,
-      const absl::optional<std::u16string>& iframe_etld_plus_one,
-      const absl::optional<std::u16string>& idp_title,
+      const std::optional<std::u16string>& iframe_etld_plus_one,
+      const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox);
 
@@ -199,8 +199,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  void OnSigninToIdP(const GURL& idp_login_url,
-                     const ui::Event& event) override;
+  void OnLoginToIdP(const GURL& idp_login_url, const ui::Event& event) override;
   void OnGotIt(const ui::Event& event) override;
   void OnMoreDetails(const ui::Event& event) override;
 
@@ -222,7 +221,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   std::u16string top_frame_for_display_;
 
-  absl::optional<std::u16string> iframe_for_display_;
+  std::optional<std::u16string> iframe_for_display_;
 
   State state_{State::ACCOUNT_PICKER};
 

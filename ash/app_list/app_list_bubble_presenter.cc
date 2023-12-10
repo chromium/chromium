@@ -360,7 +360,7 @@ void AppListBubblePresenter::UpdateContinueSectionVisibility() {
 }
 
 void AppListBubblePresenter::UpdateForNewSortingOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
   DCHECK_EQ(animate, !update_position_closure.is_null());

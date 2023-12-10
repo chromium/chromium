@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Permission.state is "denied" in cross-origin iframes.
+  assert_equals: navigator.permissions.query("geolocation") expected "denied" but got "prompt"
+Harness: the test ran to completion.

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabListEditorToolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout
+        android:id="@+id/action_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <org.chromium.ui.listmenu.ListMenuButton
+            style="@style/ToolbarMenuButton"
+            android:id="@+id/list_menu_button"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_gravity="center"
+            android:enabled="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:background="@null"
+            app:menuMaxWidth="@dimen/menu_width"
+            app:tint="@color/default_icon_color_tint_list"
+            tools:ignore="ContentDescription" />
+    </org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabListEditorToolbar>

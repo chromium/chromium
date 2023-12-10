@@ -8,6 +8,7 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
+#include <optional>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -142,11 +143,12 @@ int XdgToplevelResizeComponent(uint32_t edges) {
   }
 }
 
-using XdgSurfaceConfigureCallback =
-    base::RepeatingCallback<void(const gfx::Size& size,
-                                 chromeos::WindowStateType state_type,
-                                 bool resizing,
-                                 bool activated)>;
+using XdgSurfaceConfigureCallback = base::RepeatingCallback<void(
+    const gfx::Size& size,
+    chromeos::WindowStateType state_type,
+    bool resizing,
+    bool activated,
+    std::optional<chromeos::WindowStateType> restore_state_type)>;
 
 uint32_t HandleXdgSurfaceConfigureCallback(
     wl_resource* resource,
@@ -157,10 +159,12 @@ uint32_t HandleXdgSurfaceConfigureCallback(
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset,
-    float raster_scale) {
+    float raster_scale,
+    std::optional<chromeos::WindowStateType> restore_state_type) {
   uint32_t serial =
       serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
-  callback.Run(bounds.size(), state_type, resizing, activated);
+  callback.Run(bounds.size(), state_type, resizing, activated,
+               restore_state_type);
   xdg_surface_send_configure(resource, serial);
   wl_client_flush(wl_resource_get_client(resource));
   return serial;
@@ -295,10 +299,12 @@ class WaylandToplevel : public aura::WindowObserver {
     *value = state;
   }
 
-  void OnConfigure(const gfx::Size& size,
-                   chromeos::WindowStateType state_type,
-                   bool resizing,
-                   bool activated) {
+  void OnConfigure(
+      const gfx::Size& size,
+      chromeos::WindowStateType state_type,
+      bool resizing,
+      bool activated,
+      std::optional<chromeos::WindowStateType> restore_state_type) {
     wl_array states;
     wl_array_init(&states);
     if (state_type == chromeos::WindowStateType::kMaximized)
@@ -306,6 +312,14 @@ class WaylandToplevel : public aura::WindowObserver {
     // TODO(crbug/1250129): Pinned states need to be handled properly.
     if (IsFullscreenOrPinnedWindowStateType(state_type)) {
       AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+      // If the window was maxmized before it is fullscreened, we should
+      // keep this state while it is fullscreened. This is what X11 apps, and
+      // thus standard wayland apps expect, and they may rely on this behavior
+      // even though this is not explicitly specified in the protocol spec.
+      if (restore_state_type.has_value() &&
+          restore_state_type.value() == chromeos::WindowStateType::kMaximized) {
+        AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
+      }
     }
     if (resizing)
       AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
@@ -560,10 +574,12 @@ class WaylandPopup : aura::WindowObserver {
     wl_client_flush(wl_resource_get_client(resource_));
   }
 
-  void OnConfigure(const gfx::Size& size,
-                   chromeos::WindowStateType state_type,
-                   bool resizing,
-                   bool activated) {
+  void OnConfigure(
+      const gfx::Size& size,
+      chromeos::WindowStateType state_type,
+      bool resizing,
+      bool activated,
+      std::optional<chromeos::WindowStateType> restore_state_type) {
     // Nothing to do here as popups don't have additional configure state.
   }
 

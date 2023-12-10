@@ -13,17 +13,26 @@
 class BrowserObserver;
 class ChromeBrowserState;
 @class CommandDispatcher;
+@class SceneState;
 class WebStateList;
 
 // Browser is the model for a window containing multiple tabs. Instances
-// are owned by a BrowserList to allow multiple windows for a single user
+// are owned by a Coordinator to allow multiple windows for a single user
 // session.
 //
 // See src/docs/ios/objects.md for more information.
 class Browser : public base::SupportsUserData {
  public:
-  // Creates a new Browser attached to `browser_state`.
-  static std::unique_ptr<Browser> Create(ChromeBrowserState* browser_state);
+  // Creates a new Browser attached to `browser_state` and to `scene_state`.
+  static std::unique_ptr<Browser> Create(ChromeBrowserState* browser_state,
+                                         SceneState* scene_state);
+
+  // Creates a new temporary Browser attached to `browser_state`. It should
+  // not be presented to the user but can be used when there is a need to
+  // store WebStates while supporting BrowserAgent (i.e. recording metrics,
+  // reporting recently closed tabs, ...).
+  static std::unique_ptr<Browser> CreateTemporary(
+      ChromeBrowserState* browser_state);
 
   Browser(const Browser&) = delete;
   Browser& operator=(const Browser&) = delete;
@@ -38,6 +47,9 @@ class Browser : public base::SupportsUserData {
 
   // Accessor for the CommandDispatcher.
   virtual CommandDispatcher* GetCommandDispatcher() = 0;
+
+  // Accessor for the SceneState.
+  virtual SceneState* GetSceneState() = 0;
 
   // Adds and removes observers.
   virtual void AddObserver(BrowserObserver* observer) = 0;

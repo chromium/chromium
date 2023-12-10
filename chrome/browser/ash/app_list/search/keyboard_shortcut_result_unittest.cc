@@ -59,6 +59,14 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
         text_vector, accessible_name, text_parts);
   }
 
+  void PopulateTextVectorForNoShortcut(
+      TextVector* text_vector,
+      std::vector<std::u16string>& accessible_name) {
+    auto shortcut_result = CreateKeyboardShortcutResult();
+    shortcut_result->PopulateTextVectorForNoShortcut(text_vector,
+                                                     accessible_name);
+  }
+
   std::unique_ptr<KeyboardShortcutResult> CreateKeyboardShortcutResult() {
     const auto& search_results =
         ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
@@ -94,7 +102,7 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
-                accelerator, u"FakeKey", absl::nullopt)));
+                accelerator, u"FakeKey", std::nullopt)));
   }
 
   std::vector<ash::mojom::AcceleratorInfoPtr> CreateFakeAcceleratorInfoList(
@@ -394,6 +402,17 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVectorWithText) {
 
   std::u16string expected_accessible_name =
       u"Press  the ctrl key the a key Or  the arrow left key";
+  EXPECT_EQ(expected_accessible_name, base::JoinString(accessible_names, u" "));
+}
+
+TEST_F(KeyboardShortcutResultTest, PopulateTextVectorForNoShortcut) {
+  TextVector text_vector;
+  std::vector<std::u16string> accessible_names;
+  PopulateTextVectorForNoShortcut(&text_vector, accessible_names);
+
+  ASSERT_EQ(text_vector.size(), 1u);
+  VerifyTextItem(text_vector[0], u"No shortcut assigned", TextType::kString);
+  std::u16string expected_accessible_name = u"No shortcut assigned";
   EXPECT_EQ(expected_accessible_name, base::JoinString(accessible_names, u" "));
 }
 

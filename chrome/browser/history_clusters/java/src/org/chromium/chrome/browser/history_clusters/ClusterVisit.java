@@ -9,9 +9,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * Data structure representing a single logical visit and associated annotations//display data.
- */
+/** Data structure representing a single logical visit and associated annotations//display data. */
 public class ClusterVisit {
     /**
      * Data structure representing a visit that is considered a duplicate of a more relevant visit.
@@ -59,9 +57,16 @@ public class ClusterVisit {
      * @param timestamp The time at which the most visit occurred.
      * @param duplicateVisits A list of visits that have been de-duplicated into this visit.
      */
-    public ClusterVisit(float score, GURL normalizedUrl, String title, String urlForDisplay,
-            List<MatchPosition> titleMatchPositions, List<MatchPosition> urlMatchPositions,
-            GURL rawUrl, long timestamp, List<DuplicateVisit> duplicateVisits) {
+    public ClusterVisit(
+            float score,
+            GURL normalizedUrl,
+            String title,
+            String urlForDisplay,
+            List<MatchPosition> titleMatchPositions,
+            List<MatchPosition> urlMatchPositions,
+            GURL rawUrl,
+            long timestamp,
+            List<DuplicateVisit> duplicateVisits) {
         mScore = score;
         mNormalizedUrl = normalizedUrl;
         mTitle = title;

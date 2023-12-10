@@ -10,7 +10,7 @@
 #import "base/i18n/case_conversion.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/tab_restore_service_impl.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_client.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"

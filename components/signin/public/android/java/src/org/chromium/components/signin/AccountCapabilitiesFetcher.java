@@ -33,19 +33,23 @@ public class AccountCapabilitiesFetcher {
         assert nativeCallback != INVALID_NATIVE_CALLBACK;
         mCoreAccountInfo = coreAccountInfo;
         mNativeCallback = nativeCallback;
-    };
+    }
+    ;
 
     @CalledByNative
     public void startFetchingAccountCapabilities() {
         AccountManagerFacadeProvider.getInstance()
                 .getAccountCapabilities(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo))
-                .then(accountCapabilities -> { onCapabilitiesFetchComplete(accountCapabilities); });
+                .then(
+                        accountCapabilities -> {
+                            onCapabilitiesFetchComplete(accountCapabilities);
+                        });
     }
 
     private void onCapabilitiesFetchComplete(AccountCapabilities accountCapabilities) {
         assert mNativeCallback != INVALID_NATIVE_CALLBACK;
-        AccountCapabilitiesFetcherJni.get().onCapabilitiesFetchComplete(
-                accountCapabilities, mNativeCallback);
+        AccountCapabilitiesFetcherJni.get()
+                .onCapabilitiesFetchComplete(accountCapabilities, mNativeCallback);
         mNativeCallback = INVALID_NATIVE_CALLBACK;
     }
 

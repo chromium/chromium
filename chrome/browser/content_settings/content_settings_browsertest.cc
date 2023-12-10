@@ -140,6 +140,44 @@ MATCHER(IsErrorTooManyRedirects, "") {
   return arg->GetNetErrorCode() == net::ERR_TOO_MANY_REDIRECTS;
 }
 
+// Return the active RenderFrameHost loaded in the last iframe in |parent_rfh|.
+content::RenderFrameHost* LastChild(content::RenderFrameHost* parent_rfh) {
+  int child_end = 0;
+  while (ChildFrameAt(parent_rfh, child_end)) {
+    child_end++;
+  }
+  if (child_end == 0) {
+    return nullptr;
+  }
+  return ChildFrameAt(parent_rfh, child_end - 1);
+}
+
+// Create an <iframe> inside |parent_rfh|, and navigate it toward |url|.
+// |permission_policy| can be used to set permission policy to the iframe.
+// For instance:
+// ```
+// child = CreateIframe(parent, url, "geolocation *; camera *");
+// ```
+// This returns the new RenderFrameHost associated with new document created in
+// the iframe.
+content::RenderFrameHost* CreateIframe(
+    content::RenderFrameHost* parent_rfh,
+    const GURL& url,
+    const std::string& permission_policy = "") {
+  EXPECT_EQ(
+      "iframe loaded",
+      content::EvalJs(parent_rfh, content::JsReplace(R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = $1;
+      iframe.allow = $2;
+      iframe.onload = _ => { resolve("iframe loaded"); };
+      document.body.appendChild(iframe);
+    }))",
+                                                     url, permission_policy)));
+  return LastChild(parent_rfh);
+}
+
 }  // namespace
 
 class ContentSettingsTest : public InProcessBrowserTest {
@@ -1127,11 +1165,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RendererUpdateWhilePendingCommit) {
   content::CommitMessageDelayer delayer(
       web_contents, second_url,
       base::BindOnce([](content::RenderFrameHost* rfh) {
-        auto global_id = rfh->GetGlobalId();
+        auto global_frame_token = rfh->GetGlobalFrameToken();
         // Call ContentBlocked while the RFH is pending commit.
         PageSpecificContentSettings::ContentBlocked(
-            global_id.child_id, global_id.frame_routing_id,
-            ContentSettingsType::JAVASCRIPT);
+            global_frame_token, ContentSettingsType::JAVASCRIPT);
       }));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), second_url, WindowOpenDisposition::CURRENT_TAB,
@@ -1754,6 +1791,73 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       ContentSettingsPattern::FromURL(fenced_frame_url),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_DEFAULT);
   fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
+  ExpectScriptBlocked(fenced_frame);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
+                       NestedFramesRendererContentSettings) {
+  // a.com embeds b.com, b.com embeds c.com.
+  const GURL main_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL nested_url = https_server_.GetURL("b.test", "/empty.html");
+  const GURL fenced_frame_url =
+      https_server_.GetURL("c.test", "/fenced_frames/page_with_script.html");
+  content::RenderFrameHost* crossorigin_subframe;
+
+  auto NavigatePrimaryPageAndAddNestedFrames =
+      [&]() -> content::RenderFrameHost* {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+    EXPECT_FALSE(GetWebContents()->GetPrimaryMainFrame()->IsErrorDocument());
+    EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+
+    crossorigin_subframe =
+        CreateIframe(GetWebContents()->GetPrimaryMainFrame(), nested_url);
+
+    EXPECT_NE(crossorigin_subframe, nullptr);
+
+    content::RenderFrameHost* fenced_frame =
+        fenced_frame_test_helper().CreateFencedFrame(crossorigin_subframe,
+                                                     fenced_frame_url);
+    EXPECT_NE(fenced_frame, nullptr);
+    return fenced_frame;
+  };
+
+  auto ExpectScriptAllowed = [&](content::RenderFrameHost* fenced_frame) {
+    EXPECT_EQ(1, EvalJs(fenced_frame, "(async () => { return 1; })();"));
+    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
+    EXPECT_FALSE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  };
+
+  auto ExpectScriptBlocked = [&](content::RenderFrameHost* fenced_frame) {
+    ui_test_utils::WaitForViewVisibility(
+        browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
+    auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+        GetWebContents()->GetPrimaryMainFrame());
+    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
+    // Script should have been blocked in the fenced frame (and reflected
+    // in the PSCS of the primary page as well).
+    EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+    EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  };
+
+  content::RenderFrameHost* fenced_frame =
+      NavigatePrimaryPageAndAddNestedFrames();
+  ASSERT_TRUE(fenced_frame);
+
+  // Script is allowed by default in iframes.
+  ExpectScriptAllowed(fenced_frame);
+
+  // Block script in (a.test, c.test).
+  auto* map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(main_url),
+      ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
+
+  fenced_frame = NavigatePrimaryPageAndAddNestedFrames();
+  ASSERT_TRUE(fenced_frame);
+
+  // Script should blocked (a.com, b.com).
   ExpectScriptBlocked(fenced_frame);
 }
 

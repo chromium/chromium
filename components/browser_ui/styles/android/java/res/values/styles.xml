@@ -19,15 +19,13 @@ found in the LICENSE file.
         <item name="android:minHeight">0dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
-    <style name="Widget.BrowserUI.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint_list</item>
-        <item name="trackTint">@color/switch_track_tint</item>
-        <item name="trackTintMode">src_in</item>
+    <style name="Widget.BrowserUI.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:scaleX">@fraction/material_switch_scale_fraction</item>
+        <item name="android:scaleY">@fraction/material_switch_scale_fraction</item>
+        <item name="android:minHeight">@dimen/switch_pre_scale_min_height</item>
     </style>
-    <style name="Widget.BrowserUI.Switch.Incognito" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint_incognito_baseline_list</item>
-        <item name="trackTint">@color/switch_track_tint_incognito_baseline_list</item>
-
+    <style name="Widget.BrowserUI.Switch.Incognito">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.BrowserUI.Switch.Incognito</item>
     </style>
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
@@ -77,18 +75,6 @@ found in the LICENSE file.
 
     <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
-    </style>
-
-    <!-- Switch styling for dark theme -->
-    <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
-         -->
-    <style name="SwitchMaterialDark">
-        <!-- TODO(sinansahin): When we migrate the switch style to Material3, we should override
-             colorOnSurface and colorPrimary instead of these attributes because they are what
-             m3_selection_control_ripple_color_selector uses. -->
-        <item name="colorControlActivated">@color/default_control_color_active_dark</item>
-        <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
-        <item name="switchStyle">@style/Widget.BrowserUI.Switch.Incognito</item>
     </style>
 
     <!-- Styling for an app menu item row. -->

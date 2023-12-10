@@ -87,3 +87,7 @@ td.downloaded-models-optimization-target {
 td.downloaded-models-file-path {
   word-wrap: break-word;
 }
+
+.logged-client-ids {
+  width: 20%;
+}

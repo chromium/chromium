@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1178581264944972037">Durdurun</translation>
-<translation id="2558806128245168542">Geri qayıdın</translation>
-<translation id="3523426587027570423">Toxunaraq "Bu səhifəni dinləyin" pleyerini bağlayın.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> saniyə irəli keçin</translation>
+<translation id="1984328900355667246">Oxutma əlçatan deyil</translation>
+<translation id="3023502830214299618">Bu səhifə üçün oxutma əlçatan deyil. Sonra cəhd edin.</translation>
+<translation id="3807208219231826020">Sürüşdürüb oxutma</translation>
+<translation id="385051799172605136">Geri</translation>
 <translation id="4431240646217225907">Mətnin vurğulanması və avtomatik sürüşdürmə</translation>
 <translation id="4654641641922242357">"Bu səhifəni dinləyin" pleyeri.</translation>
-<translation id="4731877163452936634">Oxutma sürəti: <ph name="PLAYBACK_SPEED" />. Klikləyərək dəyişin.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> saniyə geri qayıdın</translation>
 <translation id="5234971936051226002">"Bu səhifəni dinləyin" pleyeri kiçildildi.</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="6315170314923504164">Səs</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6846298663435243399">Yüklənir...</translation>
 <translation id="7587250070160020374">Chrome-da oxudulur</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> saniyə irəli çəkin</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> saniyə geri çəkin</translation>
 <translation id="8136852699834914183">Bu səhifəni səsləndirmək olmur.</translation>
+<translation id="8264989794233974275">Sürəti <ph name="PLAYBACK_SPEED" /> dəfə artırın/azaldın.</translation>
+<translation id="8407011429883244666">Pleyeri bağlayın.</translation>
 <translation id="8953618380150219653">"Bu səhifəni dinləyin" pleyeri tam uzunluqda açıldı.</translation>
 </translationbundle>

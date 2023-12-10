@@ -10,14 +10,19 @@ callback ObserverCompleteCallback = void ();
 
 dictionary Observer {
   ObserverCallback next;
-  ObserverCompleteCallback complete;
   ObserverCallback error;
+  ObserverCompleteCallback complete;
+};
+
+dictionary SubscribeOptions {
   AbortSignal signal;
 };
+
+typedef (ObserverCallback or Observer) ObserverUnion;
 
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Observable {
     [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
-    [CallWith=ScriptState] void subscribe(optional Observer observer = {});
+    [CallWith=ScriptState] void subscribe(optional ObserverUnion observer = {}, optional SubscribeOptions options = {});
 };
 

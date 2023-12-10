@@ -6,9 +6,11 @@
 
 #include <xdg-shell-client-protocol.h>
 
+#include "build/buildflag.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -330,6 +332,17 @@ void TransformToWlArray(
     DCHECK(ptr);
     *ptr = static_cast<float>(t.rc(rc[0], rc[1]));
   }
+}
+
+base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/1499638): `milliseconds` comes from Weston that
+  // uses timestamp from libinput, which is different from TimeTicks.
+  // Use EventTimeForNow(), for now.
+  return ui::EventTimeForNow();
+#else
+  return base::TimeTicks() + base::Milliseconds(milliseconds);
+#endif
 }
 
 }  // namespace wl

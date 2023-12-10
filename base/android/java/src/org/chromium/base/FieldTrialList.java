@@ -6,9 +6,7 @@ package org.chromium.base;
 
 import org.jni_zero.NativeMethods;
 
-/**
- * Helper to get field trial information.
- */
+/** Helper to get field trial information. */
 public class FieldTrialList {
 
     private FieldTrialList() {}
@@ -60,9 +58,13 @@ public class FieldTrialList {
     @NativeMethods
     interface Natives {
         String findFullName(String trialName);
+
         boolean trialExists(String trialName);
+
         String getVariationParameter(String trialName, String parameterKey);
+
         void logActiveTrials();
+
         boolean createFieldTrial(String trialName, String groupName);
     }
 }

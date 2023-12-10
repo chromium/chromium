@@ -64,8 +64,8 @@ class AutofillSuggestionGenerator {
   // relevant types for the current suggestions.
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const ServerFieldTypeSet& field_types,
-      const FormFieldData& triggering_field,
-      ServerFieldType triggering_field_type,
+      const FormFieldData& trigger_field,
+      ServerFieldType trigger_field_type,
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
       AutofillSuggestionTriggerSource trigger_source);
 
@@ -84,12 +84,16 @@ class AutofillSuggestionGenerator {
   // `field_types` holds the type of fields relevant for the current suggestion.
   // The profiles passed to this function should already have been matched on
   // `trigger_field_contents_canon` and deduplicated.
+  // `previously_hidden_profiles_guid` stores the guids of the profiles that
+  // were not displayed prior to the effects of the Finch feature
+  // kAutofillUseAddressRewriterInProfileSubsetComparison.
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
       const std::vector<const AutofillProfile*>& profiles,
       const ServerFieldTypeSet& field_types,
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
       ServerFieldType trigger_field_type,
-      uint64_t trigger_field_max_length);
+      uint64_t trigger_field_max_length,
+      const std::set<std::string>& previously_hidden_profiles_guid = {});
 
   // Generates suggestions for all available credit cards based on the
   // `trigger_field_type` and the value of `field`. `should_display_gpay_logo`
@@ -151,19 +155,6 @@ class AutofillSuggestionGenerator {
   // `candidate_card`.
   bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
 
-  // Checks whether the suggestion accepted by the user, generated from the
-  // profile with `backend_id`, would've been hidden prior to landing the
-  // feature `kAutofillUseAddressRewriterInProfileSubsetComparison`.
-  // `skip_reasons` denotes for each field if it is relevant for the current
-  // suggestion or not.
-  // TODO(crbug/1439742): Remove when
-  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
-  bool WasProfileSuggestionPreviouslyHidden(
-      const FormStructure& form,
-      const AutofillField& field,
-      Suggestion::BackendId backend_id,
-      const std::vector<FieldFillingSkipReason>& skip_reasons);
-
  protected:
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`
   // suggests whether the suggestion is a virtual card option.
@@ -202,23 +193,23 @@ class AutofillSuggestionGenerator {
       base::Time min_last_used,
       std::vector<AutofillProfile*>& profiles);
 
-  // In addition to just getting the values out of the profile, this function
-  // handles type-specific formatting.
-  std::u16string GetProfileSuggestionMainText(
-      const AutofillProfile* profile,
-      ServerFieldType trigger_field_type);
-
   // Creates nested/child suggestions for `suggestion` with the `profile`
-  // information. Uses `trigger_field_type_group` to define what group filling
+  // information. Uses `trigger_field_type` to define what group filling
   // suggestion to add (name, address or phone). The existence of child
   // suggestions defines whether the autofill popup will have submenus.
   // `last_targeted_fields` specified the last set of fields target by the user.
   // When not present, we default to full form.
-  void AddGranularFillingChildSuggestions(
-      FieldTypeGroup trigger_field_type_group,
+  void AddAddressGranularFillingChildSuggestions(
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      ServerFieldType trigger_field_type,
       const AutofillProfile& profile,
-      Suggestion& suggestion);
+      Suggestion& suggestion) const;
+
+  // Creates nested/child suggestions for `suggestion` with the `credit_card`
+  // information. The number of nested suggestions added depends on the
+  // information present in the `credit_card`.
+  void AddPaymentsGranularFillingChildSuggestions(const CreditCard& credit_card,
+                                                  Suggestion& suggestion) const;
 
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the `trigger_field_type`. The first index in the pair

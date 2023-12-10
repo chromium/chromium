@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
-import {isSameEntry} from '../../common/js/entry_utils.js';
+import {getTreeItemEntry, isSameEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
@@ -165,9 +165,8 @@ export class DirectoryTreeNamingController {
     }
     this.editing_ = false;
 
-    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-    // 'XfTreeItem | DirectoryItem'.
-    const entry = this.currentDirectoryItem_.entry;
+    const entry = /** @type {DirectoryEntry} */ (
+        assert(getTreeItemEntry(this.currentDirectoryItem_)));
     const newName = this.inputElement_.value;
 
     // If new name is the same as current name or empty, do nothing.

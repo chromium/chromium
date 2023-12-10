@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -62,7 +63,6 @@
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace policy {
@@ -171,9 +171,8 @@ BASE_FEATURE(kEnableCsrssLockdownFeature,
              "EnableCsrssLockdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !defined(NACL_WIN64)
 // Adds the policy rules to allow read-only access to the windows system fonts
-// directory, and any subdirectories.
+// directory, and any subdirectories. Used by PDF renderers.
 bool AddWindowsFontsDir(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   base::FilePath directory;
@@ -194,7 +193,6 @@ bool AddWindowsFontsDir(TargetConfig* config) {
 
   return true;
 }
-#endif  // !defined(NACL_WIN64)
 
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
@@ -369,7 +367,7 @@ void CheckDuplicateHandle(HANDLE handle) {
   std::wstring_view type_name(type_info->TypeName.Buffer,
                               type_info->TypeName.Length / sizeof(wchar_t));
 
-  absl::optional<ACCESS_MASK> granted_access =
+  std::optional<ACCESS_MASK> granted_access =
       base::win::GetGrantedAccess(handle);
   CHECK(granted_access.has_value());
 
@@ -650,11 +648,9 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     config->AddRestrictingRandomSid();
   }
 
-#if !defined(NACL_WIN64)
   if (delegate->AllowWindowsFontsDir()) {
     AddWindowsFontsDir(config);
   }
-#endif
 
   result = AddGenericConfig(config);
   if (result != SBOX_ALL_OK) {
@@ -785,15 +781,13 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
   if (ret != SBOX_ALL_OK)
     return ret;
 
-  absl::optional<size_t> memory_limit = GetJobMemoryLimit(sandbox_type);
+  std::optional<size_t> memory_limit = GetJobMemoryLimit(sandbox_type);
   if (memory_limit) {
     config->SetJobMemoryLimit(*memory_limit);
   }
   return SBOX_ALL_OK;
 }
 
-// TODO(jschuh): Need get these restrictions applied to NaCl and Pepper.
-// Just have to figure out what needs to be warmed up first.
 // static
 ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -829,7 +823,6 @@ ResultCode SandboxWin::AddAppContainerPolicy(TargetConfig* config,
 // static
 ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
-#if !defined(NACL_WIN64)
   MitigationFlags flags = config->GetProcessMitigations();
   // Check not enabling twice. Should not happen.
   DCHECK_EQ(0U, flags & MITIGATION_WIN32K_DISABLE);
@@ -840,9 +833,6 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
     return result;
 
   return config->SetFakeGdiInit();
-#else  // !defined(NACL_WIN64)
-  return SBOX_ALL_OK;
-#endif
 }
 
 // static
@@ -1127,7 +1117,7 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
 
 // static
 std::string SandboxWin::GetSandboxTagForDelegate(
-    base::StringPiece prefix,
+    std::string_view prefix,
     sandbox::mojom::Sandbox sandbox_type) {
   // sandbox.mojom.Sandbox has an operator << we can use for non-human values.
   std::ostringstream stream;
@@ -1136,7 +1126,7 @@ std::string SandboxWin::GetSandboxTagForDelegate(
 }
 
 // static
-absl::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
+std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
   // Trigger feature list initialization here to ensure no population bias in
   // the experimental and control groups.
   [[maybe_unused]] const bool high_renderer_limits =
@@ -1146,7 +1136,8 @@ absl::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
-  if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer) {
+  if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer ||
+      sandbox_type == Sandbox::kOnDeviceModelExecution) {
     constexpr uint64_t GB = 1024 * 1024 * 1024;
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
@@ -1171,7 +1162,7 @@ absl::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
   }
   return memory_limit;
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

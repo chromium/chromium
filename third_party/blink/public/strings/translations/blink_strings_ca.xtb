@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Escurceu aquest text a un màxim de <ph name="MAX_CHARACTERS" /> caràcters (ara n'esteu utilitzant <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Setmana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">La càmera i el micròfon es poden utilitzar</translation>
 <translation id="2393030564806080191">Valor hexadecimal del color</translation>
 <translation id="2398813069815436052">s'ha obert el quadre de diàleg.</translation>
 <translation id="245932805758469625">nombre de segons restants del vídeo</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Allargueu aquest text fins a un mínim de <ph name="MIN_CHARACTERS" /> caràcters (ara n'utilitzeu <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Un nom d'usuari seguit de "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Surt de la pantalla completa</translation>
+<translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
 <translation id="4103419683916926126">Mil·lisegons</translation>
 <translation id="4201051445878709314">Mostra el mes anterior</translation>
 <translation id="4360991593054037559">Introduïu un valor vàlid. Els valors vàlids més propers són <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalls</translation>
+<translation id="4663373278480897665">La càmera es pot utilitzar</translation>
 <translation id="4664250907885839816">Un domini precedit per "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">S'està reproduint imatge sobre imatge</translation>
 <translation id="4748357248530471599">activa o desactiva la pantalla completa al retall de pantalla</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">baixa els fitxers multimèdia</translation>
 <translation id="698788488269350478">està desplegat.</translation>
 <translation id="6989848892321993519">Allarga aquest text fins a <ph name="MIN_CHARACTERS" /> caràcters o més (ara n'utilitzes 1).</translation>
+<translation id="7080893216867146095">Compartició d'ubicació permesa</translation>
 <translation id="709897737746224366">Feu servir el format sol·licitat.</translation>
 <translation id="7102274145889307184">ubicació actual</translation>
 <translation id="7263440858009898357">Seleccioneu un element de la llista.</translation>

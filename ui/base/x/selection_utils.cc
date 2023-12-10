@@ -17,7 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
 
 namespace ui {
 

@@ -18,7 +18,9 @@
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -42,6 +44,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
@@ -62,32 +65,33 @@ class CursorWindowControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityExtraLargeCursor);
+
     // Shell hides the cursor by default; show it for these tests.
     Shell::Get()->cursor_manager()->ShowCursor();
 
-    cursor_window_controller_ =
-        Shell::Get()->window_tree_host_manager()->cursor_window_controller();
     SetCursorCompositionEnabled(true);
   }
 
   CursorType GetCursorType() const {
-    return cursor_window_controller_->cursor_.type();
+    return cursor_window_controller()->cursor_.type();
   }
 
   const gfx::Point& GetCursorHotPoint() const {
-    return cursor_window_controller_->hot_point_;
+    return cursor_window_controller()->hot_point_;
   }
 
   aura::Window* GetCursorWindow() const {
-    return cursor_window_controller_->cursor_window_.get();
+    return cursor_window_controller()->cursor_window_.get();
   }
 
   const gfx::ImageSkia& GetCursorImage() const {
-    return cursor_window_controller_->GetCursorImageForTest();
+    return cursor_window_controller()->GetCursorImageForTest();
   }
 
   int64_t GetCursorDisplayId() const {
-    return cursor_window_controller_->display_.id();
+    return cursor_window_controller()->display_.id();
   }
 
   void SetCursorCompositionEnabled(bool enabled) {
@@ -98,14 +102,12 @@ class CursorWindowControllerTest : public AshTestBase {
         enabled);
   }
 
-  CursorWindowController* cursor_window_controller() {
-    return cursor_window_controller_;
+  CursorWindowController* cursor_window_controller() const {
+    return Shell::Get()->window_tree_host_manager()->cursor_window_controller();
   }
 
  private:
-  // Not owned.
-  raw_ptr<CursorWindowController, DanglingUntriaged | ExperimentalAsh>
-      cursor_window_controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the composited cursor moves to another display when the real cursor
@@ -217,16 +219,12 @@ class TestCursorImageSource : public gfx::ImageSkiaSource {
   }
 
  private:
-  static SkBitmap CreateSolidColorBitmap(SkColor color, int size) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(size, size);
-    bitmap.eraseColor(color);
-    return bitmap;
-  }
   gfx::ImageSkiaRep rep_1x_ =
-      gfx::ImageSkiaRep(CreateSolidColorBitmap(SK_ColorBLACK, 25), 1.f);
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(/*size=*/25, SK_ColorBLACK),
+                        1.f);
   gfx::ImageSkiaRep rep_2x_ =
-      gfx::ImageSkiaRep(CreateSolidColorBitmap(SK_ColorWHITE, 50), 2.f);
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(/*size=*/50, SK_ColorWHITE),
+                        2.f);
 };
 
 }  // namespace
@@ -277,7 +275,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
                                     << " and size " << size);
 
     cursor_window_controller()->SetCursor(cursor);
-    const absl::optional<ui::CursorData> cursor_data =
+    const std::optional<ui::CursorData> cursor_data =
         cursor_shape_client.GetCursorData(cursor);
     DCHECK(cursor_data);
 
@@ -327,7 +325,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
                             ->GetPrimaryDisplay()
                             .device_scale_factor();
 
-      for (const int size : {0, 32, 64}) {
+      for (const int size : {0, 32, 64, 128}) {
         cursor_manager->SetCursorSize(size == 0 ? ui::CursorSize::kNormal
                                                 : ui::CursorSize::kLarge);
         Shell::Get()->SetLargeCursorSizeInDip(size);
@@ -338,12 +336,10 @@ TEST_F(CursorWindowControllerTest, DSF) {
                     ui::GetScaleForResourceScaleFactor(
                         ui::GetSupportedResourceScaleFactor(dsf)));
 
-        // Custom cursor.
-        SkBitmap bitmap;
-        bitmap.allocN32Pixels(20, 20);
-        // Custom cursors are always scaled at the device scale factor. See
-        // `WebCursor::GetNativeCursor`.
-        cursor_test(ui::Cursor::NewCustom(bitmap, gfx::Point(10, 10), dsf),
+        // Custom cursor. Custom cursors are always scaled at the device scale
+        // factor. See `WebCursor::GetNativeCursor`.
+        cursor_test(ui::Cursor::NewCustom(gfx::test::CreateBitmap(/*size=*/20),
+                                          gfx::Point(10, 10), dsf),
                     size, dsf);
       }
     }

@@ -7,8 +7,8 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
@@ -27,7 +27,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -89,7 +88,7 @@ class WorkerThreadDispatcher :
   void AddWorkerData(
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
-      const absl::optional<base::UnguessableToken>& activation_sequence,
+      const std::optional<base::UnguessableToken>& activation_sequence,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);
@@ -195,7 +194,7 @@ class WorkerThreadDispatcher :
 
  private:
   static void UpdateBindingsOnWorkerThread(
-      const absl::optional<ExtensionId>& extension_id);
+      const std::optional<ExtensionId>& extension_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
@@ -226,7 +225,7 @@ class WorkerThreadDispatcher :
   // Helper method to update bindings. If `extension_id` is non-null, updates
   // only bindings for that extension; otherwise, updates all bindings.
   // Returns true if the task to each worker thread posts correctly.
-  bool UpdateBindingsHelper(const absl::optional<ExtensionId>& extension_id);
+  bool UpdateBindingsHelper(const std::optional<ExtensionId>& extension_id);
 
   using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
   IDToTaskRunnerMap task_runner_map_;

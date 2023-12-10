@@ -27,6 +27,9 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -39,9 +42,10 @@ using ParseErrorType = FirstPartySetsHandler::ParseErrorType;
 using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 using ParseError = FirstPartySetsHandler::ParseError;
 using ParseWarning = FirstPartySetsHandler::ParseWarning;
-using Aliases = FirstPartySetParser::Aliases;
-using SetsAndAliases = FirstPartySetParser::SetsAndAliases;
-using SetsMap = FirstPartySetParser::SetsMap;
+using SetsMap = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
+using Aliases = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+using SetsAndAliases = std::pair<SetsMap, Aliases>;
+using SingleSet = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
 
 constexpr char kFirstPartySetPrimaryField[] = "primary";
 constexpr char kFirstPartySetAssociatedSitesField[] = "associatedSites";
@@ -50,11 +54,13 @@ constexpr char kCCTLDsField[] = "ccTLDs";
 constexpr char kFirstPartySetPolicyReplacementsField[] = "replacements";
 constexpr char kFirstPartySetPolicyAdditionsField[] = "additions";
 
-const char* SetTypeToString(FirstPartySetParser::PolicySetType set_type) {
+enum class PolicySetType { kReplacement, kAddition };
+
+const char* SetTypeToString(PolicySetType set_type) {
   switch (set_type) {
-    case FirstPartySetParser::PolicySetType::kReplacement:
+    case PolicySetType::kReplacement:
       return kFirstPartySetPolicyReplacementsField;
-    case FirstPartySetParser::PolicySetType::kAddition:
+    case PolicySetType::kAddition:
       return kFirstPartySetPolicyAdditionsField;
   }
 }
@@ -145,6 +151,11 @@ absl::optional<std::string> RemoveTldFromSite(const net::SchemefulSite& site) {
   const std::string serialized = site.Serialize();
   return serialized.substr(0, serialized.size() - tld_length);
 }
+
+struct ParsedPolicySetLists {
+  std::vector<SingleSet> replacements;
+  std::vector<SingleSet> additions;
+};
 
 class ParseContext {
  public:
@@ -262,18 +273,18 @@ class ParseContext {
                                          {kFirstPartySetAssociatedSitesField}));
     }
 
-    return std::make_pair(FirstPartySetParser::SingleSet(set_entries), aliases);
+    return std::make_pair(SingleSet(set_entries), aliases);
   }
 
   // Returns the parsed sets if successful; otherwise returns the first error.
-  base::expected<std::vector<FirstPartySetParser::SingleSet>, ParseError>
-  GetPolicySetsFromList(const base::Value::List* policy_sets,
-                        FirstPartySetParser::PolicySetType set_type) {
+  base::expected<std::vector<SingleSet>, ParseError> GetPolicySetsFromList(
+      const base::Value::List* policy_sets,
+      PolicySetType set_type) {
     if (!policy_sets) {
       return {};
     }
 
-    std::vector<FirstPartySetParser::SingleSet> parsed_sets;
+    std::vector<SingleSet> parsed_sets;
     size_t previous_size = warnings_.size();
     for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
       base::expected<SetsAndAliases, ParseError> parsed =
@@ -386,13 +397,13 @@ class ParseContext {
   // Removes invalid site entries and fixes up any lingering singletons.
   // Modifies the lists in-place.
   void PostProcessSetLists(
-      base::expected<FirstPartySetParser::ParsedPolicySetLists,
-                     FirstPartySetsHandler::ParseError>& lists_or_error) const {
+      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>&
+          lists_or_error) const {
     if (!lists_or_error.has_value() || invalid_keys_.empty()) {
       return;
     }
 
-    FirstPartySetParser::ParsedPolicySetLists& lists = lists_or_error.value();
+    ParsedPolicySetLists& lists = lists_or_error.value();
 
     // Erase invalid members/primaries.
     const auto is_invalid_entry =
@@ -409,7 +420,7 @@ class ParseContext {
 
     // Since we just removed some keys, we have to double-check that there are
     // no singleton sets.
-    const auto is_singleton = [](const FirstPartySetParser::SingleSet& set) {
+    const auto is_singleton = [](const SingleSet& set) {
       return set.size() <= 1;
     };
     base::EraseIf(lists.additions, is_singleton);
@@ -653,43 +664,9 @@ class ParseContext {
   mutable base::flat_set<SetsMap::key_type> invalid_keys_;
 };
 
-}  // namespace
-
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
-    std::vector<FirstPartySetParser::SingleSet> replacement_list,
-    std::vector<FirstPartySetParser::SingleSet> addition_list)
-    : replacements(std::move(replacement_list)),
-      additions(std::move(addition_list)) {}
-
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists() = default;
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
-    FirstPartySetParser::ParsedPolicySetLists&&) = default;
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
-    const FirstPartySetParser::ParsedPolicySetLists&) = default;
-FirstPartySetParser::ParsedPolicySetLists::~ParsedPolicySetLists() = default;
-
-bool FirstPartySetParser::ParsedPolicySetLists::operator==(
-    const FirstPartySetParser::ParsedPolicySetLists& other) const {
-  return std::tie(replacements, additions) ==
-         std::tie(other.replacements, other.additions);
-}
-
-absl::optional<net::SchemefulSite>
-FirstPartySetParser::CanonicalizeRegisteredDomain(
-    const base::StringPiece origin_string,
-    bool emit_errors) {
-  ValidateSiteResult result =
-      ParseContext(emit_errors, /*exempt_from_limits=*/false)
-          .Canonicalize(origin_string);
-  if (result.has_error()) {
-    return absl::nullopt;
-  }
-  return result.site();
-}
-
-SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
-                                                        bool emit_errors,
-                                                        bool emit_metrics) {
+SetsAndAliases ParseSetsFromStreamInternal(std::istream& input,
+                                           bool emit_errors,
+                                           bool emit_metrics) {
   std::vector<SetsMap::value_type> sets;
   std::vector<Aliases::value_type> aliases;
   ParseContext context(emit_errors, /*exempt_from_limits=*/false);
@@ -743,7 +720,34 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
         "Cookie.FirstPartySets.ComponentSetsNonfatalErrors", nonfatal_errors);
   }
 
-  return std::make_pair(sets, aliases);
+  return std::make_pair(std::move(sets), std::move(aliases));
+}
+
+}  // namespace
+
+absl::optional<net::SchemefulSite>
+FirstPartySetParser::CanonicalizeRegisteredDomain(
+    const base::StringPiece origin_string,
+    bool emit_errors) {
+  ValidateSiteResult result =
+      ParseContext(emit_errors, /*exempt_from_limits=*/false)
+          .Canonicalize(origin_string);
+  if (result.has_error()) {
+    return absl::nullopt;
+  }
+  return result.site();
+}
+
+net::GlobalFirstPartySets FirstPartySetParser::ParseSetsFromStream(
+    std::istream& input,
+    base::Version version,
+    bool emit_errors,
+    bool emit_metrics) {
+  SetsAndAliases sets_and_aliases =
+      ParseSetsFromStreamInternal(input, emit_errors, emit_metrics);
+  return net::GlobalFirstPartySets(std::move(version),
+                                   std::move(sets_and_aliases.first),
+                                   std::move(sets_and_aliases.second));
 }
 
 FirstPartySetParser::PolicyParseResult
@@ -765,27 +769,43 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
 
   context.PostProcessSetLists(set_lists);
 
-  return FirstPartySetParser::PolicyParseResult(std::move(set_lists),
-                                                context.warnings());
+  return FirstPartySetParser::PolicyParseResult(
+      std::move(set_lists).transform([](ParsedPolicySetLists lists) {
+        return net::SetsMutation(std::move(lists.replacements),
+                                 std::move(lists.additions));
+      }),
+      context.warnings());
 }
 
-std::ostream& operator<<(
-    std::ostream& os,
-    const FirstPartySetParser::ParsedPolicySetLists& lists) {
-  os << "additions: {";
-  for (const auto& set : lists.additions) {
-    for (const auto& pair : set) {
-      os << pair.first << " -> " << pair.second << ", ";
-    }
+// static
+net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
+    const std::string& switch_value) {
+  std::istringstream stream(switch_value);
+
+  SetsAndAliases parsed =
+      ParseSetsFromStreamInternal(stream, /*emit_errors=*/true,
+                                  /*emit_metrics*/ false);
+
+  SetsMap entries = std::move(parsed.first);
+  Aliases aliases = std::move(parsed.second);
+
+  if (entries.empty()) {
+    return net::LocalSetDeclaration();
   }
-  os << "}, replacements: {";
-  for (const auto& set : lists.replacements) {
-    for (const auto& pair : set) {
-      os << pair.first << " -> " << pair.second << ", ";
-    }
+
+  const net::SchemefulSite& primary = entries.begin()->second.primary();
+
+  if (base::ranges::any_of(entries,
+                           [&primary](const SetsMap::value_type& pair) {
+                             return pair.second.primary() != primary;
+                           })) {
+    // More than one set was provided. That is (currently) unsupported.
+    LOG(ERROR) << "Ignoring use-related-website-set switch due to multiple set "
+                  "declarations.";
+    return net::LocalSetDeclaration();
   }
-  os << "}";
-  return os;
+
+  return net::LocalSetDeclaration(std::move(entries), std::move(aliases));
 }
 
 }  // namespace content

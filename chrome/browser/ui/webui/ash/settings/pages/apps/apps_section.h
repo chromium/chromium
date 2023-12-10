@@ -60,7 +60,7 @@ class AppsSection : public OsSettingsSection,
 
   void UpdateAndroidSearchTags();
 
-  absl::optional<StartupSection> startup_subsection_;
+  std::optional<StartupSection> startup_subsection_;
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
   raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;

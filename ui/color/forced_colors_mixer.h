@@ -7,8 +7,13 @@
 
 namespace ui {
 
+class ColorMixer;
 class ColorProvider;
 struct ColorProviderKey;
+
+// Adds the default system colors to `mixer` when forced colors is enabled on
+// the OS.
+void AddSystemForcedColorsToMixer(ColorMixer& mixer);
 
 // Adds a color mixer to `provider` for forced colors mode.
 void AddForcedColorsColorMixer(ColorProvider* provider,

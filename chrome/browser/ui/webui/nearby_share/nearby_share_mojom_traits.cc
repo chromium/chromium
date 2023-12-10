@@ -37,10 +37,10 @@ StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::type(
 mojo::OptionalAsPointer<const GURL>
 StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::image_url(
     const ShareTarget& share_target) {
-  return mojo::MakeOptionalAsPointer(share_target.image_url &&
-                                             share_target.image_url->is_valid()
-                                         ? &share_target.image_url.value()
-                                         : nullptr);
+  return mojo::OptionalAsPointer(share_target.image_url &&
+                                         share_target.image_url->is_valid()
+                                     ? &share_target.image_url.value()
+                                     : nullptr);
 }
 
 // static

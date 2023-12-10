@@ -75,7 +75,11 @@ class MediaButton : public views::ImageButton {
                        : kControlsIconSize),
         foreground_disabled_color_id_(foreground_disabled_color_id) {
     views::ConfigureVectorImageButton(this);
-    SetFlipCanvasOnPaintForRTLUI(false);
+
+    bool enable_flip_canvas =
+        (button_id == static_cast<int>(MediaSessionAction::kPreviousTrack) ||
+         button_id == static_cast<int>(MediaSessionAction::kNextTrack));
+    SetFlipCanvasOnPaintForRTLUI(enable_flip_canvas);
 
     auto button_size = (button_id == static_cast<int>(MediaSessionAction::kPlay)
                             ? kPlayPauseButtonSize
@@ -219,6 +223,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             media_message_center::kChevronRightIcon,
             theme_.secondary_foreground_color_id, kChevronIconSize)));
+    chevron_icon_->SetFlipCanvasOnPaintForRTLUI(true);
   }
 
   // Create the media artist label.
@@ -422,7 +427,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
     artwork_view_->SetVisible(true);
     artwork_view_->SetImageSize(
         ScaleImageSizeToFitView(image.size(), kArtworkSize));
-    artwork_view_->SetImage(image);
+    artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Draw the image with rounded corners.
     auto path = SkPath().addRoundRect(
@@ -570,9 +575,13 @@ void MediaNotificationViewAshImpl::StartCastingButtonPressed() {
     }
     case MediaDisplayPage::kQuickSettingsMediaDetailedView:
     case MediaDisplayPage::kSystemShelfMediaDetailedView: {
-      // Clicking the button on the media detailed view will open the device
-      // selector view to show the device list.
-      device_selector_view_->ShowOrHideDeviceList();
+      // Clicking the button on the media detailed view will toggle the device
+      // list in the device selector view.
+      if (device_selector_view_->IsDeviceSelectorExpanded()) {
+        device_selector_view_->HideDevices();
+      } else {
+        device_selector_view_->ShowDevices();
+      }
       UpdateCastingState();
       break;
     }
@@ -586,31 +595,34 @@ void MediaNotificationViewAshImpl::UpdateCastingState() {
   CHECK(device_selector_view_);
   CHECK(device_selector_view_separator_);
 
-  if (!start_casting_button_->GetVisible()) {
+  if (start_casting_button_->GetVisible()) {
+    device_selector_view_->SetVisible(true);
+    bool is_expanded = device_selector_view_->IsDeviceSelectorExpanded();
+    if (is_expanded) {
+      // Use the ink drop color as the button background if user clicks the
+      // button to show devices.
+      views::InkDrop::Get(start_casting_button_)
+          ->GetInkDrop()
+          ->SnapToActivated();
+
+      // Indicate the user can hide the device list.
+      start_casting_button_->UpdateText(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_HIDE_DEVICE_LIST);
+    } else {
+      // Hide the ink drop color if user clicks the button to hide devices.
+      views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToHidden();
+
+      // Indicate the user can show the device list.
+      start_casting_button_->UpdateText(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
+    }
+    device_selector_view_separator_->SetVisible(is_expanded);
+  } else {
     device_selector_view_->SetVisible(false);
     device_selector_view_separator_->SetVisible(false);
-    return;
   }
 
-  device_selector_view_->SetVisible(true);
-  bool is_expanded = device_selector_view_->IsDeviceSelectorExpanded();
-  if (is_expanded) {
-    // Use the ink drop color as the button background if user clicks the button
-    // to show devices.
-    views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToActivated();
-
-    // Indicate the user can hide the device list.
-    start_casting_button_->UpdateText(
-        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_HIDE_DEVICE_LIST);
-  } else {
-    // Hide the ink drop color if user clicks the button to hide devices.
-    views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToHidden();
-
-    // Indicate the user can show the device list.
-    start_casting_button_->UpdateText(
-        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
-  }
-  device_selector_view_separator_->SetVisible(is_expanded);
+  container_->OnDeviceSelectorViewSizeChanged();
 }
 
 // Helper functions for testing:

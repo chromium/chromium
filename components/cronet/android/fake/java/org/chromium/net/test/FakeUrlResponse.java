@@ -60,15 +60,14 @@ public class FakeUrlResponse {
         mHttpStatusCode = info.getHttpStatusCode();
         mAllHeadersList = Collections.unmodifiableList(new ArrayList<>(info.getAllHeadersAsList()));
         mWasCached = info.wasCached();
-        mNegotiatedProtocol = getNullableOrDefault(
-                info.getNegotiatedProtocol(), Builder.DEFAULT_NEGOTIATED_PROTOCOL);
+        mNegotiatedProtocol =
+                getNullableOrDefault(
+                        info.getNegotiatedProtocol(), Builder.DEFAULT_NEGOTIATED_PROTOCOL);
         mProxyServer = getNullableOrDefault(info.getProxyServer(), Builder.DEFAULT_PROXY_SERVER);
         mResponseBody = Builder.DEFAULT_RESPONSE_BODY;
     }
 
-    /**
-     * Builds a {@link FakeUrlResponse}.
-     */
+    /** Builds a {@link FakeUrlResponse}. */
     public static class Builder {
         private static final int DEFAULT_HTTP_STATUS_CODE = 200;
         private static final List<Map.Entry<String, String>> INTERNAL_INITIAL_HEADERS_LIST =
@@ -87,9 +86,7 @@ public class FakeUrlResponse {
         private String mProxyServer = DEFAULT_PROXY_SERVER;
         private byte[] mResponseBody = DEFAULT_RESPONSE_BODY;
 
-        /**
-         * Constructs a {@link FakeUrlResponse.Builder} with the default parameters.
-         */
+        /** Constructs a {@link FakeUrlResponse.Builder} with the default parameters. */
         public Builder() {}
 
         /**
@@ -256,7 +253,8 @@ public class FakeUrlResponse {
         }
         FakeUrlResponse other = (FakeUrlResponse) otherObj;
         return (mHttpStatusCode == other.mHttpStatusCode
-                && mAllHeadersList.equals(other.mAllHeadersList) && mWasCached == other.mWasCached
+                && mAllHeadersList.equals(other.mAllHeadersList)
+                && mWasCached == other.mWasCached
                 && mNegotiatedProtocol.equals(other.mNegotiatedProtocol)
                 && mProxyServer.equals(other.mProxyServer)
                 && Arrays.equals(mResponseBody, other.mResponseBody));
@@ -264,8 +262,13 @@ public class FakeUrlResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mHttpStatusCode, mAllHeadersList, mWasCached, mNegotiatedProtocol,
-                mProxyServer, Arrays.hashCode(mResponseBody));
+        return Objects.hash(
+                mHttpStatusCode,
+                mAllHeadersList,
+                mWasCached,
+                mNegotiatedProtocol,
+                mProxyServer,
+                Arrays.hashCode(mResponseBody));
     }
 
     @Override

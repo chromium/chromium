@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/linux-chromeos-dbg/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -42,6 +45,10 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "linux-chromeos-compile-dbg",
+          "group": "tryserver.chromium.chromiumos"
+        },
+        {
+          "builder": "linux-chromeos-compile-siso-dbg",
           "group": "tryserver.chromium.chromiumos"
         },
         {

@@ -18,6 +18,9 @@
   <message name="IDS_PRESS_TO_EXIT_MOUSELOCK_TWO_KEYS" desc="Text displayed in the bubble to tell users how to escape from mouselock mode (where the mouse cursor is hidden) by activating ChromeOS's Overview mode, in the case where two keys must be pressed together. Please surround the names of the keys (e.g. 'Overview') in pipe characters so it can be rendered as a key.">
     Press |<ph name="ACCELERATOR1">$1<ex>Search</ex></ph>| + |<ph name="ACCELERATOR2">$2<ex>Overview</ex></ph>| to show your cursor
   </message>
+  <message name="IDS_FULLSCREEN_HOLD_TO_SEE_DOWNLOADS" desc="Text displayed in the bubble to tell users that they need to go to normal mode to see Downloads. Please surround the name of the key (e.g. 'Esc') in pipe characters so it can be rendered as a key.">
+    Download started. To see it, press and hold |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>|.
+  </message>
   <message name="IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS" desc="Text displayed in the bubble to tell users that they need to go to normal mode to see Downloads. Please surround the name of the key (e.g. 'Esc') in pipe characters so it can be rendered as a key.">
     Download started. To see it, press |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>|.
   </message>

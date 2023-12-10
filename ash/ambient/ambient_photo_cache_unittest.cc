@@ -9,6 +9,7 @@
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_photo_cache_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/constants/ash_features.h"
@@ -18,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -40,7 +42,10 @@ base::FilePath GetTestPath() {
 
 class AmbientPhotoCacheTest : public testing::Test {
  public:
-  AmbientPhotoCacheTest() = default;
+  AmbientPhotoCacheTest() {
+    ambient_photo_cache::SetFileTaskRunner(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  }
 
   void SetUp() override {
     ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
@@ -48,14 +53,10 @@ class AmbientPhotoCacheTest : public testing::Test {
 
     auto test_path = GetTestPath();
     base::DeletePathRecursively(test_path);
-    photo_cache_ = AmbientPhotoCache::Create(
-        test_path, ambient_ash_test_helper_->ambient_client(),
-        *access_token_controller_);
+    SetAmbientPhotoCacheRootDirForTesting(test_path);
   }
 
   void TearDown() override { base::DeletePathRecursively(GetTestPath()); }
-
-  AmbientPhotoCache* photo_cache() { return photo_cache_.get(); }
 
   network::TestURLLoaderFactory& test_url_loader_factory() {
     return ambient_ash_test_helper_->ambient_client().test_url_loader_factory();
@@ -81,7 +82,6 @@ class AmbientPhotoCacheTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<AmbientAccessTokenController> access_token_controller_;
-  std::unique_ptr<AmbientPhotoCache> photo_cache_;
 };
 
 TEST_F(AmbientPhotoCacheTest, ReadsBackWrittenFiles) {
@@ -102,7 +102,9 @@ TEST_F(AmbientPhotoCacheTest, ReadsBackWrittenFiles) {
     cache.mutable_related_photo()->set_is_portrait(is_portrait);
 
     base::RunLoop loop;
-    photo_cache()->WritePhotoCache(cache_index, cache, loop.QuitClosure());
+    ambient_photo_cache::WritePhotoCache(ambient_photo_cache::Store::kPrimary,
+                                         cache_index, cache,
+                                         loop.QuitClosure());
     loop.Run();
   }
 
@@ -110,8 +112,8 @@ TEST_F(AmbientPhotoCacheTest, ReadsBackWrittenFiles) {
     base::RunLoop loop;
     // Read the files back using photo cache.
     ambient::PhotoCacheEntry cache_read;
-    photo_cache()->ReadPhotoCache(
-        cache_index,
+    ambient_photo_cache::ReadPhotoCache(
+        ambient_photo_cache::Store::kPrimary, cache_index,
         base::BindLambdaForTesting(
             [&cache_read, &loop](ambient::PhotoCacheEntry cache_entry_in) {
               cache_read = std::move(cache_entry_in);
@@ -134,7 +136,8 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
   {
     base::RunLoop loop;
     ambient::PhotoCacheEntry cache_read;
-    photo_cache()->ReadPhotoCache(
+    ambient_photo_cache::ReadPhotoCache(
+        ambient_photo_cache::Store::kPrimary,
         /*cache_index=*/1,
         base::BindLambdaForTesting(
             [&cache_read, &loop](ambient::PhotoCacheEntry cache_entry_in) {
@@ -155,8 +158,8 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
 TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
   std::string fake_url = "https://faketesturl/";
 
-  AmbientPhotoCache::DownloadPhoto(fake_url, access_token_controller(),
-                                   base::BindOnce([](std::string&&) {}));
+  ambient_photo_cache::DownloadPhoto(fake_url, access_token_controller(),
+                                     base::BindOnce([](std::string&&) {}));
   RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
   IssueAccessToken();
@@ -175,8 +178,9 @@ TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
 TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToFileRequest) {
   std::string fake_url = "https://faketesturl/";
 
-  photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
-                                     base::BindOnce([](bool) {}));
+  ambient_photo_cache::DownloadPhotoToFile(
+      ambient_photo_cache::Store::kPrimary, fake_url, access_token_controller(),
+      /*cache_index=*/1, base::BindOnce([](bool) {}));
 
   RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());

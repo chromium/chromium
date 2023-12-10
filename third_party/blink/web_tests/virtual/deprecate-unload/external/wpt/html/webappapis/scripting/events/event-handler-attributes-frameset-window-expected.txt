@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] shadowed unload (document.body)
+  assert_equals: alternative body should reflect expected (function) function "() => 0" but got (object) null
+[FAIL] not shadowed copy (document.body)
+  assert_equals: window should reflect expected (object) null but got (undefined) undefined
+[FAIL] not shadowed cut (document.body)
+  assert_equals: window should reflect expected (object) null but got (undefined) undefined
+[FAIL] not shadowed paste (document.body)
+  assert_equals: window should reflect expected (object) null but got (undefined) undefined
+[FAIL] shadowed unload (document.createElement("frameset"))
+  assert_equals: body should reflect expected (function) function "() => 0" but got (object) null
+[FAIL] not shadowed copy (document.createElement("frameset"))
+  assert_equals: window should reflect expected (object) null but got (undefined) undefined
+[FAIL] not shadowed cut (document.createElement("frameset"))
+  assert_equals: window should reflect expected (object) null but got (undefined) undefined
+[FAIL] not shadowed paste (document.createElement("frameset"))
+  assert_equals: window should reflect expected (object) null but got (undefined) undefined
+[FAIL] shadowed unload (window)
+  assert_equals: body should reflect expected (function) function "() => 0" but got (object) null
+Harness: the test ran to completion.
+

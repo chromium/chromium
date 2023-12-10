@@ -10,8 +10,7 @@
  * We define them here since they don't actually exist as bindings under
  * chrome.brailleDisplayPrivate.*.
  */
-
-import {KeyCode} from '../../../common/key_code.js';
+import {Key, KeyCode, KeyName} from '../../../common/key_code.js';
 
 /**
  * The set of commands sent from a braille display.
@@ -63,7 +62,7 @@ export const BrailleKeyEvent = {
    * NOTE: Only the key codes produced by the brailleDisplayPrivate API are
    * supported.
    * @param {string} code DOM level 4 key code.
-   * @return {KeyCode|undefined} The numeric key code, or {@code undefined}
+   * @return {Key.Code|undefined} The numeric key code, or {@code undefined}
    *     if unknown.
    */
   keyCodeToLegacyCode(code) {
@@ -78,7 +77,11 @@ export const BrailleKeyEvent = {
    */
   keyCodeToCharValue(keyCode) {
     /** @const */
-    const SPECIAL_CODES = {'Backspace': 0x08, 'Tab': 0x09, 'Enter': 0x0A};
+    const SPECIAL_CODES = {
+      [KeyName.BACK]: 0x08,
+      [KeyName.TAB]: 0x09,
+      [KeyName.RETURN]: 0x0A,
+    };
     // Note, the Chrome virtual keyboard falls back on the first character of
     // the key code if the key is not one of the above.  Do the same here.
     return SPECIAL_CODES[keyCode] || keyCode.charCodeAt(0);
@@ -152,10 +155,10 @@ BrailleKeyEvent.brailleDotsToStandardKeyCode = {
  * @type {!Object<number, string>}
  */
 BrailleKeyEvent.brailleChordsToStandardKeyCode = {
-  0b1000000: 'Backspace',
-  0b10100: 'Tab',
-  0b110101: 'Escape',
-  0b101000: 'Enter',
+  0b1000000: KeyName.BACK,
+  0b10100: KeyName.TAB,
+  0b110101: KeyName.ESCAPE,
+  0b101000: KeyName.RETURN,
 };
 
 /**
@@ -169,16 +172,15 @@ BrailleKeyEvent.brailleDotsToModifiers = {
   0b1100100: {altKey: true, shiftKey: true},
 };
 
-
 /**
  * Map from DOM level 4 key codes to legacy numeric key codes.
- * @private {Object<KeyCode>}
+ * @private {Object<Key.Code>}
  */
 BrailleKeyEvent.legacyKeyCodeMap_ = {
-  'Backspace': KeyCode.BACK,
-  'Tab': KeyCode.TAB,
-  'Enter': KeyCode.RETURN,
-  'Escape': KeyCode.ESCAPE,
+  [KeyName.BACK]: KeyCode.BACK,
+  [KeyName.TAB]: KeyCode.TAB,
+  [KeyName.RETURN]: KeyCode.RETURN,
+  [KeyName.ESCAPE]: KeyCode.ESCAPE,
   'Home': KeyCode.HOME,
   'ArrowLeft': KeyCode.LEFT,
   'ArrowUp': KeyCode.UP,
@@ -187,32 +189,29 @@ BrailleKeyEvent.legacyKeyCodeMap_ = {
   'PageUp': KeyCode.PRIOR,
   'PageDown': KeyCode.NEXT,
   'End': KeyCode.END,
-  'Insert': KeyCode.INSERT,
-  'Delete': KeyCode.DELETE,
+  [KeyName.INSERT]: KeyCode.INSERT,
+  [KeyName.DELETE]: KeyCode.DELETE,
   'AudioVolumeDown': KeyCode.VOLUME_DOWN,
   'AudioVolumeUp': KeyCode.VOLUME_UP,
 };
 
-(function() {
 // Add 0-9.
 for (let i = '0'.charCodeAt(0); i < '9'.charCodeAt(0); ++i) {
   BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] =
-      /** @type {KeyCode} */ (i);
+      /** @type {Key.Code} */ (i);
 }
 
 // Add A-Z.
 for (let i = 'A'.charCodeAt(0); i < 'Z'.charCodeAt(0); ++i) {
   BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] =
-      /** @type {KeyCode} */ (i);
+      /** @type {Key.Code} */ (i);
 }
 
 // Add the F1 to F12 keys.
 for (let i = 0; i < 12; ++i) {
   BrailleKeyEvent.legacyKeyCodeMap_['F' + (i + 1)] =
-      /** @type {KeyCode} */ (112 + i);
+      /** @type {Key.Code} */ (112 + i);
 }
-})();
-
 
 /**
  * The state of a braille display as represented in the

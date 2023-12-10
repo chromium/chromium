@@ -631,6 +631,8 @@ class Internals final : public ScriptWrappable {
   // the LCPScriptObserver Probe.
   Vector<String> getCreatorScripts(HTMLImageElement* img);
 
+  ScriptPromise LCPPrediction(ScriptState*, Document* document);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;

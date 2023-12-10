@@ -416,6 +416,20 @@ testcase.recentsPlayFiles = async () => {
 };
 
 /**
+ * Tests that file entries populated in the My Files folder recently will be
+ * displayed in the Recent folder.
+ */
+testcase.recentsMyFiles = async () => {
+  // Populate My Files.
+  addEntries(['my_files'], [ENTRIES.beautiful, ENTRIES.photos]);
+
+  const appId = await setupAndWaitUntilReady(RootPath.MY_FILES, [], []);
+
+  // Verify file list in Recents.
+  await verifyRecents(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
+};
+
+/**
  * Tests that file entries populated in Crostini folder recently won't be
  * displayed in Recent folder when Crostini has not been mounted.
  */
@@ -509,6 +523,8 @@ testcase.recentsNested = async () => {
   // Check: The directory should be highlighted in the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('C');
+  // Focus on the tree first before using the ":focus" selector below.
+  await directoryTree.focusTree();
   await directoryTree.waitForFocusedItemByLabel('C');
 };
 

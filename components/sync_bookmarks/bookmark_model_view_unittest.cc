@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,51 +20,103 @@ namespace {
 using testing::Eq;
 using testing::NotNull;
 
-TEST(BookmarkModelViewTest, ShouldExposeLocalOrSyncablePermanentFolders) {
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+class BookmarkModelViewTest : public testing::Test {
+ protected:
+  BookmarkModelViewTest() {
+    // Enable all possible permanent folders to verify how BookmarkModelView
+    // does the filtering.
+    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+    client->AllowFoldersForAccountStorage();
+    managed_node_ = client->EnableManagedNode();
+    model_ =
+        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
 
-  ASSERT_THAT(model->bookmark_bar_node(), NotNull());
-  ASSERT_THAT(model->other_node(), NotNull());
-  ASSERT_THAT(model->mobile_node(), NotNull());
+    model_->CreateAccountPermanentFoldersForTest();
 
-  BookmarkModelViewUsingLocalOrSyncableNodes view(model.get());
+    EXPECT_THAT(model_->bookmark_bar_node(), NotNull());
+    EXPECT_THAT(model_->other_node(), NotNull());
+    EXPECT_THAT(model_->mobile_node(), NotNull());
+    EXPECT_THAT(model_->account_bookmark_bar_node(), NotNull());
+    EXPECT_THAT(model_->account_other_node(), NotNull());
+    EXPECT_THAT(model_->account_mobile_node(), NotNull());
+    EXPECT_THAT(managed_node_, NotNull());
 
-  EXPECT_THAT(view.bookmark_bar_node(), Eq(model->bookmark_bar_node()));
-  EXPECT_THAT(view.other_node(), Eq(model->other_node()));
-  EXPECT_THAT(view.mobile_node(), Eq(model->mobile_node()));
+    EXPECT_NE(model_->bookmark_bar_node(), model_->account_bookmark_bar_node());
+    EXPECT_NE(model_->other_node(), model_->account_other_node());
+    EXPECT_NE(model_->mobile_node(), model_->account_mobile_node());
+  }
+
+  ~BookmarkModelViewTest() override = default;
+
+  std::unique_ptr<bookmarks::BookmarkModel> model_;
+  raw_ptr<bookmarks::BookmarkNode> managed_node_;
+};
+
+TEST_F(BookmarkModelViewTest, ShouldExposeLocalOrSyncablePermanentFolders) {
+  BookmarkModelViewUsingLocalOrSyncableNodes view(model_.get());
+
+  EXPECT_THAT(view.bookmark_bar_node(), Eq(model_->bookmark_bar_node()));
+  EXPECT_THAT(view.other_node(), Eq(model_->other_node()));
+  EXPECT_THAT(view.mobile_node(), Eq(model_->mobile_node()));
 }
 
-TEST(BookmarkModelViewTest, ShouldIdentifySyncableNodes) {
-  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-  bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
+TEST_F(BookmarkModelViewTest, ShouldExposeAccountPermanentFolders) {
+  BookmarkModelViewUsingAccountNodes view(model_.get());
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+  EXPECT_THAT(view.bookmark_bar_node(),
+              Eq(model_->account_bookmark_bar_node()));
+  EXPECT_THAT(view.other_node(), Eq(model_->account_other_node()));
+  EXPECT_THAT(view.mobile_node(), Eq(model_->account_mobile_node()));
+}
 
-  ASSERT_THAT(model->bookmark_bar_node(), NotNull());
-  ASSERT_THAT(model->other_node(), NotNull());
-  ASSERT_THAT(model->mobile_node(), NotNull());
-
+TEST_F(BookmarkModelViewTest, ShouldIdentifySyncableNodes) {
   // Create some nodes to exercise the predicate on non-permanent folders.
-  const bookmarks::BookmarkNode* folder1 = model->AddFolder(
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0, u"Title 1");
-  const bookmarks::BookmarkNode* nested_folder1 = model->AddFolder(
+  const bookmarks::BookmarkNode* folder1 = model_->AddFolder(
+      /*parent=*/model_->bookmark_bar_node(), /*index=*/0, u"Title 1");
+  const bookmarks::BookmarkNode* folder2 = model_->AddFolder(
+      /*parent=*/model_->account_bookmark_bar_node(), /*index=*/0, u"Title 2");
+  const bookmarks::BookmarkNode* nested_folder1 = model_->AddFolder(
       /*parent=*/folder1, /*index=*/0, u"Title 3");
-  const bookmarks::BookmarkNode* managed_folder = model->AddFolder(
-      /*parent=*/managed_node, /*index=*/0, u"Managed Title");
+  const bookmarks::BookmarkNode* nested_folder2 = model_->AddFolder(
+      /*parent=*/folder2, /*index=*/0, u"Title 4");
+  const bookmarks::BookmarkNode* managed_folder = model_->AddFolder(
+      /*parent=*/managed_node_, /*index=*/0, u"Managed Title");
 
-  BookmarkModelViewUsingLocalOrSyncableNodes view(model.get());
+  BookmarkModelViewUsingLocalOrSyncableNodes view1(model_.get());
+  BookmarkModelViewUsingAccountNodes view2(model_.get());
 
-  EXPECT_TRUE(view.IsNodeSyncable(model->bookmark_bar_node()));
-  EXPECT_TRUE(view.IsNodeSyncable(model->other_node()));
-  EXPECT_TRUE(view.IsNodeSyncable(model->mobile_node()));
-  EXPECT_TRUE(view.IsNodeSyncable(folder1));
-  EXPECT_TRUE(view.IsNodeSyncable(nested_folder1));
+  // In `view1`, which uses local-or-syncable data, only the local-or-syncable
+  // permanent folders and their descendants should be considered syncable.
+  EXPECT_TRUE(view1.IsNodeSyncable(model_->bookmark_bar_node()));
+  EXPECT_TRUE(view1.IsNodeSyncable(model_->other_node()));
+  EXPECT_TRUE(view1.IsNodeSyncable(model_->mobile_node()));
+  EXPECT_TRUE(view1.IsNodeSyncable(folder1));
+  EXPECT_TRUE(view1.IsNodeSyncable(nested_folder1));
+  EXPECT_FALSE(view1.IsNodeSyncable(model_->account_bookmark_bar_node()));
+  EXPECT_FALSE(view1.IsNodeSyncable(model_->account_other_node()));
+  EXPECT_FALSE(view1.IsNodeSyncable(model_->account_mobile_node()));
+  EXPECT_FALSE(view1.IsNodeSyncable(folder2));
+  EXPECT_FALSE(view1.IsNodeSyncable(nested_folder2));
 
-  // Permanent nodes should be excluded.
-  EXPECT_FALSE(view.IsNodeSyncable(managed_node));
-  EXPECT_FALSE(view.IsNodeSyncable(managed_folder));
+  // In `view2`, which uses pure account data, only the corresponding
+  // permanent folders and their descendants should be considered syncable,
+  // which is the exact opposite.
+  EXPECT_FALSE(view2.IsNodeSyncable(model_->bookmark_bar_node()));
+  EXPECT_FALSE(view2.IsNodeSyncable(model_->other_node()));
+  EXPECT_FALSE(view2.IsNodeSyncable(model_->mobile_node()));
+  EXPECT_FALSE(view2.IsNodeSyncable(folder1));
+  EXPECT_FALSE(view2.IsNodeSyncable(nested_folder1));
+  EXPECT_TRUE(view2.IsNodeSyncable(model_->account_bookmark_bar_node()));
+  EXPECT_TRUE(view2.IsNodeSyncable(model_->account_other_node()));
+  EXPECT_TRUE(view2.IsNodeSyncable(model_->account_mobile_node()));
+  EXPECT_TRUE(view2.IsNodeSyncable(folder2));
+  EXPECT_TRUE(view2.IsNodeSyncable(nested_folder2));
+
+  // Managed nodes should be excluded in all cases.
+  EXPECT_FALSE(view1.IsNodeSyncable(managed_node_));
+  EXPECT_FALSE(view1.IsNodeSyncable(managed_folder));
+  EXPECT_FALSE(view2.IsNodeSyncable(managed_node_));
+  EXPECT_FALSE(view2.IsNodeSyncable(managed_folder));
 }
 
 }  // namespace

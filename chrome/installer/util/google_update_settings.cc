@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -492,7 +493,7 @@ bool GoogleUpdateSettings::UpdateGoogleUpdateApKey(
 }
 
 GoogleUpdateSettings::UpdatePolicy GoogleUpdateSettings::GetAppUpdatePolicy(
-    base::WStringPiece app_guid,
+    std::wstring_view app_guid,
     bool* is_overridden) {
   bool found_override = false;
   UpdatePolicy update_policy = kDefaultUpdatePolicy;

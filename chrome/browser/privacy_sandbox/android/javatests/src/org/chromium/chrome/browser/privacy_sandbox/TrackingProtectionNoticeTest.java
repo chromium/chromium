@@ -289,6 +289,40 @@ public final class TrackingProtectionNoticeTest {
         onView(withId(R.id.message_banner)).check(doesNotExist());
     }
 
+    @Test
+    @SmallTest
+    public void testSilentOnboardingNoticeShown() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.SILENT_ONBOARDING);
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+
+        // Show the notice.
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+
+        assertNoticeShownActionIsRecorded();
+    }
+
+    @Test
+    @SmallTest
+    public void testSilentOnboardingNoticeShownOnlyOnSecurePage() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.SILENT_ONBOARDING);
+        sActivityTestRule.startMainActivityOnBlankPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                NOTICE_CONTROLLER_EVENT_HISTOGRAM,
+                                NoticeControllerEvent.NAVIGATION_FINISHED,
+                                NoticeControllerEvent.NON_SECURE_CONNECTION,
+                                NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
+                        .build();
+        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        histogramWatcher.assertExpected();
+
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+        sActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        assertNoticeShownActionIsRecorded();
+    }
+
     private void assertLastAction(int action) {
         assertEquals(
                 "Last notice action",

@@ -13,7 +13,7 @@ Rust has an official boostrapping build. At a high level:
    the latest beta is downloaded. If building stable 1.57.0, stage0 is stable
    1.56.1.
 2. Stage 0 libstd is built. This is different than the libstd downloaded above.
-3. Stage 1 rustc is built with rustc from (1) and libstd from (2)
+3. Stage 1 rustc is built with rustc from (1)c and libstd from (2)
 2. Stage 1 libstd is built with stage 1 rustc. Later artifacts built with
    stage 1 rustc are built with stage 1 libstd.
 
@@ -92,8 +92,6 @@ EXCLUDED_TESTS_MAC = [
     # https://crbug.com/1479875 This fails on Mac. It relates to the large code
     # model which we don't use, so suppress it for now.
     os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
-    # https://crbug.com/1486137 Fails on Mac. Probably not critical.
-    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
@@ -608,8 +606,12 @@ def BuildLLVMLibraries(skip_build, build_mac_arm):
     return (x86_64_llvm_config, aarch64_llvm_config, target_llvm_install_dir)
 
 
-def GitCherryPick(git_repository, commit):
-    print(f'Cherry-picking {commit} in {git_repository}')
+def GitCherryPick(git_repository, git_remote, commit):
+    print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
+    RunCommand(
+        ['git', '-C', git_repository, 'remote', 'add', 'github', git_remote],
+        fail_hard=False)
+    RunCommand(['git', '-C', git_repository, 'fetch', 'github', commit])
     if RunCommand([
             'git', '-C', git_repository, 'merge-base', '--is-ancestor', commit,
             'HEAD'
@@ -750,16 +752,24 @@ def main():
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
         # TODO(crbug.com/1493085): remove once
         # https://github.com/rust-lang/rust/pull/116672 has been merged.
-        RunCommand([
-            'git', '-C', RUST_SRC_DIR, 'remote', 'add', 'github',
-            'https://github.com/rust-lang/rust.git'
-        ],
-                   fail_hard=False)
-        RunCommand([
-            'git', '-C', RUST_SRC_DIR, 'fetch', 'github',
-            '046503e6f4318aaba649e51becc38b1db9c87ee7'
-        ])
-        GitCherryPick(RUST_SRC_DIR, '046503e6f4318aaba649e51becc38b1db9c87ee7')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '751f7b9431b41418e2035c2c155a39fefd5d318f')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118410 has been merged.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '81cd7c5b11766ed1e3214a2233371fb6d72ed89c')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118610 has been merged.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '0899efe363292f786e67c978ec77439c437d0e74')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '43baf5dc1fa6758c0268e30530d821d8b36fee07')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '4ac32747ba280faa5cea05ad3f54a31c03257171')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '01046205f3970e7ce111c9a0d63ed512c5a354d5')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
@@ -839,6 +849,16 @@ def main():
     if args.build_mac_arm:
         for a in DISTRIBUTION_ARTIFACTS_SKIPPED_CROSS_COMPILE:
             artifacts.remove(a)
+    # TODO(crbug.com/1504532): remove once
+    # https://github.com/rust-lang/rust/blob/master/.gitmodules#L33-L37 has
+    # been updated to include
+    # https://github.com/llvm/llvm-project/commit/7939ce39dac0078fef7183d6198598b99c652c88
+    rust_llvm_dir = os.path.join(RUST_SRC_DIR, 'src', 'llvm-project')
+    GitCherryPick(rust_llvm_dir, 'https://github.com/llvm/llvm-project.git',
+                  '7939ce39dac0078fef7183d6198598b99c652c88')
+    # Remove .git in llvm so x.py install will not sync it.
+    if (os.path.exists(os.path.join(rust_llvm_dir, '.git'))):
+        os.remove(os.path.join(rust_llvm_dir, '.git'))
     xpy.run('install', xpy_args + artifacts)
 
     # Copy additional vendored crates required for building stdlib.

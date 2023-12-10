@@ -47,39 +47,19 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   base::PlatformThread::Sleep(start - now);
   last_frame_time_ = start;
 
-  SimCanvas::Commands commands;
-  paint_commands_ = &commands;
-
   LayerTreeHost()->CompositeForTest(last_frame_time_, raster,
                                     base::OnceClosure());
 
-  paint_commands_ = nullptr;
-  return commands;
-}
-
-SimCanvas::Commands SimCompositor::PaintFrame() {
-  DCHECK(web_view_);
-
-  if (!web_view_->MainFrameImpl())
+  const auto* main_frame = web_view_->MainFrameImpl();
+  if (!main_frame ||
+      main_frame->GetFrame()->GetDocument()->Lifecycle().GetState() <
+          DocumentLifecycle::kPaintClean) {
     return SimCanvas::Commands();
+  }
 
-  auto* frame = web_view_->MainFrameImpl()->GetFrame();
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  frame->View()->PaintOutsideOfLifecycleWithThrottlingAllowed(
-      builder->Context(), PaintFlag::kOmitCompositingInfo);
-
-  auto infinite_rect = InfiniteIntRect();
-  SimCanvas canvas(infinite_rect.width(), infinite_rect.height());
-  builder->EndRecording().Playback(&canvas);
+  SimCanvas canvas;
+  main_frame->GetFrameView()->GetPaintRecord().Playback(&canvas);
   return canvas.GetCommands();
-}
-
-void SimCompositor::DidBeginMainFrame() {
-  // Note that this will run *before* LocalFrameView::RunPostLifecycleSteps,
-  // due to the calling conventions of PageWidgetDelegate::DidBeginFrame(). As a
-  // result, frame throttling status has not been updated yet, and will be in
-  // the same state as when the lifecycle steps ran.
-  *paint_commands_ = PaintFrame();
 }
 
 void SimCompositor::SetLayerTreeHost(cc::LayerTreeHost* layer_tree_host) {

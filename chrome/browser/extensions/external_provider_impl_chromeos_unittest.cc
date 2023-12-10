@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -70,8 +69,9 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
                                                    bool is_child) {
     InitializeEmptyExtensionService();
 
-    if (is_child)
+    if (is_child) {
       profile_->SetIsSupervisedProfile();
+    }
 
     service_->Init();
 
@@ -92,17 +92,16 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), &providers);
+    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
+                                                  &providers);
 
-    for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
+    for (std::unique_ptr<ExternalProviderInterface>& provider : providers) {
       service_->AddProviderForTesting(std::move(provider));
+    }
   }
 
   // ExtensionServiceTestBase overrides:
-  void SetUp() override {
-    ExtensionServiceTestBase::SetUp();
-  }
+  void SetUp() override { ExtensionServiceTestBase::SetUp(); }
 
   void TearDown() override {
     // If some extensions are being installed (on a background thread) and we
@@ -118,7 +117,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   void WaitForPendingStandaloneExtensionsInstalled() {
     service_->CheckForExternalUpdates();
     base::RunLoop().RunUntilIdle();
-    extensions::PendingExtensionManager* const pending_extension_manager =
+    PendingExtensionManager* const pending_extension_manager =
         service_->pending_extension_manager();
     while (pending_extension_manager->IsIdPending(kStandaloneAppId) ||
            pending_extension_manager->IsIdPending(kStandaloneChildAppId)) {
@@ -134,8 +133,8 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     InitializeEmptyExtensionService();
 
     ProviderCollection providers;
-    extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), &providers);
+    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
+                                                  &providers);
 
     EXPECT_EQ(providers.size(), expected_count);
   }

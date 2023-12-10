@@ -5,11 +5,11 @@
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -63,7 +63,6 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -114,7 +113,7 @@ net::RedirectInfo CreateRedirectInfo(
     const network::ResourceRequest& original_request,
     const GURL& new_url,
     int response_code,
-    const absl::optional<std::string>& referrer_policy_header) {
+    const std::optional<std::string>& referrer_policy_header) {
   return net::RedirectInfo::ComputeRedirectInfo(
       original_request.method, original_request.url,
       original_request.site_for_cookies,
@@ -242,11 +241,11 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
   }
   if (on_before_send_headers_callback_) {
     std::move(on_before_send_headers_callback_)
-        .Run(net::ERR_ABORTED, absl::nullopt);
+        .Run(net::ERR_ABORTED, std::nullopt);
   }
   if (on_headers_received_callback_) {
     std::move(on_headers_received_callback_)
-        .Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt);
+        .Run(net::ERR_ABORTED, std::nullopt, std::nullopt);
   }
 }
 
@@ -270,8 +269,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
                                     : nullptr,
       request_for_info, factory_->IsForDownload(),
       !(options_ & network::mojom::kURLLoadOptionSynchronous),
-      factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
-      ukm_source_id_));
+      factory_->IsForServiceWorkerScript(), factory_->navigation_id_));
 
   // The value of `has_any_extra_headers_listeners_` is constant for the
   // lifetime of InProgressRequest and determines whether the request is made
@@ -353,7 +351,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   if (new_url)
     request_.url = new_url.value();
 
@@ -415,7 +413,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveEarlyHints(
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT_WITH_FLOW0(
       "extensions",
       "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
@@ -614,7 +612,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnBeforeSendHeaders(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   if (!current_request_uses_header_client_) {
-    std::move(callback).Run(net::OK, absl::nullopt);
+    std::move(callback).Run(net::OK, std::nullopt);
     return;
   }
 
@@ -637,7 +635,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
       "for_cors_preflight", for_cors_preflight_);
 
   if (!current_request_uses_header_client_) {
-    std::move(callback).Run(net::OK, absl::nullopt, absl::nullopt);
+    std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
 
     if (for_cors_preflight_) {
       // CORS preflight is supported only when "extraHeaders" is specified.
@@ -684,7 +682,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   net::RedirectInfo redirect_info =
       CreateRedirectInfo(request_, redirect_url_, kInternalRedirectStatusCode,
-                         /*referrer_policy_header=*/absl::nullopt);
+                         /*referrer_policy_header=*/std::nullopt);
 
   auto head = network::mojom::URLResponseHead::New();
   std::string headers = base::StringPrintf(
@@ -946,7 +944,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
     // Here we come from an onHeaderReceived failure.
     state_ = State::kRejectedByOnHeadersReceivedForAuth;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
                                   /*should_cancel=*/true));
     return;
   }
@@ -998,7 +996,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
         AUTH_REQUIRED_RESPONSE_NO_ACTION:
       // We're not touching this auth request. Let the default browser behavior
       // proceed.
-      completion = base::BindOnce(std::move(callback), absl::nullopt,
+      completion = base::BindOnce(std::move(callback), std::nullopt,
                                   /*should_cancel=*/false);
       break;
     case WebRequestEventRouter::AuthRequiredResponse::
@@ -1009,7 +1007,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       break;
     case WebRequestEventRouter::AuthRequiredResponse::
         AUTH_REQUIRED_RESPONSE_CANCEL_AUTH:
-      completion = base::BindOnce(std::move(callback), absl::nullopt,
+      completion = base::BindOnce(std::move(callback), std::nullopt,
                                   /*should_cancel=*/true);
       state_ = State::kRejectedByOnAuthRequired;
       break;
@@ -1018,7 +1016,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       return;
   }
 
-  auth_credentials_ = absl::nullopt;
+  auth_credentials_ = std::nullopt;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(completion));
 }
@@ -1051,7 +1049,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   }
 
   DCHECK(on_headers_received_callback_);
-  absl::optional<std::string> headers;
+  std::optional<std::string> headers;
   if (override_headers_) {
     headers = override_headers_->raw_headers();
     if (current_request_uses_header_client_) {
@@ -1439,7 +1437,7 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     int view_routing_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
@@ -1494,7 +1492,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
     int view_routing_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
@@ -1606,7 +1604,7 @@ void WebRequestProxyingURLLoaderFactory::HandleAuthRequest(
   auto it = network_request_id_to_web_request_id_.find(request_id);
   if (it == network_request_id_to_web_request_id_.end()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
                                   /*should_cancel=*/true));
     return;
   }

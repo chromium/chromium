@@ -23,17 +23,18 @@ import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
-/**
- * Wraps a {@link Notification.Builder} object.
- */
+/** Wraps a {@link Notification.Builder} object. */
 public class NotificationWrapperStandardBuilder implements NotificationWrapperBuilder {
     private static final String TAG = "NotifStandardBuilder";
     private final Notification.Builder mBuilder;
     private final Context mContext;
     private final NotificationMetadata mMetadata;
 
-    public NotificationWrapperStandardBuilder(Context context, String channelId,
-            ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {
+    public NotificationWrapperStandardBuilder(
+            Context context,
+            String channelId,
+            ChannelsInitializer channelsInitializer,
+            NotificationMetadata metadata) {
         mContext = context;
         mBuilder = new Notification.Builder(mContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -145,8 +146,8 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
             int icon, CharSequence title, PendingIntent intent) {
         if (icon != 0) {
             mBuilder.addAction(
-                    new Notification.Action
-                            .Builder(Icon.createWithResource(mContext, icon), title, intent)
+                    new Notification.Action.Builder(
+                                    Icon.createWithResource(mContext, icon), title, intent)
                             .build());
         } else {
             mBuilder.addAction(icon, title, intent);
@@ -155,8 +156,11 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
-    public NotificationWrapperBuilder addAction(int icon, CharSequence title,
-            PendingIntentProvider pendingIntentProvider, int actionType) {
+    public NotificationWrapperBuilder addAction(
+            int icon,
+            CharSequence title,
+            PendingIntentProvider pendingIntentProvider,
+            int actionType) {
         addAction(icon, title, pendingIntentProvider.getPendingIntent());
         return this;
     }
@@ -170,8 +174,9 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @Override
     public NotificationWrapperBuilder addAction(
             Notification.Action action, int flags, int actionType, int requestCode) {
-        action.actionIntent = new PendingIntentProvider(action.actionIntent, flags, requestCode)
-                                      .getPendingIntent();
+        action.actionIntent =
+                new PendingIntentProvider(action.actionIntent, flags, requestCode)
+                        .getPendingIntent();
         addAction(action);
         return this;
     }

@@ -38,7 +38,7 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
  public:
   TestableRemoteDeviceLifeCycleImpl(
       ash::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<ash::multidevice::RemoteDeviceRef> local_device,
+      std::optional<ash::multidevice::RemoteDeviceRef> local_device,
       ash::secure_channel::SecureChannelClient* secure_channel_client)
       : RemoteDeviceLifeCycleImpl(remote_device,
                                   local_device,

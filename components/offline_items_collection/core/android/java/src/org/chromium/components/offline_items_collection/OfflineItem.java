@@ -23,8 +23,7 @@ public class OfflineItem implements Cloneable {
     public static class Progress {
         public final long value;
         public final Long max;
-        @OfflineItemProgressUnit
-        public final int unit;
+        @OfflineItemProgressUnit public final int unit;
 
         public Progress(long value, Long max, int unit) {
             this.value = value;
@@ -71,8 +70,7 @@ public class OfflineItem implements Cloneable {
     // Display metadata.
     public String title;
     public String description;
-    @OfflineItemFilter
-    public int filter;
+    @OfflineItemFilter public int filter;
     public boolean isTransient;
     public boolean isSuggested;
     public boolean isAccelerated;
@@ -99,18 +97,15 @@ public class OfflineItem implements Cloneable {
     public GURL referrerUrl;
 
     // In Progress Metadata.
-    @OfflineItemState
-    public int state;
+    @OfflineItemState public int state;
     public boolean isResumable;
     public boolean allowMetered;
     public long receivedBytes;
     public Progress progress;
     public long timeRemainingMs;
     public boolean isDangerous;
-    @FailState
-    public int failState;
-    @PendingState
-    public int pendingState;
+    @FailState public int failState;
+    @PendingState public int pendingState;
 
     public OfflineItem() {
         id = new ContentId();

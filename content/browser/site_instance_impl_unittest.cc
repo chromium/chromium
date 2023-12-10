@@ -703,17 +703,24 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
 
-  // Data URLs should include the whole URL, except for the hash.
+  // Data URLs should have the scheme and the nonce of their opaque origin.
   test_url = GURL("data:text/html,foo");
   site_url = GetSiteForURL(test_url);
-  EXPECT_EQ(test_url, site_url);
   EXPECT_EQ("data", site_url.scheme());
+  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+    // Check that there is a serialized nonce in the site URL. The nonce is
+    // different each time, but has length 32.
+    EXPECT_EQ(32u, site_url.GetContent().length());
+    EXPECT_FALSE(site_url.EqualsIgnoringRef(test_url));
+  } else {
+    EXPECT_EQ(test_url, site_url);
+    EXPECT_TRUE(site_url.EqualsIgnoringRef(test_url));
+  }
   EXPECT_FALSE(site_url.has_host());
   test_url = GURL("data:text/html,foo#bar");
   site_url = GetSiteForURL(test_url);
   EXPECT_FALSE(site_url.has_ref());
   EXPECT_NE(test_url, site_url);
-  EXPECT_TRUE(site_url.EqualsIgnoringRef(test_url));
 
   // Javascript URLs should include the scheme.
   test_url = GURL("javascript:foo();");
@@ -919,6 +926,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   BrowsingInstance* browsing_instance = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
       /*common_coop_origin=*/absl::nullopt);
 
@@ -955,6 +963,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
       /*common_coop_origin=*/absl::nullopt);
   // Ensure the new SiteInstance is ref counted so that it gets deleted.
@@ -1000,6 +1009,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   scoped_refptr<BrowsingInstance> browsing_instance = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
       /*common_coop_origin=*/absl::nullopt);
 
@@ -1036,6 +1046,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
       /*common_coop_origin=*/absl::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a1_2(
@@ -1052,6 +1063,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   BrowsingInstance* browsing_instance3 = new BrowsingInstance(
       browser_context2.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
       /*common_coop_origin=*/absl::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a2_3(
@@ -2080,7 +2092,8 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
   // verify that the StoragePartition is correct.
   const auto partitioned_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), partitioned_url_info,
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
   EXPECT_EQ(non_default_partition_config,
             static_cast<SiteInstanceImpl*>(partitioned_instance.get())
                 ->GetSiteInfo()
@@ -2183,7 +2196,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdentity) {
 
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url)));
@@ -2198,7 +2211,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceCrossSite) {
 
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(GURL("https://other-example.com"))));
@@ -2222,7 +2235,8 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginSameSite) {
       context(),
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
           url::Origin::Create(test_url))),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
@@ -2239,7 +2253,8 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginCrossSite) {
       context(),
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
           url::Origin::Create(test_url))),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
 
   // COOP common origin might differ from the frame's actual origin (for
   // example for cross-origin subframes), so we verify that this case is handled
@@ -2266,7 +2281,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceDifferentCoopOrigin) {
   // Start without a COOP origin.
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
@@ -2284,7 +2299,8 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCrossOriginIsolation) {
       UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
           WebExposedIsolationInfo::CreateIsolated(
               url::Origin::Create(test_url)))),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
@@ -2300,7 +2316,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceDifferentCrossOriginIsolation) {
 
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
@@ -2315,7 +2331,7 @@ TEST_F(SiteInstanceTest, GroupTokensBuilding) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   base::UnguessableToken browsing_instance_token =
       base_instance->browsing_instance_token();
@@ -2328,7 +2344,7 @@ TEST_F(SiteInstanceTest, GroupTokensRelatedSiteInstances) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(GURL("https://other-example.com"))));
@@ -2352,7 +2368,7 @@ TEST_F(SiteInstanceTest, GroupTokensCoopRelatedSiteInstances) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   // Derive a SiteInstance that lives in the same CoopRelatedGroup but a
   // different BrowsingInstance. Provide a different WebExposedIsolationInfo to
@@ -2374,11 +2390,11 @@ TEST_F(SiteInstanceTest, GroupTokensUnrelatedSiteInstances) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto other_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   EXPECT_NE(other_instance.get(), base_instance.get());
   EXPECT_FALSE(other_instance->IsRelatedSiteInstance(base_instance.get()));

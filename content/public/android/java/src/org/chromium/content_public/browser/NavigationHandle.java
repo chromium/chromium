@@ -16,9 +16,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-/**
- * JNI bridge with content::NavigationHandle
- */
+/** JNI bridge with content::NavigationHandle */
 @JNINamespace("content")
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
@@ -46,20 +44,47 @@ public class NavigationHandle {
     private boolean mIsReload;
     private UserDataHost mUserDataHost;
 
-    public static NavigationHandle createForTesting(@NonNull GURL url, boolean isRendererInitiated,
-            @PageTransition int transition, boolean hasUserGesture) {
-        return createForTesting(url, true /* isInPrimaryMainFrame */, false /* isSameDocument */,
-                isRendererInitiated, transition, hasUserGesture, false /* isReload */);
+    public static NavigationHandle createForTesting(
+            @NonNull GURL url,
+            boolean isRendererInitiated,
+            @PageTransition int transition,
+            boolean hasUserGesture) {
+        return createForTesting(
+                url,
+                /* isInPrimaryMainFrame= */ true,
+                /* isSameDocument= */ false,
+                isRendererInitiated,
+                transition,
+                hasUserGesture,
+                /* isReload= */ false);
     }
 
-    public static NavigationHandle createForTesting(@NonNull GURL url, boolean isInPrimaryMainFrame,
-            boolean isSameDocument, boolean isRendererInitiated, @PageTransition int transition,
-            boolean hasUserGesture, boolean isReload) {
+    public static NavigationHandle createForTesting(
+            @NonNull GURL url,
+            boolean isInPrimaryMainFrame,
+            boolean isSameDocument,
+            boolean isRendererInitiated,
+            @PageTransition int transition,
+            boolean hasUserGesture,
+            boolean isReload) {
         NavigationHandle handle = new NavigationHandle();
-        handle.initialize(0, url, GURL.emptyGURL(), GURL.emptyGURL(), isInPrimaryMainFrame,
-                isSameDocument, isRendererInitiated, null, transition, false /* isPost */,
-                hasUserGesture, false /* isRedirect*/, false /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */, isReload);
+        handle.initialize(
+                0,
+                url,
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                isInPrimaryMainFrame,
+                isSameDocument,
+                isRendererInitiated,
+                null,
+                transition,
+                /* isPost= */ false,
+                hasUserGesture,
+                /* isRedirect= */ false,
+                /* isExternalProtocol= */ false,
+                /* navigationId= */ 0,
+                /* isPageActivation= */ false,
+                isReload);
         return handle;
     }
 
@@ -67,12 +92,23 @@ public class NavigationHandle {
     private NavigationHandle() {}
 
     @CalledByNative
-    private void initialize(long nativeNavigationHandleProxy, @NonNull GURL url,
-            @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
-            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
-            Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
-            boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
-            long navigationId, boolean isPageActivation, boolean isReload) {
+    private void initialize(
+            long nativeNavigationHandleProxy,
+            @NonNull GURL url,
+            @NonNull GURL referrerUrl,
+            @NonNull GURL baseUrlForDataUrl,
+            boolean isInPrimaryMainFrame,
+            boolean isSameDocument,
+            boolean isRendererInitiated,
+            Origin initiatorOrigin,
+            @PageTransition int transition,
+            boolean isPost,
+            boolean hasUserGesture,
+            boolean isRedirect,
+            boolean isExternalProtocol,
+            long navigationId,
+            boolean isPageActivation,
+            boolean isReload) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -103,15 +139,20 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
     }
 
-    /**
-     * The navigation finished. Called once per navigation.
-     */
+    /** The navigation finished. Called once per navigation. */
     @CalledByNative
     @VisibleForTesting
-    public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
-            boolean isPrimaryMainFrameFragmentNavigation, boolean isDownload,
-            boolean isValidSearchFormUrl, @PageTransition int transition, @NetError int errorCode,
-            int httpStatuscode, boolean isExternalProtocol) {
+    public void didFinish(
+            @NonNull GURL url,
+            boolean isErrorPage,
+            boolean hasCommitted,
+            boolean isPrimaryMainFrameFragmentNavigation,
+            boolean isDownload,
+            boolean isValidSearchFormUrl,
+            @PageTransition int transition,
+            @NetError int errorCode,
+            int httpStatuscode,
+            boolean isExternalProtocol) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -124,9 +165,7 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
     }
 
-    /**
-     * Release the C++ pointer.
-     */
+    /** Release the C++ pointer. */
     @CalledByNative
     private void release() {
         mNativeNavigationHandleProxy = 0;
@@ -151,9 +190,7 @@ public class NavigationHandle {
         return mReferrerUrl;
     }
 
-    /**
-     * Used for specifying a base URL for pages loaded via data URLs.
-     */
+    /** Used for specifying a base URL for pages loaded via data URLs. */
     @NonNull
     public GURL getBaseUrlForDataUrl() {
         return mBaseUrlForDataUrl;
@@ -228,16 +265,12 @@ public class NavigationHandle {
         return mHttpStatusCode;
     }
 
-    /**
-     * Returns the page transition type.
-     */
+    /** Returns the page transition type. */
     public @PageTransition int pageTransition() {
         return mPageTransition;
     }
 
-    /**
-     * Returns true on same-document navigation with fragment change in the primary main frame.
-     */
+    /** Returns true on same-document navigation with fragment change in the primary main frame. */
     public boolean isPrimaryMainFrameFragmentNavigation() {
         return mIsPrimaryMainFrameFragmentNavigation;
     }
@@ -261,9 +294,7 @@ public class NavigationHandle {
         return mIsDownload;
     }
 
-    /**
-     * Returns true if the navigation is a search.
-     */
+    /** Returns true if the navigation is a search. */
     public boolean isValidSearchFormUrl() {
         return mIsValidSearchFormUrl;
     }
@@ -296,9 +327,7 @@ public class NavigationHandle {
         return mIsExternalProtocol;
     }
 
-    /**
-     * Get a unique ID for this navigation.
-     */
+    /** Get a unique ID for this navigation. */
     public long getNavigationId() {
         return mNavigationId;
     }
@@ -311,16 +340,12 @@ public class NavigationHandle {
         return mIsPageActivation;
     }
 
-    /**
-     * Whether this navigation was initiated by a page reload.
-     */
+    /** Whether this navigation was initiated by a page reload. */
     public boolean isReload() {
         return mIsReload;
     }
 
-    /**
-     * Return any user data which has been set on the NavigationHandle.
-     */
+    /** Return any user data which has been set on the NavigationHandle. */
     public UserDataHost getUserDataHost() {
         if (mUserDataHost == null) {
             mUserDataHost = new UserDataHost();
@@ -328,9 +353,7 @@ public class NavigationHandle {
         return mUserDataHost;
     }
 
-    /**
-     * Sets the user data host.  This should not be considered part of the content API.
-     */
+    /** Sets the user data host. This should not be considered part of the content API. */
     public void setUserDataHost(UserDataHost userDataHost) {
         mUserDataHost = userDataHost;
     }

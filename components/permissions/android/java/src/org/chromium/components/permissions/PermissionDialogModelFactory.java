@@ -12,9 +12,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This class creates the model for the permission dialog.
- */
+/** This class creates the model for the permission dialog. */
 class PermissionDialogModelFactory {
     public static PropertyModel getModel(
             ModalDialogProperties.Controller controller,
@@ -36,7 +34,8 @@ class PermissionDialogModelFactory {
                 .with(ModalDialogProperties.CONTENT_DESCRIPTION, messageText)
                 .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
                 .with(ModalDialogProperties.TOUCH_FILTERED_CALLBACK, touchFilteredCallback)
-                .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                .with(
+                        ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                         UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                 .build();
     }

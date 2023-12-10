@@ -62,6 +62,8 @@ class ProfileManagementFlowController {
     // Renders the search engine choice screen.
     kSearchEngineChoice,
 #endif
+
+    kFinishFlow,
   };
 
   // Creates a flow controller that will start showing UI when `Init()`-ed.

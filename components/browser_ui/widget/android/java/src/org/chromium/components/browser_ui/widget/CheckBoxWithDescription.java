@@ -27,9 +27,7 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
     private TextView mPrimary;
     private TextView mDescription;
 
-    /**
-     * Constructor for inflating via XML.
-     */
+    /** Constructor for inflating via XML. */
     public CheckBoxWithDescription(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.checkbox_with_description, this, true);
@@ -41,33 +39,25 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
         setFocusable(true);
     }
 
-    /**
-     * Set the view elements that included in xml internally.
-     */
+    /** Set the view elements that included in xml internally. */
     private void setViewsInternal() {
         mCheckBox = getCheckBoxView();
         mPrimary = getPrimaryTextView();
         mDescription = getDescriptionTextView();
     }
 
-    /**
-     * @return CheckBox View inside this {@link CheckBoxWithDescription}.
-     */
+    /** @return CheckBox View inside this {@link CheckBoxWithDescription}. */
     private CheckBox getCheckBoxView() {
         return (CheckBox) findViewById(R.id.checkbox);
     }
 
-    /**
-     * @return TextView displayed as primary inside this {@link CheckBoxWithDescription}.
-     */
+    /** @return TextView displayed as primary inside this {@link CheckBoxWithDescription}. */
     @VisibleForTesting
     TextView getPrimaryTextView() {
         return (TextView) findViewById(R.id.primary);
     }
 
-    /**
-     * @return TextView displayed as description inside this {@link CheckBoxWithDescription}.
-     */
+    /** @return TextView displayed as description inside this {@link CheckBoxWithDescription}. */
     @VisibleForTesting
     TextView getDescriptionTextView() {
         return (TextView) findViewById(R.id.description);
@@ -78,24 +68,18 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
         setChecked(!isChecked());
     }
 
-    /**
-     * Sets the text shown in the primary section.
-     */
+    /** Sets the text shown in the primary section. */
     public void setPrimaryText(CharSequence text) {
         mPrimary.setText(text);
     }
 
-    /**
-     * @return The text shown in the primary section.
-     */
+    /** @return The text shown in the primary section. */
     @VisibleForTesting
     CharSequence getPrimaryText() {
         return mPrimary.getText();
     }
 
-    /**
-     * Sets the text shown in the description section.
-     */
+    /** Sets the text shown in the description section. */
     public void setDescriptionText(CharSequence text) {
         mDescription.setText(text);
 
@@ -108,17 +92,13 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
         }
     }
 
-    /**
-     * @return The text shown in the description section.
-     */
+    /** @return The text shown in the description section. */
     @VisibleForTesting
     CharSequence getDescriptionText() {
         return mDescription.getText();
     }
 
-    /**
-     * Returns true if checked.
-     */
+    /** Returns true if checked. */
     public boolean isChecked() {
         return mCheckBox.isChecked();
     }

@@ -77,7 +77,7 @@ class CellularInhibitorTest : public testing::Test {
 
   void TearDown() override {
     cellular_inhibitor_.RemoveObserver(&observer_);
-    helper_.device_test()->SetPropertyChangeDelay(absl::nullopt);
+    helper_.device_test()->SetPropertyChangeDelay(std::nullopt);
   }
 
   void AddCellularDevice() {
@@ -137,14 +137,14 @@ class CellularInhibitorTest : public testing::Test {
       return GetInhibitedPropertyResult::kOperationFailed;
     }
 
-    absl::optional<bool> inhibited =
+    std::optional<bool> inhibited =
         properties_->FindBool(shill::kInhibitedProperty);
     EXPECT_TRUE(inhibited.has_value());
     return inhibited.value() ? GetInhibitedPropertyResult::kTrue
                              : GetInhibitedPropertyResult::kFalse;
   }
 
-  absl::optional<CellularInhibitor::InhibitReason> GetInhibitReason() const {
+  std::optional<CellularInhibitor::InhibitReason> GetInhibitReason() const {
     return cellular_inhibitor_.GetInhibitReason();
   }
 
@@ -170,7 +170,7 @@ class CellularInhibitorTest : public testing::Test {
 
  private:
   void GetPropertiesCallback(const std::string& device_path,
-                             absl::optional<base::Value::Dict> properties) {
+                             std::optional<base::Value::Dict> properties) {
     properties_ = std::move(properties);
   }
 
@@ -180,7 +180,7 @@ class CellularInhibitorTest : public testing::Test {
   CellularInhibitor cellular_inhibitor_;
   TestObserver observer_;
 
-  absl::optional<base::Value::Dict> properties_;
+  std::optional<base::Value::Dict> properties_;
 };
 
 TEST_F(CellularInhibitorTest, SuccessSingleRequest) {

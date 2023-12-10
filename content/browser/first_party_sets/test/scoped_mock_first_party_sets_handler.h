@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_TEST_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
 
 #include <string>
-#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -68,7 +67,7 @@ class ScopedMockFirstPartySetsHandler
                              const net::FirstPartySetEntry&)> f) const override;
   // FirstPartySetsHandlerImpl:
   void Init(const base::FilePath& user_data_dir,
-            const LocalSetDeclaration& local_set) override;
+            const net::LocalSetDeclaration& local_set) override;
   [[nodiscard]] absl::optional<net::GlobalFirstPartySets> GetSets(
       base::OnceCallback<void(net::GlobalFirstPartySets)> callback) override;
 
@@ -101,4 +100,4 @@ class ScopedMockFirstPartySetsHandler
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
+#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_TEST_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_

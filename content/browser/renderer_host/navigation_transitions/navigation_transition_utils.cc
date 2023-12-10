@@ -127,17 +127,9 @@ bool ShouldCaptureForWorkInProgressConditions(
     return false;
   }
 
-  if (navigation_request.frame_tree_node()->frame_tree().IsPortal() ||
-      navigation_request.frame_tree_node()
+  if (navigation_request.frame_tree_node()
           ->GetParentOrOuterDocumentOrEmbedder()) {
-    // No support for non-MPArch Portal and GuestView.
-    //
-    // TODO(https://crbug.com/1422733): We don't need to support capturing
-    // Portals, but we should make sure the browser behaves correctly with
-    // Portals enabled. When a portal activates, it takes over the session
-    // histories from its predecessor. Currently the
-    // `NavigationEntryScreenshotCache` and the manager does not support the
-    // inheritable screenshots.
+    // No support for embedded pages (including GuestView or fenced frames).
     return false;
   }
 

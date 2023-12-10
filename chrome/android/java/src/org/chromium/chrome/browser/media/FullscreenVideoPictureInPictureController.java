@@ -10,10 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
-import android.text.format.DateUtils;
 import android.util.Rational;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -23,7 +21,6 @@ import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -52,20 +49,7 @@ public class FullscreenVideoPictureInPictureController {
     private static final String TAG = "VideoPersist";
 
     // Metrics
-    private static final String METRICS_DURATION = "Media.VideoPersistence.Duration";
 
-    private static final String METRICS_ATTEMPT_RESULT = "Media.VideoPersistence.AttemptResult";
-    @IntDef({
-            MetricsAttemptResult.SUCCESS,
-            MetricsAttemptResult.NO_SYSTEM_SUPPORT,
-            MetricsAttemptResult.NO_FEATURE,
-            MetricsAttemptResult.ALREADY_RUNNING,
-            MetricsAttemptResult.RESTARTING,
-            MetricsAttemptResult.FINISHING,
-            MetricsAttemptResult.NO_WEB_CONTENTS,
-            MetricsAttemptResult.NO_VIDEO,
-            MetricsAttemptResult.APP_TASKS,
-    })
     private @interface MetricsAttemptResult {
         static final int SUCCESS = 0;
         static final int NO_SYSTEM_SUPPORT = 1;
@@ -78,19 +62,7 @@ public class FullscreenVideoPictureInPictureController {
         static final int NO_VIDEO = 8;
         static final int APP_TASKS = 9;
     }
-    // For UMA, not a valid MetricsAttemptResult.
-    private static final int METRICS_ATTEMPT_RESULT_COUNT = 9;
 
-    private static final String METRICS_END_REASON = "Media.VideoPersistence.EndReason";
-    @IntDef({
-            MetricsEndReason.RESUME,
-            MetricsEndReason.CLOSE,
-            MetricsEndReason.CRASH,
-            MetricsEndReason.NEW_TAB,
-            MetricsEndReason.REPARENT,
-            MetricsEndReason.LEFT_FULLSCREEN,
-            MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN,
-    })
     private @interface MetricsEndReason {
         static final int RESUME = 0;
         // Obsolete: NAVIGATION = 1;
@@ -101,7 +73,6 @@ public class FullscreenVideoPictureInPictureController {
         static final int LEFT_FULLSCREEN = 6;
         static final int WEB_CONTENTS_LEFT_FULLSCREEN = 7;
     }
-    private static final int METRICS_END_REASON_COUNT = 8;
 
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
     private static final float MAX_ASPECT_RATIO = 2.39f;
@@ -114,16 +85,16 @@ public class FullscreenVideoPictureInPictureController {
 
     // Components names that won't trigger the pip mode. Use cases like notification clicks won't
     // trigger pip.
-    private static final Set<String> NO_PIP_COMPONENT_NAMES = Collections.singleton(
-            NotificationIntentInterceptor.TrampolineActivity.class.getName());
+    private static final Set<String> NO_PIP_COMPONENT_NAMES =
+            Collections.singleton(NotificationIntentInterceptor.TrampolineActivity.class.getName());
 
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
+
     /** Current observers, if any. */
-    @Nullable
-    DismissActivityOnTabChangeObserver mActivityTabObserver;
-    @Nullable
-    FullscreenManager.Observer mFullscreenListener;
+    @Nullable DismissActivityOnTabChangeObserver mActivityTabObserver;
+
+    @Nullable FullscreenManager.Observer mFullscreenListener;
 
     private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
@@ -138,8 +109,10 @@ public class FullscreenVideoPictureInPictureController {
     /** Wall clock time when we last entered Picture in Picture */
     private long mLastOnEnteredTimeMillis;
 
-    public FullscreenVideoPictureInPictureController(Activity activity,
-            ActivityTabProvider activityTabProvider, FullscreenManager fullscreenManager) {
+    public FullscreenVideoPictureInPictureController(
+            Activity activity,
+            ActivityTabProvider activityTabProvider,
+            FullscreenManager fullscreenManager) {
         mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
@@ -150,9 +123,7 @@ public class FullscreenVideoPictureInPictureController {
         if (mListenForAutoEnterability) addObserversIfNeeded();
     }
 
-    /**
-     * Convenience method to get the {@link WebContents} from the active Tab.
-     */
+    /** Convenience method to get the {@link WebContents} from the active Tab. */
     private @Nullable WebContents getWebContents() {
         Tab tab = mActivityTabProvider.get();
         if (tab == null) return null;
@@ -162,15 +133,13 @@ public class FullscreenVideoPictureInPictureController {
     private static void recordAttemptResult(@MetricsAttemptResult int result) {
         // Silently ignore NO_VIDEO, since it's spammy.
         if (result == MetricsAttemptResult.NO_VIDEO) return;
-
-        RecordHistogram.recordEnumeratedHistogram(
-                METRICS_ATTEMPT_RESULT, result, METRICS_ATTEMPT_RESULT_COUNT);
     }
 
     /**
-     * Return a METRICS_ATTEMPT_REASON_* for whether Picture in Picture is okay or not.
+     * Return a `MetricsAttemptResult` for whether Picture in Picture is okay or not.
+     *
      * @param checkCurrentMode should be true if and only if "already in PiP mode" is sufficient to
-     *                         cause this to return failure.
+     *     cause this to return failure.
      */
     private @MetricsAttemptResult int getAttemptResult(boolean checkCurrentMode) {
         WebContents webContents = getWebContents();
@@ -190,8 +159,9 @@ public class FullscreenVideoPictureInPictureController {
             return MetricsAttemptResult.NO_SYSTEM_SUPPORT;
         }
 
-        if (!mActivity.getPackageManager().hasSystemFeature(
-                    PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+        if (!mActivity
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             Log.d(TAG, "Activity does not have PiP feature.");
             return MetricsAttemptResult.NO_FEATURE;
         }
@@ -224,14 +194,14 @@ public class FullscreenVideoPictureInPictureController {
     }
 
     private boolean canStartPipBasedOnRecentTasks() {
-        return AndroidTaskUtils
-                .getRecentAppTasksMatchingComponentNames(mActivity, NO_PIP_COMPONENT_NAMES)
+        return AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
+                        mActivity, NO_PIP_COMPONENT_NAMES)
                 .isEmpty();
     }
 
     /**
-     * Return a METRICS_ATTEMPT_REASON_* for whether Picture in Picture is okay or not.  Considers
-     * that "already in PiP mode" is a reason to say no.
+     * Return a `MetricsAttemptResult` for whether Picture in Picture is okay or not. Considers that
+     * "already in PiP mode" is a reason to say no.
      */
     private @MetricsAttemptResult int getAttemptResult() {
         return getAttemptResult(true);
@@ -263,8 +233,12 @@ public class FullscreenVideoPictureInPictureController {
         try {
             if (!mActivity.enterPictureInPictureMode(builder.build())) return;
         } catch (IllegalStateException | IllegalArgumentException e) {
-            Log.e(TAG, "Error entering PiP with bounds (%d, %d): %s", bounds.width(),
-                    bounds.height(), e);
+            Log.e(
+                    TAG,
+                    "Error entering PiP with bounds (%d, %d): %s",
+                    bounds.width(),
+                    bounds.height(),
+                    e);
             return;
         }
     }
@@ -290,29 +264,24 @@ public class FullscreenVideoPictureInPictureController {
         // We don't want InfoBars displaying while in PiP, they cover too much content.
         getInfoBarContainerForTab(activityTab).setHidden(true);
 
-        mOnLeavePipCallbacks.add(() -> {
-            webContents.setHasPersistentVideo(false);
-            getInfoBarContainerForTab(activityTab).setHidden(false);
-        });
+        mOnLeavePipCallbacks.add(
+                () -> {
+                    webContents.setHasPersistentVideo(false);
+                    getInfoBarContainerForTab(activityTab).setHidden(false);
+                });
 
         // Setup observers to dismiss the Activity on events that should end PiP.  In auto-enter
         // mode, these might be registered already.
         addObserversIfNeeded();
-
-        long startTimeMs = SystemClock.elapsedRealtime();
-        mOnLeavePipCallbacks.add(() -> {
-            long pipTimeMs = SystemClock.elapsedRealtime() - startTimeMs;
-            RecordHistogram.recordCustomTimesHistogram(METRICS_DURATION, pipTimeMs,
-                    DateUtils.SECOND_IN_MILLIS * 7, DateUtils.HOUR_IN_MILLIS * 10, 50);
-        });
     }
 
     private static Rect getVideoBounds(WebContents webContents, Activity activity) {
         Rect rect = webContents.getFullscreenVideoSize();
         if (rect == null || rect.width() == 0 || rect.height() == 0) return null;
 
-        float videoAspectRatio = MathUtils.clamp(
-                rect.width() / (float) rect.height(), MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
+        float videoAspectRatio =
+                MathUtils.clamp(
+                        rect.width() / (float) rect.height(), MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
 
         int windowWidth = activity.getWindow().getDecorView().getWidth();
         int windowHeight = activity.getWindow().getDecorView().getHeight();
@@ -378,9 +347,6 @@ public class FullscreenVideoPictureInPictureController {
         if (!mListenForAutoEnterability) {
             removeObserversIfNeeded();
         }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                METRICS_END_REASON, reason, METRICS_END_REASON_COUNT);
     }
 
     /**
@@ -394,12 +360,13 @@ public class FullscreenVideoPictureInPictureController {
         }
 
         if (mFullscreenListener == null) {
-            mFullscreenListener = new FullscreenManager.Observer() {
-                @Override
-                public void onExitFullscreen(Tab tab) {
-                    dismissActivityIfNeeded(mActivity, MetricsEndReason.LEFT_FULLSCREEN);
-                }
-            };
+            mFullscreenListener =
+                    new FullscreenManager.Observer() {
+                        @Override
+                        public void onExitFullscreen(Tab tab) {
+                            dismissActivityIfNeeded(mActivity, MetricsEndReason.LEFT_FULLSCREEN);
+                        }
+                    };
 
             mFullscreenManager.addObserver(mFullscreenListener);
         }
@@ -487,8 +454,10 @@ public class FullscreenVideoPictureInPictureController {
         // `isPipSessionActive()` will be false, or (b) try to close PiP properly.  We also don't
         // try to pro-rate the exit delay; it's short and arbitrary anyway.
         if (SystemClock.elapsedRealtime() - mLastOnEnteredTimeMillis < MIN_EXIT_DELAY_MILLIS) {
-            PostTask.postDelayedTask(TaskTraits.UI_USER_BLOCKING,
-                    () -> dismissActivityIfNeeded(activity, reason), MIN_EXIT_DELAY_MILLIS);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_USER_BLOCKING,
+                    () -> dismissActivityIfNeeded(activity, reason),
+                    MIN_EXIT_DELAY_MILLIS);
             return;
         }
 
@@ -526,9 +495,7 @@ public class FullscreenVideoPictureInPictureController {
                     new DismissActivityOnWebContentsObserver(mActivity, mWebContents);
         }
 
-        /**
-         * Clean up everything, and unregister `this`.
-         */
+        /** Clean up everything, and unregister `this`. */
         public void cleanup() {
             cleanupWebContentsObserver();
             if (mTab != null) {
@@ -603,9 +570,7 @@ public class FullscreenVideoPictureInPictureController {
             mTabEventObserver = new DismissActivityOnTabEventObserver(mActivity, mCurrentTab);
         }
 
-        /**
-         * Called to clean up everything, and unregister `this`.
-         */
+        /** Called to clean up everything, and unregister `this`. */
         public void cleanup() {
             if (mTabEventObserver != null) {
                 mTabEventObserver.cleanup();
@@ -656,9 +621,7 @@ public class FullscreenVideoPictureInPictureController {
             mWebContents.addObserver(this);
         }
 
-        /**
-         * Unregister us from `mWebContents`.
-         */
+        /** Unregister us from `mWebContents`. */
         public void cleanup() {
             mWebContents.removeObserver(this);
         }

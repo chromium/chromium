@@ -10,11 +10,9 @@
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Akaun yang berikut menggunakan kata laluan yang terdedah dalam pelanggaran data pihak ketiga atau yang dimasukkan pada laman web menipu. Tukar kata laluan ini dengan segera untuk memastikan akaun anda selamat.</translation>
 <translation id="1053651653201045802">Dilog keluar. Log masuk semula untuk menggunakan penanda halaman, kata laluan dan banyak lagi dalam akaun anda.</translation>
 <translation id="1054045277222934172">Anda boleh menukar paparan laman lalai pada desktop dalam Tetapan kemudian Tetapan Kandungan</translation>
 <translation id="1054745118061919935">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK" />Syarat Perkhidmatan<ph name="END_LINK" />.</translation>
-<translation id="1063454504051558093">Gunakan Kata Laluan Lain...</translation>
 <translation id="1066060668811609597">Urus Penyegerakan</translation>
 <translation id="1069154182096085577">Kata Laluan Sudah Wujud</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
@@ -63,13 +61,13 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1279024913354609713">Jangan Benarkan</translation>
 <translation id="1281818060020671000">Urus Data</translation>
 <translation id="1282311502488501110">Jangan Log Masuk</translation>
+<translation id="1283039547216852943">Ketik untuk kembangkan</translation>
 <translation id="1283524564873030414">24 Jam Yang Lalu</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1291506870746876680">Kebenaran <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
 <translation id="1295289763199166823">Sesuaikan Menu</translation>
 <translation id="1305822519689023679">Untuk memastikan anda boleh menggunakan kata laluan pada bila-bila masa dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="1312721752506309252">Perlindungan dipertingkat dihidupkan</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Jejak Pakej ini}other{Jejak semua pakej}}</translation>
 <translation id="1321993286294231467">Ralat menyimpan imej.</translation>
 <translation id="1322735045095424339">Organisasi anda menghendaki Mod inkognito digunakan</translation>
 <translation id="1323735185997015385">Padam</translation>
@@ -144,7 +142,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="165877110639533037">Tiada Tab Terbuka</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Minta Laman Mudah Alih</translation>
-<translation id="168715261339224929">Hidupkan penyegerakan untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="1687475363370981210">Tandakan Semua Sebagai Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
@@ -177,6 +174,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1883255238294161206">Runtuhkan senarai</translation>
 <translation id="1889872080060107187">Anda akan log masuk ke <ph name="URL" /></translation>
 <translation id="1890237935065108104">Tetapan ini tidak tersedia.</translation>
+<translation id="1891199774460536658">Jejak Secara Automatik Semua Bungkusan Yang Dikesan</translation>
 <translation id="1894023287452300670">Jejaki harga di sini</translation>
 <translation id="189531189292803889">iPad anda dipulihkan baru-baru ini dan mungkin telah menukar penyemak imbas lalai anda.</translation>
 <translation id="1910975740091000991">Chrome untuk iOS</translation>
@@ -211,6 +209,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2050196510205866090">{count,plural, =1{{count} kaedah pembayaran yang disimpan tersedia di sebelah atas papan kekunci anda.}other{{count} kaedah pembayaran yang disimpan tersedia di sebelah atas papan kekunci anda.}}</translation>
 <translation id="2055515971416882518">Buka "Tetapan".</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
+<translation id="2062410130322589403">Panduan Pilihan Privasi Anda</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
@@ -317,7 +316,6 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2664621323652615289">Berhenti</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
-<translation id="2671426118752779020">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan Google dalam apl lain pada iPhone anda.</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
 <translation id="2695507686909505111">Halaman Diterjemahkan</translation>
@@ -380,8 +378,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2923448633003185837">Tampal dan Pergi</translation>
 <translation id="292639812446257861">Tandakan Belum Dibaca</translation>
 <translation id="2931440415625410757">Tunjukkan arahan</translation>
-<translation id="2932085390869194046">Cadangkan Kata Laluan...</translation>
-<translation id="2932765531295814441">Tambah Kata Laluan Secara Manual</translation>
 <translation id="2952246431280799028">Sentuh &amp; Tahan alamat.</translation>
 <translation id="2952278131021475699">Carian Kamera Lens</translation>
 <translation id="2952581218264071393">1. Buka Tetapan Chrome</translation>
@@ -412,6 +408,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3080525922482950719">Anda boleh menyimpan halaman untuk dibaca kemudian atau secara luar talian</translation>
 <translation id="3081338492074632642">Pastikan kata laluan yang anda simpan sepadan dengan kata laluan anda untuk <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bawah</translation>
+<translation id="3090455602619185166">Log Masuk dengan Akaun Terurus</translation>
 <translation id="309710370695886264">Anda mempunyai 1 kata laluan yang digunakan semula. Betulkan sekarang untuk kekal selamat.</translation>
 <translation id="3112556859945124369">Tandakan...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Lihat Item Yang Boleh Anda Segerakkan<ph name="END_LINK" />.</translation>
@@ -460,7 +457,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3348387552617855658">Kad ini membantu anda menjejaki pakej anda dan memberi anda kemaskinian penghantaran yang penting.</translation>
 <translation id="3349676726073650389">Laman dan carian yang anda ikuti disimpan dalam Google Account anda. Anda boleh mengurus laman dan carian yang anda ikuti dalam tetapan pada bila-bila masa.</translation>
 <translation id="3365529507898144230">Simpan dalam Photos</translation>
-<translation id="3371831930909698441">Terjemah tersedia. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
+<translation id="3371831930909698441">Translate tersedia. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
 <translation id="3377063233124932127">Kini penanda halaman, kata laluan anda yang disimpan dan pelbagai lagi berada di bahagian atas.</translation>
 <translation id="3393920035788932672">Pop Timbul Dibenarkn</translation>
 <translation id="3399930248910934354">Buka Tetapan Chrome</translation>
@@ -565,7 +562,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3922310737605261887">Cari Teks yang Disalin</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
 <translation id="3929457972718048006">Alamat</translation>
-<translation id="3943492037546055397">Kata laluan</translation>
 <translation id="3955822496205734389">Anda mempunyai kata laluan lemah.</translation>
 <translation id="3959736869653157332">Menu → Tab Inkognito Baharu</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
@@ -576,9 +572,9 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4004204301268239848">Kata laluan disimpan dalam Google Account anda supaya anda dapat menggunakannya pada mana-mana peranti.</translation>
 <translation id="4018310736049373830">Urus Aktiviti</translation>
+<translation id="4021931095789478915">Tambahkan ${url} pada senarai bacaan</translation>
 <translation id="4038354071007134711">Tiada aplikasi pada peranti ini yang dapat membuka fail itu.</translation>
 <translation id="4042870976416480368">Cari dalam Halaman</translation>
-<translation id="40433179647657191">Buat dan kongsi pautan terus ke bahagian halaman yang telah anda serlahkan.</translation>
 <translation id="4045648459118332842">Dapatkan kata laluan anda yang disimpan dalam mana-mana apl dengan satu ketikan</translation>
 <translation id="4049507953662678203">Pastikan anda mempunyai sambungan rangkaian dan cuba lagi.</translation>
 <translation id="4066639687323968621">Log masuk dengan Google Account anda untuk menyegerakkan penanda halaman dan sejarah anda serta pelbagai lagi.</translation>
@@ -628,6 +624,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="430793432425771671">Segerakkan Semua</translation>
 <translation id="4309403553630140242">Ketik dua kali untuk mendapatkan maklumat lanjut</translation>
 <translation id="430967081421617822">Sepanjang Masa</translation>
+<translation id="4322394346347055525">Tutup Tab Lain</translation>
 <translation id="4331177082088332784">Anda boleh mengurus tetapan ini dalam BEGIN_LINK Tetapan Kandungan END_LINK</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
 <translation id="4338650699862464074">Menghantar URL halaman yang anda lawati kepada Google.</translation>
@@ -656,8 +653,8 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4489536976005181779">{count,plural, =1{Halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}other{Halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}}</translation>
 <translation id="4493604894403585654">Anda log masuk sebagai <ph name="USER_EMAIL" />. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="4502566650163919158">Semak Sekarang</translation>
-<translation id="4505980578794259603">Terakhir disemak <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Tutup promosi log masuk</translation>
+<translation id="4509449376545878717">Jangan Sesekali Mengesan Bungkusan Secara Automatik</translation>
 <translation id="4514889972748124117">Cadangkan Kata Laluan Kukuh...</translation>
 <translation id="4520798012560649652">Ketahui lebih lanjut tentang mod Inkognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} penanda halaman}other{{count} penanda halaman}}</translation>
@@ -680,7 +677,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4619615317237390068">Tab daripada peranti lain</translation>
 <translation id="4620246317052452550">Halaman yang Anda Baca</translation>
 <translation id="4620888520263267479">Tunjukkan Pratonton Pautan</translation>
-<translation id="4622477750832577849">Dayakan Penjejakan</translation>
 <translation id="4630540211544979320">Terjemah Halaman</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> kata laluan yang digunakan semula</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
@@ -702,13 +698,13 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} dan 1 lagi}other{{website_1}, {website_2} dan {more_count} lagi}}</translation>
 <translation id="4737560986434232178">Cari Tab Terkini</translation>
 <translation id="473775607612524610">Kemas kini</translation>
+<translation id="4744428388659507035">Hidupkan “Penanda halaman” dalam tetapan untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="4746926359847517643">Anda boleh mendapatkan semula tab dalam sejarah pada bila-bila masa.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Hanya pada peranti ini, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Tab Inkognito Baharu</translation>
 <translation id="4766112107778026136">Discover &amp; Mengikuti</translation>
 <translation id="47677902929517676">Untuk menyimpan kata laluan ini dalam akaun anda, anda mestilah menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="4775879719735953715">Penyemak Imbas Lalai</translation>
-<translation id="4778644898150334464">Gunakan kata laluan lain</translation>
 <translation id="4779732376610430319">Akses Tetapan...</translation>
 <translation id="478808905805139173">Buka dalam Inkognito?</translation>
 <translation id="4803185665210547709">Diurus oleh organisasi anda.
@@ -735,8 +731,8 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4856498338299082007">Dalam Google Account Anda</translation>
 <translation id="4856841893565072365">Bar Menu Isih Pintar</translation>
 <translation id="4860895144060829044">Hubungi</translation>
-<translation id="4872323082491632254">Semak Kata Laluan</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="4883824756452868502">Kesan Unit</translation>
 <translation id="488785315393301722">Tunjukkan Butiran</translation>
 <translation id="4894963374040315706">Langkah ini membolehkan anda membuat carian menggunakan suara anda</translation>
 <translation id="489903206070130262">Tab Terbuka Anda Yang Terakhir</translation>
@@ -744,7 +740,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4904877109095351937">Tandakan Dibaca</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4913626501929406101">Anda boleh berkongsi salinan kata laluan anda dengan selamat dengan seseorang dalam kumpulan keluarga anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lensa</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4922154083994158612">Lagi Keselamatan?</translation>
 <translation id="4930714375720679147">Hidupkan</translation>
@@ -800,13 +795,11 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="519530786644929958">Muat turun gagal dan tidak boleh dicuba semula.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Benarkan "<ph name="SITE_NAME" />" untuk menggunakan <ph name="PERMISSION" /> anda?</translation>
-<translation id="5215990399368742238">Jejak secara automatik semua Pakej yang Dikesan</translation>
 <translation id="5219295696240154694">Bantu Tingkatkan Keselamatan pada Web untuk Semua</translation>
 <translation id="5220945116117011963">Buat acara kalendar daripada tarikh</translation>
 <translation id="5221339005270097309">Menyemak Kata laluan…</translation>
 <translation id="5226568866393490213">Ketepikan Amaran</translation>
 <translation id="5228579091201413441">Dayakan penyegerakan</translation>
-<translation id="5232485538978018676">Log masuk dengan Akaun Terurus</translation>
 <translation id="5234094073825090254">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}.}other{Penanda halaman disimpan dalam Google Account anda, {email}.}}</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
 <translation id="5235389474593199952">Sembunyikan Sejarah</translation>
@@ -822,8 +815,8 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda telah menjejaki produk ini.</translation>
+<translation id="5329451663851195956">Anda boleh menarik ke bawah untuk menyegarkan semula.</translation>
 <translation id="5339316356165661760">Hidupkan Penyegerakan</translation>
-<translation id="5345598430982201510">Jangan sesekali Mengesan Pakej Secara Automatik</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Jejaki Pakej Ini?}other{Jejaki {COUNT} Pakej?}}</translation>
 <translation id="536067926684072644">Tunjukkan Penanda Halaman</translation>
 <translation id="5360976571138293719">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
@@ -844,12 +837,12 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5457226814769348910">Buka Versi Luar Talian</translation>
 <translation id="5475069061743940393">Penjejakan Bungkusan</translation>
 <translation id="5478327362747197944">Buat acara Kalendar secara terus dengan mengklik pada tarikh dalam halaman web.</translation>
+<translation id="5482922178977937393">Adakah anda mahu mendapatkan pemberitahuan untuk berita, sukan dan pelbagai lagi berdasarkan minat anda?</translation>
 <translation id="5489208564673669003">Untuk mengurus kuki bagi semua tapak, lihat <ph name="BEGIN_LINK" />Tetapan Kuki<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Sekat Semua Kuki (Tidak Disyorkan)</translation>
 <translation id="5497202150450073388">Penghantaran Dicuba. Akan mencuba lagi</translation>
 <translation id="5511959326926949696">Perlindungan pilihan yang ekstrem untuk penyemak imbas anda. Pilihan tersebut hanya boleh digunakan jika anda percaya bahawa anda menjadi sasaran serangan siber yang sangat canggih.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> j yang lalu</translation>
-<translation id="5520466080178053306">Ketik Password Manager Kemudian Ketik Tambah</translation>
 <translation id="5525095647255982834">Untuk menghantar tab ini ke peranti lain, log masuk Chrome pada peranti lain itu.</translation>
 <translation id="5525269841082836315">Buat Frasa Laluan</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} kata laluan lemah}other{{COUNT} kata laluan lemah}}</translation>
@@ -860,8 +853,10 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5551897871312988470">Tawaran untuk Menterjemah</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="555749644339804659">Menyemak kata laluan…</translation>
+<translation id="5559567453458728487">Tukar unit ukuran yang ditemukan pada web</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5572684875078967866">Storan Maklumat</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Jejaki Pakej Ini}other{Jejaki Semua Pakej}}</translation>
 <translation id="5597915316964418992">Buka Grid Tab</translation>
 <translation id="560322036295180549">Dimatikan oleh organisasi anda</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
@@ -909,7 +904,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5817176759448082654">Semakan Kata Laluan</translation>
 <translation id="5819208479324046259">Diurus oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5827650163984030263">Sembunyikan Password Manager</translation>
-<translation id="5833643789537100742">Simpan kata laluan, kaedah pembayaran dan alamat untuk Chrome bagi autolengkap kemudian.</translation>
 <translation id="5834415013958049700">Imej Lensa yang Anda Salin</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="5846482154967366008">Enjin Carian</translation>
@@ -926,15 +920,15 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5897956970858271241">Lawati Pautan Disalin</translation>
 <translation id="5898848375214731122">Jisim</translation>
 <translation id="5899314093904173337">Untuk berkongsi dengan orang yang berdekatan, benarkan mereka mengimbas kod QR ini dengan kamera atau apl pengimbas QR mereka</translation>
-<translation id="5911030830365207728">Google Terjemah</translation>
+<translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Pilihan untuk Menterjemah halaman</translation>
 <translation id="5922999516621365983">Seret tab ke sini untuk dipinkan.</translation>
 <translation id="5938160824633642847">Peranti anda hampir penuh. Kosongkan ruang dan cuba lagi.</translation>
 <translation id="5948291296578561264">Tindakan ini membolehkan anda menyimpan foto pada pustaka foto anda.</translation>
-<translation id="5951816930277761335">Kongsi Pautan</translation>
 <translation id="5955891643922670672">Melihat Versi Luar Talian</translation>
 <translation id="5957613098218939406">Lebih Banyak Pilihan</translation>
 <translation id="595769230373966252">Cari dengan <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
 <translation id="5963939892571022323">Pautan kepada serlahan tidak dapat dibuat.</translation>
 <translation id="5965679971710331625">Anda sudah log masuk</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 penanda halaman dipadamkan}other{{count} penanda halaman dipadamkan}}</translation>
@@ -945,6 +939,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="598634819525651074">Kawasan</translation>
 <translation id="5988097621740394599">Lihat penurunan harga pada tab anda.</translation>
 <translation id="5988851877894965432">Buka URL dalam Chrome</translation>
+<translation id="6001839398155993679">Jom</translation>
 <translation id="6006672969046233841">Tab Baharu</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
 <translation id="6012140227487808125">Menyulitkan...</translation>
@@ -1052,16 +1047,11 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="6476253015009698798">Penjejakan harga tidak tersedia untuk halaman ini.</translation>
 <translation id="6476800141292307438">Menterjemah halaman ini kepada <ph name="LANGUAGE" />. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
 <translation id="648164694371393720">Ralat Pengesahan</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dipadamkan</translation>
 <translation id="6484712497741564393">Log masuk sebagai <ph name="EMAIL" />.
 
 Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan tersebut untuk menggunakan dan menyimpan data Chrome dalam Google Account anda.</translation>
 <translation id="6494931198667773526">Tamat</translation>
-<translation id="6497772452874122664">Jika anda mempercayai <ph name="TIME" />, anda boleh menggunakan kata laluan yang disimpan daripada laman lain.
-
-Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="6497850081273517953">Chrome sudah lapuk, kemas kinikan kepada versi terbaharu untuk kekal selamat.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Nyahjejak pakej ini}other{Nyahjejak semua pakej}}</translation>
 <translation id="650279896687777322">Ketahui Lebih Lanjut...</translation>
 <translation id="6507973708545996744">Log masuk untuk mendapatkan senarai bacaan pada semua peranti anda.</translation>
 <translation id="6510072653668207258">Ingatkan Saya Kemudian</translation>
@@ -1120,11 +1110,11 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6753469262000681876">Mod Kunci Semua</translation>
 <translation id="6760509555861141183">Kembali ke Tab Baru-baru Ini</translation>
 <translation id="6762812039470893796">Nyahpilih Semua</translation>
-<translation id="6771287014037609247">Sentiasa Menjejaki Pakej Yang Dikesan</translation>
 <translation id="6780034285637185932">Poskod</translation>
 <translation id="6781260999953472352">Hidupkan Penyegerakan?</translation>
 <translation id="6781405765516175232">Untuk pilihan laluan, ketik “Dapatkan Arah”.</translation>
 <translation id="6785453220513215166">Menghantar laporan ranap sistem…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Nyahjejak Pakej Ini}other{Nyahjejak Semua Pakej}}</translation>
 <translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="6797885426782475225">Carian Suara</translation>
 <translation id="6800349425672670802">Anda boleh mengakses semua tab terbuka anda daripada Penukar Tab.</translation>
@@ -1189,7 +1179,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7154343200458623869">Lengkapkan tugasan anda.</translation>
 <translation id="7161230316646448869">Segerakkan penanda halaman, sejarah &amp; pelbagai lagi pada semua peranti</translation>
 <translation id="7162168282402939716">Buka Kunci Tab Inkognito dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Pastikan kata laluan anda selamat daripada isu keselamatan</translation>
 <translation id="7173114856073700355">Buka Tetapan</translation>
 <translation id="7189598951263744875">Kongsi...</translation>
 <translation id="719133302483559673">Uruskan minat dan pilihan anda.</translation>
@@ -1206,19 +1195,18 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7284359491594949826">{COUNT,plural, =1{Pakej Baharu Dijejaki}other{Pakej Baharu Dijejaki}}</translation>
 <translation id="7291368939935408496">Menyediakan Kata Laluan…</translation>
 <translation id="7302503784943202842">Gunakan Kata Laluan pada Semua Peranti Anda</translation>
-<translation id="730958329302570991">Tambah kata laluan pada Google Password Manager dengan mudah pada bila-bila masa.</translation>
 <translation id="7313347584264171202">Anda dapat menemukan tab Inkognito anda di sini</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> peratus dimuat turun</translation>
 <translation id="7340958967809483333">Pilihan untuk Discover</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="734758817008927353">Pilihan untuk Simpan Kad</translation>
 <translation id="7349129508108954623">Benarkan Chrome untuk menggunakan Google Maps bagi memberikan arah dan maklumat setempat kepada anda pada alamat yang dikesan.</translation>
-<translation id="7351537303876921605">Ketik Cipta Pautan dalam Menu Konteks</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353432112255316844">Sahkan Orang Itu Ialah Anda</translation>
 <translation id="7367530036083223701">Akses kata laluan anda dengan selamat daripada skrin utama dengan widget Password Manager.</translation>
 <translation id="7380220816562673297">Pada masa ini, anda hanya boleh berkongsi kata laluan dengan ahli keluarga. <ph name="BEGIN_LINK" />Buat kumpulan keluarga<ph name="END_LINK" /> dengan maksimum 6 ahli dan peroleh banyak manfaat daripada produk dan langganan anda merentas Google.</translation>
 <translation id="7383797227493018512">Senarai Bacaan</translation>
+<translation id="739101637685146669">Apakah URL yang mahu ditambahkan pada penanda halaman?</translation>
 <translation id="7396331865858820922">Kata Laluan Tidak Dikongsi</translation>
 <translation id="7398893703713203428">Buat Pautan</translation>
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
@@ -1226,6 +1214,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7402602673739047753">{count,plural, =1{1 penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman ini pada peranti anda yang lain, simpan penanda halaman dalam Google Account anda, {email}.}other{{count} penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman ini pada peranti anda yang lain, simpan penanda halaman dalam Google Account anda, {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artikel belum dibaca.</translation>
 <translation id="7412027924265291969">Teruskan</translation>
+<translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7425346204213733349">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Akaun Google anda lagi. Walau bagaimanapun, data sedia ada akan kekal disimpan dalam Akaun Google anda.</translation>
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
@@ -1242,6 +1231,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7491131399623468277">Pergi ke Tetapan…</translation>
 <translation id="7492574581995589075">Organisasi anda mematikan keupayaan untuk menggunakan dan menyimpan data Chrome dalam Google Account anda. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
 <translation id="749854780843431406">Anda boleh membuka tab baharu daripada butang <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="7500419352370346534">Kini anda boleh mengawal semua tetapan akaun anda pada satu tempat</translation>
 <translation id="750149195207506638">Penanda halaman tersembunyi</translation>
 <translation id="750228856503700085">Kemaskinian Tidak Tersedia</translation>
 <translation id="750493650310597496">0 dipilih</translation>
@@ -1289,6 +1279,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7744192722284567281">Ditemukan dalam pelanggaran data</translation>
 <translation id="7744394900930577716">Kata Laluan dalam Apl Lain</translation>
 <translation id="7749790401023484470">Anda tidak memilih apa-apa teks.</translation>
+<translation id="7752405526771734448">Carian Visual Lens</translation>
 <translation id="7756478488453921771">Menu → Tetapan → Kaedah Pembayaran</translation>
 <translation id="7760127703945531263">Kunci Inkognito</translation>
 <translation id="7765158879357617694">Alih</translation>
@@ -1310,7 +1301,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="784551991304901159">Untuk melihat kandungan, pilih Hidupkan daripada menu</translation>
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7856733331829174190">Tidak Dapat Memuat Turun</translation>
-<translation id="785938070103630874">Buka Kata Laluan, Kaedah Pembayaran atau Alamat dan Pelbagai Lagi</translation>
 <translation id="7859704718976024901">Sejarah Penyemakan Imbas</translation>
 <translation id="7866501058614003444">Pakej ini telah berjaya dinyahjejak.</translation>
 <translation id="7866993391592926595">Menyembunyikan Kad Ini Akan Mematikan Penjejakan Bungkusan dan Mengalih Keluar Semua Data Anda</translation>
@@ -1318,6 +1308,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7879275349003161544">Tunjukkan Muat Turun</translation>
 <translation id="7883882164760409935">Anda mempunyai kata laluan yang digunakan semula.</translation>
 <translation id="7884694604461143138">Sejarah Carian (<ph name="COUNT" /> Ditemukan)</translation>
+<translation id="7887174313503389866">Ikuti lawatan berpandu privasi dan kawalan keselamatan utama. Untuk mendapatkan lagi pilihan, pergi ke tetapan individu.</translation>
 <translation id="7887198238286927132">Untuk melindungi privasi anda, Chrome tidak akan mengisi medan ini secara automatik.</translation>
 <translation id="7889910613639381518">Akses mudah dan selamat dengan widget Google Password Manager.</translation>
 <translation id="7911190106180361398">Organisasi anda tidak membenarkan anda menyegerakkan semua.</translation>
@@ -1327,7 +1318,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksport Kata Laluan...</translation>
 <translation id="794799177247607889">Berhenti Mengelog</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Tiada kata laluan yang terjejas}=1{{COUNT} Kata laluan yang terjejas}other{{COUNT} Kata laluan yang terjejas}}</translation>
 <translation id="7959441099968534758">PERGI KE SUAPAN</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7966516440812255683">Tapak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingati item dalam troli beli-belah anda.
@@ -1349,6 +1339,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8023878949384262191">Mengembangkan bahagian.</translation>
 <translation id="8027581147000338959">Buka dalam Tetingkap Baharu</translation>
 <translation id="8032569120109842252">Mengikut</translation>
+<translation id="8040207962129315716">Tanya Saya Setiap Kali</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Sejarah carian<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />bentuk aktiviti lain<ph name="END_LINK" /> mungkin disimpan dalam Google Account anda semasa anda dilog masuk. Anda boleh memadamkan data tersebut pada bila-bila masa.</translation>
 <translation id="804427445359061970">Anda dapat menemukan tab anda daripada peranti lain di sini</translation>
 <translation id="8044568254381073661">Simpan Tanpa Penyulitan</translation>
@@ -1394,7 +1385,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="826614135184049678">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPad anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="8271720166617117963">Terima dan Log masuk</translation>
 <translation id="8273982424131314219">Anda akan mengisi maklumat pada <ph name="URL" /></translation>
-<translation id="8278938988428169257">Masukkan Perkataan atau Frasa</translation>
 <translation id="8281781826761538115">Lalai - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>
@@ -1402,7 +1392,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8311853334103696030">Sembunyikan Jejak Harga</translation>
-<translation id="8316944564970119719">Masukkan Laman dan Kata Laluan, Kemudian Simpan</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
@@ -1425,7 +1414,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8428634594422941299">OK</translation>
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>
 <translation id="8449347986464073209">Padam dan Log Keluar</translation>
-<translation id="8458397775385147834">1 item dipadamkan</translation>
 <translation id="8459333855531264009">Tidak Selamat</translation>
 <translation id="8487667956631253959">Hidup</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
@@ -1451,10 +1439,12 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8556590991644167667">{count,plural, =1{Anda mengetepikan {count} amaran}other{Anda mengetepikan {count} amaran}}</translation>
 <translation id="8558480467877843976">Kini anda boleh menggunakan Chrome pada bila-bila masa anda menyemak imbas atau mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="8560253818350321773">Menunjukkan item yang sering digunakan dahulu.</translation>
+<translation id="8569721750632860947">Apakah URL yang mahu ditambahkan pada senarai bacaan anda?</translation>
 <translation id="8588404856427128947">Mati</translation>
 <translation id="8591976964826315682">Sekat Kuki Pihak Ketiga dalam Inkognito</translation>
 <translation id="8593565399399144771">Anda boleh membuka tab baharu di sini.</translation>
 <translation id="8605219856220328675">Tutup tab.</translation>
+<translation id="8609743333007776886">Tambahkan ${url} pada penanda halaman</translation>
 <translation id="8613883225817609844">Sembunyikan Tab Terbaharu</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8624447588354561276">Nombor Pakej</translation>
@@ -1489,9 +1479,9 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8766790350274092814">Kata laluan untuk <ph name="WEBSITE" /> dan <ph name="SECOND_WEBSITE" /> akan dipadamkan. Akaun anda tidak akan dipadamkan.</translation>
 <translation id="8775144690796719618">URL tidak sah</translation>
 <translation id="8780076847684176174">{count,plural, =1{Semak tab...}other{Semak semua tab...}}</translation>
+<translation id="8782570580170191813">Sentiasa Jejaki Bungkusan</translation>
 <translation id="8787968206789828143">Cari di Web</translation>
 <translation id="8792626944327216835">mikrofon</translation>
-<translation id="8793366654064127924">Tanya saya Setiap Kali</translation>
 <translation id="8803639129939845298">Selamat</translation>
 <translation id="8806823403540278281">Organisasi anda menghendaki anda menyemak imbas secara peribadi. Tab tidak disimpan dalam Mod inkognito.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -1518,9 +1508,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="890565330728586731">Kembali</translation>
 <translation id="8909135823018751308">Kongsi…</translation>
 <translation id="8909459547399237818">Pilih Password Manager, kemudian ketik Tambah Widget</translation>
-<translation id="8911759861431145525">Ketik Tambah kemudian Masukkan Maklumat Anda</translation>
 <translation id="891282356902782456">Kata laluan ini disimpan untuk peranti ini sahaja. Simpan kata laluan tersebut dalam Google Account anda, <ph name="EMAIL" /> untuk menggunakan kata laluan tersebut pada peranti anda yang lain.</translation>
-<translation id="891658175948553296">Serlahkan Teks pada Laman</translation>
 <translation id="8917490105272468696">Ya, Saya Ikut Serta</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="894191600409472540">Buat kata laluan kukuh</translation>

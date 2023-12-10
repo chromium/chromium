@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
@@ -89,6 +90,26 @@ class ClipboardMacTest : public PlatformTest,
                    const SkBitmap& bitmap,
                    NSPasteboard* pasteboard) {
     clipboard_mac->WriteBitmapInternal(bitmap, pasteboard);
+  }
+
+  absl::optional<DataTransferEndpoint> GetSource(
+      const ClipboardMac* clipboard_mac,
+      NSPasteboard* pasteboard) {
+    return clipboard_mac->GetSourceInternal(ClipboardBuffer::kCopyPaste,
+                                            pasteboard);
+  }
+
+  void Clear(ClipboardMac* clipboard_mac, NSPasteboard* pasteboard) {
+    clipboard_mac->ClearInternal(ClipboardBuffer::kCopyPaste, pasteboard);
+  }
+
+  void WritePortableAndPlatformRepresentations(
+      ClipboardMac* clipboard_mac,
+      std::unique_ptr<DataTransferEndpoint> data_src,
+      NSPasteboard* pasteboard) {
+    clipboard_mac->WritePortableAndPlatformRepresentationsInternal(
+        ClipboardBuffer::kCopyPaste, /*objects=*/{},
+        /*platform_representations=*/{}, std::move(data_src), pasteboard);
   }
 
  private:
@@ -193,6 +214,36 @@ TEST_P(ClipboardMacTest, WriteBitmapAddsPNGToClipboard) {
   SkBitmap result_bitmap;
   gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &result_bitmap);
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, result_bitmap));
+}
+
+TEST_P(ClipboardMacTest, SourceTracking) {
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  GURL google_url = GURL("https://www.google.com");
+  WritePortableAndPlatformRepresentations(
+      clipboard_mac, std::make_unique<DataTransferEndpoint>(google_url),
+      pasteboard->get());
+
+  auto source = GetSource(clipboard_mac, pasteboard->get());
+  ASSERT_TRUE(source);
+  ASSERT_TRUE(source->IsUrlType());
+  ASSERT_EQ(*source->GetURL(), google_url);
+
+  GURL chromium_url = GURL("https://chromium.org");
+  WritePortableAndPlatformRepresentations(
+      clipboard_mac, std::make_unique<DataTransferEndpoint>(chromium_url),
+      pasteboard->get());
+
+  source = GetSource(clipboard_mac, pasteboard->get());
+  ASSERT_TRUE(source);
+  ASSERT_TRUE(source->IsUrlType());
+  ASSERT_EQ(*source->GetURL(), chromium_url);
+
+  Clear(clipboard_mac, pasteboard->get());
+  ASSERT_FALSE(GetSource(clipboard_mac, pasteboard->get()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

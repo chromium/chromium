@@ -10,13 +10,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
 
-/**
- * Basic functionality to needed for FrameLayouts used as the root view of NativePages.
- */
+/** Basic functionality to needed for FrameLayouts used as the root view of NativePages. */
 public class NativePageRootFrameLayout extends FrameLayout {
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public NativePageRootFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

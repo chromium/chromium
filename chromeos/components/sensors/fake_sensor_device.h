@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_SENSORS_FAKE_SENSOR_DEVICE_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace sensors {
@@ -91,7 +91,7 @@ class FakeSensorDevice final : public mojom::SensorDevice {
     ClientData();
     ~ClientData();
 
-    absl::optional<double> frequency;
+    std::optional<double> frequency;
     std::vector<bool> channels_enabled;
     mojo::Remote<mojom::SensorDeviceSamplesObserver> observer;
   };

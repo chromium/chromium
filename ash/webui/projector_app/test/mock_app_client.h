@@ -54,7 +54,7 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_CONST_METHOD0(OpenFeedbackDialog, void());
   MOCK_CONST_METHOD3(GetVideo,
                      void(const std::string&,
-                          const absl::optional<std::string>&,
+                          const std::optional<std::string>&,
                           ProjectorAppClient::OnGetVideoCallback));
   MOCK_METHOD1(SetAnnotatorPageHandler,
                void(UntrustedAnnotatorPageHandlerImpl*));

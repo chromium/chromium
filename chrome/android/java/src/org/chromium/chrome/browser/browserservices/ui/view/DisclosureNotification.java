@@ -53,8 +53,11 @@ public class DisclosureNotification
     private String mCurrentScope;
 
     @Inject
-    DisclosureNotification(@Named(APP_CONTEXT) Context context, Resources resources,
-            NotificationManagerProxy notificationManager, TrustedWebActivityModel model,
+    DisclosureNotification(
+            @Named(APP_CONTEXT) Context context,
+            Resources resources,
+            NotificationManagerProxy notificationManager,
+            TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mContext = context;
         mResources = resources;
@@ -73,10 +76,14 @@ public class DisclosureNotification
         NotificationWrapper notification =
                 createNotification(firstTime, mCurrentScope, packageName);
         mNotificationManager.notify(notification);
-        NotificationUmaTracker.getInstance().onNotificationShown(firstTime
-                        ? NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_INITIAL
-                        : NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT,
-                notification.getNotification());
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(
+                        firstTime
+                                ? NotificationUmaTracker.SystemNotificationType
+                                        .TWA_DISCLOSURE_INITIAL
+                                : NotificationUmaTracker.SystemNotificationType
+                                        .TWA_DISCLOSURE_SUBSEQUENT,
+                        notification.getNotification());
 
         mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();
     }
@@ -114,19 +121,23 @@ public class DisclosureNotification
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(scope);
         String text = mResources.getString(R.string.twa_running_in_chrome_v2, scopeForDisplay);
 
-        PendingIntentProvider intent = DisclosureAcceptanceBroadcastReceiver.createPendingIntent(
-                mContext, scope, notificationId, packageName);
+        PendingIntentProvider intent =
+                DisclosureAcceptanceBroadcastReceiver.createPendingIntent(
+                        mContext, scope, notificationId, packageName);
 
         // We don't have an icon to display.
         int icon = 0;
 
-        return NotificationWrapperBuilderFactory
-                .createNotificationWrapperBuilder(channelId, metadata)
+        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        channelId, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(intent)
-                .addAction(icon, mResources.getString(R.string.got_it), intent,
+                .addAction(
+                        icon,
+                        mResources.getString(R.string.got_it),
+                        intent,
                         NotificationUmaTracker.ActionType.TWA_NOTIFICATION_ACCEPTANCE)
                 .setShowWhen(false)
                 .setAutoCancel(false)

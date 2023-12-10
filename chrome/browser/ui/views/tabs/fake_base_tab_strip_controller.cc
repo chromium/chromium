@@ -24,7 +24,7 @@ void FakeBaseTabStripController::AddTab(int index,
                                         TabActive is_active,
                                         TabPinned is_pinned) {
   num_tabs_++;
-  tab_groups_.insert(tab_groups_.begin() + index, absl::nullopt);
+  tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
   TabRendererData data;
   if (is_pinned == TabPinned::kPinned) {
@@ -41,7 +41,7 @@ void FakeBaseTabStripController::AddTab(int index,
 }
 
 void FakeBaseTabStripController::MoveTab(int from_index, int to_index) {
-  absl::optional<tab_groups::TabGroupId> prev_group = tab_groups_[from_index];
+  std::optional<tab_groups::TabGroupId> prev_group = tab_groups_[from_index];
   tab_groups_.erase(tab_groups_.begin() + from_index);
   tab_groups_.insert(tab_groups_.begin() + to_index, prev_group);
   if (tab_strip_)
@@ -74,7 +74,7 @@ void FakeBaseTabStripController::RemoveTab(int index) {
       if (num_tabs_ > 0) {
         active_index_ = std::min(active_index_.value(), num_tabs_ - 1);
       } else {
-        active_index_ = absl::nullopt;
+        active_index_ = std::nullopt;
       }
     } else if (active_index_ > index) {
       active_index_ = active_index_.value() - 1;
@@ -122,19 +122,19 @@ void FakeBaseTabStripController::AddTabToGroup(
 }
 
 void FakeBaseTabStripController::RemoveTabFromGroup(int model_index) {
-  MoveTabIntoGroup(model_index, absl::nullopt);
+  MoveTabIntoGroup(model_index, std::nullopt);
 }
 
 void FakeBaseTabStripController::MoveTabIntoGroup(
     int index,
-    absl::optional<tab_groups::TabGroupId> new_group) {
+    std::optional<tab_groups::TabGroupId> new_group) {
   bool group_exists = base::Contains(tab_groups_, new_group);
-  absl::optional<tab_groups::TabGroupId> old_group = tab_groups_[index];
+  std::optional<tab_groups::TabGroupId> old_group = tab_groups_[index];
 
   tab_groups_[index] = new_group;
 
   if (tab_strip_ && old_group.has_value()) {
-    tab_strip_->AddTabToGroup(absl::nullopt, index);
+    tab_strip_->AddTabToGroup(std::nullopt, index);
     if (!base::Contains(tab_groups_, old_group))
       tab_strip_->OnGroupClosed(old_group.value());
     else
@@ -148,14 +148,14 @@ void FakeBaseTabStripController::MoveTabIntoGroup(
   }
 }
 
-absl::optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
+std::optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
   for (size_t i = 0; i < tab_groups_.size(); ++i) {
     if (tab_groups_[i] == group)
       return i;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 gfx::Range FakeBaseTabStripController::ListTabsInGroup(
@@ -198,7 +198,7 @@ bool FakeBaseTabStripController::IsActiveTab(int index) const {
   return active_index_ == index;
 }
 
-absl::optional<int> FakeBaseTabStripController::GetActiveIndex() const {
+std::optional<int> FakeBaseTabStripController::GetActiveIndex() const {
   return active_index_;
 }
 
@@ -247,7 +247,7 @@ int FakeBaseTabStripController::HasAvailableDragActions() const {
   return 0;
 }
 
-void FakeBaseTabStripController::OnDropIndexUpdate(absl::optional<int> index,
+void FakeBaseTabStripController::OnDropIndexUpdate(std::optional<int> index,
                                                    bool drop_before) {}
 
 void FakeBaseTabStripController::CreateNewTab() {
@@ -262,7 +262,7 @@ void FakeBaseTabStripController::OnStartedDragging(bool dragging_window) {}
 void FakeBaseTabStripController::OnStoppedDragging() {}
 
 void FakeBaseTabStripController::OnKeyboardFocusedTabChanged(
-    absl::optional<int> index) {}
+    std::optional<int> index) {}
 
 bool FakeBaseTabStripController::IsFrameCondensed() const {
   return false;
@@ -285,9 +285,9 @@ SkColor FakeBaseTabStripController::GetFrameColor(
   return gfx::kPlaceholderColor;
 }
 
-absl::optional<int> FakeBaseTabStripController::GetCustomBackgroundId(
+std::optional<int> FakeBaseTabStripController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string FakeBaseTabStripController::GetAccessibleTabName(

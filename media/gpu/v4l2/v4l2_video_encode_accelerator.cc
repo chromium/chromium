@@ -375,8 +375,10 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
   }
 
   RequestEncodingParametersChangeTask(
-      config.bitrate, config.initial_framerate.value_or(
-                          VideoEncodeAccelerator::kDefaultFramerate));
+      config.bitrate,
+      config.initial_framerate.value_or(
+          VideoEncodeAccelerator::kDefaultFramerate),
+      absl::nullopt);
 
   // input_frame_size_ is the size of input_config of |image_processor_|.
   // On native_input_mode_, since the passed size in RequireBitstreamBuffers()
@@ -587,14 +589,15 @@ void V4L2VideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void V4L2VideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          weak_this_, bitrate, framerate));
+          weak_this_, bitrate, framerate, size));
 }
 
 void V4L2VideoEncodeAccelerator::Destroy() {
@@ -1610,10 +1613,17 @@ void V4L2VideoEncodeAccelerator::SetErrorState(EncoderStatus status) {
 
 void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  if (current_bitrate_ == bitrate && current_framerate_ == framerate)
+  if (size.has_value()) {
+    SetErrorState({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                   "Update output frame size is not supported"});
     return;
+  }
+  if (current_bitrate_ == bitrate && current_framerate_ == framerate) {
+    return;
+  }
 
   VLOGF(2) << "bitrate=" << bitrate.ToString() << ", framerate=" << framerate;
   if (bitrate.mode() != current_bitrate_.mode()) {
@@ -1944,12 +1954,12 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   const uint32_t framerate = config.initial_framerate.value_or(
       VideoEncodeAccelerator::kDefaultFramerate);
   const uint32_t mb_width =
-      base::bits::AlignUp(config.input_visible_size.width(),
-                          kH264MacroblockSizeInPixels) /
+      base::bits::AlignUpDeprecatedDoNotUse(config.input_visible_size.width(),
+                                            kH264MacroblockSizeInPixels) /
       kH264MacroblockSizeInPixels;
   const uint32_t mb_height =
-      base::bits::AlignUp(config.input_visible_size.height(),
-                          kH264MacroblockSizeInPixels) /
+      base::bits::AlignUpDeprecatedDoNotUse(config.input_visible_size.height(),
+                                            kH264MacroblockSizeInPixels) /
       kH264MacroblockSizeInPixels;
   const uint32_t framesize_in_mbs = mb_width * mb_height;
 

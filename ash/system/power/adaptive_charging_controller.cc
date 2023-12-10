@@ -15,7 +15,7 @@ namespace {
 
 #if DCHECK_IS_ON()
 // Fake input for notification testing.
-constexpr int kFakeNotificationInputForTesting = 8;
+constexpr base::TimeDelta kFakeNotificationInputForTesting = base::Hours(8);
 #endif  // DCHECK_IS_ON()
 
 }  // namespace
@@ -32,7 +32,7 @@ bool AdaptiveChargingController::IsAdaptiveChargingSupported() {
   if (is_adaptive_charging_supported_)
     return true;
 
-  const absl::optional<power_manager::PowerSupplyProperties>&
+  const std::optional<power_manager::PowerSupplyProperties>&
       power_supply_proto = chromeos::PowerManagerClient::Get()->GetLastStatus();
 
   is_adaptive_charging_supported_ =
@@ -100,7 +100,7 @@ void AdaptiveChargingController::PowerChanged(
       proto.battery_time_to_full_sec() > 0) {
     // Converts time to full from second to hours.
     notification_controller_->ShowAdaptiveChargingNotification(
-        static_cast<int>(proto.battery_time_to_full_sec() / 3600));
+        base::Seconds(proto.battery_time_to_full_sec()));
   } else {
     notification_controller_->ShowAdaptiveChargingNotification();
   }

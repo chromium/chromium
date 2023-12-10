@@ -15,6 +15,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -118,4 +119,8 @@ void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
 void ScreenCaptureTrayItemView::MultiCaptureServiceClientDestroyed() {
   multi_capture_service_client_observation_.Reset();
 }
+
+BEGIN_METADATA(ScreenCaptureTrayItemView)
+END_METADATA
+
 }  // namespace ash

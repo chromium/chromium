@@ -71,6 +71,9 @@ class CapturedStream {
     close(captured_fd);
   }
 
+  CapturedStream(const CapturedStream&) = delete;
+  CapturedStream& operator=(const CapturedStream&) = delete;
+
   ~CapturedStream() { remove(filename_.c_str()); }
 
   std::string GetCapturedString() {
@@ -97,8 +100,6 @@ class CapturedStream {
   int uncaptured_fd_;
   // Name of the temporary file holding the stderr output.
   ::std::string filename_;
-
-  GTEST_DISALLOW_COPY_AND_ASSIGN_(CapturedStream);
 };
 
 GTEST_DISABLE_MSC_DEPRECATED_POP_()

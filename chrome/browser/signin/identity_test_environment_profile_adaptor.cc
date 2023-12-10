@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
@@ -28,11 +29,7 @@ std::unique_ptr<TestingProfile>
 IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
     const TestingProfile::TestingFactories& input_factories) {
   TestingProfile::Builder builder;
-
-  for (auto& input_factory : input_factories) {
-    builder.AddTestingFactory(input_factory.first, input_factory.second);
-  }
-
+  builder.AddTestingFactories(input_factories);
   return CreateProfileForIdentityTestEnvironment(builder);
 }
 
@@ -40,10 +37,7 @@ IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
 std::unique_ptr<TestingProfile>
 IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
     TestingProfile::Builder& builder) {
-  for (auto& identity_factory : GetIdentityTestEnvironmentFactories()) {
-    builder.AddTestingFactory(identity_factory.first, identity_factory.second);
-  }
-
+  builder.AddTestingFactories(GetIdentityTestEnvironmentFactories());
   return builder.Build();
 }
 
@@ -51,8 +45,11 @@ IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
 void IdentityTestEnvironmentProfileAdaptor::
     SetIdentityTestEnvironmentFactoriesOnBrowserContext(
         content::BrowserContext* context) {
-  for (const auto& factory_pair : GetIdentityTestEnvironmentFactories()) {
-    factory_pair.first->SetTestingFactory(context, factory_pair.second);
+  for (const auto& f : GetIdentityTestEnvironmentFactories()) {
+    CHECK_EQ(f.service_factory_and_testing_factory.index(), 0u);
+    const auto& [service_factory, testing_factory] =
+        absl::get<0>(f.service_factory_and_testing_factory);
+    service_factory->SetTestingFactory(context, testing_factory);
   }
 }
 

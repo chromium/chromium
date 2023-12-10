@@ -52,7 +52,10 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncSetupInProgressHandle;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
@@ -75,8 +78,10 @@ import java.util.Set;
  * what happens after the signin flow.
  */
 public abstract class SyncConsentFragmentBase extends Fragment
-        implements AccountPickerCoordinator.Listener, AccountsChangeObserver,
-                   SigninManager.SignInStateObserver, DeviceLockCoordinator.Delegate {
+        implements AccountPickerCoordinator.Listener,
+                AccountsChangeObserver,
+                SigninManager.SignInStateObserver,
+                DeviceLockCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SyncConsentFragmentBase.AccessPoint";
     private static final String ARGUMENT_ACCOUNT_NAME = "SyncConsentFragmentBase.AccountName";
     private static final String ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW =
@@ -107,8 +112,14 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     /** Group name for different UIs in tangible sync experiment. */
-    @IntDef({TangibleSyncGroup.GROUP_A, TangibleSyncGroup.GROUP_B, TangibleSyncGroup.GROUP_C,
-            TangibleSyncGroup.GROUP_D, TangibleSyncGroup.GROUP_E, TangibleSyncGroup.GROUP_F})
+    @IntDef({
+        TangibleSyncGroup.GROUP_A,
+        TangibleSyncGroup.GROUP_B,
+        TangibleSyncGroup.GROUP_C,
+        TangibleSyncGroup.GROUP_D,
+        TangibleSyncGroup.GROUP_E,
+        TangibleSyncGroup.GROUP_F
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface TangibleSyncGroup {
         int GROUP_A = 1;
@@ -263,51 +274,67 @@ public abstract class SyncConsentFragmentBase extends Fragment
      */
     protected abstract void closeAndMaybeOpenSyncSettings(boolean settingsClicked);
 
+    private SigninManager.SignInCallback newSignInCallback(
+            Profile profile, boolean settingsClicked, Runnable callback) {
+        return new SigninManager.SignInCallback() {
+            @Override
+            public void onSignInComplete() {
+                SyncService syncService = SyncServiceFactory.getForProfile(profile);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)
+                        && getTangibleSyncGroup() != TangibleSyncGroup.GROUP_F) {
+                    // Groups A-E are only for enabling History and Tab Sync.
+                    // setInitialSyncFeatureSetupComplete() wasn't called here yet, so use
+                    // SyncSetupInProgressHandle to force setSelectedTypes() to write to the prefs
+                    // for *syncing* users.
+                    // TODO(crbug.com/1486437): This code path was for a one-time experiment, clean
+                    // it up.
+                    SyncSetupInProgressHandle handle = syncService.getSetupInProgressHandle();
+                    syncService.setSelectedTypes(
+                            false, Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+                    handle.close();
+                }
+                if (!settingsClicked) {
+                    UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                            Profile.getLastUsedRegularProfile(), true);
+                    syncService.setInitialSyncFeatureSetupComplete(
+                            SyncFirstSetupCompleteSource.BASIC_FLOW);
+                }
+                closeAndMaybeOpenSyncSettings(settingsClicked);
+                callback.run();
+            }
+
+            @Override
+            public void onSignInAborted() {
+                callback.run();
+            }
+        };
+    }
+
     // TODO(crbug.com/1302635): |callback| is only used to set |mIsSigninInProgress| to false. Once
     // this method replaces onSyncAccepted(), the field can be set directly.
     // TODO(crbug.com/1462264): Refactor method to take CoreAccountInfo instead of String email.
     protected void signinAndEnableSync(
             String accountEmail, boolean settingsClicked, Runnable callback) {
-        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(coreAccountInfos -> {
-            @Nullable
-            CoreAccountInfo coreAccountInfo =
-                    AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, accountEmail);
-            if (coreAccountInfo == null) {
-                callback.run();
-                return;
-            }
-            Profile profile = Profile.getLastUsedRegularProfile();
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-            signinManager.signinAndEnableSync(
-                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo), mSigninAccessPoint,
-                    new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)
-                                    && getTangibleSyncGroup() != TangibleSyncGroup.GROUP_F) {
-                                // Groups A-E are only for enabling History and Tab Sync
-                                SyncServiceFactory.getForProfile(profile).setSelectedTypes(false,
-                                        Set.of(UserSelectableType.HISTORY,
-                                                UserSelectableType.TABS));
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            @Nullable
+                            CoreAccountInfo coreAccountInfo =
+                                    AccountUtils.findCoreAccountInfoByEmail(
+                                            coreAccountInfos, accountEmail);
+                            if (coreAccountInfo == null) {
+                                callback.run();
+                                return;
                             }
-                            if (!settingsClicked) {
-                                UnifiedConsentServiceBridge
-                                        .setUrlKeyedAnonymizedDataCollectionEnabled(
-                                                Profile.getLastUsedRegularProfile(), true);
-                                SyncServiceFactory.getForProfile(profile)
-                                        .setInitialSyncFeatureSetupComplete(
-                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            }
-                            closeAndMaybeOpenSyncSettings(settingsClicked);
-                            callback.run();
-                        }
-
-                        @Override
-                        public void onSignInAborted() {
-                            callback.run();
-                        }
-                    });
-        });
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            SigninManager signinManager =
+                                    IdentityServicesProvider.get().getSigninManager(profile);
+                            signinManager.signinAndEnableSync(
+                                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo),
+                                    mSigninAccessPoint,
+                                    newSignInCallback(profile, settingsClicked, callback));
+                        });
     }
 
     @Override
@@ -344,8 +371,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
             if (signinFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
                 // Only show the account picker for the old signin view.
                 if (!mShowTangibleSyncConsentView) {
-                    mAccountPickerDialogCoordinator = new AccountPickerDialogCoordinator(
-                            requireContext(), this, mModalDialogManager);
+                    mAccountPickerDialogCoordinator =
+                            new AccountPickerDialogCoordinator(
+                                    requireContext(), this, mModalDialogManager);
                 }
             } else if (signinFlowType == SigninFlowType.ADD_ACCOUNT) {
                 addAccount();
@@ -354,10 +382,11 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
         mConsentTextTracker = new ConsentTextTracker(getResources());
 
-        mProfileDataCache = mIsChild
-                ? ProfileDataCache.createWithDefaultImageSize(
-                        requireContext(), R.drawable.ic_account_child_20dp)
-                : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+        mProfileDataCache =
+                mIsChild
+                        ? ProfileDataCache.createWithDefaultImageSize(
+                                requireContext(), R.drawable.ic_account_child_20dp)
+                        : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
         mProfileDataCache.addObserver(mProfileDataCacheObserver);
 
         IdentityServicesProvider.get()
@@ -379,7 +408,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 .removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(mProfileDataCacheObserver);
         if (mConfirmSyncDataStateMachine != null) {
-            mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed = */ true);
+            mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed= */ true);
             mConfirmSyncDataStateMachine = null;
         }
         mModalDialogManager.destroy();
@@ -414,14 +443,23 @@ public abstract class SyncConsentFragmentBase extends Fragment
      */
     protected void displayDeviceLockPage(Runnable onSuccess) {
         mDeviceLockPageCallback = onSuccess;
-        mAccountManagerFacade.getCoreAccountInfos().then((coreAccountInfos) -> {
-            CoreAccountInfo selectedCoreAccountInfo = AccountUtils.findCoreAccountInfoByEmail(
-                    coreAccountInfos, mSelectedAccountEmail);
-            assert selectedCoreAccountInfo != null;
+        mAccountManagerFacade
+                .getCoreAccountInfos()
+                .then(
+                        (coreAccountInfos) -> {
+                            CoreAccountInfo selectedCoreAccountInfo =
+                                    AccountUtils.findCoreAccountInfoByEmail(
+                                            coreAccountInfos, mSelectedAccountEmail);
+                            assert selectedCoreAccountInfo != null;
 
-            mDeviceLockCoordinator = new DeviceLockCoordinator(this, getWindowAndroid(),
-                    getActivity(), CoreAccountInfo.getAndroidAccountFrom(selectedCoreAccountInfo));
-        });
+                            mDeviceLockCoordinator =
+                                    new DeviceLockCoordinator(
+                                            this,
+                                            getWindowAndroid(),
+                                            getActivity(),
+                                            CoreAccountInfo.getAndroidAccountFrom(
+                                                    selectedCoreAccountInfo));
+                        });
     }
 
     public boolean getDeviceLockReadyForTesting() {
@@ -437,15 +475,21 @@ public abstract class SyncConsentFragmentBase extends Fragment
         mSyncConsentView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
         mSyncConsentView.getAcceptButton().setVisibility(View.GONE);
         mSyncConsentView.getMoreButton().setVisibility(View.VISIBLE);
-        mSyncConsentView.getMoreButton().setOnClickListener(view -> {
-            mSyncConsentView.getScrollView().smoothScrollBy(
-                    0, mSyncConsentView.getScrollView().getHeight());
-            // TODO(https://crbug.com/821127): Revise this user action.
-            RecordUserAction.record("Signin_MoreButton_Shown");
-        });
+        mSyncConsentView
+                .getMoreButton()
+                .setOnClickListener(
+                        view -> {
+                            mSyncConsentView
+                                    .getScrollView()
+                                    .smoothScrollBy(
+                                            0, mSyncConsentView.getScrollView().getHeight());
+                            // TODO(https://crbug.com/821127): Revise this user action.
+                            RecordUserAction.record("Signin_MoreButton_Shown");
+                        });
         mSyncConsentView.getScrollView().setScrolledToBottomObserver(this::showButtonBar);
-        mSyncConsentView.getDetailsDescriptionView().setMovementMethod(
-                LinkMovementMethod.getInstance());
+        mSyncConsentView
+                .getDetailsDescriptionView()
+                .setMovementMethod(LinkMovementMethod.getInstance());
 
         updateSigninDetailsDescription(true);
     }
@@ -457,11 +501,16 @@ public abstract class SyncConsentFragmentBase extends Fragment
         mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
         mSigninView.getButtonBar().setVisibility(View.GONE);
         mSigninView.getMoreButton().setVisibility(View.VISIBLE);
-        mSigninView.getMoreButton().setOnClickListener(view -> {
-            mSigninView.getScrollView().smoothScrollBy(0, mSigninView.getScrollView().getHeight());
-            // TODO(https://crbug.com/821127): Revise this user action.
-            RecordUserAction.record("Signin_MoreButton_Shown");
-        });
+        mSigninView
+                .getMoreButton()
+                .setOnClickListener(
+                        view -> {
+                            mSigninView
+                                    .getScrollView()
+                                    .smoothScrollBy(0, mSigninView.getScrollView().getHeight());
+                            // TODO(https://crbug.com/821127): Revise this user action.
+                            RecordUserAction.record("Signin_MoreButton_Shown");
+                        });
         mSigninView.getScrollView().setScrolledToBottomObserver(this::showButtonBar);
         mSigninView.getDetailsDescriptionView().setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -483,9 +532,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         return syncConsentDelegate.getWindowAndroid();
     }
 
-    /**
-     * Can be overridden to return a {@link SyncConsentDelegate}.
-     */
+    /** Can be overridden to return a {@link SyncConsentDelegate}. */
     protected SyncConsentDelegate getDelegate() {
         return null;
     }
@@ -528,8 +575,11 @@ public abstract class SyncConsentFragmentBase extends Fragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         boolean cancelable = !mIsChild;
-        mCanUseGooglePlayServices = ExternalAuthUtils.getInstance().canUseGooglePlayServices(
-                new UserRecoverableErrorHandler.ModalDialog(requireActivity(), cancelable));
+        mCanUseGooglePlayServices =
+                ExternalAuthUtils.getInstance()
+                        .canUseGooglePlayServices(
+                                new UserRecoverableErrorHandler.ModalDialog(
+                                        requireActivity(), cancelable));
         if (mSyncConsentView != null) {
             mSyncConsentView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
         } else {
@@ -537,9 +587,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         }
     }
 
-    /**
-     * Implements {@link AccountsChangeObserver}.
-     */
+    /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
         mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
@@ -568,10 +616,12 @@ public abstract class SyncConsentFragmentBase extends Fragment
         assert mSigninView != null;
 
         if (hasAccounts) {
-            final boolean hideAccountPicker = mIsSignedInWithoutSync
-                    || (mSigninAccessPoint == SigninAccessPoint.START_PAGE && mIsChild);
-            mSigninView.getAccountPickerView().setVisibility(
-                    hideAccountPicker ? View.GONE : View.VISIBLE);
+            final boolean hideAccountPicker =
+                    mIsSignedInWithoutSync
+                            || (mSigninAccessPoint == SigninAccessPoint.START_PAGE && mIsChild);
+            mSigninView
+                    .getAccountPickerView()
+                    .setVisibility(hideAccountPicker ? View.GONE : View.VISIBLE);
             mConsentTextTracker.setText(
                     mSigninView.getAcceptButton(), R.string.signin_accept_button);
             mSigninView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
@@ -586,17 +636,20 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     private void updateSigninDetailsDescription(boolean addSettingsLink) {
-        final @Nullable Object settingsLinkSpan = addSettingsLink
-                ? new NoUnderlineClickableSpan(getContext(), this::onSettingsLinkClicked)
-                : null;
+        final @Nullable Object settingsLinkSpan =
+                addSettingsLink
+                        ? new NoUnderlineClickableSpan(getContext(), this::onSettingsLinkClicked)
+                        : null;
         final SpanApplier.SpanInfo spanInfo =
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);
         if (mSyncConsentView != null) {
-            mConsentTextTracker.setText(mSyncConsentView.getDetailsDescriptionView(),
+            mConsentTextTracker.setText(
+                    mSyncConsentView.getDetailsDescriptionView(),
                     R.string.sync_consent_details_description,
                     input -> SpanApplier.applySpans(input.toString(), spanInfo));
         } else {
-            mConsentTextTracker.setText(mSigninView.getDetailsDescriptionView(),
+            mConsentTextTracker.setText(
+                    mSigninView.getDetailsDescriptionView(),
                     R.string.signin_details_description,
                     input -> SpanApplier.applySpans(input.toString(), spanInfo));
         }
@@ -605,20 +658,22 @@ public abstract class SyncConsentFragmentBase extends Fragment
     /** Sets texts for immutable elements. Accept button text is set by {@link #setHasAccounts}. */
     private void updateConsentText() {
         if (mSyncConsentView != null) {
-            updateSyncConsentViewText(R.string.no_thanks);
+            updateSyncConsentViewText(R.string.signin_sync_decline_button);
         } else {
             final @StringRes int refuseButtonTextId =
                     mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
-                            || mSigninAccessPoint == SigninAccessPoint.START_PAGE
-                    ? R.string.no_thanks
-                    : R.string.cancel;
+                                    || mSigninAccessPoint == SigninAccessPoint.START_PAGE
+                            ? R.string.signin_sync_decline_button
+                            : R.string.cancel;
             updateSigninViewText(refuseButtonTextId);
         }
     }
 
     private static @TangibleSyncGroup int getTangibleSyncGroup() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.TANGIBLE_SYNC,
-                PARAM_TANGIBLE_SYNC_GROUP, TangibleSyncGroup.GROUP_A);
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.TANGIBLE_SYNC,
+                PARAM_TANGIBLE_SYNC_GROUP,
+                TangibleSyncGroup.GROUP_A);
     }
 
     private static @StringRes int getSyncConsentViewTitleText() {
@@ -642,7 +697,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
     private static @StringRes int getSyncConsentViewSubtitleText() {
         switch (getTangibleSyncGroup()) {
-            // Groups A and B share the same subtitle.
+                // Groups A and B share the same subtitle.
             case TangibleSyncGroup.GROUP_A:
             case TangibleSyncGroup.GROUP_B:
                 return R.string.history_sync_consent_subtitle_a;
@@ -709,7 +764,8 @@ public abstract class SyncConsentFragmentBase extends Fragment
         final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
 
         // The primary TextView is always visible.
-        mConsentTextTracker.setTextNonRecordable(mSigninView.getAccountTextPrimary(),
+        mConsentTextTracker.setTextNonRecordable(
+                mSigninView.getAccountTextPrimary(),
                 getSigninViewAccountTextPrimary(profileData, canShowEmailAddress));
 
         if (canShowEmailAddress) {
@@ -791,33 +847,34 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
         AccountInfoServiceProvider.get()
                 .getAccountInfoByEmail(mSelectedAccountEmail)
-                .then(accountInfo -> {
-                    if (accountInfo == null) {
-                        mIsSigninInProgress = false;
-                        // If accountInfo is null, then the account may have been removed while
-                        // sign-in is in progress. In this case update the UI with the updated
-                        // account list.
-                        mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
-                        return;
-                    }
-                    mConsentTextTracker.recordConsent(accountInfo.getId(),
-                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView,
-                            mSyncConsentView != null ? mSyncConsentView : mSigninView);
-                    if (isResumed()) {
-                        runStateMachineAndSignin(settingsClicked);
-                    } else {
-                        mIsSigninInProgress = false;
-                    }
-                });
+                .then(
+                        accountInfo -> {
+                            if (accountInfo == null) {
+                                mIsSigninInProgress = false;
+                                // If accountInfo is null, then the account may have been removed
+                                // while sign-in is in progress. In this case update the UI with
+                                // the updated account list.
+                                mAccountManagerFacade
+                                        .getCoreAccountInfos()
+                                        .then(this::updateAccounts);
+                                return;
+                            }
+                            mConsentTextTracker.recordConsent(
+                                    accountInfo.getId(),
+                                    ConsentAuditorFeature.CHROME_SYNC,
+                                    (TextView) confirmationView,
+                                    mSyncConsentView != null ? mSyncConsentView : mSigninView);
+                            if (isResumed()) {
+                                runStateMachineAndSignin(settingsClicked);
+                            } else {
+                                mIsSigninInProgress = false;
+                            }
+                        });
     }
 
     private void runStateMachineAndSignin(boolean settingsClicked) {
-        mConfirmSyncDataStateMachine = new ConfirmSyncDataStateMachine(
-                new ConfirmSyncDataStateMachineDelegate(
-                        requireContext(), getChildFragmentManager(), mModalDialogManager),
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME),
-                mSelectedAccountEmail, new ConfirmSyncDataStateMachine.Listener() {
+        var listener =
+                new ConfirmSyncDataStateMachine.Listener() {
                     @Override
                     public void onConfirm(boolean wipeData) {
                         mConfirmSyncDataStateMachine = null;
@@ -826,19 +883,26 @@ public abstract class SyncConsentFragmentBase extends Fragment
                         if (getActivity().isDestroyed()) return;
 
                         SigninManager signinManager =
-                                IdentityServicesProvider.get().getSigninManager(
-                                        Profile.getLastUsedRegularProfile());
-                        signinManager.runAfterOperationInProgress(() -> {
-                            if (wipeData) {
-                                signinManager.wipeSyncUserData(() -> {
-                                    onSyncAccepted(mSelectedAccountEmail, settingsClicked,
-                                            () -> mIsSigninInProgress = false);
-                                }, DataWipeOption.WIPE_SYNC_DATA);
-                            } else {
-                                onSyncAccepted(mSelectedAccountEmail, settingsClicked,
-                                        () -> mIsSigninInProgress = false);
-                            }
-                        });
+                                IdentityServicesProvider.get()
+                                        .getSigninManager(Profile.getLastUsedRegularProfile());
+                        signinManager.runAfterOperationInProgress(
+                                () -> {
+                                    if (wipeData) {
+                                        signinManager.wipeSyncUserData(
+                                                () -> {
+                                                    onSyncAccepted(
+                                                            mSelectedAccountEmail,
+                                                            settingsClicked,
+                                                            () -> mIsSigninInProgress = false);
+                                                },
+                                                DataWipeOption.WIPE_SYNC_DATA);
+                                    } else {
+                                        onSyncAccepted(
+                                                mSelectedAccountEmail,
+                                                settingsClicked,
+                                                () -> mIsSigninInProgress = false);
+                                    }
+                                });
                     }
 
                     @Override
@@ -846,7 +910,16 @@ public abstract class SyncConsentFragmentBase extends Fragment
                         mConfirmSyncDataStateMachine = null;
                         mIsSigninInProgress = false;
                     }
-                });
+                };
+
+        mConfirmSyncDataStateMachine =
+                new ConfirmSyncDataStateMachine(
+                        new ConfirmSyncDataStateMachineDelegate(
+                                requireContext(), getChildFragmentManager(), mModalDialogManager),
+                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                .getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME),
+                        mSelectedAccountEmail,
+                        listener);
     }
 
     @Override
@@ -859,24 +932,25 @@ public abstract class SyncConsentFragmentBase extends Fragment
     public void addAccount() {
         mIsAccountAdditionInProgress = true;
         SigninMetricsUtils.logAddAccountStateHistogram(State.REQUESTED);
-        mAccountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {
-            if (intent != null) {
-                SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);
-                startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
-                return;
-            }
+        mAccountManagerFacade.createAddAccountIntent(
+                (@Nullable Intent intent) -> {
+                    if (intent != null) {
+                        SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);
+                        startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
+                        return;
+                    }
 
-            // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
-            // instead.
-            SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
-            SigninUtils.openSettingsForAllAccounts(getActivity());
-            mIsAccountAdditionInProgress = false;
-            if (mShowTangibleSyncConsentView) {
-                // For tangible sync flow this fragment should not be shown in the absence of a
-                // selected account when add account intent can't be created.
-                getActivity().finish();
-            }
-        });
+                    // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
+                    // instead.
+                    SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
+                    SigninUtils.openSettingsForAllAccounts(getActivity());
+                    mIsAccountAdditionInProgress = false;
+                    if (mShowTangibleSyncConsentView) {
+                        // For tangible sync flow this fragment should not be shown in the absence
+                        // of a selected account when add account intent can't be created.
+                        getActivity().finish();
+                    }
+                });
         // mAccountPickerDialogCoordinator could be null here as this method may be called without
         // showing the account picker.
         if (mAccountPickerDialogCoordinator != null) {
@@ -909,15 +983,19 @@ public abstract class SyncConsentFragmentBase extends Fragment
     public void onResume() {
         super.onResume();
         mAccountManagerFacade.addObserver(this);
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile());
 
         final CoreAccountInfo primaryAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         mIsSignedInWithoutSync =
                 mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
         if (mIsSignedInWithoutSync) {
             mSelectedAccountEmail = primaryAccount.getEmail();
+
+            AccountCapabilitiesLatencyTracker.trackAccountCapabilitiesFetchLatency(
+                    identityManager, primaryAccount);
         }
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.
@@ -925,8 +1003,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
             updateProfileData(mSelectedAccountEmail);
         }
 
-        updateAccounts(AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                mAccountManagerFacade.getCoreAccountInfos()));
+        updateAccounts(
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        mAccountManagerFacade.getCoreAccountInfos()));
 
         if (mSigninView != null) mSigninView.startAnimations();
         if (mDeviceLockReady) {
@@ -956,10 +1035,11 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 // Wait for the account addition to finish.
                 return;
             }
-            final boolean selectedAccountExists = mSelectedAccountEmail != null
-                    && AccountUtils.findCoreAccountInfoByEmail(
-                               coreAccountInfos, mSelectedAccountEmail)
-                            != null;
+            final boolean selectedAccountExists =
+                    mSelectedAccountEmail != null
+                            && AccountUtils.findCoreAccountInfoByEmail(
+                                            coreAccountInfos, mSelectedAccountEmail)
+                                    != null;
             if (selectedAccountExists) {
                 selectAccount(mSelectedAccountEmail);
             } else {
@@ -991,7 +1071,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         if (mConfirmSyncDataStateMachine != null) {
             // Any dialogs that may have been showing are now invalid (they were created
             // for the previously selected account).
-            mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed = */ false);
+            mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed= */ false);
             mConfirmSyncDataStateMachine = null;
         }
 

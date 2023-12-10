@@ -18,9 +18,7 @@ class TestViewAndroidDelegate extends ViewAndroidDelegate {
     /** Stores the Visual Viewport bottom inset when under test, just like the real one. */
     private int mApplicationViewportInsetBottomPx;
 
-    /**
-     * Private constructor called by the create method from native.
-     */
+    /** Private constructor called by the create method from native. */
     private TestViewAndroidDelegate() {
         super(null);
     }

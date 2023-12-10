@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -123,6 +125,69 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   SwitchActiveUser(GetUser2AccountId());
   EXPECT_EQ(kUser2SessionDuration, controller->session_duration());
   EXPECT_EQ(kUser2DNDState, controller->turn_on_do_not_disturb());
+}
+
+TEST_F(FocusModeControllerMultiUserTest, ToggleClosesSystemBubble) {
+  SimulateUserLogin(GetUser1AccountId());
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Show the bubble.
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  system_tray->ShowBubble();
+
+  // Toggle focus mode on, and verify that the bubble is closed.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(system_tray->IsBubbleShown());
+
+  // Show the bubble again.
+  system_tray->ShowBubble();
+
+  // Toggle focus mode off, and verify that this doesn't affect the bubble
+  // visibility.
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+}
+
+// Tests that we can determine if a focus session has started before.
+TEST_F(FocusModeControllerMultiUserTest, FirstTimeUserFlow) {
+  SimulateUserLogin(GetUser1AccountId());
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->HasStartedSessionBefore());
+
+  FocusModeController::Get()->ToggleFocusMode();
+  EXPECT_TRUE(controller->HasStartedSessionBefore());
+}
+
+// Tests adding and completing tasks.
+TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
+  SimulateUserLogin(GetUser1AccountId());
+
+  // Verify that initially there is no selected task.
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->HasSelectedTask());
+
+  // Select a task, and verify that the task data is accurate.
+  int id = 0;
+  const std::string title = "Focus Task";
+  controller->SetSelectedTask(std::make_unique<api::Task>(
+                                  /*id=*/base::NumberToString(id), title,
+                                  /*completed=*/false,
+                                  /*due=*/absl::nullopt, /*has_subtasks=*/false,
+                                  /*has_email_link=*/false,
+                                  /*has_notes=*/false,
+                                  /*updated=*/base::Time::Now())
+                                  .get());
+  EXPECT_TRUE(controller->HasSelectedTask());
+  EXPECT_EQ(base::NumberToString(id), controller->selected_task_id());
+  EXPECT_EQ(title, controller->selected_task_title());
+
+  // Complete the task, and verify that the task data is cleared.
+  controller->CompleteTask();
+  EXPECT_FALSE(controller->HasSelectedTask());
 }
 
 }  // namespace ash

@@ -65,7 +65,10 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
             /*network_quality_estimator=*/nullptr,
             NetLog::Get(),
             /*websocket_endpoint_lock_manager=*/nullptr,
-            /*http_server_properties=*/nullptr) {}
+            /*http_server_properties=*/nullptr,
+            /*alpn_protos=*/nullptr,
+            /*application_settings=*/nullptr,
+            /*ignore_certificate_errors=*/nullptr) {}
 
   ~SOCKSConnectJobTest() override = default;
 

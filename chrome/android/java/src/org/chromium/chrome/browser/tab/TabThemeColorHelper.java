@@ -11,9 +11,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Monitor changes that indicate a theme color change may be needed from tab contents.
- */
+/** Monitor changes that indicate a theme color change may be needed from tab contents. */
 public class TabThemeColorHelper extends EmptyTabObserver {
     private final Tab mTab;
     private final Callback mUpdateCallback;
@@ -24,9 +22,7 @@ public class TabThemeColorHelper extends EmptyTabObserver {
         tab.addObserver(this);
     }
 
-    /**
-     * Notifies the listeners of the tab theme color change.
-     */
+    /** Notifies the listeners of the tab theme color change. */
     private void updateIfNeeded(Tab tab, boolean didWebContentsThemeColorChange) {
         int themeColor = tab.getThemeColor();
         if (didWebContentsThemeColorChange) themeColor = tab.getWebContents().getThemeColor();

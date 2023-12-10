@@ -20,9 +20,7 @@ import java.util.List;
 public class UnuploadedFilesStateLoader extends CrashInfoLoader {
     private CrashFileManager mCrashFileManager;
 
-    /**
-     * @param crashDir the directory where WebView stores crash reports files.
-     */
+    /** @param crashDir the directory where WebView stores crash reports files. */
     public UnuploadedFilesStateLoader(CrashFileManager crashFileManager) {
         mCrashFileManager = crashFileManager;
     }

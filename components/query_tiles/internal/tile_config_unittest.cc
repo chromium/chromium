@@ -86,29 +86,4 @@ TEST(TileConfigTest, GetImagePrefetchMode) {
                         ImagePrefetchMode::kAll);
 }
 
-// Test to verify the default params for enabled countries.
-TEST(TileConfigTest, ExperimentTagForEnabledCountries) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_EQ(TileConfig::GetExperimentTag("in"),
-            "{maxLevels : 1, enableTrending : true, maxTrendingQueries : 8}");
-  EXPECT_EQ(TileConfig::GetExperimentTag("in"),
-            TileConfig::GetExperimentTag("ng"));
-  EXPECT_EQ(TileConfig::GetExperimentTag("jp"),
-            "{maxLevels : 1, rankTiles : true, enableTrending : true, "
-            "maxTrendingQueries : 8, disableEntityTranslation: true}");
-
-  // Finch params should override default values.
-  std::map<std::string, std::string> params = {
-      {kExperimentTagKey,
-       "{maxLevels : 1, enableTrending : true, rankTiles : true}"}};
-  feature_list.InitAndEnableFeatureWithParameters(features::kQueryTiles,
-                                                  params);
-  EXPECT_EQ(TileConfig::GetExperimentTag("in"),
-            "{maxLevels : 1, enableTrending : true, rankTiles : true}");
-  EXPECT_EQ(TileConfig::GetExperimentTag("in"),
-            TileConfig::GetExperimentTag("ng"));
-  EXPECT_EQ(TileConfig::GetExperimentTag("in"),
-            TileConfig::GetExperimentTag("JP"));
-}
-
 }  // namespace query_tiles

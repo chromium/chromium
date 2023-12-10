@@ -286,6 +286,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // config as its container size.
     absl::optional<blink::AdSize> requested_size;
 
+    // All ad slot sizes on a page. Each AdSize must be unique. Interest
+    // groups can request this be included in trusted seller signals fetches.
+    absl::optional<std::vector<blink::AdSize>> all_slots_requested_sizes;
+
     // A unique identifier associated with this and only this invocation of
     // runAdAuction. This must come from a prior call to createAuctionNonce.
     // This is only required for auctions that provide additional bids, and each

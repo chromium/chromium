@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
 
-#import "base/time/time.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
-
 #import <UIKit/UIKit.h>
+
+#import <optional>
+
+#import "base/time/time.h"
+
 
 enum class UpdateChromeSafetyCheckState;
 enum class PasswordSafetyCheckState;
@@ -48,7 +50,7 @@ enum class RunningSafetyCheckState;
 @property(nonatomic, assign) NSInteger compromisedPasswordsCount;
 
 // The last run time of the Safety Check.
-@property(nonatomic, assign) absl::optional<base::Time> lastRunTime;
+@property(nonatomic, assign) std::optional<base::Time> lastRunTime;
 
 @end
 

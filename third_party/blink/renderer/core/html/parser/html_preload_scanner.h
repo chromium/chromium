@@ -74,6 +74,7 @@ struct PendingPreloadData {
   MetaCHValues meta_ch_values;
   absl::optional<ViewportDescription> viewport;
   bool has_csp_meta_tag = false;
+  bool has_located_potential_lcp_element = false;
   PreloadRequestStream requests;
 };
 
@@ -127,6 +128,8 @@ class TokenPreloadScanner {
     predicted_base_element_url_ = url;
   }
 
+  bool HasLocatedPotentialLcpElement() { return seen_potential_lcp_element_; }
+
  private:
   class StartTagScanner;
 
@@ -169,6 +172,7 @@ class TokenPreloadScanner {
   bool in_script_web_bundle_;
   bool seen_body_;
   bool seen_img_;
+  bool seen_potential_lcp_element_ = false;
   PictureData picture_data_;
   size_t template_count_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;

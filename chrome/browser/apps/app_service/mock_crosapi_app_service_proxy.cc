@@ -63,4 +63,11 @@ void MockCrosapiAppServiceProxy::UninstallSilently(
     const std::string& app_id,
     UninstallSource uninstall_source) {}
 
+void MockCrosapiAppServiceProxy::InstallApp(
+    crosapi::mojom::InstallAppParamsPtr params,
+    InstallAppCallback callback) {
+  // TODO(crbug.com/1309024): Implement this.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace apps

@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -70,6 +70,10 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override;
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
+  void RequestVideoFrameAt(const gfx::Point& window_point,
+                           const gfx::Size& max_size,
+                           int max_area,
+                           RequestVideoFrameAtCallback callback) override;
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType action) override;
   void AdvanceFocusInFrame(blink::mojom::FocusType focus_type,
@@ -139,11 +143,16 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void GetOpenGraphMetadata(
       base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) override;
   void SetNavigationApiHistoryEntriesForRestore(
-      blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) override;
+      blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays,
+      blink::mojom::NavigationApiEntryRestoreReason restore_reason) override;
   void NotifyNavigationApiOfDisposedEntries(
       const std::vector<std::string>& keys) override;
   void TraverseCancelled(const std::string& navigation_api_key,
                          blink::mojom::TraverseCancelledReason reason) override;
+  void DispatchNavigateEventForCrossDocumentTraversal(
+      const GURL&,
+      const std::string& page_state,
+      bool is_browser_initiated) override;
   void SnapshotDocumentForViewTransition(
       SnapshotDocumentForViewTransitionCallback callback) override;
   void AddResourceTimingEntryForFailedSubframeNavigation(
@@ -156,7 +165,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       uint32_t response_code,
       const std::string& mime_type,
       const net::LoadTimingInfo& load_timing_info,
-      net::HttpResponseInfo::ConnectionInfo connection_info,
+      net::HttpConnectionInfo connection_info,
       const std::string& alpn_negotiated_protocol,
       bool is_secure_transport,
       bool is_validated,

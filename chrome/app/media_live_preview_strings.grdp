@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Media live preview specific strings (included from generated_resources.grd). -->
+<grit-part>
+
+  <!-- Camera strings -->
+  <message name="IDS_MEDIA_PREVIEW_CAMERA_ACCESSIBLE_NAME" desc="Text for accessability description of the camera selector combobox">
+    Camera
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME" desc="Text for accessability description of the video stream view">
+    Preview of your camera
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND" desc="Text shown when there are no cameras found connected. This is shown instead of video stream">
+    No camera connected
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND_COMBOBOX" desc="Text shown when there are no cameras found connected. This is shown inside the combobx instead of list of devices">
+    Connect a camera
+  </message>
+
+  <!-- Microphone strings -->
+  <message name="IDS_MEDIA_PREVIEW_MIC_ACCESSIBLE_NAME" desc="Text for accessability description of the mic selector combobox">
+    Microphone
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_NO_MICS_FOUND" desc="Text shown when there are no mics found connected. This is shown instead of the audio stream">
+    No microphone connected
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX" desc="Text shown when there are no mics found connected. This is shown inside the combobx instead of list of devices">
+    Connect a microphone
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC" desc="Text shown as a secondary label for the system default mic when shown in the device list (combobox menu)">
+    System default
+  </message>
+
+</grit-part>

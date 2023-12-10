@@ -36,5 +36,4 @@ public class AudioFocusGrabberActivity extends Activity {
         }
         startService(intent);
     }
-
 }

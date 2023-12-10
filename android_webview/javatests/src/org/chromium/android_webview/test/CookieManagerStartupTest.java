@@ -37,21 +37,21 @@ import org.chromium.net.test.util.TestWebServer;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class CookieManagerStartupTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public CookieManagerStartupTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsAwBrowserContextCreated() {
-                return false;
-            }
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsAwBrowserContextCreated() {
+                        return false;
+                    }
 
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                return false;
-            }
-        };
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+                };
     }
 
     private TestAwContentsClient mContentsClient;

@@ -115,32 +115,6 @@ class SecurePaymentConfirmationAuthenticatorTestBase
     }
   }
 
-  void ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult result,
-      int count) {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel."
-        "EnrollSystemPromptResult",
-        count);
-    histogram_tester_.ExpectBucketCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel."
-        "EnrollSystemPromptResult",
-        result, count);
-  }
-
-  void ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult result,
-      int count) {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel."
-        "SystemPromptResult",
-        count);
-    histogram_tester_.ExpectBucketCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel."
-        "SystemPromptResult",
-        result, count);
-  }
-
   void ObserveEvent(Event event) {
     event_waiter_ =
         std::make_unique<autofill::EventWaiter<Event>>(std::list<Event>{event});
@@ -178,16 +152,12 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
   // Verify that the correct metrics are recorded.
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 1U);
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
 
   // Check that we can create a second credential, and that the tracked metrics
   // update.
   CreatePaymentCredential();
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 2U);
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 2);
 }
 
 // b.com cannot create a credential with RP = "a.com".
@@ -310,10 +280,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
   ASSERT_NE(nullptr, rpId) << response;
   EXPECT_EQ("a.com", *rpId);
 
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
   ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
                          Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation,
@@ -363,10 +329,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
       dict.FindStringByDottedPath("payment.payeeOrigin");
   ASSERT_EQ(nullptr, payee_origin) << response;
 
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
   ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
                          Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation,
@@ -418,10 +380,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(nullptr, payee_origin) << response;
   EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
 
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
   ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
                          Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation,
@@ -527,10 +485,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
           content::JsReplace("getTotalAmountFromClientData($1, $2);",
                              credential_info.id, "0.01")));
 
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
   // WebAuthn dialog failure is recorded as kOtherAborted. Since we made it
   // past the Transaction UX to the WebAuthn dialog, we should still log
   // kPayClicked and kSelectedSecurePaymentConfirmation.
@@ -586,11 +540,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
           content::JsReplace(
               "getTotalAmountFromClientDataWithModifierAndShowPromise($1, $2);",
               credential_info.id, "0.04")));
-
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
 }
 
 }  // namespace

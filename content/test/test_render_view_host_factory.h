@@ -33,7 +33,7 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
 
   virtual void set_render_process_host_factory(
       RenderProcessHostFactory* rph_factory);
-  RenderViewHost* CreateRenderViewHost(
+  RenderViewHostImpl* CreateRenderViewHost(
       FrameTree* frame_tree,
       SiteInstanceGroup* group,
       const StoragePartitionConfig& storage_partition_config,
@@ -43,7 +43,8 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
       int32_t main_frame_routing_id,
       int32_t widget_routing_id,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
-      CreateRenderViewHostCase create_case) override;
+      CreateRenderViewHostCase create_case,
+      absl::optional<viz::FrameSinkId> frame_sink_id) override;
 };
 
 }  // namespace content

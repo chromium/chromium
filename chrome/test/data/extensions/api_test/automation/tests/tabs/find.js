@@ -187,4 +187,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests, 'complex.html');
+setUpAndRunTabsTests(allTests, 'complex.html');

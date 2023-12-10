@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.creator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder class for the Creator Toolbar section
- */
+/** ViewBinder class for the Creator Toolbar section */
 public class CreatorToolbarViewBinder {
     public static void bind(PropertyModel model, CreatorToolbarView view, PropertyKey propertyKey) {
         if (CreatorProperties.TITLE_KEY == propertyKey) {

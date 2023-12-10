@@ -8,9 +8,7 @@ import org.chromium.components.minidump_uploader.util.CrashReportingPermissionMa
 
 import java.io.File;
 
-/**
- * Interface for embedder-specific implementations for uploading minidumps.
- */
+/** Interface for embedder-specific implementations for uploading minidumps. */
 public interface MinidumpUploaderDelegate {
     /**
      * Returns the parent directory in which the embedder will store the crash report directory and

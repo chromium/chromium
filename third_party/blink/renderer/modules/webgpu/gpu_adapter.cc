@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_memory_heap_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
@@ -48,11 +49,6 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
       return V8GPUFeatureName::Enum::kRg11B10UfloatRenderable;
     case WGPUFeatureName_BGRA8UnormStorage:
       return V8GPUFeatureName::Enum::kBgra8UnormStorage;
-    case WGPUFeatureName_ChromiumExperimentalDp4a:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalDp4A;
-    case WGPUFeatureName_ChromiumExperimentalReadWriteStorageTexture:
-      return V8GPUFeatureName::Enum::
-          kChromiumExperimentalReadWriteStorageTexture;
     case WGPUFeatureName_ChromiumExperimentalSubgroups:
       return V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups;
     case WGPUFeatureName_ChromiumExperimentalSubgroupUniformControlFlow:
@@ -100,6 +96,12 @@ GPUAdapter::GPUAdapter(
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
     : DawnObjectBase(dawn_control_client), handle_(handle), gpu_(gpu) {
   WGPUAdapterProperties properties = {};
+  WGPUAdapterPropertiesMemoryHeaps memoryHeapProperties = {};
+  memoryHeapProperties.chain.sType = WGPUSType_AdapterPropertiesMemoryHeaps;
+  if (GetProcs().adapterHasFeature(
+          handle_, WGPUFeatureName_AdapterPropertiesMemoryHeaps)) {
+    properties.nextInChain = &memoryHeapProperties.chain;
+  }
   GetProcs().adapterGetProperties(handle_, &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
   adapter_type_ = properties.adapterType;
@@ -115,6 +117,10 @@ GPUAdapter::GPUAdapter(
   }
   description_ = properties.name;
   driver_ = properties.driverDescription;
+  for (size_t i = 0; i < memoryHeapProperties.heapCount; ++i) {
+    memory_heaps_.push_back(MakeGarbageCollected<GPUMemoryHeapInfo>(
+        memoryHeapProperties.heapInfo[i]));
+  }
 
   features_ = MakeFeatureNameSet(GetProcs(), handle_);
 
@@ -306,6 +312,9 @@ ScriptPromise GPUAdapter::requestAdapterInfo(ScriptState* script_state) {
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(
         vendor_, architecture_, device_, description_, driver_,
         FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_));
+    for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
+      adapter_info->AppendMemoryHeapInfo(memory_heap);
+    }
   } else {
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(vendor_, architecture_);
   }
@@ -319,6 +328,7 @@ void GPUAdapter::Trace(Visitor* visitor) const {
   visitor->Trace(gpu_);
   visitor->Trace(features_);
   visitor->Trace(limits_);
+  visitor->Trace(memory_heaps_);
   ScriptWrappable::Trace(visitor);
 }
 

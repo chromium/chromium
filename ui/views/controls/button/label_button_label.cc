@@ -92,7 +92,7 @@ void LabelButtonLabel::SetColorForEnableState() {
   }
 }
 
-BEGIN_METADATA(LabelButtonLabel, Label)
+BEGIN_METADATA(LabelButtonLabel)
 ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, EnabledColorId)
 ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, DisabledColorId)
 END_METADATA

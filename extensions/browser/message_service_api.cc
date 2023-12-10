@@ -15,7 +15,7 @@ MessageServiceApi* MessageServiceApi::GetMessageService() {
 }
 
 void MessageServiceApi::SetMessageService(MessageServiceApi* message_service) {
-  CHECK(!g_message_service);
+  CHECK(!g_message_service || !message_service);
   g_message_service = message_service;
 }
 

@@ -22,15 +22,12 @@ class ScreenAIDlcInstallerTest
       public testing::WithParamInterface<std::string> {
  protected:
   void SetUp() override {
-    DlcserviceClient::InitializeFake();
     install_state_ = screen_ai::ScreenAIInstallState::Create();
     base_retry_delay_in_seconds =
         screen_ai::dlc_installer::base_retry_delay_in_seconds_for_testing();
     max_install_retries =
         screen_ai::dlc_installer::max_install_retries_for_testing();
   }
-
-  void TearDown() override { DlcserviceClient::Shutdown(); }
 
   void InstallAndWait() {
     screen_ai::dlc_installer::Install();
@@ -48,7 +45,7 @@ class ScreenAIDlcInstallerTest
   }
 
   void SetInstallError(const std::string& error_code) {
-    fake_dlcservice_client()->set_install_error(error_code);
+    fake_dlcservice_client_.set_install_error(error_code);
   }
 
   void ExpectSuccessHistogramCount(const std::string& histogram_name,
@@ -70,10 +67,7 @@ class ScreenAIDlcInstallerTest
   int max_install_retries;
 
  private:
-  FakeDlcserviceClient* fake_dlcservice_client() {
-    return static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
-  }
-
+  FakeDlcserviceClient fake_dlcservice_client_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<screen_ai::ScreenAIInstallState> install_state_;
@@ -153,9 +147,5 @@ TEST_F(ScreenAIDlcInstallerTest, UninstallSuccess) {
   ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Uninstall",
                               /*expected_count=*/1, /*expected_total_count=*/1);
 }
-
-// TODO(b/289009784): Write tests to check installation and uninstallation
-// triggered in `screen_ai::dlc_installer::ManageInstallation()`. For those
-// tests, need to create a temp binary to trigger uninstallation successfully.
 
 }  // namespace ash

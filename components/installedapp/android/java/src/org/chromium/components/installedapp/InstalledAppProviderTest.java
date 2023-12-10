@@ -500,9 +500,7 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
-    /**
-     * Android app manifest has an asset_statements key, but the resource it links to is missing.
-     */
+    /** Android app manifest has an asset_statements key, but the resource it links to is missing. */
     @Test
     @SmallTest
     @UiThreadTest

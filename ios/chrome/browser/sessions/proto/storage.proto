@@ -7,6 +7,8 @@ package ios.proto;
 
 option optimize_for = LITE_RUNTIME;
 
+import "ios/web/public/session/proto/metadata.proto";
+
 // Represents the information about a WebState's opener in a WebStateList.
 //
 // All fields are required.
@@ -25,6 +27,7 @@ message OpenerStorage {
 message WebStateListItemStorage {
   int32 identifier = 1;
   OpenerStorage opener = 2;
+  web.proto.WebStateMetadataStorage metadata = 3;
 }
 
 // Represents a single WebStateList.

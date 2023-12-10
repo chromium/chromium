@@ -49,86 +49,88 @@ public class SecurePaymentConfirmationAuthnController {
 
     private InputProtector mInputProtector = new InputProtector();
 
-    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetStateChanged(int newState, int reason) {
-            switch (newState) {
-                case BottomSheetController.SheetState.HIDDEN:
-                    onCancel();
-                    break;
-            }
-        }
-    };
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetStateChanged(int newState, int reason) {
+                    switch (newState) {
+                        case BottomSheetController.SheetState.HIDDEN:
+                            onCancel();
+                            break;
+                    }
+                }
+            };
 
-    private final BottomSheetContent mBottomSheetContent = new BottomSheetContent() {
-        @Override
-        public View getContentView() {
-            return mView.getContentView();
-        }
+    private final BottomSheetContent mBottomSheetContent =
+            new BottomSheetContent() {
+                @Override
+                public View getContentView() {
+                    return mView.getContentView();
+                }
 
-        @Override
-        public View getToolbarView() {
-            return null;
-        }
+                @Override
+                public View getToolbarView() {
+                    return null;
+                }
 
-        @Override
-        public int getVerticalScrollOffset() {
-            if (mView != null) {
-                return mView.getScrollY();
-            }
+                @Override
+                public int getVerticalScrollOffset() {
+                    if (mView != null) {
+                        return mView.getScrollY();
+                    }
 
-            return 0;
-        }
+                    return 0;
+                }
 
-        @Override
-        public float getFullHeightRatio() {
-            return HeightMode.WRAP_CONTENT;
-        }
+                @Override
+                public float getFullHeightRatio() {
+                    return HeightMode.WRAP_CONTENT;
+                }
 
-        @Override
-        public float getHalfHeightRatio() {
-            return HeightMode.DISABLED;
-        }
+                @Override
+                public float getHalfHeightRatio() {
+                    return HeightMode.DISABLED;
+                }
 
-        @Override
-        public void destroy() {}
+                @Override
+                public void destroy() {}
 
-        @Override
-        public int getPriority() {
-            return ContentPriority.HIGH;
-        }
+                @Override
+                public int getPriority() {
+                    return ContentPriority.HIGH;
+                }
 
-        @Override
-        public int getPeekHeight() {
-            return HeightMode.DISABLED;
-        }
+                @Override
+                public int getPeekHeight() {
+                    return HeightMode.DISABLED;
+                }
 
-        @Override
-        public boolean swipeToDismissEnabled() {
-            return false;
-        }
+                @Override
+                public boolean swipeToDismissEnabled() {
+                    return false;
+                }
 
-        @Override
-        public int getSheetContentDescriptionStringId() {
-            return R.string.secure_payment_confirmation_authentication_sheet_description;
-        }
+                @Override
+                public int getSheetContentDescriptionStringId() {
+                    return R.string.secure_payment_confirmation_authentication_sheet_description;
+                }
 
-        @Override
-        public int getSheetHalfHeightAccessibilityStringId() {
-            assert false : "This method should not be called";
-            return 0;
-        }
+                @Override
+                public int getSheetHalfHeightAccessibilityStringId() {
+                    assert false : "This method should not be called";
+                    return 0;
+                }
 
-        @Override
-        public int getSheetFullHeightAccessibilityStringId() {
-            return R.string.secure_payment_confirmation_authentication_sheet_opened;
-        }
+                @Override
+                public int getSheetFullHeightAccessibilityStringId() {
+                    return R.string.secure_payment_confirmation_authentication_sheet_opened;
+                }
 
-        @Override
-        public int getSheetClosedAccessibilityStringId() {
-            return R.string.secure_payment_confirmation_authentication_sheet_closed;
-        }
-    };
+                @Override
+                public int getSheetClosedAccessibilityStringId() {
+                    return R.string.secure_payment_confirmation_authentication_sheet_closed;
+                }
+            };
 
     /**
      * Constructs the SPC Authn UI component controller.
@@ -136,8 +138,9 @@ public class SecurePaymentConfirmationAuthnController {
      * @param webContents The WebContents of the merchant.
      */
     public static SecurePaymentConfirmationAuthnController create(WebContents webContents) {
-        return webContents != null ? new SecurePaymentConfirmationAuthnController(webContents)
-                                   : null;
+        return webContents != null
+                ? new SecurePaymentConfirmationAuthnController(webContents)
+                : null;
     }
 
     private SecurePaymentConfirmationAuthnController(WebContents webContents) {
@@ -157,9 +160,16 @@ public class SecurePaymentConfirmationAuthnController {
      * @param showOptOut Whether to show the opt out UX to the user.
      * @param rpId The relying party ID for the SPC credential.
      */
-    public boolean show(Drawable paymentIcon, String paymentInstrumentLabel, PaymentItem total,
-            Callback<Boolean> responseCallback, Runnable optOutCallback, @Nullable String payeeName,
-            @Nullable Origin payeeOrigin, boolean showOptOut, String rpId) {
+    public boolean show(
+            Drawable paymentIcon,
+            String paymentInstrumentLabel,
+            PaymentItem total,
+            Callback<Boolean> responseCallback,
+            Runnable optOutCallback,
+            @Nullable String payeeName,
+            @Nullable Origin payeeOrigin,
+            boolean showOptOut,
+            String rpId) {
         if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
@@ -178,8 +188,9 @@ public class SecurePaymentConfirmationAuthnController {
         boolean usingDefaultIcon = false;
         assert paymentIcon instanceof BitmapDrawable;
         if (((BitmapDrawable) paymentIcon).getBitmap() == null) {
-            paymentIcon = ResourcesCompat.getDrawable(
-                    context.getResources(), R.drawable.credit_card, context.getTheme());
+            paymentIcon =
+                    ResourcesCompat.getDrawable(
+                            context.getResources(), R.drawable.credit_card, context.getTheme());
             usingDefaultIcon = true;
         }
 
@@ -189,40 +200,50 @@ public class SecurePaymentConfirmationAuthnController {
 
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
-                        .with(SecurePaymentConfirmationAuthnProperties.STORE_LABEL,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.STORE_LABEL,
                                 getStoreLabel(payeeName, payeeOrigin))
-                        .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON,
                                 Pair.create(paymentIcon, usingDefaultIcon))
-                        .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_INSTRUMENT_LABEL,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.PAYMENT_INSTRUMENT_LABEL,
                                 paymentInstrumentLabel)
-                        .with(SecurePaymentConfirmationAuthnProperties.TOTAL,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.TOTAL,
                                 formatPaymentItem(total))
-                        .with(SecurePaymentConfirmationAuthnProperties.CURRENCY,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.CURRENCY,
                                 total.amount.currency)
                         .with(SecurePaymentConfirmationAuthnProperties.OPT_OUT_INFO, optOutInfo)
-                        .with(SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK,
                                 this::onConfirmPressed)
-                        .with(SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK,
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK,
                                 this::onCancelPressed)
                         .build();
 
         bottomSheet.addObserver(mBottomSheetObserver);
 
         mView = new SecurePaymentConfirmationAuthnView(context);
-        PropertyModelChangeProcessor changeProcessor = PropertyModelChangeProcessor.create(
-                model, mView, SecurePaymentConfirmationAuthnViewBinder::bind);
+        PropertyModelChangeProcessor changeProcessor =
+                PropertyModelChangeProcessor.create(
+                        model, mView, SecurePaymentConfirmationAuthnViewBinder::bind);
 
-        mHider = () -> {
-            changeProcessor.destroy();
-            bottomSheet.removeObserver(mBottomSheetObserver);
-            bottomSheet.hideContent(/*content=*/mBottomSheetContent, /*animate=*/true);
-        };
+        mHider =
+                () -> {
+                    changeProcessor.destroy();
+                    bottomSheet.removeObserver(mBottomSheetObserver);
+                    bottomSheet.hideContent(
+                            /* content= */ mBottomSheetContent, /* animate= */ true);
+                };
 
         mResponseCallback = responseCallback;
         mOptOutCallback = showOptOut ? optOutCallback : null;
 
         boolean isShowSuccess =
-                bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true);
+                bottomSheet.requestShowContent(mBottomSheetContent, /* animate= */ true);
 
         if (!isShowSuccess) {
             hide();
@@ -256,8 +277,9 @@ public class SecurePaymentConfirmationAuthnController {
 
         if (payeeOrigin == null) return payeeName;
 
-        String origin = UrlFormatter.formatOriginForSecurityDisplay(
-                payeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String origin =
+                UrlFormatter.formatOriginForSecurityDisplay(
+                        payeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return payeeName == null ? origin : String.format("%s (%s)", payeeName, origin);
     }
 

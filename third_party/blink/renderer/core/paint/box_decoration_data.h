@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -30,7 +30,7 @@ class BoxDecorationData {
                           layout_replaced.StyleRef().HasBorderDecoration()) {}
 
   BoxDecorationData(const PaintInfo& paint_info,
-                    const NGPhysicalFragment& fragment,
+                    const PhysicalFragment& fragment,
                     const ComputedStyle& style)
       : BoxDecorationData(
             paint_info,
@@ -39,7 +39,7 @@ class BoxDecorationData {
             !fragment.HasCollapsedBorders() && style.HasBorderDecoration()) {}
 
   BoxDecorationData(const PaintInfo& paint_info,
-                    const NGPhysicalFragment& fragment)
+                    const PhysicalFragment& fragment)
       : BoxDecorationData(paint_info, fragment, fragment.Style()) {}
 
   BoxDecorationData BackgroundOnly() const {

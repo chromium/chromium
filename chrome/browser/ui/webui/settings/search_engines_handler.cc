@@ -29,7 +29,6 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -123,7 +122,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
   // Find the default engine.
   const TemplateURL* default_engine =
       list_controller_.GetDefaultSearchProvider();
-  absl::optional<size_t> default_index =
+  std::optional<size_t> default_index =
       list_controller_.table_model()->IndexOfTemplateURL(default_engine);
 
   // Build the first list (default search engines).
@@ -228,10 +227,15 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
     dict.Set("iconURL", icon_url.spec());
 
   const bool is_search_engine_choice_settings_ui =
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceSettingsUi) &&
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny);
-  if (is_search_engine_choice_settings_ui &&
+
+  // The icons that are used for search engines in the EEA region are bundled
+  // with Chrome. We use the favicon service for countries outside the EEA
+  // region to guarantee having icons for all search engines.
+  const bool is_eea_region = search_engines::IsEeaChoiceCountry(
+      search_engines::GetSearchEngineChoiceCountryId(profile_->GetPrefs()));
+  if (is_search_engine_choice_settings_ui && is_eea_region &&
       template_url->prepopulate_id() != 0) {
     const std::u16string icon_path = GetGeneratedIconPath(
         template_url->keyword(), /*parent_directory_path=*/u"images/");

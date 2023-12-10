@@ -22,7 +22,7 @@ namespace device {
 
 namespace {
 
-mojom::SerialPortInfoPtr CreatePort(base::StringPiece device_address,
+mojom::SerialPortInfoPtr CreatePort(std::string_view device_address,
                                     base::StringPiece16 device_name,
                                     const BluetoothUUID& service_class_id) {
   auto port = mojom::SerialPortInfo::New();
@@ -173,7 +173,7 @@ BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
 BluetoothSerialDeviceEnumerator::~BluetoothSerialDeviceEnumerator() = default;
 
 void BluetoothSerialDeviceEnumerator::DeviceAdded(
-    base::StringPiece device_address,
+    std::string_view device_address,
     base::StringPiece16 device_name,
     BluetoothDevice::UUIDSet service_class_ids) {
   for (const auto& service_class_id : service_class_ids) {
@@ -182,7 +182,7 @@ void BluetoothSerialDeviceEnumerator::DeviceAdded(
 }
 
 void BluetoothSerialDeviceEnumerator::AddService(
-    base::StringPiece device_address,
+    std::string_view device_address,
     base::StringPiece16 device_name,
     const BluetoothUUID& service_class_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

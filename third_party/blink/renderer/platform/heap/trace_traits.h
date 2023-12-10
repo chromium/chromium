@@ -18,26 +18,21 @@
 
 namespace blink {
 
-template <typename T, bool = WTF::IsTraceable<T>::value>
-struct TraceIfNeeded;
-
 template <typename T>
-struct TraceIfNeeded<T, false> {
+struct TraceIfNeeded {
   STATIC_ONLY(TraceIfNeeded);
-  static void Trace(Visitor*, const T&) {}
-};
-
-template <typename T>
-struct TraceIfNeeded<T, true> {
-  STATIC_ONLY(TraceIfNeeded);
-  static void Trace(Visitor* visitor, const T& t) { visitor->Trace(t); }
+  static void Trace(Visitor* visitor, const T& t) {
+    if constexpr (WTF::IsTraceable<T>::value) {
+      visitor->Trace(t);
+    }
+  }
 };
 
 template <WTF::WeakHandlingFlag weakness,
           typename T,
           typename Traits,
           bool = WTF::IsTraceableInCollectionTrait<Traits>::value,
-          WTF::WeakHandlingFlag = WTF::WeakHandlingTrait<T>::value>
+          WTF::WeakHandlingFlag = WTF::kWeakHandlingTrait<T>>
 struct TraceCollectionIfEnabled;
 
 template <WTF::WeakHandlingFlag weakness, typename T, typename Traits>
@@ -104,10 +99,7 @@ template <typename _KeyType,
           typename _ValueTraits,
           bool = WTF::IsWeak<_ValueType>::value>
 struct EphemeronKeyValuePair {
-  // Should be STACK_ALLOCATED but the fields below are detected as Member
-  // fields which are not allowed in a stack-allocated class. Using
-  // DISALLOW_NEW() prevents a plugin ignore annotation.
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   using KeyType = _KeyType;
@@ -168,10 +160,10 @@ struct KeyValuePairInCollectionTrait {
     // (ephemeron). Order of invocation does not matter as `IsAlive()` does not
     // have any side effects.
     return blink::TraceCollectionIfEnabled<
-               WTF::WeakHandlingTrait<Key>::value, Key,
+               WTF::kWeakHandlingTrait<Key>, Key,
                typename Traits::KeyTraits>::IsAlive(info, kvp.key) &&
            blink::TraceCollectionIfEnabled<
-               WTF::WeakHandlingTrait<Value>::value, Value,
+               WTF::kWeakHandlingTrait<Value>, Value,
                typename Traits::ValueTraits>::IsAlive(info, kvp.value);
   }
 

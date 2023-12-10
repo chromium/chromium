@@ -29,6 +29,7 @@ class PreviewManager final
   void PrimaryPageChanged(content::Page& page) override;
 
   void InitiatePreview(const GURL& url);
+  void Cancel();
   void PromoteToNewTab();
 
   base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();

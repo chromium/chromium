@@ -5,12 +5,15 @@
 #ifndef ASH_SYSTEM_CAST_CAST_ZERO_STATE_VIEW_H_
 #define ASH_SYSTEM_CAST_CAST_ZERO_STATE_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 // The view shown in the system tray when there are no cast targets available.
 class CastZeroStateView : public views::View {
+  METADATA_HEADER(CastZeroStateView, views::View)
+
  public:
   CastZeroStateView();
   CastZeroStateView(const CastZeroStateView&) = delete;

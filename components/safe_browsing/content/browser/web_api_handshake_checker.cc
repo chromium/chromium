@@ -52,7 +52,7 @@ class WebApiHandshakeChecker::CheckerOnSB
         url_checker_delegate->ShouldSkipRequestCheck(
             url, frame_tree_node_id_,
             /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
-            /*render_frame_id=*/MSG_ROUTING_NONE,
+            /*render_frame_token=*/std::nullopt,
             /*originated_from_service_worker=*/false);
     if (skip_checks) {
       OnCompleteCheckInternal(/*proceed=*/true);
@@ -75,7 +75,7 @@ class WebApiHandshakeChecker::CheckerOnSB
         network::mojom::RequestDestination::kEmpty, /*has_user_gesture=*/false,
         url_checker_delegate, web_contents_getter_, /*weak_web_state=*/nullptr,
         /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
-        /*render_frame_id=*/MSG_ROUTING_NONE, frame_tree_node_id_,
+        /*render_frame_token=*/std::nullopt, frame_tree_node_id_,
         /*url_real_time_lookup_enabled=*/false,
         /*can_urt_check_subresource_url=*/false,
         /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
@@ -99,8 +99,7 @@ class WebApiHandshakeChecker::CheckerOnSB
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist) {
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
     DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                             ? content::BrowserThread::UI
                             : content::BrowserThread::IO);
@@ -118,8 +117,7 @@ class WebApiHandshakeChecker::CheckerOnSB
       bool slow_check,
       bool proceed,
       bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist) {
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
     OnCompleteCheckInternal(proceed);
   }
 

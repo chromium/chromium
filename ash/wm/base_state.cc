@@ -11,8 +11,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
@@ -20,6 +20,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -107,8 +108,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
 // static
 void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
   auto* shell = Shell::Get();
-  // For tablet mode, use |TabletModeWindowState::CycleTabletSnap|.
-  DCHECK(!shell->tablet_mode_controller()->InTabletMode());
+  // For tablet mode, use `TabletModeWindowState::CycleTabletSnap`.
+  DCHECK(!display::Screen::GetScreen()->InTabletMode());
 
   WindowStateType desired_snap_state = event == WM_EVENT_CYCLE_SNAP_PRIMARY
                                            ? WindowStateType::kPrimarySnapped
@@ -121,16 +122,15 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
     const bool is_desired_primary_snapped =
         desired_snap_state == WindowStateType::kPrimarySnapped;
     if (shell->overview_controller()->InOverviewSession() &&
-        !window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+        !window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
       // |window| must already be in split view, and so we do not need to check
       // |SplitViewController::CanSnapWindow|, although in general it is more
       // restrictive than |WindowState::CanSnap|.
       DCHECK(SplitViewController::Get(window)->IsWindowInSplitView(window));
       SplitViewController::Get(window)->SnapWindow(
           window,
-          is_desired_primary_snapped
-              ? SplitViewController::SnapPosition::kPrimary
-              : SplitViewController::SnapPosition::kSecondary,
+          is_desired_primary_snapped ? SnapPosition::kPrimary
+                                     : SnapPosition::kSecondary,
           WindowSnapActionSource::kKeyboardShortcutToSnap);
     } else {
       const WindowSnapWMEvent wm_event(
@@ -186,34 +186,25 @@ void BaseState::UpdateMinimizedState(WindowState* window_state,
 
 gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
-    const WindowStateType state_type) {
-  return BaseState::GetSnappedWindowBoundsInParent(window, state_type,
-                                                   chromeos::kDefaultSnapRatio);
-}
-
-gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
-    aura::Window* window,
     const WindowStateType state_type,
     float snap_ratio) {
-  DCHECK(chromeos::IsSnappedWindowStateType(state_type));
-  gfx::Rect bounds_in_parent;
-  if (ShouldAllowSplitView()) {
-    bounds_in_parent =
-        SplitViewController::Get(window)->GetSnappedWindowBoundsInParent(
-            (state_type == WindowStateType::kPrimarySnapped)
-                ? SplitViewController::SnapPosition::kPrimary
-                : SplitViewController::SnapPosition::kSecondary,
-            window, snap_ratio);
-  } else {
-    // Use `window_positioning_utils` to calculate the snapped window bounds.
-    bounds_in_parent = ash::GetSnappedWindowBoundsInParent(
-        window,
-        state_type == WindowStateType::kPrimarySnapped
-            ? SnapViewType::kPrimary
-            : SnapViewType::kSecondary,
-        snap_ratio);
+  CHECK(chromeos::IsSnappedWindowStateType(state_type));
+  if (auto* split_view_controller = SplitViewController::Get(window);
+      split_view_controller->IsWindowInSplitView(window) ||
+      Shell::Get()->IsInTabletMode()) {
+    // In tablet mode `SplitViewController` always manages snapped windows, in
+    // clamshell state it only manages windows in split view.
+    return split_view_controller->GetSnappedWindowBoundsInParent(
+        (state_type == WindowStateType::kPrimarySnapped)
+            ? SnapPosition::kPrimary
+            : SnapPosition::kSecondary,
+        window, snap_ratio);
   }
-  return bounds_in_parent;
+  return ash::GetSnappedWindowBoundsInParent(
+      window,
+      state_type == WindowStateType::kPrimarySnapped ? SnapViewType::kPrimary
+                                                     : SnapViewType::kSecondary,
+      snap_ratio);
 }
 
 void BaseState::HandleWindowSnapping(

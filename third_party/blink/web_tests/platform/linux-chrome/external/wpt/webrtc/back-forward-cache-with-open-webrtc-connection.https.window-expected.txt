@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Testing BFCache support for page with open WebRTC connection.
+  assert_true: Expected: WebRTC\nGot: WebRTC,internal-error\nMissing: \nExtra: internal-error\n expected true got false
+Harness: the test ran to completion.

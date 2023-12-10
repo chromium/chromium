@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://print-management/print_management.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {setMetadataProviderForTesting, setPrintManagementHandlerForTesting} from 'chrome://print-management/mojo_interface_provider.js';

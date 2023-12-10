@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 
 namespace blink {
@@ -145,23 +147,86 @@ BasicShapeRadius CreateRadius(
           .CreateLength(conversion_data, Length::ValueRange::kNonNegative));
 }
 
-InterpolableValue* ConvertCSSLength(const CSSValue* length) {
-  if (!length) {
-    return InterpolableLength::CreateNeutral();
-  }
-  return InterpolableLength::MaybeConvertCSSValue(*length);
+InterpolableLength* ConvertCSSLength(const CSSValue& length) {
+  return InterpolableLength::MaybeConvertCSSValue(length);
 }
 
-InterpolableValue* ConvertCSSLengthOrAuto(const CSSValue* length,
-                                          double auto_percent) {
+InterpolableLength* ConvertCSSLength(const CSSValue* length) {
   if (!length) {
     return InterpolableLength::CreateNeutral();
   }
+  return ConvertCSSLength(*length);
+}
+
+InterpolableLength* ConvertCSSLengthOrAuto(const CSSValue& length,
+                                           double auto_percent) {
   auto* identifier = DynamicTo<CSSIdentifierValue>(length);
   if (identifier && identifier->GetValueID() == CSSValueID::kAuto) {
     return InterpolableLength::CreatePercent(auto_percent);
   }
-  return InterpolableLength::MaybeConvertCSSValue(*length);
+  return InterpolableLength::MaybeConvertCSSValue(length);
+}
+
+InterpolableLength* ConvertCSSLengthOrAuto(const CSSValue* length,
+                                           double auto_percent) {
+  if (!length) {
+    return InterpolableLength::CreateNeutral();
+  }
+  return ConvertCSSLengthOrAuto(*length, auto_percent);
+}
+
+const CSSMathExpressionNode* AsExpressionNode(const CSSPrimitiveValue& value) {
+  if (const auto* numeric_literal = DynamicTo<CSSNumericLiteralValue>(value)) {
+    return CSSMathExpressionNumericLiteral::Create(numeric_literal);
+  }
+  return To<CSSMathFunctionValue>(value).ExpressionNode();
+}
+
+// Generate the expression: calc(minuend - subtrahend).
+const CSSMathExpressionNode* SubtractCSSLength(
+    const CSSMathExpressionNode& minuend,
+    const CSSPrimitiveValue& subtrahend) {
+  return CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      &minuend, AsExpressionNode(subtrahend), CSSMathOperator::kSubtract);
+}
+
+// Produce a InterpolableLength from a CSSMathExpressionNode expression tree.
+InterpolableLength* FinalizeExpression(
+    const CSSMathExpressionNode& difference) {
+  CSSLengthArray length_array;
+  if (difference.AccumulateLengthArray(length_array, 1)) {
+    return MakeGarbageCollected<InterpolableLength>(std::move(length_array));
+  }
+  return MakeGarbageCollected<InterpolableLength>(difference);
+}
+
+// Generate the expression: calc(100% - a - b).
+InterpolableLength* ConvertCSSLengthsSubtractedFrom100Percent(
+    const CSSPrimitiveValue& a,
+    const CSSPrimitiveValue& b) {
+  const auto* percent_100 = CSSMathExpressionNumericLiteral::Create(
+      100, CSSPrimitiveValue::UnitType::kPercentage);
+  return FinalizeExpression(
+      *SubtractCSSLength(*SubtractCSSLength(*percent_100, a), b));
+}
+
+// Generate the expression: calc(100% - a).
+InterpolableLength* ConvertCSSLengthSubtractedFrom100Percent(
+    const CSSPrimitiveValue& a) {
+  const auto* percent_100 = CSSMathExpressionNumericLiteral::Create(
+      100, CSSPrimitiveValue::UnitType::kPercentage);
+  return FinalizeExpression(*SubtractCSSLength(*percent_100, a));
+}
+
+InterpolableLength* ConvertCSSLengthOrAutoSubtractedFrom100Percent(
+    const CSSValue& length,
+    double auto_percent) {
+  auto* identifier = DynamicTo<CSSIdentifierValue>(length);
+  if (identifier && identifier->GetValueID() == CSSValueID::kAuto) {
+    return InterpolableLength::CreatePercent(auto_percent);
+  }
+  return ConvertCSSLengthSubtractedFrom100Percent(
+      To<CSSPrimitiveValue>(length));
 }
 
 InterpolableValue* ConvertLength(const Length& length, double zoom) {
@@ -418,6 +483,65 @@ InterpolationValue ConvertCSSValue(const BasicShapeCSSValueClass& inset) {
   list->Set(kInsetBorderBottomLeftHeightIndex,
             ConvertCSSBorderRadiusHeight(inset.BottomLeftRadius()));
   return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(type));
+}
+
+void FillCanonicalRect(InterpolableList* list,
+                       const cssvalue::CSSBasicShapeRectValue& rect) {
+  // rect(t r b l) => inset(t calc(100% - r) calc(100% - b) l).
+  list->Set(kInsetTopIndex, ConvertCSSLengthOrAuto(*rect.Top(), 0));
+  list->Set(kInsetRightIndex,
+            ConvertCSSLengthOrAutoSubtractedFrom100Percent(*rect.Right(), 0));
+  list->Set(kInsetBottomIndex,
+            ConvertCSSLengthOrAutoSubtractedFrom100Percent(*rect.Bottom(), 0));
+  list->Set(kInsetLeftIndex, ConvertCSSLengthOrAuto(*rect.Left(), 0));
+}
+
+void FillCanonicalRect(InterpolableList* list,
+                       const cssvalue::CSSBasicShapeXYWHValue& xywh) {
+  // xywh(x y w h) => inset(y calc(100% - (x + w)) calc(100% - (y + h)) x).
+  const CSSPrimitiveValue& x = *xywh.X();
+  const CSSPrimitiveValue& y = *xywh.Y();
+  const CSSPrimitiveValue& w = *xywh.Width();
+  const CSSPrimitiveValue& h = *xywh.Height();
+  list->Set(kInsetTopIndex, ConvertCSSLength(y));
+  // calc(100% - (x + w)) = calc(100% - x - w).
+  list->Set(kInsetRightIndex, ConvertCSSLengthsSubtractedFrom100Percent(x, w));
+  // calc(100% - (y + h)) = calc(100% - y - h).
+  list->Set(kInsetBottomIndex, ConvertCSSLengthsSubtractedFrom100Percent(y, h));
+  list->Set(kInsetLeftIndex, ConvertCSSLength(x));
+}
+
+template <typename BasicShapeCSSValueClass>
+InterpolationValue ConvertCSSValueToInset(const BasicShapeCSSValueClass& rect) {
+  // Spec: All <basic-shape-rect> functions compute to the equivalent
+  // inset() function.
+
+  // NOTE: Given `xywh(x y w h)`, the equivalent function is `inset(y
+  // calc(100% - x - w) calc(100% - y - h) x)`.  See:
+  // https://drafts.csswg.org/css-shapes/#basic-shape-computed-values and
+  // https://github.com/w3c/csswg-drafts/issues/9053
+  auto* list =
+      MakeGarbageCollected<InterpolableList>(kInsetComponentIndexCount);
+  FillCanonicalRect(list, rect);
+
+  list->Set(kInsetBorderTopLeftWidthIndex,
+            ConvertCSSBorderRadiusWidth(rect.TopLeftRadius()));
+  list->Set(kInsetBorderTopLeftHeightIndex,
+            ConvertCSSBorderRadiusHeight(rect.TopLeftRadius()));
+  list->Set(kInsetBorderTopRightWidthIndex,
+            ConvertCSSBorderRadiusWidth(rect.TopRightRadius()));
+  list->Set(kInsetBorderTopRightHeightIndex,
+            ConvertCSSBorderRadiusHeight(rect.TopRightRadius()));
+  list->Set(kInsetBorderBottomRightWidthIndex,
+            ConvertCSSBorderRadiusWidth(rect.BottomRightRadius()));
+  list->Set(kInsetBorderBottomRightHeightIndex,
+            ConvertCSSBorderRadiusHeight(rect.BottomRightRadius()));
+  list->Set(kInsetBorderBottomLeftWidthIndex,
+            ConvertCSSBorderRadiusWidth(rect.BottomLeftRadius()));
+  list->Set(kInsetBorderBottomLeftHeightIndex,
+            ConvertCSSBorderRadiusHeight(rect.BottomLeftRadius()));
+  return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(
+                                      BasicShape::kBasicShapeInsetType));
 }
 
 InterpolationValue ConvertBasicShape(const BasicShapeRectCommon& inset,
@@ -717,11 +841,20 @@ InterpolationValue basic_shape_interpolation_functions::MaybeConvertCSSValue(
   if (auto* inset_value = DynamicTo<cssvalue::CSSBasicShapeInsetValue>(value)) {
     return rect_common_functions::ConvertCSSValue(*inset_value);
   }
-  if (auto* rect_value = DynamicTo<cssvalue::CSSBasicShapeRectValue>(value)) {
-    return rect_common_functions::ConvertCSSValue(*rect_value);
-  }
-  if (auto* xywh_value = DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(value)) {
-    return xywh_functions::ConvertCSSValue(*xywh_value);
+  if (RuntimeEnabledFeatures::XYWHAndRectComputedValueEnabled()) {
+    if (auto* rect_value = DynamicTo<cssvalue::CSSBasicShapeRectValue>(value)) {
+      return rect_common_functions::ConvertCSSValueToInset(*rect_value);
+    }
+    if (auto* xywh_value = DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(value)) {
+      return rect_common_functions::ConvertCSSValueToInset(*xywh_value);
+    }
+  } else {
+    if (auto* rect_value = DynamicTo<cssvalue::CSSBasicShapeRectValue>(value)) {
+      return rect_common_functions::ConvertCSSValue(*rect_value);
+    }
+    if (auto* xywh_value = DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(value)) {
+      return xywh_functions::ConvertCSSValue(*xywh_value);
+    }
   }
   if (auto* polygon_value =
           DynamicTo<cssvalue::CSSBasicShapePolygonValue>(value)) {

@@ -52,14 +52,10 @@ class PasswordMigrationWarningMediator
     private @PasswordMigrationWarningTriggers int mReferrer;
 
     public interface MigrationWarningOptionsHandler {
-        /**
-         * Launches the sync consent flow.
-         */
+        /** Launches the sync consent flow. */
         void startSyncConsentFlow();
 
-        /**
-         * Opens the sync settings to allow users to enable passwords sync.
-         */
+        /** Opens the sync settings to allow users to enable passwords sync. */
         void openSyncSettings();
 
         /**
@@ -76,18 +72,16 @@ class PasswordMigrationWarningMediator
          */
         void savePasswordsToDownloads(Uri passwordsFile);
 
-        /**
-         * Resumes the password export flow.
-         */
+        /** Resumes the password export flow. */
         void resumeExportFlow();
 
-        /**
-         * Notifies the {@link ExportFlow} that passwords are fetched.
-         */
+        /** Notifies the {@link ExportFlow} that passwords are fetched. */
         void passwordsAvailable();
     }
 
-    PasswordMigrationWarningMediator(Profile profile, MigrationWarningOptionsHandler optionsHandler,
+    PasswordMigrationWarningMediator(
+            Profile profile,
+            MigrationWarningOptionsHandler optionsHandler,
             @PasswordMigrationWarningTriggers int referrer) {
         mProfile = profile;
         mOptionsHandler = optionsHandler;
@@ -136,12 +130,14 @@ class PasswordMigrationWarningMediator
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
 
-        if (reason == StateChangeReason.SWIPE || reason == StateChangeReason.BACK_PRESS
+        if (reason == StateChangeReason.SWIPE
+                || reason == StateChangeReason.BACK_PRESS
                 || reason == StateChangeReason.TAP_SCRIM
                 || reason == StateChangeReason.OMNIBOX_FOCUS) {
-            int dismissalKind = mModel.get(CURRENT_SCREEN) == ScreenType.INTRO_SCREEN
-                    ? PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION
-                    : PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS;
+            int dismissalKind =
+                    mModel.get(CURRENT_SCREEN) == ScreenType.INTRO_SCREEN
+                            ? PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION
+                            : PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS;
 
             logPasswordMigrationWarningUserAction(dismissalKind);
         }
@@ -249,7 +245,8 @@ class PasswordMigrationWarningMediator
 
     private void recordEmptySheetTrigger(@PasswordMigrationWarningTriggers int referrer) {
         RecordHistogram.recordEnumeratedHistogram(
-                PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER, referrer,
+                PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER,
+                referrer,
                 PasswordMigrationWarningTriggers.MAX_VALUE);
     }
 

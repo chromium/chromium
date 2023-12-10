@@ -3853,6 +3853,44 @@ TEST_F(MainThreadSchedulerImplTest, DetachRunningTaskQueue) {
   EXPECT_FALSE(weak_queue);
 }
 
+class UrgentMessageSchedulingPolicyTest : public MainThreadSchedulerImplTest {
+ public:
+  UrgentMessageSchedulingPolicyTest()
+      : MainThreadSchedulerImplTest(
+            {{features::kBlinkSchedulerPrioritizeNavigationIPCs}},
+            {}) {}
+};
+
+TEST_F(UrgentMessageSchedulingPolicyTest, PrioritizeIPCTasks) {
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "T1 D1 T2");
+  // Default TQ tasks after this are prioritized until the there are no more
+  // pending urgent messages, which happens in the "D5" task.
+  default_task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                   run_order.push_back("D2a");
+                                   scheduler_->OnUrgentMessageReceived();
+                                 }));
+  default_task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                   run_order.push_back("D2b");
+                                   scheduler_->OnUrgentMessageReceived();
+                                 }));
+  default_task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                   run_order.push_back("D2c");
+                                   scheduler_->OnUrgentMessageProcessed();
+                                 }));
+  PostTestTasks(&run_order, "T3 T4 T5 D3 D4");
+  default_task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                   run_order.push_back("D5");
+                                   scheduler_->OnUrgentMessageProcessed();
+                                 }));
+  PostTestTasks(&run_order, "T6 D6");
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order,
+              testing::ElementsAre("T1", "D1", "T2", "D2a", "D2b", "D2c", "D3",
+                                   "D4", "D5", "T3", "T4", "T5", "T6", "D6"));
+}
+
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler
 }  // namespace blink

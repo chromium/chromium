@@ -22,11 +22,11 @@
 #include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
-#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -62,7 +62,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
 
   // FirstPartySetsHandlerImpl:
   void Init(const base::FilePath& user_data_dir,
-            const LocalSetDeclaration& local_set) override;
+            const net::LocalSetDeclaration& local_set) override;
   [[nodiscard]] absl::optional<net::GlobalFirstPartySets> GetSets(
       base::OnceCallback<void(net::GlobalFirstPartySets)> callback) override;
 
@@ -218,4 +218,4 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_H_
+#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_INSTANCE_H_

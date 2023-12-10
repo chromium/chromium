@@ -35,15 +35,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.CheckoutFunnel.NoShow"
-    enum="PaymentRequestNoShowReason" expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    The reason that leads to the Payment Request not being shown to the user.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.EventResponse.CanMakePayment" enum="Boolean"
     expires_after="2024-02-20">
   <owner>rouslan@chromium.org</owner>
@@ -88,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Events2" units="bitfield value"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -166,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
-    enum="BooleanSuccess" expires_after="2024-03-17">
+    enum="BooleanSuccess" expires_after="2024-05-19">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -187,60 +178,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.RefetchIconForInstalledApp" enum="Boolean"
-    expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    True when chrome crawls to refetch the missing icon of an already installed
-    payment app.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.SecurePaymentConfirmation.Funnel.AuthenticationDialogResult"
-    enum="SecurePaymentConfirmationAuthenticationDialogResult"
-    expires_after="2023-08-20">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the action performed by the user on the Secure Payment confirmation
-    dialog. The result is Accepted if the affirmitive button is pressed,
-    Canceled if the dialog is canceled, or Closed if it is otherwise closed.
-    Logged when the user interacts with the dialog or the dialog is otherwise
-    closed.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollSystemPromptResult"
-    enum="SecurePaymentConfirmationEnrollSystemPromptResult"
-    expires_after="2023-11-19">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the result of the FIDO system prompt, which is shown after the
-    Secure Payment Confirmation enrollment dialog is accepted. The result is
-    Accepted if the prompt is successful, i.e., the user has approved the FIDO
-    system prompt, or Canceled if the prompt is canceled or failed. Logged when
-    the FIDO system prompt closes.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult"
-    enum="SecurePaymentConfirmationSystemPromptResult"
-    expires_after="2023-11-19">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the result of the FIDO system prompt, which is shown after the
-    Secure Payment Confirmation dialog is accepted. The result is Accepted if
-    the prompt is successful, or Canceled if the prompt is canceled. Logged when
-    the FIDO system prompt closes.
-  </summary>
-</histogram>
-
 <histogram
     name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
     units="bytes" expires_after="2023-06-18">
@@ -257,26 +194,6 @@ chromium-metrics-reviews@google.com.
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>True when a service worker times out 5 mins after request.</summary>
-</histogram>
-
-<histogram name="PaymentRequest.TransactionAmount.Completed"
-    enum="PaymentRequestTransactionSize" expires_after="2023-07-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the transaction amounts completed using payment request API after
-    converting to USD.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.TransactionAmount.Triggered"
-    enum="PaymentRequestTransactionSize" expires_after="2023-07-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the transaction amounts triggered using payment request API after
-    converting to USD.
-  </summary>
 </histogram>
 
 </histograms>

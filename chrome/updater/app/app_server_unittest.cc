@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_server.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -24,14 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <shlobj.h>
-
-#include "base/win/registry.h"
-#include "chrome/updater/win/win_constants.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 using testing::Invoke;
 using testing::Return;
@@ -59,6 +52,7 @@ class AppServerTest : public AppServer {
               MigrateLegacyUpdaters,
               (base::RepeatingCallback<void(const RegistrationRequest&)>),
               (override));
+  MOCK_METHOD(void, RepairUpdater, (UpdaterScope, bool), (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
   MOCK_METHOD(bool, ShutdownIfIdleAfterTask, (), (override));
   MOCK_METHOD(void, OnDelayedTaskComplete, (), (override));
@@ -74,7 +68,7 @@ class AppServerTest : public AppServer {
 
 void ClearPrefs() {
   const UpdaterScope updater_scope = GetTestScope();
-  for (const absl::optional<base::FilePath>& path :
+  for (const std::optional<base::FilePath>& path :
        {GetInstallDirectory(updater_scope),
         GetVersionedInstallDirectory(updater_scope)}) {
     ASSERT_TRUE(path);
@@ -93,24 +87,7 @@ class AppServerTestCase : public testing::Test {
     }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_WIN)
-    if (!::IsUserAnAdmin()) {
-      GTEST_SKIP() << "Need admin privileges to run this test";
-    }
-
-    // Skips `DUMP_WILL_BE_CHECK` when running these tests.
-    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_WRITE)
-        .WriteValue(kRegValueIntegrationTestMode, 1);
-#endif  // BUILDFLAG(IS_WIN)
-
     ClearPrefs();
-  }
-
-  void TearDown() override {
-#if BUILDFLAG(IS_WIN)
-    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, DELETE)
-        .DeleteValue(kRegValueIntegrationTestMode);
-#endif  // BUILDFLAG(IS_WIN)
   }
 
  private:

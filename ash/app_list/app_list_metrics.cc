@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_metrics.h"
 
 #include <algorithm>
+#include <map>
 #include <string>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -20,6 +21,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/compositor/compositor.h"
 
 namespace ash {
@@ -113,6 +116,34 @@ constexpr char kAppListOpenTimePrefix[] = "Apps.AppListOpenTime.";
 
 constexpr char kContinueSectionFilesRemovedInSessionHistogram[] =
     "Apps.AppList.Search.ContinueSectionFilesRemovedPerSession";
+
+constexpr char kSearchCategoryFilterMenuOpened[] =
+    "Apps.AppList.Search.SearchCategoryFilterMenuOpenedCount";
+constexpr char kSearchCategoriesEnableStateHeader[] =
+    "Apps.AppList.Search.SearchCategoriesEnableState.";
+
+std::string GetCategoryString(AppListSearchControlCategory category) {
+  switch (category) {
+    case AppListSearchControlCategory::kApps:
+      return "Apps";
+    case AppListSearchControlCategory::kAppShortcuts:
+      return "AppShortcuts";
+    case AppListSearchControlCategory::kFiles:
+      return "Files";
+    case AppListSearchControlCategory::kGames:
+      return "Games";
+    case AppListSearchControlCategory::kHelp:
+      return "Helps";
+    case AppListSearchControlCategory::kImages:
+      return "Images";
+    case AppListSearchControlCategory::kPlayStore:
+      return "PlayStore";
+    case AppListSearchControlCategory::kWeb:
+      return "Web";
+    case AppListSearchControlCategory::kCannotToggle:
+      NOTREACHED_NORETURN();
+  }
+}
 
 AppLaunchedMetricParams::AppLaunchedMetricParams() = default;
 
@@ -307,7 +338,7 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
 ASH_EXPORT void RecordLauncherWorkflowMetrics(
     AppListUserAction action,
     bool is_tablet_mode,
-    absl::optional<base::TimeTicks> launcher_show_time) {
+    std::optional<base::TimeTicks> launcher_show_time) {
   if (is_tablet_mode) {
     base::UmaHistogramEnumeration(kLauncherUserActionInTablet, action);
 
@@ -485,6 +516,20 @@ void RecordHideContinueSectionMetric() {
     base::UmaHistogramBoolean(
         "Apps.AppList.ContinueSectionHiddenByUser.ClamshellMode",
         hide_continue_section);
+  }
+}
+
+void RecordSearchCategoryFilterMenuOpened() {
+  base::UmaHistogramCounts100(kSearchCategoryFilterMenuOpened, 1);
+}
+
+void RecordSearchCategoryEnableState(
+    const CategoryEnableStateMap& category_to_state) {
+  for (auto category_state_pair : category_to_state) {
+    std::string histogram =
+        base::StrCat({kSearchCategoriesEnableStateHeader,
+                      GetCategoryString(category_state_pair.first)});
+    base::UmaHistogramEnumeration(histogram, category_state_pair.second);
   }
 }
 

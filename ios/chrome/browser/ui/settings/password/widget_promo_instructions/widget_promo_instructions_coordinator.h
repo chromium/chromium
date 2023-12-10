@@ -6,11 +6,13 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_WIDGET_PROMO_INSTRUCTIONS_WIDGET_PROMO_INSTRUCTIONS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/password_manager_reauthentication_delegate.h"
 
 @class WidgetPromoInstructionsCoordinator;
 
 // Delegate for WidgetPromoInstructionsCoordinator.
-@protocol WidgetPromoInstructionsCoordinatorDelegate
+@protocol WidgetPromoInstructionsCoordinatorDelegate <
+    PasswordManagerReauthenticationDelegate>
 
 // Tells the delegate that the widget promo instructions coordinator needs to be
 // stopped.

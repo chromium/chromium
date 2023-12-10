@@ -14,26 +14,38 @@
 
 namespace media {
 
-class V4L2VP9Picture : public VP9Picture {
+using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
+namespace {
+
+class StatelessVP9Picture : public VP9Picture {
  public:
-  explicit V4L2VP9Picture(scoped_refptr<StatelessDecodeSurface> dec_surface)
+  explicit StatelessVP9Picture(
+      scoped_refptr<StatelessDecodeSurface> dec_surface)
       : dec_surface_(std::move(dec_surface)) {}
 
-  V4L2VP9Picture(const V4L2VP9Picture&) = delete;
-  V4L2VP9Picture& operator=(const V4L2VP9Picture&) = delete;
+  StatelessVP9Picture(const StatelessVP9Picture&) = delete;
+  StatelessVP9Picture& operator=(const StatelessVP9Picture&) = delete;
+
+  scoped_refptr<StatelessDecodeSurface> dec_surface() { return dec_surface_; }
 
  private:
-  ~V4L2VP9Picture() override = default;
+  ~StatelessVP9Picture() override = default;
 
   scoped_refptr<VP9Picture> CreateDuplicate() override {
-    return base::MakeRefCounted<V4L2VP9Picture>(dec_surface_);
+    return base::MakeRefCounted<StatelessVP9Picture>(dec_surface_);
   }
 
   scoped_refptr<StatelessDecodeSurface> dec_surface_;
 };
 
-using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
-namespace {
+scoped_refptr<StatelessDecodeSurface> VP9PictureToStatelessDecodeSurface(
+    VP9Picture* pic) {
+  CHECK(pic);
+  StatelessVP9Picture* stateless_vp9_picture =
+      static_cast<StatelessVP9Picture*>(pic);
+
+  return stateless_vp9_picture->dec_surface();
+}
 
 void FillV4L2VP9LoopFilterParams(const Vp9LoopFilterParams& vp9_lf_params,
                                  struct v4l2_vp9_loop_filter* v4l2_lf) {
@@ -145,7 +157,7 @@ scoped_refptr<VP9Picture> VP9Delegate::CreateVP9Picture() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
+  return base::MakeRefCounted<StatelessVP9Picture>(std::move(dec_surface));
 }
 
 DecodeStatus VP9Delegate::SubmitDecode(
@@ -229,16 +241,8 @@ DecodeStatus VP9Delegate::SubmitDecode(
 
     auto ref_pic = ref_frames.GetFrame(idx);
     if (ref_pic) {
-      // TODO(frkoenig): Reference frame management needs to be done. The
-      // following block of code was copied from the previous implementation.
-      // A similar association of timestamp with decoded frame buffer needs
-      // to be done.
-      /*
-            const auto ref_surface =
-                VP9PictureToStatelessDecodeSurface(ref_pic.get());
-            const auto frame_ts = ref_surface->GetReferenceID();
-      */
-      const uint64_t frame_ts = 0;
+      auto ref_surface = VP9PictureToStatelessDecodeSurface(ref_pic.get());
+      const uint64_t frame_ts = ref_surface->GetReferenceTimestamp();
       // Only partially/indirectly documented in the VP9 spec, but this
       // array contains LAST, GOLDEN, and ALT, in that order.
       switch (i) {
@@ -283,9 +287,22 @@ DecodeStatus VP9Delegate::SubmitDecode(
   struct v4l2_ext_controls ctrls = {.count = ext_ctrls_size,
                                     .controls = ext_ctrls.data()};
 
+  scoped_refptr<StatelessDecodeSurface> dec_surface =
+      VP9PictureToStatelessDecodeSurface(pic.get());
+
+  std::vector<scoped_refptr<StatelessDecodeSurface>> ref_surfaces;
+  for (size_t i = 0; i < kVp9NumRefFrames; i++) {
+    auto ref_pic = ref_frames.GetFrame(i);
+    if (ref_pic) {
+      auto ref_surface = VP9PictureToStatelessDecodeSurface(ref_pic.get());
+      ref_surfaces.emplace_back(std::move(ref_surface));
+    }
+  }
+  dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
+
   if (!surface_handler_->SubmitFrame(&ctrls, frame_hdr->data,
                                      frame_hdr->frame_size,
-                                     pic->bitstream_id())) {
+                                     dec_surface->FrameID())) {
     return DecodeStatus::kFail;
   }
 
@@ -294,15 +311,10 @@ DecodeStatus VP9Delegate::SubmitDecode(
 
 bool VP9Delegate::OutputPicture(scoped_refptr<VP9Picture> pic) {
   DVLOGF(4);
-  surface_handler_->SurfaceReady(nullptr, pic->bitstream_id(),
-                                 pic->visible_rect(), pic->get_colorspace());
+  surface_handler_->SurfaceReady(VP9PictureToStatelessDecodeSurface(pic.get()),
+                                 pic->bitstream_id(), pic->visible_rect(),
+                                 pic->get_colorspace());
   return true;
-}
-
-bool VP9Delegate::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                  Vp9FrameContext* frame_ctx) {
-  NOTIMPLEMENTED() << "Frame context update not supported";
-  return false;
 }
 
 bool VP9Delegate::NeedsCompressedHeaderParsed() const {

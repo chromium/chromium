@@ -6,7 +6,6 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_LIBRARY_VIEW_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -46,7 +45,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   static std::unique_ptr<views::Widget> CreateSavedDeskLibraryWidget(
       aura::Window* root);
 
-  const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
+  const std::vector<SavedDeskGridView*>& grid_views() const {
+    return grid_views_;
+  }
 
   // Retrieves the item view for a given saved desk, or nullptr.
   SavedDeskItemView* GetItemForUUID(const base::Uuid& uuid);
@@ -76,11 +77,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   friend class SavedDeskLibraryViewTestApi;
   friend class SavedDeskLibraryWindowTargeter;
 
-  bool IsAnimating();
+  bool IsAnimating() const;
 
   // Called from `SavedDeskLibraryWindowTargeter`. Returns true if
   // `screen_location` intersects with an interactive part of the library UI.
-  bool IntersectsWithUi(const gfx::Point& screen_location);
+  bool IntersectsWithUi(const gfx::Point& screen_location) const;
 
   // If this view is attached to a widget, returns its window (or nullptr).
   aura::Window* GetWidgetWindow();
@@ -92,7 +93,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // that the `SavedDeskItemView` can be animated up to the desk bar view.
   // It takes animation into consideration and will return the position where
   // the desk preview will end up, rather than where it currently is.
-  absl::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
+  std::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
       const DeskMiniView* mini_view);
 
   // views::View:
@@ -119,10 +120,6 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Holds the active ones, for convenience.
   std::vector<SavedDeskGridView*> grid_views_;
-
-  // Owned by views hierarchy. Section headers above grids. Will match size and
-  // order of items in `grid_views_`.
-  std::vector<views::Label*> grid_labels_;
 
   // Label that shows up when the library has no items.
   raw_ptr<views::Label, ExperimentalAsh> no_items_label_ = nullptr;

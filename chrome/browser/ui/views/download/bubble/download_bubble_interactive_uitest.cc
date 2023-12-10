@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -18,7 +19,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,12 +61,10 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
  public:
   DownloadBubbleInteractiveUiTest() {
     test_features_.InitAndEnableFeatures(
-        {
-          feature_engagement::kIPHDownloadToolbarButtonFeature,
-              safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2
+        {feature_engagement::kIPHDownloadToolbarButtonFeature
 #if BUILDFLAG(IS_MAC)
-              ,
-              features::kImmersiveFullscreen
+         ,
+         features::kImmersiveFullscreen
 #endif  // BUILDFLAG(IS_MAC)
         },
         {});
@@ -102,39 +100,65 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
   }
 
   auto DownloadBubbleIsShowingDetails(bool showing) {
-    return base::BindLambdaForTesting([&, showing = showing]() {
-      return showing == download_toolbar_button()->IsShowingDetails();
-    });
+    return base::BindOnce(
+        [](DownloadToolbarButtonView* download_toolbar_button, bool showing) {
+          return showing == download_toolbar_button->IsShowingDetails();
+        },
+        download_toolbar_button(), showing);
+  }
+
+  // Whether the download bubble's widget is showing and active.
+  auto DownloadBubbleIsActive(bool active) {
+    return base::BindOnce(
+        [](DownloadToolbarButtonView* download_toolbar_button, bool active) {
+          if (!download_toolbar_button->IsShowingDetails() ||
+              !download_toolbar_button->bubble_contents_for_testing()
+                   ->GetWidget()) {
+            return false;
+          }
+          return active ==
+                 download_toolbar_button->bubble_contents_for_testing()
+                     ->GetWidget()
+                     ->IsActive();
+        },
+        download_toolbar_button(), active);
   }
 
   auto DownloadBubblePromoIsActive(bool active) {
-    return base::BindLambdaForTesting([&, active = active]() {
-      return active ==
-             BrowserView::GetBrowserViewForBrowser(browser())
-                 ->GetFeaturePromoController()
-                 ->IsPromoActive(
-                     feature_engagement::kIPHDownloadToolbarButtonFeature);
-    });
+    return base::BindOnce(
+        [](DownloadToolbarButtonView* download_toolbar_button, Browser* browser,
+           bool active) {
+          return active ==
+                 BrowserView::GetBrowserViewForBrowser(browser)
+                     ->GetFeaturePromoController()
+                     ->IsPromoActive(
+                         feature_engagement::kIPHDownloadToolbarButtonFeature);
+        },
+        download_toolbar_button(), browser(), active);
   }
 
   auto ChangeButtonVisibility(bool visible) {
-    return base::BindLambdaForTesting([&, visible = visible]() {
-      if (visible) {
-        download_toolbar_button()->Show();
-      } else {
-        download_toolbar_button()->Hide();
-      }
-    });
+    return base::BindOnce(
+        [](DownloadToolbarButtonView* download_toolbar_button, bool visible) {
+          if (visible) {
+            download_toolbar_button->Show();
+          } else {
+            download_toolbar_button->Hide();
+          }
+        },
+        download_toolbar_button(), visible);
   }
 
   auto ChangeBubbleVisibility(bool visible) {
-    return base::BindLambdaForTesting([&, visible = visible]() {
-      if (visible) {
-        download_toolbar_button()->ShowDetails();
-      } else {
-        download_toolbar_button()->HideDetails();
-      }
-    });
+    return base::BindOnce(
+        [](DownloadToolbarButtonView* download_toolbar_button, bool visible) {
+          if (visible) {
+            download_toolbar_button->ShowDetails();
+          } else {
+            download_toolbar_button->HideDetails();
+          }
+        },
+        download_toolbar_button(), visible);
   }
 
   auto DownloadTestFile() {
@@ -337,5 +361,40 @@ IN_PROC_BROWSER_TEST_F(
       WaitForHide(kToolbarDownloadButtonElementId));
 }
 #endif
+
+// Tests that the partial view does not steal focus from the web contents, and
+// that the partial view is still closable when clicking outside of it, and that
+// the main view is focused when shown.
+IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
+                       ClosePartialBubbleOnClick) {
+  RunTestSequence(
+      // Download a test file so that the partial view shows up.
+      Do(DownloadTestFile()),
+      InAnyContext(WaitForShow(kToolbarDownloadButtonElementId)),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled()),
+            "Partial view shows after download, if enabled."),
+      If([&] { return IsPartialViewEnabled(); },
+         // The bubble, if enabled, should be shown as inactive to avoid
+         // stealing focus from the page.
+         Steps(Check(DownloadBubbleIsActive(false),
+                     "Partial view, if enabled, is inactive."))),
+      // Click outside (at the center point of the browser) to close the bubble.
+      MoveMouseTo(kBrowserViewElementId), ClickMouse(), FlushEvents(),
+      EnsureNotPresent(kToolbarDownloadBubbleElementId),
+      Check(DownloadBubbleIsShowingDetails(false),
+            "Bubble is closed after clicking outside of it."),
+      // Click on the toolbar button to show the main view, which should always
+      // have focus.
+      PressButton(kToolbarDownloadButtonElementId),
+      WaitForShow(kToolbarDownloadBubbleElementId),
+      Check(DownloadBubbleIsShowingDetails(true),
+            "Main view is shown after clicking button."),
+      // The main view widget should be active.
+      Check(DownloadBubbleIsActive(true), "Main view is active."),
+      // Hide the bubble so it's not showing while tearing down the
+      // test browser (which causes a crash on Mac).
+      Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
+      WaitForHide(kToolbarDownloadButtonElementId));
+}
 
 }  // namespace

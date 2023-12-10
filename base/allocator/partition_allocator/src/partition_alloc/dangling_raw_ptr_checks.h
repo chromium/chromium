@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 
 // When compiled with build flags `enable_dangling_raw_ptr_checks`, dangling
 // raw_ptr are reported. Its behavior can be configured here.

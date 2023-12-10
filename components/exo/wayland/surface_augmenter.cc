@@ -144,23 +144,7 @@ void augmented_surface_set_rounded_corners_bounds_DEPRECATED(
     wl_fixed_t top_right,
     wl_fixed_t bottom_right,
     wl_fixed_t bottom_left) {
-  LOG(WARNING)
-      << "Deprecated. The server will deprecate the support for this request.";
-
-  if (width < 0 || height < 0 || top_left < 0 || bottom_left < 0 ||
-      bottom_right < 0 || top_right < 0) {
-    wl_resource_post_error(resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
-                           "The size and corners must have positive values "
-                           "(%d, %d, %d, %d, %d, %d)",
-                           width, height, top_left, top_right, bottom_right,
-                           bottom_left);
-    return;
-  }
-
-  GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
-      x, y, width, height, wl_fixed_to_double(top_left),
-      wl_fixed_to_double(top_right), wl_fixed_to_double(bottom_right),
-      wl_fixed_to_double(bottom_left));
+  LOG(WARNING) << "Deprecated. The server does not support this request.";
 }
 
 void augmented_surface_set_background_color(wl_client* client,

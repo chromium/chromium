@@ -43,10 +43,10 @@ HoldingSpaceKeyedService* GetHoldingSpaceKeyedService(Profile* profile) {
   return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
 }
 
-// Returns file info for the specified `file_path` or `absl::nullopt` in the
+// Returns file info for the specified `file_path` or `std::nullopt` in the
 // event that file info cannot be obtained.
 using GetFileInfoCallback =
-    base::OnceCallback<void(const absl::optional<base::File::Info>&)>;
+    base::OnceCallback<void(const std::optional<base::File::Info>&)>;
 void GetFileInfo(Profile* profile,
                  const base::FilePath& file_path,
                  GetFileInfoCallback callback) {
@@ -54,24 +54,24 @@ void GetFileInfo(Profile* profile,
       file_manager::util::GetFileManagerFileSystemContext(profile);
   file_manager::util::GetMetadataForPath(
       file_system_context, file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(
           [](GetFileInfoCallback callback, base::File::Error error,
              const base::File::Info& info) {
             std::move(callback).Run(error == base::File::FILE_OK
-                                        ? absl::make_optional<>(info)
-                                        : absl::nullopt);
+                                        ? std::make_optional<>(info)
+                                        : std::nullopt);
           },
           std::move(callback)));
 }
 
 // Returns the reason for failing to launch a holding space item for the
-// specified open operation `result`. Returns `absl::nullopt` on success.
-absl::optional<ItemFailureToLaunchReason> ToItemFailureToLaunchReason(
+// specified open operation `result`. Returns `std::nullopt` on success.
+std::optional<ItemFailureToLaunchReason> ToItemFailureToLaunchReason(
     platform_util::OpenOperationResult result) {
   switch (result) {
     case platform_util::OpenOperationResult::OPEN_SUCCEEDED:
-      return absl::nullopt;
+      return std::nullopt;
     case platform_util::OpenOperationResult::OPEN_FAILED_PATH_NOT_FOUND:
       return ItemFailureToLaunchReason::kPathNotFound;
     case platform_util::OpenOperationResult::OPEN_FAILED_INVALID_TYPE:
@@ -190,7 +190,7 @@ void HoldingSpaceClientImpl::OpenItems(
       continue;
     }
     if (!item->progress().IsComplete()) {
-      const absl::optional<ItemFailureToLaunchReason> failure_to_launch_reason =
+      const std::optional<ItemFailureToLaunchReason> failure_to_launch_reason =
           GetHoldingSpaceKeyedService(profile_)->OpenItemWhenComplete(item);
       if (failure_to_launch_reason) {
         holding_space_metrics::RecordItemFailureToLaunch(
@@ -207,7 +207,7 @@ void HoldingSpaceClientImpl::OpenItems(
             [](const base::WeakPtr<HoldingSpaceClientImpl>& weak_ptr,
                base::RepeatingClosure barrier_closure, bool* complete_success,
                const base::FilePath& file_path, HoldingSpaceItem::Type type,
-               const absl::optional<base::File::Info>& info) {
+               const std::optional<base::File::Info>& info) {
               if (!weak_ptr || !info.has_value()) {
                 holding_space_metrics::RecordItemFailureToLaunch(
                     type, file_path,

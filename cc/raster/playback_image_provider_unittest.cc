@@ -75,7 +75,7 @@ class MockDecodeCache : public StubDecodeCache {
 
 TEST(PlaybackImageProviderTest, SkipsAllImages) {
   MockDecodeCache cache;
-  PlaybackImageProvider provider(&cache, TargetColorParams(), absl::nullopt);
+  PlaybackImageProvider provider(&cache, TargetColorParams(), std::nullopt);
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
   SkM44 matrix = SkM44();
@@ -98,7 +98,7 @@ TEST(PlaybackImageProviderTest, SkipsSomeImages) {
   MockDecodeCache cache;
   PaintImage skip_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
 
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
   settings->images_to_skip = {skip_image.stable_id()};
 
@@ -115,7 +115,7 @@ TEST(PlaybackImageProviderTest, SkipsSomeImages) {
 TEST(PlaybackImageProviderTest, RefAndUnrefDecode) {
   MockDecodeCache cache;
 
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
   PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
@@ -143,7 +143,7 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
 
   base::flat_map<PaintImage::Id, size_t> image_to_frame;
   image_to_frame[image.stable_id()] = 1u;
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
   settings->image_to_current_frame_index = image_to_frame;
 
@@ -163,7 +163,7 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
 TEST(PlaybackImageProviderTest, BitmapImages) {
   MockDecodeCache cache;
 
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
   PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
@@ -186,7 +186,7 @@ TEST(PlaybackImageProviderTest, BitmapImages) {
 TEST(PlaybackImageProviderTest, IgnoresImagesNotSupportedByCache) {
   MockDecodeCache cache;
   cache.set_use_cache_for_draw_image(false);
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
   PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));

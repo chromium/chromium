@@ -40,7 +40,7 @@ FakeMultiDeviceSetup::~FakeMultiDeviceSetup() {
     if (get_host_arg) {
       std::move(get_host_arg)
           .Run(mojom::HostStatus::kNoEligibleHosts,
-               absl::nullopt /* host_device */);
+               std::nullopt /* host_device */);
     }
   }
 
@@ -94,7 +94,7 @@ bool FakeMultiDeviceSetup::HasAtLeastOneFeatureStateObserver() {
 
 void FakeMultiDeviceSetup::NotifyHostStatusChanged(
     mojom::HostStatus host_status,
-    const absl::optional<multidevice::RemoteDevice>& host_device) {
+    const std::optional<multidevice::RemoteDevice>& host_device) {
   for (auto& observer : host_status_observers_)
     observer->OnHostStatusChanged(host_status, host_device);
 }
@@ -151,7 +151,7 @@ void FakeMultiDeviceSetup::GetHostStatus(GetHostStatusCallback callback) {
 void FakeMultiDeviceSetup::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const absl::optional<std::string>& auth_token,
+    const std::optional<std::string>& auth_token,
     SetFeatureEnabledStateCallback callback) {
   set_feature_enabled_args_.emplace_back(feature, enabled, auth_token,
                                          std::move(callback));

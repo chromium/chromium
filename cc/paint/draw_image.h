@@ -5,11 +5,11 @@
 #ifndef CC_PAINT_DRAW_IMAGE_H_
 #define CC_PAINT_DRAW_IMAGE_H_
 
+#include <optional>
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/target_color_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -32,13 +32,13 @@ class CC_PAINT_EXPORT DrawImage {
             const SkIRect& src_rect,
             PaintFlags::FilterQuality filter_quality,
             const SkM44& matrix,
-            absl::optional<size_t> frame_index = absl::nullopt);
+            std::optional<size_t> frame_index = std::nullopt);
   DrawImage(PaintImage image,
             bool use_dark_mode,
             const SkIRect& src_rect,
             PaintFlags::FilterQuality filter_quality,
             const SkM44& matrix,
-            absl::optional<size_t> frame_index,
+            std::optional<size_t> frame_index,
             const TargetColorParams& target_color_params);
   // Constructs a DrawImage from |other| by adjusting its scale and setting new
   // color params.
@@ -92,8 +92,8 @@ class CC_PAINT_EXPORT DrawImage {
   PaintFlags::FilterQuality filter_quality_;
   SkSize scale_;
   bool matrix_is_decomposable_;
-  absl::optional<size_t> frame_index_;
-  absl::optional<TargetColorParams> target_color_params_;
+  std::optional<size_t> frame_index_;
+  std::optional<TargetColorParams> target_color_params_;
 };
 
 }  // namespace cc

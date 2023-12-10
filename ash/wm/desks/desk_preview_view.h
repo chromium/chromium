@@ -90,8 +90,8 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
 
   SystemShadow* shadow() const { return shadow_.get(); }
 
-  absl::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
-  void set_focus_color_id(absl::optional<ui::ColorId> focus_color_id) {
+  std::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
+  void set_focus_color_id(std::optional<ui::ColorId> focus_color_id) {
     focus_color_id_ = focus_color_id;
   }
 
@@ -168,7 +168,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
 
   std::unique_ptr<SystemShadow> shadow_;
 
-  absl::optional<ui::ColorId> focus_color_id_;
+  std::optional<ui::ColorId> focus_color_id_;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/lock_contents_view_constants.h"
 #include "ash/login/ui/login_tooltip_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -37,5 +38,8 @@ gfx::Size ManagementBubble::CalculatePreferredSize() const {
   return gfx::Size(kManagementBubbleWidth,
                    GetHeightForWidth(kManagementBubbleWidth));
 }
+
+BEGIN_METADATA(ManagementBubble)
+END_METADATA
 
 }  // namespace ash

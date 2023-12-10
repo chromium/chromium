@@ -148,6 +148,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // Sets the size of the buttons in this container.
   void SetButtonSize(const gfx::Size& size);
 
+  // Sets whether close button is enabled.
+  void SetCloseButtonEnabled(bool enabled);
+
   // Sets the CaptionButtonModel. Caller is responsible for updating
   // the state by calling UpdateCaptionButtonState.
   void SetModel(std::unique_ptr<CaptionButtonModel> model);
@@ -239,6 +242,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   std::unique_ptr<gfx::SlideAnimation> tablet_mode_animation_;
 
   std::unique_ptr<CaptionButtonModel> model_;
+
+  // Callback which has to be called if not null when `SetCloseButtonEnabled`
+  // is called. When called, it updates `DefaultCaptionButtonModel` state.
+  base::RepeatingCallback<void(bool close_button_enabled)>
+      on_close_button_enabled_changed_callback_;
 
   // Callback for the size button action, which overrides the default behavior.
   // If the callback returns false, it will fall back to the default dehavior.

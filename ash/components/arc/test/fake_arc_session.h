@@ -41,6 +41,7 @@ class FakeArcSession : public ArcSession {
   void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) override;
   void SetDefaultDeviceScaleFactor(float scale_factor) override;
   void SetUseVirtioBlkData(bool use_virtio_blk_data) override;
+  void SetArcSignedIn(bool arc_signed_in) override;
 
   // To emulate unexpected stop, such as crash.
   void StopWithReason(ArcStopReason reason);

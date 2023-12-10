@@ -167,6 +167,23 @@ class ASH_EXPORT ScheduledFeature
 
   virtual const char* GetFeatureName() const = 0;
 
+  // Invoked whenever `OnActiveUserPrefServiceChanged()` is called.
+  // `active_user_pref_service()` is guaranteed to be non-null within this
+  // method and reflect the new active user. This is always called before the
+  // first `RefreshFeatureState()` call is made for the new user.
+  virtual void InitFeatureForNewActiveUser() {}
+
+  // Optionally override to observe feature-specific prefs. Invoked whenever
+  // `OnActiveUserPrefServiceChanged()` is called. Overrides can assume the
+  // `pref_change_registrar` is already initialized.
+  virtual void ListenForPrefChanges(
+      PrefChangeRegistrar& pref_change_registrar) {}
+
+  // Optional for recording a metric that tracks how often each `ScheduleType`
+  // is used. Returns the full histogram name. By default, returns nullptr,
+  // which disables the metric.
+  virtual const char* GetScheduleTypeHistogramName() const;
+
   // Attempts restoring a previously stored schedule for the current user if
   // possible and returns true if so, false otherwise.
   bool MaybeRestoreSchedule();
@@ -182,10 +199,13 @@ class ASH_EXPORT ScheduledFeature
   void OnEnabledPrefChanged();
 
   // Called when the user pref for the schedule type is changed or initialized.
+  void OnScheduleTypePrefChanged();
+
+  // Refreshes feature state assuming `RefreshReason::kSettingsChanged`.
   // During initialization, `keep_manual_toggles_during_schedules` is set to
   // true, so the load user pref override any user current toggled setting. For
   // more detail about `keep_manual_toggles_during_schedules`, see `Refresh()`.
-  void OnScheduleTypePrefChanged(bool keep_manual_toggles_during_schedules);
+  void RefreshForSettingsChanged(bool keep_manual_toggles_during_schedules);
 
   // Called when either of the custom schedule prefs (custom start or end times)
   // are changed.
@@ -237,10 +257,6 @@ class ASH_EXPORT ScheduledFeature
   // never null; this is only reinitialized when the caller sets a new clock.
   std::unique_ptr<base::OneShotTimer> timer_;
 
-  // True only until this feature is initialized from the very first user
-  // session. After that, it is set to false.
-  bool is_first_user_init_ = true;
-
   // The registrar used to watch prefs changes in the above
   // `active_user_pref_service_` from outside ash.
   // NOTE: Prefs are how Chrome communicates changes to the ScheduledFeature
@@ -251,8 +267,6 @@ class ASH_EXPORT ScheduledFeature
   const std::string prefs_path_schedule_type_;
   const std::string prefs_path_custom_start_time_;
   const std::string prefs_path_custom_end_time_;
-  const std::string prefs_path_latitude_;
-  const std::string prefs_path_longitude_;
 
   raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
 

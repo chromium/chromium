@@ -14,10 +14,9 @@
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "gpu/config/gpu_finch_features.h"
-#include "gpu/config/gpu_switches.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/color_space.h"
 
@@ -198,8 +197,7 @@ bool AwDrawFnImpl::IsUsingVulkan() {
 }
 
 AwDrawFnImpl::AwDrawFnImpl()
-    : is_interop_mode_(!features::IsUsingVulkan()),
-      render_thread_manager_(content::GetUIThreadTaskRunner({})) {
+    : render_thread_manager_(content::GetUIThreadTaskRunner({})) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(g_draw_fn_function_table);
 
@@ -270,9 +268,6 @@ void AwDrawFnImpl::OnContextDestroyed() {
     }
   }
 
-  if (interop_)
-    interop_->MakeGLContextCurrentIgnoreFailure();
-
   {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         &render_thread_manager_);
@@ -280,7 +275,6 @@ void AwDrawFnImpl::OnContextDestroyed() {
         false /* save_restore */, false /* abandon_context */);
   }
 
-  interop_.reset();
   vulkan_context_provider_.reset();
 }
 
@@ -310,12 +304,8 @@ void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
   vulkan_context_provider_ = AwVulkanContextProvider::Create(params);
   DCHECK(vulkan_context_provider_);
 
-  if (is_interop_mode_) {
-    interop_.emplace(&render_thread_manager_, vulkan_context_provider_.get());
-  } else {
-    render_thread_manager_.SetVulkanContextProviderOnRT(
-        vulkan_context_provider_.get());
-  }
+  render_thread_manager_.SetVulkanContextProviderOnRT(
+      vulkan_context_provider_.get());
 }
 
 void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
@@ -345,38 +335,6 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
       CreateHRDrawParams(params, color_space.get());
   OverlaysParams overlays_params = CreateOverlaysParams(params);
 
-  if (is_interop_mode_) {
-    DCHECK(interop_);
-    interop_->DrawVk(std::move(draw_context), std::move(color_space), hr_params,
-                     overlays_params);
-
-  } else {
-    DrawVkDirect(std::move(draw_context), std::move(color_space), hr_params,
-                 overlays_params);
-  }
-}
-
-void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
-  if (!vulkan_context_provider_)
-    return;
-
-  if (skip_next_post_draw_vk_) {
-    skip_next_post_draw_vk_ = false;
-    return;
-  }
-
-  if (is_interop_mode_) {
-    DCHECK(interop_);
-    interop_->PostDrawVk();
-  } else {
-    PostDrawVkDirect(params);
-  }
-}
-
-void AwDrawFnImpl::DrawVkDirect(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
-                                sk_sp<SkColorSpace> color_space,
-                                const HardwareRendererDrawParams& hr_params,
-                                const OverlaysParams& overlays_params) {
   DCHECK(!scoped_secondary_cb_draw_);
 
   // Set the draw contexct in |vulkan_context_provider_|, so the SkiaRenderer
@@ -387,9 +345,14 @@ void AwDrawFnImpl::DrawVkDirect(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
                                   overlays_params);
 }
 
-void AwDrawFnImpl::PostDrawVkDirect(AwDrawFn_PostDrawVkParams* params) {
+void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
+
+  if (skip_next_post_draw_vk_) {
+    skip_next_post_draw_vk_ = false;
+    return;
+  }
 
   DCHECK(scoped_secondary_cb_draw_);
   scoped_secondary_cb_draw_.reset();

@@ -16,6 +16,7 @@
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_query_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -45,6 +46,7 @@ class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
 
 void ChromeComponentUpdaterConfiguratorTest::SetUp() {
   pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref_service_->registry());
 }
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestDisablePings) {

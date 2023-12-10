@@ -20,7 +20,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -63,8 +63,7 @@ public class ReturnToChromeUtilUmaUnitTest {
                         + "correctly when doing search using omnibox.",
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX));
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK, ModuleTypeOnStartAndNtp.OMNIBOX));
 
         // Test navigating using omnibox.
         ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
@@ -79,8 +78,7 @@ public class ReturnToChromeUtilUmaUnitTest {
                         + "correctly when navigating using omnibox.",
                 2,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX));
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK, ModuleTypeOnStartAndNtp.OMNIBOX));
 
         // Test clicking on MV tiles.
         ReturnToChromeUtil.handleLoadUrlFromStartSurface(
@@ -91,7 +89,6 @@ public class ReturnToChromeUtilUmaUnitTest {
                         + "recorded when click on MV tiles.",
                 2,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX));
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK, ModuleTypeOnStartAndNtp.OMNIBOX));
     }
 }

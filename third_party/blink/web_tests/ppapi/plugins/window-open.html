@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+    if (window.testRunner) {
+        testRunner.setPopupBlockingEnabled(false);
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+     }
+     
+</script>
+<body style="margin:0px;overflow:hidden">
+<object name="testPlugin" type="application/x-blink-deprecated-test-plugin" testwindowopen="true">
+</object>
+<div>
+    This tests that window.open invoked by a plugin without a javascript context succeeds.
+</div>
+<body>
+</html>

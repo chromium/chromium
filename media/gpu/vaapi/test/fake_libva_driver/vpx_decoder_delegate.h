@@ -7,6 +7,8 @@
 
 #include "media/gpu/vaapi/test/fake_libva_driver/context_delegate.h"
 
+#include <va/va.h>
+
 struct vpx_codec_ctx;
 
 namespace media::internal {
@@ -14,7 +16,9 @@ namespace media::internal {
 // Class used for libvpx software decoding.
 class VpxDecoderDelegate : public ContextDelegate {
  public:
-  VpxDecoderDelegate(int picture_width_hint, int picture_height_hint);
+  VpxDecoderDelegate(int picture_width_hint,
+                     int picture_height_hint,
+                     VAProfile profile);
   VpxDecoderDelegate(const VpxDecoderDelegate&) = delete;
   VpxDecoderDelegate& operator=(const VpxDecoderDelegate&) = delete;
   ~VpxDecoderDelegate() override;

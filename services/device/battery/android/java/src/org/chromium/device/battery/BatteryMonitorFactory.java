@@ -31,20 +31,21 @@ public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
     private boolean mHasStatusUpdate;
     private BatteryStatus mBatteryStatus;
 
-    private final BatteryStatusCallback mCallback = new BatteryStatusCallback() {
-        @Override
-        public void onBatteryStatusChanged(BatteryStatus batteryStatus) {
-            ThreadUtils.assertOnUiThread();
+    private final BatteryStatusCallback mCallback =
+            new BatteryStatusCallback() {
+                @Override
+                public void onBatteryStatusChanged(BatteryStatus batteryStatus) {
+                    ThreadUtils.assertOnUiThread();
 
-            mHasStatusUpdate = true;
-            mBatteryStatus = batteryStatus;
+                    mHasStatusUpdate = true;
+                    mBatteryStatus = batteryStatus;
 
-            List<BatteryMonitorImpl> monitors = new ArrayList<>(mSubscribedMonitors);
-            for (BatteryMonitorImpl monitor : monitors) {
-                monitor.didChange(batteryStatus);
-            }
-        }
-    };
+                    List<BatteryMonitorImpl> monitors = new ArrayList<>(mSubscribedMonitors);
+                    for (BatteryMonitorImpl monitor : monitors) {
+                        monitor.didChange(batteryStatus);
+                    }
+                }
+            };
 
     public BatteryMonitorFactory() {
         mHasStatusUpdate = false;

@@ -19,22 +19,32 @@ import org.chromium.ui.display.DisplayAndroid;
 public abstract class VrDelegate implements BackPressHandler {
     private static final String TAG = "VrDelegate";
     /* package */ static final boolean DEBUG_LOGS = false;
-    /* package */ static final int VR_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+    /* package */ static final int VR_SYSTEM_UI_FLAGS =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     public abstract void forceExitVrImmediately();
+
     public abstract boolean onActivityResultWithNative(int requestCode, int resultCode);
+
     public abstract void onNativeLibraryAvailable();
+
     public abstract boolean onBackPressed();
+
     public abstract void onMultiWindowModeChanged(boolean isInMultiWindowMode);
+
     public abstract void onActivityShown(Activity activity);
+
     public abstract void onActivityHidden(Activity activity);
 
     public abstract void setVrModeEnabled(Activity activity, boolean enabled);
 
     public abstract boolean isDaydreamReadyDevice();
+
     public abstract boolean isDaydreamCurrentViewer();
 
     public void setSystemUiVisibilityForVr(Activity activity) {
@@ -44,8 +54,9 @@ public abstract class VrDelegate implements BackPressHandler {
     }
 
     /* package */ boolean relaunchOnMainDisplayIfNecessary(Activity activity, Intent intent) {
-        boolean onMainDisplay = DisplayAndroid.getNonMultiDisplay(activity).getDisplayId()
-                == Display.DEFAULT_DISPLAY;
+        boolean onMainDisplay =
+                DisplayAndroid.getNonMultiDisplay(activity).getDisplayId()
+                        == Display.DEFAULT_DISPLAY;
         // TODO(mthiesse): There's a known race when switching displays on Android O/P that can
         // lead us to actually be on the main display, but our context still thinks it's on
         // the virtual display. This is intended to be fixed for Android Q+, but we can work
@@ -53,7 +64,8 @@ public abstract class VrDelegate implements BackPressHandler {
         if (!onMainDisplay) {
             Log.i(TAG, "Relaunching Chrome onto the main display.");
             activity.finish();
-            activity.startActivity(intent,
+            activity.startActivity(
+                    intent,
                     ApiCompatibilityUtils.createLaunchDisplayIdActivityOptions(
                             Display.DEFAULT_DISPLAY));
             return true;

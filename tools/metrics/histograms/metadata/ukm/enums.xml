@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanMigrated">
-  <int value="0" label="Not migrated"/>
-  <int value="1" label="Migrated"/>
-</enum>
-
 <enum name="PersistedLogsLogReadStatus">
   <int value="0" label="RECALL_SUCCESS"/>
   <int value="1" label="LIST_EMPTY"/>

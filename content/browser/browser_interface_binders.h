@@ -78,13 +78,6 @@ using BatteryMonitorBinder = base::RepeatingCallback<void(
 CONTENT_EXPORT void OverrideBatteryMonitorBinderForTesting(
     BatteryMonitorBinder binder);
 
-// Allows tests to override how frame hosts binds DevicePostureProvider
-// receivers.
-using DevicePostureProviderBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<device::mojom::DevicePostureProvider>)>;
-CONTENT_EXPORT void OverrideDevicePostureProviderBinderForTesting(
-    DevicePostureProviderBinder binder);
-
 // Allows tests to override how frame hosts bind VibrationManager receivers.
 using VibrationManagerBinder = base::RepeatingCallback<void(
     mojo::PendingReceiver<device::mojom::VibrationManager>)>;

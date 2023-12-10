@@ -169,4 +169,22 @@ public abstract class ConditionalState {
                 throw new IllegalArgumentException("No string representation for phase " + phase);
         }
     }
+
+    public static String phaseToShortString(@Phase int phase) {
+        switch (phase) {
+            case Phase.NEW:
+                return "NEW";
+            case Phase.TRANSITIONING_TO:
+                return "TRANSITIONING_TO";
+            case Phase.ACTIVE:
+                return "ACTIVE";
+            case Phase.TRANSITIONING_FROM:
+                return "TRANSITIONING_AWAY";
+            case Phase.FINISHED:
+                return "FINISHED";
+            default:
+                throw new IllegalArgumentException(
+                        "No short string representation for phase " + phase);
+        }
+    }
 }

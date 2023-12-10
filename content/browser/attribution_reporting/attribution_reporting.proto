@@ -45,10 +45,12 @@ message AttributionReadOnlySourceData {
   optional TriggerDataMatching trigger_data_matching = 5;
 
   optional bool debug_cookie_set = 6;
+
+  optional double event_level_epsilon = 7;
 }
 
 message AttributionEventLevelMetadata {
-  optional uint64 trigger_data = 1;
+  optional uint32 trigger_data = 1;
   optional int64 priority = 2;
 }
 
@@ -61,6 +63,7 @@ message AttributionCommonAggregatableMetadata {
   optional string verification_token = 2;
   optional SourceRegistrationTimeConfig source_registration_time_config = 3;
   optional string coordinator_origin = 4;
+  optional string trigger_context_id = 5;
 
   reserved 1;
   reserved "coordinator";

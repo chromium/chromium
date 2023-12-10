@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker_list_impl.h"
 
-#include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
+#include "third_party/blink/renderer/core/editing/markers/overlapping_document_marker_list_editor.h"
+#include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
 
 namespace blink {
 
@@ -15,7 +16,7 @@ bool HighlightPseudoMarkerListImpl::IsEmpty() const {
 void HighlightPseudoMarkerListImpl::Add(DocumentMarker* marker) {
   DCHECK(marker->GetType() == DocumentMarker::kCustomHighlight ||
          marker->GetType() == DocumentMarker::kTextFragment);
-  markers_.push_back(marker);
+  OverlappingDocumentMarkerListEditor::AddMarker(&markers_, marker);
 }
 
 void HighlightPseudoMarkerListImpl::Clear() {
@@ -30,7 +31,7 @@ HighlightPseudoMarkerListImpl::GetMarkers() const {
 DocumentMarker* HighlightPseudoMarkerListImpl::FirstMarkerIntersectingRange(
     unsigned start_offset,
     unsigned end_offset) const {
-  return UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
+  return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
@@ -38,28 +39,28 @@ HeapVector<Member<DocumentMarker>>
 HighlightPseudoMarkerListImpl::MarkersIntersectingRange(
     unsigned start_offset,
     unsigned end_offset) const {
-  return UnsortedDocumentMarkerListEditor::MarkersIntersectingRange(
+  return OverlappingDocumentMarkerListEditor::MarkersIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
 bool HighlightPseudoMarkerListImpl::MoveMarkers(
     int length,
     DocumentMarkerList* dst_markers_) {
-  return UnsortedDocumentMarkerListEditor::MoveMarkers(&markers_, length,
-                                                       dst_markers_);
+  return OverlappingDocumentMarkerListEditor::MoveMarkers(&markers_, length,
+                                                          dst_markers_);
 }
 
 bool HighlightPseudoMarkerListImpl::RemoveMarkers(unsigned start_offset,
                                                   int length) {
-  return UnsortedDocumentMarkerListEditor::RemoveMarkers(&markers_,
-                                                         start_offset, length);
+  return OverlappingDocumentMarkerListEditor::RemoveMarkers(
+      &markers_, start_offset, length);
 }
 
 bool HighlightPseudoMarkerListImpl::ShiftMarkers(const String&,
                                                  unsigned offset,
                                                  unsigned old_length,
                                                  unsigned new_length) {
-  return UnsortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
+  return OverlappingDocumentMarkerListEditor::ShiftMarkers(
       &markers_, offset, old_length, new_length);
 }
 

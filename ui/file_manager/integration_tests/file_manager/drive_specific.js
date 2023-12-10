@@ -1768,3 +1768,33 @@ testcase.driveOutOfOrganizationSpaceBanner = async () => {
   await remoteCall.waitForElement(
       appId, 'drive-out-of-organization-space-banner');
 };
+
+/**
+ * Tests that copy operation of a directory will start, but a error message will
+ * appear when encrypted files within that directory were skipped.
+ */
+testcase.copyDirectoryWithEncryptedFile = async () => {
+  const dir = ENTRIES.testCSEDirectory;
+  const file = ENTRIES.testCSEFileInDirectory;
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [dir, file]);
+  await sendTestMessage({name: 'mockDriveReadFailure', path: file.targetPath});
+
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive');
+
+  await remoteCall.waitForFiles(appId, [dir.getExpectedRow()]);
+  await remoteCall.waitUntilSelected(appId, dir.nameText);
+
+  await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']);
+  await directoryTree.navigateToPath('/My files/Downloads');
+  await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']);
+
+  const panelType = 3;  // panelTypeError from PanelItem
+  const panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', `xf-panel-item[panel-type="${panelType}"]`]);
+
+  chrome.test.assertEq(
+      ENTRIES.testCSEFileInDirectory.nameText +
+          ' could not be copied because it is encrypted.',
+      panel.attributes['primary-text']);
+};

@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECT_TO_DEVICE_OPERATION_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECT_TO_DEVICE_OPERATION_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -35,7 +36,7 @@ class FakeConnectToDeviceOperation
 
   bool canceled() const { return canceled_; }
 
-  const absl::optional<ConnectionPriority>& updated_priority() {
+  const std::optional<ConnectionPriority>& updated_priority() {
     return updated_priority_;
   }
 
@@ -67,7 +68,7 @@ class FakeConnectToDeviceOperation
   }
 
   bool canceled_ = false;
-  absl::optional<ConnectionPriority> updated_priority_;
+  std::optional<ConnectionPriority> updated_priority_;
   base::OnceClosure destructor_callback_;
   base::OnceClosure cancel_callback_;
 };

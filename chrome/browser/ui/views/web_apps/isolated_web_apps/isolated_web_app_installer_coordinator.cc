@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -27,7 +27,7 @@ void LaunchIsolatedWebAppInstaller(Profile* profile,
   IsolatedWebAppInstallerCoordinator* raw_coordinator = coordinator.get();
   base::OnceClosure delete_callback =
       base::DoNothingWithBoundArgs(std::move(coordinator));
-  raw_coordinator->Show(base::IgnoreArgs<absl::optional<webapps::AppId>>(
+  raw_coordinator->Show(base::IgnoreArgs<std::optional<webapps::AppId>>(
       std::move(delete_callback)));
 }
 
@@ -44,7 +44,7 @@ IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
     default;
 
 void IsolatedWebAppInstallerCoordinator::Show(
-    base::OnceCallback<void(absl::optional<webapps::AppId>)> callback) {
+    base::OnceCallback<void(std::optional<webapps::AppId>)> callback) {
   controller_->Start();
   controller_->Show(
       base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
@@ -52,11 +52,11 @@ void IsolatedWebAppInstallerCoordinator::Show(
 }
 
 void IsolatedWebAppInstallerCoordinator::OnDialogClosed(
-    base::OnceCallback<void(absl::optional<webapps::AppId>)> callback) {
+    base::OnceCallback<void(std::optional<webapps::AppId>)> callback) {
   if (model_->step() == IsolatedWebAppInstallerModel::Step::kInstallSuccess) {
     std::move(callback).Run(model_->bundle_metadata().app_id());
   } else {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 }
 

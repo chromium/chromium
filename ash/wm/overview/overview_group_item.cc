@@ -4,8 +4,10 @@
 
 #include "ash/wm/overview/overview_group_item.h"
 
+#include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"
@@ -18,6 +20,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -34,6 +37,38 @@ constexpr gfx::InsetsF kLeftItemBoundsInsets =
 constexpr gfx::InsetsF kRightItemBoundsInsets =
     gfx::InsetsF::TLBR(/*top=*/0, /*left=*/1, /*bottom=*/0, /*right=*/0);
 
+float CalculateSnapRatioForPrimarySnappedWindow(
+    const aura::Window* primary_window,
+    const aura::Window* secondary_window) {
+  const auto primary_window_bounds_in_screen =
+      primary_window->GetBoundsInScreen();
+  const auto secondary_window_bounds_in_screen =
+      secondary_window->GetBoundsInScreen();
+  // TODO(http://b/309539997): Calculate differently for portrait screen
+  // orientation.
+  return static_cast<float>(primary_window_bounds_in_screen.width()) /
+         (primary_window_bounds_in_screen.width() +
+          secondary_window_bounds_in_screen.width());
+}
+
+// TODO(http://b/309539997): Calculate differently for portrait screen
+// orientation.
+gfx::RectF CalculateScreenBoundsForWindow(const gfx::RectF& union_bounds,
+                                          const float primary_snap_ratio,
+                                          const bool is_primary) {
+  const float snap_ratio =
+      is_primary ? primary_snap_ratio : (1 - primary_snap_ratio);
+  const gfx::PointF origin =
+      is_primary ? union_bounds.origin()
+                 : gfx::PointF(union_bounds.origin().x() +
+                                   union_bounds.width() * primary_snap_ratio,
+                               union_bounds.origin().y());
+  gfx::RectF bounds(origin, gfx::SizeF(union_bounds.width() * snap_ratio,
+                                       union_bounds.height()));
+  bounds.Inset(is_primary ? kLeftItemBoundsInsets : kRightItemBoundsInsets);
+  return bounds;
+}
+
 }  // namespace
 
 OverviewGroupItem::OverviewGroupItem(const Windows& windows,
@@ -45,6 +80,9 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
   CreateItemWidget();
 
   CHECK_EQ(windows.size(), 2u);
+
+  const aura::Window* topmost_window = window_util::GetTopMostWindow(windows);
+  OverviewItem* bottom_item = nullptr;
   for (auto* window : windows) {
     // Create the overview items hosted by `this`, which will be the delegate to
     // handle the window destroying if the overview representation for the
@@ -53,17 +91,22 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
     // group-level shadow will be installed instead.
     std::unique_ptr<OverviewItem> overview_item =
         std::make_unique<OverviewItem>(window, overview_session_,
-                                       overview_grid_, /*delegate=*/this,
+                                       overview_grid_,
+                                       /*destruction_delegate=*/this,
+                                       /*event_handler_delegate=*/this,
                                        /*eligible_for_shadow_config=*/false);
-
-    // Disallow events to be forwarded to the individual overview item(s) hosted
-    // by `this` so that we can perform group-level operation on event received
-    // by the contents view of `this`.
-    OverviewItemView* overview_item_view = overview_item->overview_item_view();
-    overview_item_view->SetCanProcessEventsWithinSubtree(false);
-    overview_item_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    if (window != topmost_window) {
+      bottom_item = overview_item.get();
+    }
     overview_items_.push_back(std::move(overview_item));
   }
+
+  // Explicitly stack the window of the group item widget below the item widget
+  // whose window is lower in stacking order so that the `OverviewItemView` will
+  // be able to receive the events.
+  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  widget_window->parent()->StackChildBelow(
+      widget_window, bottom_item->item_widget()->GetNativeWindow());
 }
 
 OverviewGroupItem::~OverviewGroupItem() = default;
@@ -114,7 +157,11 @@ OverviewItem* OverviewGroupItem::GetLeafItemForWindow(aura::Window* window) {
   return nullptr;
 }
 
-void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {}
+void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {
+  for (const auto& item : overview_items_) {
+    item->RestoreWindow(reset_transform, animate);
+  }
+}
 
 void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
                                   OverviewAnimationType animation_type) {
@@ -136,19 +183,22 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
 
   CHECK_EQ(size, 2);
   item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
-  // TODO(michelefan): Set bounds differently based on the screen orientation.
-  // TODO(michelefan): Calculate the actual snap ratio based on the window
-  // bounds and apply it on the individual items hosted by `this`.
-  auto sub_bounds1 = gfx::RectF(
-      target_bounds.origin(),
-      gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
-  sub_bounds1.Inset(kLeftItemBoundsInsets);
-  overview_items_[0]->SetBounds(sub_bounds1, animation_type);
 
-  auto sub_bounds2 = gfx::RectF(
-      gfx::PointF(target_bounds.top_center()),
-      gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
+  // TODO(http://b/309539997): Set bounds differently based on the screen
+  // orientation.
+  const float primary_window_snap_ratio =
+      CalculateSnapRatioForPrimarySnappedWindow(
+          overview_items_[0]->GetWindow(), overview_items_[1]->GetWindow());
+
+  gfx::RectF sub_bounds1 =
+      CalculateScreenBoundsForWindow(target_bounds, primary_window_snap_ratio,
+                                     /*is_primary=*/true);
+  sub_bounds1.Inset(kLeftItemBoundsInsets);
+  gfx::RectF sub_bounds2 =
+      CalculateScreenBoundsForWindow(target_bounds, primary_window_snap_ratio,
+                                     /*is_primary=*/false);
   sub_bounds2.Inset(kRightItemBoundsInsets);
+  overview_items_[0]->SetBounds(sub_bounds1, animation_type);
   overview_items_[1]->SetBounds(sub_bounds2, animation_type);
 }
 
@@ -194,8 +244,15 @@ void OverviewGroupItem::ScaleUpSelectedItem(
 
 void OverviewGroupItem::EnsureVisible() {}
 
-OverviewFocusableView* OverviewGroupItem::GetFocusableView() const {
-  return overview_group_container_view_;
+std::vector<OverviewFocusableView*> OverviewGroupItem::GetFocusableViews()
+    const {
+  std::vector<OverviewFocusableView*> focusable_views;
+  for (const auto& overview_item : overview_items_) {
+    if (auto* overview_item_view = overview_item->overview_item_view()) {
+      focusable_views.push_back(overview_item_view);
+    }
+  }
+  return focusable_views;
 }
 
 views::View* OverviewGroupItem::GetBackDropView() const {
@@ -241,10 +298,6 @@ void OverviewGroupItem::CloseWindows() {
 void OverviewGroupItem::Restack() {}
 
 void OverviewGroupItem::StartDrag() {
-  DCHECK(item_widget_);
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
-  widget_window->parent()->StackChildAtTop(widget_window);
-
   for (const auto& item : overview_items_) {
     item->StartDrag();
   }
@@ -253,11 +306,6 @@ void OverviewGroupItem::StartDrag() {
 void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
 
 void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {
-  // TODO(michelefan): Figure out why we need to explicitly stack the
-  // `item_widget_` on top by looking into the `Restack()`.
-  DCHECK(item_widget_);
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
-  widget_window->parent()->StackChildAtTop(widget_window);
 }
 
 void OverviewGroupItem::OnOverviewItemContinuousScroll(
@@ -301,7 +349,7 @@ OverviewGridWindowFillMode OverviewGroupItem::GetWindowDimensionsType() const {
 void OverviewGroupItem::UpdateWindowDimensionsType() {}
 
 gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
-  return overview_group_container_view_->GetMagnifierFocusPointInScreen();
+  return overview_group_container_view_->GetBoundsInScreen().CenterPoint();
 }
 
 const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {
@@ -340,6 +388,12 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
       item_view->ResetRoundedCorners();
       item_view->RefreshItemVisuals();
     }
+  }
+}
+
+void OverviewGroupItem::HandleDragEvent(const gfx::PointF& location_in_screen) {
+  if (IsDragItem()) {
+    overview_session_->Drag(this, location_in_screen);
   }
 }
 

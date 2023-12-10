@@ -36,7 +36,11 @@ class TestBookmarkClient : public BookmarkClient {
 
   // Returns a new BookmarkModel using |client|.
   static std::unique_ptr<BookmarkModel> CreateModelWithClient(
-      std::unique_ptr<BookmarkClient> client);
+      std::unique_ptr<TestBookmarkClient> client);
+
+  // Allows the creation of account permanent nodes (they are disallowed by
+  // default).
+  void AllowFoldersForAccountStorage();
 
   // Causes the the next call to CreateModel() or GetLoadManagedNodeCallback()
   // to return a node representing managed bookmarks. The raw pointer of this
@@ -67,6 +71,7 @@ class TestBookmarkClient : public BookmarkClient {
   void SetStorageStateForUma(metrics::StorageStateForUma storage_state);
 
   // BookmarkClient:
+  bool AreFoldersForAccountStorageAllowed() override;
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;
@@ -90,6 +95,9 @@ class TestBookmarkClient : public BookmarkClient {
   static std::unique_ptr<BookmarkPermanentNode> LoadManagedNode(
       std::unique_ptr<BookmarkPermanentNode> managed_node,
       int64_t* next_id);
+
+  // Whether or not the creation of account bookmarks is allowed.
+  bool are_folders_for_account_storage_allowed_ = false;
 
   // managed_node_ exists only until GetLoadManagedNodeCallback gets called, but
   // unowned_managed_node_ stays around after that.

@@ -26,8 +26,9 @@ inline bool IsWindowsDriveSeparator(char ch) {
 template<typename CHAR>
 inline int FindNextSlash(const CHAR* spec, int begin_index, int spec_len) {
   int idx = begin_index;
-  while (idx < spec_len && !IsURLSlash(spec[idx]))
+  while (idx < spec_len && !IsSlashOrBackslash(spec[idx])) {
     idx++;
+  }
   return idx;
 }
 
@@ -91,7 +92,8 @@ inline bool DoesBeginUNCPath(const CHAR* text,
 
   if (strict_slashes)
     return text[start_offset] == '\\' && text[start_offset + 1] == '\\';
-  return IsURLSlash(text[start_offset]) && IsURLSlash(text[start_offset + 1]);
+  return IsSlashOrBackslash(text[start_offset]) &&
+         IsSlashOrBackslash(text[start_offset + 1]);
 }
 
 #endif  // WIN32

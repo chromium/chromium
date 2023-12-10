@@ -14,7 +14,7 @@
 namespace base {
 namespace internal {
 
-class WorkerThread;
+class WorkerThreadWaitableEvent;
 
 // An ordered set of WorkerThreads which has custom logic to treat the worker at
 // the front of the set as being "in-use" (so its time in that position doesn't
@@ -24,7 +24,8 @@ class WorkerThread;
 // O(log(n)). This class is NOT thread-safe.
 class BASE_EXPORT WorkerThreadSet {
   struct Compare {
-    bool operator()(const WorkerThread* a, const WorkerThread* b) const;
+    bool operator()(const WorkerThreadWaitableEvent* a,
+                    const WorkerThreadWaitableEvent* b) const;
   };
 
  public:
@@ -34,24 +35,24 @@ class BASE_EXPORT WorkerThreadSet {
   ~WorkerThreadSet();
 
   // Inserts |worker| in the set. |worker| must not already be on the set. Flags
-  // the WorkerThread previously at the front of the set, if it changed, or
-  // |worker| as unused.
-  void Insert(WorkerThread* worker);
+  // the WorkerThreadWaitableEvent previously at the front of the set, if it
+  // changed, or |worker| as unused.
+  void Insert(WorkerThreadWaitableEvent* worker);
 
   // Removes the front WorkerThread from the set and returns it. Returns nullptr
   // if the set is empty. Flags the WorkerThread now at the front of the set, if
   // any, as being in-use.
-  WorkerThread* Take();
+  WorkerThreadWaitableEvent* Take();
 
   // Returns the front WorkerThread from the set, nullptr if empty.
-  WorkerThread* Peek() const;
+  WorkerThreadWaitableEvent* Peek() const;
 
   // Returns true if |worker| is already in the set.
-  bool Contains(const WorkerThread* worker) const;
+  bool Contains(const WorkerThreadWaitableEvent* worker) const;
 
   // Removes |worker| from the set. Must not be invoked for the first worker
   // on the set.
-  void Remove(const WorkerThread* worker);
+  void Remove(const WorkerThreadWaitableEvent* worker);
 
   // Returns the number of WorkerThreads on the set.
   size_t Size() const { return set_.size(); }
@@ -60,7 +61,7 @@ class BASE_EXPORT WorkerThreadSet {
   bool IsEmpty() const { return set_.empty(); }
 
  private:
-  std::set<WorkerThread*, Compare> set_;
+  std::set<WorkerThreadWaitableEvent*, Compare> set_;
 };
 
 }  // namespace internal

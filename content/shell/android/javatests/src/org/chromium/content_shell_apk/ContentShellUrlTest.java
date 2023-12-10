@@ -15,9 +15,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Example test that just starts the content shell.
- */
+/** Example test that just starts the content shell. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ContentShellUrlTest {
     @Rule

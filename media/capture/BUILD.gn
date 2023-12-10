@@ -56,6 +56,7 @@ source_set("capture_device_specific") {
   visibility = [
     ":capture_lib",
     "//media/capture/video/android",
+    "//media/capture/video/win",
   ]
   defines = [ "CAPTURE_IMPLEMENTATION" ]
   sources = [
@@ -82,10 +83,14 @@ source_set("capture_device_specific") {
     "video/gpu_memory_buffer_utils.h",
     "video/video_capture_buffer_handle.cc",
     "video/video_capture_buffer_handle.h",
+    "video/video_capture_buffer_tracker.cc",
+    "video/video_capture_buffer_tracker.h",
     "video/video_capture_device.cc",
     "video/video_capture_device.h",
     "video/video_capture_device_factory.cc",
     "video/video_capture_device_factory.h",
+    "video/video_capture_metrics.cc",
+    "video/video_capture_metrics.h",
   ]
 
   public_deps = [ ":capture_base" ]
@@ -121,15 +126,11 @@ component("capture_lib") {
     "video/video_capture_buffer_pool_impl.h",
     "video/video_capture_buffer_pool_util.cc",
     "video/video_capture_buffer_pool_util.h",
-    "video/video_capture_buffer_tracker.cc",
-    "video/video_capture_buffer_tracker.h",
     "video/video_capture_buffer_tracker_factory.h",
     "video/video_capture_buffer_tracker_factory_impl.cc",
     "video/video_capture_buffer_tracker_factory_impl.h",
     "video/video_capture_device_client.cc",
     "video/video_capture_device_client.h",
-    "video/video_capture_metrics.cc",
-    "video/video_capture_metrics.h",
     "video/video_capture_system.h",
     "video/video_capture_system_impl.cc",
     "video/video_capture_system_impl.h",
@@ -219,43 +220,7 @@ component("capture_lib") {
   }
 
   if (is_win) {
-    sources += [
-      "video/win/capability_list_win.cc",
-      "video/win/capability_list_win.h",
-      "video/win/filter_base_win.cc",
-      "video/win/filter_base_win.h",
-      "video/win/gpu_memory_buffer_tracker_win.cc",
-      "video/win/gpu_memory_buffer_tracker_win.h",
-      "video/win/metrics.cc",
-      "video/win/metrics.h",
-      "video/win/pin_base_win.cc",
-      "video/win/pin_base_win.h",
-      "video/win/sink_filter_observer_win.h",
-      "video/win/sink_filter_win.cc",
-      "video/win/sink_filter_win.h",
-      "video/win/sink_input_pin_win.cc",
-      "video/win/sink_input_pin_win.h",
-      "video/win/video_capture_device_factory_win.cc",
-      "video/win/video_capture_device_factory_win.h",
-      "video/win/video_capture_device_mf_win.cc",
-      "video/win/video_capture_device_mf_win.h",
-      "video/win/video_capture_device_utils_win.cc",
-      "video/win/video_capture_device_utils_win.h",
-      "video/win/video_capture_device_win.cc",
-      "video/win/video_capture_device_win.h",
-    ]
-    deps += [ "//media/base/win:color_space_util_win" ]
-    libs = [
-      "mf.lib",
-      "mfplat.lib",
-      "mfreadwrite.lib",
-      "mfuuid.lib",
-    ]
-    ldflags = [
-      "/DELAYLOAD:mf.dll",
-      "/DELAYLOAD:mfplat.dll",
-      "/DELAYLOAD:mfreadwrite.dll",
-    ]
+    public_deps += [ "video/win" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -365,7 +330,6 @@ component("capture_lib") {
       "//ash/constants",
       "//build/config/linux/libdrm",
       "//chromeos/ash/components/mojo_service_manager",
-      "//chromeos/components/sensors:sensors",
       "//chromeos/dbus/power",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
@@ -561,25 +525,7 @@ test("capture_unittests") {
   }
 
   if (is_win) {
-    sources += [
-      "video/win/d3d_capture_test_utils.cc",
-      "video/win/d3d_capture_test_utils.h",
-      "video/win/gpu_memory_buffer_tracker_win_unittest.cc",
-      "video/win/video_capture_device_factory_win_unittest.cc",
-      "video/win/video_capture_device_mf_win_unittest.cc",
-    ]
-    libs = [
-      "mf.lib",
-      "mfplat.lib",
-      "mfreadwrite.lib",
-      "mfuuid.lib",
-      "dxguid.lib",
-    ]
-    ldflags = [
-      "/DELAYLOAD:mf.dll",
-      "/DELAYLOAD:mfplat.dll",
-      "/DELAYLOAD:mfreadwrite.dll",
-    ]
+    deps += [ "video/win:win_unittests" ]
   }
 
   if (is_chromeos) {

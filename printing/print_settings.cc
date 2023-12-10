@@ -219,7 +219,7 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
 }
 #endif  // BUILDFLAG(USE_CUPS_IPP)
 
-absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
+std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
   switch (color_model) {
     case mojom::ColorModel::kColor:
     case mojom::ColorModel::kCMYK:
@@ -267,7 +267,7 @@ absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
       return false;
     case mojom::ColorModel::kUnknownColorModel:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.

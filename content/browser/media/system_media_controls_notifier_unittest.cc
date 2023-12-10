@@ -51,7 +51,7 @@ class SystemMediaControlsNotifierTest : public testing::Test {
 
   void SetUp() override {
     notifier_ = std::make_unique<SystemMediaControlsNotifier>(
-        &mock_system_media_controls_);
+        &mock_system_media_controls_, base::UnguessableToken::Null());
     SetupMediaSessionClient();
   }
 

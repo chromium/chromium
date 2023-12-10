@@ -46,14 +46,8 @@ TEST_P(PaintLayerTest, ChildWithoutPaintLayer) {
   EXPECT_NE(nullptr, root_layer);
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1313268): Fix this test on Fuchsia and re-enable.
-#define MAYBE_RootLayerScrollBounds DISABLED_RootLayerScrollBounds
-#else
-#define MAYBE_RootLayerScrollBounds RootLayerScrollBounds
-#endif
-TEST_P(PaintLayerTest, MAYBE_RootLayerScrollBounds) {
-  USE_NON_OVERLAY_SCROLLBARS();
+TEST_P(PaintLayerTest, RootLayerScrollBounds) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
   SetBodyInnerHTML(
       "<style> body { width: 1000px; height: 1000px; margin: 0 } </style>");
@@ -2073,15 +2067,8 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   }
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1313268): Fix this test on Fuchsia and re-enable.
-#define MAYBE_HitTestScrollbarUnderClip DISABLED_HitTestScrollbarUnderClip
-#else
-#define MAYBE_HitTestScrollbarUnderClip HitTestScrollbarUnderClip
-#endif
-
-TEST_P(PaintLayerTest, MAYBE_HitTestScrollbarUnderClip) {
-  USE_NON_OVERLAY_SCROLLBARS();
+TEST_P(PaintLayerTest, HitTestScrollbarUnderClip) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 50px; }</style>

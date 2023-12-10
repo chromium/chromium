@@ -538,21 +538,6 @@ class QueueTimeTaskObserver : public TaskObserver {
   std::vector<TimeTicks> queue_times_;
 };
 
-class ScopedNoWakeUpsForCanceledTasks {
- public:
-  ScopedNoWakeUpsForCanceledTasks()
-      : scoped_feature_list_(kNoWakeUpsForCanceledTasks) {
-    SequenceManagerImpl::ApplyNoWakeUpsForCanceledTasks();
-  }
-
-  ~ScopedNoWakeUpsForCanceledTasks() {
-    SequenceManagerImpl::ResetNoWakeUpsForCanceledTasksForTesting();
-  }
-
- private:
-  test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
 TEST_P(SequenceManagerTest, GetCorrectTaskRunnerForCurrentTask) {
@@ -2925,8 +2910,6 @@ TEST_P(SequenceManagerTest,
 
 TEST_P(SequenceManagerTest,
        CancelledTaskPostAnother_RemoveAllCanceledDelayedTasksFromFront) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks;
-
   // This check ensures that a task whose destruction causes another task to be
   // posted as a side-effect doesn't cause us to access invalid iterators while
   // removing canceled tasks from the front of the queues.
@@ -2950,7 +2933,8 @@ TEST_P(SequenceManagerTest,
   task.weak_factory_.InvalidateWeakPtrs();
   EXPECT_FALSE(did_destroy);
   LazyNow lazy_now(mock_tick_clock());
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
+  // This removes canceled delayed tasks from the front of the queue.
+  sequence_manager()->GetPendingWakeUp(&lazy_now);
   EXPECT_TRUE(did_destroy);
 }
 
@@ -3772,8 +3756,6 @@ TEST_P(SequenceManagerTest, GetPendingWakeUp_DelayedTaskReady) {
 }
 
 TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks;
-
   auto queue = CreateTaskQueue();
 
   // Posts a cancelable task.
@@ -3790,19 +3772,11 @@ TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
   // Canceling the task is not sufficient to ensure it is not considered for the
   // next task time.
   cancelable_closure.Cancel();
-  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay, kLeeway}),
-            sequence_manager()->GetPendingWakeUp(&lazy_now));
-
-  // Removing the canceled task means it can't be considered for the next task
-  // time.
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 TEST_P(SequenceManagerTest,
        RemoveAllCanceledDelayedTasksFromFront_MultipleQueues) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks;
-
   auto queues = CreateTaskQueues(2u);
 
   // Post a task in each queue such that they would be executed in order
@@ -3822,15 +3796,12 @@ TEST_P(SequenceManagerTest,
   EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay1, kLeeway}),
             sequence_manager()->GetPendingWakeUp(&lazy_now));
 
-  // Test that calling RemoveAllCanceledDelayedTasksFromFront() works (and does
-  // nothing) when no task is canceled.
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
+  // Test that calling `GetPendingWakeUp()` works when no task is canceled.
   EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay1, kLeeway}),
             sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Canceling the first task which comes from the first queue.
   cancelable_closure_1.Cancel();
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
 
   // Now the only task remaining is the one from the second queue.
   EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay2, kLeeway}),
@@ -3838,15 +3809,11 @@ TEST_P(SequenceManagerTest,
 
   // Cancel the remaining task.
   cancelable_closure_2.Cancel();
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
 
   // No more valid tasks in any queues.
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 
-  // Test that calling RemoveAllCanceledDelayedTasksFromFront() works (and does
-  // nothing) when all queues are empty.
-  sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
+  // Test that calling `GetPendingWakeUp()` works when no task is canceled.
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 

@@ -743,10 +743,10 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     if (client_security_state_ &&
         PrivateNetworkAccessChecker::NeedPermission(
             request.url, client_security_state_->is_web_secure_context,
-            request.target_address_space)) {
-      if (request.target_address_space == mojom::IPAddressSpace::kPublic) {
+            request.required_ip_address_space)) {
+      if (request.required_ip_address_space == mojom::IPAddressSpace::kPublic) {
         mojo::ReportBadMessage(
-            "CorsURLLoaderFactory: target_address_space "
+            "CorsURLLoaderFactory: required_ip_address_space "
             "is set to public.");
         return false;
       }

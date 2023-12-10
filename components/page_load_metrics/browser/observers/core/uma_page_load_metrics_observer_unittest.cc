@@ -1063,12 +1063,16 @@ TEST_P(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
       UserInteractionLatencies::NewUserInteractionLatencies({});
   auto& max_event_durations =
       input_timing.max_event_durations->get_user_interaction_latencies();
+  base::TimeTicks current_time = base::TimeTicks::Now();
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard));
+      base::Milliseconds(50), UserInteractionType::kKeyboard, 0,
+      current_time + base::Milliseconds(1000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), UserInteractionType::kTapOrClick));
+      base::Milliseconds(100), UserInteractionType::kTapOrClick, 1,
+      current_time + base::Milliseconds(2000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), UserInteractionType::kDrag));
+      base::Milliseconds(150), UserInteractionType::kDrag, 2,
+      current_time + base::Milliseconds(3000)));
   NavigateAndCommit(GURL(kDefaultTestUrl));
   tester()->SimulateInputTimingUpdate(input_timing);
   // Navigate again to force histogram recording.
@@ -1081,6 +1085,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
           internal::
               kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
           146),
+      std::make_pair(internal::kHistogramInpOffset, 2),
       std::make_pair(internal::kHistogramNumInteractions, 3)};
 
   for (auto& metric : uma_list) {

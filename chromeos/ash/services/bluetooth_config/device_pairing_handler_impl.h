@@ -61,7 +61,7 @@ class DevicePairingHandlerImpl
                    FetchDeviceCallback callback) override;
   void PerformPairDevice(const std::string& device_id) override;
   void PerformFinishCurrentPairingRequest(
-      absl::optional<device::ConnectionFailureReason> failure_reason,
+      std::optional<device::ConnectionFailureReason> failure_reason,
       base::TimeDelta duration) override;
   void CancelPairing() override;
   void OnRequestPinCode(const std::string& pin_code) override;
@@ -82,7 +82,7 @@ class DevicePairingHandlerImpl
 
   // device::BluetoothDevice::Connect() callback.
   void OnDeviceConnect(
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
   void HandlePairingFailed(
       device::BluetoothDevice::ConnectErrorCode error_code);
 

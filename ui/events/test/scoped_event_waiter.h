@@ -44,4 +44,4 @@ class ScopedEventWaiter : public EventHandler {
 
 }  // namespace ui
 
-#endif
+#endif  // UI_EVENTS_TEST_SCOPED_EVENT_WAITER_H_

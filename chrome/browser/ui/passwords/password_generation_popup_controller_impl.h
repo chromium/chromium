@@ -47,6 +47,7 @@ struct PasswordGenerationUIData;
 
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupView;
+class PrefService;
 
 // This class controls a PasswordGenerationPopupView. It is responsible for
 // determining the location of the popup, handling keypress events while the
@@ -78,7 +79,8 @@ class PasswordGenerationPopupControllerImpl
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
-      content::RenderFrameHost* frame);
+      content::RenderFrameHost* frame,
+      PrefService* pref_service);
 
   PasswordGenerationPopupControllerImpl(
       const PasswordGenerationPopupControllerImpl&) = delete;
@@ -137,44 +139,56 @@ class PasswordGenerationPopupControllerImpl
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
-      content::RenderFrameHost* frame);
+      content::RenderFrameHost* frame,
+      PrefService* pref_service);
 
  private:
   class KeyPressRegistrator;
-  // PasswordGenerationPopupController implementation:
+
+  // Defines different elements of the popup that can be selected.
+  enum class PasswordGenerationPopupElement {
+    kNone = 0,
+    kUseStrongPassword = 1,
+    kEditPassword = 2,
+  };
+
+  // AutofillPopupViewDelegate implementation:
   void Hide(autofill::PopupHidingReason) override;
   void ViewDestroyed() override;
-  void SelectionCleared() override;
-  void SetSelected() override;
-  void EditPasswordClicked() override;
-  void EditPasswordHovered(bool hovered) override;
-#if !BUILDFLAG(IS_ANDROID)
-  void OnGooglePasswordManagerLinkClicked() override;
-  std::u16string GetPrimaryAccountEmail() override;
-#endif  // !BUILDFLAG(IS_ANDROID)
-  void PasswordAccepted() override;
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
 
-  void HideImpl();
-
+  // PasswordGenerationPopupController implementation:
+  void PasswordAccepted() override;
+  void SetSelected() override;
+  void SelectionCleared() override;
+  void EditPasswordClicked() override;
+  void EditPasswordHovered(bool hovered) override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::u16string GetPrimaryAccountEmail() override;
+  bool ShouldShowNudgePassword() const override;
+#endif  // !BUILDFLAG(IS_ANDROID)
   GenerationUIState state() const override;
   bool password_selected() const override;
+  bool edit_password_selected() const override;
   const std::u16string& password() const override;
   std::u16string SuggestedText() const override;
   const std::u16string& HelpText() const override;
 
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  void HideImpl();
 
-  // Returns whether the password is selectable. This is true iff the password
-  // has not been accepted yet.
-  bool IsPasswordSelectable() const;
-  // Set if the password is currently selected.
-  void PasswordSelected(bool selected);
-  // Accept password if it's selected.
-  bool PossiblyAcceptPassword();
+  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleNudgePasswordKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event);
+
+  // Whether the elements of popup are selectable (true in generation state).
+  bool IsSelectable() const;
+  // Sets currently selected popup element.
+  void SelectElement(PasswordGenerationPopupElement element);
+  // Accepts currently selected element. No-op if no element is selected.
+  bool PossiblyAcceptSelectedElement();
 
   // Handle to the popup. May be NULL if popup isn't showing.
   raw_ptr<PasswordGenerationPopupView> view_;
@@ -185,6 +199,9 @@ class PasswordGenerationPopupControllerImpl
 
   // May be NULL.
   const raw_ptr<PasswordGenerationPopupObserver> observer_;
+
+  // Contains information about user prefs.
+  const raw_ptr<PrefService> pref_service_;
 
   // Signature of the form for which password generation is triggered.
   const autofill::FormSignature form_signature_;
@@ -209,8 +226,9 @@ class PasswordGenerationPopupControllerImpl
   // be displayed in the user generation dialog.
   std::u16string current_generated_password_;
 
-  // Whether the row with the password is currently selected/highlighted.
-  bool password_selected_ = false;
+  // Currently selected / highlighted element of the popup.
+  PasswordGenerationPopupElement selected_element_ =
+      PasswordGenerationPopupElement::kNone;
 
   // The state of the generation popup.
   GenerationUIState state_;

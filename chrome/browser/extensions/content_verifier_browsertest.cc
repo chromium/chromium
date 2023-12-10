@@ -15,6 +15,7 @@
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
@@ -621,7 +622,8 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   }
   // This ensures that the background page is loaded. There is a unload/load
   // of the extension happening which crashes `ExtensionBackgroundPageWaiter`.
-  devtools_util::InspectBackgroundPage(extension, profile());
+  devtools_util::InspectBackgroundPage(extension, profile(),
+                                       DevToolsOpenedByAction::kUnknown);
   WaitForExtensionViewsToLoad();
   EXPECT_EQ("Test", ExecuteScriptInBackgroundPage(
                         kStoragePermissionExtensionId,

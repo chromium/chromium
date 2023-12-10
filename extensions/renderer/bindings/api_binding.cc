@@ -239,7 +239,7 @@ APIBinding::APIBinding(const std::string& api_name,
       const std::set<std::string>& enum_values = argument_spec->enum_values();
       if (!enum_values.empty()) {
         // Type names may be prefixed by the api name. If so, remove the prefix.
-        absl::optional<std::string> stripped_id;
+        std::optional<std::string> stripped_id;
         if (base::StartsWith(*id, api_name_, base::CompareCase::SENSITIVE))
           stripped_id =
               id->substr(api_name_.size() + 1);  // +1 for trailing '.'
@@ -300,7 +300,7 @@ APIBinding::APIBinding(const std::string& api_name,
             options->FindBool("supportsFilters").value_or(false);
         supports_rules = options->FindBool("supportsRules").value_or(false);
         if (supports_rules) {
-          absl::optional<bool> supports_listeners =
+          std::optional<bool> supports_listeners =
               options->FindBool("supportsListeners");
           DCHECK(supports_listeners);
           DCHECK(!*supports_listeners)
@@ -318,15 +318,15 @@ APIBinding::APIBinding(const std::string& api_name,
           get_values("conditions", &rule_conditions);
         }
 
-        absl::optional<int> max_listeners_option =
+        std::optional<int> max_listeners_option =
             options->FindInt("maxListeners");
         if (max_listeners_option)
           max_listeners = *max_listeners_option;
-        absl::optional<bool> unmanaged = options->FindBool("unmanaged");
+        std::optional<bool> unmanaged = options->FindBool("unmanaged");
         if (unmanaged)
           notify_on_change = !*unmanaged;
 
-        absl::optional<bool> supports_lazy_listeners_value =
+        std::optional<bool> supports_lazy_listeners_value =
             options->FindBool("supportsLazyListeners");
         if (supports_lazy_listeners_value) {
           supports_lazy_listeners = *supports_lazy_listeners_value;
@@ -510,11 +510,11 @@ void APIBinding::DecorateTemplateWithProperties(
       continue;
     }
     if (*type == "integer") {
-      absl::optional<int> val = dict->FindInt(kValueKey);
+      std::optional<int> val = dict->FindInt(kValueKey);
       CHECK(val);
       object_template->Set(v8_key, v8::Integer::New(isolate, *val));
     } else if (*type == "boolean") {
-      absl::optional<bool> val = dict->FindBool(kValueKey);
+      std::optional<bool> val = dict->FindBool(kValueKey);
       CHECK(val);
       object_template->Set(v8_key, v8::Boolean::New(isolate, *val));
     } else if (*type == "string") {
@@ -534,9 +534,6 @@ void APIBinding::DecorateTemplateWithProperties(
       root_properties_.insert(item.first);
   }
 }
-
-// static
-bool APIBinding::enable_promise_support_for_testing = false;
 
 // static
 void APIBinding::GetEventObject(

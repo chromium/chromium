@@ -56,6 +56,10 @@ class AXRelationCache {
   // ProcessUpdatesWithCleanLayout.
   // |node| is not optional.
   // |obj| is optional. If provided, it must match the AXObject for |node|.
+  // Returns AXObject* of owner if an aria-owns relation to |obj| exists.
+  AXObject* GetOrCreateAriaOwnerFor(Node* node, AXObject* obj);
+  // Update aria-owns as well as any name/description related to the node
+  // and any aria-activedescendant relations.
   void UpdateRelatedTree(Node* node, AXObject* obj);
 
   void UpdateRelatedActiveDescendant(Node* node);
@@ -237,7 +241,7 @@ class AXRelationCache {
   AXObject* ObjectFromAXID(AXID) const;
   AXObject* GetOrCreate(Node*, const AXObject* owner);
   AXObject* Get(Node*);
-  void ChildrenChanged(AXObject*);
+  void ChildrenChangedWithCleanLayout(AXObject*);
 
   // Do an initial scan of document to find any relations. We'll catch any
   // subsequent relations when nodes fare attached or attributes change.
@@ -249,6 +253,9 @@ class AXRelationCache {
   // to process relations first). An error here indicates that
   // UpdateCacheAfterNodeIsAttached() was never called for the element.
   HashSet<DOMNodeId> processed_elements_;
+
+  // Avoid running relation checks until cache is initialized().
+  bool is_initialized_ = false;
 #endif
 };
 

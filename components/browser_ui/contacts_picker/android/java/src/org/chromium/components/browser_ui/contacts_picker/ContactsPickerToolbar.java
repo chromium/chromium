@@ -14,17 +14,11 @@ import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.List;
 
-/**
- * Handles toolbar functionality for the {@ContactsPickerDialog}.
- */
+/** Handles toolbar functionality for the {@ContactsPickerDialog}. */
 public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails> {
-    /**
-     * A delegate that handles dialog actions.
-     */
+    /** A delegate that handles dialog actions. */
     public interface ContactsToolbarDelegate {
-        /**
-         * Called when the back arrow is clicked in the toolbar.
-         */
+        /** Called when the back arrow is clicked in the toolbar. */
         void onNavigationBackCallback();
     }
 
@@ -39,23 +33,17 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         super(context, attrs);
     }
 
-    /**
-     * Set the {@ContactToolbarDelegate} for this toolbar.
-     */
+    /** Set the {@ContactToolbarDelegate} for this toolbar. */
     public void setDelegate(ContactsToolbarDelegate delegate) {
         mDelegate = delegate;
     }
 
-    /**
-     * Shows the Back arrow navigation button in the upper left corner.
-     */
+    /** Shows the Back arrow navigation button in the upper left corner. */
     public void showBackArrow() {
         setNavigationButton(NavigationButton.BACK);
     }
 
-    /**
-     * Sets whether any filter chips are |selected| in the dialog.
-     */
+    /** Sets whether any filter chips are |selected| in the dialog. */
     public void setFilterChipsSelected(boolean selected) {
         mFilterChipsSelected = selected;
         updateToolbarUI();
@@ -73,8 +61,12 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     }
 
     @Override
-    public void initialize(SelectionDelegate<ContactDetails> delegate, int titleResId,
-            int normalGroupResId, int selectedGroupResId, boolean updateStatusBarColor) {
+    public void initialize(
+            SelectionDelegate<ContactDetails> delegate,
+            int titleResId,
+            int normalGroupResId,
+            int selectedGroupResId,
+            boolean updateStatusBarColor) {
         super.initialize(
                 delegate, titleResId, normalGroupResId, selectedGroupResId, updateStatusBarColor);
 
@@ -87,9 +79,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         updateToolbarUI();
     }
 
-    /**
-     * Update the UI elements of the toolbar, based on whether contacts & filter chips are selected.
-     */
+    /** Update the UI elements of the toolbar, based on whether contacts & filter chips are selected. */
     private void updateToolbarUI() {
         boolean contactsSelected = !mSelectionDelegate.getSelectedItems().isEmpty();
 

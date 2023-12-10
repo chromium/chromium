@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
 #define CHROME_BROWSER_APPS_ICON_STANDARDIZER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace gfx {
 class ImageSkia;
@@ -25,7 +25,7 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image);
 
 // The same as CreateStandardIconImage but for ImageSkiaRep.
 // Returns nullopt if base_rep was not modified.
-absl::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
+std::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
     const gfx::ImageSkiaRep& base_rep,
     float scale);
 }  // namespace apps

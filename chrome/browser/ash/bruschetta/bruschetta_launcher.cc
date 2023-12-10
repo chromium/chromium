@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -26,7 +27,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bruschetta {
 
@@ -152,7 +152,7 @@ void BruschettaLauncher::StartVm() {
 
 void BruschettaLauncher::OnStartVm(
     RunningVmPolicy launch_policy,
-    absl::optional<vm_tools::concierge::StartVmResponse> response) {
+    std::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response || !response->success()) {
     if (response) {
       LOG(ERROR) << "Error starting VM, got status: " << response->status()

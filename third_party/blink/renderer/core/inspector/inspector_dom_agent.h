@@ -57,7 +57,6 @@ class DocumentLoader;
 class Element;
 class ExceptionState;
 class HTMLFrameOwnerElement;
-class HTMLPortalElement;
 class HTMLSlotElement;
 class InspectedFrames;
 class InspectorHistory;
@@ -298,7 +297,6 @@ class CORE_EXPORT InspectorDOMAgent final
   void TopLayerElementsChanged();
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
-  void PortalRemoteFrameCreated(HTMLPortalElement*);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;

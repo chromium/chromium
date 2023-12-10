@@ -55,8 +55,7 @@ constexpr const char* usage_msg =
            [--output_frames=(all|corrupt)] [--output_format=(png|yuv)]
            [--output_limit=<number>] [--output_folder=<folder>]
            [--linear_output] ([--use-legacy]|[--use_vd_vda])
-           [--use-gl=<backend>] [--ozone-platform=<platform>]
-           [--gtest_help] [--help]
+           [--use-gl=<backend>] [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
 
@@ -99,10 +98,7 @@ The following arguments are supported:
                         "<testname>".
   --use-gl              specify which GPU backend to use, possible values
                         include desktop (GLX), egl (GLES w/ ANGLE), and
-                        swiftshader (software rendering)
-  --ozone-platform      specify which Ozone platform to use, possible values
-                        depend on build configuration but normally include
-                        x11, drm, wayland, and headless.)""") +
+                        swiftshader (software rendering)""") +
 #if defined(ARCH_CPU_ARM_FAMILY)
     R"""(
   --disable-libyuv      use hw format conversion instead of libYUV.
@@ -221,7 +217,8 @@ class VideoDecoderTest : public ::testing::Test {
         /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
-        /*oop_video_decoder=*/{});
+        /*oop_video_decoder=*/{},
+        /*in_video_decoder_process=*/true);
 
     bool init_result = false;
     VideoDecoder::InitCB init_cb = base::BindLambdaForTesting(
@@ -690,9 +687,10 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
 
   for (size_t i = 0; i < kMinSupportedConcurrentDecoders; ++i) {
     EXPECT_TRUE(tvps[i]->WaitForFlushDone());
-    EXPECT_EQ(tvps[i]->GetFlushDoneCount(), 1u);
-    EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames());
-    EXPECT_TRUE(tvps[i]->WaitForFrameProcessors());
+    EXPECT_EQ(tvps[i]->GetFlushDoneCount(), 1u) << "Decoder #" << i;
+    EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames())
+        << "Decoder #" << i;
+    EXPECT_TRUE(tvps[i]->WaitForFrameProcessors()) << "Decoder #" << i;
   }
 }
 
@@ -750,8 +748,7 @@ int main(int argc, char** argv) {
        it != switches.end(); ++it) {
     if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
                                           // Options below are handled by Chrome
-        it->first == "ozone-platform" || it->first == "use-gl" ||
-        it->first == "v" || it->first == "vmodule" ||
+        it->first == "use-gl" || it->first == "v" || it->first == "vmodule" ||
         it->first == "enable-features" || it->first == "disable-features") {
       continue;
     }
@@ -841,17 +838,17 @@ int main(int argc, char** argv) {
   // video decoder to allow clear HEVC decoding.
   cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
 
-#if defined(ARCH_CPU_ARM_FAMILY)
-  // On some platforms bandwidth compression is fully opaque and can not be
-  // read by the cpu.  This prevents MD5 computation as that is done by the
-  // cpu.
-  cmd_line->AppendSwitch("disable-buffer-bw-compression");
+#if defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  // On some platforms bandwidth compression is fully opaque and can not be read
+  // by the cpu. This prevents MD5 computation as that is done by the CPU. This
+  // is currently only needed for Trogdor/Strongbad to disable UBWC compression.
+  setenv("MINIGBM_DEBUG", "nocompression", 1);
 #endif
 
 #if BUILDFLAG(USE_V4L2_CODEC)
   std::unique_ptr<base::FeatureList> feature_list =
       std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
   if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {

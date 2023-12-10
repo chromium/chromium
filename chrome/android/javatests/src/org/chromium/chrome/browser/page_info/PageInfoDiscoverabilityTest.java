@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIPHController;
 import org.chromium.chrome.browser.omnibox.status.StatusMediator;
@@ -195,7 +194,6 @@ public class PageInfoDiscoverabilityTest {
 
     @Mock LocationBarDataProvider mLocationBarDataProvider;
     @Mock UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
-    @Mock SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock Profile mProfile;
     @Mock TemplateUrlService mTemplateUrlService;
     @Mock PageInfoIPHController mPageInfoIPHController;
@@ -227,7 +225,6 @@ public class PageInfoDiscoverabilityTest {
                                     /* isTablet= */ false,
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
-                                    mSearchEngineLogoUtils,
                                     mTemplateUrlServiceSupplier,
                                     () -> mProfile,
                                     mPageInfoIPHController,

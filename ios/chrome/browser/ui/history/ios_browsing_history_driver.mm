@@ -9,7 +9,7 @@
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browsing_data/core/history_notice_utils.h"
-#import "ios/chrome/browser/history/history_utils.h"
+#import "ios/chrome/browser/history/model/history_utils.h"
 #import "ios/chrome/browser/ui/history/history_consumer.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
 

@@ -51,7 +51,10 @@ ShareTarget::ShareTarget() {}
 
 ShareTarget::~ShareTarget() {}
 
-ShortcutInfo::ShortcutInfo(const GURL& shortcut_url) : url(shortcut_url) {}
+ShortcutInfo::ShortcutInfo(const GURL& shortcut_url)
+    : url(shortcut_url),
+      scope(shortcut_url.GetWithoutFilename()),
+      manifest_id(shortcut_url) {}
 
 ShortcutInfo::ShortcutInfo(const ShortcutInfo& other) = default;
 
@@ -59,15 +62,14 @@ ShortcutInfo::~ShortcutInfo() = default;
 
 // static
 std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
+    const GURL& url,
     const GURL& manifest_url,
     const blink::mojom::Manifest& manifest,
+    const mojom::WebPageMetadata& web_page_metadata,
     const GURL& primary_icon_url,
     bool primary_icon_maskable) {
-  if (blink::IsEmptyManifest(manifest)) {
-    return nullptr;
-  }
-
-  auto shortcut_info = std::make_unique<ShortcutInfo>(GURL());
+  auto shortcut_info = std::make_unique<ShortcutInfo>(url);
+  shortcut_info->UpdateFromWebPageMetadata(web_page_metadata);
   shortcut_info->UpdateFromManifest(manifest);
   shortcut_info->manifest_url = manifest_url;
   shortcut_info->best_primary_icon_url = primary_icon_url;
@@ -131,7 +133,7 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
   }
   if (metadata.application_url.is_valid()) {
     url = metadata.application_url;
-    scope = metadata.application_url;
+    scope = metadata.application_url.GetWithoutFilename();
   }
   if (metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED ||
       metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED_APPLE) {
@@ -141,6 +143,9 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
 }
 
 void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
+  if (blink::IsEmptyManifest(manifest)) {
+    return;
+  }
   std::u16string s_name = manifest.short_name.value_or(std::u16string());
   std::u16string f_name = manifest.name.value_or(std::u16string());
   if (!s_name.empty() || !f_name.empty()) {
@@ -150,17 +155,25 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
       short_name = name;
     else if (name.empty())
       name = short_name;
+    user_title = short_name;
   }
-  user_title = short_name;
 
-  description = manifest.description.value_or(std::u16string());
+  if (manifest.description.has_value()) {
+    description = manifest.description.value();
+  }
 
   // Set the url based on the manifest value, if any.
-  if (manifest.start_url.is_valid())
+  if (manifest.start_url.is_valid()) {
     url = manifest.start_url;
+  }
 
-  scope = manifest.scope;
-  manifest_id = manifest.id;
+  if (manifest.scope.is_valid()) {
+    scope = manifest.scope;
+  }
+
+  if (manifest.id.is_valid()) {
+    manifest_id = manifest.id;
+  }
 
   // Set the display based on the manifest value, if any.
   if (manifest.display != DisplayMode::kUndefined)

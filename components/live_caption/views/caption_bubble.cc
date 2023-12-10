@@ -30,6 +30,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/hit_test.h"
@@ -76,6 +77,8 @@
 #endif
 
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+#include "base/scoped_observation.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #endif
 
@@ -446,12 +449,10 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
  public:
   explicit CaptionBubbleLabelAXModeObserver(CaptionBubbleLabel* owner)
       : owner_(owner) {
-    ui::AXPlatformNode::AddAXModeObserver(this);
+    ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   }
 
-  ~CaptionBubbleLabelAXModeObserver() override {
-    ui::AXPlatformNode::RemoveAXModeObserver(this);
-  }
+  ~CaptionBubbleLabelAXModeObserver() override = default;
 
   CaptionBubbleLabelAXModeObserver(const CaptionBubbleLabelAXModeObserver&) =
       delete;
@@ -464,6 +465,8 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 
  private:
   raw_ptr<CaptionBubbleLabel> owner_;
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
 };
 #endif
 
@@ -635,9 +638,8 @@ void CaptionBubble::Init() {
               base::Unretained(this)));
 #endif
 
-  views::Button::PressedCallback expand_or_collapse_callback =
-      base::BindRepeating(&CaptionBubble::ExpandOrCollapseButtonPressed,
-                          base::Unretained(this));
+  base::RepeatingClosure expand_or_collapse_callback = base::BindRepeating(
+      &CaptionBubble::ExpandOrCollapseButtonPressed, base::Unretained(this));
   auto expand_button = BuildImageButton(expand_or_collapse_callback,
                                         IDS_LIVE_CAPTION_BUBBLE_EXPAND);
   expand_button->SetVisible(!is_expanded_);
@@ -657,7 +659,7 @@ void CaptionBubble::Init() {
                                            base::Unretained(this)),
                        IDS_LIVE_CAPTION_BUBBLE_CLOSE);
 
-  views::Button::PressedCallback pin_or_unpin_callback = base::BindRepeating(
+  base::RepeatingClosure pin_or_unpin_callback = base::BindRepeating(
       &CaptionBubble::PinOrUnpinButtonPressed, base::Unretained(this));
   auto pin_button =
       BuildImageButton(pin_or_unpin_callback, IDS_LIVE_CAPTION_BUBBLE_PIN);
@@ -1196,8 +1198,8 @@ void CaptionBubble::SetTextColor() {
   title_->SetEnabledColor(text_color);
   generic_error_text_->SetEnabledColor(text_color);
 
-  generic_error_icon_->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+  generic_error_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kErrorOutlineIcon, text_color));
 
   // Update Live Translate label style
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {

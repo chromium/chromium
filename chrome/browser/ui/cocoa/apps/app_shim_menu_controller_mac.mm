@@ -134,8 +134,7 @@ const Extension* GetExtensionForNSWindow(NSWindow* window,
     if (profile)
       *profile = browser->profile();
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser->profile());
-    const Extension* extension =
-        registry->GetExtensionById(app_id, ExtensionRegistry::ENABLED);
+    const Extension* extension = registry->enabled_extensions().GetByID(app_id);
     if (extension &&
         (extension->is_platform_app() || extension->is_hosted_app())) {
       return extension;

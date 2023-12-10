@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_link.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -24,7 +24,7 @@ namespace {
 void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
                                 FontFamilyNames& result);
 
-void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
+void GetFontsUsedByFragment(const PhysicalBoxFragment& fragment,
                             FontFamilyNames& result) {
   for (InlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
     const FragmentItem& item = *cursor.Current().Item();
@@ -53,7 +53,7 @@ void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
   }
 
   // Traverse out-of-flow children. They are not in |FragmentItems|.
-  for (const NGLink& child : fragment.Children()) {
+  for (const PhysicalFragmentLink& child : fragment.Children()) {
     if (const auto* child_layout_box =
             DynamicTo<LayoutBox>(child->GetLayoutObject()))
       GetFontsUsedByLayoutObject(*child_layout_box, result);
@@ -67,9 +67,10 @@ void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
     // Use |InlineCursor| to traverse if |target| is an IFC.
     if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(target)) {
       if (block_flow->HasFragmentItems()) {
-        for (const NGPhysicalBoxFragment& fragment :
-             block_flow->PhysicalFragments())
+        for (const PhysicalBoxFragment& fragment :
+             block_flow->PhysicalFragments()) {
           GetFontsUsedByFragment(fragment, result);
+        }
         target = target->NextInPreOrderAfterChildren(&layout_object);
         continue;
       }

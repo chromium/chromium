@@ -99,7 +99,7 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
   ui::TextInputClient* client = GetTextInputClient();
   gfx::Range text_range = gfx::Range();
   gfx::Range selection_range = gfx::Range();
-  absl::optional<gfx::Range> composition_text_range = gfx::Range();
+  std::optional<gfx::Range> composition_text_range = gfx::Range();
   std::u16string text;
 
   if (!client) {
@@ -199,7 +199,7 @@ void InputConnectionImpl::FinishComposingText() {
 void InputConnectionImpl::SetComposingText(
     const std::u16string& text,
     int new_cursor_pos,
-    const absl::optional<gfx::Range>& new_selection_range) {
+    const std::optional<gfx::Range>& new_selection_range) {
   // It's relative to the last character of the composing text,
   // so 0 means the cursor should be just before the last character of the text.
   new_cursor_pos += text.length() - 1;

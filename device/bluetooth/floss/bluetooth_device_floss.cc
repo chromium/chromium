@@ -343,7 +343,6 @@ void BluetoothDeviceFloss::CancelPairing() {
 
 void BluetoothDeviceFloss::Disconnect(base::OnceClosure callback,
                                       ErrorCallback error_callback) {
-  // TODO (b/223832034): Create API that does hard disconnect of a peer device
   FlossDBusManager::Get()->GetAdapterClient()->DisconnectAllEnabledProfiles(
       base::BindOnce(&BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -398,13 +397,22 @@ BluetoothDeviceFloss::CreateBluetoothGattConnectionObject() {
 }
 
 void BluetoothDeviceFloss::SetGattServicesDiscoveryComplete(bool complete) {
-  NOTIMPLEMENTED();
-  // This is not necessary for Floss which already knows of discovery complete.
+  // This API actually refers to all services including SDP, not just GATT.
+  // This function is called by BluetoothSocketFloss because a connected socket
+  // implies SDP is completed, but Floss doesn't emit the UUIDs to the clients.
+  if (complete && !svc_resolved_) {
+    svc_resolved_ = true;
+    adapter()->NotifyGattServicesDiscovered(this);
+  } else if (!complete) {
+    svc_resolved_ = false;
+  }
 }
 
 bool BluetoothDeviceFloss::IsGattServicesDiscoveryComplete() const {
-  // Services are only considered resolved if connection was established without
-  // a specific search uuid or was subsequently upgraded to full discovery.
+  // This API actually refers to all services including SDP, not just GATT.
+  // In GATT case, services are only considered resolved if connection was
+  // established without a specific search uuid or was subsequently upgraded to
+  // full discovery.
   return svc_resolved_ && !search_uuid.has_value();
 }
 
@@ -669,6 +677,7 @@ bool BluetoothDeviceFloss::IsBondedImpl() const {
 }
 
 void BluetoothDeviceFloss::OnGetRemoteType(
+    base::OnceClosure callback,
     DBusResult<FlossAdapterClient::BluetoothDeviceType> ret) {
   if (ret.has_value()) {
     switch (*ret) {
@@ -690,40 +699,44 @@ void BluetoothDeviceFloss::OnGetRemoteType(
     BLUETOOTH_LOG(ERROR) << "GetRemoteType() failed: " << ret.error();
   }
 
-  TriggerInitDevicePropertiesCallback();
+  std::move(callback).Run();
 }
 
-void BluetoothDeviceFloss::OnGetRemoteClass(DBusResult<uint32_t> ret) {
+void BluetoothDeviceFloss::OnGetRemoteClass(base::OnceClosure callback,
+                                            DBusResult<uint32_t> ret) {
   if (ret.has_value()) {
     cod_ = *ret;
   } else {
     BLUETOOTH_LOG(ERROR) << "GetRemoteClass() failed: " << ret.error();
   }
 
-  TriggerInitDevicePropertiesCallback();
+  std::move(callback).Run();
 }
 
-void BluetoothDeviceFloss::OnGetRemoteAppearance(DBusResult<uint16_t> ret) {
+void BluetoothDeviceFloss::OnGetRemoteAppearance(base::OnceClosure callback,
+                                                 DBusResult<uint16_t> ret) {
   if (ret.has_value()) {
     appearance_ = *ret;
   } else {
-    BLUETOOTH_LOG(ERROR) << "OnGetRemoteAppearance() failed: " << ret.error();
+    BLUETOOTH_LOG(ERROR) << "GetRemoteAppearance() failed: " << ret.error();
   }
 
-  TriggerInitDevicePropertiesCallback();
+  std::move(callback).Run();
 }
 
-void BluetoothDeviceFloss::OnGetRemoteUuids(DBusResult<UUIDList> ret) {
+void BluetoothDeviceFloss::OnGetRemoteUuids(base::OnceClosure callback,
+                                            DBusResult<UUIDList> ret) {
   if (ret.has_value()) {
     device_uuids_.ReplaceServiceUUIDs(*ret);
   } else {
     BLUETOOTH_LOG(ERROR) << "GetRemoteUuids() failed: " << ret.error();
   }
 
-  TriggerInitDevicePropertiesCallback();
+  std::move(callback).Run();
 }
 
 void BluetoothDeviceFloss::OnGetRemoteVendorProductInfo(
+    base::OnceClosure callback,
     DBusResult<FlossAdapterClient::VendorProductInfo> ret) {
   if (ret.has_value()) {
     vpi_ = *ret;
@@ -732,7 +745,7 @@ void BluetoothDeviceFloss::OnGetRemoteVendorProductInfo(
                          << ret.error();
   }
 
-  TriggerInitDevicePropertiesCallback();
+  std::move(callback).Run();
 }
 
 void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
@@ -792,6 +805,8 @@ void BluetoothDeviceFloss::TriggerConnectCallback(
     pending_callback_on_connect_profiles_ = absl::nullopt;
     std::move(callback).Run(error_code);
   }
+
+  pairing_ = nullptr;
 }
 
 void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
@@ -831,6 +846,42 @@ void BluetoothDeviceFloss::OnConnectToServiceError(
   std::move(error_callback).Run(error_message);
 }
 
+void BluetoothDeviceFloss::FetchRemoteType(base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteType(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteType,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
+void BluetoothDeviceFloss::FetchRemoteClass(base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteClass(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteClass,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
+void BluetoothDeviceFloss::FetchRemoteAppearance(base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteAppearance(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteAppearance,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
+void BluetoothDeviceFloss::FetchRemoteUuids(base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteUuids(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteUuids,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
+void BluetoothDeviceFloss::FetchRemoteVendorProductInfo(
+    base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteVendorProductInfo(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteVendorProductInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
 void BluetoothDeviceFloss::InitializeDeviceProperties(
     PropertiesState state,
     base::OnceClosure callback) {
@@ -845,27 +896,21 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
   // and followed up with a TriggerInitDevicePropertiesCallback()
   // in the callback.
   num_pending_properties_ += 5;
-  // TODO(b/204708206): Update with property framework when available
-  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteType(
-      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteType,
-                     weak_ptr_factory_.GetWeakPtr()),
-      AsFlossDeviceId());
-  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteClass(
-      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteClass,
-                     weak_ptr_factory_.GetWeakPtr()),
-      AsFlossDeviceId());
-  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteAppearance(
-      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteAppearance,
-                     weak_ptr_factory_.GetWeakPtr()),
-      AsFlossDeviceId());
-  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteUuids(
-      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteUuids,
-                     weak_ptr_factory_.GetWeakPtr()),
-      AsFlossDeviceId());
-  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteVendorProductInfo(
-      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteVendorProductInfo,
-                     weak_ptr_factory_.GetWeakPtr()),
-      AsFlossDeviceId());
+  FetchRemoteType(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FetchRemoteClass(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FetchRemoteAppearance(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FetchRemoteUuids(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FetchRemoteVendorProductInfo(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback() {

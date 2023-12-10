@@ -42,17 +42,17 @@ namespace web_app {
 
 namespace {
 
-absl::optional<GURL> GetProtocolHandlingTranslatedUrl(
+std::optional<GURL> GetProtocolHandlingTranslatedUrl(
     OsIntegrationManager& os_integration_manager,
     const apps::AppLaunchParams& params) {
   if (!params.protocol_handler_launch_url.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   GURL protocol_url(params.protocol_handler_launch_url.value());
   if (!protocol_url.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<GURL> translated_url =
+  std::optional<GURL> translated_url =
       os_integration_manager.TranslateProtocolUrl(params.app_id, protocol_url);
 
   return translated_url;
@@ -103,7 +103,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   }
 
   // Place new windows on the specified display.
-  absl::optional<display::ScopedDisplayForNewWindows> scoped_display;
+  std::optional<display::ScopedDisplayForNewWindows> scoped_display;
   if (params_->display_id != display::kInvalidDisplayId) {
     scoped_display.emplace(params_->display_id);
   }
@@ -140,7 +140,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System Web Apps have their own launch code path.
-  absl::optional<ash::SystemWebAppType> system_app_type =
+  std::optional<ash::SystemWebAppType> system_app_type =
       ash::GetSystemWebAppTypeForAppId(&profile_.get(), params_->app_id);
   if (system_app_type) {
     Browser* browser = LaunchSystemWebAppImpl(&profile_.get(), *system_app_type,
@@ -198,7 +198,7 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
              params_->url_handler_launch_url->is_valid()) {
     // Handle url_handlers launch.
     launch_url = params_->url_handler_launch_url.value();
-  } else if (absl::optional<GURL> protocol_handler_translated_url =
+  } else if (std::optional<GURL> protocol_handler_translated_url =
                  GetProtocolHandlingTranslatedUrl(*os_integration_manager_,
                                                   *params_)) {
     // Handle protocol_handlers launch.
@@ -296,6 +296,10 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
 #endif
     return chrome::FindTabbedBrowser(
         &profile_.get(), /*match_original_profiles=*/false, display_id);
+  }
+
+  if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {
+    return nullptr;
   }
 
   // In the case of prevent-close, we do not want to create a new browser, but

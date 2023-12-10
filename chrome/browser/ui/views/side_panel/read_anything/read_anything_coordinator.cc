@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -78,7 +77,9 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
-  CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
+  if (features::IsReadAnythingLocalSidePanelEnabled()) {
+    CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
+  }
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
@@ -148,8 +149,30 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
     return;
   }
 
+  // Deregisters the Read Anything side panel if it is not local. When a side
+  // panel entry is global, it has the same lifetime as the browser.
+  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+    SidePanelRegistry* global_registry =
+        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
+    global_registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  }
+
   browser->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
+}
+
+void ReadAnythingCoordinator::CreateAndRegisterEntry(
+    SidePanelRegistry* global_registry) {
+  auto side_panel_entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kReadAnything,
+      l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
+      ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
+                                     ui::kColorIcon),
+      base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
+                          base::Unretained(this)));
+  side_panel_entry->AddObserver(this);
+  global_registry->Register(std::move(side_panel_entry));
 }
 
 void ReadAnythingCoordinator::CreateAndRegisterEntriesForExistingWebContents(
@@ -201,6 +224,16 @@ void ReadAnythingCoordinator::RemoveModelObserver(
   model_->RemoveObserver(observer);
 }
 
+void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
+  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
+  OnReadAnythingSidePanelEntryShown();
+}
+
+void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
+  OnReadAnythingSidePanelEntryHidden();
+}
+
 void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
   for (Observer& obs : observers_) {
     obs.Activate(true);
@@ -211,6 +244,40 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
   for (Observer& obs : observers_) {
     obs.Activate(false);
   }
+}
+
+std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
+  Browser* browser = &GetBrowser();
+  auto web_view =
+      std::make_unique<SidePanelWebUIViewT<ReadAnythingUntrustedUI>>(
+          /* on_show_cb= */ base::RepeatingClosure(),
+          /* close_cb= */ base::RepeatingClosure(),
+          /* contents_wrapper= */
+          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
+              /* webui_url= */ GURL(
+                  chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
+              /* browser_context= */ browser->profile(),
+              /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
+              /* webui_resizes_host= */ false,
+              /* esc_closes_ui= */ false));
+
+  if (features::IsReadAnythingWebUIToolbarEnabled()) {
+    return std::move(web_view);
+  }
+
+  // Create the views.
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
+      this,
+      /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
+      /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
+
+  // Create the component.
+  // Note that a coordinator would normally maintain ownership of these objects,
+  // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
+  auto container_view = std::make_unique<ReadAnythingContainerView>(
+      this, std::move(toolbar), std::move(web_view));
+
+  return std::move(container_view);
 }
 
 void ReadAnythingCoordinator::StartPageChangeDelay() {
@@ -229,7 +296,7 @@ void ReadAnythingCoordinator::OnTabChangeDelayComplete() {
   CHECK(web_contents);
   if (!web_contents->IsLoading()) {
     // Ability to show was already checked before timer was started.
-    MaybeShowReadingModeSidePanelIPH();
+    ActivePageDistillable();
   }
 }
 
@@ -237,25 +304,29 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::Type::kInserted) {
-    for (const auto& inserted_tab : change.GetInsert()->contents) {
-      CreateAndRegisterEntryForWebContents(inserted_tab.contents);
+  // If the Read Anything side panel is local, creates and registers a side
+  // panel entry for each tab.
+  if (features::IsReadAnythingLocalSidePanelEnabled()) {
+    if (change.type() == TabStripModelChange::Type::kInserted) {
+      for (const auto& inserted_tab : change.GetInsert()->contents) {
+        CreateAndRegisterEntryForWebContents(inserted_tab.contents);
+      }
     }
-  }
-  if (change.type() == TabStripModelChange::Type::kReplaced) {
-    content::WebContents* new_contents = change.GetReplace()->new_contents;
-    if (new_contents) {
-      CreateAndRegisterEntryForWebContents(new_contents);
+    if (change.type() == TabStripModelChange::Type::kReplaced) {
+      content::WebContents* new_contents = change.GetReplace()->new_contents;
+      if (new_contents) {
+        CreateAndRegisterEntryForWebContents(new_contents);
+      }
     }
   }
   if (!selection.active_tab_changed()) {
     return;
   }
   Observe(GetActiveWebContents());
-  if (ShouldShowReadingModeSidePanelIPH()) {
+  if (IsActivePageDistillable()) {
     StartPageChangeDelay();
   } else {
-    CancelShowReadingModeSidePanelIPH();
+    ActivePageNotDistillable();
   }
 }
 
@@ -263,10 +334,10 @@ void ReadAnythingCoordinator::DidStopLoading() {
   if (!post_tab_change_delay_complete_) {
     return;
   }
-  if (ShouldShowReadingModeSidePanelIPH()) {
-    MaybeShowReadingModeSidePanelIPH();
+  if (IsActivePageDistillable()) {
+    ActivePageDistillable();
   } else {
-    CancelShowReadingModeSidePanelIPH();
+    ActivePageNotDistillable();
   }
 }
 
@@ -274,10 +345,10 @@ void ReadAnythingCoordinator::PrimaryPageChanged(content::Page& page) {
   // On navigation, cancel any running delays.
   delay_timer_.Stop();
 
-  if (!ShouldShowReadingModeSidePanelIPH()) {
+  if (!IsActivePageDistillable()) {
     // On navigation, if we shouldn't show the IPH hide it. Otherwise continue
     // to show it.
-    CancelShowReadingModeSidePanelIPH();
+    ActivePageNotDistillable();
   }
 }
 
@@ -285,7 +356,7 @@ content::WebContents* ReadAnythingCoordinator::GetActiveWebContents() const {
   return GetBrowser().tab_strip_model()->GetActiveWebContents();
 }
 
-bool ReadAnythingCoordinator::ShouldShowReadingModeSidePanelIPH() const {
+bool ReadAnythingCoordinator::IsActivePageDistillable() const {
   auto* web_contents = GetActiveWebContents();
   if (!web_contents) {
     return false;
@@ -303,14 +374,28 @@ bool ReadAnythingCoordinator::ShouldShowReadingModeSidePanelIPH() const {
   return false;
 }
 
-void ReadAnythingCoordinator::CancelShowReadingModeSidePanelIPH() {
+void ReadAnythingCoordinator::ActivePageNotDistillable() {
   GetBrowser().window()->CloseFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
+  for (Observer& obs : observers_) {
+    obs.OnActivePageDistillable(false);
+  }
 }
 
-void ReadAnythingCoordinator::MaybeShowReadingModeSidePanelIPH() {
+void ReadAnythingCoordinator::ActivePageDistillable() {
   GetBrowser().window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
+  for (Observer& obs : observers_) {
+    obs.OnActivePageDistillable(true);
+  }
+}
+
+void ReadAnythingCoordinator::ActivePageNotDistillableForTesting() {
+  ActivePageNotDistillable();
+}
+
+void ReadAnythingCoordinator::ActivePageDistillableForTesting() {
+  ActivePageDistillable();
 }
 
 void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {

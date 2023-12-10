@@ -16,7 +16,7 @@
 namespace performance_manager::features {
 
 BASE_FEATURE(kRunOnMainThread,
-             "RunOnMainThread",
+             "RunPerformanceManagerOnMainThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunOnDedicatedThreadPoolThread,
@@ -122,6 +122,32 @@ BASE_FEATURE(kPerformanceControlsSidePanel,
              "PerformanceControlsSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPerformanceCPUIntervention,
+             "PerformanceCPUIntervention",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold{
+    &kPerformanceCPUIntervention, "cpu_time_over_threshold", base::Seconds(60)};
+
+const base::FeatureParam<int> kCPUSystemPercentThreshold{
+    &kPerformanceCPUIntervention, "cpu_system_percent_threshold", 90};
+const base::FeatureParam<int> kCPUChromePercentThreshold{
+    &kPerformanceCPUIntervention, "cpu_chrome_percent_threshold", 20};
+
+BASE_FEATURE(kPerformanceMemoryIntervention,
+             "PerformanceMemoryIntervention",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold{
+    &kPerformanceMemoryIntervention, "memory_time_over_threshold",
+    base::Seconds(60)};
+
+const base::FeatureParam<int> kMemoryFreePercentThreshold{
+    &kPerformanceMemoryIntervention, "memory_free_percent_threshold", 10};
+const base::FeatureParam<int> kMemoryFreeBytesThreshold{
+    &kPerformanceMemoryIntervention, "memory_free_bytes_threshold",
+    1024 * 1024 * 1024};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAshUrgentDiscardingFromPerformanceManager,
              "AshUrgentDiscardingFromPerformanceManager",
@@ -129,6 +155,39 @@ BASE_FEATURE(kAshUrgentDiscardingFromPerformanceManager,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif
+
+BASE_FEATURE(kPMProcessPriorityPolicy,
+             "PMProcessPriorityPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
+                                                 "downvote_ad_frames", false};
+
+BASE_FEATURE(kProbabilisticProactiveDiscarding,
+             "ProbabilisticProactiveDiscarding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kProactiveDiscardingTargetFalsePositivePercent{
+    &kProbabilisticProactiveDiscarding,
+    "proactive_discarding_target_false_positive_percent", 35};
+
+const base::FeatureParam<base::TimeDelta> kProactiveDiscardingSamplingInterval{
+    &kProbabilisticProactiveDiscarding,
+    "proactive_discarding_sampling_interval", base::Minutes(10)};
+
+const base::FeatureParam<bool> kProactiveDiscardingSimulationMode{
+    &kProbabilisticProactiveDiscarding, "proactive_discarding_simulation_mode",
+    true};
+
+BASE_FEATURE(kModalMemorySaver,
+             "ModalMemorySaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kModalMemorySaverMode{
+    &kModalMemorySaver,
+    "modal_memory_saver_mode",
+    0,
+};
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",

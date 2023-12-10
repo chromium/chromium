@@ -26,6 +26,7 @@ bool HasDevicePermission(UsbDelegate* delegate,
                          const blink::StorageKey& key,
                          const device::mojom::UsbDeviceInfo& device_info) {
   return delegate && delegate->HasDevicePermission(browser_context,
+                                                   /*frame=*/nullptr,
                                                    key.origin(), device_info);
 }
 

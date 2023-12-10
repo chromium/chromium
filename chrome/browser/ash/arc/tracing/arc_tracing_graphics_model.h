@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_TRACING_ARC_TRACING_GRAPHICS_MODEL_H_
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_TRACING_GRAPHICS_MODEL_H_
 
-#include <deque>
 #include <map>
-#include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -19,22 +16,7 @@
 namespace arc {
 
 class ArcTracingModel;
-
-// Timestamps in tick counts (ms) accumulated over the course of a trace. Backed
-// by deques to give O(1) non-amortized insertion time.
-struct TraceTimestamps {
-  TraceTimestamps();
-  ~TraceTimestamps();
-
-  // Prevent accidental copying.
-  TraceTimestamps(const TraceTimestamps&) = delete;
-  TraceTimestamps& operator=(const TraceTimestamps&) = delete;
-
-  void AddCommit(base::TimeTicks commit_ts);
-  void AddPresent(base::TimeTicks present_ts);
-
-  std::deque<int64_t> commits, presents;
-};
+class PresentFramesTracer;
 
 // Graphic buffers events model. It is build from the generic |ArcTracingModel|
 // and contains only events that describe life-cycle of graphics buffers across
@@ -175,7 +157,7 @@ class ArcTracingGraphicsModel {
 
   // Builds the model from the common tracing model |common_model|.
   bool Build(const ArcTracingModel& common_model,
-             const TraceTimestamps& commits);
+             const PresentFramesTracer& present_frames);
 
   // Serializes the model to |base::Value::Dict|, this can be passed to
   // javascript for rendering.

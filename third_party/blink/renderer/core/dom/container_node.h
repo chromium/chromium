@@ -111,12 +111,17 @@ class CORE_EXPORT ContainerNode : public Node {
   bool HasOneChild() const {
     return first_child_ && !first_child_->HasNextSibling();
   }
+
+  bool HasChildCount(unsigned) const;
+  unsigned CountChildren() const;
+
   bool HasOneTextChild() const {
     return HasOneChild() && first_child_->IsTextNode();
   }
-  bool HasChildCount(unsigned) const;
 
-  unsigned CountChildren() const;
+  // Returns true if all children are text nodes and at least one of them is not
+  // empty. Ignores comments.
+  bool HasOnlyText() const;
 
   Element* QuerySelector(const AtomicString& selectors, ExceptionState&);
   Element* QuerySelector(const AtomicString& selectors);
@@ -145,6 +150,10 @@ class CORE_EXPORT ContainerNode : public Node {
   HTMLCollection* getElementsByClassName(const AtomicString& class_names);
   RadioNodeList* GetRadioNodeList(const AtomicString&,
                                   bool only_match_img_elements = false);
+
+  // Returns the contents of the first descendant element, if any, that contains
+  // only text, a part of which is the given substring.
+  String FindTextInElementWith(const AtomicString& substring) const;
 
   // These methods are only used during parsing.
   // They don't send DOM mutation events or accept DocumentFragments.

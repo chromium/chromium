@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_image_painter.h"
-#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -95,46 +94,42 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
   if (!width_is_auto && !height_is_auto)
     return gfx::SizeF(style_size.x(), style_size.y());
 
-  gfx::SizeF intrinsic_size;
-  bool has_intrinsic_ratio = true;
+  const gfx::SizeF kDefaultObjectSize(LayoutReplaced::kDefaultWidth,
+                                      LayoutReplaced::kDefaultHeight);
+  IntrinsicSizingInfo sizing_info;
   if (HasOverriddenIntrinsicSize()) {
-    intrinsic_size.SetSize(LayoutReplaced::kDefaultWidth,
-                           LayoutReplaced::kDefaultHeight);
+    sizing_info.size = kDefaultObjectSize;
+    sizing_info.aspect_ratio = sizing_info.size;
   } else {
-    ImageResourceContent* cached_image = image_resource_->CachedImage();
-    if (!cached_image || cached_image->ErrorOccurred() ||
-        !cached_image->IsSizeAvailable()) {
+    if (!image_resource_->HasImage() || image_resource_->ErrorOccurred()) {
       return gfx::SizeF(style_size.x(), style_size.y());
     }
-
-    RespectImageOrientationEnum respect_orientation =
-        LayoutObject::ShouldRespectImageOrientation(this);
-    intrinsic_size = cached_image->GetImage()->SizeAsFloat(respect_orientation);
-    if (auto* svg_image = DynamicTo<SVGImage>(cached_image->GetImage())) {
-      IntrinsicSizingInfo intrinsic_sizing_info;
-      has_intrinsic_ratio &=
-          svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info);
-      has_intrinsic_ratio &= !intrinsic_sizing_info.aspect_ratio.IsEmpty();
-    }
+    sizing_info = image_resource_->GetNaturalDimensions(1);
   }
 
-  if (width_is_auto && height_is_auto)
-    return intrinsic_size;
+  const gfx::SizeF concrete_object_size =
+      ConcreteObjectSize(sizing_info, kDefaultObjectSize);
+  if (width_is_auto && height_is_auto) {
+    return concrete_object_size;
+  }
 
+  const bool has_intrinsic_ratio = !sizing_info.aspect_ratio.IsEmpty();
   if (height_is_auto) {
     if (has_intrinsic_ratio) {
-      return gfx::SizeF(style_size.x(),
-                        ResolveHeightForRatio(style_size.x(), intrinsic_size));
+      return gfx::SizeF(
+          style_size.x(),
+          ResolveHeightForRatio(style_size.x(), sizing_info.aspect_ratio));
     }
-    return gfx::SizeF(style_size.x(), intrinsic_size.height());
+    return gfx::SizeF(style_size.x(), concrete_object_size.height());
   }
 
   DCHECK(width_is_auto);
   if (has_intrinsic_ratio) {
-    return gfx::SizeF(ResolveWidthForRatio(style_size.y(), intrinsic_size),
-                      style_size.y());
+    return gfx::SizeF(
+        ResolveWidthForRatio(style_size.y(), sizing_info.aspect_ratio),
+        style_size.y());
   }
-  return gfx::SizeF(intrinsic_size.width(), style_size.y());
+  return gfx::SizeF(concrete_object_size.width(), style_size.y());
 }
 
 bool LayoutSVGImage::UpdateBoundingBox() {

@@ -84,11 +84,11 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     GetBridgeDelegate()->RecordMemoryUsageAndCountsHistograms();
   }
 
-  void ClearMetadataWhileStopped() override {
+  void ClearMetadataIfStopped() override {
     if (!bridge_) {
       return;
     }
-    GetBridgeDelegate()->ClearMetadataWhileStopped();
+    GetBridgeDelegate()->ClearMetadataIfStopped();
   }
 
  private:

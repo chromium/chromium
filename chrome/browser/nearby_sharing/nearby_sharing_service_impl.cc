@@ -57,6 +57,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/cross_device/logging/logging.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -330,6 +331,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           profile->GetPath(),
           http_client_factory_.get())),
       transfer_profiler_(std::make_unique<NearbyShareTransferProfiler>()),
+      logger_(std::make_unique<NearbyShareLogger>()),
       settings_(prefs, local_device_data_manager_.get()),
       feature_usage_metrics_(prefs),
       on_network_changed_delay_timer_(
@@ -338,7 +340,15 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           base::BindRepeating(&NearbySharingServiceImpl::
                                   StopAdvertisingAndInvalidateSurfaceState,
                               base::Unretained(this))),
-      visibility_reminder_timer_delay_(kNearbyVisibilityReminderTimerDelay) {
+      visibility_reminder_timer_delay_(kNearbyVisibilityReminderTimerDelay),
+      discovery_metric_logger_(
+          std::make_unique<nearby::share::metrics::DiscoveryMetricLogger>()),
+      throughput_metric_logger_(
+          std::make_unique<nearby::share::metrics::ThroughputMetricLogger>()),
+      attachment_metric_logger_(
+          std::make_unique<nearby::share::metrics::AttachmentMetricLogger>()),
+      neaby_share_metric_logger_(
+          std::make_unique<nearby::share::metrics::NearbyShareMetricLogger>()) {
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
@@ -361,6 +371,15 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   certificate_manager_->AddObserver(this);
 
   settings_.AddSettingsObserver(settings_receiver_.BindNewPipeAndPassRemote());
+
+  // Register logging observers.
+  AddObserver(logger_.get());
+  if (base::FeatureList::IsEnabled(metrics::structured::kNearbyShareMetrics)) {
+    AddObserver(discovery_metric_logger_.get());
+    AddObserver(throughput_metric_logger_.get());
+    AddObserver(attachment_metric_logger_.get());
+    AddObserver(neaby_share_metric_logger_.get());
+  }
 
   GetBluetoothAdapter();
 
@@ -385,6 +404,15 @@ NearbySharingServiceImpl::~NearbySharingServiceImpl() {
 
   if (bluetooth_adapter_) {
     DCHECK(!bluetooth_adapter_->HasObserver(this));
+  }
+
+  // Unregister observers.
+  RemoveObserver(logger_.get());
+  if (base::FeatureList::IsEnabled(metrics::structured::kNearbyShareMetrics)) {
+    RemoveObserver(discovery_metric_logger_.get());
+    RemoveObserver(throughput_metric_logger_.get());
+    RemoveObserver(attachment_metric_logger_.get());
+    RemoveObserver(neaby_share_metric_logger_.get());
   }
 }
 
@@ -805,6 +833,9 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
 
   CHECK(info->endpoint_id().has_value());
   transfer_profiler_->OnShareTargetSelected(info->endpoint_id().value());
+  for (auto& observer : observers_) {
+    observer.OnShareTargetSelected(share_target);
+  }
 
   is_connecting_ = true;
   InvalidateSendSurfaceState();
@@ -846,6 +877,14 @@ void NearbySharingServiceImpl::Accept(
 
   is_waiting_to_record_accept_to_transfer_start_metric_ =
       share_target.is_incoming;
+
+  for (auto& observer : observers_) {
+    observer.OnTransferAccepted(share_target);
+  }
+
+  // This should probably always evaluate to true, since a sender will
+  // never accept a transfer.
+  DCHECK(share_target.is_incoming);
   if (share_target.is_incoming) {
     incoming_share_accepted_timestamp_ = base::TimeTicks::Now();
 
@@ -1383,6 +1422,13 @@ void NearbySharingServiceImpl::OnBandwidthUpgrade(
     const std::string& endpoint_id,
     const Medium medium) {
   transfer_profiler_->OnBandwidthUpgrade(endpoint_id, medium);
+
+  // This gets triggered when connecting as a receiver.
+  CHECK(share_target_map_.contains(endpoint_id));
+  auto share_target = share_target_map_[endpoint_id];
+  for (auto& observer : observers_) {
+    observer.OnBandwidthUpgrade(share_target, medium);
+  }
 }
 
 void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
@@ -2252,6 +2298,12 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::StopScanning() {
   nearby_connections_manager_->StopDiscovery();
   is_scanning_ = false;
 
+  // TODO(b/313950374): This should really happen when NC actually stops
+  // discovery, which could happen outside of this function.
+  for (auto& observer : observers_) {
+    observer.OnShareTargetDiscoveryStopped();
+  }
+
   certificate_download_during_discovery_timer_.Stop();
   discovered_advertisements_to_retry_map_.clear();
 
@@ -2473,6 +2525,10 @@ void NearbySharingServiceImpl::RemoveOutgoingShareTargetWithEndpointId(
     return;
   }
 
+  // Share target state needs to be cleared before the move below.
+  share_target_map_.erase(endpoint_id);
+  transfer_size_map_.erase(endpoint_id);
+
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Removing (endpoint_id=" << it->first
       << ", share_target.id=" << it->second.id
@@ -2493,6 +2549,10 @@ void NearbySharingServiceImpl::RemoveOutgoingShareTargetWithEndpointId(
   for (ShareTargetDiscoveredCallback& discovery_callback :
        background_send_discovery_callbacks_) {
     discovery_callback.OnShareTargetLost(share_target);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnShareTargetRemoved(share_target);
   }
 
   CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Reported OnShareTargetLost";
@@ -2715,6 +2775,12 @@ void NearbySharingServiceImpl::OnPayloadPathsRegistered(
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Successfully wrote response frame";
 
+  // Receiver event
+  for (auto& observer : observers_) {
+    observer.OnTransferStarted(share_target,
+                               transfer_size_map_[info->endpoint_id().value()]);
+  }
+
   info->transfer_update_callback()->OnTransferUpdate(
       share_target,
       TransferMetadataBuilder()
@@ -2767,6 +2833,9 @@ void NearbySharingServiceImpl::OnOutgoingConnection(
 
   CHECK(info->endpoint_id().has_value());
   transfer_profiler_->OnConnectionEstablished(info->endpoint_id().value());
+  for (auto& observer : observers_) {
+    observer.OnShareTargetConnected(share_target);
+  }
 
   connection->SetDisconnectionListener(base::BindOnce(
       &NearbySharingServiceImpl::OnOutgoingConnectionDisconnected,
@@ -2824,6 +2893,7 @@ void NearbySharingServiceImpl::SendIntroduction(
       << __func__ << ": Sending attachments to " << share_target.id;
 
   // Write introduction of file payloads.
+  int64_t transfer_size = 0;
   for (const auto& file : share_target.file_attachments) {
     absl::optional<int64_t> payload_id = GetAttachmentPayloadId(file.id());
     if (!payload_id) {
@@ -2838,6 +2908,7 @@ void NearbySharingServiceImpl::SendIntroduction(
     file_metadata->set_type(sharing::ConvertFileMetadataType(file.type()));
     file_metadata->set_mime_type(file.mime_type());
     file_metadata->set_size(file.size());
+    transfer_size += file.size();
   }
 
   // Write introduction of text payloads.
@@ -2854,6 +2925,7 @@ void NearbySharingServiceImpl::SendIntroduction(
     text_metadata->set_type(sharing::ConvertTextMetadataType(text.type()));
     text_metadata->set_size(text.size());
     text_metadata->set_payload_id(*payload_id);
+    transfer_size += text.size();
   }
 
   if (introduction->file_metadata_size() == 0 &&
@@ -2885,6 +2957,9 @@ void NearbySharingServiceImpl::SendIntroduction(
 
   CHECK(info->endpoint_id().has_value());
   transfer_profiler_->OnIntroductionFrameSent(info->endpoint_id().value());
+
+  // Store the file size for use when the transfer actually begins.
+  transfer_size_map_[info->endpoint_id().value()] = transfer_size;
 
   mutual_acceptance_timeout_alarm_.Reset(base::BindOnce(
       &NearbySharingServiceImpl::OnOutgoingMutualAcceptanceTimeout,
@@ -3165,6 +3240,13 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
     last_incoming_metadata_ = absl::nullopt;
   }
 
+  // Failed or cancelled transfers result in the progress being set to 0.
+  if (!metadata.is_final_status()) {
+    for (auto& observer : observers_) {
+      observer.OnTransferUpdated(share_target, metadata.progress());
+    }
+  }
+
   if (metadata.is_final_status()) {
     RecordNearbyShareTransferFinalStatusMetric(
         &feature_usage_metrics_,
@@ -3175,6 +3257,10 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
     CHECK(info->endpoint_id().has_value());
     transfer_profiler_->OnReceiveComplete(info->endpoint_id().value(),
                                           metadata.status());
+
+    for (auto& observer : observers_) {
+      observer.OnTransferCompleted(share_target, metadata.status());
+    }
 
     OnTransferComplete();
     if (metadata.status() != TransferMetadata::Status::kComplete) {
@@ -3208,6 +3294,13 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
         << TransferMetadata::StatusToString(metadata.status());
   }
 
+  // Failed or cancelled transfers result in the progress being set to 0.
+  if (!metadata.is_final_status()) {
+    for (auto& observer : observers_) {
+      observer.OnTransferUpdated(share_target, metadata.progress());
+    }
+  }
+
   if (metadata.is_final_status()) {
     is_connecting_ = false;
     RecordNearbyShareTransferFinalStatusMetric(
@@ -3219,6 +3312,10 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
     CHECK(info->endpoint_id().has_value());
     transfer_profiler_->OnSendComplete(info->endpoint_id().value(),
                                        metadata.status());
+
+    for (auto& observer : observers_) {
+      observer.OnTransferCompleted(share_target, metadata.status());
+    }
 
     OnTransferComplete();
   } else if (metadata.status() == TransferMetadata::Status::kMediaDownloading ||
@@ -3291,6 +3388,10 @@ void NearbySharingServiceImpl::OnIncomingDecryptedCertificate(
 
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Received incoming connection from " << share_target->id;
+
+  for (auto& observer : observers_) {
+    observer.OnShareTargetConnected(share_target.value());
+  }
 
   ShareTargetInfo* share_target_info = GetShareTargetInfo(*share_target);
   DCHECK(share_target_info);
@@ -3555,6 +3656,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
       << __func__ << ": Successfully read the introduction frame.";
 
   base::CheckedNumeric<int64_t> file_size_sum(0);
+  int64_t transfer_size = 0;
 
   sharing::mojom::IntroductionFramePtr introduction_frame =
       std::move((*frame)->get_introduction());
@@ -3578,6 +3680,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
     share_target.file_attachments.push_back(std::move(attachment));
 
     file_size_sum += file->size;
+    transfer_size += file->size;
     if (!file_size_sum.IsValid()) {
       Fail(share_target, TransferMetadata::Status::kNotEnoughSpace);
       CD_LOG(WARNING, Feature::NS)
@@ -3589,6 +3692,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
   }
 
   for (const auto& text : introduction_frame->text_metadata) {
+    transfer_size += text->size;
     if (text->size <= 0) {
       Fail(share_target, TransferMetadata::Status::kUnsupportedAttachmentType);
       CD_LOG(WARNING, Feature::NS)
@@ -3649,6 +3753,9 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
                             /*is_out_of_storage=*/false);
     return;
   }
+
+  CHECK(info->endpoint_id().has_value());
+  transfer_size_map_[info->endpoint_id().value()] = transfer_size;
 
   base::FilePath download_path =
       DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
@@ -3745,6 +3852,13 @@ void NearbySharingServiceImpl::OnReceiveConnectionResponse(
 
       CHECK(info->endpoint_id().has_value());
       transfer_profiler_->OnSendStart(info->endpoint_id().value());
+
+      // Sender events
+      for (auto& observer : observers_) {
+        observer.OnTransferAccepted(share_target);
+        observer.OnTransferStarted(
+            share_target, transfer_size_map_[info->endpoint_id().value()]);
+      }
       break;
     }
     case sharing::mojom::ConnectionResponseFrame::Status::kReject:
@@ -4018,6 +4132,11 @@ absl::optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
 
     target.is_known = true;
     info.set_certificate(std::move(*certificate));
+  }
+
+  share_target_map_[endpoint_id] = target;
+  for (auto& observer : observers_) {
+    observer.OnShareTargetAdded(target);
   }
 
   return target;
@@ -4540,6 +4659,9 @@ void NearbySharingServiceImpl::OnStartDiscoveryResult(
   }
   for (auto& observer : observers_) {
     observer.OnStartDiscoveryResult(success);
+    if (success) {
+      observer.OnShareTargetDiscoveryStarted();
+    }
   }
 }
 

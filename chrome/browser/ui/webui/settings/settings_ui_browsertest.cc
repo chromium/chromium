@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, TriggerHappinessTrackingSurveys) {
           browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerSettings, _,
-                                                _, _, _, _));
+                                                _, _, _, _, _, _, _));
   ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
   base::RunLoop().RunUntilIdle();
 }

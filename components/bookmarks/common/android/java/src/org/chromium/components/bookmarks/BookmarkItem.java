@@ -8,9 +8,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
-/**
- * Contains data about a bookmark or bookmark folder.
- */
+/** Contains data about a bookmark or bookmark folder. */
 public class BookmarkItem {
     private final String mTitle;
     private final GURL mUrl;
@@ -24,9 +22,17 @@ public class BookmarkItem {
     private final long mDateLastOpened;
     private boolean mForceEditableForTesting;
 
-    public BookmarkItem(BookmarkId id, String title, GURL url, boolean isFolder,
-            BookmarkId parentId, boolean isEditable, boolean isManaged, long dateAdded,
-            boolean read, long dateLastOpened) {
+    public BookmarkItem(
+            BookmarkId id,
+            String title,
+            GURL url,
+            boolean isFolder,
+            BookmarkId parentId,
+            boolean isEditable,
+            boolean isManaged,
+            long dateAdded,
+            boolean read,
+            long dateLastOpened) {
         mId = id;
         mTitle = title;
         mUrl = url;

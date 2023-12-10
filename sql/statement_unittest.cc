@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "sql/database.h"
 #include "sql/statement.h"

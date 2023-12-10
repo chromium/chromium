@@ -40,6 +40,9 @@ void WebTestFedCmManager::GetDialogType(
     case FederatedAuthRequestImpl::kConfirmIdpLogin:
       type_string = "ConfirmIdpLogin";
       break;
+    case FederatedAuthRequestImpl::kError:
+      type_string = "Error";
+      break;
   };
   std::move(callback).Run(type_string);
 }
@@ -110,22 +113,49 @@ void WebTestFedCmManager::DismissFedCmDialog(
       auth_request->DismissConfirmIdpLoginDialogForDevtools();
       std::move(callback).Run(true);
       return;
+    case FederatedAuthRequestImpl::kError:
+      auth_request->DismissErrorDialogForDevtools();
+      std::move(callback).Run(true);
+      return;
   }
 }
 
-void WebTestFedCmManager::ConfirmIdpLogin(ConfirmIdpLoginCallback callback) {
+void WebTestFedCmManager::ClickFedCmDialogButton(
+    blink::test::mojom::DialogButton button,
+    ClickFedCmDialogButtonCallback callback) {
   FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
   }
-  if (auth_request->GetDialogType() !=
-      FederatedAuthRequestImpl::kConfirmIdpLogin) {
-    std::move(callback).Run(false);
-    return;
+  switch (button) {
+    case blink::test::mojom::DialogButton::kConfirmIdpLoginContinue:
+      if (auth_request->GetDialogType() !=
+          FederatedAuthRequestImpl::kConfirmIdpLogin) {
+        std::move(callback).Run(false);
+        return;
+      }
+      auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+      std::move(callback).Run(true);
+      return;
+    case blink::test::mojom::DialogButton::kErrorGotIt:
+      if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
+        std::move(callback).Run(false);
+        return;
+      }
+      auth_request->ClickErrorDialogGotItForDevtools();
+      std::move(callback).Run(true);
+      return;
+    case blink::test::mojom::DialogButton::kErrorMoreDetails:
+      if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
+        std::move(callback).Run(false);
+        return;
+      }
+      auth_request->ClickErrorDialogMoreDetailsForDevtools();
+      std::move(callback).Run(true);
+      return;
   }
-  auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-  std::move(callback).Run(true);
+  std::move(callback).Run(false);
 }
 
 FederatedAuthRequestImpl* WebTestFedCmManager::GetAuthRequestImpl() {

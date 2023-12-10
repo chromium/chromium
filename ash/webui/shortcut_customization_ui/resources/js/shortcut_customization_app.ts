@@ -4,7 +4,6 @@
 
 import './accelerator_edit_dialog.js';
 import './bottom_nav_content.js';
-import './shortcut_input.js';
 import './shortcuts_page.js';
 import '../strings.m.js';
 import './search/search_box.js';

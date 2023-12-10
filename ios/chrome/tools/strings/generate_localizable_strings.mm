@@ -72,8 +72,7 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
 // Return nil if none is found.
 NSString* GetStringFromDataPack(const ui::DataPack& data_pack,
                                 uint16_t resource_id) {
-  absl::optional<base::StringPiece> data =
-      data_pack.GetStringPiece(resource_id);
+  std::optional<base::StringPiece> data = data_pack.GetStringPiece(resource_id);
   if (!data.has_value()) {
     return nil;
   }
@@ -148,7 +147,7 @@ NSDictionary* LoadResourcesListFromHeaders(NSArray* header_list,
         [root_header_dir stringByAppendingPathComponent:header]));
   }
 
-  absl::optional<ResourceMap> resource_map =
+  std::optional<ResourceMap> resource_map =
       LoadResourcesFromGritHeaders(headers);
   if (!resource_map) {
     return nil;

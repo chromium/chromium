@@ -465,6 +465,11 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   bool animating_for_snap_for_testing() const { return IsAnimatingForSnap(); }
 
+  const std::unique_ptr<SnapSelectionStrategy>& snap_strategy_for_testing()
+      const {
+    return snap_strategy_;
+  }
+
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input
   // system.
@@ -599,9 +604,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   bool ShouldAnimateScroll(const ScrollState& scroll_state) const;
 
-  bool ScrollAnimationUpdateTarget(const ScrollNode& scroll_node,
-                                   const gfx::Vector2dF& scroll_delta,
-                                   base::TimeDelta delayed_by);
+  std::optional<gfx::PointF> ScrollAnimationUpdateTarget(
+      const ScrollNode& scroll_node,
+      const gfx::Vector2dF& scroll_delta,
+      base::TimeDelta delayed_by);
 
   // Transforms viewport start point and scroll delta to local start point and
   // local delta, respectively. If the transformation of either the start or end
@@ -634,7 +640,17 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     return scrollbar_controller_.get();
   }
 
-  absl::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
+  std::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
+
+  // Estimate how to adjust the height of the snapport rect based on the state
+  // of browser controls that are being shown or hidden during a scroll gesture
+  // before the Blink WebView is resized to reflect the new state.
+  double PredictViewportBoundsDelta(gfx::Vector2dF scroll_distance);
+
+  std::unique_ptr<SnapSelectionStrategy> CreateSnapStrategy(
+      const ScrollState& scroll_state,
+      const gfx::PointF& current_offset,
+      SnapReason snap_reason) const;
 
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
@@ -659,12 +675,12 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   // The source device type that started the scroll gesture. Only set between a
   // ScrollBegin and ScrollEnd.
-  absl::optional<ui::ScrollInputType> latched_scroll_type_;
+  std::optional<ui::ScrollInputType> latched_scroll_type_;
 
   // Tracks the last scroll update/begin state received. Used to infer the most
   // recent scroll type and direction.
-  absl::optional<ScrollState> last_scroll_begin_state_;
-  absl::optional<ScrollState> last_scroll_update_state_;
+  std::optional<ScrollState> last_scroll_begin_state_;
+  std::optional<ScrollState> last_scroll_update_state_;
 
   // If a scroll snap is being animated, then the value of this will be the
   // element id(s) of the target(s). Otherwise, the ids will be invalid.
@@ -679,8 +695,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     kSnapFling
   };
   SnapFlingState snap_fling_state_ = kNoFling;
-  absl::optional<gfx::RangeF> fling_snap_constrain_x_;
-  absl::optional<gfx::RangeF> fling_snap_constrain_y_;
+  std::optional<gfx::RangeF> fling_snap_constrain_x_;
+  std::optional<gfx::RangeF> fling_snap_constrain_y_;
 
   // A set of elements that scroll-snapped to a new target since the last
   // begin main frame. The snap target ids of these elements will be sent to
@@ -750,6 +766,14 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   bool prefers_reduced_motion_ = false;
 
   bool is_handling_touch_sequence_ = false;
+
+  // This tracks the strategy cc will use to snap at the end of the current
+  // scroll based on the scroll updates so far. The |current_offset|
+  // in SnapSelectionStrategy is set based on whether the scroll is animated
+  // or non animated. For non-animated scrolls, it is the same as the
+  // offset in the ScrollTree. For animated scrolls it is the target offset that
+  // is being animated to.
+  std::unique_ptr<SnapSelectionStrategy> snap_strategy_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

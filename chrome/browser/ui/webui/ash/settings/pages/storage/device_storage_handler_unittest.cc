@@ -610,7 +610,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
       std::vector<int64_t>{200 * GB, 50 * GB, 50 * GB};
   other_users_size_test_api_->InitializeOtherUserSize(other_user_sizes.size());
   for (std::size_t i = 0; i < other_user_sizes.size(); i++) {
-    absl::optional<::user_data_auth::GetAccountDiskUsageReply> reply =
+    std::optional<::user_data_auth::GetAccountDiskUsageReply> reply =
         ::user_data_auth::GetAccountDiskUsageReply();
     reply->set_size(other_user_sizes[i]);
     other_users_size_test_api_->SimulateOnGetOtherUserSize(reply);

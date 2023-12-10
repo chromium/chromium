@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
+#include "ios/web/public/navigation/form_warning_type.h"
 #include "ios/web/public/web_state_delegate.h"
 #include "ios/web/public/web_state_observer.h"
 
@@ -82,6 +83,7 @@ class WebStateDelegateBrowserAgent
       const web::WebState::OpenURLParams& params) override;
   void ShowRepostFormWarningDialog(
       web::WebState* source,
+      web::FormWarningType warning_type,
       base::OnceCallback<void(bool)> callback) override;
   web::JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       web::WebState* source) override;

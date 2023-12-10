@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1178581264944972037">Paus</translation>
-<translation id="2558806128245168542">Tillbaka</translation>
-<translation id="3523426587027570423">Tryck för att stänga Lyssna på den här sidan.</translation>
+<translation id="1921351128855867012">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder framåt</translation>
+<translation id="1984328900355667246">Uppspelning inte tillgänglig</translation>
+<translation id="3023502830214299618">Det går inte att spela upp den här sidan just nu. Försök igen senare.</translation>
+<translation id="3807208219231826020">Skrubba uppspelningen</translation>
+<translation id="385051799172605136">Föregående</translation>
 <translation id="4431240646217225907">Markera text och scrolla automatiskt</translation>
 <translation id="4654641641922242357">Spelaren Lyssna på den här sidan.</translation>
-<translation id="4731877163452936634">Uppspelningshastighet: <ph name="PLAYBACK_SPEED" />. Klicka för att ändra.</translation>
+<translation id="4872475766448853257">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder bakåt</translation>
 <translation id="5234971936051226002">Spelaren Lyssna på den här sidan har minimerats.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="6315170314923504164">Mikrofon</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6846298663435243399">Läser in …</translation>
 <translation id="7587250070160020374">Spelas upp i Chrome</translation>
-<translation id="7945822420239537236">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder framåt</translation>
-<translation id="7972866381678406344">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder bakåt</translation>
 <translation id="8136852699834914183">Uppspelning är inte tillgängligt på den här sidan.</translation>
+<translation id="8264989794233974275">Öka/minska hastigheten till <ph name="PLAYBACK_SPEED" /> x.</translation>
+<translation id="8407011429883244666">Stäng spelaren.</translation>
 <translation id="8953618380150219653">Spelaren Lyssna på den här sidan har öppnats över hela skärmen.</translation>
 </translationbundle>

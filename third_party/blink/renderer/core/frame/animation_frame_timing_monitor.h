@@ -57,12 +57,11 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void Shutdown();
 
-  void WillBeginMainFrame();
+  void BeginMainFrame(base::TimeTicks frame_time);
   void WillPerformStyleAndLayoutCalculation();
   void DidBeginMainFrame();
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
-                       base::TimeTicks desired_execution_time,
                        LocalFrame* frame);
 
   // TaskTimeObsrver
@@ -70,7 +69,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void DidProcessTask(base::TimeTicks start_time,
                       base::TimeTicks end_time) override {
-    OnTaskCompleted(start_time, end_time, base::TimeTicks(), /*frame=*/nullptr);
+    OnTaskCompleted(start_time, end_time, /*frame=*/nullptr);
   }
 
   // probes
@@ -102,9 +101,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void DidRunJavaScriptDialog();
   void DidFinishSyncXHR(base::TimeDelta);
 
-  void SetDesiredRenderStartTime(base::TimeTicks time) {
-    desired_render_start_time_ = time;
-  }
 
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
@@ -156,12 +152,13 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   };
   State state_ = State::kIdle;
 
-  base::TimeTicks desired_render_start_time_;
   base::TimeTicks first_ui_event_timestamp_;
   base::TimeTicks javascript_dialog_start_;
+  base::TimeTicks current_task_start_;
   base::TimeDelta total_blocking_time_excluding_longest_task_;
   base::TimeDelta longest_task_duration_;
   bool did_pause_ = false;
+  bool did_see_ui_events_ = false;
 
   unsigned entry_point_depth_ = 0;
 

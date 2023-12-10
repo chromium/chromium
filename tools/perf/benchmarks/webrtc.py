@@ -9,9 +9,7 @@ from telemetry.web_perf import timeline_based_measurement
 from benchmarks import press
 
 
-@benchmark.Info(emails=['mbonadei@chromium.org',
-                        'video-cmi-apis@google.com',
-                        'herre@google.com'],
+@benchmark.Info(emails=['video-cmi-apis@google.com', 'herre@google.com'],
                 component='Blink>WebRTC',
                 documentation_url='http://bit.ly/webrtc-benchmark')
 class WebrtcPerfBenchmark(press._PressBenchmark):  # pylint: disable=protected-access

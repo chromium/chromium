@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 namespace {
 
-class FlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class FlexLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const DevtoolsFlexInfo* LayoutForDevtools(const String& body_content) {
     SetBodyInnerHTML(body_content);
@@ -49,15 +49,15 @@ TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
     </div>
   )HTML");
 
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
-  NGBlockNode box(GetDocument().body()->GetLayoutBox());
+  BlockNode box(GetDocument().body()->GetLayoutBox());
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
   EXPECT_EQ(PhysicalSize(84, 22), fragment->Size());
   ASSERT_EQ(1u, fragment->Children().size());
-  fragment = To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+  fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
   EXPECT_EQ(PhysicalSize(50, 22), fragment->Size());
   ASSERT_EQ(1u, fragment->Children().size());
   EXPECT_EQ(PhysicalSize(29, 22), fragment->Children()[0]->Size());

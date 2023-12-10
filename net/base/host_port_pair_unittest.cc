@@ -4,11 +4,12 @@
 
 #include "net/base/host_port_pair.h"
 
+#include <optional>
+
 #include "base/values.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 

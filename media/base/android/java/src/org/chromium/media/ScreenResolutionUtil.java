@@ -28,7 +28,7 @@ public class ScreenResolutionUtil {
                     continue;
                 }
                 if (videoCapabilities.isSizeSupported(
-                            targetResolution.getWidth(), targetResolution.getHeight())) {
+                        targetResolution.getWidth(), targetResolution.getHeight())) {
                     return true;
                 }
             } catch (IllegalArgumentException e) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,6 +57,10 @@ void AppPlatformMetricsService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kAppUsageTime);
   registry->RegisterDictionaryPref(kAppInputEventsKey);
   registry->RegisterDictionaryPref(kWebsiteUsageTime);
+
+  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+    AppDiscoveryMetrics::RegisterProfilePrefs(registry);
+  }
 }
 
 // static
@@ -69,14 +74,15 @@ void AppPlatformMetricsService::Start(
   app_platform_app_metrics_ = std::make_unique<apps::AppPlatformMetrics>(
       profile_, app_registry_cache, instance_registry);
   app_platform_input_metrics_ = std::make_unique<apps::AppPlatformInputMetrics>(
-      profile_, instance_registry);
+      profile_, app_registry_cache, instance_registry);
   website_metrics_ = std::make_unique<apps::WebsiteMetrics>(
       profile_, GetUserTypeByDeviceTypeMetrics());
 
   // App discovery logging.
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     app_discovery_metrics_ = std::make_unique<apps::AppDiscoveryMetrics>(
-        profile_, instance_registry, app_platform_app_metrics_.get());
+        profile_, app_registry_cache, instance_registry,
+        app_platform_app_metrics_.get());
   }
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);

@@ -106,7 +106,7 @@ class PaymentRequestLacrosBrowserTest
           });
     } else {
       EXPECT_CALL(service_, GetAssociatedAndroidPackage(_, _))
-          .WillRepeatedly(RunOnceCallback<1>(nullptr));
+          .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(nullptr));
     }
 
     InstallTestApp();

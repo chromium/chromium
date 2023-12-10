@@ -18,7 +18,7 @@ const elementMap = new Map();
  * @param {string} attribute An attribute name.
  * @return {?string} Lowercase value of DOM element or null if not present.
  */
-function getLowerCaseAttribute_(element, attribute) {
+function getLowerCaseAttribute(element, attribute) {
   if (!element) {
     return null;
   }
@@ -40,18 +40,18 @@ function getLowerCaseAttribute_(element, attribute) {
  * @param {Element} element An element to check if it can be autocompleted.
  * @return {boolean} true if element can be autocompleted.
  */
-__gCrWeb.fill.autoComplete = function(element) {
+function autoComplete(element) {
   if (!element) {
     return false;
   }
-  if (getLowerCaseAttribute_(element, 'autocomplete') === 'off') {
+  if (getLowerCaseAttribute(element, 'autocomplete') === 'off') {
     return false;
   }
-  if (getLowerCaseAttribute_(element.form, 'autocomplete') == 'off') {
+  if (getLowerCaseAttribute(element.form, 'autocomplete') == 'off') {
     return false;
   }
   return true;
-};
+}
 
 /**
  * Returns true if an element should suggest autocomplete dropdown.
@@ -60,14 +60,13 @@ __gCrWeb.fill.autoComplete = function(element) {
  * @return {boolean} true if autocomplete dropdown should be suggested.
  */
 __gCrWeb.fill.shouldAutocomplete = function(element) {
-  if (!__gCrWeb.fill.autoComplete(element)) {
+  if (!autoComplete(element)) {
     return false;
   }
-  if (getLowerCaseAttribute_(element, 'autocomplete') === 'one-time-code') {
+  if (getLowerCaseAttribute(element, 'autocomplete') === 'one-time-code') {
     return false;
   }
-  if (getLowerCaseAttribute_(element.form, 'autocomplete') ===
-      'one-time-code') {
+  if (getLowerCaseAttribute(element.form, 'autocomplete') === 'one-time-code') {
     return false;
   }
   return true;
@@ -86,7 +85,7 @@ __gCrWeb.fill.shouldAutocomplete = function(element) {
  * @param {string} value The value the input element will be set.
  * @param {Element} input The input element of which the value is set.
  */
-function setInputElementAngularValue_(value, input) {
+function setInputElementAngularValue(value, input) {
   if (!input || !window['angular']) {
     return;
   }
@@ -139,21 +138,18 @@ __gCrWeb.fill.setInputElementValue = function(
 
   const activeElement = document.activeElement;
   if (input !== activeElement) {
-    __gCrWeb.fill.createAndDispatchHTMLEvent(
-        activeElement, value, 'blur', true, false);
-    __gCrWeb.fill.createAndDispatchHTMLEvent(
-        input, value, 'focus', true, false);
+    createAndDispatchHTMLEvent(activeElement, value, 'blur', true, false);
+    createAndDispatchHTMLEvent(input, value, 'focus', true, false);
   }
 
-  const filled = setInputElementValue_(value, input);
+  const filled = setInputElementValue(value, input);
   if (callback) {
     callback();
   }
 
   if (input !== activeElement) {
-    __gCrWeb.fill.createAndDispatchHTMLEvent(input, value, 'blur', true, false);
-    __gCrWeb.fill.createAndDispatchHTMLEvent(
-        activeElement, value, 'focus', true, false);
+    createAndDispatchHTMLEvent(input, value, 'blur', true, false);
+    createAndDispatchHTMLEvent(activeElement, value, 'focus', true, false);
   }
   return filled;
 };
@@ -165,7 +161,7 @@ __gCrWeb.fill.setInputElementValue = function(
  * @param {Element} input The input element of which the value is set.
  * @return {boolean} Whether the value has been set successfully.
  */
-function setInputElementValue_(value, input) {
+function setInputElementValue(value, input) {
   const propertyName = (input.type === 'checkbox' || input.type === 'radio') ?
       'checked' :
       'value';
@@ -175,7 +171,7 @@ function setInputElementValue_(value, input) {
     // returns false only for file input. As file input is not relevant for
     // autofill and this method is only used for autofill for now, there is no
     // such check in this implementation.
-    value = __gCrWeb.fill.sanitizeValueForInputElement(value, input);
+    value = sanitizeValueForInputElement(value, input);
   }
 
   // Return early if the value hasn't changed.
@@ -231,9 +227,9 @@ function setInputElementValue_(value, input) {
   if (window['angular']) {
     // The page uses the AngularJS framework. Update the angular value before
     // sending events.
-    setInputElementAngularValue_(value, input);
+    setInputElementAngularValue(value, input);
   }
-  __gCrWeb.fill.notifyElementValueChanged(input, value);
+  notifyElementValueChanged(input, value);
 
   if (overrideProperty) {
     Object.defineProperty(input, propertyName, oldPropertyDescriptor);
@@ -261,7 +257,7 @@ function setInputElementValue_(value, input) {
  *     sanitized.
  * @return {string} The sanitized value.
  */
-__gCrWeb.fill.sanitizeValueForInputElement = function(proposedValue, element) {
+function sanitizeValueForInputElement(proposedValue, element) {
   if (!proposedValue) {
     return '';
   }
@@ -276,11 +272,10 @@ __gCrWeb.fill.sanitizeValueForInputElement = function(proposedValue, element) {
   // TextFieldInputType is relevant and sanitizeValue() for other types of
   // input elements has not been implemented.
   if (__gCrWeb.common.isTextField(element)) {
-    return __gCrWeb.fill.sanitizeValueForTextFieldInputType(
-        proposedValue, element);
+    return sanitizeValueForTextFieldInputType(proposedValue, element);
   }
   return proposedValue;
-};
+}
 
 /**
  * Returns a sanitized value for a text field.
@@ -294,13 +289,12 @@ __gCrWeb.fill.sanitizeValueForInputElement = function(proposedValue, element) {
  *     sanitized.
  * @return {string} The sanitized value.
  */
-__gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
-    proposedValue, element) {
+function sanitizeValueForTextFieldInputType(proposedValue, element) {
   const textFieldElementType = element.type;
   if (textFieldElementType === 'email') {
-    return __gCrWeb.fill.sanitizeValueForEmailInputType(proposedValue, element);
+    return sanitizeValueForEmailInputType(proposedValue, element);
   } else if (textFieldElementType === 'number') {
-    return __gCrWeb.fill.sanitizeValueForNumberInputType(proposedValue);
+    return sanitizeValueForNumberInputType(proposedValue);
   }
   const valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n|\r)/gm, '');
   // TODO(chenyu): Should we also implement numCharactersInGraphemeClusters()
@@ -320,7 +314,7 @@ __gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
     }
   }
   return valueWithLineBreakRemoved.substring(0, newLength);
-};
+}
 
 /**
  * Returns the sanitized value for an email input.
@@ -336,8 +330,7 @@ __gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
  *     sanitized.
  * @return {string} The sanitized value.
  */
-__gCrWeb.fill.sanitizeValueForEmailInputType = function(
-    proposedValue, element) {
+function sanitizeValueForEmailInputType(proposedValue, element) {
   const valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n\r)/gm, '');
 
   if (!element.multiple) {
@@ -348,7 +341,7 @@ __gCrWeb.fill.sanitizeValueForEmailInputType = function(
     addresses[i] = __gCrWeb.common.trim(addresses[i]);
   }
   return addresses.join(',');
-};
+}
 
 
 /**
@@ -367,13 +360,13 @@ __gCrWeb.fill.sanitizeValueForEmailInputType = function(
  * @param {string} proposedValue The proposed value.
  * @return {string} The sanitized value.
  */
-__gCrWeb.fill.sanitizeValueForNumberInputType = function(proposedValue) {
+function sanitizeValueForNumberInputType(proposedValue) {
   const sanitizedValue = Number(proposedValue);
   if (isNaN(sanitizedValue)) {
     return '';
   }
   return sanitizedValue.toString();
-};
+}
 
 /**
  * Creates and sends notification that element has changed.
@@ -384,18 +377,13 @@ __gCrWeb.fill.sanitizeValueForNumberInputType = function(proposedValue) {
  *
  * @param {Element} element The element that changed.
  */
-__gCrWeb.fill.notifyElementValueChanged = function(element, value) {
-  __gCrWeb.fill.createAndDispatchHTMLEvent(
-      element, value, 'keydown', true, false);
-  __gCrWeb.fill.createAndDispatchHTMLEvent(
-      element, value, 'keypress', true, false);
-  __gCrWeb.fill.createAndDispatchHTMLEvent(
-      element, value, 'input', true, false);
-  __gCrWeb.fill.createAndDispatchHTMLEvent(
-      element, value, 'keyup', true, false);
-  __gCrWeb.fill.createAndDispatchHTMLEvent(
-      element, value, 'change', true, false);
-};
+function notifyElementValueChanged(element, value) {
+  createAndDispatchHTMLEvent(element, value, 'keydown', true, false);
+  createAndDispatchHTMLEvent(element, value, 'keypress', true, false);
+  createAndDispatchHTMLEvent(element, value, 'input', true, false);
+  createAndDispatchHTMLEvent(element, value, 'keyup', true, false);
+  createAndDispatchHTMLEvent(element, value, 'change', true, false);
+}
 
 /**
  * Creates and dispatches an HTML event.
@@ -407,15 +395,14 @@ __gCrWeb.fill.notifyElementValueChanged = function(element, value) {
  * @param {boolean} cancelable A boolean indicating whether the event can be
  *     canceled.
  */
-__gCrWeb.fill.createAndDispatchHTMLEvent = function(
-    element, value, type, bubbles, cancelable) {
+function createAndDispatchHTMLEvent(element, value, type, bubbles, cancelable) {
   const event =
       new Event(type, {bubbles: bubbles, cancelable: cancelable, data: value});
   if (type === 'input') {
     event.inputType = 'insertText';
   }
   element.dispatchEvent(event);
-};
+}
 
 /**
  * Converts a relative URL into an absolute URL.
@@ -424,7 +411,7 @@ __gCrWeb.fill.createAndDispatchHTMLEvent = function(
  * @param {string} relativeURL Relative URL.
  * @return {string} Absolute URL.
  */
-function absoluteURL_(doc, relativeURL) {
+function absoluteURL(doc, relativeURL) {
   // In the case of data: URL-based pages, relativeURL === absoluteURL.
   if (doc.location.protocol === 'data:') {
     return doc.location.href;
@@ -449,7 +436,7 @@ function absoluteURL_(doc, relativeURL) {
  */
 __gCrWeb.fill.getCanonicalActionForForm = function(formElement) {
   const rawAction = formElement.getAttribute('action') || '';
-  const absoluteUrl = absoluteURL_(formElement.ownerDocument, rawAction);
+  const absoluteUrl = absoluteURL(formElement.ownerDocument, rawAction);
   return __gCrWeb.common.removeQueryAndReferenceFromURL(absoluteUrl);
 };
 
@@ -482,18 +469,6 @@ __gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
     field['option_contents'].push(
         option['text'].substring(0, fillConstants.MAX_STRING_LENGTH));
   }
-};
-
-/**
- * Returns the nodeValue in a way similar to the C++ version of node.nodeValue,
- * used in src/components/autofill/content/renderer/form_autofill_util.h.
- * Newlines and tabs are stripped.
- *
- * @param {Node} node A node to examine.
- * @return {string} The text contained in |element|.
- */
-__gCrWeb.fill.nodeValue = function(node) {
-  return (node.nodeValue || '').replace(/[\n\t]/gm, '');
 };
 
 /**

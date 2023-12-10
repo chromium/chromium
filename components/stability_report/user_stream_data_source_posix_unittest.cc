@@ -25,7 +25,11 @@ TEST(StabilityReportUserStreamDataSourceTest, GetOpenFDs) {
   process_snapshot.SetProcessID(process_id);
 
   std::unique_ptr<base::ProcessMetrics> metrics =
+#if !BUILDFLAG(IS_MAC)
       base::ProcessMetrics::CreateProcessMetrics(process_id);
+#else
+      base::ProcessMetrics::CreateProcessMetrics(process_id, nullptr);
+#endif  // !BUILDFLAG(IS_MAC)
   const int fd_count = metrics->GetOpenFdCount();
   EXPECT_GE(fd_count, 0);
 
@@ -51,7 +55,7 @@ TEST(StabilityReportUserStreamDataSourceTest, GetOpenFDs) {
   EXPECT_TRUE(process_state.file_system_state().has_posix_file_system_state());
   EXPECT_EQ(process_state.file_system_state()
                 .posix_file_system_state()
-                .crashing_open_file_descriptors(),
+                .open_file_descriptors(),
             base::checked_cast<unsigned int>(fd_count + 1));
 }
 

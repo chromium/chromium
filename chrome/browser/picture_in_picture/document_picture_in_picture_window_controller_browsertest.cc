@@ -486,24 +486,6 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                           "'documentPictureInPicture' in window"));
 }
 
-// Make sure that we cannot set window bounds on the PiP window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CannotSetWindowRect) {
-  LoadTabAndEnterPictureInPicture(browser());
-  auto* pip_web_contents = window_controller()->GetChildWebContents();
-  ASSERT_NE(nullptr, pip_web_contents);
-
-  auto* browser_view = static_cast<BrowserView*>(
-      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  const gfx::Rect bounds = browser_view->GetBounds();
-  gfx::Rect different_bounds(bounds.x() + 10, bounds.y() + 10,
-                             bounds.width() / 2, bounds.height() / 2);
-  ASSERT_NE(bounds, different_bounds);
-  static_cast<content::WebContentsDelegate*>(browser_view->browser())
-      ->SetContentsBounds(pip_web_contents, different_bounds);
-  EXPECT_EQ(bounds, browser_view->GetBounds());
-}
-
 // Make sure that inner bounds of document PiP windows are not smaller than the
 // allowed minimum size.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
@@ -774,4 +756,22 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBrowserTest,
   gfx::Point expected_origin =
       gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
   ASSERT_EQ(window_bounds.origin(), expected_origin);
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       DoNotDeferMediaLoadIfWindowOpened) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+
+  // Open a new foreground tab.
+  GURL test_page_url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kPictureInPictureDocumentPipPage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_NE(browser()->tab_strip_model()->GetActiveWebContents(),
+            opener_web_contents);
+
+  ASSERT_EQ(true, EvalJs(opener_web_contents, "loadAndPlayVideo();"));
 }

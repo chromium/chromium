@@ -488,7 +488,7 @@ std::unique_ptr<Volume> Volume::CreateForTesting(base::FilePath device_path,
 std::unique_ptr<Volume> Volume::CreateForTesting(
     base::FilePath path,
     VolumeType volume_type,
-    absl::optional<guest_os::VmType> vm_type,
+    std::optional<guest_os::VmType> vm_type,
     base::FilePath source_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->mount_path_ = std::move(path);

@@ -1,0 +1,2 @@
+CONSOLE ERROR: Permissions policy violation: unload is not allowed in this document.
+PASS if no crash.

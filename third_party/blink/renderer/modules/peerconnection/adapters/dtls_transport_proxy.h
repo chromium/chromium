@@ -21,7 +21,7 @@
 // no control, and all information is passed via callbacks on the Delegate.
 
 // The proxy thread = the Blink main thread
-// The host thread = the webrtc signalling thread (the one that gets callbacks)
+// The host thread = the webrtc network thread (the one that gets callbacks)
 
 namespace blink {
 

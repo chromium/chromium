@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
  public:
   explicit EnclaveAuthenticatorDiscovery(
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+      base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+          save_passkey_callback,
       raw_ptr<network::mojom::NetworkContext> network_context);
   ~EnclaveAuthenticatorDiscovery() override;
 
@@ -40,6 +42,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
 
   std::unique_ptr<EnclaveAuthenticator> authenticator_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys_;
+  base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+      save_passkey_callback_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
 
   // TODO(https://crbug.com/1459620): Temporary for the stand-in signing

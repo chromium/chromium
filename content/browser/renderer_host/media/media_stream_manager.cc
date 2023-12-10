@@ -647,7 +647,7 @@ class MediaStreamManager::DeviceRequest {
     ui_request_ = std::make_unique<MediaStreamRequest>(
         requesting_render_frame_host_id.child_id,
         requesting_render_frame_host_id.frame_routing_id, page_request_id,
-        salt_and_origin.origin().GetURL(), user_gesture, request_type_,
+        salt_and_origin.origin(), user_gesture, request_type_,
         requested_audio_device_id, requested_video_device_id, audio_type_,
         video_type_, stream_controls_.disable_local_echo,
         stream_controls_.request_pan_tilt_zoom_permission);
@@ -671,7 +671,7 @@ class MediaStreamManager::DeviceRequest {
     ui_request_ = std::make_unique<MediaStreamRequest>(
         target_render_frame_host_id_.child_id,
         target_render_frame_host_id_.frame_routing_id, page_request_id,
-        salt_and_origin.origin().GetURL(), user_gesture, request_type_, "", "",
+        salt_and_origin.origin(), user_gesture, request_type_, "", "",
         audio_type_, video_type_, stream_controls_.disable_local_echo,
         /*request_pan_tilt_zoom_permission=*/false);
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
@@ -1495,11 +1495,7 @@ MediaStreamManager::MediaStreamManager(
     if (media::ShouldUseCrosCameraService()) {
       media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
           GpuMemoryBufferManagerSingleton::GetInstance());
-      media::CameraHalDispatcherImpl::GetInstance()->Start(
-          base::BindRepeating(
-              &VideoCaptureDependencies::CreateJpegDecodeAccelerator),
-          base::BindRepeating(
-              &VideoCaptureDependencies::CreateJpegEncodeAccelerator));
+      media::CameraHalDispatcherImpl::GetInstance()->Start();
       media::JpegAcceleratorProviderImpl::GetInstance()->Start(
           base::BindRepeating(
               &VideoCaptureDependencies::CreateJpegDecodeAccelerator),
@@ -2040,7 +2036,11 @@ void MediaStreamManager::OpenDevice(
 
 void MediaStreamManager::EnsureDeviceMonitorStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  media_devices_manager_->StartMonitoring();
+  // Call `EnumerateDevices` to start monitoring and ensure that the observers
+  // are notified at least once.
+  MediaDevicesManager::BoolDeviceTypes types;
+  types.fill(true);
+  media_devices_manager_->EnumerateDevices(types, base::DoNothing());
 }
 
 void MediaStreamManager::StopRemovedDevice(
@@ -2124,8 +2124,8 @@ bool MediaStreamManager::GetRequestedDeviceCaptureId(
 void MediaStreamManager::TranslateDeviceIdToSourceId(
     const DeviceRequest* request,
     MediaStreamDevice* device) const {
-  if (request->audio_type() == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-      request->video_type() == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+  if (blink::IsDeviceMediaType(request->audio_type()) ||
+      blink::IsDeviceMediaType(request->video_type())) {
     device->id =
         GetHMACForRawMediaDeviceID(request->salt_and_origin, device->id);
     if (device->group_id) {
@@ -2800,8 +2800,11 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
                          RequestTypeToString(request->request_type())));
 
   // Subscribe to follow permission changes in order to close streams when the
-  // user denies mic/camera.
-  SubscribeToPermissionController(label, request);
+  // user denies mic/camera. Only done for input devices.
+  if (blink::IsDeviceMediaType(request->audio_type()) ||
+      blink::IsDeviceMediaType(request->video_type())) {
+    SubscribeToPermissionController(label, request);
+  }
 
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       request->stream_devices_set.Clone();
@@ -2843,8 +2846,11 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
                          RequestTypeToString(request->request_type())));
 
   // Subscribe to follow permission changes in order to close streams when the
-  // user denies mic/camera.
-  SubscribeToPermissionController(label, request);
+  // user denies mic/camera. Only done for input devices.
+  if (blink::IsDeviceMediaType(request->audio_type()) ||
+      blink::IsDeviceMediaType(request->video_type())) {
+    SubscribeToPermissionController(label, request);
+  }
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop and so outlives the IO thread.

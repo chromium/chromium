@@ -47,12 +47,6 @@ class TestPrefetchService : public PrefetchService {
 
 class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
  public:
-  PrefetchDocumentManagerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor,
-        {{"proxy_host", "https://testproxyhost.com"}});
-  }
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -69,9 +63,16 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    // The PrefetchService we created for the test contains a
+    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
+    // When tearing down, it's important to free our PrefetchService
+    // before freeing the BrowserContext, to avoid any chance of a use after
+    // free.
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
+    prefetch_service_.reset();
+
     web_contents_.reset();
     browser_context_.reset();
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -117,7 +118,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     auto* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
             &GetPrimaryMainFrame());
-    prefetch_document_manager->EnableNoVarySearchSupport();
 
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -149,8 +149,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
@@ -389,38 +387,44 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   ASSERT_EQ(prefetch_urls.size(), 6U);
   EXPECT_EQ(prefetch_urls[0]->GetURL(), GetCrossOriginUrl("/candidate1.html"));
   EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
-            PrefetchType(/*use_prefetch_proxy=*/true,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager));
   EXPECT_TRUE(
       prefetch_urls[0]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[1]->GetURL(), GetCrossOriginUrl("/candidate2.html"));
   EXPECT_EQ(prefetch_urls[1]->GetPrefetchType(),
-            PrefetchType(/*use_prefetch_proxy=*/false,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kEager));
   EXPECT_TRUE(
       prefetch_urls[1]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[2]->GetURL(), GetSameOriginUrl("/candidate3.html"));
   EXPECT_EQ(prefetch_urls[2]->GetPrefetchType(),
-            PrefetchType(/*use_prefetch_proxy=*/false,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kEager));
   EXPECT_FALSE(
       prefetch_urls[2]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[3]->GetURL(), GetCrossOriginUrl("/candidate6.html"));
   EXPECT_EQ(prefetch_urls[3]->GetPrefetchType(),
-            PrefetchType(/*use_prefetch_proxy=*/true,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kConservative));
   EXPECT_TRUE(
       prefetch_urls[3]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[4]->GetURL(),
             GetSameSiteCrossOriginUrl("/candidate7.html"));
   EXPECT_EQ(prefetch_urls[4]->GetPrefetchType(),
-            PrefetchType(/*use_prefetch_proxy=*/false,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kEager));
   EXPECT_FALSE(
       prefetch_urls[4]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[5]->GetURL(), GetSameOriginUrl("/candidate8.html"));
   EXPECT_EQ(prefetch_urls[5]->GetPrefetchType(),
-            PrefetchType(/*use_prefetch_proxy=*/true,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager));
   EXPECT_FALSE(
       prefetch_urls[5]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
@@ -454,6 +458,54 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
 }
+
+// Struct describing the settings for No-Vary-Search experiment's flags used to
+// support shipping and origin trial.
+struct NoVarySearchExperimentConfigTestInfo {
+  bool shipped_by_default;
+  bool origin_trial_enabled;
+  bool experiment_expected_status;
+};
+
+class PrefetchDocumentManagerNoVarySearchTest
+    : public PrefetchDocumentManagerTest,
+      public testing::WithParamInterface<NoVarySearchExperimentConfigTestInfo> {
+};
+
+// Tests that the NoVarySearch feature is properly enabled/disabled when
+// setting shipping and Origin Trial flags.
+TEST_P(PrefetchDocumentManagerNoVarySearchTest,
+       NoVarySearchFeatureStatusCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  bool shipped_by_default = GetParam().shipped_by_default;
+  bool origin_trial_enabled = GetParam().origin_trial_enabled;
+  bool experiment_expected_status = GetParam().experiment_expected_status;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kPrefetchNoVarySearch,
+      {{network::features::kPrefetchNoVarySearchShippedByDefault.name,
+        shipped_by_default ? "true" : "false"}});
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &GetPrimaryMainFrame());
+
+  if (origin_trial_enabled) {
+    prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
+  }
+
+  EXPECT_EQ(prefetch_document_manager->NoVarySearchSupportEnabled(),
+            experiment_expected_status);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrefetchDocumentManagerTest,
+    PrefetchDocumentManagerNoVarySearchTest,
+    ::testing::Values(NoVarySearchExperimentConfigTestInfo{false, false, false},
+                      NoVarySearchExperimentConfigTestInfo{false, true, true},
+                      NoVarySearchExperimentConfigTestInfo{true, false, true},
+                      NoVarySearchExperimentConfigTestInfo{true, true, true}));
 
 }  // namespace
 }  // namespace content

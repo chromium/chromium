@@ -16,9 +16,7 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.components.content_creation.notes.ui.TextHighlightSpan;
 
-/**
- * Model class for a template's text style.
- */
+/** Model class for a template's text style. */
 public class TextStyle {
     // Value in pixels of the leading padding when text has a highlight.
     private static final int HIGHLIGHT_LEADING_PADDING = 10;
@@ -35,9 +33,16 @@ public class TextStyle {
     private final HighlightStyle mHighlightStyle;
 
     /** Constructor. */
-    public TextStyle(String fontName, @ColorInt int fontColor, int weight, boolean allCaps,
-            TextAlignment alignment, int minTextSizeSP, int maxTextSizeSP,
-            @ColorInt int highlightColor, HighlightStyle highlightStyle) {
+    public TextStyle(
+            String fontName,
+            @ColorInt int fontColor,
+            int weight,
+            boolean allCaps,
+            TextAlignment alignment,
+            int minTextSizeSP,
+            int maxTextSizeSP,
+            @ColorInt int highlightColor,
+            HighlightStyle highlightStyle) {
         this.fontName = fontName;
         this.weight = weight;
 
@@ -59,16 +64,18 @@ public class TextStyle {
         return this.mHighlightColor != 0 && this.mHighlightStyle != HighlightStyle.NONE;
     }
 
-    /**
-     * Applies the current styling to the |text| when setting it on |textView|.
-     */
+    /** Applies the current styling to the |text| when setting it on |textView|. */
     public void apply(TextView textView, String text) {
         textView.setTextColor(this.mFontColor);
         textView.setAllCaps(this.mAllCaps);
         textView.setGravity(TextAlignment.toGravity(this.mAlignment));
 
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(textView, mMinTextSizeSP,
-                mMaxTextSizeSP, /*autoSizeStepGranularity=*/1, TypedValue.COMPLEX_UNIT_SP);
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                textView,
+                mMinTextSizeSP,
+                mMaxTextSizeSP,
+                /* autoSizeStepGranularity= */ 1,
+                TypedValue.COMPLEX_UNIT_SP);
 
         if (this.hasHighlight()) {
             int start = 0;
@@ -77,8 +84,9 @@ public class TextStyle {
             SpannableString spannableString = new SpannableString(text);
 
             boolean isRtl = textView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-            TextHighlightSpan highlightSpan = new TextHighlightSpan(
-                    this.mHighlightStyle, this.mHighlightColor, this.mAlignment, isRtl);
+            TextHighlightSpan highlightSpan =
+                    new TextHighlightSpan(
+                            this.mHighlightStyle, this.mHighlightColor, this.mAlignment, isRtl);
             spannableString.setSpan(highlightSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Needs a small leading margin span otherwise the highlight appears as if it was

@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -43,6 +44,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -64,6 +66,8 @@ public class TouchToFillCreditCardTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     private static final String FORM_URL =
             "/chrome/test/data/autofill/autofill_creditcard_form.html";
@@ -132,6 +136,9 @@ public class TouchToFillCreditCardTest {
                 () -> {
                     checkThat(mInputMethodWrapper.getShowSoftInputCounter(), is(0));
                 });
+
+        // Wait minimum amount of time for input protector.
+        mFakeTimeTestRule.advanceMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
 
         // The item with the index 1 in the recycler view is supposed to be the credit card.
         // Click on it to simulate user selection.

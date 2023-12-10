@@ -30,21 +30,30 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     @Override
     public void getSelectedSegment(
             String segmentationKey, Callback<SegmentSelectionResult> callback) {
-        SegmentationPlatformServiceImplJni.get().getSelectedSegment(
-                mNativePtr, this, segmentationKey, callback);
+        SegmentationPlatformServiceImplJni.get()
+                .getSelectedSegment(mNativePtr, this, segmentationKey, callback);
     }
 
     @Override
-    public void getClassificationResult(String segmentationKey, PredictionOptions predictionOptions,
-            InputContext inputContext, Callback<ClassificationResult> callback) {
-        SegmentationPlatformServiceImplJni.get().getClassificationResult(
-                mNativePtr, this, segmentationKey, predictionOptions, inputContext, callback);
+    public void getClassificationResult(
+            String segmentationKey,
+            PredictionOptions predictionOptions,
+            InputContext inputContext,
+            Callback<ClassificationResult> callback) {
+        SegmentationPlatformServiceImplJni.get()
+                .getClassificationResult(
+                        mNativePtr,
+                        this,
+                        segmentationKey,
+                        predictionOptions,
+                        inputContext,
+                        callback);
     }
 
     @Override
     public SegmentSelectionResult getCachedSegmentResult(String segmentationKey) {
-        return SegmentationPlatformServiceImplJni.get().getCachedSegmentResult(
-                mNativePtr, this, segmentationKey);
+        return SegmentationPlatformServiceImplJni.get()
+                .getCachedSegmentResult(mNativePtr, this, segmentationKey);
     }
 
     @CalledByNative
@@ -54,16 +63,23 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
 
     @NativeMethods
     interface Natives {
-        void getSelectedSegment(long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller, String segmentationKey,
+        void getSelectedSegment(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller,
+                String segmentationKey,
                 Callback<SegmentSelectionResult> callback);
 
-        void getClassificationResult(long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller, String segmentationKey,
-                PredictionOptions predictionOptions, InputContext inputContext,
+        void getClassificationResult(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller,
+                String segmentationKey,
+                PredictionOptions predictionOptions,
+                InputContext inputContext,
                 Callback<ClassificationResult> callback);
 
-        SegmentSelectionResult getCachedSegmentResult(long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller, String segmentationKey);
+        SegmentSelectionResult getCachedSegmentResult(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller,
+                String segmentationKey);
     }
 }

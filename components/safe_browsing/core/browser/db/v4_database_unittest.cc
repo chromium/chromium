@@ -509,7 +509,7 @@ TEST_F(V4DatabaseTest, TestStoresAvailable) {
 
   // Doesn't exist in out list
   const ListIdentifier bogus_id(LINUX_PLATFORM, CHROME_EXTENSION,
-                                CSD_WHITELIST);
+                                CSD_ALLOWLIST);
 
   EXPECT_TRUE(v4_database_->AreAllStoresAvailable(
       StoresToCheck({linux_malware_id_, win_malware_id_})));

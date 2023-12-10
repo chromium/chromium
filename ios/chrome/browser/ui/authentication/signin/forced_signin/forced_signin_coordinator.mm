@@ -10,8 +10,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
@@ -33,9 +33,13 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                            screenProvider:(ScreenProvider*)screenProvider {
+                            screenProvider:(ScreenProvider*)screenProvider
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _screenProvider = screenProvider;
   }
@@ -118,6 +122,7 @@
     case kTangibleSync:
     case kDefaultBrowserPromo:
     case kChoice:
+    case kOmniboxPosition:
     case kStepsCompleted:
       NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
       break;

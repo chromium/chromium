@@ -9,13 +9,8 @@ export class TestOsResetBrowserProxy extends TestBrowserProxy implements
     OsResetBrowserProxy {
   constructor() {
     super([
-      'onPowerwashDialogShow',
       'requestFactoryResetRestart',
     ]);
-  }
-
-  onPowerwashDialogShow(): void {
-    this.methodCalled('onPowerwashDialogShow');
   }
 
   requestFactoryResetRestart(): void {

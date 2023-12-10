@@ -121,7 +121,7 @@ class ObserverBridge : public BulkLeakCheckServiceInterface::Observer {
   }
 
   _bulkLeakCheckService->CheckUsernamePasswordPairs(
-      LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck,
       std::move(internalCredentials));
 }
 

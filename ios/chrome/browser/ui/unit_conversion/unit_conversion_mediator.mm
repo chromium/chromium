@@ -18,6 +18,8 @@
   BOOL _unitTypeChanged;
   // A boolean to track if the source unit value has changed.
   BOOL _sourceUnitValueChanged;
+  // A boolean to track if the target unit value has changed.
+  BOOL _targetUnitValueChanged;
 
   // An item to track the source unit change before the unit type is changed,
   // it's initialised with the value `kUnchanged` and store the first change
@@ -32,16 +34,23 @@
   // An item to track the target unit change, it is initialised with the value
   // `kUnchanged` and store the first change only.
   UnitConversionActionTypes _targetUnitChanged;
+
+  // The unit conversion keyed service to keep track of the changes of the
+  // target unit based on a source unit and store them as the new default
+  // conversion.
+  UnitConversionService* _service;
 }
 
-- (instancetype)init {
+- (instancetype)initWithService:(UnitConversionService*)service {
   self = [super init];
   if (self) {
     _unitTypeChanged = NO;
     _sourceUnitValueChanged = NO;
+    _targetUnitValueChanged = NO;
     _sourceUnitChangedBeforeUnitType = UnitConversionActionTypes::kUnchanged;
     _sourceUnitChangedAfterUnitType = UnitConversionActionTypes::kUnchanged;
     _targetUnitChanged = UnitConversionActionTypes::kUnchanged;
+    _service = service;
   }
   return self;
 }
@@ -52,6 +61,10 @@
   base::UmaHistogramEnumeration(kSourceUnitChangeBeforeUnitTypeChangeHistogram,
                                 _sourceUnitChangedBeforeUnitType);
   base::UmaHistogramEnumeration(kTargetUnitChangeHistogram, _targetUnitChanged);
+}
+
+- (void)shutdown {
+  _service = nullptr;
 }
 
 #pragma mark - UnitConversionMutator
@@ -128,6 +141,7 @@
   NSMeasurement* sourceUnitMeasurement =
       [[NSMeasurement alloc] initWithDoubleValue:unitValue unit:sourceUnit];
   if ([sourceUnitMeasurement canBeConvertedToUnit:targetUnit]) {
+    _service->UpdateDefaultConversionCache(sourceUnit, targetUnit);
     NSMeasurement* targetUnitMeasurement =
         [sourceUnitMeasurement measurementByConvertingToUnit:targetUnit];
 
@@ -149,6 +163,9 @@
                            targetUnit:(NSUnit*)targetUnit {
   NSNumber* unitValueNumber = [self numberFromString:sourceUnitValueField];
   if (!unitValueNumber) {
+    // Update the target field with 0 as a default value when the source field's
+    // content is not valid (empty and non numerical values).
+    [self.consumer updateTargetUnitValue:0 reload:YES];
     return;
   }
   double unitValue = unitValueNumber.doubleValue;
@@ -166,6 +183,34 @@
       _sourceUnitValueChanged = YES;
       base::RecordAction(
           base::UserMetricsAction("IOS.UnitConversion.SourceUnitValueChange"));
+    }
+  }
+}
+
+- (void)targetUnitValueFieldDidChange:(NSString*)targetUnitValueField
+                           sourceUnit:(NSUnit*)sourceUnit
+                           targetUnit:(NSUnit*)targetUnit {
+  NSNumber* unitValueNumber = [self numberFromString:targetUnitValueField];
+  if (!unitValueNumber) {
+    // Update the source field with 0 as a default value when the target field's
+    // content is not valid (empty and non numerical values).
+    [self.consumer updateSourceUnitValue:0 reload:YES];
+    return;
+  }
+  double unitValue = unitValueNumber.doubleValue;
+  NSMeasurement* targetUnitMeasurement =
+      [[NSMeasurement alloc] initWithDoubleValue:unitValue unit:targetUnit];
+  if ([targetUnitMeasurement canBeConvertedToUnit:sourceUnit]) {
+    NSMeasurement* sourceUnitMeasurement =
+        [targetUnitMeasurement measurementByConvertingToUnit:sourceUnit];
+    [self.consumer updateSourceUnitValue:sourceUnitMeasurement.doubleValue
+                                  reload:YES];
+    // Record only the first targetUnitValueChange before any change of the unit
+    // type.
+    if (!_targetUnitValueChanged) {
+      _targetUnitValueChanged = YES;
+      base::RecordAction(
+          base::UserMetricsAction("IOS.UnitConversion.TargetUnitValueChange"));
     }
   }
 }

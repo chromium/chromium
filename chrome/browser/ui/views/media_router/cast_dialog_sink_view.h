@@ -38,6 +38,7 @@ class CastDialogSinkView : public views::View {
   CastDialogSinkView(Profile* profile,
                      const UIMediaSink& sink,
                      views::Button::PressedCallback sink_pressed_callback,
+                     views::Button::PressedCallback issue_pressed_callback,
                      views::Button::PressedCallback stop_pressed_callback,
                      views::Button::PressedCallback freeze_pressed_callback);
   CastDialogSinkView(const CastDialogSinkView&) = delete;
@@ -59,14 +60,16 @@ class CastDialogSinkView : public views::View {
   views::MdTextButton* freeze_button_for_test() { return freeze_button_; }
   views::MdTextButton* stop_button_for_test() { return stop_button_; }
   views::StyledLabel* title_for_test() { return title_; }
-  views::Label* subtitle_for_test() { return subtitle_; }
+  views::View* subtitle_for_test() { return subtitle_; }
   void set_sink_for_test(const UIMediaSink& sink) { sink_ = sink; }
 
  private:
   std::unique_ptr<views::View> CreateButtonsView(
       views::Button::PressedCallback stop_pressed_callback,
       views::Button::PressedCallback freeze_pressed_callback);
-  std::unique_ptr<views::View> CreateLabelView(const UIMediaSink& sink);
+  std::unique_ptr<views::View> CreateLabelView(
+      const UIMediaSink& sink,
+      views::Button::PressedCallback issue_pressed_callback);
 
   // Gets accessible names for buttons based on if the current route is tab
   // mirroring, screen mirroring, or something else.
@@ -81,7 +84,7 @@ class CastDialogSinkView : public views::View {
   raw_ptr<views::MdTextButton> stop_button_ = nullptr;
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
-  raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::View> subtitle_ = nullptr;
 };
 
 }  // namespace media_router

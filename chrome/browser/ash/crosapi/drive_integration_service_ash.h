@@ -28,7 +28,8 @@ class DriveIntegrationServiceAsh : public mojom::DriveIntegrationService,
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver);
 
   // crosapi::mojom::DriveIntegrationService:
-  void GetMountPointPath(GetMountPointPathCallback callback) override;
+  void DeprecatedGetMountPointPath(
+      DeprecatedGetMountPointPathCallback callback) override;
   void AddDriveIntegrationServiceObserver(
       mojo::PendingRemote<mojom::DriveIntegrationServiceObserver> observer)
       override;

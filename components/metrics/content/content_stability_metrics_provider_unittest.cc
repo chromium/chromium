@@ -105,7 +105,7 @@ TEST_F(ContentStabilityMetricsProviderTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
+TEST_F(ContentStabilityMetricsProviderTest, RenderProcessObserver) {
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
   content::TestBrowserContext browser_context;
   content::MockRenderProcessHostFactory rph_factory;
@@ -153,6 +153,26 @@ TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kExtensionCrash, 0);
 }
+
+TEST_F(ContentStabilityMetricsProviderTest,
+       MetricsServicesWebContentsObserver) {
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kPageLoad, 0);
+
+  // Simulate page loads.
+  const auto expected_page_load_count = 4;
+  for (int i = 0; i < expected_page_load_count; i++) {
+    provider.OnPageLoadStarted();
+  }
+
+  // Verify metrics.
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kPageLoad,
+                                     expected_page_load_count);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Assertions for an extension related crash.

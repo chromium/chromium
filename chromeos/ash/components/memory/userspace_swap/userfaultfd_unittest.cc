@@ -16,7 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -70,7 +70,7 @@ class ScopedMemory {
   }
 
   void* Remap(size_t new_size) {
-    ptr_ = mremap(ptr_.get(), len_, new_size, MREMAP_MAYMOVE, nullptr);
+    ptr_ = mremap(ptr_, len_, new_size, MREMAP_MAYMOVE, nullptr);
     len_ = new_size;
     return ptr_;
   }
@@ -83,7 +83,7 @@ class ScopedMemory {
 
   operator bool() { return is_valid(); }
 
-  operator uintptr_t() { return reinterpret_cast<uintptr_t>(ptr_.get()); }
+  operator uintptr_t() { return reinterpret_cast<uintptr_t>(ptr_); }
 
   template <typename T>
   operator T*() {
@@ -94,7 +94,10 @@ class ScopedMemory {
   void* get() { return ptr_; }
 
  private:
-  raw_ptr<void, ExperimentalAsh> ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it always points to a mmap'd
+  // region of memory outside of the PA heap. Thus, there would be overhead
+  // involved with using a raw_ptr<> but no safety gains.
+  RAW_PTR_EXCLUSION void* ptr_ = nullptr;
   size_t len_ = 0;
 };
 

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 
+#include <optional>
+
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 const char kSelectFileDialogExtensionUserDataKey[] =
@@ -25,7 +26,7 @@ void SelectFileDialogExtensionUserData::SetDialogDataForWebContents(
     content::WebContents* web_contents,
     const std::string& routing_id,
     ui::SelectFileDialog::Type type,
-    absl::optional<policy::DlpFileDestination> dialog_caller) {
+    std::optional<policy::DlpFileDestination> dialog_caller) {
   DCHECK(web_contents);
   web_contents->SetUserData(
       kSelectFileDialogExtensionUserDataKey,
@@ -67,14 +68,14 @@ SelectFileDialogExtensionUserData::GetDialogTypeForWebContents(
 }
 
 // static
-absl::optional<policy::DlpFileDestination>
+std::optional<policy::DlpFileDestination>
 SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
     content::WebContents* web_contents) {
   // There's a race condition. This can be called from a callback after the
   // webcontents has been deleted.
   if (!web_contents) {
     LOG(WARNING) << "WebContents already destroyed.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (g_fake_dialog_caller) {
@@ -85,7 +86,7 @@ SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
   SelectFileDialogExtensionUserData* data =
       static_cast<SelectFileDialogExtensionUserData*>(
           web_contents->GetUserData(kSelectFileDialogExtensionUserDataKey));
-  return data ? data->dialog_caller() : absl::nullopt;
+  return data ? data->dialog_caller() : std::nullopt;
 }
 
 // static
@@ -97,7 +98,7 @@ void SelectFileDialogExtensionUserData::SetDialogCallerForTesting(
 SelectFileDialogExtensionUserData::SelectFileDialogExtensionUserData(
     const std::string& routing_id,
     ui::SelectFileDialog::Type type,
-    absl::optional<policy::DlpFileDestination> dialog_caller)
+    std::optional<policy::DlpFileDestination> dialog_caller)
     : routing_id_(routing_id),
       type_(type),
       dialog_caller_(std::move(dialog_caller)) {}

@@ -88,12 +88,6 @@ struct TriggerSpecs {
   map<uint32, uint8> trigger_data_indices;
 };
 
-// Configures a source's output space.
-// https://github.com/WICG/attribution-reporting-api/blob/main/flexible_event_config.md
-struct TriggerConfig {
-  TriggerDataMatching trigger_data_matching;
-};
-
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -128,7 +122,13 @@ struct SourceRegistration {
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
 
-  TriggerConfig trigger_config;
+  // Controls how trigger data is matched against the source's trigger specs.
+  TriggerDataMatching trigger_data_matching;
+
+  // Controls the epsilon parameter used for obtaining a randomized response for
+  // the containing source registration. Must be greater than or equal to 0.
+  // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response
+  double event_level_epsilon;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -194,6 +194,10 @@ struct TriggerRegistration {
   // Specifies whether to include source registration time in aggregatable
   // reports.
   SourceRegistrationTimeConfig source_registration_time_config;
+
+  // Specifies the context ID associated with the trigger. The context ID
+  // cannot be empty or longer than 64 bytes.
+  string? trigger_context_id;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

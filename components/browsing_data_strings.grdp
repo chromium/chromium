@@ -158,6 +158,12 @@
       =1 {From 1 site (you won't be signed out of your Google Account)}
       other {From # sites (you won't be signed out of your Google Account)}}
   </message>
+  <message name="IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION" desc="A counter showing the number of sites that use cookies, followed by an exception message that the user will stay signed in to their Google account.">
+    {COUNT, plural,
+      =0 {None}
+      =1 {From 1 site (you'll stay signed in to your Google Account)}
+      other {From # sites (you'll stay signed in to your Google Account)}}
+  </message>
   <message name="IDS_ANDROID_DEL_COOKIES_COUNTER_ADVANCED" desc="A counter showing the number of sites that use cookies on the advanced Clear browsing data screen on Android. It also explains that deleting these cookies will sign you out of most sites.">
     {COUNT, plural,
       =0 {None}

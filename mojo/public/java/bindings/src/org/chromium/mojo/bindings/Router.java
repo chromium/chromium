@@ -13,9 +13,7 @@ import org.chromium.mojo.system.MessagePipeHandle;
  */
 public interface Router extends MessageReceiverWithResponder, HandleOwner<MessagePipeHandle> {
 
-    /**
-     * Start listening for incoming messages.
-     */
+    /** Start listening for incoming messages. */
     public void start();
 
     /**
@@ -24,8 +22,6 @@ public interface Router extends MessageReceiverWithResponder, HandleOwner<Messag
      */
     public void setIncomingMessageReceiver(MessageReceiverWithResponder incomingMessageReceiver);
 
-    /**
-     * Set the handle that will be notified of errors on the message pipe.
-     */
+    /** Set the handle that will be notified of errors on the message pipe. */
     public void setErrorHandler(ConnectionErrorHandler errorHandler);
 }

@@ -28,6 +28,8 @@ class MenuRunner;
 class SidePanelWebUIView : public views::WebView,
                            public BubbleContentsWrapper::Host {
  public:
+  static inline constexpr int kSidePanelWebViewId = 777;
+
   METADATA_HEADER(SidePanelWebUIView);
   SidePanelWebUIView(base::RepeatingClosure on_show_cb,
                      base::RepeatingClosure close_cb,

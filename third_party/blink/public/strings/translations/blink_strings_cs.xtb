@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Zkraťte prosím tento text na <ph name="MAX_CHARACTERS" /> znaků nebo méně. (Aktuálně má <ph name="CURRENT_LENGTH" /> znaků.)</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týden, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Stopa <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera a mikrofon jsou povoleny</translation>
 <translation id="2393030564806080191">Hexadecimální hodnota barvy</translation>
 <translation id="2398813069815436052">dialogové okno je otevřeno.</translation>
 <translation id="245932805758469625">zbývající čas videa v sekundách</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Prodlužte prosím tento text na <ph name="MIN_CHARACTERS" /> či více znaků. (Aktuálně má <ph name="CURRENT_LENGTH" /> znaků.)</translation>
 <translation id="383465348367842624">Část před znakem <ph name="ATSIGN" /> nesmí obsahovat znak <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Ukončit režim na celou obrazovku</translation>
+<translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4103419683916926126">Milisekundy</translation>
 <translation id="4201051445878709314">Zobrazit předchozí měsíc</translation>
 <translation id="4360991593054037559">Zadejte platnou hodnotu. Dvě nejbližší hodnoty jsou <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
+<translation id="4663373278480897665">Kamera je povolena</translation>
 <translation id="4664250907885839816">Část za znakem <ph name="ATSIGN" /> nesmí obsahovat znak <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Video se přehrává v režimu obrazu v obraze</translation>
 <translation id="4748357248530471599">přepnout výřez displeje na celou obrazovku</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">stáhnout média</translation>
 <translation id="698788488269350478">rozbaleno.</translation>
 <translation id="6989848892321993519">Prodlužte prosím tento text na <ph name="MIN_CHARACTERS" /> či více znaků. (Aktuálně má 1 znak.)</translation>
+<translation id="7080893216867146095">Sdílení polohy povoleno</translation>
 <translation id="709897737746224366">Zadejte hodnotu, která odpovídá požadovanému formátu.</translation>
 <translation id="7102274145889307184">aktuální poloha</translation>
 <translation id="7263440858009898357">Vyberte prosím v seznamu některou položku.</translation>

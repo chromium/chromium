@@ -66,14 +66,24 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   void OnGetManagedProperties(std::string iccid,
                               std::string guid,
                               const std::string& service_path,
-                              absl::optional<base::Value::Dict> properties,
-                              absl::optional<std::string> error);
+                              std::optional<base::Value::Dict> properties,
+                              std::optional<std::string> error);
+
+  // Helper func that creates the |default_apn| before creating the
+  // |attach_apn|. If |can_use_default_apn_as_attach| is true, the |default_apn|
+  // will be given the capability to attach as well.
+  void CreateDefaultThenAttachCustomApns(
+      chromeos::network_config::mojom::ApnPropertiesPtr attach_apn,
+      chromeos::network_config::mojom::ApnPropertiesPtr default_apn,
+      bool can_use_default_apn_as_attach,
+      const std::string& guid,
+      const std::string& iccid);
 
   void CreateCustomApn(const std::string& iccid,
                        const std::string& network_guid,
                        chromeos::network_config::mojom::ApnPropertiesPtr apn,
-                       absl::optional<base::OnceCallback<void(bool)>>
-                           success_callback = absl::nullopt);
+                       std::optional<base::OnceCallback<void(bool)>>
+                           success_callback = std::nullopt);
 
   void CompleteMigrationAttempt(const std::string& iccid, bool success);
 

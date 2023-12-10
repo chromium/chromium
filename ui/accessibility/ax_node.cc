@@ -1737,9 +1737,12 @@ absl::optional<int> AXNode::GetSetSize() const {
 bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
   ax::mojom::Role item_role = GetRole();
 
-  // Tree grid rows should be treated as ordered set items.
-  if (IsRowInTreeGrid(ordered_set))
+  // Tree grid rows and grouped disclosure triangles should be treated as
+  // ordered set items.
+  if (IsRowInTreeGrid(ordered_set) ||
+      item_role == ax::mojom::Role::kDisclosureTriangleGrouped) {
     return true;
+  }
 
   // Switch on role of ordered set
   switch (ordered_set->GetRole()) {
@@ -1792,6 +1795,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
 
 bool AXNode::IsIgnoredContainerForOrderedSet() const {
   return IsIgnored() || IsEmbeddedGroup() ||
+         GetRole() == ax::mojom::Role::kDetails ||
          GetRole() == ax::mojom::Role::kLabelText ||
          GetRole() == ax::mojom::Role::kListItem ||
          GetRole() == ax::mojom::Role::kGenericContainer ||

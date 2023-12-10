@@ -28,14 +28,14 @@
 #import "components/language/core/browser/url_language_histogram.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/strike_database_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
@@ -44,22 +44,21 @@
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_remover_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
@@ -152,10 +151,8 @@ BrowsingDataRemoverImpl::RemovalTask::RemovalTask(
 BrowsingDataRemoverImpl::RemovalTask::~RemovalTask() = default;
 
 BrowsingDataRemoverImpl::BrowsingDataRemoverImpl(
-    ChromeBrowserState* browser_state,
-    SessionServiceIOS* session_service)
+    ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
-      session_service_(session_service),
       context_getter_(browser_state->GetRequestContext()),
       weak_ptr_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -274,14 +271,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   // browsing data even if `browser_state` is destroyed after this method call.
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
-    if (session_service_) {
-      const base::FilePath& state_path = browser_state_->GetStatePath();
-      [session_service_
-          deleteAllSessionFilesInDirectory:state_path
-                                completion:
-                                    CreatePendingTaskCompletionClosure()];
-    }
-
     // Remove the screenshots taken by the system when backgrounding the
     // application. Partial removal based on timePeriod is not required.
     ClearIOSSnapshots(CreatePendingTaskCompletionClosure());
@@ -384,8 +373,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     sessions::TabRestoreService* tab_service =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state_);
     if (tab_service) {
-      tab_service->ClearEntries();
       tab_service->DeleteLastSession();
+      tab_service->ClearEntries();
     }
 
     // The saved Autofill profiles and credit cards can include the origin from
@@ -575,16 +564,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   UMA_HISTOGRAM_ENUMERATION(
       "History.ClearBrowsingData.UserDeletedCookieOrCache", choice,
       MAX_CHOICE_VALUE);
-}
-
-// Removes directories for sessions with `session_ids`
-void BrowsingDataRemoverImpl::RemoveSessionsData(
-    NSArray<NSString*>* session_ids) {
-  if (session_service_) {
-    [session_service_ deleteSessions:session_ids
-                           directory:browser_state_->GetStatePath()
-                          completion:base::DoNothing()];
-  }
 }
 
 // TODO(crbug.com/619783): removing data from WkWebsiteDataStore should be

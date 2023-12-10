@@ -22,15 +22,13 @@ import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvide
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
-/**
- * Bridge for FeedService-related calls.
- */
+/** Bridge for FeedService-related calls. */
 @JNINamespace("feed")
 public final class FeedServiceBridge {
     // Access to JNI test hooks for other libraries. This can go away once more Feed code is
     // migrated to chrome/browser/feed.
     public static org.jni_zero.JniStaticTestMocker<FeedServiceBridge.Natives>
-    getTestHooksForTesting() {
+            getTestHooksForTesting() {
         return FeedServiceBridgeJni.TEST_HOOKS;
     }
 
@@ -44,9 +42,8 @@ public final class FeedServiceBridge {
             return null;
         }
         try {
-            return (FeedServiceDependencyProviderFactory) dependencyProviderFactoryClazz
-                    .getDeclaredMethod("getInstance")
-                    .invoke(null);
+            return (FeedServiceDependencyProviderFactory)
+                    dependencyProviderFactoryClazz.getDeclaredMethod("getInstance").invoke(null);
         } catch (NoSuchMethodException e) {
         } catch (InvocationTargetException e) {
         } catch (IllegalAccessException e) {
@@ -81,6 +78,7 @@ public final class FeedServiceBridge {
     public static String getLanguageTag() {
         return getLocale(ContextUtils.getApplicationContext()).toLanguageTag();
     }
+
     @CalledByNative
     public static double[] getDisplayMetrics() {
         DisplayMetrics metrics =
@@ -184,17 +182,26 @@ public final class FeedServiceBridge {
     @NativeMethods
     public interface Natives {
         boolean isEnabled();
+
         void startup();
+
         int getLoadMoreTriggerLookahead();
+
         int getLoadMoreTriggerScrollDistanceDp();
+
         long getReliabilityLoggingId();
+
         void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
+
         @ContentOrder
         int getContentOrderForWebFeed();
+
         void setContentOrderForWebFeed(@ContentOrder int contentOrder);
 
         long addUnreadContentObserver(Object object, boolean isWebFeed);
+
         boolean isSignedIn();
+
         @NativeClassQualifiedName("feed::JavaUnreadContentObserver")
         void destroy(long nativePtr);
     }

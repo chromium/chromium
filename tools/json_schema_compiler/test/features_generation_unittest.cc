@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/complex_feature.h"
@@ -9,7 +11,6 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/json_schema_compiler/test/features_compiler_test.h"
 
 namespace extensions {
@@ -26,8 +27,8 @@ void ExpectVectorsEqual(std::vector<T> expected,
 }
 
 template <typename T>
-void ExpectOptionalVectorsEqual(const absl::optional<std::vector<T>>& expected,
-                                const absl::optional<std::vector<T>>& actual,
+void ExpectOptionalVectorsEqual(const std::optional<std::vector<T>>& expected,
+                                const std::optional<std::vector<T>>& actual,
                                 const std::string& name) {
   if (expected.has_value() != actual.has_value()) {
     ADD_FAILURE() << "Mismatched optional vectors for " << name << ": "
@@ -57,16 +58,16 @@ struct FeatureComparator {
   std::vector<std::string> allowlist;
   std::vector<std::string> dependencies;
   std::vector<Manifest::Type> extension_types;
-  absl::optional<std::vector<Feature::Context>> contexts;
+  std::optional<std::vector<Feature::Context>> contexts;
   std::vector<Feature::Platform> platforms;
 
   URLPatternSet matches;
 
-  absl::optional<SimpleFeature::Location> location;
-  absl::optional<int> min_manifest_version;
-  absl::optional<int> max_manifest_version;
-  absl::optional<std::string> command_line_switch;
-  absl::optional<version_info::Channel> channel;
+  std::optional<SimpleFeature::Location> location;
+  std::optional<int> min_manifest_version;
+  std::optional<int> max_manifest_version;
+  std::optional<std::string> command_line_switch;
+  std::optional<version_info::Channel> channel;
 
   std::string alias;
   std::string source;

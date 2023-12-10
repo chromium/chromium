@@ -46,9 +46,7 @@ There are two common scenarios for hitting the pragma:
    using techniques such as forward declarations to avoid increasing the header
    size. Even complex classes may have forward declarations available, see for
    example
-   [https://source.chromium.org/chromium/chromium/src/+/HEAD:base/functional/callback_forward.h](callback_forward.h)
-   and
-   [https://source.chromium.org/chromium/chromium/src/+/HEAD:base/strings/string_piece_forward.h](string_piece_forward.h).
+   [https://source.chromium.org/chromium/chromium/src/+/HEAD:base/functional/callback_forward.h](callback_forward.h).
    Many types defined in .mojom.h files have forward declarations in a
    corresponding .mojom-forward.h file. If the size increase is unavoidable,
    raise the limit.

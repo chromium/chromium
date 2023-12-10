@@ -15,6 +15,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/views/controls/button/label_button.h"
@@ -48,6 +50,8 @@ bool AXObjectHandlesSelector(id<NSAccessibility> ax_obj, SEL action) {
 }
 
 class FlexibleRoleTestView : public View {
+  METADATA_HEADER(FlexibleRoleTestView, View)
+
  public:
   explicit FlexibleRoleTestView(ax::mojom::Role role) : role_(role) {}
 
@@ -81,7 +85,12 @@ class FlexibleRoleTestView : public View {
   bool mouse_was_pressed_ = false;
 };
 
+BEGIN_METADATA(FlexibleRoleTestView)
+END_METADATA
+
 class TestLabelButton : public LabelButton {
+  METADATA_HEADER(TestLabelButton, LabelButton)
+
  public:
   TestLabelButton() {
     // Make sure the label doesn't cover the hit test co-ordinates.
@@ -93,6 +102,9 @@ class TestLabelButton : public LabelButton {
 
   using LabelButton::label;
 };
+
+BEGIN_METADATA(TestLabelButton)
+END_METADATA
 
 class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
  public:

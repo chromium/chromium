@@ -826,7 +826,7 @@ bool HoldingSpaceTray::PreviewsShown() const {
 }
 
 void HoldingSpaceTray::UpdateDefaultTrayIcon() {
-  const absl::optional<float>& progress = progress_indicator_->progress();
+  const std::optional<float>& progress = progress_indicator_->progress();
 
   // If `progress` is not `complete`, there is potential for overlap between the
   // `default_tray_icon_` and the `progress_indicator_`'s inner icon. To address

@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -23,22 +24,6 @@ namespace optimization_guide {
 namespace {
 
 constexpr char kGoogleAPITypeName[] = "type.googleapis.com/";
-
-std::string_view GetStringNameForModelExecutionFeature(
-    proto::ModelExecutionFeature feature) {
-  switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      return "WallpaperSearch";
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      return "TabOrganization";
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-      return "Compose";
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      return "Unknown";
-      // Must be in sync with the ModelExecutionFeature variant in
-      // optimization/histograms.xml for metric recording.
-  }
-}
 
 void RecordRequestStatusHistogram(proto::ModelExecutionFeature feature,
                                   FetcherRequestStatus status) {
@@ -79,7 +64,6 @@ ModelExecutionFetcher::~ModelExecutionFetcher() {
 void ModelExecutionFetcher::ExecuteModel(
     proto::ModelExecutionFeature feature,
     signin::IdentityManager* identity_manager,
-    const std::set<std::string>& oauth_scopes,
     const google::protobuf::MessageLite& request_metadata,
     ModelExecuteResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -108,7 +92,8 @@ void ModelExecutionFetcher::ExecuteModel(
   execute_request.SerializeToString(&serialized_request);
 
   RequestAccessToken(
-      identity_manager, oauth_scopes,
+      identity_manager,
+      {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope},
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), serialized_request));
 }

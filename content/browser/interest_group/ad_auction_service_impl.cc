@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -511,6 +510,10 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
     const absl::optional<url::Origin>& coordinator,
     GetInterestGroupAdAuctionDataCallback callback) {
+  if (seller.scheme() != url::kHttpsScheme) {
+    ReportBadMessageAndDeleteThis("Invalid Seller");
+    return;
+  }
   if (coordinator && coordinator->scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis("Invalid Bidding and Auction Coordinator");
     return;
@@ -777,13 +780,18 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       GetFrame()->GetPage().fenced_frame_urls_map();
   // TODO(crbug.com/1422301): The auction must operate on the same fenced frame
   // mapping that was used at the beginning of the auction. If not, we fail the
-  // auction and dump without crashing the browser. Once the root cause is known
-  // and the issue fixed, convert it back to a CHECK.
+  // auction. Once the issue fixed, convert it back to a CHECK.
   //
   // The fenced frame mapping may be changed because:
   // 1. The render frame host has changed.
   // 2. The page owned by the render frame host has changed.
   // 3. The fenced frame mapping of the page has changed.
+  //
+  // From crash reports, we find the RenderFrameHostImpl is the same during the
+  // auction. However, PageImpl has changed, so FencedFrameUrlMapping ends up
+  // also being different. The crash takes place when there exists a child frame
+  // for the auction. The main frame is active, and the child frame is running
+  // the unload handler.
   if (IsAuctionExpectedToFail(fenced_frame_urls_map_id, render_frame_host_id,
                               page_impl)) {
     // At least one of the RenderFrameHostImpl, PageImpl and the
@@ -895,6 +903,7 @@ void AdAuctionServiceImpl::OnGotAuctionData(
   }
 
   state.data = std::move(data);
+
   absl::optional<url::Origin> coordinator = state.coordinator;
   scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
       GetRefCountedTrustedURLLoaderFactory();
@@ -995,43 +1004,8 @@ bool AdAuctionServiceImpl::IsAuctionExpectedToFail(
       fenced_frame_urls_map_id !=
       GetFrame()->GetPage().fenced_frame_urls_map().unique_id();
 
-  if (!render_frame_host_impl_mismatch && !page_impl_mismatch &&
-      !fenced_frame_url_mapping_mismatch) {
-    // None of the RenderFrameHostImpl, PageImpl and FencedFrameUrlMapping are
-    // different from the ones at the start of the auction. The auction is not
-    // expected to fail.
-    return false;
-  }
-
-  // Record the `LifecycleState` of the main frame. If the auction is from a
-  // child frame, also record the `LifecycleState` of the child frame.
-  std::string main_frame_cycle;
-  std::string child_frame_cycle;
-
-  if (GetFrame()->IsOutermostMainFrame()) {
-    main_frame_cycle = RenderFrameHostImpl::LifecycleStateImplToString(
-        GetFrame()->lifecycle_state());
-    child_frame_cycle = "AuctionIsFromMainFrame";
-  } else {
-    main_frame_cycle = RenderFrameHostImpl::LifecycleStateImplToString(
-        GetFrame()->GetOutermostMainFrame()->lifecycle_state());
-    child_frame_cycle = RenderFrameHostImpl::LifecycleStateImplToString(
-        GetFrame()->lifecycle_state());
-  }
-
-  // Set the crash key with the string describing the state.
-  SCOPED_CRASH_KEY_STRING1024(
-      "fledge", "on-auction-complete-state",
-      base::StrCat({"RenderFrameHostImplMismatch_",
-                    render_frame_host_impl_mismatch ? "true" : "false",
-                    "_PageImplMismatch_", page_impl_mismatch ? "true" : "false",
-                    "_FencedFrameUrlMappingMismatch_",
-                    fenced_frame_url_mapping_mismatch ? "true" : "false",
-                    "_MainFrame_", main_frame_cycle, "_ChildFrame_",
-                    child_frame_cycle}));
-  base::debug::DumpWithoutCrashing();
-
-  return true;
+  return render_frame_host_impl_mismatch || page_impl_mismatch ||
+         fenced_frame_url_mapping_mismatch;
 }
 
 }  // namespace content

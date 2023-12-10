@@ -6,16 +6,12 @@ package org.chromium.components.segmentation_platform;
 
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
-/**
- * Java counterpart of native SegmentSelectionResult. Contains the result of segment selection.
- */
+/** Java counterpart of native SegmentSelectionResult. Contains the result of segment selection. */
 public class SegmentSelectionResult {
     /** Whether the backend is ready and has enough signals to compute the segment selection.*/
     public final boolean isReady;
 
-    /**
-     * The result of segment selection.
-     */
+    /** The result of segment selection. */
     public final SegmentId selectedSegment;
 
     /**

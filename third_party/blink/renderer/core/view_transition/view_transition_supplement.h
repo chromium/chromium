@@ -88,6 +88,12 @@ class CORE_EXPORT ViewTransitionSupplement
   // Document.
   void WillInsertBody();
 
+  // In the new page of a cross-document transition, this resolves the
+  // @view-transition rule to use, sets types, and returns the ViewTransition.
+  // It is the 'resolve cross-document view-transition` steps in the spec:
+  // https://drafts.csswg.org/css-view-transitions-2/#document-resolve-cross-document-view-transition
+  DOMViewTransition* ResolveCrossDocumentViewTransition();
+
  private:
   static DOMViewTransition* StartViewTransitionInternal(
       ScriptState*,

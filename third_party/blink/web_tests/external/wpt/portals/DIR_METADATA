@@ -1,7 +1,0 @@
-monorail {
-  component: "Blink>Portals"
-}
-wpt {
-  notify: YES
-}
-

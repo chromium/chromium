@@ -225,7 +225,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   bool proxy_auth_ = false;
 
   // Caches the last-passed callbacks for ScanAndConnectToBestServices.
-  absl::optional<ConnectToBestServicesCallbacks>
+  std::optional<ConnectToBestServicesCallbacks>
       connect_to_best_services_callbacks_;
 
   // Note: This should remain the last member so it'll be destroyed and

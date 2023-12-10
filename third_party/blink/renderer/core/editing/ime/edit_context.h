@@ -31,7 +31,6 @@ class InputMethodController;
 
 class CORE_EXPORT EditContext final : public EventTarget,
                                       public ActiveScriptWrappable<EditContext>,
-                                      public ExecutionContextClient,
                                       public WebInputMethodController,
                                       public ElementRareDataField {
   DEFINE_WRAPPERTYPEINFO();
@@ -118,6 +117,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  LocalDOMWindow* DomWindow() const;
+
   // ActiveScriptWrappable overrides.
   bool HasPendingActivity() const override;
 
@@ -188,6 +189,12 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Delete `before` characters preceding the current `selection_start_` and
   // `after` characters following the current `selection_end_`.
   void DeleteSurroundingText(int before, int after);
+
+  // Called from WebLocalFrame to change the selection range.
+  // Unlike updateSelection(), we need to dispatch TextInputEvent to notify the
+  // page that the selection has changed since in this case the change was not
+  // triggered by the page.
+  void SetSelection(int start, int end);
 
   // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
   // for the character range specified by `location` and `length`.
@@ -278,6 +285,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   uint32_t composition_range_end_ = 0;
   // Elements that are associated with this EditContext.
   HeapVector<Member<HTMLElement>> attached_elements_;
+
+  WeakMember<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink

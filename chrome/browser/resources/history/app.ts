@@ -16,28 +16,31 @@ import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
 
-import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import type {WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserService, BrowserServiceImpl} from './browser_service.js';
+import type {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
-import {ForeignSession, QueryResult, QueryState} from './externs.js';
-import {HistoryListElement} from './history_list.js';
-import {HistoryToolbarElement} from './history_toolbar.js';
+import type {ForeignSession, QueryResult, QueryState} from './externs.js';
+import type {HistoryListElement} from './history_list.js';
+import type {HistoryToolbarElement} from './history_toolbar.js';
 import {Page, TABBED_PAGES} from './router.js';
-import {FooterInfo, HistorySideBarElement} from './side_bar.js';
+import type {FooterInfo, HistorySideBarElement} from './side_bar.js';
 
 let lazyLoadPromise: Promise<void>|null = null;
 export function ensureLazyLoaded(): Promise<void> {
@@ -330,11 +333,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onFirstRender_() {
-    setTimeout(() => {
-      this.browserService_!.recordTime(
-          'History.ResultsRenderedTime', window.performance.now());
-    });
-
     // Focus the search field on load. Done here to ensure the history page
     // is rendered before we try to take focus.
     const searchField = this.$.toolbar.searchField;

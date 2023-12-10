@@ -108,6 +108,13 @@ const char kAutoSelectDesktopCaptureSource[] =
 const char kAutoSelectTabCaptureSourceByTitle[] =
     "auto-select-tab-capture-source-by-title";
 
+// This flag makes Chrome auto-select a window with the provided title when
+// the media-picker should otherwise be displayed to the user. This switch
+// is very similar to kAutoSelectDesktopCaptureSource, but limits selection
+// to the window.
+const char kAutoSelectWindowCaptureSourceByTitle[] =
+    "auto-select-window-capture-source-by-title";
+
 // How often (in seconds) to check for updates. Should only be used for testing
 // purposes.
 const char kCheckForUpdateIntervalSec[] = "check-for-update-interval";
@@ -723,13 +730,12 @@ const char kHelp[] = "help";
 const char kHelpShort[] = "h";
 
 // Specifies which encryption storage backend to use. Possible values are
-// kwallet, kwallet5, kwallet6, gnome, gnome-keyring, gnome-libsecret, basic.
+// kwallet, kwallet5, kwallet6, gnome-libsecret, basic.
 // Any other value will lead to Chrome detecting the best backend automatically.
-// TODO(crbug.com/571003): Once PasswordStore no longer uses the Keyring or
-// KWallet for storing passwords, rename this flag to stop referencing
-// passwords. Do not rename it sooner, though; developers and testers might
-// rely on it keeping large amounts of testing passwords out of their Keyrings
-// or KWallets.
+// TODO(crbug.com/571003): Once PasswordStore no longer uses KWallet for storing
+// passwords, rename this flag to stop referencing passwords. Do not rename it
+// sooner, though; developers and testers might rely on it keeping large amounts
+// of testing passwords out of their KWallets.
 const char kPasswordStore[] = "password-store";
 
 // Enables the feature of allowing the user to disable the backend via a

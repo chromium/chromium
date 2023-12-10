@@ -8,11 +8,9 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
-#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "third_party/angle/include/EGL/eglext_angle.h"
@@ -32,9 +30,16 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
+#endif
+
+#if BUILDFLAG(USE_DAWN)
 using dawn::native::d3d::ExternalImageDXGI;
 using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
 using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
+#endif
 
 namespace gpu {
 
@@ -281,6 +286,7 @@ DCompSurfaceImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+#if BUILDFLAG(SKIA_USE_DAWN)
   DCHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteDawn);
 
   auto device = context_state->dawn_context_provider()->GetDevice();
@@ -289,8 +295,10 @@ DCompSurfaceImageBacking::ProduceSkiaGraphite(
           manager, this, tracker, device, wgpu::BackendType::D3D11);
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
-      context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      /*plane_index=*/0, /*is_yuv_plane=*/false);
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+#else
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
 Microsoft::WRL::ComPtr<ID3D11Texture2D> DCompSurfaceImageBacking::BeginDraw(
@@ -423,6 +431,7 @@ void DCompSurfaceImageBacking::EndDrawGanesh() {
   EndDraw();
 }
 
+#if BUILDFLAG(USE_DAWN)
 wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
     const wgpu::Device& device,
     const wgpu::TextureUsage usage,
@@ -521,5 +530,6 @@ void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
 
   EndDraw();
 }
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

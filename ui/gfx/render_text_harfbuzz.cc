@@ -34,6 +34,7 @@
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
@@ -67,11 +68,6 @@
 #include <hb.h>
 
 namespace gfx {
-
-// Experiment text eliding during layout phase (see https://crbug.com/1085014).
-BASE_FEATURE(kRenderTextEarlyEliding,
-             "RenderTextEarlyEliding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -406,143 +402,6 @@ bool GetClusterAtImpl(size_t pos,
   DCHECK(!glyphs->is_empty());
   return true;
 }
-
-// An helper class that implement an eliding behavior.
-class ElideBehaviorBase {
- public:
-  ElideBehaviorBase(RenderTextHarfBuzz* render_text,
-                    const internal::TextRunList* run_list)
-      : render_text_(render_text), run_list_(run_list) {}
-  virtual ~ElideBehaviorBase() = default;
-  ElideBehaviorBase(const ElideBehaviorBase& render_text) = delete;
-  ElideBehaviorBase& operator=(const ElideBehaviorBase&) = delete;
-
-  virtual void ApplyEliding() = 0;
-  virtual bool ElidedMore() = 0;
-
- protected:
-  RenderTextHarfBuzz* render_text() { return render_text_; }
-
-  size_t GetPreviousGraphemeIndex(size_t index) {
-    internal::GraphemeIterator grapheme_iter =
-        render_text()->GetGraphemeIteratorAtTextIndex(index);
-    --grapheme_iter;
-
-    DCHECK_LT(render_text()->GetTextIndex(grapheme_iter), index);
-    return render_text()->GetTextIndex(grapheme_iter);
-  }
-
-  size_t ApplyWhitespaceElisionBackward(size_t index) {
-    // This function removes unnecessary whitespace. For example, without
-    // this function, elide_tail could turn a string:"abc  x" to "abc  …".
-    // While the result is valid if it fits the display rect, there
-    // is no need to have whitespace between the elide codepoint and the rest of
-    // the string. Enabling ApplyWhitespaceElisionBackward will reduce the index
-    // such that resulting string is "abc…".
-    if (!render_text()->whitespace_elision().has_value() ||
-        render_text()->whitespace_elision().value()) {
-      while (index > 0 && render_text()->text()[index - 1] == ' ') {
-        --index;
-      }
-    }
-    return index;
-  }
-
-  // Returns the text index for the first grapheme at |text_span|. The distance
-  // |text_span| is the sum of graphemes width before the text index in logical
-  // order.
-  size_t GetTextIndexForTextSpan(float text_span) {
-    DCHECK(!run_list_->runs().empty());
-
-    // Find the run that contains the logical offset |text_span|.
-    auto run_iter = std::lower_bound(
-        run_list_->runs().begin(), run_list_->runs().end(), text_span,
-        [](const std::unique_ptr<internal::TextRunHarfBuzz>& run,
-           const float width) -> bool {
-          return run->logical_preceding_run_widths < width;
-        });
-    DCHECK(run_iter != run_list_->runs().begin());
-    --run_iter;
-
-    const internal::TextRunHarfBuzz* run = run_iter->get();
-    DCHECK_LT(run->logical_preceding_run_widths, text_span);
-    const bool run_is_rtl = run->font_params.is_rtl;
-    const float remaining_width = text_span - run->logical_preceding_run_widths;
-
-    // Search for the glyph that contains the logical offset by performing a
-    // binary search.
-    int start_glyph = 0;
-    int end_glyph = run->shape.positions.size() - 1;
-    while (start_glyph <= end_glyph) {
-      size_t glyph = (start_glyph + end_glyph) / 2;
-      DCHECK_LT(glyph, run->shape.positions.size());
-
-      float glyph_start_offset;
-      float glyph_end_offset;
-      glyph_start_offset = run->shape.positions[glyph].x();
-      glyph_end_offset = (glyph + 1 < run->shape.positions.size())
-                             ? run->shape.positions[glyph + 1].x()
-                             : run->shape.width;
-
-      if (run_is_rtl) {
-        std::swap(glyph_start_offset, glyph_end_offset);
-        glyph_start_offset = run->shape.width - glyph_start_offset;
-        glyph_end_offset = run->shape.width - glyph_end_offset;
-      }
-      DCHECK_LE(glyph_start_offset, glyph_end_offset);
-
-      if (glyph_start_offset < remaining_width &&
-          remaining_width <= glyph_end_offset) {
-        const size_t layout_index = run->shape.glyph_to_char[glyph];
-        return render_text()->DisplayIndexToTextIndex(layout_index);
-      }
-
-      const bool offset_is_before = remaining_width <= glyph_start_offset;
-      if (run_is_rtl == offset_is_before) {
-        start_glyph = glyph + 1;
-      } else {
-        end_glyph = glyph - 1;
-      }
-    }
-
-    NOTREACHED();
-    return 0;
-  }
-
- private:
-  raw_ptr<RenderTextHarfBuzz> render_text_;
-  raw_ptr<const internal::TextRunList> run_list_;
-};
-
-class TailElideBehaviorImpl : public ElideBehaviorBase {
- public:
-  TailElideBehaviorImpl(RenderTextHarfBuzz* render_text,
-                        const internal::TextRunList* run_list,
-                        float available_width)
-      : ElideBehaviorBase(render_text, run_list) {
-    cutting_index_ = GetTextIndexForTextSpan(available_width);
-    cutting_index_ = ApplyWhitespaceElisionBackward(cutting_index_);
-  }
-
-  void ApplyEliding() override {
-    render_text()->ApplyEliding(
-        true, Range(cutting_index_, render_text()->text().length()));
-  }
-
-  bool ElidedMore() override {
-    if (cutting_index_ == 0) {
-      return false;
-    }
-
-    // Shrink the layout text by removing the previous grapheme.
-    cutting_index_ = GetPreviousGraphemeIndex(cutting_index_);
-    cutting_index_ = ApplyWhitespaceElisionBackward(cutting_index_);
-    return true;
-  }
-
- private:
-  size_t cutting_index_;
-};
 
 // Internal class to generate Line structures. If |multiline| is true, the text
 // is broken into lines at |words| boundaries such that each line is no longer
@@ -1010,8 +869,7 @@ sk_sp<SkTypeface> CreateSkiaTypeface(const Font& font,
   SkFontStyle skia_style(
       static_cast<int>(weight), SkFontStyle::kNormal_Width,
       italic ? SkFontStyle::kItalic_Slant : SkFontStyle::kUpright_Slant);
-  return sk_sp<SkTypeface>(SkTypeface::MakeFromName(
-      font.GetFontName().c_str(), skia_style));
+  return skia::MakeTypefaceFromName(font.GetFontName().c_str(), skia_style);
 #endif
 }
 
@@ -1084,13 +942,13 @@ bool TextRunHarfBuzz::FontParams::SetRenderParamsRematchFont(
     const Font& new_font,
     const FontRenderParams& new_render_params) {
   // This takes the font family name from new_font, and calls
-  // SkTypeface::makeFromName() with that family name and the style information
-  // internal to this text run. So it triggers a new font match and looks for
-  // adjacent fonts in the family. This works for styling, e.g. styling a run in
-  // bold, italic or underline, but breaks font fallback in certain scenarios,
-  // as the fallback font may be of a different weight and style than the run's
-  // own, so this can lead to a failure of instantiating the correct fallback
-  // font.
+  // skia::MakeTypefaceFromName() with that family name and the style
+  // information internal to this text run. So it triggers a new font match and
+  // looks for adjacent fonts in the family. This works for styling, e.g.
+  // styling a run in bold, italic or underline, but breaks font fallback in
+  // certain scenarios, as the fallback font may be of a different weight and
+  // style than the run's own, so this can lead to a failure of instantiating
+  // the correct fallback font.
   sk_sp<SkTypeface> new_skia_face(
       internal::CreateSkiaTypeface(new_font, italic, weight));
   if (!new_skia_face)
@@ -1350,19 +1208,12 @@ void TextRunList::InitIndexMap() {
 }
 
 void TextRunList::ComputePrecedingRunWidths() {
-  // Precalculate visual run width information.
+  // Precalculate run width information.
   width_ = 0.0f;
   for (size_t i = 0; i < runs_.size(); ++i) {
     const auto& run = runs_[visual_to_logical_[i]];
     run->preceding_run_widths = width_;
     width_ += run->shape.width;
-  }
-  // Precalculate logical run width information.
-  float logical_width = 0.0f;
-  for (size_t i = 0; i < runs_.size(); ++i) {
-    const auto& run = runs_[i];
-    run->logical_preceding_run_widths = logical_width;
-    logical_width += run->shape.width;
   }
 }
 
@@ -2440,102 +2291,25 @@ void RenderTextHarfBuzz::EnsureLayoutRunList() {
   // layout run list was last updated, as changes in device scale factor change
   // subpixel positioning, at least on Linux and Chrome OS.
   const float device_scale_factor = GetFontRenderParamsDeviceScaleFactor();
-  if (device_scale_factor_ != device_scale_factor) {
-    device_scale_factor_ = device_scale_factor;
-    update_layout_run_list_ = true;
-  }
 
-  // This pass is computing the layout of the text after text rewriting
-  // (e.g. rewriting, obscured, ...). If required, text eliding is apply.
-  if (update_layout_run_list_) {
+  if (update_layout_run_list_ || device_scale_factor_ != device_scale_factor) {
+    device_scale_factor_ = device_scale_factor;
     layout_run_list_.Reset();
+
+    const std::u16string& text = GetLayoutText();
+    if (!text.empty()) {
+      ItemizeAndShapeText(text, &layout_run_list_);
+    }
+
     display_run_list_.reset();
     update_display_text_ = true;
-
-    const std::u16string& layout_text = GetLayoutText();
-    if (!layout_text.empty()) {
-      ItemizeAndShapeText(layout_text, &layout_run_list_);
-
-      // If eliding is required, update the eliding breaklist to reduce the
-      // width of the visible text. |layout_text_| and |layout_run_list_| are
-      // updated by ElideLayoutText(...).
-      if (!multiline() && elide_behavior() == ELIDE_TAIL &&
-          base::FeatureList::IsEnabled(kRenderTextEarlyEliding)) {
-        ElideLayoutText();
-      }
-    }
-
     update_layout_run_list_ = false;
   }
-
   if (update_display_text_) {
     set_shaped_text(nullptr);
-
-    if (base::FeatureList::IsEnabled(kRenderTextEarlyEliding) && !multiline() &&
-        elide_behavior() == ELIDE_TAIL) {
-      // Text eliding was applied on the layout text. It should fit the
-      // display_rect and display text eliding algorithm should not be involved.
-      DCHECK_LE(layout_run_list_.width(), display_rect().width());
-      DCHECK(!text_elided());
-    } else {
-      UpdateDisplayText(multiline() ? 0 : layout_run_list_.width());
-    }
-
+    UpdateDisplayText(multiline() ? 0 : layout_run_list_.width());
     update_display_text_ = false;
     update_display_run_list_ = text_elided();
-  }
-}
-
-void RenderTextHarfBuzz::ElideLayoutText() {
-  const float initial_text_width = layout_run_list_.width();
-  const float available_text_width = display_rect().width();
-  const bool text_needs_eliding = initial_text_width >= available_text_width;
-
-  if (available_text_width == 0) {
-    SetTextFullyElided();
-    return;
-  }
-
-  if (!text_needs_eliding) {
-    return;
-  }
-
-  std::unique_ptr<ElideBehaviorBase> eliding_impl;
-  if (elide_behavior() == ELIDE_TAIL) {
-    eliding_impl = std::make_unique<TailElideBehaviorImpl>(
-        this, &layout_run_list_, available_text_width);
-  } else {
-    // TODO(https://crbug/1085014): Support this eliding path for other eliding
-    // behaviors.
-    NOTREACHED();
-    return;
-  }
-
-  // Increase the amount of elided codepoints to shrink the text until it fits
-  // the available width.
-  while (true) {
-    // Update the eliding property.
-    eliding_impl->ApplyEliding();
-
-    // Recompute the layout runlist with the updated eliding property.
-    layout_run_list_.Reset();
-    const std::u16string& elided_layout_text = GetLayoutText();
-    if (elided_layout_text.empty()) {
-      break;
-    }
-    ItemizeAndShapeText(elided_layout_text, &layout_run_list_);
-
-    // Check whether the elided text fits into available width.
-    if (layout_run_list_.width() <= available_text_width) {
-      break;
-    }
-
-    // If the text doesn't fit the available width, elide more codepoints to
-    // reduce the text width.
-    if (!eliding_impl->ElidedMore()) {
-      // The text can't be shrunk more. Force full eliding of the text.
-      SetTextFullyElided();
-    }
   }
 }
 

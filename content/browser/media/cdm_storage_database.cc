@@ -31,9 +31,7 @@ CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
       // bytes) and that we'll typically only be pulling one file at a time
       // (playback), specify a large page size to allow inner nodes can pack
       // many keys, to keep the index B-tree flat.
-      db_(sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 32768,
-                               .cache_size = 8}) {
+      db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8}) {
   // base::Unretained is safe because `db_` is owned by `this`
   db_.set_error_callback(base::BindRepeating(
       &CdmStorageDatabase::OnDatabaseError, base::Unretained(this)));
@@ -118,6 +116,12 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
   bool success = statement.Run();
 
   DVLOG_IF(1, !success) << "Error writing Cdm storage data.";
+
+  if (success) {
+    bool large_write = data.size() > (15 * 1024);
+    base::UmaHistogramBoolean(
+        "Media.EME.CdmStorageDatabase.WriteFileForBigData", large_write);
+  }
 
   return success;
 }

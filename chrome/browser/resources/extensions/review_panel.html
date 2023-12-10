@@ -8,6 +8,7 @@
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
+    padding: 12px 20px;
   }
 
   .header-with-icon {
@@ -24,16 +25,6 @@
   .header-with-icon h3 {
     margin: 5px 0 3px 0;
     font-weight: 400;
-  }
-
-  /** TODO(crbug.com/1432194): Clean up the CSS with the shared styles added
-   * in https://crrev.com/c/4579629 once its in. */
-  .header-with-icon iron-icon {
-    border-radius: 50%;
-    flex-shrink: 0;
-    height: var(--cr-icon-size);
-    padding: 6px;
-    width: var(--cr-icon-size);
   }
 
   iron-icon[icon='cr:check'] {
@@ -53,13 +44,11 @@
 
   .header-icon {
     align-items: center;
-    background-color: var(--google-blue-50);
-    fill: var(--google-blue-600);
+    fill: var(--google-grey-700);
   }
 
   @media (prefers-color-scheme: dark) {
     .header-icon {
-      background-color: var(--google-blue-300);
       fill: var(--review-panel-icon-color);
     }
   }
@@ -83,13 +72,11 @@
 
   .extension-list{
     border-top: var(--cr-separator-line);
-    padding: 0px 0px 15px 0px;
+    padding: 0px 0px 15px 3px;
   }
 
   .extension-row {
     border-top: none;
-    padding-inline-end: 20px;
-    padding-inline-start: 27px;
   }
 
   .display-name {
@@ -103,6 +90,10 @@
 
   .bulk-action-button {
     margin-inline-start: auto;
+  }
+
+  .cr-row{
+    padding: 0;
   }
 
   .cr-row.first {
@@ -142,7 +133,8 @@
       expanded="{{unsafeExtensionsReviewListExpanded_}}"
       hidden$="[[!shouldShowUnsafeExtensions_]]">
     <div class="header-with-icon" id="reviewPanelContainer">
-      <iron-icon aria-hidden="true" icon="cr:extension" class="header-icon">
+      <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+          class="header-icon">
         <!-- TODO(crbug.com/1432194):Will replace this
           info icon with the correct header icon -->
       </iron-icon>

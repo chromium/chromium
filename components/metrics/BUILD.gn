@@ -99,8 +99,8 @@ if (!is_cronet_build || is_ios) {
     sources = [
       "android_metrics_helper.cc",
       "android_metrics_helper.h",
-      "call_stack_profile_metrics_provider.cc",
-      "call_stack_profile_metrics_provider.h",
+      "call_stacks/call_stack_profile_metrics_provider.cc",
+      "call_stacks/call_stack_profile_metrics_provider.h",
       "clean_exit_beacon.cc",
       "clean_exit_beacon.h",
       "cloned_install_detector.cc",
@@ -188,7 +188,6 @@ if (!is_cronet_build || is_ios) {
       "stability_metrics_helper.h",
       "stability_metrics_provider.cc",
       "stability_metrics_provider.h",
-      "system_memory_stats_recorder.h",
       "ukm_demographic_metrics_provider.h",
       "unsent_log_store.cc",
       "unsent_log_store.h",
@@ -258,7 +257,6 @@ if (!is_cronet_build || is_ios) {
         "drive_metrics_provider_linux.cc",
         "psi_memory_parser.h",
         "psi_memory_parser_linux.cc",
-        "system_memory_stats_recorder_linux.cc",
       ]
     }
 
@@ -347,6 +345,8 @@ if (!is_cronet_build) {
         "content/extensions_helper.h",
         "content/gpu_metrics_provider.cc",
         "content/gpu_metrics_provider.h",
+        "content/metrics_services_web_contents_observer.cc",
+        "content/metrics_services_web_contents_observer.h",
         "content/rendering_perf_metrics_provider.cc",
         "content/rendering_perf_metrics_provider.h",
         "content/subprocess_metrics_provider.cc",
@@ -433,10 +433,10 @@ if (!is_cronet_build) {
 
   source_set("call_stack_profile_params") {
     public = [
-      "call_stack_profile_encoding.h",
-      "call_stack_profile_params.h",
+      "call_stacks/call_stack_profile_encoding.h",
+      "call_stacks/call_stack_profile_params.h",
     ]
-    sources = [ "call_stack_profile_encoding.cc" ]
+    sources = [ "call_stacks/call_stack_profile_encoding.cc" ]
 
     deps = [
       "//base:base",
@@ -447,14 +447,14 @@ if (!is_cronet_build) {
   # Dependency for child processes that use the CallStackProfileBuilder.
   source_set("child_call_stack_profile_builder") {
     public = [
-      "call_stack_profile_builder.h",
-      "call_stack_profile_metadata.h",
-      "child_call_stack_profile_collector.h",
+      "call_stacks/call_stack_profile_builder.h",
+      "call_stacks/call_stack_profile_metadata.h",
+      "call_stacks/child_call_stack_profile_collector.h",
     ]
     sources = [
-      "call_stack_profile_builder.cc",
-      "call_stack_profile_metadata.cc",
-      "child_call_stack_profile_collector.cc",
+      "call_stacks/call_stack_profile_builder.cc",
+      "call_stacks/call_stack_profile_metadata.cc",
+      "call_stacks/child_call_stack_profile_collector.cc",
     ]
     public_deps = [ ":call_stack_profile_params" ]
     deps = [
@@ -478,8 +478,8 @@ if (!is_cronet_build) {
   # processes.
   source_set("call_stack_profile_collector") {
     sources = [
-      "call_stack_profile_collector.cc",
-      "call_stack_profile_collector.h",
+      "call_stacks/call_stack_profile_collector.cc",
+      "call_stacks/call_stack_profile_collector.h",
     ]
     deps = [
       ":call_stack_profile_params",
@@ -504,10 +504,10 @@ if (!is_cronet_build) {
     testonly = true
     sources = [
       "android_metrics_helper_unittest.cc",
-      "call_stack_profile_builder_unittest.cc",
-      "call_stack_profile_metadata_unittest.cc",
-      "call_stack_profile_metrics_provider_unittest.cc",
-      "child_call_stack_profile_collector_unittest.cc",
+      "call_stacks/call_stack_profile_builder_unittest.cc",
+      "call_stacks/call_stack_profile_metadata_unittest.cc",
+      "call_stacks/call_stack_profile_metrics_provider_unittest.cc",
+      "call_stacks/child_call_stack_profile_collector_unittest.cc",
       "clean_exit_beacon_unittest.cc",
       "cloned_install_detector_unittest.cc",
       "component_metrics_provider_unittest.cc",
@@ -621,7 +621,8 @@ if (!is_cronet_build) {
     # iOS is not supported by the profiler and the ios-simulator bot chokes on
     # these tests.
     if (is_ios) {
-      sources -= [ "child_call_stack_profile_collector_unittest.cc" ]
+      sources -=
+          [ "call_stacks/child_call_stack_profile_collector_unittest.cc" ]
       deps += [ "//ios/web/public/test" ]
     } else {
       sources += [

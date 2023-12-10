@@ -47,6 +47,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   std::unique_ptr<ash::SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;
+  std::unique_ptr<ash::api::TasksDelegate> CreateTasksDelegate() const override;
   std::unique_ptr<ash::UserEducationDelegate> CreateUserEducationDelegate()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -78,6 +79,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackDialog(ShellDelegate::FeedbackSource source,
                           const std::string& description_template) override;
+  void OpenProfileManager() override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;

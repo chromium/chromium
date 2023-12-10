@@ -29,6 +29,9 @@ class CONTENT_EXPORT AggregatableHistogramContribution {
 
   uint32_t value() const { return value_; }
 
+  friend bool operator==(const AggregatableHistogramContribution&,
+                         const AggregatableHistogramContribution&) = default;
+
  private:
   absl::uint128 key_;
   uint32_t value_;

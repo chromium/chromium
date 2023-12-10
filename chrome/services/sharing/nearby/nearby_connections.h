@@ -125,20 +125,20 @@ class NearbyConnections : public mojom::NearbyConnections {
       ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
       mojom::ConnectionOptionsPtr connection_options,
       mojo::PendingRemote<mojom::ConnectionListenerV3> listener,
-      RequestConnectionCallback callback) override;
+      RequestConnectionV3Callback callback) override;
   void AcceptConnectionV3(
       const std::string& service_id,
       ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
       mojo::PendingRemote<mojom::PayloadListenerV3> listener,
-      AcceptConnectionCallback callback) override;
+      AcceptConnectionV3Callback callback) override;
   void RejectConnectionV3(
       const std::string& service_id,
       ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-      RejectConnectionCallback callback) override;
+      RejectConnectionV3Callback callback) override;
   void DisconnectFromDeviceV3(
       const std::string& service_id,
       ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-      DisconnectFromEndpointCallback callback) override;
+      DisconnectFromDeviceV3Callback callback) override;
 
   // Returns the file associated with |payload_id| for InputFile.
   base::File ExtractInputFile(int64_t payload_id);

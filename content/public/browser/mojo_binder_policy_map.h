@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 
 #include "base/check_op.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 
 namespace content {

@@ -69,7 +69,15 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   void set_cache(NavigationEntryScreenshotCache* cache) { cache_ = cache; }
   bool is_cached() { return cache_ != nullptr; }
 
+  // Returns the size of the bounds of the bitmap.
+  gfx::Size GetDimensions() const;
+
+  // Returns the memory occupied by the bitmap.
   size_t SizeInBytes() const;
+
+  int navigation_entry_id() const { return navigation_entry_id_; }
+
+  SkBitmap GetBitmapForTesting() const;
 
  private:
   // TODO(https://crbug.com/1414164):

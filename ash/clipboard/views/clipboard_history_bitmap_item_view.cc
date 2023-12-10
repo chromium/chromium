@@ -50,6 +50,8 @@ constexpr base::TimeDelta kFadeInDurationMs = base::Milliseconds(200);
 // rendering. Expected to transition at most once in its lifetime.
 class FadeImageView : public views::ImageView,
                       public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(FadeImageView, views::ImageView)
+
  public:
   FadeImageView(
       base::RepeatingCallback<const ClipboardHistoryItem*()> item_resolver,
@@ -148,6 +150,9 @@ class FadeImageView : public views::ImageView,
   base::CallbackListSubscription display_image_updated_subscription_;
 };
 
+BEGIN_METADATA(FadeImageView, views::ImageView)
+END_METADATA
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,8 +160,9 @@ class FadeImageView : public views::ImageView,
 
 class ClipboardHistoryBitmapItemView::BitmapContentsView
     : public ClipboardHistoryBitmapItemView::ContentsView {
+  METADATA_HEADER(BitmapContentsView, ContentsView)
+
  public:
-  METADATA_HEADER(BitmapContentsView);
   explicit BitmapContentsView(ClipboardHistoryBitmapItemView* container)
       : container_(container) {
     views::Builder<views::View>(this)

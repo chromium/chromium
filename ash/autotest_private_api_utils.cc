@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/autotest_private_api_utils.h"
 
+#include <optional>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -13,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -117,7 +118,7 @@ class LauncherAnimationWaiter : public ui::LayerAnimationObserver {
 
 bool WaitForHomeLauncherState(bool target_visible, base::OnceClosure closure) {
   if (Shell::Get()->app_list_controller()->IsVisible(
-          /*display_id=*/absl::nullopt) == target_visible) {
+          /*display_id=*/std::nullopt) == target_visible) {
     std::move(closure).Run();
     return true;
   }
@@ -174,7 +175,7 @@ bool WaitForLauncherState(AppListViewState target_state,
           ? AppListViewState::kFullscreenAllApps
           : target_state;
 
-  absl::optional<bool> target_home_launcher_visibility;
+  std::optional<bool> target_home_launcher_visibility;
   if (in_tablet_mode)
     target_home_launcher_visibility = target_state != AppListViewState::kClosed;
 

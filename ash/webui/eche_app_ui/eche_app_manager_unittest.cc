@@ -39,17 +39,17 @@ namespace ash::eche_app {
 namespace {
 
 void LaunchEcheAppFunction(
-    const absl::optional<int64_t>& notification_id,
+    const std::optional<int64_t>& notification_id,
     const std::string& package_name,
     const std::u16string& visible_name,
-    const absl::optional<int64_t>& user_id,
+    const std::optional<int64_t>& user_id,
     const gfx::Image& icon,
     const std::u16string& phone_name,
     AppsLaunchInfoProvider* apps_launcher_info_provider) {}
 
 void LaunchNotificationFunction(
-    const absl::optional<std::u16string>& title,
-    const absl::optional<std::u16string>& message,
+    const std::optional<std::u16string>& title,
+    const std::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {}
 
 void CloseNotificationFunction(const std::string& notification_id) {}

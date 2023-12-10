@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.provider;
 
-/**
- * Copy of android.provider.Browser.SearchColumns.
- */
+/** Copy of android.provider.Browser.SearchColumns. */
 public class SearchColumns implements BaseColumns {
-    /**
-     * The user entered search term.
-     */
+    /** The user entered search term. */
     public static final String SEARCH = "search";
 
     /**

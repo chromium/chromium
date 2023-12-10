@@ -55,20 +55,30 @@ class CssToWrapperTest(unittest.TestCase):
 
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
 
-  def testCssToWrapperStyle(self):
+  def testCssToWrapperStylePolymer(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.ts',
                    'css_to_wrapper/foo_style_expected.css.ts')
+
+  def testCssToWrapperStyleLit(self):
+    self._run_test('css_to_wrapper/foo_style_lit.css',
+                   'css_to_wrapper/foo_style_lit.css.ts',
+                   'css_to_wrapper/expected/foo_style_lit.css.ts')
 
   def testCssToWrapperStyleNoIncludes(self):
     self._run_test('css_to_wrapper/foo_no_includes_style.css',
                    'css_to_wrapper/foo_no_includes_style.css.ts',
                    'css_to_wrapper/foo_no_includes_style_expected.css.ts')
 
-  def testCssToWrapperVars(self):
+  def testCssToWrapperVarsPolymer(self):
     self._run_test('css_to_wrapper/foo_vars.css',
                    'css_to_wrapper/foo_vars.css.ts',
                    'css_to_wrapper/foo_vars_expected.css.ts')
+
+  def testCssToWrapperVarsLit(self):
+    self._run_test('css_to_wrapper/foo_vars_lit.css',
+                   'css_to_wrapper/foo_vars_lit.css.ts',
+                   'css_to_wrapper/expected/foo_vars_lit.css.ts')
 
   def testCssToWrapperMinify(self):
     self._run_test('css_to_wrapper/foo_style.css',

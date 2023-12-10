@@ -4,13 +4,13 @@
 
 #include "cc/paint/solid_color_analyzer.h"
 
+#include <optional>
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -39,7 +39,7 @@ class SolidColorAnalyzerTest : public testing::Test {
   RecordPaintCanvas canvas_;
 
  private:
-  absl::optional<SolidColorAnalyzer> analyzer_;
+  std::optional<SolidColorAnalyzer> analyzer_;
 };
 
 TEST_F(SolidColorAnalyzerTest, Empty) {

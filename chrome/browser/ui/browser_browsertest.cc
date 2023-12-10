@@ -52,6 +52,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -82,6 +83,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -93,6 +95,7 @@
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -2586,37 +2589,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
   EXPECT_TRUE(chrome::CanDuplicateTabAt(browser(), 1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTest, DefaultMediaDevices) {
-  const std::string kDefaultAudioCapture1 = "test_default_audio_capture";
-  const std::string kDefaultVideoCapture1 = "test_default_video_capture";
-  auto SetString = [this](const std::string& path, const std::string& value) {
-    browser()->profile()->GetPrefs()->SetString(path, value);
-  };
-  SetString(prefs::kDefaultAudioCaptureDevice, kDefaultAudioCapture1);
-  SetString(prefs::kDefaultVideoCaptureDevice, kDefaultVideoCapture1);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto GetDeviceID = [web_contents](blink::mojom::MediaStreamType type) {
-    return web_contents->GetDelegate()->GetDefaultMediaDeviceID(web_contents,
-                                                                type);
-  };
-  EXPECT_EQ(kDefaultAudioCapture1,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
-  EXPECT_EQ(kDefaultVideoCapture1,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
-
-  const std::string kDefaultAudioCapture2 = "test_default_audio_capture_2";
-  const std::string kDefaultVideoCapture2 = "test_default_video_capture_2";
-  SetString(prefs::kDefaultAudioCaptureDevice, kDefaultAudioCapture2);
-  SetString(prefs::kDefaultVideoCaptureDevice, kDefaultVideoCapture2);
-  EXPECT_EQ(kDefaultAudioCapture2,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
-  EXPECT_EQ(kDefaultVideoCapture2,
-            GetDeviceID(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
-}
-
 namespace {
 
 void CheckDisplayModeMQ(const std::u16string& display_mode,
@@ -2833,6 +2805,202 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestNavEntryCommittedUserAction) {
   base::UserActionTester user_action_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
   EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted.SRP"), 0);
+}
+
+namespace {
+
+void SetTestDefaultSearchProvider(TemplateURLService* service,
+                                  const GURL& search_template) {
+  ASSERT_TRUE(service);
+  search_test_utils::WaitForTemplateURLServiceToLoad(service);
+  ASSERT_TRUE(service->loaded());
+
+  TemplateURLData data;
+  data.SetShortName(u"test");
+  data.SetKeyword(data.short_name());
+  data.SetURL(search_template.spec());
+
+  TemplateURL* template_url = service->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+  service->SetUserSelectedDefaultSearchProvider(template_url);
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BrowserTest, TestNavEntryCommittedSRPUserAction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  SetTestDefaultSearchProvider(
+      service,
+      embedded_test_server()->GetURL("a.test", "/title1.html?q={searchTerms}"));
+
+  const GURL srp_url =
+      service->GenerateSearchURLForDefaultSearchProvider(u"testing");
+
+  base::UserActionTester user_action_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), srp_url));
+  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted.SRP"), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       TestNavEntryCommittedUserActionOnlyRecordedForTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  SetTestDefaultSearchProvider(
+      service,
+      embedded_test_server()->GetURL("a.test", "/title1.html?q={searchTerms}"));
+
+  const GURL srp_url =
+      service->GenerateSearchURLForDefaultSearchProvider(u"testing");
+
+  base::UserActionTester user_action_tester;
+
+  // Create and navigate a WebContents that is not a tab. The NavEntryCommitted
+  // actions should not be recorded for this WebContents.
+  std::unique_ptr<content::WebContents> non_tab_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  content::TestNavigationObserver observer(non_tab_web_contents.get());
+  non_tab_web_contents->GetController().LoadURL(
+      srp_url, content::Referrer(), ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      std::string());
+  observer.Wait();
+
+  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted"), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted.SRP"), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest, TestTabCountMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // This test assumes there's only one browser with one tab at the start of the
+  // test.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Create an additional browser with two tabs.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  chrome::NewTab(browser2);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser2->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser2->tab_strip_model()->count());
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser2, embedded_test_server()->GetURL("/title1.html")));
+
+  histogram_tester.ExpectBucketCount("Tabs.TabCountPerWindow", 1, 1);
+  histogram_tester.ExpectBucketCount("Tabs.TabCountPerWindow", 2, 1);
+  histogram_tester.ExpectUniqueSample("Tabs.TabCountPerLoad", 3, 1);
+  // Skipping "Tabs.TabCountActiveWindow" due to flakiness risk w.r.t. focus.
+
+  // Also check that tab group count metrics are recorded. In this case, there
+  // aren't any groups.
+  histogram_tester.ExpectUniqueSample("TabGroups.UserGroupCountPerLoad", 0, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.UserPinnedTabCountPerLoad", 0,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Tabs.TabCountInGroupPerLoad", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.UserCustomizedGroupCountPerLoad", 0, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.CollapsedGroupCountPerLoad", 0,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       TestTabCountMetricsOnlyRecordedWhenTabLoads) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::HistogramTester histogram_tester;
+
+  // Create and navigate a WebContents that is not a tab. Tab count metrics
+  // should not be recorded when this WebContents loads.
+  std::unique_ptr<content::WebContents> non_tab_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  content::TestNavigationObserver observer(non_tab_web_contents.get());
+  non_tab_web_contents->GetController().LoadURL(
+      embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
+      ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  observer.Wait();
+
+  histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       TestTabCountMetricsNotRecordedWhenIframeLoads) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
+
+  base::HistogramTester histogram_tester;
+
+  // Tab count metrics should not be recorded when the iframe navigates.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL iframe_url = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, "test", iframe_url));
+
+  histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserTest,
+    TestTabCountMetricsNotRecordedForSameDocumentNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  base::HistogramTester histogram_tester;
+
+  // Tab count metrics should not be recorded for same document navigations.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents, "location.href = '#test'"));
+  nav_observer.Wait();
+
+  histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest, TestTabCountMetricsRecordedOnReload) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(web_contents);
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  nav_observer.Wait();
+
+  histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       TestTabCountMetricsRecordedOnBackNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
+
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(web_contents);
+  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  nav_observer.Wait();
+
+  histogram_tester.ExpectTotalCount("Tabs.TabCountPerLoad", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveBrowserChangedUserAction) {

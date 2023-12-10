@@ -37,7 +37,11 @@ source_set("util") {
 
   deps = [
     "//base",
-    "//chrome/browser/nearby_sharing/proto",
-    "//chromeos/ash/components/nearby/common/proto",
+    "//third_party/nearby:certificate_rpc_proto",
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:device_rpc_proto",
+    "//third_party/nearby:encrypted_metadata_proto",
+    "//third_party/nearby:rpc_resources_proto",
   ]
 }

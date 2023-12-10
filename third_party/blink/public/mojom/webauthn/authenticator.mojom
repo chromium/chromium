@@ -44,7 +44,6 @@ enum AuthenticatorStatus {
   BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR,
   BAD_RELYING_PARTY_ID_NO_JSON_MATCH,
   BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS,
-  BAD_RELYING_PARTY_ID_NO_JSON_MATCH_EXTENSION,
   CANNOT_READ_AND_WRITE_LARGE_BLOB,
   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
   FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION,
@@ -97,10 +96,9 @@ struct UvmEntry {
   uint16 matcher_protection_type;
 };
 
-// The output for the `devicePubKey` extension.
-struct DevicePublicKeyResponse {
-  array<uint8> authenticator_output;
-  array<uint8> signature;
+// The output for the `supplementalPubKeys` extension.
+struct SupplementalPubKeysResponse {
+  array<array<uint8>> signatures;
 };
 
 // The public key and attestation returned by Authenticator::MakeCredential.
@@ -159,7 +157,7 @@ struct MakeCredentialAuthenticatorResponse {
   bool echo_large_blob;
   bool supports_large_blob;
 
-  DevicePublicKeyResponse? device_public_key;
+  SupplementalPubKeysResponse? supplemental_pub_keys;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -224,7 +222,7 @@ struct AuthenticationExtensionsClientOutputs {
   // null if none.
   array<uint8>? get_cred_blob;
 
-  DevicePublicKeyResponse? device_public_key;
+  SupplementalPubKeysResponse? supplemental_pub_keys;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -338,7 +336,9 @@ struct RemoteDesktopClientOverride {
   bool same_origin_with_ancestors;
 };
 
-struct DevicePublicKeyRequest {
+struct SupplementalPubKeysRequest {
+  bool device_scope_requested;
+  bool provider_scope_requested;
   AttestationConveyancePreference attestation;
   array<string> attestation_formats;
 };
@@ -422,9 +422,9 @@ struct AuthenticationExtensionsClientInputs {
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
 
-  // If present, reflects the contents of the "devicePubKey" extension.
+  // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
-  DevicePublicKeyRequest? device_public_key;
+  SupplementalPubKeysRequest? supplemental_pub_keys;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -546,9 +546,9 @@ struct PublicKeyCredentialCreationOptions {
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
 
-  // If present, reflects the contents of the "devicePubKey" extension.
+  // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
-  DevicePublicKeyRequest? device_public_key;
+  SupplementalPubKeysRequest? supplemental_pub_keys;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

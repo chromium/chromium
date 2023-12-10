@@ -6,6 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
+// TODO(http://b/307989065) Make this web_app.proto
 package web_app;
 
 // A proto representing the "launch_handler" manifest field.

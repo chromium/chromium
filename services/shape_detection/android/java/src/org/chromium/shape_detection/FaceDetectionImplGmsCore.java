@@ -103,7 +103,8 @@ public class FaceDetectionImplGmsCore implements FaceDetection {
             for (int j = 0; j < landmarks.size(); j++) {
                 final Landmark landmark = landmarks.get(j);
                 final int landmarkType = landmark.getType();
-                if (landmarkType != Landmark.LEFT_EYE && landmarkType != Landmark.RIGHT_EYE
+                if (landmarkType != Landmark.LEFT_EYE
+                        && landmarkType != Landmark.RIGHT_EYE
                         && landmarkType != Landmark.BOTTOM_MOUTH
                         && landmarkType != Landmark.NOSE_BASE) {
                     continue;
@@ -128,8 +129,9 @@ public class FaceDetectionImplGmsCore implements FaceDetection {
                 }
                 mojoLandmarks.add(mojoLandmark);
             }
-            faceArray[i].landmarks = mojoLandmarks.toArray(
-                    new org.chromium.shape_detection.mojom.Landmark[mojoLandmarks.size()]);
+            faceArray[i].landmarks =
+                    mojoLandmarks.toArray(
+                            new org.chromium.shape_detection.mojom.Landmark[mojoLandmarks.size()]);
         }
         callback.call(faceArray);
     }

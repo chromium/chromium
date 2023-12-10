@@ -86,12 +86,11 @@ public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
     private static final String SPACER_KEY = "Spacer";
 
-    /**
-     * Implementation of SurfaceActionsHandler methods.
-     */
+    /** Implementation of SurfaceActionsHandler methods. */
     @VisibleForTesting
     class FeedSurfaceActionsHandler implements SurfaceActionsHandler {
         FeedActionDelegate mActionDelegate;
+
         FeedSurfaceActionsHandler(FeedActionDelegate actionDelegate) {
             mActionDelegate = actionDelegate;
         }
@@ -102,22 +101,32 @@ public class FeedStream implements Stream {
             switch (openMode) {
                 case OpenMode.UNKNOWN:
                 case OpenMode.SAME_TAB:
-                    mBridge.reportOpenAction(new GURL(url),
-                            getSliceIdFromView(options.actionSourceView()), OpenActionType.DEFAULT);
+                    mBridge.reportOpenAction(
+                            new GURL(url),
+                            getSliceIdFromView(options.actionSourceView()),
+                            OpenActionType.DEFAULT);
                     openSuggestionUrl(
-                            url, WindowOpenDisposition.CURRENT_TAB, /*inGroup=*/false, options);
+                            url, WindowOpenDisposition.CURRENT_TAB, /* inGroup= */ false, options);
                     break;
                 case OpenMode.NEW_TAB:
-                    mBridge.reportOpenAction(new GURL(url),
-                            getSliceIdFromView(options.actionSourceView()), OpenActionType.NEW_TAB);
-                    openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                            /*inGroup=*/false, options);
+                    mBridge.reportOpenAction(
+                            new GURL(url),
+                            getSliceIdFromView(options.actionSourceView()),
+                            OpenActionType.NEW_TAB);
+                    openSuggestionUrl(
+                            url,
+                            WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                            /* inGroup= */ false,
+                            options);
                     break;
                 case OpenMode.INCOGNITO_TAB:
                     mBridge.reportOtherUserAction(
                             FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
                     openSuggestionUrl(
-                            url, WindowOpenDisposition.OFF_THE_RECORD, /*inGroup=*/false, options);
+                            url,
+                            WindowOpenDisposition.OFF_THE_RECORD,
+                            /* inGroup= */ false,
+                            options);
                     break;
                 case OpenMode.DOWNLOAD_LINK:
                     mBridge.reportOtherUserAction(FeedUserActionType.TAPPED_DOWNLOAD);
@@ -128,11 +137,15 @@ public class FeedStream implements Stream {
                     mActionDelegate.addToReadingList(options.getTitle(), url);
                     break;
                 case OpenMode.NEW_TAB_IN_GROUP:
-                    mBridge.reportOpenAction(new GURL(url),
+                    mBridge.reportOpenAction(
+                            new GURL(url),
                             getSliceIdFromView(options.actionSourceView()),
                             OpenActionType.NEW_TAB_IN_GROUP);
-                    openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                            /*inGroup=*/true, options);
+                    openSuggestionUrl(
+                            url,
+                            WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                            /* inGroup= */ true,
+                            options);
                     break;
             }
 
@@ -143,12 +156,15 @@ public class FeedStream implements Stream {
         // Deprecated in favor of openUrl(), will be removed once internal references are removed.
         @Override
         public void navigateTab(String url, View actionSourceView) {
-            openUrl(OpenMode.SAME_TAB, url, new OpenUrlOptions() {
-                @Override
-                public View actionSourceView() {
-                    return actionSourceView;
-                }
-            });
+            openUrl(
+                    OpenMode.SAME_TAB,
+                    url,
+                    new OpenUrlOptions() {
+                        @Override
+                        public View actionSourceView() {
+                            return actionSourceView;
+                        }
+                    });
         }
 
         @Override
@@ -170,20 +186,21 @@ public class FeedStream implements Stream {
             // Make a sheetContent with the view.
             mBottomSheetContent = new CardMenuBottomSheetContent(view);
             mBottomSheetOriginatingSliceId = getSliceIdFromView(actionSourceView);
-            mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetClosed(@StateChangeReason int reason) {
-                    if (mLastFocusedView != null) {
-                        mLastFocusedView.requestFocus();
-                        mLastFocusedView = null;
-                    }
-                    if (mLastAccessibilityFocusedView != null) {
-                        mLastAccessibilityFocusedView.sendAccessibilityEvent(
-                                AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                        mLastAccessibilityFocusedView = null;
-                    }
-                }
-            });
+            mBottomSheetController.addObserver(
+                    new EmptyBottomSheetObserver() {
+                        @Override
+                        public void onSheetClosed(@StateChangeReason int reason) {
+                            if (mLastFocusedView != null) {
+                                mLastFocusedView.requestFocus();
+                                mLastFocusedView = null;
+                            }
+                            if (mLastAccessibilityFocusedView != null) {
+                                mLastAccessibilityFocusedView.sendAccessibilityEvent(
+                                        AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                                mLastAccessibilityFocusedView = null;
+                            }
+                        }
+                    });
             mBottomSheetController.requestShowContent(mBottomSheetContent, true);
         }
 
@@ -192,9 +209,7 @@ public class FeedStream implements Stream {
             FeedStream.this.dismissBottomSheet();
         }
 
-        /**
-         * Search the view hierarchy to find the accessibility focused view.
-         */
+        /** Search the view hierarchy to find the accessibility focused view. */
         private View findAccessibilityFocus(View view) {
             if (view == null || view.isAccessibilityFocused()) return view;
             if (!(view instanceof ViewGroup)) return null;
@@ -228,28 +243,39 @@ public class FeedStream implements Stream {
             }
             WebFeedFollowUpdate.Callback updateCallback = update.callback();
             if (update.isFollow()) {
-                Callback<WebFeedBridge.FollowResults> followCallback = results -> {
-                    boolean successfulFollow =
-                            results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS;
-                    if (updateCallback != null) {
-                        updateCallback.requestComplete(successfulFollow);
-                    }
-                    if (successfulFollow && results.metadata != null) {
-                        mWebFeedSnackbarController.showPostSuccessfulFollowHelp(
-                                results.metadata.title,
-                                results.metadata.availabilityStatus
-                                        == WebFeedAvailabilityStatus.ACTIVE,
-                                mStreamKind, null /* tab */, null /* url */);
-                    }
-                };
-                WebFeedBridge.followFromId(webFeedId, update.isDurable(),
-                        update.webFeedChangeReason(), followCallback);
+                Callback<WebFeedBridge.FollowResults> followCallback =
+                        results -> {
+                            boolean successfulFollow =
+                                    results.requestStatus
+                                            == WebFeedSubscriptionRequestStatus.SUCCESS;
+                            if (updateCallback != null) {
+                                updateCallback.requestComplete(successfulFollow);
+                            }
+                            if (successfulFollow && results.metadata != null) {
+                                mWebFeedSnackbarController.showPostSuccessfulFollowHelp(
+                                        results.metadata.title,
+                                        results.metadata.availabilityStatus
+                                                == WebFeedAvailabilityStatus.ACTIVE,
+                                        mStreamKind,
+                                        /* tab= */ null,
+                                        /* url= */ null);
+                            }
+                        };
+                WebFeedBridge.followFromId(
+                        webFeedId,
+                        update.isDurable(),
+                        update.webFeedChangeReason(),
+                        followCallback);
             } else {
                 WebFeedBridge.unfollow(
-                        webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
+                        webFeedId,
+                        update.isDurable(),
+                        update.webFeedChangeReason(),
+                        results -> {
                             if (updateCallback != null) {
-                                updateCallback.requestComplete(results.requestStatus
-                                        == WebFeedSubscriptionRequestStatus.SUCCESS);
+                                updateCallback.requestComplete(
+                                        results.requestStatus
+                                                == WebFeedSubscriptionRequestStatus.SUCCESS);
                             }
                         });
             }
@@ -257,8 +283,7 @@ public class FeedStream implements Stream {
 
         @Override
         public void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {
-            @SingleWebFeedEntryPoint
-            int singleWebFeedEntryPoint;
+            @SingleWebFeedEntryPoint int singleWebFeedEntryPoint;
 
             switch (entryPoint) {
                 case OpenWebFeedEntryPoint.ATTRIBUTION:
@@ -280,8 +305,9 @@ public class FeedStream implements Stream {
 
         private void openSuggestionUrl(
                 String url, int disposition, boolean inGroup, OpenUrlOptions openOptions) {
-            boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
-                    || disposition == WindowOpenDisposition.OFF_THE_RECORD);
+            boolean inNewTab =
+                    (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
+                            || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mReliabilityLogger != null) {
@@ -299,12 +325,17 @@ public class FeedStream implements Stream {
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
             // triggers unbind, which can break event handling.
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                mActionDelegate.openSuggestionUrl(disposition, params, inGroup, /*onPageLoaded=*/
-                        ()
-                                -> mBridge.reportPageLoaded(inNewTab),
-                        visitResult -> mBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        mActionDelegate.openSuggestionUrl(
+                                disposition,
+                                params,
+                                inGroup,
+                                /* onPageLoaded= */ () -> mBridge.reportPageLoaded(inNewTab),
+                                visitResult ->
+                                        mBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
+                    });
         }
 
         @Override
@@ -314,8 +345,10 @@ public class FeedStream implements Stream {
 
         @Override
         public void showSignInInterstitial() {
-            mActionDelegate.showSignInInterstitial(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
-                    mBottomSheetController, mWindowAndroid);
+            mActionDelegate.showSignInInterstitial(
+                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
+                    mBottomSheetController,
+                    mWindowAndroid);
         }
     }
 
@@ -367,6 +400,7 @@ public class FeedStream implements Stream {
                 }
             }
         }
+
         private void finishWork(int workId) {
             mActiveWork.remove(workId);
             if (mActiveWork.isEmpty()) {
@@ -375,9 +409,7 @@ public class FeedStream implements Stream {
         }
     }
 
-    /**
-     * Implementation of FeedActionsHandler methods.
-     */
+    /** Implementation of FeedActionsHandler methods. */
     class FeedActionsHandlerImpl implements FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
@@ -388,8 +420,8 @@ public class FeedStream implements Stream {
         @VisibleForTesting
         static final String FEEDBACK_REPORT_TYPE =
                 "com.google.chrome.feed.USER_INITIATED_FEEDBACK_REPORT";
-        @VisibleForTesting
-        static final String XSURFACE_CARD_URL = "Card URL";
+
+        @VisibleForTesting static final String XSURFACE_CARD_URL = "Card URL";
 
         @Override
         public void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {
@@ -413,9 +445,10 @@ public class FeedStream implements Stream {
             // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
             // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
             // matching an allow list rule.
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
-                    ()
-                            -> mHelpAndFeedbackLauncher.showFeedback(
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () ->
+                            mHelpAndFeedbackLauncher.showFeedback(
                                     mActivity, url, FEEDBACK_REPORT_TYPE, productSpecificDataMap),
                     MENU_DISMISS_TASK_DELAY);
         }
@@ -442,7 +475,9 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void showSnackbar(String text, String actionLabel,
+        public void showSnackbar(
+                String text,
+                String actionLabel,
                 @FeedActionsHandler.SnackbarDuration int duration,
                 FeedActionsHandler.SnackbarController delegateController) {
             assert ThreadUtils.runningOnUiThread();
@@ -456,6 +491,7 @@ public class FeedStream implements Stream {
                         public void onAction(Object actionData) {
                             delegateController.onAction(mInProgressWorkTracker.addWork());
                         }
+
                         @Override
                         public void onDismissNoAction(Object actionData) {
                             delegateController.onDismissNoAction(mInProgressWorkTracker.addWork());
@@ -463,11 +499,15 @@ public class FeedStream implements Stream {
                     };
 
             mSnackbarControllers.add(controller);
-            mSnackManager.showSnackbar(Snackbar.make(text, controller, Snackbar.TYPE_ACTION,
-                                                       Snackbar.UMA_FEED_NTP_STREAM)
-                                               .setAction(actionLabel, /*actionData=*/null)
-                                               .setDuration(durationMs)
-                                               .setSingleLine(false));
+            mSnackManager.showSnackbar(
+                    Snackbar.make(
+                                    text,
+                                    controller,
+                                    Snackbar.TYPE_ACTION,
+                                    Snackbar.UMA_FEED_NTP_STREAM)
+                            .setAction(actionLabel, /* actionData= */ null)
+                            .setDuration(durationMs)
+                            .setSingleLine(false));
         }
 
         @Override
@@ -534,8 +574,7 @@ public class FeedStream implements Stream {
 
         @Override
         public void invalidateContentCacheFor(@FeedIdentifier int feedToInvalidate) {
-            @StreamKind
-            int streamKindToInvalidate = feedIdentifierToKind(feedToInvalidate);
+            @StreamKind int streamKindToInvalidate = feedIdentifierToKind(feedToInvalidate);
             if (streamKindToInvalidate != StreamKind.UNKNOWN) {
                 mBridge.invalidateContentCacheFor(streamKindToInvalidate);
             }
@@ -635,17 +674,27 @@ public class FeedStream implements Stream {
      * @param streamsMediator the mediator for multiple streams.
      * @param singleWebFeedParameters the parameters needed to create a single web feed.
      */
-    public FeedStream(Activity activity, SnackbarManager snackbarManager,
-            BottomSheetController bottomSheetController, boolean isPlaceholderShown,
-            WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
-            int streamKind, FeedActionDelegate actionDelegate,
+    public FeedStream(
+            Activity activity,
+            SnackbarManager snackbarManager,
+            BottomSheetController bottomSheetController,
+            boolean isPlaceholderShown,
+            WindowAndroid windowAndroid,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            int streamKind,
+            FeedActionDelegate actionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
-            Stream.StreamsMediator streamsMediator, SingleWebFeedParameters singleWebFeedParameters,
+            Stream.StreamsMediator streamsMediator,
+            SingleWebFeedParameters singleWebFeedParameters,
             FeedSurfaceRendererBridge.Factory feedSurfaceRendererBridgeFactory) {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
-        mBridge = feedSurfaceRendererBridgeFactory.create(
-                new Renderer(), mReliabilityLoggingBridge, streamKind, singleWebFeedParameters);
+        mBridge =
+                feedSurfaceRendererBridgeFactory.create(
+                        new Renderer(),
+                        mReliabilityLoggingBridge,
+                        streamKind,
+                        singleWebFeedParameters);
         mActivity = activity;
         mStreamKind = streamKind;
         mBottomSheetController = bottomSheetController;
@@ -659,16 +708,22 @@ public class FeedStream implements Stream {
         mStreamsMediator = streamsMediator;
         WebFeedSnackbarController.FeedLauncher snackbarAction;
         if (mStreamKind == StreamKind.FOLLOWING) {
-            snackbarAction = () -> {
-                mStreamsMediator.refreshStream();
-            };
+            snackbarAction =
+                    () -> {
+                        mStreamsMediator.refreshStream();
+                    };
         } else {
-            snackbarAction = () -> {
-                mStreamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
-            };
+            snackbarAction =
+                    () -> {
+                        mStreamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
+                    };
         }
-        mWebFeedSnackbarController = new WebFeedSnackbarController(
-                activity, snackbarAction, windowAndroid.getModalDialogManager(), snackbarManager);
+        mWebFeedSnackbarController =
+                new WebFeedSnackbarController(
+                        activity,
+                        snackbarAction,
+                        windowAndroid.getModalDialogManager(),
+                        snackbarManager);
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
@@ -677,32 +732,34 @@ public class FeedStream implements Stream {
         this.mLoadMoreTriggerScrollDistanceDp =
                 FeedServiceBridge.getLoadMoreTriggerScrollDistanceDp();
 
-        addOnContentChangedListener(contents -> {
-            // Feed's background is set to be transparent in {@link #bind} to show the Feed
-            // placeholder. When first batch of articles are about to show, set recyclerView back
-            // to non-transparent.
-            if (isPlaceholderShown()) {
-                hidePlaceholder();
-            }
-        });
+        addOnContentChangedListener(
+                contents -> {
+                    // Feed's background is set to be transparent in {@link #bind} to show the Feed
+                    // placeholder. When first batch of articles are about to show, set recyclerView
+                    // back to non-transparent.
+                    if (isPlaceholderShown()) {
+                        hidePlaceholder();
+                    }
+                });
         mScrollReporter = new ScrollReporter();
 
         mLoadMoreTriggerLookahead = FeedServiceBridge.getLoadMoreTriggerLookahead();
 
-        mMainScrollListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView v, int dx, int dy) {
-                super.onScrolled(v, dx, dy);
-                checkScrollingForLoadMore(dy);
-                mBridge.reportStreamScrollStart();
-                mScrollReporter.trackScroll(dx, dy);
-            }
-        };
+        mMainScrollListener =
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView v, int dx, int dy) {
+                        super.onScrolled(v, dx, dy);
+                        checkScrollingForLoadMore(dy);
+                        mBridge.reportStreamScrollStart();
+                        mScrollReporter.trackScroll(dx, dy);
+                    }
+                };
 
         // Only watch for unread content on the web feed, not for-you feed.
         // Sort options only available for web feed right now.
         if (streamKind == StreamKind.FOLLOWING) {
-            mUnreadContentObserver = new UnreadContentObserver(/*isWebFeed=*/true);
+            mUnreadContentObserver = new UnreadContentObserver(/* isWebFeed= */ true);
         }
     }
 
@@ -731,9 +788,13 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void bind(RecyclerView rootView, FeedListContentManager manager,
-            FeedScrollState savedInstanceState, FeedSurfaceScope surfaceScope,
-            HybridListRenderer renderer, @Nullable FeedReliabilityLogger reliabilityLogger,
+    public void bind(
+            RecyclerView rootView,
+            FeedListContentManager manager,
+            FeedScrollState savedInstanceState,
+            FeedSurfaceScope surfaceScope,
+            HybridListRenderer renderer,
+            @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount) {
         mReliabilityLogger = reliabilityLogger;
         if (mReliabilityLogger != null) {
@@ -743,11 +804,15 @@ public class FeedStream implements Stream {
 
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
-        mSliceViewTracker = new FeedSliceViewTracker(rootView, mActivity, manager,
-                renderer.getListLayoutHelper(), /* watchForUserInteractionReliabilityReport= */
-                (mReliabilityLogger != null
-                        && mReliabilityLogger.getUserInteractionLogger() != null),
-                new FeedStream.ViewTrackerObserver());
+        mSliceViewTracker =
+                new FeedSliceViewTracker(
+                        rootView,
+                        mActivity,
+                        manager,
+                        renderer.getListLayoutHelper(),
+                        /* watchForUserInteractionReliabilityReport= */ (mReliabilityLogger != null
+                                && mReliabilityLogger.getUserInteractionLogger() != null),
+                        new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
@@ -855,12 +920,13 @@ public class FeedStream implements Stream {
     @Override
     public void triggerRefresh(Callback<Boolean> callback) {
         dismissSnackbars();
-        mInProgressWorkTracker.postTaskAfterWorkComplete(() -> {
-            if (mRenderer != null) {
-                mRenderer.onManualRefreshStarted();
-            }
-            mBridge.manualRefresh(callback);
-        });
+        mInProgressWorkTracker.postTaskAfterWorkComplete(
+                () -> {
+                    if (mRenderer != null) {
+                        mRenderer.onManualRefreshStarted();
+                    }
+                    mBridge.manualRefresh(callback);
+                });
     }
 
     @Override
@@ -873,8 +939,9 @@ public class FeedStream implements Stream {
         if (!mIsPlaceholderShown || mContentManager == null) {
             return;
         }
-        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(
-                mRecyclerView.getBackground(), PropertyValuesHolder.ofInt("alpha", 255));
+        ObjectAnimator animator =
+                ObjectAnimator.ofPropertyValuesHolder(
+                        mRecyclerView.getBackground(), PropertyValuesHolder.ofInt("alpha", 255));
         animator.setTarget(mRecyclerView.getBackground());
         animator.setDuration(mRecyclerView.getItemAnimator().getAddDuration())
                 .setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
@@ -899,9 +966,11 @@ public class FeedStream implements Stream {
         if (mAccumulatedDySinceLastLoadMore < 0) {
             mAccumulatedDySinceLastLoadMore = 0;
         }
-        if (mAccumulatedDySinceLastLoadMore < TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    mLoadMoreTriggerScrollDistanceDp,
-                    mRecyclerView.getResources().getDisplayMetrics())) {
+        if (mAccumulatedDySinceLastLoadMore
+                < TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        mLoadMoreTriggerScrollDistanceDp,
+                        mRecyclerView.getResources().getDisplayMetrics())) {
             return;
         }
 
@@ -913,8 +982,9 @@ public class FeedStream implements Stream {
 
     @Override
     public ObservableSupplier<Boolean> hasUnreadContent() {
-        return mUnreadContentObserver != null ? mUnreadContentObserver.mHasUnreadContent
-                                              : Stream.super.hasUnreadContent();
+        return mUnreadContentObserver != null
+                ? mUnreadContentObserver.mHasUnreadContent
+                : Stream.super.hasUnreadContent();
     }
 
     @Override
@@ -980,9 +1050,13 @@ public class FeedStream implements Stream {
             // The native loadMore() call may immediately result in onStreamUpdated(), which can
             // result in a crash if maybeLoadMore() is being called in response to certain events.
             // Use postTask to avoid this.
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mBridge.loadMore((Boolean success) -> {
-                mIsLoadingMoreContent = false;
-            }));
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () ->
+                            mBridge.loadMore(
+                                    (Boolean success) -> {
+                                        mIsLoadingMoreContent = false;
+                                    }));
         }
 
         return true;
@@ -997,10 +1071,12 @@ public class FeedStream implements Stream {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             FrameLayout spacerView = new FrameLayout(mActivity);
-            mSpacerViewContent = new FeedListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), SPACER_KEY, spacerView);
-            spacerView.setLayoutParams(new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, displayMetrics.heightPixels));
+            mSpacerViewContent =
+                    new FeedListContentManager.NativeViewContent(
+                            getLateralPaddingsPx(), SPACER_KEY, spacerView);
+            spacerView.setLayoutParams(
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, displayMetrics.heightPixels));
         }
         list.add(mSpacerViewContent);
     }
@@ -1093,7 +1169,7 @@ public class FeedStream implements Stream {
             // If all of the cards fit on the screen, load more content. The view
             // may not be scrollable, preventing the user from otherwise triggering
             // load more.
-            maybeLoadMore(/*lookaheadTrigger=*/0);
+            maybeLoadMore(/* lookaheadTrigger= */ 0);
         }
     }
 
@@ -1101,8 +1177,10 @@ public class FeedStream implements Stream {
             FeedUiProto.Slice slice, LoggingParameters loggingParameters) {
         String sliceId = slice.getSliceId();
         if (slice.hasXsurfaceSlice()) {
-            return new FeedListContentManager.ExternalViewContent(sliceId,
-                    slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(), loggingParameters);
+            return new FeedListContentManager.ExternalViewContent(
+                    sliceId,
+                    slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(),
+                    loggingParameters);
         } else if (slice.hasLoadingSpinnerSlice()) {
             // If the placeholder is shown, spinner is not needed.
             if (mIsPlaceholderShown) {
@@ -1126,22 +1204,31 @@ public class FeedStream implements Stream {
             // TODO(crbug/1396161): Add offline error scenario.
             if (slice.getZeroStateSlice().getType()
                     == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE) {
-                creatorErrorCard = LayoutInflater.from(mActivity).inflate(
-                        R.layout.creator_content_unavailable_error, mRecyclerView, false);
+                creatorErrorCard =
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.creator_content_unavailable_error,
+                                        mRecyclerView,
+                                        false);
             } else {
                 mStreamsMediator.disableFollowButton();
-                creatorErrorCard = LayoutInflater.from(mActivity).inflate(
-                        R.layout.creator_general_error, mRecyclerView, false);
+                creatorErrorCard =
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.creator_general_error, mRecyclerView, false);
             }
-             // TODO(crbug/1385903): Replace display height dependency with setting the
-             // RecyclerView height to match_parent.
+            // TODO(crbug/1385903): Replace display height dependency with setting the
+            // RecyclerView height to match_parent.
             DisplayMetrics displayMetrics = new DisplayMetrics();
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             MarginLayoutParams marginParams =
                     (MarginLayoutParams) creatorErrorCard.getLayoutParams();
-            marginParams.setMargins(0, displayMetrics.heightPixels / 4, 0,
-                    mActivity.getResources().getDimensionPixelSize(
-                            R.dimen.creator_error_margin_bottom));
+            marginParams.setMargins(
+                    0,
+                    displayMetrics.heightPixels / 4,
+                    0,
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.creator_error_margin_bottom));
             return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, creatorErrorCard);
         }
@@ -1162,7 +1249,7 @@ public class FeedStream implements Stream {
             ArrayList<FeedListContentManager.FeedContent> newContentList) {
         assert mHeaderCount <= mContentManager.getItemCount();
         if (mContentManager.replaceRange(
-                    mHeaderCount, mContentManager.getItemCount() - mHeaderCount, newContentList)) {
+                mHeaderCount, mContentManager.getItemCount() - mHeaderCount, newContentList)) {
             notifyContentChange();
         }
     }
@@ -1293,39 +1380,45 @@ public class FeedStream implements Stream {
                 }
             }
         }
-    };
+    }
 
     private class ViewTrackerObserver implements FeedSliceViewTracker.Observer {
         @Override
         public void sliceVisible(String sliceId) {
             mBridge.reportSliceViewed(sliceId);
         }
+
         @Override
         public void reportContentSliceVisibleTime(long elapsedMs) {
             mBridge.reportContentSliceVisibleTimeForGoodVisits(elapsedMs);
         }
+
         @Override
         public void feedContentVisible() {
             mBridge.reportFeedViewed();
         }
+
         @Override
         public void reportViewFirstBarelyVisible(View view) {
             if (mReliabilityLogger != null) {
                 mReliabilityLogger.onViewFirstVisible(view);
             }
         }
+
         @Override
         public void reportViewFirstRendered(View view) {
             if (mReliabilityLogger != null) {
                 mReliabilityLogger.onViewFirstRendered(view);
             }
         }
+
         @Override
         public void reportLoadMoreIndicatorVisible() {
             if (mReliabilityLogger != null) {
                 mReliabilityLogger.onPaginationIndicatorShown();
             }
         }
+
         @Override
         public void reportLoadMoreUserScrolledAwayFromIndicator() {
             if (mReliabilityLogger != null) {
@@ -1343,6 +1436,7 @@ public class FeedStream implements Stream {
     static class ShareHelperWrapper {
         private WindowAndroid mWindowAndroid;
         private Supplier<ShareDelegate> mShareDelegateSupplier;
+
         public ShareHelperWrapper(
                 WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier) {
             mWindowAndroid = windowAndroid;
@@ -1355,8 +1449,12 @@ public class FeedStream implements Stream {
          */
         public void share(String url, String title) {
             ShareParams params = new ShareParams.Builder(mWindowAndroid, title, url).build();
-            mShareDelegateSupplier.get().share(params, new ChromeShareExtras.Builder().build(),
-                    ShareDelegate.ShareOrigin.FEED);
+            mShareDelegateSupplier
+                    .get()
+                    .share(
+                            params,
+                            new ChromeShareExtras.Builder().build(),
+                            ShareDelegate.ShareOrigin.FEED);
         }
     }
 
@@ -1384,7 +1482,8 @@ public class FeedStream implements Stream {
     }
 
     private int getLateralPaddingsPx() {
-        return mActivity.getResources().getDimensionPixelSize(
-                R.dimen.ntp_header_lateral_paddings_v2);
+        return mActivity
+                .getResources()
+                .getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2);
     }
 }

@@ -15,10 +15,12 @@ component("printing") {
   output_name = "chromeos_printing"  # Avoid conflict with //printing
   defines = [ "IS_CHROMEOS_PRINTING_IMPL" ]
 
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   deps = [
-    "//base",
     "//base:i18n",
     "//chromeos/crosapi/mojom",
     "//components/device_event_log",

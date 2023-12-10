@@ -185,6 +185,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<PpapiProcessPolicy>();
 #endif
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+      return GetGpuProcessSandbox(options);
     case sandbox::mojom::Sandbox::kUtility:
       return std::make_unique<UtilityProcessPolicy>();
     case sandbox::mojom::Sandbox::kCdm:

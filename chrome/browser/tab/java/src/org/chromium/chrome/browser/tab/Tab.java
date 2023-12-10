@@ -119,7 +119,7 @@ public interface Tab extends TabLifecycle {
     int getId();
 
     /**
-     * @return Parameters that should be used for a lazily loaded Tab.  May be null.
+     * @return Parameters that should be used for a lazily loaded Tab. May be null.
      */
     LoadUrlParams getPendingLoadParams();
 
@@ -205,10 +205,10 @@ public interface Tab extends TabLifecycle {
      */
     boolean isUserInteractable();
 
-    /**
-     *  Sets Parent for the current Tab and other tab related parent properties.
-     */
+    /** Returns whether the tab is detached for reparenting. */
+    boolean isDetached();
 
+    /** Sets Parent for the current Tab and other tab related parent properties. */
     void reparentTab(Tab parent);
 
     /**
@@ -229,9 +229,7 @@ public interface Tab extends TabLifecycle {
      */
     boolean loadIfNeeded(int caller);
 
-    /**
-     * Reloads the current page content.
-     */
+    /** Reloads the current page content. */
     void reload();
 
     /**
@@ -240,9 +238,7 @@ public interface Tab extends TabLifecycle {
      */
     void reloadIgnoringCache();
 
-    /**
-     * Stop the current navigation.
-     */
+    /** Stop the current navigation. */
     void stopLoading();
 
     /**
@@ -275,14 +271,10 @@ public interface Tab extends TabLifecycle {
      */
     boolean canGoForward();
 
-    /**
-     * Goes to the navigation entry before the current one.
-     */
+    /** Goes to the navigation entry before the current one. */
     void goBack();
 
-    /**
-     * Goes to the navigation entry after the current one.
-     */
+    /** Goes to the navigation entry after the current one. */
     void goForward();
 
     /**
@@ -306,9 +298,7 @@ public interface Tab extends TabLifecycle {
      */
     int getRootId();
 
-    /**
-     * Set the root identifier for the {@link Tab}
-     */
+    /** Set the root identifier for the {@link Tab} */
     void setRootId(int rootId);
 
     /**
@@ -316,9 +306,8 @@ public interface Tab extends TabLifecycle {
      */
     @TabUserAgent
     int getUserAgent();
-    /**
-     * Set user agent type for the {@link Tab}
-     */
+
+    /** Set user agent type for the {@link Tab} */
     void setUserAgent(@TabUserAgent int userAgent);
 
     /**
@@ -337,4 +326,7 @@ public interface Tab extends TabLifecycle {
     @Nullable
     @TabLaunchType
     Integer getTabLaunchTypeAtCreation();
+
+    /** Sets the TabLaunchType for tabs launched with an unset launch type. */
+    void setTabLaunchType(@TabLaunchType int launchType);
 }

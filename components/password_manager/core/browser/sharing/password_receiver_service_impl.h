@@ -11,9 +11,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
-#include "components/password_manager/core/browser/sharing/sharing_invitations.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
@@ -25,7 +26,7 @@ class IncomingPasswordSharingInvitationSyncBridge;
 
 // A class that represents an in-flight task that processes an incoming password
 // sharing invitation. This is necessary since communication with the password
-// store is async. This object caches the incoming invtation till getting the
+// store is async. This object caches the incoming credentials till getting the
 // response from the password store regarding stored credentials such that it
 // can process the incoming invitation accordingly.
 class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
@@ -33,7 +34,7 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
   // `done_callback` is invoked when the task is completed passing the value of
   // `this` informing the embedder which task has completed.
   ProcessIncomingSharingInvitationTask(
-      IncomingSharingInvitation invitation,
+      PasswordForm incoming_credentials,
       PasswordStoreInterface* password_store,
       base::OnceCallback<void(ProcessIncomingSharingInvitationTask*)>
           done_callback);
@@ -48,8 +49,8 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  // The invitation that is being processed by this task.
-  IncomingSharingInvitation invitation_;
+  // The incoming credentials that are being processed by this task.
+  PasswordForm incoming_credentials_;
 
   raw_ptr<PasswordStoreInterface> password_store_;
 
@@ -79,7 +80,7 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService,
 
   // PasswordReceiverService implementation:
   void ProcessIncomingSharingInvitation(
-      IncomingSharingInvitation invitation) override;
+      sync_pb::IncomingPasswordSharingInvitationSpecifics invitation) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
   void OnSyncServiceInitialized(syncer::SyncService* service) override;

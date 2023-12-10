@@ -5,6 +5,7 @@
 #include "ash/login/ui/pin_request_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -31,7 +32,6 @@
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -89,7 +89,7 @@ class PinRequestViewTest : public LoginTestBase,
 
   void OnHelp() override { ++help_dialog_opened_; }
 
-  void StartView(absl::optional<int> pin_length = 6) {
+  void StartView(std::optional<int> pin_length = 6) {
     PinRequest request;
     request.help_button_enabled = true;
     request.obscure_pin = false;
@@ -101,7 +101,7 @@ class PinRequestViewTest : public LoginTestBase,
   }
 
   // Shows pin request widget with the specified |reason|.
-  void ShowWidget(absl::optional<int> pin_length = 6) {
+  void ShowWidget(std::optional<int> pin_length = 6) {
     PinRequest request;
     request.help_button_enabled = true;
     request.pin_length = pin_length;
@@ -359,7 +359,7 @@ TEST_F(PinRequestViewTest, Backspace) {
 
 // Tests digit-only input with unknown pin length.
 TEST_F(PinRequestViewTest, FlexCodeInput) {
-  StartView(absl::nullopt);
+  StartView(std::nullopt);
   PinRequestView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   will_authenticate_ = false;
@@ -384,7 +384,7 @@ TEST_F(PinRequestViewTest, FlexCodeInput) {
 
 // Tests non-digit input with unknown pin length.
 TEST_F(PinRequestViewTest, FlexCodeInputCharacters) {
-  StartView(absl::nullopt);
+  StartView(std::nullopt);
   PinRequestView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   will_authenticate_ = false;

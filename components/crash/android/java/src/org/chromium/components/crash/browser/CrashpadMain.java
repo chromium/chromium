@@ -24,7 +24,7 @@ final class CrashpadMain {
      * in trichrome library apk/dex and not in trichrome chrome apk/dex.
      * Referencing a class that doesn't exist causes R8 to not be able to inline
      * CrashpadMainJni#get into CrashpadMain#main.
-
+     *
      * References to NativeLibraries are in a separate method to avoid this issue
      * and allow CrashpadMainJni#get to be inlined into CrashpadMain#main.
      * @DoNotInline is to avoid any similar inlining issues whenever this method

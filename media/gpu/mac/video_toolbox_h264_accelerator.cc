@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/sys_byteorder.h"
+#include "build/build_config.h"
 #include "media/base/media_log.h"
 
 namespace media {
@@ -81,7 +82,7 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
     // If we're not at a keyframe and only the PPS has changed, put the new PPS
     // in-band and don't create a new format.
     // TODO(crbug.com/1331597): Record that this PPS has been provided and avoid
-    // sending it again.
+    // sending it again. (Copy implementation from H265Accelerator.)
     if (!pic->idr && sps_data == active_sps_data_) {
       slice_nalu_data_.push_back(
           base::make_span(pps_data.data(), pps_data.size()));
@@ -93,11 +94,11 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
     const uint8_t* nalu_data[2] = {sps_data.data(), pps_data.data()};
     size_t nalu_size[2] = {sps_data.size(), pps_data.size()};
     OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(
-        kCFAllocatorDefault,
-        2,                  // parameter_set_count
-        nalu_data,          // parameter_set_pointers
-        nalu_size,          // parameter_set_sizes
-        kNALUHeaderLength,  // nal_unit_header_length
+        /*allocator=*/kCFAllocatorDefault,
+        /*parameterSetCount=*/2,
+        /*parameterSetPointers=*/nalu_data,
+        /*parameterSetSizes=*/nalu_size,
+        /*NALUnitHeaderLength=*/kNALUHeaderLength,
         active_format_.InitializeInto());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
@@ -141,15 +142,14 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   // Allocate a buffer.
   base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
-      kCFAllocatorDefault,
-      nullptr,              // memory_block
-      data_size,            // block_length
-      kCFAllocatorDefault,  // block_allocator
-      nullptr,              // custom_block_source
-      0,                    // offset_to_data
-      data_size,            // data_length
-      0,                    // flags
-      data.InitializeInto());
+      /*structureAllocator=*/kCFAllocatorDefault,
+      /*memoryBlock=*/nullptr,
+      /*blockLength=*/data_size,
+      /*blockAllocator=*/kCFAllocatorDefault,
+      /*customBlockSource=*/nullptr,
+      /*offsetToData=*/0,
+      /*dataLength=*/data_size,
+      /*flags=*/0, data.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferCreateWithMemoryBlock()";
@@ -191,26 +191,35 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
 
   // Wrap in a sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data.get(),  // data_buffer
-                                true,        // data_ready
-                                nullptr,     // make_data_ready_callback
-                                nullptr,     // make_data_ready_refcon
-                                active_format_.get(),  // format_description
-                                1,                     // num_samples
-                                0,           // num_sample_timing_entries
-                                nullptr,     // sample_timing_array
-                                1,           // num_sample_size_entries
-                                &data_size,  // sample_size_array
-                                sample.InitializeInto());
+  status = CMSampleBufferCreate(
+      /*allocator=*/kCFAllocatorDefault,
+      /*dataBuffer=*/data.get(),
+      /*dataReady=*/true,
+      /*makeDataReadyCallback=*/nullptr,
+      /*makeDataReadyRefcon=*/nullptr,
+      /*formatDescription=*/active_format_.get(),
+      /*numSamples=*/1,
+      /*numSampleTimingEntries=*/0,
+      /*sampleTimingArray=*/nullptr,
+      /*numSampleSizeEntries=*/1,
+      /*sampleSizeArray=*/&data_size, sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMSampleBufferCreate()";
     return Status::kFail;
   }
 
-  VideoToolboxSessionMetadata session_metadata = {
-      /*allow_software_decoding=*/false, /*is_hbd=*/false};
+  VideoToolboxDecompressionSessionMetadata session_metadata = {
+#if defined(ARCH_CPU_X86_FAMILY)
+      // Allow software decoding on Intel hardware where the cutoff is around
+      // 480p and breaks tests.
+      /*allow_software_decoding=*/true,
+#else
+      /*allow_software_decoding=*/false,
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+      /*is_hbd=*/false,
+      /*has_alpha=*/false,
+      /*visible_rect=*/pic->visible_rect()};
   decode_cb_.Run(std::move(sample), session_metadata, std::move(pic));
   return Status::kOk;
 }

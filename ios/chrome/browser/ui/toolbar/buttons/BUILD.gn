@@ -39,7 +39,7 @@ source_set("buttons") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

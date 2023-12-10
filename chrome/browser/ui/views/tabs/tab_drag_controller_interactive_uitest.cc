@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -58,15 +59,11 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/aura/env.h"
 #include "ui/base/test/ui_controls.h"
@@ -328,12 +325,9 @@ void TabDragControllerTest::AddTabsAndResetBrowser(Browser* browser,
                                                    int additional_tabs,
                                                    const GURL& url) {
   for (int i = 0; i < additional_tabs; i++) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(browser, url,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    observer.Wait();
+    auto* contents = chrome::AddSelectedTabWithURL(
+        browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    content::WaitForLoadStop(contents);
   }
   browser->window()->Show();
   StopAnimating(GetTabStripForBrowser(browser));
@@ -816,7 +810,7 @@ class DetachToBrowserTabDragControllerTest
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_ = nullptr;
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<webapps::AppId> tabbed_app_id_;
+  std::optional<webapps::AppId> tabbed_app_id_;
 };
 
 // Creates a browser with four tabs. The first three belong in the same Tab
@@ -848,8 +842,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("0 1 3 2", IDString(model));
   EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
             gfx::Range(0, 2));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(2));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(3));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(2));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(3));
 
   ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
   ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip->tab_at(2))));
@@ -861,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("0 3 1 2", IDString(model));
   EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
             gfx::Range(0, 1));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(1));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(1));
 }
 
 // Creates a browser with four tabs. The last three belong in the same Tab
@@ -894,8 +888,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("1 0 2 3", IDString(model));
   EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
             gfx::Range(2, 4));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(0));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(1));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(1));
 
   ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(2))));
   ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
@@ -907,7 +901,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("1 2 0 3", IDString(model));
   EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
             gfx::Range(3, 4));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(2));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(2));
 }
 
 // Creates a browser with four tabs. The first three belong in the same Tab
@@ -1357,8 +1351,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   EXPECT_EQ("0 3 1 2", IDString(model));
   EXPECT_EQ(group_model->GetTabGroup(group)->ListTabs(), gfx::Range(2, 4));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(0));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(1));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(1));
 
   // Drag the entire group left by its header.
   ASSERT_TRUE(
@@ -1369,8 +1363,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   EXPECT_EQ("1 2 0 3", IDString(model));
   EXPECT_EQ(group_model->GetTabGroup(group)->ListTabs(), gfx::Range(0, 2));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(2));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(3));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(2));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(3));
 }
 
 // Creates a browser with four tabs. The first two belong in Tab Group 1, and
@@ -1493,7 +1487,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("0 1 2 3", IDString(model));
   EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
             gfx::Range(1, 4));
-  EXPECT_EQ(absl::nullopt, model->GetTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(0));
 }
 
 // Drags a tab within the window (without dragging the whole window) then
@@ -3337,8 +3331,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // Creates two browsers, drags from first into the second in such a way that
 // no detaching should happen.
+// TODO(crbug.com/1509717): Reenable flaky test.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragDirectlyToSecondWindow) {
+                       DISABLED_DragDirectlyToSecondWindow) {
   // TODO(pkasting): Crashes when detaching browser.  https://crbug.com/918733
   if (input_source() == INPUT_SOURCE_TOUCH) {
     VLOG(1) << "Test is DISABLED for touch input.";
@@ -3455,14 +3450,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 namespace {
 
 // Invoked from the nested run loop.
-void CancelOnNewTabWhenDraggingStep2(
-    DetachToBrowserTabDragControllerTest* test,
-    const BrowserList* browser_list) {
+void CancelOnNewTabWhenDraggingStep2(DetachToBrowserTabDragControllerTest* test,
+                                     const BrowserList* browser_list,
+                                     base::OnceClosure quit_closure,
+                                     WebContents** contents_out) {
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(2u, browser_list->size());
 
-  chrome::AddTabAt(browser_list->GetLastActive(), GURL(url::kAboutBlankURL),
-                   0, false);
+  *contents_out = chrome::AddAndReturnTabAt(
+      browser_list->GetLastActive(), GURL(url::kAboutBlankURL), 0, false);
+  std::move(quit_closure).Run();
 }
 
 }  // namespace
@@ -3480,16 +3477,20 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       GetCenterInScreenCoordinates(tab_strip->tab_at(0));
   ASSERT_TRUE(PressInput(tab_0_center));
 
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  WebContents* web_contents = nullptr;
   // Add another tab. This should trigger exiting the nested loop. Add at the
   // beginning to exercise past crash when model/tabstrip got out of sync.
   // crbug.com/474082
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
   ASSERT_TRUE(DragInputToNotifyWhenDone(
       tab_0_center + gfx::Vector2d(0, GetDetachY(tab_strip)),
-      base::BindOnce(&CancelOnNewTabWhenDraggingStep2, this, browser_list)));
-  observer.Wait();
+      base::BindOnce(&CancelOnNewTabWhenDraggingStep2, this, browser_list,
+                     std::move(quit_closure),
+                     base::Unretained(&web_contents))));
+  run_loop.Run();
+  ASSERT_TRUE(!!web_contents);
+  content::WaitForLoadStop(web_contents);
 
   // Should be two windows and not dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -4005,8 +4006,9 @@ void DragSingleTabToSeparateWindowInSecondDisplayStep2(
 }  // namespace
 
 // Drags from browser to a second display and releases input.
+// TODO(crbug.com/1499240): Test is flaky on multiple bots.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
-                       DragSingleTabToSeparateWindowInSecondDisplay) {
+                       DISABLED_DragSingleTabToSeparateWindowInSecondDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 

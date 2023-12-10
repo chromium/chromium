@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.UserData;
 
-/**
- * Attributes associated with a {@link MockTab}
- */
+/** Attributes associated with a {@link MockTab} */
 public class MockTabAttributes implements UserData {
     public final boolean restoredFromDisk;
 

@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,9 +57,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/**
- * A client for calling methods on a {@link TrustedWebActivityService}.
- */
+/** A client for calling methods on a {@link TrustedWebActivityService}. */
 @Singleton
 public class TrustedWebActivityClient {
     private static final String TAG = "TWAClient";
@@ -88,43 +85,34 @@ public class TrustedWebActivityClient {
     private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityUmaRecorder mRecorder;
 
-    /**
-     * Interface for callbacks to get a permission setting from a TWA app.
-     */
+    /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
-        /**
-         * Called when the app answered with a permission setting.
-         */
+        /** Called when the app answered with a permission setting. */
         void onPermission(ComponentName app, @ContentSettingValues int settingValue);
 
-        /**
-         * Called when no app was found to connect to.
-         */
+        /** Called when no app was found to connect to. */
         default void onNoTwaFound() {}
     }
 
-    /**
-     * Interface for callbacks to {@link #connectAndExecute}.
-     */
+    /** Interface for callbacks to {@link #connectAndExecute}. */
     public interface ExecutionCallback {
         void onConnected(Origin origin, Connection service) throws RemoteException;
+
         default void onNoTwaFound() {}
     }
 
-    /**
-     * Creates a TrustedWebActivityClient.
-     */
+    /** Creates a TrustedWebActivityClient. */
     @Inject
-    public TrustedWebActivityClient(TrustedWebActivityServiceConnectionPool connectionPool,
+    public TrustedWebActivityClient(
+            TrustedWebActivityServiceConnectionPool connectionPool,
             InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityUmaRecorder recorder) {
         this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager, recorder);
     }
 
-    /**
-     * Creates a TrustedWebActivityClient for tests.
-     */
-    public TrustedWebActivityClient(ConnectionPool connectionPool,
+    /** Creates a TrustedWebActivityClient for tests. */
+    public TrustedWebActivityClient(
+            ConnectionPool connectionPool,
             InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityUmaRecorder recorder) {
         mConnectionPool = connectionPool;
@@ -152,50 +140,62 @@ public class TrustedWebActivityClient {
      * @param permissionCallback To be called with the permission setting.
      */
     public void checkNotificationPermission(String url, PermissionCallback permissionCallback) {
-        String channelName = ContextUtils.getApplicationContext().getResources().getString(
-                R.string.notification_category_group_general);
+        String channelName =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getString(R.string.notification_category_group_general);
 
-        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
-            @Override
-            public void onConnected(Origin origin, Connection service) throws RemoteException {
-                Bundle commandArgs = new Bundle();
-                commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
-                Bundle commandResult = safeSendExtraCommand(service,
-                        COMMAND_CHECK_NOTIFICATION_PERMISSION, commandArgs, /*callback=*/null);
-                boolean commandSuccess = commandResult == null
-                        ? false
-                        : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
-                mRecorder.recordExtraCommandSuccess(
-                        COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
-                // The command might fail if the app is too old to support it. To handle that case,
-                // fall back to the old flow.
-                if (!commandSuccess) {
-                    boolean enabled = service.areNotificationsEnabled(channelName);
-                    @ContentSettingValues
-                    int settingValue =
-                            enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
-                    permissionCallback.onPermission(service.getComponentName(), settingValue);
-                    return;
-                }
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle commandArgs = new Bundle();
+                        commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
+                        Bundle commandResult =
+                                safeSendExtraCommand(
+                                        service,
+                                        COMMAND_CHECK_NOTIFICATION_PERMISSION,
+                                        commandArgs,
+                                        /* callback= */ null);
+                        boolean commandSuccess =
+                                commandResult == null
+                                        ? false
+                                        : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
+                        mRecorder.recordExtraCommandSuccess(
+                                COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
+                        // The command might fail if the app is too old to support it. To handle
+                        // that case, fall back to the old flow.
+                        if (!commandSuccess) {
+                            boolean enabled = service.areNotificationsEnabled(channelName);
+                            @ContentSettingValues
+                            int settingValue =
+                                    enabled
+                                            ? ContentSettingValues.ALLOW
+                                            : ContentSettingValues.BLOCK;
+                            permissionCallback.onPermission(
+                                    service.getComponentName(), settingValue);
+                            return;
+                        }
 
-                @ContentSettingValues
-                int settingValue = ContentSettingValues.BLOCK;
-                @PermissionStatus
-                int permissionStatus =
-                        commandResult.getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
-                if (permissionStatus == PermissionStatus.ALLOW) {
-                    settingValue = ContentSettingValues.ALLOW;
-                } else if (permissionStatus == PermissionStatus.ASK) {
-                    settingValue = ContentSettingValues.ASK;
-                }
-                permissionCallback.onPermission(service.getComponentName(), settingValue);
-            }
+                        @ContentSettingValues int settingValue = ContentSettingValues.BLOCK;
+                        @PermissionStatus
+                        int permissionStatus =
+                                commandResult.getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
+                        if (permissionStatus == PermissionStatus.ALLOW) {
+                            settingValue = ContentSettingValues.ALLOW;
+                        } else if (permissionStatus == PermissionStatus.ASK) {
+                            settingValue = ContentSettingValues.ASK;
+                        }
+                        permissionCallback.onPermission(service.getComponentName(), settingValue);
+                    }
 
-            @Override
-            public void onNoTwaFound() {
-                permissionCallback.onNoTwaFound();
-            }
-        });
+                    @Override
+                    public void onNoTwaFound() {
+                        permissionCallback.onNoTwaFound();
+                    }
+                });
     }
 
     /**
@@ -204,63 +204,87 @@ public class TrustedWebActivityClient {
      * @param permissionCallback To be called with the permission setting.
      */
     public void requestNotificationPermission(String url, PermissionCallback permissionCallback) {
-        String channelName = ContextUtils.getApplicationContext().getResources().getString(
-                R.string.notification_category_group_general);
-        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
-            @Override
-            public void onConnected(Origin origin, Connection service) throws RemoteException {
-                Bundle commandArgs = new Bundle();
-                commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
-                Bundle commandResult = safeSendExtraCommand(service,
-                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT, commandArgs,
-                        /*callback=*/null);
-                boolean commandSuccess = commandResult == null
-                        ? false
-                        : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
-                PendingIntent pendingIntent = commandSuccess
-                        ? commandResult.getParcelable(
-                                KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
-                        : null;
-                mRecorder.recordExtraCommandSuccess(
-                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
-                        commandSuccess && pendingIntent != null);
-                if (!commandSuccess || pendingIntent == null) {
-                    permissionCallback.onPermission(
-                            service.getComponentName(), ContentSettingValues.BLOCK);
-                    return;
-                }
+        String channelName =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getString(R.string.notification_category_group_general);
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle commandArgs = new Bundle();
+                        commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
+                        Bundle commandResult =
+                                safeSendExtraCommand(
+                                        service,
+                                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
+                                        commandArgs,
+                                        /* callback= */ null);
+                        boolean commandSuccess =
+                                commandResult == null
+                                        ? false
+                                        : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
+                        PendingIntent pendingIntent =
+                                commandSuccess
+                                        ? commandResult.getParcelable(
+                                                KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
+                                        : null;
+                        mRecorder.recordExtraCommandSuccess(
+                                COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
+                                commandSuccess && pendingIntent != null);
+                        if (!commandSuccess || pendingIntent == null) {
+                            permissionCallback.onPermission(
+                                    service.getComponentName(), ContentSettingValues.BLOCK);
+                            return;
+                        }
 
-                Handler handler = new Handler(Looper.getMainLooper(), message -> {
-                    @ContentSettingValues
-                    int settingValue = ContentSettingValues.BLOCK;
-                    @PermissionStatus
-                    int permissionStatus =
-                            message.getData().getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
-                    if (permissionStatus == PermissionStatus.ALLOW) {
-                        settingValue = ContentSettingValues.ALLOW;
-                    } else if (permissionStatus == PermissionStatus.ASK) {
-                        settingValue = ContentSettingValues.ASK;
+                        Handler handler =
+                                new Handler(
+                                        Looper.getMainLooper(),
+                                        message -> {
+                                            @ContentSettingValues
+                                            int settingValue = ContentSettingValues.BLOCK;
+                                            @PermissionStatus
+                                            int permissionStatus =
+                                                    message.getData()
+                                                            .getInt(
+                                                                    KEY_PERMISSION_STATUS,
+                                                                    PermissionStatus.BLOCK);
+                                            if (permissionStatus == PermissionStatus.ALLOW) {
+                                                settingValue = ContentSettingValues.ALLOW;
+                                            } else if (permissionStatus == PermissionStatus.ASK) {
+                                                settingValue = ContentSettingValues.ASK;
+                                            }
+                                            permissionCallback.onPermission(
+                                                    service.getComponentName(), settingValue);
+                                            return true;
+                                        });
+                        Intent extraIntent = new Intent();
+                        extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
+                        try {
+                            ActivityOptions options = ActivityOptions.makeBasic();
+                            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
+                                    options);
+                            pendingIntent.send(
+                                    ContextUtils.getApplicationContext(),
+                                    0,
+                                    extraIntent,
+                                    null,
+                                    null,
+                                    null,
+                                    options.toBundle());
+                        } catch (PendingIntent.CanceledException e) {
+                            Log.e(TAG, "The PendingIntent was canceled.", e);
+                        }
                     }
-                    permissionCallback.onPermission(service.getComponentName(), settingValue);
-                    return true;
-                });
-                Intent extraIntent = new Intent();
-                extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
-                try {
-                    ActivityOptions options = ActivityOptions.makeBasic();
-                    ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
-                    pendingIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent, null,
-                            null, null, options.toBundle());
-                } catch (PendingIntent.CanceledException e) {
-                    Log.e(TAG, "The PendingIntent was canceled.", e);
-                }
-            }
 
-            @Override
-            public void onNoTwaFound() {
-                permissionCallback.onNoTwaFound();
-            }
-        });
+                    @Override
+                    public void onNoTwaFound() {
+                        permissionCallback.onNoTwaFound();
+                    }
+                });
     }
 
     /**
@@ -269,43 +293,61 @@ public class TrustedWebActivityClient {
      * @param permissionCallback Will be called with whether the permission is granted.
      */
     public void checkLocationPermission(String url, PermissionCallback permissionCallback) {
-        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
-            @Override
-            public void onConnected(Origin origin, Connection service) throws RemoteException {
-                TrustedWebActivityCallback resultCallback = new TrustedWebActivityCallback() {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
                     @Override
-                    public void onExtraCallback(String callbackName, @Nullable Bundle bundle) {
-                        // Hop back to the UI thread because we are on a binder thread.
-                        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
-                            boolean granted = false;
-                            if (TextUtils.equals(
-                                        callbackName, CHECK_LOCATION_PERMISSION_COMMAND_NAME)
-                                    && bundle != null) {
-                                granted = bundle.getBoolean(LOCATION_PERMISSION_RESULT);
-                            }
-                            @ContentSettingValues
-                            int settingValue = granted ? ContentSettingValues.ALLOW
-                                                       : ContentSettingValues.BLOCK;
-                            permissionCallback.onPermission(
-                                    service.getComponentName(), settingValue);
-                        });
-                    }
-                };
-                Bundle executionResult = safeSendExtraCommand(service,
-                        CHECK_LOCATION_PERMISSION_COMMAND_NAME, Bundle.EMPTY, resultCallback);
-                // Set permission to false if the service does not know how to handle the
-                // extraCommand or did not handle the command.
-                if (executionResult == null || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
-                    permissionCallback.onPermission(
-                            service.getComponentName(), ContentSettingValues.BLOCK);
-                }
-            }
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        TrustedWebActivityCallback resultCallback =
+                                new TrustedWebActivityCallback() {
+                                    private void onUiThread(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        boolean granted =
+                                                CHECK_LOCATION_PERMISSION_COMMAND_NAME.equals(
+                                                                callbackName)
+                                                        && bundle != null
+                                                        && bundle.getBoolean(
+                                                                LOCATION_PERMISSION_RESULT);
+                                        @ContentSettingValues
+                                        int settingValue =
+                                                granted
+                                                        ? ContentSettingValues.ALLOW
+                                                        : ContentSettingValues.BLOCK;
+                                        permissionCallback.onPermission(
+                                                service.getComponentName(), settingValue);
+                                    }
 
-            @Override
-            public void onNoTwaFound() {
-                permissionCallback.onNoTwaFound();
-            }
-        });
+                                    @Override
+                                    public void onExtraCallback(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        // Hop back to the UI thread because we are on a binder
+                                        // thread.
+                                        PostTask.postTask(
+                                                TaskTraits.UI_USER_VISIBLE,
+                                                () -> onUiThread(callbackName, bundle));
+                                    }
+                                };
+                        Bundle executionResult =
+                                safeSendExtraCommand(
+                                        service,
+                                        CHECK_LOCATION_PERMISSION_COMMAND_NAME,
+                                        Bundle.EMPTY,
+                                        resultCallback);
+                        // Set permission to false if the service does not know how to handle the
+                        // extraCommand or did not handle the command.
+                        if (executionResult == null
+                                || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
+                            permissionCallback.onPermission(
+                                    service.getComponentName(), ContentSettingValues.BLOCK);
+                        }
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        permissionCallback.onNoTwaFound();
+                    }
+                });
     }
 
     /**
@@ -315,34 +357,46 @@ public class TrustedWebActivityClient {
      */
     public void startListeningLocationUpdates(
             String url, boolean highAccuracy, TrustedWebActivityCallback locationCallback) {
-        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
-            @Override
-            public void onConnected(Origin origin, Connection service) throws RemoteException {
-                Bundle args = new Bundle();
-                args.putBoolean(LOCATION_ARG_ENABLE_HIGH_ACCURACY, highAccuracy);
-                Bundle executionResult = safeSendExtraCommand(
-                        service, START_LOCATION_COMMAND_NAME, args, locationCallback);
-                // Notify an error if the service does not know how to handle the extraCommand.
-                if (executionResult == null || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
-                    notifyLocationUpdateError(
-                            locationCallback, "Failed to request location updates");
-                }
-            }
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle args = new Bundle();
+                        args.putBoolean(LOCATION_ARG_ENABLE_HIGH_ACCURACY, highAccuracy);
+                        Bundle executionResult =
+                                safeSendExtraCommand(
+                                        service,
+                                        START_LOCATION_COMMAND_NAME,
+                                        args,
+                                        locationCallback);
+                        // Notify an error if the service does not know how to handle the
+                        // extraCommand.
+                        if (executionResult == null
+                                || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
+                            notifyLocationUpdateError(
+                                    locationCallback, "Failed to request location updates");
+                        }
+                    }
 
-            @Override
-            public void onNoTwaFound() {
-                notifyLocationUpdateError(locationCallback, "NoTwaFound");
-            }
-        });
+                    @Override
+                    public void onNoTwaFound() {
+                        notifyLocationUpdateError(locationCallback, "NoTwaFound");
+                    }
+                });
     }
 
     public void stopLocationUpdates(String url) {
-        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
-            @Override
-            public void onConnected(Origin origin, Connection service) {
-                safeSendExtraCommand(service, STOP_LOCATION_COMMAND_NAME, Bundle.EMPTY, null);
-            }
-        });
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service) {
+                        safeSendExtraCommand(
+                                service, STOP_LOCATION_COMMAND_NAME, Bundle.EMPTY, null);
+                    }
+                });
     }
 
     /**
@@ -354,35 +408,47 @@ public class TrustedWebActivityClient {
      *                The Trusted Web Activity client may override the small icon.
      * @param notificationUmaTracker To log Notification UMA.
      */
-    public void notifyNotification(Uri scope, String platformTag, int platformId,
-            NotificationBuilderBase builder, NotificationUmaTracker notificationUmaTracker) {
+    public void notifyNotification(
+            Uri scope,
+            String platformTag,
+            int platformId,
+            NotificationBuilderBase builder,
+            NotificationUmaTracker notificationUmaTracker) {
         Resources res = ContextUtils.getApplicationContext().getResources();
         String channelDisplayName = res.getString(R.string.notification_category_group_general);
 
-        connectAndExecute(scope, (origin, service) -> {
-            if (!service.areNotificationsEnabled(channelDisplayName)) {
-                mPermissionManager.updatePermission(origin,
-                        service.getComponentName().getPackageName(),
-                        ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK);
+        connectAndExecute(
+                scope,
+                (origin, service) -> {
+                    if (!service.areNotificationsEnabled(channelDisplayName)) {
+                        mPermissionManager.updatePermission(
+                                origin,
+                                service.getComponentName().getPackageName(),
+                                ContentSettingsType.NOTIFICATIONS,
+                                ContentSettingValues.BLOCK);
 
-                // Attempting to notify when notifications are disabled won't have any effect, but
-                // returning here just saves us from doing unnecessary work.
-                return;
-            }
+                        // Attempting to notify when notifications are disabled won't have any
+                        // effect, but returning here just saves us from doing unnecessary work.
+                        return;
+                    }
 
-            fallbackToIconFromServiceIfNecessary(builder, service);
+                    fallbackToIconFromServiceIfNecessary(builder, service);
 
-            NotificationMetadata metadata = new NotificationMetadata(
-                    NotificationUmaTracker.SystemNotificationType.TRUSTED_WEB_ACTIVITY_SITES,
-                    platformTag, platformId);
-            Notification notification = builder.build(metadata).getNotification();
+                    NotificationMetadata metadata =
+                            new NotificationMetadata(
+                                    NotificationUmaTracker.SystemNotificationType
+                                            .TRUSTED_WEB_ACTIVITY_SITES,
+                                    platformTag,
+                                    platformId);
+                    Notification notification = builder.build(metadata).getNotification();
 
-            service.notify(platformTag, platformId, notification, channelDisplayName);
+                    service.notify(platformTag, platformId, notification, channelDisplayName);
 
-            notificationUmaTracker.onNotificationShown(
-                    NotificationUmaTracker.SystemNotificationType.TRUSTED_WEB_ACTIVITY_SITES,
-                    notification);
-        });
+                    notificationUmaTracker.onNotificationShown(
+                            NotificationUmaTracker.SystemNotificationType
+                                    .TRUSTED_WEB_ACTIVITY_SITES,
+                            notification);
+                });
     }
 
     private void fallbackToIconFromServiceIfNecessary(
@@ -398,9 +464,11 @@ public class TrustedWebActivityClient {
             return;
         }
 
-        recordFallback(builder.hasSmallIconForContent()
-                ? DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR
-                : DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR_AND_CONTENT);
+        recordFallback(
+                builder.hasSmallIconForContent()
+                        ? DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR
+                        : DelegatedNotificationSmallIconFallback
+                                .FALLBACK_FOR_STATUS_BAR_AND_CONTENT);
 
         Bitmap bitmap = service.getSmallIconBitmap();
         if (!builder.hasStatusBarIconBitmap()) {
@@ -448,38 +516,42 @@ public class TrustedWebActivityClient {
      *
      * If multiple {@link ResolveInfo}s in the list match this criteria, the first will be chosen.
      */
-    public static @Nullable Intent createLaunchIntentForTwa(Context appContext, String url,
-            List<ResolveInfo> resolveInfosForUrl) {
+    public static @Nullable Intent createLaunchIntentForTwa(
+            Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
         // This is ugly, but the call site for this is static and called by native.
         TrustedWebActivityClient client =
                 ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
         return client.createLaunchIntentForTwaInternal(appContext, url, resolveInfosForUrl);
     }
 
-    private @Nullable Intent createLaunchIntentForTwaInternal(Context appContext, String url,
-            List<ResolveInfo> resolveInfosForUrl) {
+    private @Nullable Intent createLaunchIntentForTwaInternal(
+            Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
         Origin origin = Origin.create(url);
         if (origin == null) return null;
 
         // Trusted Web Activities only work with https so we can shortcut here.
         if (!UrlConstants.HTTPS_SCHEME.equals(origin.uri().getScheme())) return null;
 
-        ComponentName componentName = searchVerifiedApps(appContext.getPackageManager(),
-                mPermissionManager.getAllDelegateApps(origin), resolveInfosForUrl);
+        ComponentName componentName =
+                searchVerifiedApps(
+                        appContext.getPackageManager(),
+                        mPermissionManager.getAllDelegateApps(origin),
+                        resolveInfosForUrl);
 
         if (componentName == null) return null;
 
         Intent intent = new Intent();
         intent.setData(Uri.parse(url));
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setComponent(componentName);
         return intent;
     }
 
-    private static @Nullable ComponentName searchVerifiedApps(@NonNull PackageManager pm,
-            @Nullable Set<Token> verifiedPackages, @NonNull List<ResolveInfo> resolveInfosForUrl) {
+    private static @Nullable ComponentName searchVerifiedApps(
+            @NonNull PackageManager pm,
+            @Nullable Set<Token> verifiedPackages,
+            @NonNull List<ResolveInfo> resolveInfosForUrl) {
         if (verifiedPackages == null || verifiedPackages.isEmpty()) return null;
 
         for (ResolveInfo info : resolveInfosForUrl) {
@@ -501,8 +573,11 @@ public class TrustedWebActivityClient {
         callback.onExtraCallback(EXTRA_NEW_LOCATION_ERROR_CALLBACK, error);
     }
 
-    private @Nullable Bundle safeSendExtraCommand(Connection service, String commandName,
-            Bundle args, TrustedWebActivityCallback callback) {
+    private @Nullable Bundle safeSendExtraCommand(
+            Connection service,
+            String commandName,
+            Bundle args,
+            TrustedWebActivityCallback callback) {
         try {
             return service.sendExtraCommand(commandName, args, callback);
         } catch (Exception e) {

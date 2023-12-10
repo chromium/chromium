@@ -197,7 +197,9 @@ void FileSystemAccessFileDelegateHostImpl::GetLength(
             std::move(callback).Run(file_error, 0);
           },
           std::move(callback)),
-      url(), storage::FileSystemOperation::GET_METADATA_FIELD_SIZE);
+      url(),
+      storage::FileSystemOperation::GetMetadataFieldSet(
+          {storage::FileSystemOperation::GetMetadataField::kSize}));
 }
 
 void FileSystemAccessFileDelegateHostImpl::SetLength(

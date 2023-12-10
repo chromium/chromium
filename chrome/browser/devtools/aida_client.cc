@@ -7,6 +7,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/string_escape.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/load_flags.h"
@@ -16,21 +17,13 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if !defined(AIDA_ENDPOINT)
-#define AIDA_ENDPOINT ""
-#endif
-
-#if !defined(AIDA_SCOPE)
-#define AIDA_SCOPE ""
-#endif
-
 AidaClient::AidaClient(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : profile_(*profile),
       url_loader_factory_(url_loader_factory),
-      aida_endpoint_(AIDA_ENDPOINT),
-      aida_scope_(AIDA_SCOPE) {}
+      aida_endpoint_(features::kDevToolsConsoleInsightsAidaEndpoint.Get()),
+      aida_scope_(features::kDevToolsConsoleInsightsAidaScope.Get()) {}
 
 AidaClient::~AidaClient() = default;
 
@@ -53,6 +46,11 @@ void AidaClient::DoConversation(
     return;
   }
   auto* identity_manager = IdentityManagerFactory::GetForProfile(&*profile_);
+  if (!identity_manager) {
+    std::move(callback).Run(
+        R"([{"error": "IdentityManager is not available"}])");
+    return;
+  }
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
@@ -98,16 +96,29 @@ void AidaClient::SendAidaRequest(
   aida_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                   std::string("Bearer ") + access_token_);
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("devtools_cdp_network_resource", R"(
+      net::DefineNetworkTrafficAnnotation("devtools_cdp_console_insights", R"(
         semantics {
           sender: "Developer Tools via CDP"
           description:
-            "When user opens Developer Tools, the browser may fetch additional "
-            "resources from the network to enrich the debugging experience "
-            "(e.g. source map resources)."
-          trigger: "User opens Developer Tools to debug a web page."
-          data: "Any resources requested by Developer Tools."
-          destination: WEBSITE
+            "In Chrome DevTools, the user can ask for additional insights "
+            "regarding an error message. A prompt message for AIDA containing "
+            "the error message and sometimes more context such as stack trace, "
+            "surrounding code, or network headers is sent to the Chrome "
+            "backend via DevTools UI bindings, which in turn queries an AIDA "
+            "endpoint."
+          trigger: "User asks for more insights on a DevTools error message."
+          data: "Prompt for AIDA endpoint, containing instructions, error and "
+            "sometimes some additional context information."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-devtools@google.com"
+            }
+          }
+          user_data {
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2023-11-09"
         }
         policy {
           cookies_allowed: YES

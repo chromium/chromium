@@ -19,6 +19,7 @@
 #include "ui/gfx/icon_util_unittests_resource.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
 
@@ -209,10 +210,8 @@ TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
       temp_directory_.GetPath().AppendASCII("<>?.ico");
 
   // Invalid file name.
-  SkBitmap bitmap;
   image_family.clear();
-  bitmap.allocN32Pixels(1, 1);
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));
+  image_family.Add(gfx::test::CreateImage(/*size=*/1));
   EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                        invalid_icon_filename));
   EXPECT_FALSE(base::PathExists(invalid_icon_filename));

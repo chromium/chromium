@@ -138,7 +138,7 @@ class FakeApplicationContext final : public chromium::cast::ApplicationContext {
     loop.Run();
   }
 
-  absl::optional<int64_t> WaitForApplicationTerminated() {
+  std::optional<int64_t> WaitForApplicationTerminated() {
     if (application_exit_code_.has_value()) {
       return application_exit_code_;
     }
@@ -171,7 +171,7 @@ class FakeApplicationContext final : public chromium::cast::ApplicationContext {
   chromium::cast::ApplicationControllerPtr application_controller_;
   base::OnceClosure on_set_application_controller_;
 
-  absl::optional<int64_t> application_exit_code_;
+  std::optional<int64_t> application_exit_code_;
   base::OnceClosure on_application_terminated_;
 };
 
@@ -265,7 +265,7 @@ class TestCastComponent {
     test_port_->ReceiveMessage(CallbackToFitFunction(response.GetCallback()));
     EXPECT_TRUE(response.Wait());
 
-    absl::optional<std::string> response_string =
+    std::optional<std::string> response_string =
         base::StringFromMemBuffer(response.Get().data());
     EXPECT_TRUE(response_string.has_value());
 
@@ -400,9 +400,9 @@ class TestCastComponent {
   bool offer_services_ = true;
 
   // Holds the service directory and fake services offered to `component_`.
-  absl::optional<FakeComponentServices> services_;
+  std::optional<FakeComponentServices> services_;
 
-  absl::optional<fuchsia_component_support::DynamicComponentHost> component_;
+  std::optional<fuchsia_component_support::DynamicComponentHost> component_;
 
   fuchsia::web::MessagePortPtr test_port_;
 
@@ -874,7 +874,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
 
   // Have the web content close itself, and wait for OnApplicationTerminated().
   EXPECT_EQ(component.ExecuteJavaScript("window.close()"), "undefined");
-  absl::optional<zx_status_t> exit_code =
+  std::optional<zx_status_t> exit_code =
       component.application_context().WaitForApplicationTerminated();
   ASSERT_TRUE(exit_code);
   EXPECT_EQ(exit_code.value(), ZX_OK);
@@ -896,7 +896,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_ComponentStop) {
   // Request that the component be destroyed, and wait for
   // OnApplicationTerminated().
   component.ShutdownComponent();
-  absl::optional<zx_status_t> exit_code =
+  std::optional<zx_status_t> exit_code =
       component.application_context().WaitForApplicationTerminated();
   ASSERT_TRUE(exit_code);
   EXPECT_EQ(exit_code.value(), ZX_OK);

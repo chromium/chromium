@@ -49,11 +49,6 @@ class CONTENT_EXPORT XRRuntimeManager {
   // XRDeviceId, or nullptr if no such device exists/has been registered.
   virtual content::BrowserXRRuntime* GetRuntime(
       device::mojom::XRDeviceId id) = 0;
-
-  // Provides a mechanism for performing operations on/reasoning about all
-  // currently active runtimes, without exposing the collection.
-  virtual void ForEachRuntime(
-      base::RepeatingCallback<void(content::BrowserXRRuntime*)> fn) = 0;
 };
 
 }  // namespace content

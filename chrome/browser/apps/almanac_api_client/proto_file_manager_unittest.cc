@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/almanac_api_client/proto_file_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 namespace {
@@ -56,7 +56,7 @@ TEST_F(ProtoFileManagerTest, WriteAndReadDataSuccess) {
 
   ASSERT_TRUE(base::PathExists(temp_file_path_));
   {
-    base::test::TestFuture<absl::optional<proto::DeduplicateData>> read_data;
+    base::test::TestFuture<std::optional<proto::DeduplicateData>> read_data;
     manager_->ReadProtoFromFile(read_data.GetCallback());
     ASSERT_TRUE(read_data.Get().has_value());
     ASSERT_EQ(read_data.Get()->app_group_size(), 1);
@@ -82,7 +82,7 @@ TEST_F(ProtoFileManagerTest, WriteAndReadDataSuccess) {
 
   ASSERT_TRUE(base::PathExists(temp_file_path_));
   {
-    base::test::TestFuture<absl::optional<proto::DeduplicateData>> read_data;
+    base::test::TestFuture<std::optional<proto::DeduplicateData>> read_data;
     manager_->ReadProtoFromFile(read_data.GetCallback());
     ASSERT_TRUE(read_data.Get().has_value());
     ASSERT_EQ(read_data.Get()->app_group_size(), 1);

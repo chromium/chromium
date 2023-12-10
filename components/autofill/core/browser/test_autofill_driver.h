@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_DRIVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_DRIVER_H_
 
+#include <concepts>
+#include <map>
+#include <string>
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -32,11 +37,9 @@ namespace autofill {
 //
 // As a rule of thumb, TestContentAutofillDriver is preferable in tests that
 // have a content::WebContents.
-template <typename T>
+template <std::derived_from<AutofillDriver> T>
 class TestAutofillDriverTemplate : public T {
  public:
-  static_assert(std::is_base_of_v<AutofillDriver, T>);
-
   using T::T;
   TestAutofillDriverTemplate(const TestAutofillDriverTemplate&) = delete;
   TestAutofillDriverTemplate& operator=(const TestAutofillDriverTemplate&) =
@@ -61,7 +64,6 @@ class TestAutofillDriverTemplate : public T {
   bool IsPrerendering() const override { return false; }
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
-  bool RendererIsAvailable() override { return true; }
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
                         mojom::TextReplacement text_replacement,
                         const FieldGlobalId& field,

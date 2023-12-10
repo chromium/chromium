@@ -40,7 +40,7 @@ namespace extensions {
 
 class DeveloperPrivateApiTest : public ExtensionApiTest {
  protected:
-  std::unique_ptr<api::developer_private::ExtensionInfo> GetExtensionInfo(
+  std::optional<api::developer_private::ExtensionInfo> GetExtensionInfo(
       const Extension& extension) {
     auto get_info_function =
         base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
@@ -50,10 +50,10 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
             content::JsReplace(R"([$1])", extension.id()), profile());
     if (!result) {
       ADD_FAILURE() << "No result back when getting extension info";
-      return nullptr;
+      return std::nullopt;
     }
-    std::unique_ptr<api::developer_private::ExtensionInfo> info =
-        api::developer_private::ExtensionInfo::FromValueDeprecated(*result);
+    std::optional<api::developer_private::ExtensionInfo> info =
+        api::developer_private::ExtensionInfo::FromValue(*result);
     if (!info)
       ADD_FAILURE() << "Problem creating ExtensionInfo from result data";
     return info;
@@ -146,7 +146,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
 }
 
 // TODO(https://crbug.com/1457154): Test is flaky on MSan builders.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_InspectInactiveServiceWorkerBackground \
   DISABLED_InspectInactiveServiceWorkerBackground
 #else
@@ -320,8 +322,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Now open up an incognito browser window page and check the inspectable
   // views again. Waiting for the result catcher will wait for the incognito
   // service worker to have become active.
-  Browser* inconito_browser = CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(inconito_browser);
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_TRUE(incognito_browser);
   ASSERT_TRUE(result_catcher.GetNextResult());
   info = GetExtensionInfo(*extension);
   // The views should now have 2 entries, one for the main worker which will be

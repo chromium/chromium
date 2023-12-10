@@ -155,7 +155,8 @@ struct CommonResourceObjects {
         &MockReleaseCallback::Release2, base::Unretained(&mock_callback_),
         shared_bitmap_id_);
     sw_resource_ = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_id_, size, viz::SinglePlaneFormat::kRGBA_8888);
+        shared_bitmap_id_, gpu::SyncToken(), size,
+        viz::SinglePlaneFormat::kRGBA_8888);
   }
 
   using RepeatingReleaseCallback =
@@ -1481,7 +1482,8 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1584,7 +1586,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1668,7 +1671,8 @@ class SoftwareTextureLayerMultipleRegisterTest
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id1_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id1_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1769,7 +1773,8 @@ class SoftwareTextureLayerRegisterUnregisterTest
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id1_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id1_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1856,7 +1861,8 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce(
                 &SoftwareTextureLayerLoseFrameSinkTest::ReleaseCallback,
                 base::Unretained(this)));
@@ -1974,7 +1980,8 @@ class SoftwareTextureLayerUnregisterRegisterTest
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:

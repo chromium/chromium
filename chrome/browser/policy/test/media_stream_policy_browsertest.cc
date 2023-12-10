@@ -71,9 +71,9 @@ class MediaStreamDevicesControllerBrowserTest
     int render_frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
-        request_url_.DeprecatedGetOriginAsURL(), false,
-        blink::MEDIA_DEVICE_ACCESS, std::string(), std::string(),
-        audio_request_type, video_request_type, /*disable_local_echo=*/false,
+        url::Origin::Create(request_url_), false, blink::MEDIA_DEVICE_ACCESS,
+        std::string(), std::string(), audio_request_type, video_request_type,
+        /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);
   }
 

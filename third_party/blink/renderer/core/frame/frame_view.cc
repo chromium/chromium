@@ -60,19 +60,17 @@ bool FrameView::DisplayLockedInParentFrame() {
   return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*owner);
 }
 
-gfx::Vector2dF FrameView::UpdateViewportIntersection(
-    unsigned flags,
-    bool needs_occlusion_tracking) {
-  if (!(flags &
-        IntersectionObservation::kFrameViewportIntersectionNeedsUpdate)) {
-    return min_scroll_delta_to_update_viewport_intersection_;
+void FrameView::UpdateViewportIntersection(unsigned flags,
+                                           bool needs_occlusion_tracking) {
+  if (!(flags & IntersectionObservation::kImplicitRootObserversNeedUpdate)) {
+    return;
   }
 
   // This should only run in child frames.
   Frame& frame = GetFrame();
   HTMLFrameOwnerElement* owner_element = frame.DeprecatedLocalOwner();
   if (!owner_element) {
-    return gfx::Vector2dF();
+    return;
   }
 
   Document& owner_document = owner_element->GetDocument();
@@ -98,8 +96,6 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
     // zero size, or it's display locked in parent frame; leave
     // viewport_intersection empty, and signal the frame as occluded if
     // necessary.
-    min_scroll_delta_to_update_viewport_intersection_ =
-        IntersectionGeometry::kInfiniteScrollDelta;
     occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   } else if (parent_lifecycle_state >= DocumentLifecycle::kLayoutClean &&
              !owner_document.View()->NeedsLayout()) {
@@ -117,9 +113,8 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
         /* target_margin */ {},
         /* scroll_margin */ {}, geometry_flags, root_geometry);
 
-    min_scroll_delta_to_update_viewport_intersection_ =
-        geometry.MinScrollDeltaToUpdate();
-    PhysicalRect new_rect_in_parent = geometry.IntersectionRect();
+    PhysicalRect new_rect_in_parent =
+        PhysicalRect::FastAndLossyFromRectF(geometry.IntersectionRect());
 
     // Convert to DIP
     const auto& screen_info =
@@ -202,9 +197,7 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
     PhysicalRect mainframe_intersection_rect;
     if (!geometry.UnclippedIntersectionRect().IsEmpty()) {
       mainframe_intersection_rect = PhysicalRect::EnclosingRect(
-          matrix
-              .ProjectQuad(
-                  gfx::QuadF(gfx::RectF(geometry.UnclippedIntersectionRect())))
+          matrix.ProjectQuad(gfx::QuadF(geometry.UnclippedIntersectionRect()))
               .BoundingBox());
 
       if (mainframe_intersection_rect.IsEmpty()) {
@@ -295,7 +288,6 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
   }
   UpdateRenderThrottlingStatus(should_throttle, subtree_throttled,
                                display_locked_in_parent_frame);
-  return min_scroll_delta_to_update_viewport_intersection_;
 }
 
 void FrameView::UpdateFrameVisibility(bool intersects_viewport) {

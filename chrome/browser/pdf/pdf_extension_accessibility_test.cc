@@ -6,24 +6,30 @@
 
 #include <map>
 #include <string>
+#include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -162,7 +168,8 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
 
  protected:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestBase::GetDisabledFeatures();
     // PDF OCR should not be enabled in `PDFExtensionAccessibilityTest`. If a
     // new test class is derived from this class and needs to test PDF OCR,
     // make sure that `GetDisabledFeatures()` is overridden to exclude
@@ -185,14 +192,23 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
   }
 };
 
+class PDFExtensionAccessibilityTestWithOopifOverride
+    : public base::test::WithFeatureOverride,
+      public PDFExtensionAccessibilityTest {
+ public:
+  PDFExtensionAccessibilityTestWithOopifOverride()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
+  bool UseOopif() const override { return GetParam(); }
+};
+
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                 "1 First Section\r\n");
@@ -204,12 +220,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   // Now enable accessibility globally, and assert that the PDF
   // accessibility tree loads.
@@ -224,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilityInIframe) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -239,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+                       PdfAccessibilityInOOPIF) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -261,12 +277,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibilityInOOPIF) {
 #else
 #define MAYBE_PdfAccessibilityWordBoundaries PdfAccessibilityWordBoundaries
 #endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        MAYBE_PdfAccessibilityWordBoundaries) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   WaitForAccessibilityTreeToContainNodeWithName(contents,
@@ -296,11 +311,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilitySelection) {
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(
@@ -345,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilityContextMenuAction) {
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
@@ -359,11 +373,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
       "2 Second Section\n"
       "3";
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* content_host =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+  ASSERT_TRUE(content_host);
+
   ASSERT_TRUE(
       content::ExecJs(contents,
                       "document.getElementsByTagName('embed')[0].postMessage("
@@ -380,8 +397,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
       content::FindAccessibilityNode(contents, find_criteria);
   ASSERT_TRUE(pdf_root);
 
-  content::ContextMenuInterceptor context_menu_interceptor(
-      GetPluginFrame(guest));
+  content::ContextMenuInterceptor context_menu_interceptor(content_host);
 
   ContextMenuWaiter menu_waiter;
   // Invoke kShowContextMenu accessibility action on the node with the kPdfRoot
@@ -403,11 +419,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest_view);
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(contents);
@@ -425,12 +440,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_RecordInaccessiblePdfUKM) {
-  MimeHandlerViewGuest* guest_view =
-      LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
-          "/pdf/accessibility/hello-world-in-image.pdf"));
-  ASSERT_TRUE(guest_view);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/hello-world-in-image.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(contents);
@@ -455,13 +468,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(
-    PDFExtensionAccessibilityTest,
-    DISABLED_RecordHasAccessibleTextToUmaWithInaccessiblePdf) {
-  MimeHandlerViewGuest* guest_view =
-      LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
-          "/pdf/accessibility/hello-world-in-image.pdf"));
-  ASSERT_TRUE(guest_view);
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
+                       DISABLED_RecordHasAccessibleTextToUmaWithInaccessible) {
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/hello-world-in-image.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(contents);
@@ -487,12 +497,11 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
 // when accessibility is enabled.  (http://crbug.com/668724)
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        PdfAccessibilityTextRunCrash) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf_private/accessibility_crash_2.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf_private/accessibility_crash_2.pdf")));
 
   WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                 "Page 1");
@@ -504,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 // TreeDumpTests, this allows us to verify the kNextOnLine and kPreviousOnLine
 // relationships.
 class PDFExtensionAccessibilityTextExtractionTest
-    : public PDFExtensionAccessibilityTest {
+    : public PDFExtensionAccessibilityTestWithOopifOverride {
  public:
   PDFExtensionAccessibilityTextExtractionTest() = default;
   ~PDFExtensionAccessibilityTextExtractionTest() override = default;
@@ -524,7 +533,8 @@ class PDFExtensionAccessibilityTextExtractionTest
 
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
+    std::vector<base::test::FeatureRef> enabled =
+        PDFExtensionAccessibilityTestWithOopifOverride::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
@@ -543,11 +553,9 @@ class PDFExtensionAccessibilityTextExtractionTest
 
     // Enable accessibility and load the test file.
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-    MimeHandlerViewGuest* guest =
-        LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
-            "/" + std::string(file_dir) + "/" +
-            test_file_path.BaseName().MaybeAsASCII()));
-    ASSERT_TRUE(guest);
+    const GURL test_file_url = embedded_test_server()->GetURL(base::StrCat(
+        {"/", file_dir, "/", test_file_path.BaseName().MaybeAsASCII()}));
+    ASSERT_TRUE(LoadPdf(test_file_url));
     WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                   "Page 1");
 
@@ -660,56 +668,56 @@ class PDFExtensionAccessibilityTextExtractionTest
 
 // Test that Previous/NextOnLineId attributes are present and properly linked on
 // InlineTextBoxes within a line.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        NextOnLine) {
   RunTextExtractionTest(FILE_PATH_LITERAL("next-on-line.pdf"));
 }
 
 // Test that a drop-cap is grouped with the correct line.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
   RunTextExtractionTest(FILE_PATH_LITERAL("drop-cap.pdf"));
 }
 
 // Test that simulated superscripts and subscripts don't cause a line break.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        SuperscriptSubscript) {
   RunTextExtractionTest(FILE_PATH_LITERAL("superscript-subscript.pdf"));
 }
 
 // Test that simple font and font-size changes in the middle of a line don't
 // cause line breaks.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        FontChange) {
   RunTextExtractionTest(FILE_PATH_LITERAL("font-change.pdf"));
 }
 
 // Test one property of pdf_private/accessibility_crash_2.pdf, where a page has
 // only whitespace characters.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        OnlyWhitespaceText) {
   RunTextExtractionTest(FILE_PATH_LITERAL("whitespace.pdf"));
 }
 
 // Test data of inline text boxes for PDF with weblinks.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
   RunTextExtractionTest(FILE_PATH_LITERAL("weblinks.pdf"));
 }
 
 // Test data of inline text boxes for PDF with highlights.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        Highlights) {
   RunTextExtractionTest(FILE_PATH_LITERAL("highlights.pdf"));
 }
 
 // Test data of inline text boxes for PDF with text fields.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        TextFields) {
   RunTextExtractionTest(FILE_PATH_LITERAL("text_fields.pdf"));
 }
 
 // Test data of inline text boxes for PDF with multi-line and various font-sized
 // text.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        ParagraphsAndHeadingUntagged) {
   RunTextExtractionTest(
       FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"));
@@ -717,22 +725,23 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 
 // Test data of inline text boxes for PDF with text, weblinks, images and
 // annotation links.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        LinksImagesAndText) {
   RunTextExtractionTest(FILE_PATH_LITERAL("text-image-link.pdf"));
 }
 
 // Test data of inline text boxes for PDF with overlapping annotations.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        OverlappingAnnots) {
   RunTextExtractionTest(FILE_PATH_LITERAL("overlapping-annots.pdf"));
 }
 
 class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionAccessibilityTest,
-      public ::testing::WithParamInterface<ui::AXApiType::Type> {
+      public ::testing::WithParamInterface<
+          std::tuple<ui::AXApiType::Type, bool>> {
  public:
-  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(GetParam()) {}
+  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(ax_inspect_type()) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -742,13 +751,20 @@ class PDFExtensionAccessibilityTreeDumpTest
     test_helper_.InitializeFeatureList();
   }
 
- protected:
+  ui::AXApiType::Type ax_inspect_type() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
+
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
+    std::vector<base::test::FeatureRef> enabled =
+        PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
 
+ protected:
   void RunPDFTest(const base::FilePath::CharType* pdf_file) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
@@ -794,7 +810,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     ui::AXInspectScenario scenario = ParsePdfForExtraDirectives(pdf_contents);
 
     std::unique_ptr<ui::AXTreeFormatter> formatter =
-        content::AXInspectFactory::CreateFormatter(GetParam());
+        content::AXInspectFactory::CreateFormatter(ax_inspect_type());
     formatter->SetPropertyFilters(scenario.property_filters,
                                   ui::AXTreeFormatter::kFiltersDefaultSet);
 
@@ -818,11 +834,9 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Enable accessibility and load the test file.
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-    MimeHandlerViewGuest* guest =
-        LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
-            "/" + std::string(file_dir) + "/" +
-            test_file_path.BaseName().MaybeAsASCII()));
-    ASSERT_TRUE(guest);
+    const GURL test_file_url = embedded_test_server()->GetURL(base::StrCat(
+        {"/", file_dir, "/", test_file_path.BaseName().MaybeAsASCII()}));
+    ASSERT_TRUE(LoadPdf(test_file_url));
     WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                   "Page 1");
 
@@ -838,10 +852,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     std::vector<std::string> actual_lines =
         base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
-    // TODO(b/1473176): Either keep the banner and status node in the output or
-    // modify `pdf_root` above to remove the banner and status nodes from the
-    // tree so that they are not in the format output.
-    RemoveBannerAndStatusNodesFromFormatOutput(actual_lines, GetParam());
+    RemoveBannerAndStatusNodesFromFormatOutput(actual_lines, ax_inspect_type());
 
     // Validate the dump against the expectation file.
     EXPECT_TRUE(test_helper_.ValidateAgainstExpectation(
@@ -938,14 +949,17 @@ const std::vector<ui::AXApiType::Type> GetAXTestValues() {
 
 struct PDFExtensionAccessibilityTreeDumpTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
-    return std::string(i.param);
+      const ::testing::TestParamInfo<std::tuple<ui::AXApiType::Type, bool>>& i)
+      const {
+    return std::string(std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
+           std::string(std::get<0>(i.param));
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTest,
-                         testing::ValuesIn(GetAXTestValues()),
+                         testing::Combine(testing::ValuesIn(GetAXTestValues()),
+                                          testing::Bool()),
                          PDFExtensionAccessibilityTreeDumpTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
@@ -1011,15 +1025,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
 }
 
 // This test suite validates the navigation done using the accessibility client.
-using PDFExtensionAccessibilityNavigationTest = PDFExtensionAccessibilityTest;
+using PDFExtensionAccessibilityNavigationTest =
+    PDFExtensionAccessibilityTestWithOopifOverride;
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
-                       LinkNavigation) {
+// TODO(crbug.com/1487426): Fix the flakiness on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LinkNavigation DISABLED_LinkNavigation
+#else
+#define MAYBE_LinkNavigation LinkNavigation
+#endif  // BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
+                       MAYBE_LinkNavigation) {
   // Enable accessibility and load the test file.
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/accessibility/weblinks.pdf"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(LoadPdf(
+      embedded_test_server()->GetURL("/pdf/accessibility/weblinks.pdf")));
+
   WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                 "Page 1");
 
@@ -1051,49 +1072,54 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // This test suite contains simple tests for the PDF OCR feature.
 class PDFExtensionAccessibilityPdfOcrTest
-    : public PDFExtensionAccessibilityTest {
+    : public PDFExtensionAccessibilityTestWithOopifOverride {
  public:
   PDFExtensionAccessibilityPdfOcrTest() = default;
   ~PDFExtensionAccessibilityPdfOcrTest() override = default;
 
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
+    std::vector<base::test::FeatureRef> enabled =
+        PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(::features::kPdfOcr);
     return enabled;
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    // `PDFExtensionAccessibilityTest` has `::features::kPdfOcr` in a list of
-    // disabled features. Now that `::features::kPdfOcr` is used in this test,
-    // just return an empty list to exclude the feature from the list.
-    return {};
+    // `PDFExtensionAccessibilityTest` has
+    // `::features::kPdfOcr` in a list of disabled features. Now that
+    // `::features::kPdfOcr` is used in this test, don't include it in the
+    // disabled list.
+    std::vector<base::test::FeatureRef> disabled;
+    if (!UseOopif()) {
+      disabled.push_back(chrome_pdf::features::kPdfOopif);
+    }
+    return disabled;
   }
 
-  void ClickPdfOcrToggleButton(MimeHandlerViewGuest* guest_view) {
-    content::RenderFrameHost* guest_main_frame =
-        guest_view->GetGuestMainFrame();
-    ASSERT_TRUE(guest_main_frame);
-
+  void ClickPdfOcrToggleButton(content::RenderFrameHost* extension_host) {
     ASSERT_TRUE(content::ExecJs(
-        guest_main_frame,
+        extension_host,
         "viewer.shadowRoot.getElementById('toolbar').shadowRoot."
         "getElementById('pdf-ocr-button').click();"));
-    ASSERT_TRUE(content::WaitForRenderFrameReady(guest_main_frame));
+    ASSERT_TRUE(content::WaitForRenderFrameReady(extension_host));
   }
 };
 
 // TODO(b/289010799): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_view);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+  ASSERT_TRUE(extension_host);
 
   // Turn on PDF OCR always.
   base::HistogramTester histograms;
-  ClickPdfOcrToggleButton(guest_view);
+  ClickPdfOcrToggleButton(extension_host);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample(
@@ -1104,22 +1130,37 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
 
 // TODO(b/289010799): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_view);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  WebContents* contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+  ASSERT_TRUE(extension_host);
 
   // Turn on PDF OCR always.
-  ClickPdfOcrToggleButton(guest_view);
+  ClickPdfOcrToggleButton(extension_host);
 
   // Turn off PDF OCR.
   base::HistogramTester histograms;
-  ClickPdfOcrToggleButton(guest_view);
+  ClickPdfOcrToggleButton(extension_host);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample("Accessibility.PdfOcr.UserSelection",
                                 PdfOcrUserSelection::kTurnOffFromMoreActions,
                                 /*expected_bucket_count=*/1);
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionAccessibilityTestWithOopifOverride);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionAccessibilityTextExtractionTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionAccessibilityNavigationTest);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

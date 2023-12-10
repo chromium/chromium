@@ -7,16 +7,15 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/mathml/mathml_table_cell_element.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_table_cell_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/table_cell_paint_invalidator.h"
 
 namespace blink {
 
@@ -163,7 +162,7 @@ LayoutBlock* LayoutTableCell::StickyContainer() const {
 void LayoutTableCell::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   NOT_DESTROYED();
-  NGTableCellPaintInvalidator(*this, context).InvalidatePaint();
+  TableCellPaintInvalidator(*this, context).InvalidatePaint();
 }
 
 bool LayoutTableCell::BackgroundIsKnownToBeOpaqueInRect(

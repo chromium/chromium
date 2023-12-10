@@ -1,4 +1,8 @@
 <style include="settings-shared">
+  :host-context(body.revamp-wayfinding-enabled) #parentalControlRowIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+
   cr-link-row {
     --cr-section-padding: 0;
   }
@@ -15,7 +19,10 @@
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[!isChild_]]">
-      <iron-icon class="start-icon" icon="cr20:kite"></iron-icon>
+      <iron-icon id="parentalControlRowIcon"
+          class="start-icon"
+          icon="cr20:kite">
+      </iron-icon>
       <div class="middle settings-box-text">
         <div id="label" aria-hidden="true">
           $i18n{parentalControlsPageTitle}

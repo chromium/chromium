@@ -8,9 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Wrapper around the native content::ResourceRequestBody.
- */
+/** Wrapper around the native content::ResourceRequestBody. */
 @JNINamespace("content")
 public final class ResourceRequestBody {
     /**

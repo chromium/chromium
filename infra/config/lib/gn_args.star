@@ -216,6 +216,16 @@ def _generate_gn_args(ctx):
     root_out_dir = per_builder_outputs_config().root_dir
     resolve_gn_args = _get_gn_args_resolver()
 
+    # Function for validating special restrictions
+    def validate_gn_args(gn_args_dict):
+        # "chromium" group builders build public artifacts and should not
+        # include Chrome proprietary codec.
+        if node.props.builder_group == "chromium":
+            if (gn_args_dict["gn_args"].get("proprietary_codecs", False) or
+                gn_args_dict["gn_args"].get("ffmpeg_branding", "Chromium") != "Chromium"):
+                fail("\"chromium\" group builder " +
+                     "{} should not include Chrome proprietary codec".format(node.key.id))
+
     # Function for generating args-gn.json files
     def gen_args_gn_json(gn_args_dict):
         gn_args_file_path = "{}/{}/{}".format(root_out_dir, node.key.id, _GN_ARGS_FILE_NAME)
@@ -231,13 +241,16 @@ def _generate_gn_args(ctx):
     # Builders with non-phased GN configs
     for node in graph.children(keys.project(), _GN_CONFIG.kind):
         gn_args_dict = resolve_gn_args(node)
+        validate_gn_args(gn_args_dict)
         gen_args_gn_json(gn_args_dict)
 
     # Builders with phased GN configs
     for node in graph.children(keys.project(), _PHASED_CONFIG.kind):
         phases_dict = {}
         for phase_node in graph.children(node.key):
-            phases_dict[phase_node.key.id.split(":")[-1]] = resolve_gn_args(phase_node)
+            phase_args = resolve_gn_args(phase_node)
+            validate_gn_args(phase_args)
+            phases_dict[phase_node.key.id.split(":")[-1]] = phase_args
         gen_args_gn_json({"phases": phases_dict})
 
     locations_file_path = "{}/gn_args_locations.json".format(root_out_dir)

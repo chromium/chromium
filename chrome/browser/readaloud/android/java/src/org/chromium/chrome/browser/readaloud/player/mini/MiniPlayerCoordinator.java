@@ -22,9 +22,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator responsible for Read Aloud mini player lifecycle. */
 public class MiniPlayerCoordinator {
-    private final PropertyModel mModel;
     private final PropertyModelChangeProcessor<PropertyModel, MiniPlayerLayout, PropertyKey>
-            mModelChangeProcessor;
+            mPlayerModelChangeProcessor;
+    private final PropertyModelChangeProcessor<
+                    PropertyModel, MiniPlayerViewBinder.ViewHolder, PropertyKey>
+            mMiniPlayerModelChangeProcessor;
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
     // Compositor layer to be shown during show and hide while browser controls are
@@ -35,17 +37,17 @@ public class MiniPlayerCoordinator {
      * @param activity App activity containing a placeholder FrameLayout with ID
      *     R.id.readaloud_mini_player.
      * @param context View-inflation-capable Context for read_aloud_playback isolated split.
-     * @param model Player UI property model.
+     * @param sharedModel Player UI property model for properties shared with expanded player.
      */
     public MiniPlayerCoordinator(
             Activity activity,
             Context context,
-            PropertyModel model,
+            PropertyModel sharedModel,
             BrowserControlsSizer browserControlsSizer,
             LayoutManager layoutManager) {
         this(
-                model,
-                new MiniPlayerMediator(model, browserControlsSizer),
+                sharedModel,
+                new MiniPlayerMediator(browserControlsSizer),
                 inflateLayout(activity, context),
                 new ReadAloudMiniPlayerSceneLayer(browserControlsSizer),
                 layoutManager);
@@ -61,20 +63,26 @@ public class MiniPlayerCoordinator {
 
     @VisibleForTesting
     MiniPlayerCoordinator(
-            PropertyModel model,
+            PropertyModel sharedModel,
             MiniPlayerMediator mediator,
             MiniPlayerLayout layout,
             ReadAloudMiniPlayerSceneLayer sceneLayer,
             LayoutManager layoutManager) {
-        mModel = model;
         mMediator = mediator;
         mLayout = layout;
         assert layout != null;
         mSceneLayer = sceneLayer;
-        layoutManager.addSceneOverlay(mSceneLayer);
+        sceneLayer.setIsVisible(true);
+        layoutManager.addSceneOverlay(sceneLayer);
 
-        mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mModel, layout, MiniPlayerViewBinder::bind);
+        mPlayerModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        sharedModel, mLayout, MiniPlayerViewBinder::bindPlayerProperties);
+        mMiniPlayerModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mMediator.getModel(),
+                        new MiniPlayerViewBinder.ViewHolder(layout, sceneLayer),
+                        MiniPlayerViewBinder::bindMiniPlayerProperties);
     }
 
     public void destroy() {
@@ -90,9 +98,7 @@ public class MiniPlayerCoordinator {
         mMediator.show(animate);
     }
 
-    /**
-     * Returns the mini player visibility state.
-     */
+    /** Returns the mini player visibility state. */
     public @VisibilityState int getVisibility() {
         return mMediator.getVisibility();
     }

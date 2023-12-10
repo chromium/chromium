@@ -23,12 +23,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthUseNativeWinApi);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enable a ChromeOS platform authenticator
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthCrosPlatformAuthenticator);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_ANDROID)
 // Enable UI options to explicitly invoke hybrid CTAP authentication on
 // Android.
@@ -56,23 +50,10 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForHybrid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Count kCtap2ErrPinRequired as meaning not recognised.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPinRequiredMeansNotRecognized);
-
 // Advertise hybrid prelinking on Android even if the app doesn't have
 // notifications permission.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
-
-// Don't allow the old style JSON where values could be `null`.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNoNullInJSON);
-
-// Require the "easy accessor" fields to be provided in JSON attestation
-// responses. Otherwise the fields are only checked if provided.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON);
 
 // Require up-to-date JSON formatting in remote-desktop contexts.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -104,17 +85,9 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
 
-// Get caBLE pre-linking information from Play Services
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPrelinkPlayServices);
-
 // Don't show the single-account sheet on macOS if Touch ID is available.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
-
-// Delegate to Windows UI with webauthn.dll version six.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnWindowsUIv6);
 
 // Allow sites to opt into experimenting with conditional UI presentations.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -131,11 +104,6 @@ BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
 // Enable use of a cloud enclave authenticator service.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
-
-// Serialize WebAuthn requests to JSON on the desktop. Useful for future
-// projects but only concretely used for better logging at the time of writing.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnJSONSerializeRequests);
 
 // Cache prelinking information on Android.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -199,6 +167,10 @@ BASE_DECLARE_FEATURE(kWebAuthnAccessibleTimeouts);
 // Support cross-domain RP ID assertions.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
+
+// CHECK an invariant about credential sources.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnChromeImplementedInvariant);
 
 }  // namespace device
 

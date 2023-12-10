@@ -21,6 +21,10 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_fence.h"
 
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/vulkan/vulkan_fence_helper.h"
+#endif
+
 namespace gpu {
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -724,10 +728,10 @@ scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
   return backing()->GetNativePixmap();
 }
 #elif BUILDFLAG(IS_WIN)
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 OverlayImageRepresentation::GetDCLayerOverlayImage() {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 #elif BUILDFLAG(IS_APPLE)
 gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {
@@ -822,9 +826,14 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
 wgpu::Texture DawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     const gfx::Rect& update_rect) {
-  // If the implementation doesn't support partial updates, we need to update
-  // the whole image.
+#if BUILDFLAG(IS_WIN)
+  // The `update_rect` is a hint to update only certain portion
+  // of shared image but it doesn't have to match the size of shared image for
+  // eg. CopyOutput cases where an empty rect is passed to as there is no intent
+  // to update the shared image. Keeping this windows only for helping compare
+  // with DComp/DXGI cases.
   DCHECK_EQ(update_rect, gfx::Rect(size()));
+#endif
   return this->BeginAccess(usage);
 }
 
@@ -911,7 +920,7 @@ RasterImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<RasterImageRepresentation> pass_key,
     RasterImageRepresentation* representation,
     const cc::PaintOpBuffer* paint_op_buffer,
-    const absl::optional<SkColor4f>& clear_color)
+    const std::optional<SkColor4f>& clear_color)
     : ScopedAccessBase(representation, AccessMode::kRead),
       paint_op_buffer_(paint_op_buffer),
       clear_color_(clear_color) {}
@@ -933,7 +942,7 @@ RasterImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
 
 std::unique_ptr<RasterImageRepresentation::ScopedReadAccess>
 RasterImageRepresentation::BeginScopedReadAccess() {
-  absl::optional<SkColor4f> clear_color;
+  std::optional<SkColor4f> clear_color;
   auto* paint_op_buffer = BeginReadAccess(clear_color);
   if (!paint_op_buffer) {
     return nullptr;
@@ -948,7 +957,7 @@ RasterImageRepresentation::BeginScopedWriteAccess(
     scoped_refptr<SharedContextState> context_state,
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
-    const absl::optional<SkColor4f>& clear_color,
+    const std::optional<SkColor4f>& clear_color,
     bool visible) {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<RasterImageRepresentation>(), this,
@@ -985,5 +994,51 @@ VideoDecodeImageRepresentation::BeginScopedWriteAccess() {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<VideoDecodeImageRepresentation>(), this);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// VulkanImageRepresentation
+
+#if BUILDFLAG(ENABLE_VULKAN)
+VulkanImageRepresentation::VulkanImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    std::unique_ptr<gpu::VulkanImage> vulkan_image,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl)
+    : SharedImageRepresentation(manager, backing, tracker),
+      vulkan_image_(std::move(vulkan_image)),
+      vulkan_device_queue_(vulkan_device_queue),
+      vulkan_impl_(vulkan_impl) {}
+
+VulkanImageRepresentation::~VulkanImageRepresentation() {
+  vulkan_device_queue_->GetFenceHelper()
+      ->EnqueueVulkanObjectCleanupForSubmittedWork<gpu::VulkanImage>(
+          std::move(vulkan_image_));
+}
+
+VulkanImageRepresentation::ScopedAccess::ScopedAccess(
+    VulkanImageRepresentation* representation,
+    AccessMode access_mode,
+    std::vector<VkSemaphore> begin_semaphores,
+    VkSemaphore end_semaphore)
+    : ScopedAccessBase(representation, access_mode),
+      is_read_only_(access_mode == AccessMode::kRead),
+      begin_semaphores_(begin_semaphores),
+      end_semaphore_(end_semaphore) {}
+
+VulkanImageRepresentation::ScopedAccess::~ScopedAccess() {
+  representation()->EndScopedAccess(is_read_only_, end_semaphore_);
+
+  auto* fence_helper = representation()->vulkan_device_queue_->GetFenceHelper();
+  fence_helper->EnqueueSemaphoresCleanupForSubmittedWork(
+      std::move(begin_semaphores_));
+  fence_helper->EnqueueSemaphoreCleanupForSubmittedWork(end_semaphore_);
+}
+
+gpu::VulkanImage& VulkanImageRepresentation::ScopedAccess::GetVulkanImage() {
+  return *representation()->vulkan_image_;
+}
+#endif
 
 }  // namespace gpu

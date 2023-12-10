@@ -6,7 +6,7 @@ import {startIOTask} from '../../common/js/api.js';
 import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {checkAPIError, visitURL} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {getStore} from '../../state/store.js';
 
@@ -35,8 +35,7 @@ export class FileOperationHandler {
       item.itemCount = event.itemCount;
       const state = getStore().getState();
       const volume = state.volumes[event.destinationVolumeId];
-      item.isDestinationDrive =
-          volume?.volumeType === VolumeManagerCommon.VolumeType.DRIVE;
+      item.isDestinationDrive = volume?.volumeType === VolumeType.DRIVE;
       item.cancelCallback = () => {
         chrome.fileManagerPrivate.cancelIOTask(event.taskId);
       };
@@ -125,6 +124,7 @@ export class FileOperationHandler {
           item.state = ProgressItemState.CANCELED;
         } else {  // ERROR
           item.state = ProgressItemState.ERROR;
+          item.skippedEncryptedFiles = event.skippedEncryptedFiles;
           // Check if there was a policy error.
           if (event.policyError) {
             item.policyError =
@@ -150,7 +150,11 @@ export class FileOperationHandler {
                         chrome.fileManagerPrivate.PolicyDialogType.ERROR,
                         checkAPIError);
                   });
-            } else {
+            } else if (
+                event.policyError.type !==
+                PolicyErrorType.ENTERPRISE_CONNECTORS) {
+              // There is not a default learn more URL for EC, and when a custom
+              // one is set we show the review button defined above instead.
               item.setExtraButton(
                   ProgressItemState.ERROR, extraButtonText, () => {
                     visitURL(str('DLP_HELP_URL'));

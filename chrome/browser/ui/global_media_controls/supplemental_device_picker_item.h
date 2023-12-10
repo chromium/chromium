@@ -39,8 +39,8 @@ class SupplementalDevicePickerItem final
 
   // Updates `view_` with the new info.
   void UpdateViewWithMetadata(const media_session::MediaMetadata& metadata);
-  void UpdateViewWithArtworkImage(absl::optional<gfx::ImageSkia> artwork_image);
-  void UpdateViewWithFaviconImage(absl::optional<gfx::ImageSkia> favicon_image);
+  void UpdateViewWithArtworkImage(std::optional<gfx::ImageSkia> artwork_image);
+  void UpdateViewWithFaviconImage(std::optional<gfx::ImageSkia> favicon_image);
 
   // media_message_center::MediaNotificationItem
   void SetView(media_message_center::MediaNotificationView* view) final;
@@ -52,7 +52,7 @@ class SupplementalDevicePickerItem final
   bool RequestMediaRemoting() override;
   media_message_center::Source GetSource() const override;
   media_message_center::SourceType GetSourceType() const override;
-  absl::optional<base::UnguessableToken> GetSourceId() const override;
+  std::optional<base::UnguessableToken> GetSourceId() const override;
 
   base::WeakPtr<SupplementalDevicePickerItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -73,8 +73,8 @@ class SupplementalDevicePickerItem final
 
   // An image for the Media Session associated with the
   // WebContents this presentation request is associated with.
-  absl::optional<gfx::ImageSkia> artwork_image_;
-  absl::optional<gfx::ImageSkia> favicon_image_;
+  std::optional<gfx::ImageSkia> artwork_image_;
+  std::optional<gfx::ImageSkia> favicon_image_;
 
   raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
 

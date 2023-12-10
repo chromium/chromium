@@ -16,8 +16,6 @@ MockInputMethodEngine::~MockInputMethodEngine() = default;
 void MockInputMethodEngine::Focus(
     const TextInputMethod::InputContext& input_context) {}
 
-void MockInputMethodEngine::OnTouch(ui::EventPointerType pointerType) {}
-
 void MockInputMethodEngine::Blur() {}
 
 void MockInputMethodEngine::Enable(const std::string& component_id) {

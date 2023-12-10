@@ -35,66 +35,24 @@ LocalDataContainer::CreateFromStoragePartition(
     content::StoragePartition* storage_partition,
     browsing_data::CookieHelper::IsDeletionDisabledCallback
         is_cookie_deletion_disabled_callback) {
-  // Migrating storage handling to the `BrowsingDataModel` excludes all related
-  // helpers that are handled by the model from the `LocalDataContainer` .
-  // This works independently whether partitioned storage is enabled or not.
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    return std::make_unique<LocalDataContainer>(
-        base::FeatureList::IsEnabled(
-            browsing_data::features::kDeprecateCookiesTreeModel)
-            ? nullptr
-            : base::MakeRefCounted<browsing_data::CookieHelper>(
-                  storage_partition, is_cookie_deletion_disabled_callback),
-        /*database_helper=*/nullptr,
-        /*local_storage_helper=*/nullptr,
-        /*session_storage_helper=*/nullptr,
-        /*indexed_db_helper=*/nullptr,
-        /*file_system_helper=*/nullptr,
-        /*quota_helper=*/nullptr,
-        /*service_worker_helper=*/nullptr,
-        /*shared_worker_helper=*/nullptr,
-        /*cache_storage_helper=*/nullptr);
-  }
-
-  // If partitioned storage is enabled, the quota node is used to represent all
-  // types of quota managed storage. If not, the quota node type is excluded as
-  // it is represented by other types.
-  if (blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
-    return std::make_unique<LocalDataContainer>(
-        base::MakeRefCounted<browsing_data::CookieHelper>(
-            storage_partition, is_cookie_deletion_disabled_callback),
-        /*database_helper=*/nullptr,
-        base::MakeRefCounted<browsing_data::LocalStorageHelper>(
-            storage_partition),
-        /*session_storage_helper=*/nullptr,
-        /*indexed_db_helper=*/nullptr,
-        /*file_system_helper=*/nullptr,
-        /*quota_helper=*/BrowsingDataQuotaHelper::Create(storage_partition),
-        /*service_worker_helper=*/nullptr,
-        base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
-            storage_partition),
-        /*cache_storage_helper=*/nullptr);
-  }
-
+  // TODO(crbug.com/1271155): remove this flag.
+  CHECK(base::FeatureList::IsEnabled(
+      browsing_data::features::kMigrateStorageToBDM));
   return std::make_unique<LocalDataContainer>(
-      base::MakeRefCounted<browsing_data::CookieHelper>(
-          storage_partition, is_cookie_deletion_disabled_callback),
-      base::MakeRefCounted<browsing_data::DatabaseHelper>(storage_partition),
-      base::MakeRefCounted<browsing_data::LocalStorageHelper>(
-          storage_partition),
+      base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)
+          ? nullptr
+          : base::MakeRefCounted<browsing_data::CookieHelper>(
+                storage_partition, is_cookie_deletion_disabled_callback),
+      /*database_helper=*/nullptr,
+      /*local_storage_helper=*/nullptr,
       /*session_storage_helper=*/nullptr,
-      base::MakeRefCounted<browsing_data::IndexedDBHelper>(storage_partition),
-      base::MakeRefCounted<browsing_data::FileSystemHelper>(
-          storage_partition->GetFileSystemContext(),
-          browsing_data_file_system_util::GetAdditionalFileSystemTypes()),
+      /*indexed_db_helper=*/nullptr,
+      /*file_system_helper=*/nullptr,
       /*quota_helper=*/nullptr,
-      base::MakeRefCounted<browsing_data::ServiceWorkerHelper>(
-          storage_partition->GetServiceWorkerContext()),
-      base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
-          storage_partition),
-      base::MakeRefCounted<browsing_data::CacheStorageHelper>(
-          storage_partition));
+      /*service_worker_helper=*/nullptr,
+      /*shared_worker_helper=*/nullptr,
+      /*cache_storage_helper=*/nullptr);
 }
 
 LocalDataContainer::LocalDataContainer(
@@ -102,7 +60,7 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::DatabaseHelper> database_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-    scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+    scoped_refptr<browsing_data::CannedIndexedDBHelper> indexed_db_helper,
     scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
     scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,

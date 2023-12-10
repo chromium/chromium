@@ -22,7 +22,7 @@ void UnrefImageFromCache(DrawImage draw_image,
 PlaybackImageProvider::PlaybackImageProvider(
     ImageDecodeCache* cache,
     const TargetColorParams& target_color_params,
-    absl::optional<Settings>&& settings)
+    std::optional<Settings>&& settings)
     : cache_(cache),
       target_color_params_(target_color_params),
       settings_(std::move(settings)) {

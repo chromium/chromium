@@ -11,10 +11,10 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
 
 namespace device {
 
@@ -34,7 +34,7 @@ class FakeGattDeviceServiceWinrt
   FakeGattDeviceServiceWinrt(
       BluetoothTestWinrt* bluetooth_test_winrt,
       Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device,
-      base::StringPiece uuid,
+      std::string_view uuid,
       uint16_t attribute_handle,
       bool allowed);
 
@@ -120,7 +120,7 @@ class FakeGattDeviceServiceWinrt
           ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
               GattDeviceServicesResult*>** operation) override;
 
-  void SimulateGattCharacteristic(base::StringPiece uuid, int proporties);
+  void SimulateGattCharacteristic(std::string_view uuid, int proporties);
 
  private:
   const raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_;

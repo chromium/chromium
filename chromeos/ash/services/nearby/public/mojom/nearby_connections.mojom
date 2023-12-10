@@ -109,7 +109,39 @@ interface PayloadListener {
 // //third_party/nearby/src/connections/v3/listeners.h
 //
 // TODO(b/308178927): Introduce functions when callback implementation begins.
-interface ConnectionListenerV3 {};
+interface ConnectionListenerV3 {
+  // A basic encrypted channel has been created between you and the device.
+  // Both sides are now asked if they wish to accept or reject the connection
+  // before any data can be sent over this channel.
+  //
+  // This is your chance, before you accept the connection, to confirm that you
+  // connected to the correct device. Both devices are given an identical token;
+  // it's up to you to decide how to verify it before proceeding. Typically this
+  // involves showing the token on both devices and having the users manually
+  // compare and confirm; however, this is only required if you desire a secure
+  // connection between the devices.
+  //
+  // For Presence, devices are authenticated using the devices' credentials to
+  // confirm that the remote device has the correct key pairing detected during
+  // advertising. There is no need to do an additional verification of keys
+  // during this step if this is successful. See (go/np-nc-handshake) for more
+  // details.
+  //
+  // Whichever route you decide to take (including not authenticating the other
+  // device), call Core::AcceptConnectionV3() when you're ready to talk, or
+  // Core::RejectConnectionV3() to close the connection.
+  //
+  // remote_device - The object for the remote device.
+  // info          - Other relevant information about the connection.
+  OnConnectionInitiated(ash.nearby.presence.mojom.PresenceDevice remote_device,
+                        InitialConnectionInfoV3 info);
+
+  // Called when a remote device is disconnected or has become unreachable.
+  // At this point service (re-)discovery may start again.
+  //
+  // remote_device - The object for the remote device.
+  OnDisconnected(ash.nearby.presence.mojom.PresenceDevice remote_device);
+};
 
 // Listener for payload status, used by the V3 APIs. Methods in this interface
 // are called from utility process, and is used by the browser process to listen

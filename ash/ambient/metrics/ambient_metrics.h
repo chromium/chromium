@@ -5,6 +5,7 @@
 #ifndef ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
 #define ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -106,8 +106,8 @@ class ASH_EXPORT AmbientOrientationMetricsRecorder
       root_rendering_view_observer_{this};
   // Null until a non-empty view boundary is provided (i.e. the initial view
   // layout occurs).
-  absl::optional<bool> current_orientation_is_portrait_;
-  absl::optional<base::ElapsedTimer> current_orientation_timer_;
+  std::optional<bool> current_orientation_is_portrait_;
+  std::optional<base::ElapsedTimer> current_orientation_timer_;
   base::TimeDelta total_portrait_duration_;
   base::TimeDelta total_landscape_duration_;
 };

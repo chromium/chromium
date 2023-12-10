@@ -103,15 +103,17 @@
               <template is="dom-repeat"
                   items="[[getStandardAcceleratorModifiers(acceleratorInfo)]]"
                   as="modifierKey">
-                <input-key key="[[modifierKey]]" key-state="modifier-selected"
-                    narrow highlighted="[[selected]]">
-                </input-key>
+                <shortcut-input-key key="[[modifierKey]]" key-state="modifier-selected"
+                    narrow highlighted="[[selected]]"
+                    has-launcher-button="[[hasLauncherButton]]">
+                </shortcut-input-key>
               </template>
-              <input-key
+              <shortcut-input-key
                   key="[[getStandardAcceleratorKey(acceleratorInfo)]]"
                   key-state="alpha-numeric-selected" narrow
-                  highlighted="[[selected]]">
-              </input-key>
+                  highlighted="[[selected]]"
+                  has-launcher-button="[[hasLauncherButton]]">
+              </shortcut-input-key>
               <template is="dom-if"
                   if="[[shouldShowTextDivider(index, searchResult)]]">
                 <div class="accelerator-text-divider">

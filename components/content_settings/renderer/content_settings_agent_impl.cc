@@ -118,7 +118,8 @@ void ContentSettingsAgentImpl::DidBlockContentType(
     ContentSettingsType settings_type) {
   bool newly_blocked = content_blocked_.insert(settings_type).second;
   if (newly_blocked)
-    GetContentSettingsManager().OnContentBlocked(routing_id(), settings_type);
+    GetContentSettingsManager().OnContentBlocked(
+        render_frame()->GetWebFrame()->GetLocalFrameToken(), settings_type);
 }
 
 namespace {
@@ -255,7 +256,7 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
       std::move(callback), key, std::ref(cached_storage_permissions_));
 
   GetContentSettingsManager().AllowStorageAccess(
-      routing_id(), ConvertToMojoStorageType(storage_type),
+      frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), std::move(new_cb));
 }
@@ -275,7 +276,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   SCOPED_UMA_HISTOGRAM_TIMER("ContentSettings.AllowStorageAccessSync");
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
-      routing_id(), ConvertToMojoStorageType(storage_type),
+      frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
@@ -339,21 +340,6 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
   return allow || IsAllowlistedForContentSettings();
 }
 
-bool ContentSettingsAgentImpl::AllowAutoDarkWebContent(
-    bool enabled_per_settings) {
-  if (!enabled_per_settings)
-    return false;
-
-  bool allow = true;
-  if (content_setting_rules_) {
-    ContentSetting setting = GetContentSettingFromRules(
-        content_setting_rules_->auto_dark_content_rules, GURL());
-    allow = setting != CONTENT_SETTING_BLOCK;
-  }
-  allow = allow || IsAllowlistedForContentSettings();
-  return allow;
-}
-
 bool ContentSettingsAgentImpl::AllowReadFromClipboard(bool default_value) {
   return delegate_->AllowReadFromClipboard().value_or(default_value);
 }
@@ -382,16 +368,6 @@ bool ContentSettingsAgentImpl::AllowRunningInsecureContent(
   return false;
 }
 
-bool ContentSettingsAgentImpl::AllowPopupsAndRedirects(bool default_value) {
-  if (!content_setting_rules_)
-    return default_value;
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  return GetContentSettingFromRules(
-             content_setting_rules_->popup_redirect_rules,
-             url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL()) ==
-         CONTENT_SETTING_ALLOW;
-}
-
 bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {
   if (mixed_content_autoupgrades_disabled_)
     return false;
@@ -416,6 +392,10 @@ void ContentSettingsAgentImpl::SetRendererContentSettingRulesForTest(
 
 void ContentSettingsAgentImpl::DidNotAllowScript() {
   DidBlockContentType(ContentSettingsType::JAVASCRIPT);
+}
+
+void ContentSettingsAgentImpl::DidNotAllowImage() {
+  DidBlockContentType(ContentSettingsType::IMAGES);
 }
 
 void ContentSettingsAgentImpl::ClearBlockedContentSettings() {

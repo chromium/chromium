@@ -63,6 +63,10 @@
 #include "ui/aura/window_observer.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::BubbleDialogDelegate*>*)
 
 namespace views {
@@ -787,6 +791,14 @@ gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
   DCHECK_EQ(arrow_adjustment,
             BubbleFrameView::PreferredArrowAdjustment::kMirror);
 
+#if BUILDFLAG(IS_OZONE)
+  // This function should not be called in ozone platforms where global screen
+  // coordinates are not available.
+  DCHECK(ui::OzonePlatform::GetInstance()
+             ->GetPlatformProperties()
+             .supports_global_screen_coordinates);
+#endif
+
   gfx::Rect anchor_rect = anchor_view->GetAnchorBoundsInScreen();
   gfx::Rect screen_rect =
       display::Screen::GetScreen()
@@ -1031,6 +1043,21 @@ void BubbleDialogDelegate::SetSubtitle(const std::u16string& subtitle) {
     frame_view->UpdateSubtitle();
 }
 
+bool BubbleDialogDelegate::GetSubtitleAllowCharacterBreak() const {
+  return subtitle_allow_character_break_;
+}
+
+void BubbleDialogDelegate::SetSubtitleAllowCharacterBreak(bool allow) {
+  if (subtitle_allow_character_break_ == allow) {
+    return;
+  }
+  subtitle_allow_character_break_ = allow;
+  BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view) {
+    frame_view->UpdateSubtitle();
+  }
+}
+
 void BubbleDialogDelegate::UpdateColorsFromTheme() {
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);
@@ -1056,6 +1083,9 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // Log time from bubble dialog delegate creation to bubble becoming
   // visible.
   if (visible) {
+    if (GetWidget()->IsClosed()) {
+      return;
+    }
     if (bubble_created_time_.has_value()) {
       GetWidget()
           ->GetCompositor()
@@ -1089,6 +1119,7 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // the bubble in its entirety rather than just its title and initially focused
   // view.  See http://crbug.com/474622 for details.
   if (visible && ui::IsAlert(GetAccessibleWindowRole())) {
+    GetWidget()->GetRootView()->SetAccessibleRole(GetAccessibleWindowRole());
     GetWidget()->GetRootView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }
@@ -1133,7 +1164,7 @@ void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {
   }
 }
 
-BEGIN_METADATA(BubbleDialogDelegateView, View)
+BEGIN_METADATA(BubbleDialogDelegateView)
 END_METADATA
 
 }  // namespace views

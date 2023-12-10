@@ -6,8 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement, TimePeriodExperiment} from 'chrome://settings/lazy_load.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement, TimePeriodExperiment, TimePeriod} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData, StatusAction, SyncBrowserProxyImpl, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -111,13 +111,20 @@ function getClearBrowsingDataPrefs() {
   };
 }
 
+function getTimePeriodDropdown(
+    tabName: string, element: SettingsClearBrowsingDataDialogElement):
+    SettingsDropdownMenuElement {
+  const timePeriodDropdown =
+      element.shadowRoot!.getElementById(tabName)!
+          .querySelector<SettingsDropdownMenuElement>('.time-range-select');
+  assertTrue(!!timePeriodDropdown);
+  return timePeriodDropdown;
+}
+
 // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
 function testChangeDefaultAndAdd15minForTab(
     tabName: string, element: SettingsClearBrowsingDataDialogElement) {
-  const timeframe =
-      element.shadowRoot!.getElementById(tabName)!
-          .querySelector<SettingsDropdownMenuElement>('.time-range-select');
-  assertTrue(!!timeframe);
+  const timeframe = getTimePeriodDropdown(tabName, element);
   assertTrue(!!timeframe.menuOptions);
   assertEquals(7, timeframe.menuOptions.length);
 
@@ -151,6 +158,9 @@ suite('ClearBrowsingDataDesktop', function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
+    loadTimeData.overrideValues(
+        {enableCbdTimeframeRequired: false, unoDesktopEnabled: false});
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -327,10 +337,7 @@ suite('ClearBrowsingDataDesktop', function() {
   });
 
   test('ClearBrowsingData_MenuOptions', function() {
-    const timeframe =
-        element.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-            '.time-range-select');
-    assertTrue(!!timeframe);
+    const timeframe = getTimePeriodDropdown('basic-tab', element);
     assertTrue(!!timeframe.menuOptions);
     assertTrue(timeframe.menuOptions.length === 5);
 
@@ -357,6 +364,48 @@ suite('ClearBrowsingDataDesktop', function() {
     await flushTasks();
     testChangeDefaultAndAdd15minForTab('basic-tab', element);
     testChangeDefaultAndAdd15minForTab('advanced-tab', element);
+  });
+
+  test('ClearBrowsingData_UnsupportedTimePeriod_Advanced', async function() {
+    const timePeriodDropdown = getTimePeriodDropdown('advanced-tab', element);
+    const selectElement =
+        timePeriodDropdown.shadowRoot!.querySelector('select')!;
+    assertTrue(!!selectElement);
+
+    const unsupported_pref_value = 100;
+
+    element.setPrefValue(
+        'browser.clear_data.time_period', unsupported_pref_value);
+
+    await waitAfterNextRender(timePeriodDropdown);
+
+    // Assert unsupported value in Advanced tab is replaced by the Default value
+    // (Last hour).
+    assertEquals(
+        TimePeriod.LAST_HOUR,
+        element.getPref('browser.clear_data.time_period').value);
+    assertEquals(TimePeriod.LAST_HOUR.toString(), selectElement.value);
+  });
+
+  test('ClearBrowsingData_UnsupportedTimePeriod_Basic', async function() {
+    const timePeriodDropdown = getTimePeriodDropdown('basic-tab', element);
+    const selectElement =
+        timePeriodDropdown.shadowRoot!.querySelector('select')!;
+    assertTrue(!!selectElement);
+
+    const unsupported_pref_value = 100;
+
+    element.setPrefValue(
+        'browser.clear_data.time_period_basic', unsupported_pref_value);
+
+    await waitAfterNextRender(timePeriodDropdown);
+
+    // Assert unsupported value in Basic tab is replaced by the Default value
+    // (Last hour).
+    assertEquals(
+        TimePeriod.LAST_HOUR,
+        element.getPref('browser.clear_data.time_period_basic').value);
+    assertEquals(TimePeriod.LAST_HOUR.toString(), selectElement.value);
   });
 });
 

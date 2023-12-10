@@ -44,7 +44,9 @@ public class NoteServiceBridge implements NoteService {
 
     @NativeMethods
     interface Natives {
-        void getTemplates(long nativeNoteServiceBridge, NoteServiceBridge caller,
+        void getTemplates(
+                long nativeNoteServiceBridge,
+                NoteServiceBridge caller,
                 Callback<List<NoteTemplate>> callback);
     }
 }

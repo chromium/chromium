@@ -264,6 +264,8 @@ HRESULT AXPlatformNodeTextProviderWin::RangeFromPoint(
 
 HRESULT AXPlatformNodeTextProviderWin::get_DocumentRange(
     ITextRangeProvider** range) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_GET_DOCUMENTRANGE);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
 
@@ -312,6 +314,8 @@ void AXPlatformNodeTextProviderWin::GetRangeFromChild(
   DCHECK(descendant);
   DCHECK(descendant->GetDelegate());
   DCHECK(ancestor->IsDescendant(descendant));
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
 
   // Start and end should be leaf text positions that span the beginning and end
   // of text content within a node. The start position should be the directly

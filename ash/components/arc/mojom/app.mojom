@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 62
+// Next MinVersion: 64
 
 module arc.mojom;
 
@@ -16,6 +16,8 @@ import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 struct InstallationResult {
   string package_name;
   bool success;  // true if app was installed successfully.
+  [MinVersion=62] bool is_launchable_app; // true if the package installed
+                                          // successfully and is launchable.
 };
 
 // Describes application storage.
@@ -100,6 +102,8 @@ enum InstallPriority {
 };
 
 // ARC package locale-related info.
+// NOTE: All locales here are sent as is, and not guaranteed to have correspondent ICU display name
+// translation. Displaying this to user will require special handling.
 struct PackageLocaleInfo {
   // These are the locales explicitly mentioned by the app to be supported.
   // Should not be empty.
@@ -434,7 +438,7 @@ interface AppHost {
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
-// Next method ID: 43
+// Next method ID: 44
 // Deprecated method IDs: 0, 1, 2, 3, 4, 6, 9, 12, 13, 15, 17, 18, 19, 22, 31
 interface AppInstance {
   // Establishes full-duplex communication with the host.
@@ -586,4 +590,13 @@ interface AppInstance {
   // declare an app category.
   [MinVersion=53] GetAppCategory@41(string package_name) =>
       (AppCategory category);
+
+  // Sets app locale for |package_name|. Empty |locale_tag| indicates system
+  // language being chosen.
+  // The |locale_tag| is using string as there's no direct representation for
+  // locale (which is based on IETF BCP 47). As for the content of the string,
+  // it's defined by app, so we shouldn't trust the content of this string.
+  // As for the implementation / use case, this will only be passed to Android,
+  // which is then sent back to the app as is.
+  [MinVersion=63] SetAppLocale@43(string package_name, string locale_tag);
 };

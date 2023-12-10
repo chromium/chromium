@@ -23,4 +23,4 @@ class BrowserTutorialService : public user_education::TutorialService {
   std::u16string GetBodyIconAltText(bool is_last_step) const override;
 };
 
-#endif  // CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_TUTORIAL_SERVICE_H_
+#endif  // CHROME_BROWSER_USER_EDUCATION_BROWSER_TUTORIAL_SERVICE_H_

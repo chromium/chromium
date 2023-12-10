@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.PanelPriority;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -60,6 +61,7 @@ public class OverlayPanelManagerTest {
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ViewGroup mCompositorViewHolder;
+    @Mock private Profile mProfile;
     @Mock private Tab mTab;
 
     Activity mActivity;
@@ -82,6 +84,7 @@ public class OverlayPanelManagerTest {
                 OverlayPanelManager manager,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 WindowAndroid windowAndroid,
+                Profile profile,
                 ViewGroup compositorViewHolder,
                 Tab tab,
                 @PanelPriority int priority,
@@ -92,6 +95,7 @@ public class OverlayPanelManagerTest {
                     manager,
                     browserControlsStateProvider,
                     windowAndroid,
+                    profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
                     () -> tab);
@@ -149,7 +153,7 @@ public class OverlayPanelManagerTest {
         /** Override creation and destruction of the WebContents as they rely on native methods. */
         private static class MockOverlayPanelContent extends OverlayPanelContent {
             public MockOverlayPanelContent() {
-                super(null, null, null, false, 0, null, null, null);
+                super(null, null, null, null, 0, null, null, null);
             }
 
             @Override
@@ -200,6 +204,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.MEDIUM,
@@ -223,6 +228,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.MEDIUM,
@@ -247,6 +253,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -258,6 +265,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,
@@ -282,6 +290,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -293,6 +302,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,
@@ -318,6 +328,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -329,6 +340,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,
@@ -354,6 +366,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -365,6 +378,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,
@@ -392,6 +406,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -403,6 +418,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.MEDIUM,
@@ -414,6 +430,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,
@@ -460,6 +477,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -471,6 +489,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.MEDIUM,
@@ -482,6 +501,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,
@@ -523,6 +543,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.MEDIUM,
@@ -539,6 +560,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.MEDIUM,
@@ -578,6 +600,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.LOW,
@@ -589,6 +612,7 @@ public class OverlayPanelManagerTest {
                         panelManager,
                         mBrowserControlsStateProvider,
                         mWindowAndroid,
+                        mProfile,
                         mCompositorViewHolder,
                         mTab,
                         PanelPriority.HIGH,

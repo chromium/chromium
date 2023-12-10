@@ -305,7 +305,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         Tab tab =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> mTabbedActivityTestRule.getActivity().getActivityTab());
-        Assert.assertTrue(UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
+        Assert.assertTrue(UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
         Assert.assertFalse(tab.isIncognito());
         Assert.assertEquals(
                 initialTabCount + 1,

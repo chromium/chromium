@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ora bolas! Falha ao gerar chave privada RSA aleatória.</translation>
 <translation id="1445572445564823378">Esta extensão está a tornar o <ph name="PRODUCT_NAME" /> lento. Deve desativá-la para restaurar o desempenho do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">O WebGL não é suportado.</translation>
+<translation id="1610570795592207282">Não foi possível carregar o ficheiro CSS "<ph name="RELATIVE_PATH" />" para o script.</translation>
 <translation id="1803557475693955505">Não foi possível carregar a página de fundo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Não foi possível descodificar a imagem: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localização utilizada, mas não foi especificado default_locale no manifesto.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Produto desconhecido <ph name="PRODUCT_ID" /> do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Falha ao substituir o ficheiro crx. Verifique se o ficheiro está a ser utilizado.</translation>
 <translation id="3163201441334626963">Produto desconhecido <ph name="PRODUCT_ID" /> do fornecedor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Não foi possível carregar css "<ph name="RELATIVE_PATH" />" para script de conteúdo.</translation>
 <translation id="3369521687965833290">Não é possível descompactar a extensão. Para descompactar uma extensão em segurança, é necessário existir um caminho para o seu directório de perfil começado por uma letra de unidade e sem uma junção, ponto de montagem ou ligação simbólica. Não existe um caminho deste tipo para o seu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada para uma chave privada tem de ser um caminho válido.</translation>
 <translation id="388442998277590542">Não foi possível carregar a página de opções "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro durante a assinatura da extensão.</translation>
-<translation id="39964277676607559">Não foi possível carregar javascript "<ph name="RELATIVE_PATH" />" para script de conteúdo.</translation>
 <translation id="4115165561519362854">O gestor deste computador requer que <ph name="EXTENSION_NAME" /> tenha uma versão mínima de <ph name="EXTENSION_VERSION" />. Não pode ser atualizado enquanto não for atualizado para essa versão (ou posterior).</translation>
 <translation id="4233778200880751280">Não foi possível carregar a página acerca de "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Falha ao obter resultado de chave privada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Falha ao exportar chave pública.</translation>
 <translation id="5026754133087629784">Vista Web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Não foi possível encontrar o caminho absoluto para o directório a empacotar.</translation>
+<translation id="5160071981665899014">Não foi possível carregar o ficheiro JavaScript "<ph name="RELATIVE_PATH" />" para o script.</translation>
 <translation id="5356315618422219272">Vista de aplicação: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Não são suportadas janelas com forma.</translation>
 <translation id="5456409301717116725">Esta extensão inclui o ficheiro-chave "<ph name="KEY_PATH" />". Provavelmente não quer fazer isso.</translation>

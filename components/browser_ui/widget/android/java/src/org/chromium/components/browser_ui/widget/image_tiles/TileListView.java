@@ -40,17 +40,18 @@ class TileListView {
     /** Constructor. */
     public TileListView(Context context, TileConfig config, TileListModel model) {
         mModel = model;
-        mView = new RecyclerView(context) {
-            @Override
-            protected void onConfigurationChanged(Configuration newConfig) {
-                super.onConfigurationChanged(newConfig);
+        mView =
+                new RecyclerView(context) {
+                    @Override
+                    protected void onConfigurationChanged(Configuration newConfig) {
+                        super.onConfigurationChanged(newConfig);
 
-                // Reset the adapter to ensure that any cached views are recreated.
-                setAdapter(null);
-                setAdapter(mAdapter);
-                mTileSizeSupplier.recompute();
-            }
-        };
+                        // Reset the adapter to ensure that any cached views are recreated.
+                        setAdapter(null);
+                        setAdapter(mAdapter);
+                        mTileSizeSupplier.recompute();
+                    }
+                };
 
         mView.setHasFixedSize(true);
 
@@ -66,8 +67,10 @@ class TileListView {
         PropertyModelChangeProcessor.create(
                 mModel.getProperties(), mView, new TileListPropertyViewBinder());
 
-        mAdapter = new RecyclerViewAdapter<>(
-                new ModelChangeProcessor(mModel), new TileViewHolderFactory(mTileSizeSupplier));
+        mAdapter =
+                new RecyclerViewAdapter<>(
+                        new ModelChangeProcessor(mModel),
+                        new TileViewHolderFactory(mTileSizeSupplier));
         mView.setAdapter(mAdapter);
         mView.post(mAdapter::notifyDataSetChanged);
     }
@@ -84,9 +87,7 @@ class TileListView {
         }
     }
 
-    /**
-     * Called to show enter animation for the list items.
-     */
+    /** Called to show enter animation for the list items. */
     void showAnimation(boolean animate) {
         if (animate) {
             mView.setLayoutAnimation(mLayoutAnimationController);
@@ -95,31 +96,36 @@ class TileListView {
     }
 
     private void configureAnimationListener() {
-        mView.setLayoutAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
+        mView.setLayoutAnimationListener(
+                new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mView.setLayoutAnimation(null);
-            }
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mView.setLayoutAnimation(null);
+                    }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
     }
 
     private class ItemDecorationImpl extends ItemDecoration {
         private final int mInterCellPadding;
 
         public ItemDecorationImpl(Context context) {
-            mInterCellPadding = context.getResources().getDimensionPixelOffset(
-                    R.dimen.tile_grid_inter_tile_padding);
+            mInterCellPadding =
+                    context.getResources()
+                            .getDimensionPixelOffset(R.dimen.tile_grid_inter_tile_padding);
         }
 
         @Override
-        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
-                @NonNull RecyclerView parent, @NonNull State state) {
+        public void getItemOffsets(
+                @NonNull Rect outRect,
+                @NonNull View view,
+                @NonNull RecyclerView parent,
+                @NonNull State state) {
             int position = parent.getChildAdapterPosition(view);
             if (position != 0) outRect.left = mInterCellPadding / 2;
             if (position != mModel.size() - 1) outRect.right = mInterCellPadding / 2;

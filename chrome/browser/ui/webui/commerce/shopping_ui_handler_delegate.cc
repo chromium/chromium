@@ -39,18 +39,18 @@ ShoppingUiHandlerDelegate::ShoppingUiHandlerDelegate(
 
 ShoppingUiHandlerDelegate::~ShoppingUiHandlerDelegate() = default;
 
-absl::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
+std::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
   auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional<GURL>(web_contents->GetLastCommittedURL());
+  return std::make_optional<GURL>(web_contents->GetLastCommittedURL());
 }
 
 void ShoppingUiHandlerDelegate::ShowInsightsSidePanelUI() {

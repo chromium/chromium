@@ -227,9 +227,8 @@ void NearbyPresenceServerClientImpl::UpdateDevice(
     ErrorCallback error_callback) {
   MakeApiCall(CreateV1RequestUrl(request.device().name()), RequestType::kPatch,
               request.SerializeAsString(),
-              /*request_as_query_parameters=*/absl::nullopt,
-              std::move(callback), std::move(error_callback),
-              GetUpdateDeviceAnnotation());
+              /*request_as_query_parameters=*/std::nullopt, std::move(callback),
+              std::move(error_callback), GetUpdateDeviceAnnotation());
 }
 
 void NearbyPresenceServerClientImpl::ListPublicCertificates(
@@ -238,7 +237,7 @@ void NearbyPresenceServerClientImpl::ListPublicCertificates(
     ErrorCallback error_callback) {
   MakeApiCall(
       CreateV1RequestUrl(request.parent() + "/" + kListPublicCertificatesPath),
-      RequestType::kGet, /*serialized_request=*/absl::nullopt,
+      RequestType::kGet, /*serialized_request=*/std::nullopt,
       ListPublicCertificatesRequestToQueryParameters(request),
       std::move(callback), std::move(error_callback),
       GetListPublicCertificatesAnnotation());
@@ -252,8 +251,8 @@ template <class ResponseProto>
 void NearbyPresenceServerClientImpl::MakeApiCall(
     const GURL& request_url,
     RequestType request_type,
-    const absl::optional<std::string>& serialized_request,
-    const absl::optional<NearbyApiCallFlow::QueryParameters>&
+    const std::optional<std::string>& serialized_request,
+    const std::optional<NearbyApiCallFlow::QueryParameters>&
         request_as_query_parameters,
     base::OnceCallback<void(const ResponseProto&)> response_callback,
     ErrorCallback error_callback,
@@ -286,8 +285,8 @@ void NearbyPresenceServerClientImpl::MakeApiCall(
 template <class ResponseProto>
 void NearbyPresenceServerClientImpl::OnAccessTokenFetched(
     RequestType request_type,
-    const absl::optional<std::string>& serialized_request,
-    const absl::optional<NearbyApiCallFlow::QueryParameters>&
+    const std::optional<std::string>& serialized_request,
+    const std::optional<NearbyApiCallFlow::QueryParameters>&
         request_as_query_parameters,
     base::OnceCallback<void(const ResponseProto&)> response_callback,
     GoogleServiceAuthError error,

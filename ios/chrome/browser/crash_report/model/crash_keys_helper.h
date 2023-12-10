@@ -71,6 +71,9 @@ void SetForegroundScenesCount(int connectedScenes);
 // Sets a key in browser_state dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
+// Sets a key in browser_state dictionary to store the count of inactive tabs.
+void SetInactiveTabCount(int tabCount);
+
 // Sets a key in browser_state dictionary to store the count of incognito tabs.
 void SetIncognitoTabCount(int tabCount);
 
@@ -99,6 +102,9 @@ void MediaStreamPlaybackDidStart();
 // video). This function records a stop or pause. This function must be called
 // the same number of times as MediaStreamPlaybackDidStart.
 void MediaStreamPlaybackDidStop();
+
+// Sets whether VoiceOver is currently running or not.
+void SetVoiceOverRunning(bool running);
 
 }  // namespace crash_keys
 

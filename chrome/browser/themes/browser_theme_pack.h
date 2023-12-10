@@ -347,8 +347,13 @@ class BrowserThemePack : public CustomThemeSupplier {
       display_properties_ = nullptr;
 
   // A list of included source images. A pointer to a -1 terminated array of
-  // our persistent IDs.
-  raw_ptr<int, DanglingUntriaged | AllowPtrArithmetic> source_images_ = nullptr;
+  // our persistent IDs. The IDs are `int`s, but must be wrapped in a struct so
+  // that `#pragma pack` above applies.
+  struct SourceImage {
+    int id;
+  };
+  raw_ptr<SourceImage, DanglingUntriaged | AllowPtrArithmetic> source_images_ =
+      nullptr;
 #pragma pack(pop)
 
   // The scale factors represented by the images in the theme pack.

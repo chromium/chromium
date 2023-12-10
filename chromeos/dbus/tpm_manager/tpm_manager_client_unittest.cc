@@ -118,6 +118,7 @@ class TpmManagerClientTest : public testing::Test {
   ::tpm_manager::GetDictionaryAttackInfoReply expected_get_da_info_reply_;
   ::tpm_manager::TakeOwnershipReply expected_take_ownership_reply_;
   ::tpm_manager::ClearStoredOwnerPasswordReply expected_clear_password_reply_;
+  ::tpm_manager::ClearTpmReply expected_clear_tpm_reply_;
 
   // When it is set `true`, the parsing failure is expected to be translated by
   // proxy to status `STATUS_DBUS_ERROR`.
@@ -152,6 +153,8 @@ class TpmManagerClientTest : public testing::Test {
     } else if (method_call->GetMember() ==
                ::tpm_manager::kClearStoredOwnerPassword) {
       writer.AppendProtoAsArrayOfBytes(expected_clear_password_reply_);
+    } else if (method_call->GetMember() == ::tpm_manager::kClearTpm) {
+      writer.AppendProtoAsArrayOfBytes(expected_clear_tpm_reply_);
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -345,6 +348,19 @@ TEST_F(TpmManagerClientTest, ClearStoredOwnerPassword) {
       ::tpm_manager::ClearStoredOwnerPasswordRequest(), std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(expected_clear_password_reply_.status(), result_reply.status());
+}
+
+TEST_F(TpmManagerClientTest, ClearTpm) {
+  // Use a non-zero status value to make sure the value is correctly set.
+  expected_clear_password_reply_.set_status(::tpm_manager::STATUS_DEVICE_ERROR);
+  ::tpm_manager::ClearTpmReply result_reply;
+  auto callback = base::BindOnce(
+      [](::tpm_manager::ClearTpmReply* result_reply,
+         const ::tpm_manager::ClearTpmReply& reply) { *result_reply = reply; },
+      &result_reply);
+  client_->ClearTpm(::tpm_manager::ClearTpmRequest(), std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(expected_clear_tpm_reply_.status(), result_reply.status());
 }
 
 TEST_F(TpmManagerClientTest, OnwershipTakenSignal) {

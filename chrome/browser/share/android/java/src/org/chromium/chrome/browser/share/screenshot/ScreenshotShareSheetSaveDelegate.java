@@ -12,9 +12,7 @@ import org.chromium.chrome.browser.share.SaveBitmapDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ScreenshotShareSheetSaveDelegate is in charge of download the current bitmap.
- */
+/** ScreenshotShareSheetSaveDelegate is in charge of download the current bitmap. */
 class ScreenshotShareSheetSaveDelegate {
     private final PropertyModel mModel;
     private final Context mContext;
@@ -26,25 +24,31 @@ class ScreenshotShareSheetSaveDelegate {
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
      */
-    ScreenshotShareSheetSaveDelegate(Context context, PropertyModel propertyModel,
-            Runnable closeDialogRunnable, WindowAndroid windowAndroid) {
+    ScreenshotShareSheetSaveDelegate(
+            Context context,
+            PropertyModel propertyModel,
+            Runnable closeDialogRunnable,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mModel = propertyModel;
         mWindowAndroid = windowAndroid;
         mCloseDialogRunnable = closeDialogRunnable;
     }
 
-    /**
-     * Saves the current image.
-     */
+    /** Saves the current image. */
     protected void save() {
         Bitmap bitmap = mModel.get(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP);
         if (bitmap == null) {
             return;
         }
 
-        SaveBitmapDelegate saveBitmapDelegate = new SaveBitmapDelegate(mContext, bitmap,
-                R.string.screenshot_filename_prefix, mCloseDialogRunnable, mWindowAndroid);
+        SaveBitmapDelegate saveBitmapDelegate =
+                new SaveBitmapDelegate(
+                        mContext,
+                        bitmap,
+                        R.string.screenshot_filename_prefix,
+                        mCloseDialogRunnable,
+                        mWindowAndroid);
 
         saveBitmapDelegate.save();
     }

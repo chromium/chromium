@@ -28,7 +28,6 @@
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
-#include "components/update_client/test_activity_data_service.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
@@ -59,7 +58,6 @@ class PingManagerTest : public testing::Test,
 
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<PingManager> ping_manager_;
-  std::unique_ptr<PersistedData> metadata_;
 
   int error_ = -1;
   std::string response_;
@@ -67,22 +65,18 @@ class PingManagerTest : public testing::Test,
  private:
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
-  std::unique_ptr<TestActivityDataService> activity_data_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_;
 };
 
 PingManagerTest::PingManagerTest()
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-  config_ = base::MakeRefCounted<TestConfigurator>();
+  pref_ = std::make_unique<TestingPrefServiceSimple>();
+  RegisterPersistedDataPrefs(pref_->registry());
 }
 
 void PingManagerTest::SetUp() {
+  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   ping_manager_ = base::MakeRefCounted<PingManager>(config_);
-  pref_ = std::make_unique<TestingPrefServiceSimple>();
-  activity_data_service_ = std::make_unique<TestActivityDataService>();
-  PersistedData::RegisterPrefs(pref_->registry());
-  metadata_ = std::make_unique<PersistedData>(pref_.get(),
-                                              activity_data_service_.get());
 }
 
 void PingManagerTest::TearDown() {
@@ -90,6 +84,7 @@ void PingManagerTest::TearDown() {
   // of the network interceptors on the IO thread.
   task_environment_.RunUntilIdle();
   ping_manager_ = nullptr;
+  config_ = nullptr;
 }
 
 void PingManagerTest::RunThreads() {
@@ -150,12 +145,13 @@ TEST_P(PingManagerTest, SendPing) {
     component.next_version_ = base::Version("2.0");
     component.AppendEvent(component.MakeEventUpdateComplete());
 
-    metadata_->SetCohort("abc", "c1");
-    metadata_->SetCohortName("abc", "cn1");
-    metadata_->SetCohortHint("abc", "ch1");
+    config_->GetPersistedData()->SetCohort("abc", "c1");
+    config_->GetPersistedData()->SetCohortName("abc", "cn1");
+    config_->GetPersistedData()->SetCohortHint("abc", "ch1");
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -226,7 +222,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -269,7 +266,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -311,7 +309,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -340,7 +339,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.PingOnly(crx_component, 4, 1, 0, 0);
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -399,7 +399,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -473,7 +474,8 @@ TEST_P(PingManagerTest, SendPing) {
       component.crx_component_ = CrxComponent();
       component.previous_version_ = base::Version("1.0");
       component.AppendEvent(component.MakeEventUpdateComplete());
-      ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+      ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                              MakePingCallback());
 
       RunThreads();
 
@@ -508,7 +510,8 @@ TEST_P(PingManagerTest, RequiresEncryption) {
   component.next_version_ = base::Version("2.0");
   component.AppendEvent(component.MakeEventUpdateComplete());
 
-  ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+  ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                          MakePingCallback());
   RunThreads();
 
   EXPECT_EQ(-2, error_);

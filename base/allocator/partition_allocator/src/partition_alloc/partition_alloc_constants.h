@@ -10,21 +10,21 @@
 #include <cstddef>
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_types.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/flags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/flags.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_forward.h"
 
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
 #include <mach/vm_page_size.h>
 #endif
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"
 #endif
 
 namespace partition_alloc {
@@ -63,7 +63,9 @@ enum class FreeFlags {
   kNoHooks = 1 << 1,  // Internal.
   // Quarantine for a while to ensure no UaF from on-stack pointers.
   kSchedulerLoopQuarantine = 1 << 2,
-  kMaxValue = kSchedulerLoopQuarantine,
+  // Zap the object region on `Free()`.
+  kZap = 1 << 3,
+  kMaxValue = kZap,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
 }  // namespace internal

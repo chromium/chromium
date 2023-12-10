@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/child_accounts/usage_time_state_notifier.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -89,7 +89,7 @@ class ChildStatusCollector : public StatusCollector,
 
  private:
   // Callbacks from chromeos::VersionLoader.
-  void OnOSVersion(const absl::optional<std::string>& version);
+  void OnOSVersion(const std::optional<std::string>& version);
 
   // Fetches all child data that is necessary to fill ChildStatusReportRequest.
   void FillChildStatusReportRequest(
@@ -138,7 +138,7 @@ class ChildStatusCollector : public StatusCollector,
   int64_t last_reported_end_timestamp_ = 0;
 
   // The parameters associated with last app activity report.
-  absl::optional<ash::app_time::AppActivityReportInterface::ReportParams>
+  std::optional<ash::app_time::AppActivityReportInterface::ReportParams>
       last_report_params_;
 
   base::RepeatingTimer update_child_usage_timer_;

@@ -32,9 +32,7 @@ public class Fido2ApiCallHelper {
         sInstance = instance;
     }
 
-    /**
-     * @return The Fido2ApiCallHelper for use during the lifetime of the browser process.
-     */
+    /** @return The Fido2ApiCallHelper for use during the lifetime of the browser process. */
     public static Fido2ApiCallHelper getInstance() {
         if (sInstance == null) {
             sInstance = new Fido2ApiCallHelper();
@@ -43,11 +41,12 @@ public class Fido2ApiCallHelper {
     }
 
     public boolean arePlayServicesAvailable() {
-        return ExternalAuthUtils.getInstance().canUseGooglePlayServices(
-                new UserRecoverableErrorHandler.Silent());
+        return ExternalAuthUtils.getInstance()
+                .canUseGooglePlayServices(new UserRecoverableErrorHandler.Silent());
     }
 
-    public void invokeFido2GetCredentials(String relyingPartyId,
+    public void invokeFido2GetCredentials(
+            String relyingPartyId,
             OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
             OnFailureListener failureCallback) {
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
@@ -58,15 +57,22 @@ public class Fido2ApiCallHelper {
         args.writeString(relyingPartyId);
 
         Task<List<WebAuthnCredentialDetails>> task =
-                call.run(Fido2ApiCall.METHOD_BROWSER_GETCREDENTIALS,
-                        Fido2ApiCall.TRANSACTION_GETCREDENTIALS, args, result);
+                call.run(
+                        Fido2ApiCall.METHOD_BROWSER_GETCREDENTIALS,
+                        Fido2ApiCall.TRANSACTION_GETCREDENTIALS,
+                        args,
+                        result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }
 
-    public void invokeFido2MakeCredential(PublicKeyCredentialCreationOptions options, Uri uri,
-            byte[] clientDataHash, OnSuccessListener<PendingIntent> successCallback,
-            OnFailureListener failureCallback) throws NoSuchAlgorithmException {
+    public void invokeFido2MakeCredential(
+            PublicKeyCredentialCreationOptions options,
+            Uri uri,
+            byte[] clientDataHash,
+            OnSuccessListener<PendingIntent> successCallback,
+            OnFailureListener failureCallback)
+            throws NoSuchAlgorithmException {
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult();
@@ -75,14 +81,21 @@ public class Fido2ApiCallHelper {
 
         Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options, uri, clientDataHash, args);
 
-        Task<PendingIntent> task = call.run(Fido2ApiCall.METHOD_BROWSER_REGISTER,
-                Fido2ApiCall.TRANSACTION_REGISTER, args, result);
+        Task<PendingIntent> task =
+                call.run(
+                        Fido2ApiCall.METHOD_BROWSER_REGISTER,
+                        Fido2ApiCall.TRANSACTION_REGISTER,
+                        args,
+                        result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }
 
-    public void invokeFido2GetAssertion(PublicKeyCredentialRequestOptions options, Uri uri,
-            byte[] clientDataHash, OnSuccessListener<PendingIntent> successCallback,
+    public void invokeFido2GetAssertion(
+            PublicKeyCredentialRequestOptions options,
+            Uri uri,
+            byte[] clientDataHash,
+            OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback) {
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
         Parcel args = call.start();
@@ -91,9 +104,13 @@ public class Fido2ApiCallHelper {
         args.writeInt(1); // This indicates that the following options are present.
 
         Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options, uri, clientDataHash, /*tunnelId=*/null, args);
-        Task<PendingIntent> task = call.run(
-                Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);
+                options, uri, clientDataHash, /* tunnelId= */ null, args);
+        Task<PendingIntent> task =
+                call.run(
+                        Fido2ApiCall.METHOD_BROWSER_SIGN,
+                        Fido2ApiCall.TRANSACTION_SIGN,
+                        args,
+                        result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }

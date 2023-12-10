@@ -10,9 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 
-/**
- * Wrapper for native dom_distiller::DomDistillerService.
- */
+/** Wrapper for native dom_distiller::DomDistillerService. */
 @JNINamespace("dom_distiller::android")
 public final class DomDistillerService {
 
@@ -20,8 +18,9 @@ public final class DomDistillerService {
 
     private DomDistillerService(long nativeDomDistillerAndroidServicePtr) {
         mDistilledPagePrefs =
-                new DistilledPagePrefs(DomDistillerServiceJni.get().getDistilledPagePrefsPtr(
-                        nativeDomDistillerAndroidServicePtr));
+                new DistilledPagePrefs(
+                        DomDistillerServiceJni.get()
+                                .getDistilledPagePrefsPtr(nativeDomDistillerAndroidServicePtr));
     }
 
     public DistilledPagePrefs getDistilledPagePrefs() {

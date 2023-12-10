@@ -8,6 +8,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_screen_reader_only.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../i18n_setup.js';
 import '../settings_shared.css.js';

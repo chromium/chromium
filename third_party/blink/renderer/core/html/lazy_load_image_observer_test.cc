@@ -147,28 +147,18 @@ TEST_F(LazyLoadImagesSimTest, LazyLoadedImageSizeHistograms) {
       "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
 }
 
-enum class LazyLoadImagesParams {
-  kDelayOutOfViewportDisabled,
-  kDelayOutOfViewportEnabled
-};
-
 class LazyLoadImagesParamsTest
     : public SimTest,
-      public ::testing::WithParamInterface<
-          std::tuple<LazyLoadImagesParams, WebEffectiveConnectionType>> {
+      public ::testing::WithParamInterface<WebEffectiveConnectionType> {
  public:
   static constexpr int kViewportWidth = 800;
   static constexpr int kViewportHeight = 600;
 
-  LazyLoadImagesParamsTest()
-      : delay_out_of_viewport_lazy_images_(
-            std::get<LazyLoadImagesParams>(GetParam()) ==
-            LazyLoadImagesParams::kDelayOutOfViewportEnabled) {}
+  LazyLoadImagesParamsTest() = default;
 
   void SetUp() override {
     GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
-        true /*on_line*/, kWebConnectionTypeWifi,
-        std::get<WebEffectiveConnectionType>(GetParam()),
+        true /*on_line*/, kWebConnectionTypeWifi, GetParam(),
         1000 /*http_rtt_msec*/, 100 /*max_bandwidth_mbps*/);
 
     SimTest::SetUp();
@@ -178,27 +168,21 @@ class LazyLoadImagesParamsTest
     Settings& settings = WebView().GetPage()->GetSettings();
 
     // These should match the values that would be returned by
-    // GetLoadingDistanceThreshold().
-    settings.SetLazyImageLoadingDistanceThresholdPxUnknown(200);
-    settings.SetLazyImageLoadingDistanceThresholdPxOffline(300);
-    settings.SetLazyImageLoadingDistanceThresholdPxSlow2G(400);
-    settings.SetLazyImageLoadingDistanceThresholdPx2G(500);
-    settings.SetLazyImageLoadingDistanceThresholdPx3G(600);
-    settings.SetLazyImageLoadingDistanceThresholdPx4G(700);
+    // GetMargin().
+    settings.SetLazyLoadingImageMarginPxUnknown(200);
+    settings.SetLazyLoadingImageMarginPxOffline(300);
+    settings.SetLazyLoadingImageMarginPxSlow2G(400);
+    settings.SetLazyLoadingImageMarginPx2G(500);
+    settings.SetLazyLoadingImageMarginPx3G(600);
+    settings.SetLazyLoadingImageMarginPx4G(700);
   }
 
-  // When DelayOutOfViewportLazyImages is enabled, this returns the threshold
-  // that will be used after the document has finished loading, as a threshold
-  // of zero is used during loading.
-  int GetLoadingDistanceThreshold() const {
+  int GetMargin() const {
     static constexpr int kDistanceThresholdByEffectiveConnectionType[] = {
         200, 300, 400, 500, 600, 700};
     return kDistanceThresholdByEffectiveConnectionType[static_cast<int>(
-        std::get<WebEffectiveConnectionType>(GetParam()))];
+        GetParam())];
   }
-
- private:
-  ScopedDelayOutOfViewportLazyImagesForTest delay_out_of_viewport_lazy_images_;
 };
 
 TEST_P(LazyLoadImagesParamsTest, NearViewport) {
@@ -231,7 +215,7 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
         <img src='https://example.com/unset.png'
              onload='console.log("unset onload");' />
         </body>)HTML",
-      kViewportHeight + GetLoadingDistanceThreshold() - 100));
+      kViewportHeight + GetMargin() - 100));
 
   css_resource.Complete("img { width: 50px; height: 50px; }");
   test::RunPendingTasks();
@@ -316,7 +300,7 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
         <img src='https://example.com/unset.png'
              onload='console.log("unset onload");' />
         </body>)HTML",
-      kViewportHeight + GetLoadingDistanceThreshold() + 100));
+      kViewportHeight + GetMargin() + 100));
 
   css_resource.Complete("img { width: 50px; height: 50px; }");
   test::RunPendingTasks();
@@ -373,15 +357,12 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
 INSTANTIATE_TEST_SUITE_P(
     LazyImageLoading,
     LazyLoadImagesParamsTest,
-    ::testing::Combine(
-        ::testing::Values(LazyLoadImagesParams::kDelayOutOfViewportEnabled,
-                          LazyLoadImagesParams::kDelayOutOfViewportDisabled),
-        ::testing::Values(WebEffectiveConnectionType::kTypeUnknown,
-                          WebEffectiveConnectionType::kTypeOffline,
-                          WebEffectiveConnectionType::kTypeSlow2G,
-                          WebEffectiveConnectionType::kType2G,
-                          WebEffectiveConnectionType::kType3G,
-                          WebEffectiveConnectionType::kType4G)));
+    ::testing::Values(WebEffectiveConnectionType::kTypeUnknown,
+                      WebEffectiveConnectionType::kTypeOffline,
+                      WebEffectiveConnectionType::kTypeSlow2G,
+                      WebEffectiveConnectionType::kType2G,
+                      WebEffectiveConnectionType::kType3G,
+                      WebEffectiveConnectionType::kType4G));
 
 class LazyLoadImagesTest : public SimTest {
  public:
@@ -399,8 +380,7 @@ class LazyLoadImagesTest : public SimTest {
         gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
-    settings.SetLazyImageLoadingDistanceThresholdPx4G(
-        kLoadingDistanceThreshold);
+    settings.SetLazyLoadingImageMarginPx4G(kLoadingDistanceThreshold);
     settings.SetLazyFrameLoadingDistanceThresholdPx4G(
         kLoadingDistanceThreshold);
   }
@@ -612,8 +592,6 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromUnsetToEager) {
 }
 
 TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
-  ScopedLazyFrameLoadingForTest scoped_lazy_frame_loading_for_test(true);
-
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(String::Format(
@@ -700,8 +678,10 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
                                       "image/png");
 
   // Scroll down so that all the images in the iframe are near the viewport.
+  // TODO(crbug.com/1503290): Change this back to 250 once scroll margin is
+  // fixed to walk through same-origin iframes.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1125,132 +1105,6 @@ TEST_F(LazyLoadImagesTest, GarbageCollectDeferredLazyLoadImages) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_EQ(nullptr, image);
-}
-
-class DelayOutOfViewportLazyImagesTest : public SimTest {
- public:
-  static constexpr int kViewportWidth = 800;
-  static constexpr int kViewportHeight = 600;
-  static constexpr int kDistanceThresholdPx = 1000;
-
-  DelayOutOfViewportLazyImagesTest() : delay_out_of_viewport_for_test_(true) {}
-
-  void SetUp() override {
-    GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
-        true /*on_line*/, kWebConnectionTypeWifi,
-        WebEffectiveConnectionType::kType4G, 1000 /*http_rtt_msec*/,
-        100 /*max_bandwidth_mbps*/);
-    SimTest::SetUp();
-    WebView().MainFrameViewWidget()->Resize(
-        gfx::Size(kViewportWidth, kViewportHeight));
-
-    Settings& settings = WebView().GetPage()->GetSettings();
-    settings.SetLazyImageLoadingDistanceThresholdPx4G(kDistanceThresholdPx);
-  }
-
- private:
-  ScopedDelayOutOfViewportLazyImagesForTest delay_out_of_viewport_for_test_;
-};
-
-// Test that DelayOutOfViewportLazyImages causes lazy loading to use a viewport
-// threshold of zero while the document loads, and that a non-zero threshold is
-// used once the document finishes loading.
-TEST_F(DelayOutOfViewportLazyImagesTest, DelayOutOfViewportLazyLoads) {
-  SimRequest main_resource("https://a.com/", "text/html");
-  SimSubresourceRequest in_viewport_resource("https://a.com/in_viewport.png",
-                                             "image/png");
-  SimSubresourceRequest near_viewport_resource(
-      "https://a.com/near_viewport.png", "image/png");
-  SimSubresourceRequest far_from_viewport_resource(
-      "https://a.com/far_from_viewport.png", "image/png");
-
-  LoadURL("https://a.com/");
-  // Begin writing the document, but do not complete loading yet.
-  main_resource.Write(R"HTML(
-    <!doctype html>
-    <html>
-      <img src='https://a.com/in_viewport.png' loading='lazy'
-        style='position:absolute; top:0; left:0; width:50px; height:50px;'
-        id='in_viewport' />
-      <img src='https://a.com/near_viewport.png' loading='lazy'
-        style='position:absolute; top:101vh; left:0; width:50px; height:50px;'
-        id='near_viewport' />
-      <img src='https://a.com/far_from_viewport.png' loading='lazy'
-        style='position:absolute; top:9999vh; left:0; width:50px; height:50px;'
-        id='far_from_viewport' />
-      )HTML");
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  auto* in_viewport = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("in_viewport")));
-  auto* near_viewport = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("near_viewport")));
-  auto* far_from_viewport = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("far_from_viewport")));
-
-  // While loading (`main_resource` is not yet complete), only the in-viewport
-  // image should be loading.
-  EXPECT_TRUE(in_viewport->CachedImage()->IsLoading());
-  EXPECT_FALSE(near_viewport->CachedImage()->IsLoading());
-  EXPECT_FALSE(far_from_viewport->CachedImage()->IsLoading());
-
-  // After the document completes loading, the lazy load threshold should
-  // increase so the near-viewport image begins to load.
-  main_resource.Complete("</html>");
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_TRUE(in_viewport->CachedImage()->IsLoading());
-  EXPECT_TRUE(near_viewport->CachedImage()->IsLoading());
-  EXPECT_FALSE(far_from_viewport->CachedImage()->IsLoading());
-}
-
-// Test that DelayOutOfViewportLazyImages has no effect on lazy loaded images
-// inserted after the document has already loaded.
-TEST_F(DelayOutOfViewportLazyImagesTest, DoNotDelayAfterDocumentLoads) {
-  SimRequest main_resource("https://a.com/", "text/html");
-  SimSubresourceRequest in_viewport_resource("https://a.com/in_viewport.png",
-                                             "image/png");
-  SimSubresourceRequest near_viewport_resource(
-      "https://a.com/near_viewport.png", "image/png");
-  SimSubresourceRequest far_from_viewport_resource(
-      "https://a.com/far_from_viewport.png", "image/png");
-
-  LoadURL("https://a.com/");
-  main_resource.Complete("<!doctype html><html></html>");
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  EXPECT_TRUE(GetDocument().LoadEventFinished());
-
-  // Insert three lazy loaded images and ensure they are loaded according to a
-  // non-zero lazy loading viewport threshold.
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <img src='https://a.com/in_viewport.png' loading='lazy'
-      style='position:absolute; top:0; left:0; width:50px; height:50px;'
-      id='in_viewport' />
-    <img src='https://a.com/near_viewport.png' loading='lazy'
-      style='position:absolute; top:101vh; left:0; width:50px; height:50px;'
-      id='near_viewport' />
-    <img src='https://a.com/far_from_viewport.png' loading='lazy'
-      style='position:absolute; top:9999vh; left:0; width:50px; height:50px;'
-      id='far_from_viewport' />
-    )HTML");
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  auto* in_viewport = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("in_viewport")));
-  auto* near_viewport = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("near_viewport")));
-  auto* far_from_viewport = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("far_from_viewport")));
-
-  EXPECT_TRUE(in_viewport->CachedImage()->IsLoading());
-  EXPECT_TRUE(near_viewport->CachedImage()->IsLoading());
-  EXPECT_FALSE(far_from_viewport->CachedImage()->IsLoading());
 }
 
 }  // namespace

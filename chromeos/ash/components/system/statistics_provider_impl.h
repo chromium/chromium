@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/system/name_value_pairs_parser.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::system {
 
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   // If `ash::switches::kCrosRegion` switch is set, looks for the requested
   // statistic in the region file and ignores any other sources. Otherwise
   // returns the statistic from the first matching source.
-  absl::optional<base::StringPiece> GetMachineStatistic(
+  std::optional<base::StringPiece> GetMachineStatistic(
       base::StringPiece name) override;
   FlagValue GetMachineFlag(base::StringPiece name) override;
 
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
                        base::StringPiece region);
 
   // Extracts known data from `regional_data_`.
-  absl::optional<base::StringPiece> GetRegionalInformation(
+  std::optional<base::StringPiece> GetRegionalInformation(
       base::StringPiece name) const;
 
   StatisticsSources sources_;

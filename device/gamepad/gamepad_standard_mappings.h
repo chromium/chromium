@@ -5,7 +5,8 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_STANDARD_MAPPINGS_H_
 #define DEVICE_GAMEPAD_GAMEPAD_STANDARD_MAPPINGS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "device/gamepad/public/cpp/gamepad.h"
 
 namespace device {
@@ -31,7 +32,7 @@ typedef void (*GamepadStandardMappingFunction)(const Gamepad& original,
 // number reported by the device (bcdDevice). |bus_type| is the transport
 // used to connect to this device, or GAMEPAD_BUS_UNKNOWN if unknown.
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
-    const base::StringPiece product_name,
+    const std::string_view product_name,
     const uint16_t vendor_id,
     const uint16_t product_id,
     const uint16_t hid_specification_version,

@@ -104,6 +104,12 @@ void PipController::SetPipWindow(aura::Window* window) {
     return;
   }
 
+  if (pip_window_) {
+    // As removing ARC/Lacros PiP is async, a new PiP could be created before
+    // the currently one is fully removed.
+    UnsetPipWindow(pip_window_);
+  }
+
   pip_window_ = window;
   is_tucked_ = false;
   scoped_window_tucker_.reset();
@@ -112,7 +118,12 @@ void PipController::SetPipWindow(aura::Window* window) {
   pip_window_observation_.Observe(window);
 }
 
-void PipController::UnsetPipWindow() {
+void PipController::UnsetPipWindow(aura::Window* window) {
+  if (!pip_window_ || pip_window_ != window) {
+    // This function can be called with one of window state, visibility, or
+    // existence changes, all of which are valid.
+    return;
+  }
   pip_window_observation_.Reset();
   pip_window_ = nullptr;
   scoped_window_tucker_.reset();
@@ -121,7 +132,12 @@ void PipController::UnsetPipWindow() {
 }
 
 void PipController::UpdatePipBounds() {
-  CHECK(pip_window_);
+  if (!pip_window_) {
+    // It's a bit hard for the caller of this function to tell when PiP is
+    // really active (v.s. A PiP window just exists), so allow calling this
+    // when not appropriate.
+    return;
+  }
   if (is_tucked_) {
     // If the window is tucked, we do not want to move it to the resting
     // position.
@@ -173,7 +189,11 @@ views::Widget* PipController::GetTuckHandleWidget() {
 }
 
 void PipController::SetDimOpacity(float opacity) {
-  CHECK(pip_window_);
+  if (!pip_window_) {
+    // This function is invoked during drag move, and PiP can get killed during
+    // drag move too.
+    return;
+  }
   if (opacity == 0.f) {
     if (dimmer_) {
       dimmer_->window()->Hide();
@@ -195,12 +215,8 @@ void PipController::SetDimOpacity(float opacity) {
 }
 
 void PipController::OnWindowDestroying(aura::Window* window) {
-  CHECK(window == pip_window_);
-  pip_window_observation_.Reset();
-  pip_window_ = nullptr;
-  is_tucked_ = false;
-  scoped_window_tucker_.reset();
-  dimmer_.reset();
+  // Ensure to clean up when PiP is gone especially in unit tests.
+  UnsetPipWindow(window);
 }
 
 }  // namespace ash

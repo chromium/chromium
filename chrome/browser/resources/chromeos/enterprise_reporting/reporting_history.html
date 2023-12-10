@@ -1,16 +1,23 @@
 <style>
   .controls {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     font-family: monospace;
     font-weight: bold;
     gap: 10px;
     padding: 20px;
+    align-items: center;
   }
 
   .prefix {
     font-weight: bold;
     padding-inline-end: 5px;
+  }
+
+  .download-button, .select-filter {
+    height: 30px;
+    margin-bottom: 5px;
+    width: 150px;
   }
 
   .erp-type {
@@ -87,9 +94,15 @@
 </style>
 
 <div class="controls">
-  <span class="prefix">History [[loggingStateToString(loggingState)]]</span>
+  <span class="prefix">History: [[loggingStateToString(loggingState)]]</span>
   <cr-toggle checked="{{loggingState}}" on-change="onToggleChange"></cr-toggle>
-  <button on-click="onDownloadButtonClick">Download as CSV</button>
+  <span class="prefix"> Filter by: </span>
+  <select id="erpTableFilter" class="select-filter" value="[[selectedOption]]" on-change="onFilterChange">
+    <template is="dom-repeat" items="[[filterOptions]]">
+      <option value="[[item]]">[[item]]</option>
+    </template>
+  </select>
+  <button class="download-button" on-click="onDownloadButtonClick">Download as CSV</button>
 </div>
 <table class="erp-history-table">
   <thead>

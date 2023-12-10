@@ -68,9 +68,10 @@ enum DCLayerResult {
 
 bool IsCompatibleHDRMetadata(
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-  return hdr_metadata && hdr_metadata->smpte_st_2086 &&
-         hdr_metadata->smpte_st_2086->IsValid() && hdr_metadata->cta_861_3 &&
-         hdr_metadata->cta_861_3->IsValid();
+  return hdr_metadata &&
+         ((hdr_metadata->smpte_st_2086 &&
+           hdr_metadata->smpte_st_2086->IsValid()) ||
+          (hdr_metadata->cta_861_3 && hdr_metadata->cta_861_3->IsValid()));
 }
 
 DCLayerResult ValidateYUVOverlay(
@@ -108,10 +109,10 @@ DCLayerResult ValidateYUVOverlay(
 
   if (video_color_space.IsHDR()) {
     // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-    // hdr metadata is still missing. Missing `smpte_st_2086` and `cta_861_3`
-    // could always cause intel driver crash when in HDR overlay mode, and
+    // hdr metadata is still missing. Missing `smpte_st_2086` or `cta_861_3`
+    // could always causes intel driver crash when in HDR overlay mode, and
     // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
-    // could solve the crash issue, but for safe reason, validate both here.
+    // could solve the crash issue.
     if (!IsCompatibleHDRMetadata(hdr_metadata)) {
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
     }
@@ -192,10 +193,10 @@ DCLayerResult ValidateYUVQuad(
 
   if (quad->video_color_space.IsHDR()) {
     // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-    // hdr metadata is still missing. Missing `smpte_st_2086` and `cta_861_3`
-    // could always cause intel driver crash when in HDR overlay mode, and
+    // hdr metadata is still missing. Missing `smpte_st_2086` or `cta_861_3`
+    // could always causes intel driver crash when in HDR overlay mode, and
     // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
-    // could solve the crash issue, but for safe reason, validate both here.
+    // could solve the crash issue.
     if (!IsCompatibleHDRMetadata(quad->hdr_metadata)) {
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
     }

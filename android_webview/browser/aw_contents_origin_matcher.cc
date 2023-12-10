@@ -47,8 +47,8 @@ std::vector<std::string> AwContentsOriginMatcher::UpdateRuleList(
 jboolean AwContentsOriginMatcher::MatchesOrigin(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jorigin) {
-  const url::Origin origin =
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin)));
+  const url::Origin origin = url::Origin::Create(
+      GURL(base::android::ConvertJavaStringToUTF8(env, jorigin)));
   return MatchesOrigin(origin);
 }
 

@@ -19,6 +19,8 @@ const char kCredentialProviderEnabledOnStartup[] =
 
 #if BUILDFLAG(IS_ANDROID)
 const char kAutoSignInEnabledGMS[] = "profile.auto_sign_in_enabled_gms";
+const char kEmptyProfileStoreLoginDatabase[] =
+    "password_manager.empty_profile_store_login_database";
 const char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
 const char kSavePasswordsSuspendedByError[] =
@@ -120,11 +122,6 @@ const char kProfileStoreDateLastUsedForFilling[] =
 const char kAccountStoreDateLastUsedForFilling[] =
     "password_manager.account_store_date_last_used_for_filling";
 
-const char kPasswordChangeSuccessTrackerFlows[] =
-    "password_manager.password_change_success_tracker.flows";
-const char kPasswordChangeSuccessTrackerVersion[] =
-    "password_manager.password_change_success_tracker.version";
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kBiometricAuthBeforeFillingPromoShownCounter[] =
     "password_manager.biometric_authentication_filling_promo_counter";
@@ -145,12 +142,20 @@ const char kAccountStorageNewFeatureIconImpressions[] =
 #endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+const char kPasswordGenerationNudgePasswordDismissCount[] =
+    "password_generation_nudge_password_dismiss_count";
+
 const char kPasswordManagerPromoCardsList[] =
     "password_manager.password_promo_cards_list";
 #endif
 
 const char kPasswordSharingEnabled[] =
     "password_manager.password_sharing_enabled";
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kRelaunchChromeBubbleDismissedCounter[] =
+    "password_manager.relaunch_chrome_bubble_dismissed_counter";
+#endif
 
 }  // namespace prefs
 }  // namespace password_manager

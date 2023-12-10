@@ -67,7 +67,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
 
     service_ = std::make_unique<SupervisedUserService>(
         identity_test_env_.identity_manager(), &kids_chrome_management_client_,
-        syncable_pref_service_, settings_service_, sync_service_,
+        syncable_pref_service_, settings_service_, &sync_service_,
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
@@ -100,50 +100,6 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
   SupervisedUserServiceTest()
       : SupervisedUserServiceTestBase(/*is_supervised=*/true) {}
 };
-
-TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(service_->IsURLFilteringEnabled());
-#else
-  ASSERT_FALSE(service_->IsURLFilteringEnabled());
-#endif
-
-  // Enable filtering flag across platforms.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-
-  EXPECT_TRUE(service_->IsURLFilteringEnabled());
-}
-
-TEST_F(SupervisedUserServiceTest,
-       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
-#else
-  EXPECT_FALSE(service_->AreExtensionsPermissionsEnabled());
-#endif
-}
-
-TEST_F(SupervisedUserServiceTest,
-       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list(
-      kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
-#else
-  EXPECT_FALSE(service_->AreExtensionsPermissionsEnabled());
-#endif
-}
 
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
@@ -228,29 +184,6 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
       SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
       /*expected_count=*/3);
 }
-TEST_F(SupervisedUserServiceTest,
-       CookieDeletionDisabledForYoutubeDomainsWhenClearingCookiesEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_TRUE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_TRUE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
-}
-
-TEST_F(SupervisedUserServiceTest,
-       CookieDeletionAllowedForYoutubeDomainsWhenClearingCookiesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
-}
 
 TEST_F(SupervisedUserServiceTest, InterstitialBannerState) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -258,6 +191,10 @@ TEST_F(SupervisedUserServiceTest, InterstitialBannerState) {
   {
     // If disabled kFilterWebsitesForSupervisedUsersOnDesktopAndIOS
     // the state remains unchanged.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+
     EXPECT_TRUE(service_->GetUpdatedBannerState(
                     FirstTimeInterstitialBannerState::kUnknown) ==
                 FirstTimeInterstitialBannerState::kUnknown);
@@ -307,23 +244,6 @@ class SupervisedUserServiceTestUnsupervised
       : SupervisedUserServiceTestBase(/*is_supervised=*/false) {}
 };
 
-TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
-  ASSERT_FALSE(service_->IsURLFilteringEnabled());
-
-  // Enable filtering flag across platforms.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS));
-
-  EXPECT_FALSE(service_->IsURLFilteringEnabled());
-}
-
-TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
-  EXPECT_FALSE(service_->AreExtensionsPermissionsEnabled());
-}
-
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -338,30 +258,6 @@ TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   EXPECT_DCHECK_DEATH(syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       /* SupervisedUserURLFilter::WARN */ 1));
-}
-
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CookieDeletionAllowedForYoutubeDomainsWhenClearingCookiesEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
-}
-
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CookieDeletionAllowedForYoutubeDomainsWhenClearingCookiesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kClearingCookiesKeepsSupervisedUsersSignedIn);
-
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://google.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://example.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("http://youtube.com")));
-  EXPECT_FALSE(service_->IsCookieDeletionDisabled(GURL("https://youtube.com")));
 }
 
 }  // namespace supervised_user

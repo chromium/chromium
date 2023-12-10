@@ -11,9 +11,12 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
@@ -23,6 +26,9 @@
 // Indicates whether the user has already seen the post restore default browser
 // promo in the current app session.
 @property(nonatomic, assign) BOOL postRestorePromoSeenInCurrentSession;
+
+// YES if the main profile for this scene is signed in.
+@property(nonatomic, readonly, getter=isSignedIn) BOOL signedIn;
 
 @end
 
@@ -57,11 +63,13 @@
   }
 }
 
-// Returns whether the user is signed in.
-- (bool)isSignedIn {
+- (BOOL)isSignedIn {
+  ChromeBrowserState* browserState =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
+
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.sceneState.appState.mainBrowserState);
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
   DCHECK(authenticationService);
   DCHECK(authenticationService->initialized());
   return authenticationService->HasPrimaryIdentity(
@@ -71,10 +79,12 @@
 #pragma mark - BaseDefaultBrowserPromoSchedulerSceneAgent
 
 - (bool)promoCanBeDisplayed {
+  ChromeBrowserState* browserState =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   return ShouldRegisterPromoWithPromoManager(
-      [self isSignedIn], /*is_omnibox_copy_paste=*/true,
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.sceneState.appState.mainBrowserState));
+      self.signedIn, /*is_omnibox_copy_paste=*/true,
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 - (void)resetPromoHandler {
@@ -102,16 +112,16 @@
   // Post Restore promo takes priority over other default browser promos.
   [self maybeRegisterPostRestorePromo];
 
-  AppState* appState = self.sceneState.appState;
+  ChromeBrowserState* browserState =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
 
   // Register default browser promo manager to the promo manager.
-  DCHECK(self.sceneState.appState.mainBrowserState);
-
   DCHECK(self.promosManager);
   if (ShouldRegisterPromoWithPromoManager(
-          [self isSignedIn], /*is_omnibox_copy_paste=*/false,
+          self.signedIn, /*is_omnibox_copy_paste=*/false,
           feature_engagement::TrackerFactory::GetForBrowserState(
-              appState.mainBrowserState))) {
+              browserState))) {
     self.promosManager->RegisterPromoForSingleDisplay(
         promos_manager::Promo::DefaultBrowser);
   } else {

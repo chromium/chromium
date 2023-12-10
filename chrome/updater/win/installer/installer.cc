@@ -16,6 +16,7 @@
 #include <shellapi.h>
 #include <shlobj.h>
 
+#include <optional>
 #include <string>
 
 // TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
@@ -46,7 +47,6 @@
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -162,12 +162,12 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
   return TRUE;
 }
 
-absl::optional<base::FilePath> FindOfflineDir(
+std::optional<base::FilePath> FindOfflineDir(
     const base::FilePath& unpack_path) {
   const base::FilePath base_offline_dir =
       unpack_path.Append(L"bin").Append(L"Offline");
   if (!base::PathExists(base_offline_dir)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::FileEnumerator file_enumerator(base_offline_dir, false,
                                        base::FileEnumerator::DIRECTORIES);
@@ -177,7 +177,7 @@ absl::optional<base::FilePath> FindOfflineDir(
       return path;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Finds and writes to disk resources of type 'B7' (7zip archive). Returns false
@@ -232,7 +232,7 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
   // argument exists. If --tag is present in `argv`, then it is going to be
   // handed over to the updater, along with the other arguments. Otherwise, try
   // extracting a tag embedded in the program image of the meta installer.
-  if (![&argv, num_args]() {
+  if (![&argv, num_args] {
         // Returns true if the --tag argument is present on the command line.
         constexpr wchar_t kTagSwitch[] = L"--tag=";
         for (int i = 1; i != num_args; ++i) {
@@ -328,7 +328,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
 
   // Deelevate the metainstaller.
   HRESULT hr =
-      RunDeElevated(command_line.GetProgram().value(), [&command_line]() {
+      RunDeElevated(command_line.GetProgram().value(), [&command_line] {
         base::CommandLine de_elevate_command_line = command_line;
         de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
         return de_elevate_command_line.GetArgumentsString();
@@ -406,7 +406,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   // First get a path where we can extract the resource payload, which is
   // a compressed LZMA archive of a single file.
-  absl::optional<base::ScopedTempDir> base_path_owner = CreateSecureTempDir();
+  std::optional<base::ScopedTempDir> base_path_owner = CreateSecureTempDir();
   if (!base_path_owner) {
     return ProcessExitResult(TEMP_DIR_FAILED);
   }
@@ -422,7 +422,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
                                     &compressed_archive);
 
   // Create a temp folder where the archives are unpacked.
-  absl::optional<base::ScopedTempDir> temp_path = CreateSecureTempDir();
+  std::optional<base::ScopedTempDir> temp_path = CreateSecureTempDir();
   if (!temp_path) {
     return ProcessExitResult(TEMP_DIR_FAILED);
   }
@@ -455,8 +455,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
   // Determine if an offlinedir is embedded and, if it is, add an
   // --offlinedir={GUID} switch to indicate that an offline install should
   // be performed.
-  const absl::optional<base::FilePath> offline_dir =
-      FindOfflineDir(unpack_path);
+  const std::optional<base::FilePath> offline_dir = FindOfflineDir(unpack_path);
   if (offline_dir.has_value()) {
     if (!cmd_line_args.append(L" --") ||
         !cmd_line_args.append(base::SysUTF8ToWide(kOfflineDirSwitch).c_str()) ||

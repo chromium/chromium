@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] getParameters() with audio receiver
-[PASS] getParameters() with video receiver
 [FAIL] getParameters() with simulcast video receiver
   assert_greater_than: expected a number greater than 0 but got 0
 Harness: the test ran to completion.

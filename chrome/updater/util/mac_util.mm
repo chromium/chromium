@@ -6,6 +6,8 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#include <optional>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
@@ -27,7 +29,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -53,7 +54,7 @@ std::string GetDomain(UpdaterScope scope) {
   }
 }
 
-absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
+std::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser:
       return base::apple::GetUserLibraryPath();
@@ -62,14 +63,14 @@ absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
       if (!base::apple::GetLocalDirectory(NSLibraryDirectory,
                                           &local_library_path)) {
         VLOG(1) << "Could not get local library path";
-        return absl::nullopt;
+        return std::nullopt;
       }
       return local_library_path;
     }
   }
 }
 
-absl::optional<base::FilePath> GetApplicationSupportDirectory(
+std::optional<base::FilePath> GetApplicationSupportDirectory(
     UpdaterScope scope) {
   base::FilePath path;
   switch (scope) {
@@ -87,22 +88,20 @@ absl::optional<base::FilePath> GetApplicationSupportDirectory(
   }
 
   VLOG(1) << "Could not get applications support path";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
-  const absl::optional<base::FilePath> keystone_folder_path =
+std::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
+  const std::optional<base::FilePath> keystone_folder_path =
       GetKeystoneFolderPath(scope);
-  if (!keystone_folder_path || !base::PathExists(*keystone_folder_path))
-    return absl::nullopt;
-  base::FilePath ksadmin_path =
+  if (!keystone_folder_path) {
+    return std::nullopt;
+  }
+  return std::make_optional(
       keystone_folder_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
           .Append(FILE_PATH_LITERAL("Contents"))
           .Append(FILE_PATH_LITERAL("Helpers"))
-          .Append(FILE_PATH_LITERAL("ksadmin"));
-  if (!base::PathExists(ksadmin_path))
-    return absl::nullopt;
-  return absl::make_optional(ksadmin_path);
+          .Append(FILE_PATH_LITERAL("ksadmin")));
 }
 
 std::string GetWakeLaunchdName(UpdaterScope scope) {
@@ -111,7 +110,7 @@ std::string GetWakeLaunchdName(UpdaterScope scope) {
 }
 
 bool RemoveWakeJobFromLaunchd(UpdaterScope scope) {
-  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  const std::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
   if (!path) {
     return false;
   }
@@ -158,20 +157,20 @@ bool UnzipWithExe(const base::FilePath& src_path,
   return exit_code <= 1;
 }
 
-absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
+std::optional<base::FilePath> GetExecutableFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version) {
-  absl::optional<base::FilePath> path =
+  std::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, version);
   if (!path)
-    return absl::nullopt;
+    return std::nullopt;
   return path->Append(ExecutableFolderPath());
 }
 
-absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
+std::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
+  std::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
   if (!path)
-    return absl::nullopt;
+    return std::nullopt;
   return path->Append(
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}));
 }
@@ -181,10 +180,10 @@ base::FilePath GetExecutableRelativePath() {
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
 }
 
-absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
+std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
+  std::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   if (!path)
-    return absl::nullopt;
+    return std::nullopt;
   return path->Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
       .Append(FILE_PATH_LITERAL(KEYSTONE_NAME));
 }
@@ -219,36 +218,35 @@ bool ConfirmFilePermissions(const base::FilePath& root_path,
   return true;
 }
 
-absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
-  return path ? absl::optional<base::FilePath>(
+std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
+  std::optional<base::FilePath> path = GetLibraryFolderPath(scope);
+  return path ? std::optional<base::FilePath>(
                     path->Append("Application Support")
                         .Append(GetUpdaterFolderName()))
-              : absl::nullopt;
+              : std::nullopt;
 }
 
-absl::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
+std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
   base::FilePath caches_path;
   if (!base::apple::GetLocalDirectory(NSCachesDirectory, &caches_path)) {
     VLOG(1) << "Could not get Caches path";
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::optional<base::FilePath>(
+  return std::optional<base::FilePath>(
       caches_path.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING));
 }
 
-absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
-    UpdaterScope scope) {
-  absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
+std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
+  std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   return install_dir
-             ? absl::optional<base::FilePath>(
+             ? std::optional<base::FilePath>(
                    install_dir->Append("Current")
                        .Append(base::StrCat({PRODUCT_FULLNAME_STRING,
                                              kExecutableSuffix, ".app"}))
                        .Append("Contents")
                        .Append("Helpers")
                        .Append("launcher"))
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
@@ -264,13 +262,13 @@ bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
   return success;
 }
 
-absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
+std::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
   @autoreleasepool {
     NSArray* library_paths = NSSearchPathForDirectoriesInDomains(
         NSLibraryDirectory,
         IsSystemInstall(scope) ? NSLocalDomainMask : NSUserDomainMask, YES);
     if ([library_paths count] < 1) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return base::apple::NSStringToFilePath(library_paths[0])
         .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
@@ -278,10 +276,10 @@ absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
   }
 }
 
-absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
-                                               const std::string& key) {
+std::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
+                                              const std::string& key) {
   if (key.empty() || path.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   NSData* data;
   {
@@ -291,7 +289,7 @@ absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
         [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(path)];
   }
   if ([data length] == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   NSDictionary* all_keys = base::apple::ObjCCastStrict<NSDictionary>(
       [NSPropertyListSerialization propertyListWithData:data
@@ -299,13 +297,13 @@ absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
                                                  format:nil
                                                   error:nil]);
   if (all_keys == nil) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   CFStringRef value = base::apple::GetValueFromDictionary<CFStringRef>(
       base::apple::NSToCFPtrCast(all_keys),
       base::SysUTF8ToCFStringRef(key).get());
   if (value == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::SysCFStringRefToUTF8(value);
 }

@@ -42,9 +42,7 @@ public class TextScalePreference extends Preference implements SeekBar.OnSeekBar
 
     private NumberFormat mFormat = NumberFormat.getPercentInstance();
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public TextScalePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -80,8 +78,12 @@ public class TextScalePreference extends Preference implements SeekBar.OnSeekBar
 
         // On Android R+, use stateDescription so the only percentage announced to the user is
         // the scaling percent. For previous versions the SeekBar percentage is always announced.
-        String userFriendlyFontDescription = getContext().getResources().getString(
-                R.string.font_size_accessibility_label, mFormat.format(mUserFontScaleFactor));
+        String userFriendlyFontDescription =
+                getContext()
+                        .getResources()
+                        .getString(
+                                R.string.font_size_accessibility_label,
+                                mFormat.format(mUserFontScaleFactor));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             mSeekBar.setStateDescription(userFriendlyFontDescription);
         } else {
@@ -107,9 +109,7 @@ public class TextScalePreference extends Preference implements SeekBar.OnSeekBar
         return Math.round((userFontScaleFactor - MIN) / STEP);
     }
 
-    /**
-     * Notifies {@link Preference.OnPreferenceChangeListener}s of updated value.
-     */
+    /** Notifies {@link Preference.OnPreferenceChangeListener}s of updated value. */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (!fromUser) return;

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 
 namespace blink {
 
@@ -22,14 +22,12 @@ bool HasSingleInvalidSVGMaskReferenceMaskLayer(const LayoutObject& object,
   if (first_layer.Next()) {
     return false;
   }
-  const auto* svg_mask_reference =
-      DynamicTo<StyleSVGMaskReferenceImage>(first_layer.GetImage());
-  if (!svg_mask_reference) {
+  const auto* mask_source =
+      DynamicTo<StyleMaskSourceImage>(first_layer.GetImage());
+  if (!mask_source || !mask_source->HasSVGMask()) {
     return false;
   }
-  return !SVGMaskPainter::MaskIsValid(
-      svg_mask_reference->GetSVGResource(),
-      svg_mask_reference->GetSVGResourceClient(object));
+  return !SVGMaskPainter::MaskIsValid(*mask_source, object);
 }
 
 }  // namespace

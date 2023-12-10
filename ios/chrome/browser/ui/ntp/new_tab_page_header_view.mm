@@ -10,9 +10,8 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
@@ -211,14 +210,26 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 @implementation NewTabPageHeaderView {
   CGFloat _lastAnimationPercent;
+  BOOL _useNewBadgeForLensButton;
+  // The current scale of the transform for the hint label. 1 if not currently
+  //  scaled.
+  CGFloat _currentHintLabelScale;
+  // Stores the small font used for the pinned fakebox.
+  UIFont* _hintLabelFontSmall;
+  // Stores the big font used for the unpinned fakebox.
+  UIFont* _hintLabelFontBig;
 }
 
 #pragma mark - Public
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithUseNewBadgeForLensButton:
+    (BOOL)useNewBadgeForLensButton {
+  self = [super initWithFrame:CGRectZero];
   if (self) {
     self.clipsToBounds = YES;
+    _useNewBadgeForLensButton = useNewBadgeForLensButton;
+    _lastAnimationPercent = 0;
+    _currentHintLabelScale = 1;
   }
   return self;
 }
@@ -300,7 +311,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.searchHintLabel = [[UILabel alloc] init];
   content_suggestions::ConfigureSearchHintLabel(self.searchHintLabel,
                                                 searchField);
-  self.searchHintLabel.font = [self hintLabelFont];
+  [self updateHintLabelFonts];
 
   if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
     // Enable the leading-edge-alignment hint label constraints.
@@ -355,7 +366,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (useLens) {
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    content_suggestions::ConfigureLensButton(self.lensButton, searchField);
+    [searchField addSubview:self.lensButton];
+    content_suggestions::ConfigureLensButtonAppearance(
+        self.lensButton, _useNewBadgeForLensButton);
     endButton = self.lensButton;
   }
 
@@ -466,7 +479,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
-  _lastAnimationPercent = percent;
 
   // Update the opacity of the header background color as the user scrolls so
   // that content does not appear beneath it. Since the NTP background might be
@@ -482,9 +494,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // from the original scale, since constraints are calculated before
   // transformations are applied. This prevents the label from overlapping
   // with other UI elements.
+  [self scaleHintLabelForPercent:percent];
   CGFloat hintLabelScalingExtraOffset =
-      (content_suggestions::kHintTextScale * (1 - percent)) *
-      self.searchHintLabel.bounds.size.width * 0.5;
+      (_currentHintLabelScale - 1) *
+      self.searchHintLabel.intrinsicContentSize.width * 0.5;
   self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset;
 
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
@@ -503,7 +516,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         fakeOmniboxHeight - kFakeLocationBarHeightMargin;
     self.fakeLocationBar.layer.cornerRadius =
         self.fakeLocationBarHeightConstraint.constant / 2;
-    [self scaleHintLabelForPercent:percent];
 
     self.fakeLocationBarLeadingConstraint.constant = 0;
     self.fakeLocationBarTrailingConstraint.constant = 0;
@@ -521,6 +533,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
     self.separator.alpha = 0;
 
+    _lastAnimationPercent = percent;
     return;
   }
 
@@ -562,9 +575,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.fakeLocationBar.layer.cornerRadius =
       self.fakeLocationBarHeightConstraint.constant / 2;
 
-  // Scale the hintLabel and update the horizontal constraint constant.
-  [self scaleHintLabelForPercent:percent];
-
   // Adjust the position of the search field's subviews by adjusting their
   // constraint constant value.
   CGFloat subviewsDiff = -maxXInset * percent;
@@ -587,6 +597,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.hintLabelLeadingConstraint.constant =
         subviewsDiff + ntp_header::kCenteredHintLabelSidePadding;
   }
+  _lastAnimationPercent = percent;
 }
 
 - (void)setFakeboxHighlighted:(BOOL)highlighted {
@@ -607,7 +618,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.searchHintLabel.font = [self hintLabelFont];
+    [self updateHintLabelFonts];
   }
 
   if (previousTraitCollection.userInterfaceStyle !=
@@ -644,19 +655,60 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 #pragma mark - Private
 
-// Returns the font size for the hint label.
-- (UIFont*)hintLabelFont {
-  return LocationBarSteadyViewFont(
+// Gets the fonts for the pinned and unpinned fakebox hint label, and sets
+// the correct one.
+- (void)updateHintLabelFonts {
+  _hintLabelFontSmall = LocationBarSteadyViewFont(
       self.traitCollection.preferredContentSizeCategory);
+  CGFloat bigFontSize = _hintLabelFontSmall.pointSize /
+                        (1.0 - content_suggestions::kHintTextScale);
+  _hintLabelFontBig = [_hintLabelFontSmall fontWithSize:bigFontSize];
+  self.searchHintLabel.font =
+      [self hintLabelFontForPercent:_lastAnimationPercent];
+}
+
+// Returns the font for the hint label at the given animation percent.
+- (UIFont*)hintLabelFontForPercent:(CGFloat)percent {
+  if (percent == 1) {
+    return _hintLabelFontSmall;
+  }
+  return _hintLabelFontBig;
 }
 
 // Scale the the hint label down to at most content_suggestions::kHintTextScale.
 - (void)scaleHintLabelForPercent:(CGFloat)percent {
   DCHECK(self.searchHintLabel);
-  CGFloat scaleValue =
-      1 + (content_suggestions::kHintTextScale * (1 - percent));
-  self.searchHintLabel.transform =
-      CGAffineTransformMakeScale(scaleValue, scaleValue);
+  if (percent == _lastAnimationPercent) {
+    return;
+  }
+
+  if (percent > 0.90) {
+    // When percent is very close to 1, the big font will be scaled down to be
+    // almost the same size as the small font. But due to rendering differences
+    // the big font scaled down can actually look slightly smaller than the
+    // small font. By switching to the small font 10% early, a glitchy jump in
+    // size is avoided.
+    percent = 1;
+  }
+
+  UILabel* searchHintLabel = self.searchHintLabel;
+  UIFont* font = [self hintLabelFontForPercent:percent];
+  if (searchHintLabel.font != font) {
+    searchHintLabel.font = font;
+  }
+
+  if (percent == 1) {
+    // When pinned, the small font is used without scaling down.
+    _currentHintLabelScale = 1;
+    searchHintLabel.transform = CGAffineTransformIdentity;
+    return;
+  }
+
+  // When unpinned, the bigger font is used and scaling is applied depending on
+  // the animation percent.
+  _currentHintLabelScale = 1 - (content_suggestions::kHintTextScale * percent);
+  searchHintLabel.transform = CGAffineTransformMakeScale(
+      _currentHintLabelScale, _currentHintLabelScale);
 }
 
 // The positive offset value to begin the fake omnibox expansion animation.

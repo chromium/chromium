@@ -37,8 +37,7 @@ import java.util.concurrent.TimeoutException;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Shared dependencies among the tests cause conflicts during batch testing.")
 public class AwFileChooserTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
     private AwTestContainerView mTestContainerView;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();

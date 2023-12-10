@@ -140,7 +140,7 @@ InkDropContainerView::InkDropContainerView() {
   SetCanProcessEventsWithinSubtree(false);
 }
 
-BEGIN_METADATA(InkDropContainerView, views::View)
+BEGIN_METADATA(InkDropContainerView)
 END_METADATA
 
 }  // namespace views

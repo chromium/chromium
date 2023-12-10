@@ -6,9 +6,7 @@ package org.chromium.net.impl;
 
 import org.chromium.net.QuicException;
 
-/**
- * Implements {@link QuicException}.
- */
+/** Implements {@link QuicException}. */
 public class QuicExceptionImpl extends QuicException {
     private final int mQuicDetailedErrorCode;
     private final NetworkExceptionImpl mNetworkException;

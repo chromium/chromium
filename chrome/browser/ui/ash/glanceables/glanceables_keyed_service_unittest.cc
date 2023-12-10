@@ -50,7 +50,7 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
     return profile_manager()->CreateTestingProfile(
         kPrimaryProfileName, std::move(prefs), u"Test profile", /*avatar_id=*/0,
         TestingProfile::TestingFactories(), /*is_supervised_profile=*/false,
-        /*is_new_profile=*/absl::nullopt, /*policy_service=*/absl::nullopt,
+        /*is_new_profile=*/std::nullopt, /*policy_service=*/std::nullopt,
         /*is_main_profile=*/true);
   }
 

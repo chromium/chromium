@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -68,7 +68,7 @@ constexpr int kHTTPStatusGone = 410;
 class DefaultConfigurator : public DMClient::Configurator {
  public:
   DefaultConfigurator(const GURL& server_url,
-                      absl::optional<PolicyServiceProxyConfiguration>
+                      std::optional<PolicyServiceProxyConfiguration>
                           policy_service_proxy_configuration);
   ~DefaultConfigurator() override = default;
 
@@ -92,7 +92,7 @@ class DefaultConfigurator : public DMClient::Configurator {
 
 DefaultConfigurator::DefaultConfigurator(
     const GURL& server_url,
-    absl::optional<PolicyServiceProxyConfiguration>
+    std::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration)
     : server_url_(server_url),
       network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
@@ -414,7 +414,7 @@ void DMClient::ReportPolicyValidationErrors(
 
 std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator(
     const GURL& server_url,
-    absl::optional<PolicyServiceProxyConfiguration>
+    std::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration) {
   return std::make_unique<DefaultConfigurator>(
       server_url, policy_service_proxy_configuration);

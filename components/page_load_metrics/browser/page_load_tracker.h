@@ -287,10 +287,10 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       BfcacheStrategy bfcache_strategy) const override;
   const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
       const override;
-  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
-      const override;
-  const NormalizedResponsivenessMetrics&
-  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const override;
+  const ResponsivenessMetricsNormalization&
+  GetResponsivenessMetricsNormalization() const override;
+  const ResponsivenessMetricsNormalization&
+  GetSoftNavigationIntervalResponsivenessMetricsNormalization() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const absl::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
@@ -350,16 +350,20 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size);
 
-  void OnCookiesRead(const GURL& url,
-                     const GURL& first_party_url,
-                     bool blocked_by_policy,
-                     bool is_ad_tagged);
+  void OnCookiesRead(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides);
 
-  void OnCookieChange(const GURL& url,
-                      const GURL& first_party_url,
-                      const net::CanonicalCookie& cookie,
-                      bool blocked_by_policy,
-                      bool is_ad_tagged);
+  void OnCookieChange(
+      const GURL& url,
+      const GURL& first_party_url,
+      const net::CanonicalCookie& cookie,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides);
 
   void OnStorageAccessed(const GURL& url,
                          const GURL& first_party_url,
@@ -427,10 +431,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnEnterBackForwardCache();
   void OnRestoreFromBackForwardCache(
       content::NavigationHandle* navigation_handle);
-
-  // Called when the page tracked was just activated after being loaded inside a
-  // portal.
-  void DidActivatePortal(base::TimeTicks activation_time);
 
   // Called when the page tracked was just activated after being prerendered.
   void DidActivatePrerenderedPage(content::NavigationHandle* navigation_handle);

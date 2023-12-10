@@ -12,7 +12,7 @@ import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
 import {entryDebugString, isDescendantEntry, isEntryInsideDrive, isEntryInsideMyDrive, readEntriesRecursively} from './entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {RootType, VolumeType} from './volume_manager_types.js';
 
 let fileSystem: MockFileSystem;
 
@@ -41,18 +41,15 @@ export function testInsideMyDriveAndInsideDrive() {
   // Add sub folders for MyFiles and Drive.
   const {volumeManager} = window.fileManager;
   const myFilesFs =
-      volumeManager
-          .getCurrentProfileVolumeInfo(
-              VolumeManagerCommon.VolumeType.DOWNLOADS)!.fileSystem as
-      MockFileSystem;
-  const driveFs = volumeManager
-                      .getCurrentProfileVolumeInfo(
-                          VolumeManagerCommon.VolumeType.DRIVE)!.fileSystem as
+      volumeManager.getCurrentProfileVolumeInfo(
+                       VolumeType.DOWNLOADS)!.fileSystem as MockFileSystem;
+  const driveFs =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!.fileSystem as
       MockFileSystem;
   myFilesFs.populate(['/folder1/']);
   driveFs.populate(['/root/folder1']);
   const driveRootEntryList =
-      new EntryList('Drive root', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+      new EntryList('Drive root', RootType.DRIVE_FAKE_ROOT);
 
   // Convert entry into FileData.
   const driveRootFileData = convertEntryToFileData(driveRootEntryList);
@@ -94,18 +91,15 @@ export function testIsDescendantEntry() {
   const file = fileSystem.entries['/file_a.txt']!;
   const deepFile = fileSystem.entries['/dir_a/dir_b/dir_c/file_g.txt']!;
 
-  const fakeEntry = new FakeEntryImpl(
-      'fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);
+  const fakeEntry = new FakeEntryImpl('fake-entry-label', RootType.CROSTINI);
 
-  const entryList =
-      new EntryList('entry-list-label', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('entry-list-label', RootType.MY_FILES);
   entryList.addEntry(fakeEntry);
 
   const volumeManager = new MockVolumeManager();
   // Index 1 is Downloads.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
   const downloadsVolumeInfo = volumeManager.volumeInfoList.item(1);
   const mockFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   mockFs.populate(['/folder1/']);
@@ -202,16 +196,13 @@ export function testEntryDebugString() {
   const root = fileSystem.root;
   const folder = fileSystem.entries['/dir_a']!;
   const file = fileSystem.entries['/file_a.txt']!;
-  const fakeEntry = new FakeEntryImpl(
-      'fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);
-  const entryList =
-      new EntryList('entry-list-label', VolumeManagerCommon.RootType.MY_FILES);
+  const fakeEntry = new FakeEntryImpl('fake-entry-label', RootType.CROSTINI);
+  const entryList = new EntryList('entry-list-label', RootType.MY_FILES);
   entryList.addEntry(fakeEntry);
   const volumeManager = new MockVolumeManager();
   // Index 1 is Downloads.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
   const downloadsVolumeInfo = volumeManager.volumeInfoList.item(1);
   const mockFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   mockFs.populate(['/folder1/']);

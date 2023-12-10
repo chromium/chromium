@@ -33,6 +33,7 @@ namespace blink {
 
 class Document;
 class StyleImage;
+class SVGResource;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
  public:
@@ -81,6 +82,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   void TraceAfterDispatch(blink::Visitor*) const;
   void RestoreCachedResourceIfNeeded(const Document&) const;
+  SVGResource* EnsureSVGResource() const;
 
  private:
   CSSUrlData url_data_;
@@ -88,6 +90,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   // Cached image data.
   mutable Member<StyleImage> cached_image_;
+  mutable Member<SVGResource> svg_resource_;
 };
 
 template <>

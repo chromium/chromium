@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Client hints loaded on same-origin iframe request with feature policy.
+  promise_test: Unhandled rejection with value: "FAIL rtt True None"
+Harness: the test ran to completion.

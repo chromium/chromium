@@ -18,7 +18,8 @@ import android.widget.DatePicker;
 class DatePickerDialogCompat extends DatePickerDialog {
     private final OnDateSetListener mCallBack;
 
-    public DatePickerDialogCompat(Context context,
+    public DatePickerDialogCompat(
+            Context context,
             OnDateSetListener callBack,
             int year,
             int monthOfYear,
@@ -37,8 +38,11 @@ class DatePickerDialogCompat extends DatePickerDialog {
         if (which == BUTTON_POSITIVE && mCallBack != null) {
             DatePicker datePicker = getDatePicker();
             datePicker.clearFocus();
-            mCallBack.onDateSet(datePicker, datePicker.getYear(),
-                    datePicker.getMonth(), datePicker.getDayOfMonth());
+            mCallBack.onDateSet(
+                    datePicker,
+                    datePicker.getYear(),
+                    datePicker.getMonth(),
+                    datePicker.getDayOfMonth());
         }
     }
 

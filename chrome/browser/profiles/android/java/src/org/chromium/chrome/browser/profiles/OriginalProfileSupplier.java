@@ -19,8 +19,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
  * synchronously returned. Like {@link org.chromium.base.supplier.OneshotSupplier}, this class must
  * only be accessed from a single thread.
  */
-public class OriginalProfileSupplier
-        extends OneshotSupplierImpl<Profile> implements Destroyable, ProfileManager.Observer {
+public class OriginalProfileSupplier extends OneshotSupplierImpl<Profile>
+        implements Destroyable, ProfileManager.Observer {
     public OriginalProfileSupplier() {
         ProfileManager.addObserver(this);
     }

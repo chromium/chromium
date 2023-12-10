@@ -84,8 +84,8 @@ void UDPSocket::Disconnect(bool socket_destroying) {
   is_connected_ = false;
   is_bound_ = false;
   socket_->Close();
-  local_addr_ = absl::nullopt;
-  peer_addr_ = absl::nullopt;
+  local_addr_ = std::nullopt;
+  peer_addr_ = std::nullopt;
   read_callback_.Reset();
   // TODO(devlin): Should we do this for all callbacks?
   if (!recv_from_callback_.is_null()) {
@@ -215,8 +215,8 @@ bool UDPSocket::IsConnectedOrBound() const {
 }
 
 void UDPSocket::OnReceived(int32_t result,
-                           const absl::optional<net::IPEndPoint>& src_addr,
-                           absl::optional<base::span<const uint8_t>> data) {
+                           const std::optional<net::IPEndPoint>& src_addr,
+                           std::optional<base::span<const uint8_t>> data) {
   DCHECK(!recv_from_callback_.is_null() || !read_callback_.is_null());
 
   std::string ip;
@@ -252,7 +252,7 @@ void UDPSocket::OnConnectCompleted(
     net::CompletionOnceCallback callback,
     const net::IPEndPoint& remote_addr,
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   if (result != net::OK) {
     std::move(callback).Run(result);
     return;
@@ -266,7 +266,7 @@ void UDPSocket::OnConnectCompleted(
 void UDPSocket::OnBindCompleted(
     net::CompletionOnceCallback callback,
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   if (result != net::OK) {
     std::move(callback).Run(result);
     return;

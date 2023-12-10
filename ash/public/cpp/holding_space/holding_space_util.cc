@@ -54,7 +54,7 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     return paths;
   }
 
-  absl::optional<std::u16string> maybe_sources =
+  std::optional<std::u16string> maybe_sources =
       ui::ReadCustomDataForType(p, u"fs/sources");
   if (!maybe_sources.has_value()) {
     return paths;

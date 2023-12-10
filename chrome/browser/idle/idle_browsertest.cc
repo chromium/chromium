@@ -5,6 +5,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -46,9 +47,14 @@ class IdleBrowserTest : public InProcessBrowserTest {
   IdleBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~IdleBrowserTest() override = default;
 
+  void SetUp() override {
+    // Prevent user education from polling idle state.
+    UserEducationServiceFactory::GetInstance()
+        ->disable_idle_polling_for_testing();
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "IdleDetection");
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);

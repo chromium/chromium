@@ -60,13 +60,13 @@ void PendingUnsafeResourceStorage::UpdatePolicyObserver() {
   if (resource_) {
     policy_observer_ = ResourcePolicyObserver(this);
   } else {
-    policy_observer_ = absl::nullopt;
+    policy_observer_ = std::nullopt;
   }
 }
 
 void PendingUnsafeResourceStorage::ResetResource() {
-  resource_ = absl::nullopt;
-  policy_observer_ = absl::nullopt;
+  resource_ = std::nullopt;
+  policy_observer_ = std::nullopt;
 }
 
 #pragma mark - PendingUnsafeResourceStorage::ResourcePolicyObserver

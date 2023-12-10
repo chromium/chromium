@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function fakeUpdateControllerTest() {
+suite('FakeUpdateController', () => {
   let controller: FakeUpdateController|null = null;
 
   setup(() => controller = new FakeUpdateController());
@@ -43,7 +43,7 @@ export function fakeUpdateControllerTest() {
       },
     } as UpdateProgressObserverRemote;
 
-    controller.addObserver(updateProgressObserverRemote);
+    controller.addUpdateProgressObserver(updateProgressObserverRemote);
     const filePath: FilePath = {path: 'test1.cab'};
     controller.beginUpdate(deviceId, filePath);
     // Allow firmware update to complete.
@@ -52,4 +52,4 @@ export function fakeUpdateControllerTest() {
     assertTrue(
         controller.getCompletedFirmwareUpdatesForTesting().has(deviceId));
   });
-}
+});

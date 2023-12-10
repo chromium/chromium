@@ -235,8 +235,7 @@ void NavigationControllerAndroid::GoToNavigationIndex(
   navigation_controller_->GoToIndex(index);
 }
 
-base::android::ScopedJavaGlobalRef<jobject>
-NavigationControllerAndroid::LoadUrl(
+base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& url,
@@ -358,7 +357,7 @@ NavigationControllerAndroid::LoadUrl(
     return nullptr;
   }
 
-  return base::android::ScopedJavaGlobalRef<jobject>(
+  return base::android::ScopedJavaLocalRef<jobject>(
       handle->GetJavaNavigationHandle());
 }
 
@@ -572,13 +571,6 @@ void NavigationControllerAndroid::SetEntryExtraData(
   MapData* map_data =
       MapData::Get(navigation_controller_->GetEntryAtIndex(index));
   map_data->map()[key] = value;
-}
-
-jboolean NavigationControllerAndroid::IsEntryMarkedToBeSkipped(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    jint index) {
-  return navigation_controller_->IsEntryMarkedToBeSkipped(index);
 }
 
 }  // namespace content

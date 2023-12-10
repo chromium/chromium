@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_shared_style.css.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -98,6 +99,12 @@ class RealboxActionElement extends PolymerElement {
     if (e.key && (e.key === 'Enter' || e.key === ' ')) {
       this.onActionClick_(e);
     }
+  }
+
+  private showCr23ActionIcon_(): boolean {
+    // Action icons are webkit-mask-image when chrome refresh expanded state
+    // layout is enabled.
+    return loadTimeData.getBoolean('realboxCr23ExpandedStateLayout');
   }
 
   //============================================================================

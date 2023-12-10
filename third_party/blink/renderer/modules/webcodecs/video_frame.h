@@ -133,6 +133,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsAccelerated() const override;
 
   void ResetExternalMemory();
+  void ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
+                           const gfx::Rect& src_rect,
+                           const VideoFrameLayout& dest_layout,
+                           base::span<uint8_t> buffer);
   ScriptPromiseResolver* CopyToAsync(ScriptState* script_state,
                                      scoped_refptr<media::VideoFrame> frame,
                                      gfx::Rect src_rect,

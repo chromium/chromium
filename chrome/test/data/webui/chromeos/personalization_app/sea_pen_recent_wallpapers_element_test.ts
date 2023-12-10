@@ -3,45 +3,79 @@
 // found in the LICENSE file.
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenRecentWallpapersElement} from 'chrome://personalization/js/personalization_app.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {emptyState, SeaPenActionName, SeaPenRecentWallpapersElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('SeaPenRecentWallpapersElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
+  let seaPenProvider: TestSeaPenProvider;
   let wallpaperProvider: TestWallpaperProvider;
   let seaPenRecentWallpapersElement: SeaPenRecentWallpapersElement|null;
+
+  function getLoadingPlaceholders(): WallpaperGridItemElement[] {
+    if (!seaPenRecentWallpapersElement) {
+      return [];
+    }
+
+    return Array.from(seaPenRecentWallpapersElement.shadowRoot!
+                          .querySelectorAll<WallpaperGridItemElement>(
+                              'div:not([hidden]) .sea-pen-image[placeholder]'));
+  }
+
+  function getDisplayedRecentImages(): WallpaperGridItemElement[] {
+    if (!seaPenRecentWallpapersElement) {
+      return [];
+    }
+
+    return Array.from(
+        seaPenRecentWallpapersElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                'div:not([hidden]) .sea-pen-image:not([placeholder])'));
+  }
 
   setup(() => {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
+    seaPenProvider = mocks.seaPenProvider;
     wallpaperProvider = mocks.wallpaperProvider;
   });
 
   teardown(async () => {
     await teardownElement(seaPenRecentWallpapersElement);
     seaPenRecentWallpapersElement = null;
+    await flushTasks();
   });
 
   test('displays recently used Sea Pen wallpapers', async () => {
-    personalizationStore.data.wallpaper.seaPen.recentWallpapers =
-        wallpaperProvider.seaPenWallpapers;
+    personalizationStore.data.wallpaper.seaPen.recentImages =
+        seaPenProvider.recentImages;
+    personalizationStore.data.wallpaper.seaPen.recentImageData =
+        seaPenProvider.recentImageData;
+    personalizationStore.data.wallpaper.seaPen.loading = {
+      recentImageData: {
+        '/sea_pen/111.jpg': false,
+        '/sea_pen/222.jpg': false,
+        '/sea_pen/333.jpg': false,
+      },
+      recentImages: false,
+      thumbnails: false,
+    };
 
     // Initialize |seaPenRecentWallpapersElement|.
     seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
     await waitAfterNextRender(seaPenRecentWallpapersElement);
 
     // Sea Pen wallpaper thumbnails should display.
-    const recentWallpapers =
-        seaPenRecentWallpapersElement.shadowRoot!.querySelectorAll(
-            'div:not([hidden]) .recent-wallpaper');
-    assertEquals(3, recentWallpapers!.length, 'should be 3 images available.');
+    const recentImages = getDisplayedRecentImages();
+    assertEquals(3, recentImages.length);
 
     // The menu button for each Sea Pen wallpaper should display.
     const menuIconButtons =
@@ -63,9 +97,215 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     });
   });
 
+
+  test(
+      'loads recently used Sea Pen wallpapers and saves to store', async () => {
+        assertDeepEquals(emptyState(), personalizationStore.data);
+
+        personalizationStore.setReducersEnabled(true);
+        personalizationStore.expectAction(
+            SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES);
+        personalizationStore.expectAction(
+            SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA);
+
+        seaPenRecentWallpapersElement =
+            initElement(SeaPenRecentWallpapersElement);
+
+        await personalizationStore.waitForAction(
+            SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES);
+        await personalizationStore.waitForAction(
+            SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA);
+
+        assertEquals(
+            seaPenProvider.recentImages,
+            personalizationStore.data.wallpaper.seaPen.recentImages,
+            'expected recent images are set');
+        for (const [key, value] of Object.entries(
+                 personalizationStore.data.wallpaper.seaPen.recentImageData)) {
+          assertTrue(
+              seaPenProvider.recentImageData.hasOwnProperty(key),
+              `expected image data for file path ${key} is set`);
+          assertDeepEquals(
+              seaPenProvider.recentImageData[key]!.url, value!.url,
+              `expected url for file path ${key} is set`);
+        }
+      });
+
+  test(
+      'displays placeholder tiles with no src for unloaded local images',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.recentImages =
+            seaPenProvider.recentImages;
+        personalizationStore.data.wallpaper.seaPen.recentImageData =
+            seaPenProvider.recentImageData;
+
+        // No image data loaded.
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {},
+          recentImages: false,
+          thumbnails: false,
+        };
+
+        // Initialize |seaPenRecentWallpapersElement|.
+        seaPenRecentWallpapersElement =
+            initElement(SeaPenRecentWallpapersElement);
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        // Iron-list creates some extra dom elements as a scroll buffer and
+        // hides them.  Only select visible elements here to get the real ones.
+        let loadingPlaceholders = getLoadingPlaceholders();
+
+        // Counts as loading if store.loading.local.data does not contain an
+        // entry for the image. Therefore should be 2 loading tiles.
+        assertEquals(
+            3, loadingPlaceholders.length, 'first time 3 placeholders');
+
+        // All images are loading data.
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            '/sea_pen/111.jpg': true,
+            '/sea_pen/222.jpg': true,
+            '/sea_pen/333.jpg': true,
+          },
+          recentImages: false,
+          thumbnails: false,
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        loadingPlaceholders = getLoadingPlaceholders();
+        assertEquals(3, loadingPlaceholders.length, 'still 3 placeholders');
+
+        // Only 3rd image is still loading data.
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            '/sea_pen/111.jpg': false,
+            '/sea_pen/222.jpg': false,
+            '/sea_pen/333.jpg': true,
+          },
+          recentImages: false,
+          thumbnails: false,
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        loadingPlaceholders = getLoadingPlaceholders();
+        assertEquals(
+            1, loadingPlaceholders.length, 'Only one loading placeholder');
+      });
+
+  test(
+      'displays images for recent sea pen images that have successfully loaded',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.recentImages =
+            seaPenProvider.recentImages;
+        personalizationStore.data.wallpaper.seaPen.recentImageData =
+            seaPenProvider.recentImageData;
+
+        // No image data loaded.
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {},
+          recentImages: false,
+          thumbnails: false,
+        };
+
+        seaPenRecentWallpapersElement =
+            initElement(SeaPenRecentWallpapersElement);
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        let recentImages = getDisplayedRecentImages();
+        // No recent images are displayed.
+        assertEquals(0, recentImages.length);
+
+        // 1st image has finished loading data.
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            '/sea_pen/111.jpg': false,
+            '/sea_pen/222.jpg': true,
+            '/sea_pen/333.jpg': true,
+          },
+          recentImages: false,
+          thumbnails: false,
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        recentImages = getDisplayedRecentImages();
+        assertEquals(1, recentImages.length);
+        assertDeepEquals(
+            {url: 'data:image/jpeg;base64,image111data'},
+            recentImages![0]!.src);
+
+        // Set loading failed for second thumbnail.
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            '/sea_pen/111.jpg': false,
+            '/sea_pen/222.jpg': false,
+            '/sea_pen/333.jpg': true,
+          },
+          recentImages: false,
+          thumbnails: false,
+        };
+        personalizationStore.data.wallpaper.seaPen.recentImageData = {
+          '/sea_pen/111.jpg': {
+            url: {url: 'data:image/jpeg;base64,image111data'},
+            queryInfo: 'query 1',
+          },
+          '/sea_pen/222.jpg': {url: {url: ''}, queryInfo: 'query 2'},
+          '/sea_pen/333.jpg': {url: {url: ''}, queryInfo: 'query 3'},
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        // Still only first thumbnail displayed.
+        recentImages = getDisplayedRecentImages();
+        assertEquals(1, recentImages.length);
+        assertDeepEquals(
+            {url: 'data:image/jpeg;base64,image111data'},
+            recentImages![0]!.src);
+      });
+
+  test('sets selected if image name matches currently selected', async () => {
+    personalizationStore.data.wallpaper.seaPen.recentImages =
+        seaPenProvider.recentImages;
+    personalizationStore.data.wallpaper.seaPen.recentImageData =
+        seaPenProvider.recentImageData;
+    personalizationStore.data.wallpaper.seaPen.loading = {
+      recentImageData: {
+        '/sea_pen/111.jpg': false,
+        '/sea_pen/222.jpg': false,
+        '/sea_pen/333.jpg': false,
+      },
+      recentImages: false,
+      thumbnails: false,
+    };
+
+    // Initialize |seaPenRecentWallpapersElement|.
+    seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
+    await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+    // Sea Pen wallpaper thumbnails should display.
+    const recentImages = getDisplayedRecentImages();
+    assertEquals(3, recentImages.length);
+
+    // Every image is not selected.
+    assertTrue(recentImages.every(image => !image.selected));
+
+    personalizationStore.data.wallpaper.currentSelected = {
+      ...wallpaperProvider.currentWallpaper,
+      key: '/sea_pen/333.jpg',
+    };
+    personalizationStore.notifyObservers();
+
+    assertEquals(3, recentImages.length);
+    assertFalse(recentImages[0]!.selected!);
+    assertFalse(recentImages[1]!.selected!);
+    assertTrue(recentImages[2]!.selected!);
+  });
+
   test('opens menu options for a Sea Pen wallpaper', async () => {
-    personalizationStore.data.wallpaper.seaPen.recentWallpapers =
-        wallpaperProvider.seaPenWallpapers;
+    personalizationStore.data.wallpaper.seaPen.recentImages =
+        seaPenProvider.recentImages;
 
     // Initialize |seaPenRecentWallpapersElement|.
     seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
@@ -104,8 +344,8 @@ suite('SeaPenRecentWallpapersElementTest', function() {
   test(
       'selects Wallpaper Info menu option for a Sea Pen wallpaper',
       async () => {
-        personalizationStore.data.wallpaper.seaPen.recentWallpapers =
-            wallpaperProvider.seaPenWallpapers;
+        personalizationStore.data.wallpaper.seaPen.recentImages =
+            seaPenProvider.recentImages;
 
         // Initialize |seaPenRecentWallpapersElement|.
         seaPenRecentWallpapersElement =
@@ -171,4 +411,27 @@ suite('SeaPenRecentWallpapersElementTest', function() {
                 'wallpaperInfoDialog'),
             'no Wallpaper Info dialog after close button clicked');
       });
+
+  test('clicks on a recent wallpaper to set wallpaper', async () => {
+    personalizationStore.data.wallpaper.seaPen.recentImages =
+        seaPenProvider.recentImages;
+
+    // Initialize |seaPenRecentWallpapersElement|.
+    seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
+    await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+    // Sea Pen wallpaper thumbnails should display.
+    const recentImages =
+        seaPenRecentWallpapersElement.shadowRoot!.querySelectorAll(
+            'div:not([hidden]) .sea-pen-image');
+    assertEquals(3, recentImages!.length, 'should be 3 images available.');
+
+    // Click on the second image to set it as wallpaper.
+    (recentImages[1] as HTMLElement)!.click();
+
+    const filePath = await seaPenProvider.whenCalled('selectRecentSeaPenImage');
+    assertEquals(
+        seaPenProvider.recentImages[1], filePath,
+        'file_path sent for the second Sea Pen image');
+  });
 });

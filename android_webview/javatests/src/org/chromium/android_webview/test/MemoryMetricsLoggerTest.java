@@ -28,8 +28,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class MemoryMetricsLoggerTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private HistogramWatcher mHistogramExpectationBrowser;
     private HistogramWatcher mHistogramExpectationRendererMulti;

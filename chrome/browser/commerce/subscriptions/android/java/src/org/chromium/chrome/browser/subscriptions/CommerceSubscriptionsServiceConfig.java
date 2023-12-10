@@ -27,7 +27,8 @@ public class CommerceSubscriptionsServiceConfig {
         int defaultValue = (int) TimeUnit.DAYS.toSeconds(DEFAULT_STALE_TAB_LOWER_BOUND_DAYS);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, STALE_TAB_LOWER_BOUND_SECONDS_PARAM,
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    STALE_TAB_LOWER_BOUND_SECONDS_PARAM,
                     defaultValue);
         }
         return defaultValue;
@@ -36,7 +37,8 @@ public class CommerceSubscriptionsServiceConfig {
     public static boolean isImplicitSubscriptionsEnabled() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
                     false);
         }
         return false;

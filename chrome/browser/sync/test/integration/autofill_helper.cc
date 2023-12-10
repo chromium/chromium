@@ -23,6 +23,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
@@ -134,7 +135,7 @@ bool ProfilesMatchImpl(const absl::optional<unsigned int>& expected_count,
 
   std::map<std::string, AutofillProfile> autofill_profiles_a_map;
   for (AutofillProfile* p : autofill_profiles_a) {
-    autofill_profiles_a_map[p->guid()] = *p;
+    autofill_profiles_a_map.insert({p->guid(), *p});
   }
 
   // This seems to be a transient state that will eventually be rectified by
@@ -152,7 +153,15 @@ bool ProfilesMatchImpl(const absl::optional<unsigned int>& expected_count,
           << ".";
       return false;
     }
-    AutofillProfile* expected_profile = &autofill_profiles_a_map[p->guid()];
+
+    auto profiles_a_it = autofill_profiles_a_map.find(p->guid());
+
+    if (profiles_a_it == autofill_profiles_a_map.end()) {
+      *os << "Profile with GUID " << p->guid() << " was not found.";
+      return false;
+    }
+
+    AutofillProfile* expected_profile = &profiles_a_it->second;
     expected_profile->set_guid(p->guid());
     if (*expected_profile != *p) {
       *os << "Mismatch in profile with GUID " << p->guid() << ".";
@@ -174,7 +183,8 @@ bool ProfilesMatchImpl(const absl::optional<unsigned int>& expected_count,
 namespace autofill_helper {
 
 AutofillProfile CreateAutofillProfile(ProfileType type) {
-  AutofillProfile profile;
+  AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   switch (type) {
     case PROFILE_MARION:
       autofill::test::SetProfileInfoWithGuid(
@@ -205,7 +215,7 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
 }
 
 AutofillProfile CreateUniqueAutofillProfile() {
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfoWithGuid(
       &profile, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str(),
       "First", "Middle", "Last", "email@domain.tld", "Company", "123 Main St",
@@ -259,18 +269,19 @@ void RemoveKey(int profile, const AutocompleteKey& key) {
 }
 
 void RemoveKeys(int profile) {
-  std::set<AutocompleteEntry> keys = GetAllKeys(profile);
-  for (const AutocompleteEntry& entry : keys) {
-    RemoveKeyDontBlockForSync(profile, entry.key());
+  for (const AutocompleteKey& key : GetAllKeys(profile)) {
+    RemoveKeyDontBlockForSync(profile, key);
   }
   WaitForCurrentTasksToComplete(GetWebDataService(profile)->GetDBTaskRunner());
 }
 
-std::set<AutocompleteEntry> GetAllKeys(int profile) {
+std::set<AutocompleteKey> GetAllKeys(int profile) {
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
-  std::vector<AutocompleteEntry> all_entries =
-      GetAllAutocompleteEntries(wds.get());
-  return std::set<AutocompleteEntry>(all_entries.begin(), all_entries.end());
+  std::set<AutocompleteKey> result;
+  for (const AutocompleteEntry& entry : GetAllAutocompleteEntries(wds.get())) {
+    result.insert(entry.key());
+  }
+  return result;
 }
 
 bool KeysMatch(int profile_a, int profile_b) {

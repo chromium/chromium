@@ -46,8 +46,7 @@ import java.util.Set;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Tests focus on manipulation of global profile state")
 public class MultiProfileTest extends AwParameterizedTest {
-    @Rule
-    public MultiProfileTestRule mRule;
+    @Rule public MultiProfileTestRule mRule;
 
     private TestAwContentsClient mContentsClient;
 

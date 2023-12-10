@@ -9,6 +9,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "free_space", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -40,6 +41,13 @@ consoles.console_view(
 ci.builder(
     name = "Deterministic Fuchsia (dbg)",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
+    ),
     # Runs two builds, which can cause the builder to run out of disk space
     # with standard free space.
     free_space = free_space.high,
@@ -82,6 +90,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "arm64_host",
+            "cast_receiver_size_optimized",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
@@ -120,6 +137,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia_smart_display",
+            "arm64_host",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
@@ -156,6 +181,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "cast_receiver_size_optimized",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
@@ -190,6 +223,14 @@ ci.builder(
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
         build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia",
+            "compile_only",
+        ],
     ),
     console_view_entry = [
         consoles.console_view_entry(
@@ -226,6 +267,13 @@ ci.builder(
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
         build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
     ),
     console_view_entry = [
         consoles.console_view_entry(

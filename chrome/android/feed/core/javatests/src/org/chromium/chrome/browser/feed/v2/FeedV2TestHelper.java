@@ -16,24 +16,24 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Helpers for Feed V2 browser tests.
- */
+/** Helpers for Feed V2 browser tests. */
 public class FeedV2TestHelper {
     private FeedV2TestHelper() {}
 
     private static Map<String, Integer> getEnumHistogramValues(
             String histogramName, Map<String, Integer> enumNames) {
         HashMap<String, Integer> counts = new HashMap<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (Map.Entry<String, Integer> entry : enumNames.entrySet()) {
-                int count = RecordHistogram.getHistogramValueCountForTesting(
-                        histogramName, entry.getValue());
-                if (count > 0) {
-                    counts.put(entry.getKey(), count);
-                }
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Map.Entry<String, Integer> entry : enumNames.entrySet()) {
+                        int count =
+                                RecordHistogram.getHistogramValueCountForTesting(
+                                        histogramName, entry.getValue());
+                        if (count > 0) {
+                            counts.put(entry.getKey(), count);
+                        }
+                    }
+                });
         return counts;
     }
 
@@ -50,7 +50,8 @@ public class FeedV2TestHelper {
         enumNames.put("kTappedOpenInNewTab", FeedUserActionType.TAPPED_OPEN_IN_NEW_TAB);
         enumNames.put("kOpenedContextMenu", FeedUserActionType.OPENED_CONTEXT_MENU);
         enumNames.put("kOpenedFeedSurface", FeedUserActionType.OPENED_FEED_SURFACE);
-        enumNames.put("kTappedOpenInNewIncognitoTab",
+        enumNames.put(
+                "kTappedOpenInNewIncognitoTab",
                 FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
         enumNames.put("kEphemeralChange", FeedUserActionType.EPHEMERAL_CHANGE);
         enumNames.put("kEphemeralChangeRejected", FeedUserActionType.EPHEMERAL_CHANGE_REJECTED);
@@ -77,9 +78,11 @@ public class FeedV2TestHelper {
                 "kFailedToStorePendingAction", UploadActionsStatus.FAILED_TO_STORE_PENDING_ACTION);
         enumNames.put("kStoredPendingAction", UploadActionsStatus.STORED_PENDING_ACTION);
         enumNames.put("kUpdatedConsistencyToken", UploadActionsStatus.UPDATED_CONSISTENCY_TOKEN);
-        enumNames.put("kFinishedWithoutUpdatingConsistencyToken",
+        enumNames.put(
+                "kFinishedWithoutUpdatingConsistencyToken",
                 UploadActionsStatus.FINISHED_WITHOUT_UPDATING_CONSISTENCY_TOKEN);
-        enumNames.put("kAbortUploadForSignedOutUser",
+        enumNames.put(
+                "kAbortUploadForSignedOutUser",
                 UploadActionsStatus.ABORT_UPLOAD_FOR_SIGNED_OUT_USER);
         enumNames.put(
                 "kAbortUploadBecauseDisabled", UploadActionsStatus.ABORT_UPLOAD_BECAUSE_DISABLED);
@@ -102,39 +105,53 @@ public class FeedV2TestHelper {
         enumNames.put("kNoResponseBody", LoadStreamStatus.NO_RESPONSE_BODY);
         enumNames.put("kProtoTranslationFailed", LoadStreamStatus.PROTO_TRANSLATION_FAILED);
         enumNames.put("kDataInStoreIsStale", LoadStreamStatus.DATA_IN_STORE_IS_STALE);
-        enumNames.put("kDataInStoreIsStaleTimestampInFuture",
+        enumNames.put(
+                "kDataInStoreIsStaleTimestampInFuture",
                 LoadStreamStatus.DATA_IN_STORE_IS_STALE_TIMESTAMP_IN_FUTURE);
-        enumNames.put("kCannotLoadFromNetworkSupressedForHistoryDelete_DEPRECATED",
+        enumNames.put(
+                "kCannotLoadFromNetworkSupressedForHistoryDelete_DEPRECATED",
                 LoadStreamStatus.CANNOT_LOAD_FROM_NETWORK_SUPRESSED_FOR_HISTORY_DELETE_DEPRECATED);
         enumNames.put(
                 "kCannotLoadFromNetworkOffline", LoadStreamStatus.CANNOT_LOAD_FROM_NETWORK_OFFLINE);
-        enumNames.put("kCannotLoadFromNetworkThrottled",
+        enumNames.put(
+                "kCannotLoadFromNetworkThrottled",
                 LoadStreamStatus.CANNOT_LOAD_FROM_NETWORK_THROTTLED);
-        enumNames.put("kLoadNotAllowedEulaNotAccepted",
+        enumNames.put(
+                "kLoadNotAllowedEulaNotAccepted",
                 LoadStreamStatus.LOAD_NOT_ALLOWED_EULA_NOT_ACCEPTED);
-        enumNames.put("kLoadNotAllowedArticlesListHidden",
+        enumNames.put(
+                "kLoadNotAllowedArticlesListHidden",
                 LoadStreamStatus.LOAD_NOT_ALLOWED_ARTICLES_LIST_HIDDEN);
-        enumNames.put("kCannotParseNetworkResponseBody",
+        enumNames.put(
+                "kCannotParseNetworkResponseBody",
                 LoadStreamStatus.CANNOT_PARSE_NETWORK_RESPONSE_BODY);
         enumNames.put("kLoadMoreModelIsNotLoaded", LoadStreamStatus.LOAD_MORE_MODEL_IS_NOT_LOADED);
-        enumNames.put("kLoadNotAllowedDisabledByEnterprisePolicy",
+        enumNames.put(
+                "kLoadNotAllowedDisabledByEnterprisePolicy",
                 LoadStreamStatus.LOAD_NOT_ALLOWED_DISABLED_BY_ENTERPRISE_POLICY);
         enumNames.put("kNetworkFetchFailed", LoadStreamStatus.NETWORK_FETCH_FAILED);
-        enumNames.put("kCannotLoadMoreNoNextPageToken",
+        enumNames.put(
+                "kCannotLoadMoreNoNextPageToken",
                 LoadStreamStatus.CANNOT_LOAD_MORE_NO_NEXT_PAGE_TOKEN);
-        enumNames.put("kDataInStoreStaleMissedLastRefresh",
+        enumNames.put(
+                "kDataInStoreStaleMissedLastRefresh",
                 LoadStreamStatus.DATA_IN_STORE_STALE_MISSED_LAST_REFRESH);
-        enumNames.put("kLoadedStaleDataFromStoreDueToNetworkFailure",
+        enumNames.put(
+                "kLoadedStaleDataFromStoreDueToNetworkFailure",
                 LoadStreamStatus.LOADED_STALE_DATA_FROM_STORE_DUE_TO_NETWORK_FAILURE);
         enumNames.put("kDataInStoreIsExpired", LoadStreamStatus.DATA_IN_STORE_IS_EXPIRED);
         return enumNames;
     }
 
     public static void waitForRecyclerItems(int minItems, RecyclerView recyclerView) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Recycler view exists", recyclerView, Matchers.notNullValue());
-            Criteria.checkThat("Items are loaded", recyclerView.getAdapter().getItemCount(),
-                    Matchers.greaterThan(minItems));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Recycler view exists", recyclerView, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Items are loaded",
+                            recyclerView.getAdapter().getItemCount(),
+                            Matchers.greaterThan(minItems));
+                });
     }
 }

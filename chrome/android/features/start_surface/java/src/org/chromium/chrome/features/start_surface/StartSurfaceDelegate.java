@@ -52,8 +52,11 @@ public class StartSurfaceDelegate {
      * @param startSurface The {@link StartSurface} the layout should own.
      * @return The {@link StartSurfaceHomeLayout}.
      */
-    public static StartSurfaceHomeLayout createStartSurfaceHomeLayout(Context context,
-            LayoutUpdateHost updateHost, LayoutRenderHost renderHost, StartSurface startSurface) {
+    public static StartSurfaceHomeLayout createStartSurfaceHomeLayout(
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            StartSurface startSurface) {
         return new StartSurfaceHomeLayout(context, updateHost, renderHost, startSurface);
     }
 
@@ -70,12 +73,21 @@ public class StartSurfaceDelegate {
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @return The {@link TabSwitcherAndStartSurfaceLayout}.
      */
-    public static Layout createTabSwitcherAndStartSurfaceLayout(Context context,
-            LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
-            BrowserControlsStateProvider browserControlsStateProvider, StartSurface startSurface,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
-        return new TabSwitcherAndStartSurfaceLayout(context, updateHost, renderHost,
-                browserControlsStateProvider, startSurface, tabSwitcherScrimAnchor,
+    public static Layout createTabSwitcherAndStartSurfaceLayout(
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            StartSurface startSurface,
+            ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator) {
+        return new TabSwitcherAndStartSurfaceLayout(
+                context,
+                updateHost,
+                renderHost,
+                browserControlsStateProvider,
+                startSurface,
+                tabSwitcherScrimAnchor,
                 scrimCoordinator);
     }
 
@@ -114,12 +126,15 @@ public class StartSurfaceDelegate {
      * @param profileSupplier Supplies the {@link Profile}.
      * @return the {@link StartSurface}
      */
-    public static StartSurface createStartSurface(@NonNull Activity activity,
+    public static StartSurface createStartSurface(
+            @NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull BottomSheetController sheetController,
             @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            @NonNull Supplier<Tab> parentTabSupplier, boolean hadWarmStart,
-            @NonNull WindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull Supplier<Tab> parentTabSupplier,
+            boolean hadWarmStart,
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull JankTracker jankTracker,
             @NonNull ViewGroup containerView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabModelSelector tabModelSelector,
@@ -134,17 +149,38 @@ public class StartSurfaceDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull Supplier<Toolbar> toolbarSupplier, BackPressManager backPressManager,
+            @NonNull Supplier<Toolbar> toolbarSupplier,
+            BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler,
             @NonNull ObservableSupplier<Profile> profileSupplier) {
-        return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
-                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
-                jankTracker, containerView, dynamicResourceLoaderSupplier, tabModelSelector,
-                browserControlsManager, snackbarManager, shareDelegateSupplier, omniboxStubSupplier,
-                tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
-                activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
-                multiWindowModeStateDispatcher, toolbarSupplier, backPressManager,
-                incognitoReauthControllerSupplier, tabSwitcherClickHandler, profileSupplier);
+        return new StartSurfaceCoordinator(
+                activity,
+                scrimCoordinator,
+                sheetController,
+                startSurfaceOneshotSupplier,
+                parentTabSupplier,
+                hadWarmStart,
+                windowAndroid,
+                jankTracker,
+                containerView,
+                dynamicResourceLoaderSupplier,
+                tabModelSelector,
+                browserControlsManager,
+                snackbarManager,
+                shareDelegateSupplier,
+                omniboxStubSupplier,
+                tabContentManager,
+                modalDialogManager,
+                chromeActivityNativeDelegate,
+                activityLifecycleDispatcher,
+                tabCreatorManager,
+                menuOrKeyboardActionController,
+                multiWindowModeStateDispatcher,
+                toolbarSupplier,
+                backPressManager,
+                incognitoReauthControllerSupplier,
+                tabSwitcherClickHandler,
+                profileSupplier);
     }
 }

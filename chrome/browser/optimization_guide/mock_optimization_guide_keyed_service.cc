@@ -4,6 +4,51 @@
 
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 
+#include "base/path_service.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/prediction_model_store.h"
+#include "components/prefs/testing_pref_service.h"
+
+// static
+void MockOptimizationGuideKeyedService::Initialize(
+    TestingPrefServiceSimple* local_state) {
+  TestingBrowserProcess::GetGlobal()->SetLocalState(local_state);
+  RegisterLocalState(local_state->registry());
+  InitializeWithExistingTestLocalState();
+}
+
+// static
+void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
+  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+    // Create and initialize the install-wide model store.
+    base::FilePath model_downloads_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
+    model_downloads_dir = model_downloads_dir.Append(
+        optimization_guide::kOptimizationGuideModelStoreDirPrefix);
+    optimization_guide::PredictionModelStore::GetInstance()->Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state(), model_downloads_dir);
+  }
+}
+
+// static
+void MockOptimizationGuideKeyedService::TearDown() {
+  ResetForTesting();
+  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+}
+
+// static
+void MockOptimizationGuideKeyedService::ResetForTesting() {
+  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+    // Reinitialize the store, so that tests do not use state from the
+    // previous test.
+    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
+  }
+}
+
 MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService(
     content::BrowserContext* browser_context)
     : OptimizationGuideKeyedService(browser_context) {}

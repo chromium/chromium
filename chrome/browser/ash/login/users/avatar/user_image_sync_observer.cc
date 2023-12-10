@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -171,7 +171,7 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
 bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
   *index = user_manager::User::USER_IMAGE_INVALID;
   const base::Value::Dict& dict = prefs_->GetDict(kUserImageInfo);
-  absl::optional<int> maybe_index = dict.FindInt(kImageIndex);
+  std::optional<int> maybe_index = dict.FindInt(kImageIndex);
   if (!maybe_index.has_value()) {
     *index = user_manager::User::USER_IMAGE_INVALID;
     return false;

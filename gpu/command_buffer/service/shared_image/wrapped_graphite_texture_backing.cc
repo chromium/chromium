@@ -9,8 +9,6 @@
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
-#include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -26,6 +24,11 @@
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
+#endif
 
 namespace gpu {
 namespace {
@@ -151,9 +154,9 @@ bool WrappedGraphiteTextureBacking::Initialize() {
     // is_yuv_plane is false here because the planes are separate single plane
     // textures, not planes of a multi-planar YUV texture.
     constexpr bool is_yuv_plane = false;
-    skgpu::graphite::TextureInfo texture_info =
-        gpu::GetGraphiteTextureInfo(context_state_->gr_context_type(), format(),
-                                    plane, is_yuv_plane, mipmapped);
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
+        context_state_->gr_context_type(), format(), plane, is_yuv_plane,
+        mipmapped);
     auto sk_size = gfx::SizeToSkISize(format().GetPlaneSize(plane, size()));
     auto texture = recorder()->createBackendTexture(sk_size, texture_info);
     if (!texture.isValid()) {
@@ -187,8 +190,8 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
   SkPixmap pixmap(image_info, pixels.data(), image_info.minRowBytes());
 
   auto& texture = graphite_textures_[0];
-  skgpu::graphite::TextureInfo texture_info =
-      gpu::GetGraphiteTextureInfo(context_state_->gr_context_type(), format());
+  skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
+      context_state_->gr_context_type(), format());
   texture = recorder()->createBackendTexture(gfx::SizeToSkISize(size()),
                                              texture_info);
   if (!texture.isValid()) {
@@ -341,7 +344,8 @@ WrappedGraphiteTextureBacking::ProduceGLTexturePassthrough(
     return nullptr;
   }
   return std::make_unique<GLTexturePassthroughFallbackImageRepresentation>(
-      manager, this, tracker, context_state_->progress_reporter());
+      manager, this, tracker, context_state_->progress_reporter(),
+      context_state_->GetGLFormatCaps());
 }
 
 std::unique_ptr<DawnImageRepresentation>

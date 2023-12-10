@@ -16,6 +16,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "v8/include/cppgc/heap-statistics.h"
+#include "v8/include/v8-isolate.h"
 
 namespace blink {
 namespace {
@@ -92,6 +93,19 @@ size_t GetFragmentation(const Stats& stats) {
 bool BlinkGCMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
+  if ((args.determinism ==
+       base::trace_event::MemoryDumpDeterminism::kForceGc) &&
+      thread_state_->isolate_) {
+    // Memory dumps are asynchronous and the MemoryDumpDeterminism::kForceGc
+    // flag indicates that we want the dump to be precise and without garbage.
+    // Trigger a unified heap GC in V8 (using the same API DevTools uses in
+    // "collectGarbage") to eliminate as much garbage as possible.
+    // It is not sufficient to rely on a GC from the V8 dump provider since the
+    // order between the V8 dump provider and this one is unknown, and this
+    // provider may run before the V8 one.
+    thread_state_->isolate_->LowMemoryNotification();
+  }
+
   ::cppgc::HeapStatistics::DetailLevel detail_level =
       args.level_of_detail ==
               base::trace_event::MemoryDumpLevelOfDetail::kDetailed

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1000498691615767391">খুলতে একটি ফোল্ডার বেছে নিন</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> কপি করা যায়নি কারণ এটি এনক্রিপ্ট করা আছে।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />টি আইটেম মুছে ফেলা হচ্ছে...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop-এর সাথে ফোল্ডার শেয়ার করুন</translation>
 <translation id="1439919885608649279">ফুলের সাথে ব্যক্তির ছবি</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> সরিয়ে দিন</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" />টি ফাইল কপি করা যায়নি কারণ সেগুলি এনক্রিপ্ট করা আছে।</translation>
 <translation id="1471718551822868769">স্লোভাক</translation>
 <translation id="1482884275703521657">ফিনিশ</translation>
 <translation id="148466539719134488">সুইস</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">উপলভ্য নয়</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ফাইলের জন্য ডিফল্ট অ্যাপ বেছে নিন:</translation>
 <translation id="3255159654094949700">আরবি</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" />টি ফাইল সরানো যায়নি কারণ সেগুলি এনক্রিপ্ট করা আছে।</translation>
 <translation id="3264582393905923483">প্রসঙ্গ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" খোলা যায়নি</translation>
 <translation id="3280431534455935878">প্রস্তুতি</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> দিয়ে ১টি ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="3524311639100184459">সতর্কতা: এই ফাইলগুলি অস্থায়ী এবং ডিস্কের জায়গা খালি করতে হয়ত অটোমেটিক মুছে ফেলা হবে।  <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
+<translation id="3529424493985988200">বিবরণের জন্য অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="3548125359243647069">একটি ভুল পিন অনেকবার লেখা হয়েছে।</translation>
 <translation id="3549797760399244642">drive.google.com এ যান...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ব্যবহার করে ফাইল খুলতে, সেগুলি প্রথমে Windows ফাইল ফোল্ডারে কপি করে রাখুন।</translation>
@@ -700,6 +704,7 @@
 <translation id="637062427944097960">এই ফাইলটি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) এ সরান৷</translation>
 <translation id="6394388407447716302">রিড-ওনলি</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টি আইটেম</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> সরানো যায়নি কারণ এটি এনক্রিপ্ট করা আছে।</translation>
 <translation id="642282551015776456">ফাইল বা ফোল্ডারের নাম হিসাবে নামটি ব্যবহৃত নাও হতে পারে</translation>
 <translation id="6423031066725912715">ভিয়েতনামি ভাষায় টিসিভিএন (TCVN) কীবোর্ড</translation>
 <translation id="6430271654280079150">আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>

@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <string>
-#include <tuple>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -51,18 +51,10 @@ class BASE_EXPORT Token {
     return as_bytes(make_span(words_));
   }
 
-  constexpr bool operator==(const Token& other) const {
-    return words_[0] == other.words_[0] && words_[1] == other.words_[1];
-  }
-
-  constexpr bool operator!=(const Token& other) const {
-    return !(*this == other);
-  }
-
-  constexpr bool operator<(const Token& other) const {
-    return std::tie(words_[0], words_[1]) <
-           std::tie(other.words_[0], other.words_[1]);
-  }
+  friend constexpr auto operator<=>(const Token& lhs,
+                                    const Token& rhs) = default;
+  friend constexpr bool operator==(const Token& lhs,
+                                   const Token& rhs) = default;
 
   // Generates a string representation of this Token useful for e.g. logging.
   std::string ToString() const;

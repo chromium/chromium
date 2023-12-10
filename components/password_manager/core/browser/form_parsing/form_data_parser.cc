@@ -514,6 +514,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
   // For the use of basic heuristics, also mark CVC fields and NOT_PASSWORD
   // fields as such.
+  // TODO(crbug/1507825): Treat non-password related fields as not password and
+  // not username fields.
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
     ProcessedField* current_field = FindField(processed_fields, prediction);
     if (!current_field)
@@ -521,8 +523,10 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
         prediction.type == autofill::CREDIT_CARD_NUMBER) {
       current_field->server_hints_credit_card_field = true;
-    } else if (prediction.type == autofill::NOT_PASSWORD ||
-               prediction.type == autofill::ONE_TIME_CODE) {
+    } else if (prediction.type == autofill::ONE_TIME_CODE) {
+      current_field->server_hints_not_password = true;
+      current_field->server_hints_not_username = true;
+    } else if (prediction.type == autofill::NOT_PASSWORD) {
       current_field->server_hints_not_password = true;
     } else if (prediction.type == autofill::NOT_USERNAME) {
       current_field->server_hints_not_username = true;
@@ -1000,7 +1004,7 @@ std::vector<ProcessedField> ProcessFields(
 // |form_predictions| has |may_use_prefilled_placeholder| == true for the
 // username field.
 bool GetMayUsePrefilledPlaceholder(
-    const absl::optional<FormPredictions>& form_predictions,
+    const std::optional<FormPredictions>& form_predictions,
     const SignificantFields& significant_fields) {
   if (!form_predictions || !significant_fields.username)
     return false;
@@ -1027,7 +1031,7 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
     const SignificantFields& significant_fields,
     AlternativeElementVector all_alternative_passwords,
     AlternativeElementVector all_alternative_usernames,
-    const absl::optional<FormPredictions>& form_predictions) {
+    const std::optional<FormPredictions>& form_predictions) {
   if (!significant_fields.HasPasswords() &&
       !significant_fields.is_single_username &&
       !significant_fields.accepts_webauthn_credentials) {
@@ -1224,7 +1228,8 @@ const FormFieldData* FindUsernameInPredictions(
   for (autofill::FieldRendererId predicted_id : username_predictions) {
     auto iter = base::ranges::find_if(
         processed_fields, [&](const ProcessedField& processed_field) {
-          return processed_field.field->unique_renderer_id == predicted_id &&
+          return !IsNotUsernameField(processed_field) &&
+                 (processed_field.field->unique_renderer_id == predicted_id) &&
                  MatchesInteractability(processed_field, username_max);
         });
     if (iter != processed_fields.end()) {

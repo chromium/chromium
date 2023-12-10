@@ -80,8 +80,11 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
     }
 
     @Override
-    public void setCompoundDrawablesRelative(@Nullable Drawable start, @Nullable Drawable top,
-            @Nullable Drawable end, @Nullable Drawable bottom) {
+    public void setCompoundDrawablesRelative(
+            @Nullable Drawable start,
+            @Nullable Drawable top,
+            @Nullable Drawable end,
+            @Nullable Drawable bottom) {
         Drawable[] drawables = {start, top, end, bottom};
         setDrawableBounds(drawables);
 
@@ -93,15 +96,19 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        TypedArray array = context.obtainStyledAttributes(
-                attrs, R.styleable.TextViewWithCompoundDrawables, defStyleAttr, 0);
+        TypedArray array =
+                context.obtainStyledAttributes(
+                        attrs, R.styleable.TextViewWithCompoundDrawables, defStyleAttr, 0);
 
-        mDrawableWidth = array.getDimensionPixelSize(
-                R.styleable.TextViewWithCompoundDrawables_drawableWidth, -1);
-        mDrawableHeight = array.getDimensionPixelSize(
-                R.styleable.TextViewWithCompoundDrawables_drawableHeight, -1);
-        mDrawableTint = array.getColorStateList(
-                R.styleable.TextViewWithCompoundDrawables_chromeDrawableTint);
+        mDrawableWidth =
+                array.getDimensionPixelSize(
+                        R.styleable.TextViewWithCompoundDrawables_drawableWidth, -1);
+        mDrawableHeight =
+                array.getDimensionPixelSize(
+                        R.styleable.TextViewWithCompoundDrawables_drawableHeight, -1);
+        mDrawableTint =
+                array.getColorStateList(
+                        R.styleable.TextViewWithCompoundDrawables_chromeDrawableTint);
 
         array.recycle();
 

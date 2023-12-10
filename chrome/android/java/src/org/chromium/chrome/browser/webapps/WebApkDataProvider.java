@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
@@ -36,9 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Provides access to more detail about webapks.
- */
+/** Provides access to more detail about webapks. */
 public class WebApkDataProvider {
     // Contains the details to return for an offline app when testing.
     private static WebappInfo sWebappInfoForTesting;
@@ -54,26 +51,21 @@ public class WebApkDataProvider {
         ResettersForTesting.register(() -> sWebappInfoForTesting = null);
     }
 
-    /**
-     * Converts a color value to a hex string.
-     * @param color The color to convert.
-     * @return The RGB values of the color, as string presented in hex (prefixed with #).
-     *         For example: '#FF0000' (for red).
-     */
-    private static String colorToHexString(@ColorInt long color) {
-        return String.format("#%02X%02X%02X", (((color) >> 16) & 0xFF), (((color) >> 8) & 0xFF),
-                (((color) >> 0) & 0xFF));
-    }
-
     public static WebappInfo getPartialWebappInfo(String url) {
         if (sWebappInfoForTesting != null) return sWebappInfoForTesting;
 
         Context appContext = ContextUtils.getApplicationContext();
         String packageName = WebApkValidator.queryFirstWebApkPackage(appContext, url);
-        return WebappInfo.create(WebApkIntentDataProviderFactory.create(new Intent(), packageName,
-                "", WebApkConstants.ShortcutSource.UNKNOWN, false /* forceNavigation */,
-                false /* isSplashProvidedByWebApk */, null /* shareData */,
-                null /* shareDataActivityClassName */));
+        return WebappInfo.create(
+                WebApkIntentDataProviderFactory.create(
+                        new Intent(),
+                        packageName,
+                        "",
+                        WebApkConstants.ShortcutSource.UNKNOWN,
+                        /* forceNavigation= */ false,
+                        /* canUseSplashFromContentProvider= */ false,
+                        /* shareData= */ null,
+                        /* shareDataActivityClassName= */ null));
     }
 
     private static OfflineData getOfflinePageInfoForPwa(String url) {
@@ -103,13 +95,16 @@ public class WebApkDataProvider {
         OfflineData result = new OfflineData();
         PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
         try {
-            result.mName = packageManager
-                                   .getApplicationLabel(packageManager.getApplicationInfo(
-                                           clientPackageName, PackageManager.GET_META_DATA))
-                                   .toString();
+            result.mName =
+                    packageManager
+                            .getApplicationLabel(
+                                    packageManager.getApplicationInfo(
+                                            clientPackageName, PackageManager.GET_META_DATA))
+                            .toString();
             Drawable d = packageManager.getApplicationIcon(clientPackageName);
-            Bitmap bitmap = Bitmap.createBitmap(
-                    d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Bitmap bitmap =
+                    Bitmap.createBitmap(
+                            d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             d.draw(canvas);

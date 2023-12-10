@@ -47,6 +47,17 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
 }
 
 Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
+// Temporary workaround to report foldable for variations without affecting
+// other form factors. This will be removed and replaced with a long-term
+// solution in DeviceFormFactor::GetDeviceFormFactor() after conducting an
+// audit of form factor usage or exposing ui_mode.
+// FormFactorMetricsProvider::GetFormFactor() also needs to be updated.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_foldable()) {
+    return Study::FOLDABLE;
+  }
+#endif
+
 #if BUILDFLAG(PLATFORM_CFM)
   return Study::MEET_DEVICE;
 #else
@@ -72,6 +83,13 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
 std::unique_ptr<SeedResponse>
 VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return nullptr;
+}
+
+void VariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
+    std::string_view group_name) {
+  // This trial should only be registered on platforms that support the limited
+  // entropy mode.
+  NOTREACHED();
 }
 
 }  // namespace variations

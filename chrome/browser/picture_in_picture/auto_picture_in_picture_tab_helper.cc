@@ -178,8 +178,13 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
     return false;
   }
 
-  // The user may block autopip via a content setting.
-  if (GetCurrentContentSetting() == CONTENT_SETTING_BLOCK) {
+  // The user may block autopip via a content setting. Also, if we're in an
+  // incognito window, then we should treat "ask" as "block".
+  ContentSetting setting = GetCurrentContentSetting();
+  if (setting == CONTENT_SETTING_BLOCK ||
+      (setting == CONTENT_SETTING_ASK &&
+       Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+           ->IsIncognitoProfile())) {
     return false;
   }
 

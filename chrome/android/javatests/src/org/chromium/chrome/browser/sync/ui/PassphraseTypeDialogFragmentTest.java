@@ -43,7 +43,7 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(RenderTestRule.Component.SERVICES_SYNC)
                     .build();
 

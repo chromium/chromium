@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
@@ -15,12 +16,10 @@
 #include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -30,6 +29,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class Canvas;
@@ -58,7 +61,6 @@ class ASH_EXPORT CaptureModeSession
     : public BaseCaptureModeSession,
       public ui::LayerDelegate,
       public ui::EventHandler,
-      public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
       public FolderSelectionDialogController::Delegate,
@@ -132,7 +134,7 @@ class ASH_EXPORT CaptureModeSession
   // reparented, display metrics change or located events enter / exit / move
   // on capture UI.
   void MaybeUpdateCaptureUisOpacity(
-      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
+      std::optional<gfx::Point> cursor_screen_location = std::nullopt);
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
@@ -176,14 +178,11 @@ class ASH_EXPORT CaptureModeSession
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
   // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
@@ -337,7 +336,7 @@ class ASH_EXPORT CaptureModeSession
   // `cursor_screen_location` is not provived, we will try to get the screen
   // location of the mouse.
   void EndSelection(
-      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
+      std::optional<gfx::Point> cursor_screen_location = std::nullopt);
 
   // Schedules a paint on the region and enough inset around it so that the
   // shadow, affordance circles, etc. are all repainted.
@@ -449,7 +448,7 @@ class ASH_EXPORT CaptureModeSession
 
   // Caches the old status of mouse warping while dragging or resizing a
   // captured region.
-  absl::optional<bool> old_mouse_warp_status_;
+  std::optional<bool> old_mouse_warp_status_;
 
   // Observer to observe the current selected to-be-captured window.
   std::unique_ptr<CaptureWindowObserver> capture_window_observer_;
@@ -479,7 +478,7 @@ class ASH_EXPORT CaptureModeSession
       input_capture_window_ = nullptr;
 
   // The display observer between init/shutdown.
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // True when we ask the DLP manager to check the screen content before we
   // perform the capture.

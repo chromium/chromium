@@ -28,8 +28,13 @@ public class AccountInfo extends CoreAccountInfo {
 
     @VisibleForTesting
     @CalledByNative
-    public AccountInfo(CoreAccountId id, String email, String gaiaId, String fullName,
-            String givenName, @Nullable Bitmap accountImage,
+    public AccountInfo(
+            CoreAccountId id,
+            String email,
+            String gaiaId,
+            String fullName,
+            String givenName,
+            @Nullable Bitmap accountImage,
             AccountCapabilities accountCapabilities) {
         super(id, email, gaiaId);
         mFullName = fullName;
@@ -45,26 +50,24 @@ public class AccountInfo extends CoreAccountInfo {
      */
     public boolean canHaveEmailAddressDisplayed() {
         switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
-            case Tribool.FALSE: {
-                return false;
-            }
-            case Tribool.TRUE: {
-                return true;
-            }
+            case Tribool.FALSE:
+                {
+                    return false;
+                }
+            case Tribool.TRUE:
+                {
+                    return true;
+                }
         }
         return AccountEmailDomainDisplayability.checkIfDisplayableEmailAddress(getEmail());
     }
 
-    /**
-     * @return Full name of the account.
-     */
+    /** @return Full name of the account. */
     public String getFullName() {
         return mFullName;
     }
 
-    /**
-     * @return Given name of the account.
-     */
+    /** @return Given name of the account. */
     public String getGivenName() {
         return mGivenName;
     }
@@ -77,9 +80,7 @@ public class AccountInfo extends CoreAccountInfo {
         return mAccountImage;
     }
 
-    /**
-     * @return the capability values associated with the account.
-     */
+    /** @return the capability values associated with the account. */
     public AccountCapabilities getAccountCapabilities() {
         return mAccountCapabilities;
     }
@@ -89,7 +90,8 @@ public class AccountInfo extends CoreAccountInfo {
      * The displayable information are full name, given name and avatar.
      */
     public boolean hasDisplayableInfo() {
-        return !TextUtils.isEmpty(mFullName) || !TextUtils.isEmpty(mGivenName)
+        return !TextUtils.isEmpty(mFullName)
+                || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
     }
 }

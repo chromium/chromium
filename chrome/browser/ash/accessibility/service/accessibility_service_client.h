@@ -32,6 +32,7 @@ class AutoclickClientImpl;
 class AutomationClientImpl;
 class SpeechRecognitionImpl;
 class TtsClientImpl;
+class UserInputImpl;
 class UserInterfaceImpl;
 
 // The AccessibilityServiceClient in the Browser process interacts with the
@@ -58,6 +59,8 @@ class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
   void BindSpeechRecognition(
       mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
+  void BindUserInput(
+      mojo::PendingReceiver<ax::mojom::UserInput> ui_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver) override;
   void BindAccessibilityFileLoader(
@@ -105,11 +108,12 @@ class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
   // opened.
   void OnFileLoaded(LoadCallback callback, base::File file);
 
+  std::unique_ptr<AutoclickClientImpl> autoclick_client_;
   std::unique_ptr<AutomationClientImpl> automation_client_;
   std::unique_ptr<SpeechRecognitionImpl> speech_recognition_impl_;
   std::unique_ptr<TtsClientImpl> tts_client_;
+  std::unique_ptr<UserInputImpl> user_input_client_;
   std::unique_ptr<UserInterfaceImpl> user_interface_client_;
-  std::unique_ptr<AutoclickClientImpl> autoclick_client_;
 
   // Track the currently enabled features in case we disconnect from the service
   // and need to reconnect, for example when the profile changes.

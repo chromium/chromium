@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -25,12 +27,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
+import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
+import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
@@ -59,7 +66,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,7 +74,6 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
@@ -312,6 +317,74 @@ public class KeyboardAccessoryModernViewTest {
 
     @Test
     @MediumTest
+    public void testCanAddSingleButtons() {
+        BarItem generatePasswordItem =
+                new BarItem(
+                        BarItem.Type.ACTION_BUTTON,
+                        new Action(GENERATE_PASSWORD_AUTOMATIC, unused -> {}),
+                        R.string.password_generation_accessory_button);
+        BarItem credmanItem =
+                new BarItem(
+                        BarItem.Type.ACTION_CHIP,
+                        new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {}),
+                        R.string.more_passkeys);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        generatePasswordItem, credmanItem, createSheetOpener()
+                                    });
+                });
+
+        onViewWaiting(withText(R.string.password_generation_accessory_button));
+        onViewWaiting(withText(R.string.more_passkeys));
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testCanRemoveSingleButtons() {
+        BarItem generatePasswordsItem =
+                new BarItem(
+                        BarItem.Type.ACTION_BUTTON,
+                        new Action(GENERATE_PASSWORD_AUTOMATIC, unused -> {}),
+                        R.string.password_generation_accessory_button);
+        BarItem credmanItem =
+                new BarItem(
+                        BarItem.Type.ACTION_CHIP,
+                        new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {}),
+                        R.string.more_passkeys);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        generatePasswordsItem, credmanItem, createSheetOpener()
+                                    });
+                });
+
+        onViewWaiting(withText(R.string.password_generation_accessory_button));
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.get(BAR_ITEMS).remove(mModel.get(BAR_ITEMS).get(1)));
+
+        ViewUtils.waitForViewCheckingState(
+                withText(R.string.more_passkeys), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.more_passkeys)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
     public void testUpdatesKeyPaddingAfterRotation() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -346,7 +419,7 @@ public class KeyboardAccessoryModernViewTest {
                                 .setPopupItemId(PopupItemId.PASSWORD_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -382,7 +455,7 @@ public class KeyboardAccessoryModernViewTest {
                                 .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -416,7 +489,7 @@ public class KeyboardAccessoryModernViewTest {
                                 .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -440,7 +513,6 @@ public class KeyboardAccessoryModernViewTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1432551")
     public void testDismissesSwipingEducationBubbleOnTap() {
         TestTracker tracker =
                 new TestTracker() {
@@ -487,7 +559,7 @@ public class KeyboardAccessoryModernViewTest {
                                 .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -562,7 +634,7 @@ public class KeyboardAccessoryModernViewTest {
                         getDefaultAutofillSuggestionBuilder()
                                 .setCustomIconUrl(customIconUrl)
                                 .build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -598,7 +670,7 @@ public class KeyboardAccessoryModernViewTest {
                         getDefaultAutofillSuggestionBuilder()
                                 .setCustomIconUrl(customIconUrl)
                                 .build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -625,7 +697,7 @@ public class KeyboardAccessoryModernViewTest {
         AutofillBarItem itemWithoutCustomIconUrl =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder().build(),
-                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -715,7 +787,7 @@ public class KeyboardAccessoryModernViewTest {
                         .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
                         .setFeatureForIPH("")
                         .build(),
-                new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, chipCallback));
+                new Action(AUTOFILL_SUGGESTION, chipCallback));
     }
 
     private SheetOpenerBarItem createSheetOpener() {

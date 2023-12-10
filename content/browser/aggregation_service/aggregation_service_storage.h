@@ -5,15 +5,13 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
 
-#include <stdint.h>
-
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_request_storage_id.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -77,19 +75,19 @@ class AggregationServiceStorage {
 
   // Returns the earliest report time for a stored pending request strictly
   // after `strictly_after_time`. If there are no such requests stored, returns
-  // `absl::nullopt`.
-  virtual absl::optional<base::Time> NextReportTimeAfter(
+  // `std::nullopt`.
+  virtual std::optional<base::Time> NextReportTimeAfter(
       base::Time strictly_after_time) = 0;
 
   // Returns requests with report times on or before `not_after_time`. The
   // returned requests are ordered by report time. `limit` limits the number of
   // requests to return and cannot have a non-positive value; use
-  // `absl::nullopt` for no limit.
+  // `std::nullopt` for no limit.
   // TODO(crbug.com/1340046): Limit the number of in-progress reports kept in
   // memory at the same time.
   virtual std::vector<RequestAndId> GetRequestsReportingOnOrBefore(
       base::Time not_after_time,
-      absl::optional<int> limit = absl::nullopt) = 0;
+      std::optional<int> limit = std::nullopt) = 0;
 
   // Returns the requests with the given IDs. Empty vector is returned if `ids`
   // is empty.
@@ -101,7 +99,7 @@ class AggregationServiceStorage {
   // each report is picked independently from a uniform distribution between
   // `min_delay` and `max_delay`, both inclusive. Returns the new first report
   // time in storage, if any.
-  virtual absl::optional<base::Time> AdjustOfflineReportTimes(
+  virtual std::optional<base::Time> AdjustOfflineReportTimes(
       base::Time now,
       base::TimeDelta min_delay,
       base::TimeDelta max_delay) = 0;

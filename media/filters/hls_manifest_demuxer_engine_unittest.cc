@@ -317,7 +317,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAsyncSeek) {
   auto rendition = std::make_unique<StrictMock<MockHlsRendition>>();
   EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
   auto* rendition_ptr = rendition.get();
-  engine_->AddRenditionForTesting(std::move(rendition));
+  engine_->AddRenditionForTesting("primary", std::move(rendition));
   // Set up rendition state and run, expecting no other callbacks.
   task_environment_.RunUntilIdle();
 
@@ -350,7 +350,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
 
   auto* rend1 = rendition1.get();
   auto* rend2 = rendition2.get();
-  engine_->AddRenditionForTesting(std::move(rendition1));
+  engine_->AddRenditionForTesting("primary", std::move(rendition1));
 
   // While there is only one rendition, the response from |OnTimeUpdate| is
   // whatever that rendition wants.
@@ -370,7 +370,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
   // After adding the second rendition, the response from OnTimeUpdate is now
   // the lesser of (rend1.response - (calc time of rend2)) and
   // (rend2.response)
-  engine_->AddRenditionForTesting(std::move(rendition2));
+  engine_->AddRenditionForTesting("audio-override", std::move(rendition2));
 
   // Both renditions request time, so pick the lesser.
   EXPECT_CALL(*rend1, CheckState(_, _, _))

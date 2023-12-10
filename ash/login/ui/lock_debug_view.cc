@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -42,7 +43,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -396,7 +396,8 @@ class LockDebugView::DebugDataDispatcherTransformer
                                            account_id);
 
     Shell::Get()->local_authentication_request_controller()->ShowWidget(
-        base::BindOnce([](bool bla) {}), std::move(user_context));
+        base::BindOnce([](bool bla, std::unique_ptr<UserContext> ctx) {}),
+        std::move(user_context));
   }
 
   // Cycles fingerprint state for the user at |user_index|.
@@ -748,7 +749,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
   // Clears all in-memory pairing state.
   void ClearDebugPairingState() {
-    pairing_status_ = absl::nullopt;
+    pairing_status_ = std::nullopt;
     base_id_ = kNullBaseId;
     last_used_bases_.clear();
 
@@ -786,7 +787,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
  private:
   // In-memory detachable base pairing state.
-  absl::optional<DetachableBasePairingStatus> pairing_status_;
+  std::optional<DetachableBasePairingStatus> pairing_status_;
   int base_id_ = kNullBaseId;
   // Maps user account to the last used detachable base ID (base ID being the
   // base's index in kDebugDetachableBases array).
@@ -939,7 +940,7 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
         views::ScrollView::CreateScrollViewWithBorder();
     scroll->SetPreferredSize(gfx::Size(600, height));
     scroll->SetContents(base::WrapUnique(content));
-    scroll->SetBackgroundColor(absl::nullopt);
+    scroll->SetBackgroundColor(std::nullopt);
     scroll->SetVerticalScrollBar(
         std::make_unique<views::OverlayScrollBar>(false));
     scroll->SetHorizontalScrollBar(

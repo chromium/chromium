@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -17,10 +17,12 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::SettingsCollectionView;
 using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::GetInteractionForPasswordIssueEntry;
 using password_manager_test_utils::kDefaultPassword;
@@ -28,6 +30,7 @@ using password_manager_test_utils::kDefaultSite;
 using password_manager_test_utils::kDefaultUsername;
 using password_manager_test_utils::PasswordCheckupCellForState;
 using password_manager_test_utils::PasswordIssuesTableView;
+using password_manager_test_utils::ReauthenticationController;
 using password_manager_test_utils::SaveCompromisedPasswordForm;
 using password_manager_test_utils::SaveMutedCompromisedPasswordForm;
 using password_manager_test_utils::SavePasswordForm;
@@ -55,6 +58,11 @@ id<GREYMatcher> PasswordManagerEmptyView() {
 }
 
 #pragma mark - Password Checkup Homepage matchers
+
+// Matcher for the TableView in the Password Checkup Homepage.
+id<GREYMatcher> PasswordCheckupTableView() {
+  return grey_accessibilityID(password_manager::kPasswordCheckupTableViewId);
+}
 
 // Matcher for the header image view shown in the Password Checkup Homepage.
 id<GREYMatcher> PasswordCheckupHompageHeaderImageView() {
@@ -114,7 +122,7 @@ id<GREYMatcher> CompromisedPasswordIssuesPageTitle(int issue_count) {
 // Matcher for dismissed warnings table view item shown in the compromised
 // issues page.
 id<GREYMatcher> CompromisedPasswordIssuesDismissedWarnings() {
-  return grey_accessibilityID(kDismissedWarningsCellId);
+  return grey_accessibilityID(kDismissedWarningsCellID);
 }
 
 // Matcher for the navigation title of the dismissed warnings page.
@@ -142,7 +150,7 @@ id<GREYMatcher> WeakPasswordIssuesPageTitle(int issue_count) {
 // Matcher for the compromised warning found in a compromised password's details
 // page.
 id<GREYMatcher> CompromisedWarning() {
-  return grey_accessibilityID(kCompromisedWarningId);
+  return grey_accessibilityID(kCompromisedWarningID);
 }
 
 // Matcher for the "Dismiss Warning" button found in a compromised password's
@@ -194,9 +202,7 @@ void OpenPasswordCheckupHomepage(PasswordCheckUIState result_state,
   // Open the Password Checkup Homepage and make sure that it is visible.
   [[EarlGrey selectElementWithMatcher:password_checkup_result_cell]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -277,7 +283,7 @@ NSString* LeakedPasswordDescription() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordCheckup);
+      password_manager::features::kIOSPasswordAuthOnEntryV2);
 
   return config;
 }
@@ -324,6 +330,40 @@ NSString* LeakedPasswordDescription() {
   [[[EarlGrey
       selectElementWithMatcher:PasswordCheckupHomepageWeakPasswordsItem()]
       performAction:grey_tap()] assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Validates that the Password Manager UI is dismissed when local authentication
+// fails while in the Password Checkup UI.
+- (void)testPasswordCheckupHomepageWithFailedAuth {
+  SavePasswordForm();
+
+  OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
+                              /*result_password_count=*/0);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Password Checkup should be covered by reauthentication UI until successful
+  // local authentication.
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Password Manager UI should be dismissed leaving the Settings UI Visible.
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the warning state of the Password Checkup Homepage.
@@ -648,7 +688,6 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
-// TODO(crbug.com/1462095): Fix and re enable the test.
 - (void)testResolveLastIssueByEditingPassword {
   SaveReusedPasswordForms();
 
@@ -886,6 +925,49 @@ NSString* LeakedPasswordDescription() {
       selectElementWithMatcher:
           grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
       assertWithMatcher:grey_nil()];
+}
+
+// Validates that the Password Manager UI is dismissed when local authentication
+// fails while in the Password Issues UI.
+- (void)testPasswordIssuesWithFailedAuth {
+  SaveWeakPasswordForm();
+
+  OpenPasswordCheckupHomepage(
+      /*result_state=*/PasswordCheckStateWeakPasswords,
+      /*result_password_count=*/1);
+
+  // Verify that tapping the reused passwords item opens the reused password
+  // issues page.
+  [[EarlGrey
+      selectElementWithMatcher:PasswordCheckupHomepageWeakPasswordsItem()]
+      performAction:grey_tap()];
+  VerifyWeakPasswordIssuesPageIsVisible(/*issue_count=*/1);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Reauthentication UI should be covering Password Issues.
+  [[EarlGrey
+      selectElementWithMatcher:WeakPasswordIssuesPageTitle(/*issue_count=*/1)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Password Manager UI should have been dismissed leaving Settings visible.
+  [[EarlGrey
+      selectElementWithMatcher:WeakPasswordIssuesPageTitle(/*issue_count=*/1)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

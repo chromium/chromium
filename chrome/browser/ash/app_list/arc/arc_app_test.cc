@@ -14,6 +14,7 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_compatibility_mode_instance.h"
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -22,6 +23,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -144,6 +148,12 @@ void ArcAppTest::SetUp(Profile* profile) {
     WaitForDefaultApps();
   WaitForRemoveAllApps();
 
+  if (ash::features::ArePromiseIconsEnabled()) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->PromiseAppService()
+        ->SetSkipAlmanacForTesting(true);
+  }
+
   // Check initial conditions.
   if (activate_arc_on_start_) {
     if (!arc::ShouldArcAlwaysStart())
@@ -197,10 +207,10 @@ void ArcAppTest::WaitForRemoveAllApps() {
 void ArcAppTest::CreateFakeAppsAndPackages() {
   arc::mojom::AppInfo app;
   // Make sure we have enough data for test.
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 1; i <= 5; ++i) {
     arc::mojom::AppInfoPtr app_info = arc::mojom::AppInfo::New(
         base::StringPrintf("Fake App %d", i),
-        base::StringPrintf("fake.app.%d", i),
+        base::StringPrintf("fake.package.name%d", i),
         base::StringPrintf("fake.app.%d.activity", i), false /* sticky */);
     app_info->app_category = arc::mojom::AppCategory::kUndefined;
     fake_apps_.emplace_back(std::move(app_info));
@@ -224,8 +234,8 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       kPackageName1 /* package_name */, 1 /* package_version */,
       1 /* last_backup_android_id */, 1 /* last_backup_time */,
       false /* sync */, false /* system */, false /* vpn_provider */,
-      nullptr /* web_app_info */, absl::nullopt, std::move(permissions1),
-      absl::nullopt /* version_name */, false /* preinstalled */));
+      nullptr /* web_app_info */, std::nullopt, std::move(permissions1),
+      std::nullopt /* version_name */, false /* preinstalled */));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions2;
@@ -239,7 +249,7 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       kPackageName2 /* package_name */, 2 /* package_version */,
       2 /* last_backup_android_id */, 2 /* last_backup_time */, true /* sync */,
       false /* system */, false /* vpn_provider */, nullptr /* web_app_info */,
-      absl::nullopt, std::move(permissions2), absl::nullopt /* version_name */,
+      std::nullopt, std::move(permissions2), std::nullopt /* version_name */,
       false /* preinstalled */));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
@@ -257,8 +267,8 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       kPackageName3 /* package_name */, 3 /* package_version */,
       3 /* last_backup_android_id */, 3 /* last_backup_time */,
       false /* sync */, false /* system */, false /* vpn_provider */,
-      nullptr /* web_app_info */, absl::nullopt, std::move(permissions3),
-      absl::nullopt /* version_name */, false /* preinstalled */));
+      nullptr /* web_app_info */, std::nullopt, std::move(permissions3),
+      std::nullopt /* version_name */, false /* preinstalled */));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions4;
@@ -275,9 +285,9 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
                                   kWebAppInfoScope4,
                                   /*theme_color=*/0, /*is_web_only_twa=*/true,
                                   kWebAppInfoCertificateFingerprint4),
-      /*deprecated_permissions=*/absl::nullopt,
+      /*deprecated_permissions=*/std::nullopt,
       /*permission_states=*/std::move(permissions4),
-      /*version_name=*/absl::nullopt,
+      /*version_name=*/std::nullopt,
       /*preinstalled=*/false));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
@@ -286,13 +296,13 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       kPackageName5 /* package_name */, 5 /* package_version */,
       5 /* last_backup_android_id */, 5 /* last_backup_time */,
       false /* sync */, false /* system */, false /* vpn_provider */,
-      nullptr /* web_app_info */, absl::nullopt, std::move(permissions5),
-      absl::nullopt /* version_name */, false /* preinstalled */,
+      nullptr /* web_app_info */, std::nullopt, std::move(permissions5),
+      std::nullopt /* version_name */, false /* preinstalled */,
       arc::mojom::InstallPriority::kUndefined /* priority */,
       arc::mojom::PackageLocaleInfo::New(kSupportedLocales5,
                                          kSelectedLocale5)));
 
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 1; i <= 5; ++i) {
     arc::mojom::ShortcutInfo shortcut_info;
     shortcut_info.name = base::StringPrintf("Fake Shortcut %d", i);
     shortcut_info.package_name = base::StringPrintf("fake.shortcut.%d", i);

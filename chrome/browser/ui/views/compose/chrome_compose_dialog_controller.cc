@@ -52,31 +52,39 @@ void ChromeComposeDialogController::ShowComposeDialog(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  bubble_wrapper_ = std::make_unique<BubbleContentsWrapperT<ComposeUI>>(
-      GURL(kComposeURL), profile, IDS_COMPOSE_TITLE);
-  bubble_wrapper_->ReloadWebContents();
+  auto bubble_wrapper = std::make_unique<BubbleContentsWrapperT<ComposeUI>>(
+      GURL(kComposeURL), profile, IDS_COMPOSE_DIALOG_TITLE);
+  bubble_wrapper->ReloadWebContents();
 
   // This WebUI needs to know the calling BrowserContents so that the compose
   // request/result can be properly associated with the triggering form.
-  bubble_wrapper_->GetWebUIController()->set_triggering_web_contents(
+  bubble_wrapper->GetWebUIController()->set_triggering_web_contents(
       web_contents_.get());
 
-  auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
-      anchor_view, bubble_wrapper_.get(),
-      gfx::ToRoundedRect(element_bounds_in_screen));
+  // The element will not be visible if it is outside the Browser View bounds,
+  // so clamp the element bounds to be within them.
+  gfx::Rect clamped_element_bounds =
+      gfx::ToRoundedRect(element_bounds_in_screen);
+  clamped_element_bounds.Intersect(anchor_view->GetBoundsInScreen());
 
-  // Allows the bubble bounds to escape the browser window.
-  bubble_view->set_has_parent(false);
-
-  bubble_ = bubble_view->GetWeakPtr();
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-
-  bubble_->set_adjust_if_offscreen(true);
+  auto compose_dialog_view = std::make_unique<ComposeDialogView>(
+      anchor_view, std::move(bubble_wrapper), clamped_element_bounds,
+      views::BubbleBorder::Arrow::TOP_CENTER);
+  bubble_ = compose_dialog_view->GetWeakPtr();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(compose_dialog_view));
+  if (bubble_) {
+    // This must be called after CreateBubble, as that resets the
+    // |adjust_if_offscreen| field to the platform-dependent default.
+    bubble_->set_adjust_if_offscreen(true);
+  }
 }
 
 BubbleContentsWrapperT<ComposeUI>*
 ChromeComposeDialogController::GetBubbleWrapper() const {
-  return bubble_wrapper_.get();
+  if (bubble_) {
+    return bubble_->bubble_wrapper();
+  }
+  return nullptr;
 }
 
 void ChromeComposeDialogController::ShowUI() {
@@ -87,8 +95,10 @@ void ChromeComposeDialogController::ShowUI() {
 
 // TODO(b/300939629): Flesh out implementation and cover other closing paths.
 void ChromeComposeDialogController::Close() {
-  bubble_wrapper_->CloseUI();
-  bubble_wrapper_.reset();
+  auto* wrapper = GetBubbleWrapper();
+  if (wrapper) {
+    wrapper->CloseUI();
+  }
 }
 
 ChromeComposeDialogController::ChromeComposeDialogController(

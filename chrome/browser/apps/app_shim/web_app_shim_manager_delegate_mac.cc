@@ -114,7 +114,7 @@ void UserChoiceDialogCompleted(
     base::OnceClosure launch_finished_callback,
     bool allowed,
     bool remember_user_choice) {
-  absl::optional<GURL> protocol_url = params.protocol_handler_launch_url;
+  std::optional<GURL> protocol_url = params.protocol_handler_launch_url;
   const bool is_file_launch = !file_launches.empty();
   webapps::AppId app_id = params.app_id;
 

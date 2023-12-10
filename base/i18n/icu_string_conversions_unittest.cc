@@ -32,9 +32,9 @@ namespace {
 // This is to help write tests for functions with std::u16string params until
 // the C++ 0x UTF-16 literal is well-supported by compilers.
 std::u16string BuildString16(const wchar_t* s) {
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
   return WideToUTF16(s);
-#elif defined(WCHAR_T_IS_UTF32)
+#elif defined(WCHAR_T_IS_32_BIT)
   std::u16string u16;
   while (*s != 0) {
     DCHECK_LE(static_cast<unsigned int>(*s), 0xFFFFu);
@@ -99,9 +99,9 @@ static const struct {
      L"\x00A5\x00A8", nullptr},
     // Chinese (GB18030) : A 4 byte sequence mapped to plane 2 (U+20000)
     {"gb18030", "\x95\x32\x82\x36\xD2\xBB", OnStringConversionError::FAIL, true,
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
      L"\xD840\xDC00\x4E00",
-#elif defined(WCHAR_T_IS_UTF32)
+#elif defined(WCHAR_T_IS_32_BIT)
      L"\x20000\x4E00",
 #endif
      L"\xD840\xDC00\x4E00"},

@@ -62,8 +62,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.createNotificationChannel")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannel")) {
             mNotificationManager.createNotificationChannel(channel);
         }
     }
@@ -72,8 +72,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.createNotificationChannelGroup")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannelGroup")) {
             mNotificationManager.createNotificationChannelGroup(channelGroup);
         }
     }
@@ -83,7 +83,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     public List<NotificationChannel> getNotificationChannels() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
-                        TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels")) {
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels")) {
             return mNotificationManager.getNotificationChannels();
         }
     }
@@ -92,8 +92,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public List<NotificationChannelGroup> getNotificationChannelGroups() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.getNotificationChannelGroups")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups")) {
             return mNotificationManager.getNotificationChannelGroups();
         }
     }
@@ -102,8 +102,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public void deleteNotificationChannel(String id) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.deleteNotificationChannel")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannel")) {
             mNotificationManager.deleteNotificationChannel(id);
         }
     }
@@ -115,8 +115,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             return;
         }
 
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.notify(id, notification)")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.notify(id, notification)")) {
             mNotificationManager.notify(id, notification);
         }
     }
@@ -128,8 +128,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             return;
         }
 
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.notify(tag, id, notification)")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.notify(tag, id, notification)")) {
             mNotificationManager.notify(tag, id, notification);
         }
     }
@@ -142,10 +142,12 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         }
 
         try (TraceEvent e =
-                        TraceEvent.scoped("NotificationManagerProxyImpl.notify(notification)")) {
+                TraceEvent.scoped("NotificationManagerProxyImpl.notify(notification)")) {
             assert notification.getMetadata() != null;
-            mNotificationManager.notify(notification.getMetadata().tag,
-                    notification.getMetadata().id, notification.getNotification());
+            mNotificationManager.notify(
+                    notification.getMetadata().tag,
+                    notification.getMetadata().id,
+                    notification.getNotification());
         }
     }
 
@@ -154,7 +156,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     public NotificationChannel getNotificationChannel(String channelId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
-                        TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannel")) {
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannel")) {
             return mNotificationManager.getNotificationChannel(channelId);
         }
     }
@@ -163,8 +165,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public void deleteNotificationChannelGroup(String groupId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e = TraceEvent.scoped(
-                     "NotificationManagerProxyImpl.deleteNotificationChannelGroup")) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannelGroup")) {
             mNotificationManager.deleteNotificationChannelGroup(groupId);
         }
     }

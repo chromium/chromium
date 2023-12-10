@@ -9,6 +9,9 @@
 
 #import <utility>
 
+#import "components/password_manager/core/browser/ui/affiliated_group.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+
 @protocol ReauthenticationProtocol;
 @protocol SuccessfulReauthTimeAccessor;
 
@@ -23,6 +26,17 @@ std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
 // with passwords.
 id<ReauthenticationProtocol> BuildReauthenticationModule(
     id<SuccessfulReauthTimeAccessor> successfulReauthTimeAccessor = nullptr);
+
+// Returns whether any of the affiliated domains of the given credential
+// contains the given search term. Expects search term to be in lowercase.
+bool MatchCredentialForTerm(const CredentialUIEntry& credential,
+                            const std::string& search_term);
+
+// Returns whether branding info or any of the credential groups of the given
+// affiliated group matches the given search term. Expects search term to be in
+// lowercase.
+bool MatchAffiliatedGroupsForTerm(const AffiliatedGroup& affiliated_group,
+                                  const std::string& search_term);
 
 }  // namespace password_manager
 

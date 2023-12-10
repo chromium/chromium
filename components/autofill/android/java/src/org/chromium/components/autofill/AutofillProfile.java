@@ -50,9 +50,7 @@ public class AutofillProfile {
         }
     }
 
-    /**
-     * Builder for the {@link AutofillProfile}.
-     */
+    /** Builder for the {@link AutofillProfile}. */
     public static final class Builder {
         private String mGUID = "";
         private @Source int mSource = Source.LOCAL_OR_SYNCABLE;
@@ -406,6 +404,7 @@ public class AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
+    @CalledByNative
     public String getCountryCode() {
         return getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
     }
@@ -448,7 +447,9 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public void setInfo(@ServerFieldType int fieldType, @Nullable String value,
+    public void setInfo(
+            @ServerFieldType int fieldType,
+            @Nullable String value,
             @VerificationStatus int status) {
         value = value == null ? "" : value;
         mFields.put(fieldType, new ValueWithStatus(value, status));

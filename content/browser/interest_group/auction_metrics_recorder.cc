@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <functional>
 
 #include "base/check.h"
-#include "base/functional/invoke.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/additional_bid_result.h"
@@ -565,12 +565,12 @@ void AuctionMetricsRecorder::MaybeSetMeanAndMaxLatency(
     EntrySetFunction set_mean_function,
     EntrySetFunction set_max_function) {
   if (aggregator.GetNumRecords() > 0) {
-    base::invoke(set_mean_function, builder_,
-                 GetSemanticBucketMinForDurationTiming(
-                     aggregator.GetMeanLatency().InMilliseconds()));
-    base::invoke(set_max_function, builder_,
-                 GetSemanticBucketMinForDurationTiming(
-                     aggregator.GetMaxLatency().InMilliseconds()));
+    std::invoke(set_mean_function, builder_,
+                GetSemanticBucketMinForDurationTiming(
+                    aggregator.GetMeanLatency().InMilliseconds()));
+    std::invoke(set_max_function, builder_,
+                GetSemanticBucketMinForDurationTiming(
+                    aggregator.GetMaxLatency().InMilliseconds()));
   }
 }
 
@@ -578,13 +578,12 @@ void AuctionMetricsRecorder::SetNumAndMaybeMeanLatency(
     AuctionMetricsRecorder::LatencyAggregator& aggregator,
     EntrySetFunction set_num_function,
     EntrySetFunction set_mean_function) {
-  base::invoke(
-      set_num_function, builder_,
-      GetExponentialBucketMinForCounts1000(aggregator.GetNumRecords()));
+  std::invoke(set_num_function, builder_,
+              GetExponentialBucketMinForCounts1000(aggregator.GetNumRecords()));
   if (aggregator.GetNumRecords() > 0) {
-    base::invoke(set_mean_function, builder_,
-                 GetSemanticBucketMinForDurationTiming(
-                     aggregator.GetMeanLatency().InMilliseconds()));
+    std::invoke(set_mean_function, builder_,
+                GetSemanticBucketMinForDurationTiming(
+                    aggregator.GetMeanLatency().InMilliseconds()));
   }
 }
 

@@ -18,6 +18,18 @@ namespace network {
 // 3rd party context.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceResourceBlockList {
  public:
+  // The result of checking a URL against the blocklist, used for metrics
+  // analysis.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AntiFingerprintingBlockListResult {
+    kThirdPartyAllowed = 0,
+    kThirdPartyBlocked = 1,
+    kFirstPartyAllowed = 2,
+    kMaxValue = kFirstPartyAllowed
+  };
+
   NetworkServiceResourceBlockList();
   ~NetworkServiceResourceBlockList();
 

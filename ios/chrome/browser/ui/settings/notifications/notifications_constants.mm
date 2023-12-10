@@ -8,3 +8,8 @@ NSString* const kNotificationsTableViewId = @"kNotificationsTableViewId";
 
 NSString* const kSettingsNotificationsPriceTrackingCellId =
     @"kSettingsNotificationsPriceTrackingCellId";
+
+NSString* const kSettingsNotificationsContentCellId =
+    @"kSettingsNotificationsContentCellId";
+
+NSString* const kNewspaperSFSymbol = @"newspaper";

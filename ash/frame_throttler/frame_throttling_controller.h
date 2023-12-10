@@ -30,6 +30,16 @@ class HostFrameSinkManager;
 
 namespace ash {
 
+class ASH_EXPORT ThottleControllerWindowDelegate {
+ public:
+  virtual ~ThottleControllerWindowDelegate() = default;
+  virtual viz::FrameSinkId GetFrameSinkIdForWindow(
+      const aura::Window* window) const = 0;
+};
+
+ASH_EXPORT void SetThottleControllerWindowDelegate(
+    std::unique_ptr<ThottleControllerWindowDelegate> delegate);
+
 constexpr uint8_t kDefaultThrottleFps = 20;
 
 struct ThrottleCandidates {

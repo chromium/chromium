@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAKE_FAST_PAIR_REPOSITORY_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAKE_FAST_PAIR_REPOSITORY_H_
 
+#include <optional>
+
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
@@ -12,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::bluetooth_config {
 class DeviceImageInfo;
@@ -36,7 +37,7 @@ class FakeFastPairRepository : public FastPairRepository {
 
   void ClearFakeMetadata(const std::string& hex_model_id);
 
-  void SetCheckAccountKeysResult(absl::optional<PairingMetadata> result);
+  void SetCheckAccountKeysResult(std::optional<PairingMetadata> result);
 
   void set_is_account_key_paired_locally(bool is_account_key_paired_locally) {
     is_account_key_paired_locally_ = is_account_key_paired_locally;
@@ -75,11 +76,11 @@ class FakeFastPairRepository : public FastPairRepository {
                                             bool cache_may_be_stale) override;
 
   void FetchDeviceImages(scoped_refptr<Device> device) override;
-  absl::optional<std::string> GetDeviceDisplayNameFromCache(
+  std::optional<std::string> GetDeviceDisplayNameFromCache(
       std::vector<uint8_t> account_key) override;
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
   bool EvictDeviceImages(const std::string& mac_address) override;
-  absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
+  std::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
       const std::string& mac_address) override;
   void CheckOptInStatus(CheckOptInStatusCallback callback) override;
   void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
@@ -122,7 +123,7 @@ class FakeFastPairRepository : public FastPairRepository {
   // The key for 'saved_display_names_' is the device's classic address.
   base::flat_map<std::string, std::string> saved_display_names_;
 
-  absl::optional<PairingMetadata> check_account_keys_result_;
+  std::optional<PairingMetadata> check_account_keys_result_;
   base::WeakPtrFactory<FakeFastPairRepository> weak_ptr_factory_{this};
 };
 

@@ -29,6 +29,35 @@ OptimizationGuideModelExecutionError::FromHttpStatusCode(
   }
 }
 
+//  static
+OptimizationGuideModelExecutionError
+OptimizationGuideModelExecutionError::FromModelExecutionServerError(
+    proto::ErrorResponse error) {
+  switch (error.error_state()) {
+    case proto::ErrorState::ERROR_STATE_UNSPECIFIED:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kGenericFailure);
+    case proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kRetryableError);
+    case proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kNonRetryableError);
+    case proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kUnsupportedLanguage);
+    case proto::ErrorState::ERROR_STATE_FILTERED:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kFiltered);
+    case proto::ErrorState::ERROR_STATE_REQUEST_THROTTLED:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kRequestThrottled);
+    case proto::ErrorState::ERROR_STATE_DISABLED:
+      return OptimizationGuideModelExecutionError(
+          ModelExecutionError::kDisabled);
+  }
+}
+
 // static
 OptimizationGuideModelExecutionError
 OptimizationGuideModelExecutionError::FromModelExecutionError(
@@ -49,13 +78,39 @@ bool OptimizationGuideModelExecutionError::transient() const {
   switch (error_) {
     case ModelExecutionError::kInvalidRequest:
     case ModelExecutionError::kPermissionDenied:
+    case ModelExecutionError::kNonRetryableError:
+    case ModelExecutionError::kUnsupportedLanguage:
+    case ModelExecutionError::kFiltered:
+    case ModelExecutionError::kDisabled:
       return false;
     case ModelExecutionError::kRequestThrottled:
     case ModelExecutionError::kGenericFailure:
+    case ModelExecutionError::kRetryableError:
+    case ModelExecutionError::kCancelled:
       return true;
     case ModelExecutionError::kUnknown:
       NOTREACHED();
       return true;
+  }
+}
+
+bool OptimizationGuideModelExecutionError::ShouldLogModelQuality() const {
+  switch (error_) {
+    case ModelExecutionError::kFiltered:
+    case ModelExecutionError::kUnsupportedLanguage:
+      return true;
+    case ModelExecutionError::kInvalidRequest:
+    case ModelExecutionError::kPermissionDenied:
+    case ModelExecutionError::kNonRetryableError:
+    case ModelExecutionError::kDisabled:
+    case ModelExecutionError::kRequestThrottled:
+    case ModelExecutionError::kGenericFailure:
+    case ModelExecutionError::kRetryableError:
+    case ModelExecutionError::kCancelled:
+      return false;
+    case ModelExecutionError::kUnknown:
+      NOTREACHED();
+      return false;
   }
 }
 

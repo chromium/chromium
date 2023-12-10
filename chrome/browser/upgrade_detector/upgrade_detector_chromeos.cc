@@ -224,6 +224,7 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     if (!upgrade_detected_time().is_null())
       NotifyOnUpgrade();
   }
+  // TODO(b/219067273): Cleanup toggling from ash into platform code.
   if (!toggled_update_flag_) {
     // Only send feature flag status one time.
     toggled_update_flag_ = true;

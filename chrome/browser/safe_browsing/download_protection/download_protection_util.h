@@ -96,7 +96,9 @@ enum class DeepScanEvent {
   kScanCanceled = 3,
   kScanCompleted = 4,
   kScanFailed = 5,
-  kMaxValue = kScanFailed,
+  kScanDeleted = 6,
+  kPromptAcceptedFromWebUI = 7,
+  kMaxValue = kPromptAcceptedFromWebUI,
 };
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
 

@@ -6,9 +6,9 @@
 #define GPU_COMMAND_BUFFER_COMMON_SYNC_TOKEN_H_
 
 #include <stdint.h>
-#include <string.h>
 
-#include <tuple>
+#include <compare>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -71,20 +71,9 @@ struct GPU_EXPORT SyncToken {
   CommandBufferId command_buffer_id() const { return command_buffer_id_; }
   uint64_t release_count() const { return release_count_; }
 
-  bool operator<(const SyncToken& other) const {
-    return std::tie(namespace_id_, command_buffer_id_, release_count_) <
-           std::tie(other.namespace_id_, other.command_buffer_id_,
-                    other.release_count_);
-  }
-
-  bool operator==(const SyncToken& other) const {
-    return verified_flush_ == other.verified_flush() &&
-           namespace_id_ == other.namespace_id() &&
-           command_buffer_id_ == other.command_buffer_id() &&
-           release_count_ == other.release_count();
-  }
-
-  bool operator!=(const SyncToken& other) const { return !(*this == other); }
+  friend bool operator==(const SyncToken&, const SyncToken&) = default;
+  friend std::strong_ordering operator<=>(const SyncToken&,
+                                          const SyncToken&) = default;
 
   std::string ToDebugString() const;
 

@@ -6,6 +6,7 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -13,8 +14,8 @@
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
@@ -158,6 +159,11 @@ void SetUpTestsIfPresent() {
 
 void RunTestsIfPresent() {
   // No-op for Earl Grey.
+}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  // No delays for eg tests.
+  return base::Seconds(0);
 }
 
 }  // namespace tests_hook

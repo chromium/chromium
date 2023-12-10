@@ -43,6 +43,7 @@ EventReportValidator::~EventReportValidator() {
 
 void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -56,6 +57,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -81,6 +83,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
 
 void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::vector<std::string>& expected_filenames,
@@ -100,6 +103,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
@@ -119,6 +123,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
 void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -133,6 +138,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const absl::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -161,6 +167,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
 
 void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -175,6 +182,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   dlp_verdicts_[expected_filename] = expected_dlp_verdict;
@@ -201,6 +209,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
 
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::vector<std::string>& expected_filenames,
@@ -222,6 +231,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
@@ -242,6 +252,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 void EventReportValidator::
     ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         const std::string& expected_url,
+        const std::string& expected_tab_url,
         const std::string& expected_source,
         const std::string& expected_destination,
         const std::string& expected_filename,
@@ -257,6 +268,7 @@ void EventReportValidator::
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -292,6 +304,7 @@ void EventReportValidator::
 void EventReportValidator::
     ExpectSensitiveDataEventAndDangerousDeepScanningResult(
         const std::string& expected_url,
+        const std::string& expected_tab_url,
         const std::string& expected_source,
         const std::string& expected_destination,
         const std::string& expected_filename,
@@ -307,6 +320,7 @@ void EventReportValidator::
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -341,6 +355,7 @@ void EventReportValidator::
 
 void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_threat_type,
@@ -352,6 +367,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
   threat_type_ = expected_threat_type;
   mimetypes_ = expected_mimetypes;
@@ -440,6 +456,7 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
   // The event should match the expected values.
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTabUrl, tab_url_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeySource, source_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyDestination,
                 destination_);
@@ -556,25 +573,46 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
         << "Expected no file name but found "
         << *value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
   } else {
-    const std::string* filename =
-        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
-    ASSERT_TRUE(filename);
-    ASSERT_TRUE(base::Contains(filenames_and_hashes_, *filename))
-        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName;
+    ASSERT_TRUE(
+        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+
+    std::string filename =
+        *(value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    std::string filenames;
+    for (const auto& fh : filenames_and_hashes_) {
+      filenames += fh.first + "; ";
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1501186): To fix the tests for ChromeOS.
+    // If filename is not found as expected, try the filename without path.
+    if (!base::Contains(filenames_and_hashes_, filename)) {
+      for (const auto& fh : filenames_and_hashes_) {
+        filenames += fh.first + "; ";
+        if (base::FilePath(fh.first).BaseName().AsUTF8Unsafe() == filename) {
+          filename = fh.first;  // filename has full path now.
+        }
+      }
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    ASSERT_TRUE(base::Contains(filenames_and_hashes_, filename))
+        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName
+        << "\nActual filename: " << filename << "\nExpected one filename in: { "
+        << filenames << "}";
     ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  results_[*filename]);
+                  results_[filename]);
     ValidateField(value,
                   SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
-                  filenames_and_hashes_[*filename]);
-    if (scan_ids_.count(*filename)) {
+                  filenames_and_hashes_[filename]);
+    if (scan_ids_.count(filename)) {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    scan_ids_[*filename]);
+                    scan_ids_[filename]);
     } else {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
                     absl::optional<std::string>());
     }
-    if (dlp_verdicts_.count(*filename)) {
-      ValidateDlpVerdict(value, dlp_verdicts_[*filename]);
+    if (dlp_verdicts_.count(filename)) {
+      ValidateDlpVerdict(value, dlp_verdicts_[filename]);
     }
   }
 }
@@ -585,7 +623,9 @@ void EventReportValidator::ValidateField(
     const absl::optional<std::string>& expected_value) {
   if (expected_value.has_value()) {
     ASSERT_EQ(*value->FindString(field_key), expected_value.value())
-        << "Mismatch in field " << field_key;
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << value->FindString(field_key)
+        << "\nExpected value: " << expected_value.value();
   } else {
     ASSERT_EQ(nullptr, value->FindString(field_key))
         << "Field " << field_key << " should not be populated. It has value "
@@ -601,7 +641,9 @@ void EventReportValidator::ValidateField(
   if (expected_value.has_value()) {
     const std::u16string actual_string_value = base::UTF8ToUTF16(*s);
     ASSERT_EQ(actual_string_value, expected_value.value())
-        << "Mismatch in field " << field_key;
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << actual_string_value
+        << "\nExpected value: " << expected_value.value();
   } else {
     ASSERT_EQ(nullptr, s) << "Field " << field_key
                           << " should not be populated. It has value "
@@ -614,7 +656,9 @@ void EventReportValidator::ValidateField(
     const std::string& field_key,
     const absl::optional<int>& expected_value) {
   ASSERT_EQ(value->FindInt(field_key), expected_value)
-      << "Mismatch in field " << field_key;
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindInt(field_key).value()
+      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ValidateField(
@@ -622,7 +666,9 @@ void EventReportValidator::ValidateField(
     const std::string& field_key,
     const absl::optional<bool>& expected_value) {
   ASSERT_EQ(value->FindBool(field_key), expected_value)
-      << "Mismatch in field " << field_key;
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindBool(field_key).value()
+      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ExpectNoReport() {

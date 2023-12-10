@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -284,23 +286,40 @@ absl::optional<gfx::RectF> ComputeCaptureRect(
       captured_ink_overflow_subrect_in_snapshot_root_space);
 }
 
-int ComputeMaxCaptureSize(absl::optional<int> max_texture_size,
+int ComputeMaxCaptureSize(Document& document,
+                          absl::optional<int> max_texture_size,
                           const gfx::Size& snapshot_root_size) {
+  // If the max texture size is not known yet, use the size of the snapshot
+  // root.
+  if (!max_texture_size) {
+    return std::max(snapshot_root_size.width(), snapshot_root_size.height());
+  }
+
+  // The snapshot root corresponds to the maximum screen bounds so we should be
+  // able to allocate a buffer of that size. However, Chrome Android's scaling
+  // behavior of the position-fixed viewport means the snapshot root may
+  // actually be larger than the screen bounds, though it gets scaled down by
+  // the page-scale-factor in the compositor. Since this maximum is applied to
+  // layout-generated bounds, project it into layout-space by using the minimum
+  // possible scale (which is how the position-fixed viewport size is
+  // computed).
+  const float min_page_scale_factor = document.GetPage()
+                                          ->GetPageScaleConstraintsSet()
+                                          .FinalConstraints()
+                                          .minimum_scale;
+  const int max_texture_size_in_layout =
+      static_cast<int>(std::ceil(*max_texture_size / min_page_scale_factor));
+
+  CHECK_LE(snapshot_root_size.width(), max_texture_size_in_layout);
+  CHECK_LE(snapshot_root_size.height(), max_texture_size_in_layout);
+
   // While we can render up to the max texture size, that would significantly
   // add to the memory overhead. So limit to up to a viewport worth of
   // additional content.
   const int max_bounds_based_on_viewport =
       2 * std::max(snapshot_root_size.width(), snapshot_root_size.height());
 
-  // If the max texture size is not known yet, clip to the size of the snapshot
-  // root. The snapshot root corresponds to the maximum screen bounds, we must
-  // be able to allocate a buffer of that size.
-  const int computed_max_texture_size = max_texture_size.value_or(
-      std::max(snapshot_root_size.width(), snapshot_root_size.height()));
-  DCHECK_LE(snapshot_root_size.width(), computed_max_texture_size);
-  DCHECK_LE(snapshot_root_size.height(), computed_max_texture_size);
-
-  return std::min(max_bounds_based_on_viewport, computed_max_texture_size);
+  return std::min(max_bounds_based_on_viewport, max_texture_size_in_layout);
 }
 
 gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
@@ -317,6 +336,16 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
 
   auto transform = GeometryMapper::SourceToDestinationProjection(
       paint_properties.Transform(), root_properties.Transform());
+  if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
+    // The paint_properties we get from
+    // `first_fragment.LocalBorderBoxProperties()` correspond to the origin of
+    // the inline's container's border-box. So the transform from GeometryMapper
+    // maps a point from the viewport to the container's border-box origin. We
+    // need the extra translation to map from container's border box origin to
+    // inline's border box origin.
+    transform.Translate(
+        gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
+  }
 
   if (!transform.HasPerspective()) {
     transform.Round2dTranslationComponents();
@@ -1038,6 +1067,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   }
 
   const int max_capture_size = ComputeMaxCaptureSize(
+      *document_,
       document_->GetPage()->GetChromeClient().GetMaxRenderBufferBounds(
           *document_->GetFrame()),
       *snapshot_root_size_at_capture_);
@@ -1208,11 +1238,14 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
                            LayoutUnit(entry_size->blockSize()))
             : PhysicalSize(LayoutUnit(entry_size->blockSize()),
                            LayoutUnit(entry_size->inlineSize()));
-  } else if (auto* box_model = DynamicTo<LayoutBoxModelObject>(layout_object)) {
+  } else if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     border_box_size_in_css_space =
-        PhysicalSize(box_model->BorderBoundingBox().size());
-    // Size BorderBoundingBox is in Layout space, we need to convert to CSS
-    // space.
+        RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
+            ? layout_inline->PhysicalLinesBoundingBox().size
+            : PhysicalSize(
+                  ToEnclosingRect(layout_inline->PhysicalLinesBoundingBox())
+                      .size());
+    // Convert to CSS pixels instead of layout pixels.
     border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
 
@@ -1228,11 +1261,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_css_space, border_box_size_in_css_space);
 
   if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
-    visual_overflow_rect_in_layout_space =
-        RuntimeEnabledFeatures::
-                ViewTransitionLayoutObjectVisualOverflowEnabled()
-            ? ComputeVisualOverflowRect(*box)
-            : ComputeVisualOverflowRectWithPaintLayers(*box);
+    visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
   }
 
   // This is intentionally computed in layout space to include scaling from
@@ -1473,15 +1502,28 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
 }  // namespace
 
 gfx::Rect ViewTransitionStyleTracker::GetSnapshotRootInFixedViewport() const {
+  DCHECK(document_->View());
   DCHECK(document_->GetLayoutView());
 
   LayoutView& layout_view = *document_->GetLayoutView();
+  LocalFrameView& frame_view = *document_->View();
 
   // Start with the position: fixed viewport and expand it by any
   // insetting UI such as the mobile URL bar, virtual-keyboard, scrollbars,
   // etc.
-  gfx::Rect snapshot_viewport_rect(layout_view.ClientWidth().ToInt(),
-                                   layout_view.ClientHeight().ToInt());
+  // TODO(bokan): Differing behavior based on ViewportEnabled is a bit of a
+  // kludge but is required since with ViewportEnabled the frame size may
+  // actually be larger than than the LayoutView (the ICB) so we must use it.
+  // However, LayoutView::ClientWidth/Height is the only way I know to get the
+  // correct content size when the frame is inset by a scrollbar-gutter.
+  // Luckily these two cases are mutually exclusive: ViewportEnabled is only
+  // used with overlay scrollbars which have no gutter, however, it'd be better
+  // if we could query a single property directly from layout information.
+  gfx::Rect snapshot_viewport_rect =
+      document_->GetSettings()->GetViewportEnabled()
+          ? gfx::Rect(frame_view.Size().width(), frame_view.Size().height())
+          : gfx::Rect(layout_view.ClientWidth().ToInt(),
+                      layout_view.ClientHeight().ToInt());
   snapshot_viewport_rect.Outset(GetFixedToSnapshotViewportOutsets(*document_));
 
   return snapshot_viewport_rect;
@@ -1796,6 +1838,10 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
             ComputeVisualOverflowRect(*child_box, ancestor_for_recursion);
         result.Unite(mapped_overflow_rect);
       } else if (auto* child_text = DynamicTo<LayoutText>(child)) {
+        if (box.IsLayoutInline()) {
+          continue;
+        }
+
         const bool child_visible =
             child_text->StyleRef().Visibility() == EVisibility::kVisible ||
             !child_text->VisualRectRespectsVisibility();
@@ -1820,10 +1866,8 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
             layout_box->ComputeVisualEffectOverflowOutsets();
         overflow_rect.Expand(outsets);
       }
-    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
-      overflow_rect = layout_inline->PhysicalLinesBoundingBox();
     } else {
-      overflow_rect = PhysicalRect(box.BorderBoundingBox());
+      overflow_rect = To<LayoutInline>(box).LinesVisualOverflowBoundingBox();
     }
   }
 
@@ -1844,6 +1888,17 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     if (auto* layout_box = DynamicTo<LayoutBox>(&box);
         layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
       result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
+    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
+      // We need the `overflow_rect` to be relative to the inline's
+      // border-box. However, `LayoutInline::LinesVisualOverflowBoundingBox()`
+      // is relative to the inline's container's border-box. The offset below
+      // removes the translation between the container's border-box and the
+      // inline's border-box.
+      //
+      // This mapping is done internally by
+      // `LayoutObject::MapToVisualRectInAncestorSpace` so its not necessary
+      // when computing overflow for an ancestor.
+      overflow_rect.Move(-layout_inline->PhysicalLinesBoundingBox().offset);
     }
 
     if (visible) {
@@ -1858,83 +1913,6 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     // of a better way to fix this for all cases.
     result.Move(box.FirstFragment().PaintOffset());
     if (visible && box.StyleRef().BoxShadow()) {
-      result = PhysicalRect(ToEnclosingRect(result));
-    } else {
-      result = PhysicalRect(ToPixelSnappedRect(result));
-    }
-  }
-  return result;
-}
-
-PhysicalRect
-ViewTransitionStyleTracker::ComputeVisualOverflowRectWithPaintLayers(
-    const LayoutBoxModelObject& box,
-    const LayoutBoxModelObject* ancestor) const {
-  if (ancestor) {
-    if (auto* element = DynamicTo<Element>(box.GetNode());
-        element && IsTransitionElement(*element)) {
-      return {};
-    }
-  }
-
-  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
-    // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
-    // opposed to the intersection between the clip-path and the border box
-    // bounds. This seems suboptimal, but that's the rect that we use further
-    // down the pipeline to generate the texture.
-    // TODO(khushalsagar): This doesn't account for CSS clip property.
-    auto bounds = PhysicalRect::EnclosingRect(*clip_path_bounds);
-    if (ancestor) {
-      box.MapToVisualRectInAncestorSpace(ancestor, bounds, kUseGeometryMapper);
-    }
-    return bounds;
-  }
-
-  PhysicalRect result;
-  auto* paint_layer = box.Layer();
-  if (!box.ChildPaintBlockedByDisplayLock() &&
-      paint_layer->HasSelfPaintingLayerDescendant() &&
-      !paint_layer->KnownToClipSubtreeToPaddingBox()) {
-    PaintLayerPaintOrderIterator iterator(paint_layer, kAllChildren);
-    while (PaintLayer* child_layer = iterator.Next()) {
-      if (!child_layer->IsSelfPaintingLayer()) {
-        continue;
-      }
-      LayoutBoxModelObject& child_box = child_layer->GetLayoutObject();
-
-      PhysicalRect mapped_overflow_rect =
-          ComputeVisualOverflowRectWithPaintLayers(child_box,
-                                                   ancestor ? ancestor : &box);
-      result.Unite(mapped_overflow_rect);
-    }
-  }
-
-  if (ancestor) {
-    // For any recursive call, we instead map our overflow rect into the
-    // ancestor space and combine that with the result. GeometryMapper should
-    // take care of any filters and clips that are necessary between this box
-    // and the ancestor.
-    auto overflow_rect = box.VisualOverflowRect();
-    box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
-                                       kUseGeometryMapper);
-    result.Unite(overflow_rect);
-  } else {
-    // We're at the root of the recursion, so clip self painting descendant
-    // overflow by the overflow clip rect, then add in the visual overflow (with
-    // filters) from the own painting layer.
-    if (auto* layout_box = DynamicTo<LayoutBox>(&box);
-        layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
-      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-    }
-    result.Unite(box.VisualOverflowRectIncludingFilters());
-
-    // TODO(crbug.com/1432868): This captures a couple of common cases --
-    // box-shadow and no box shadow on the element. However, this isn't at all
-    // comprehensive. The paint system determines per element whether it
-    // should pixel snap or enclosing rect or something else. We need to think
-    // of a better way to fix this for all cases.
-    result.Move(box.FirstFragment().PaintOffset());
-    if (box.StyleRef().BoxShadow()) {
       result = PhysicalRect(ToEnclosingRect(result));
     } else {
       result = PhysicalRect(ToPixelSnappedRect(result));

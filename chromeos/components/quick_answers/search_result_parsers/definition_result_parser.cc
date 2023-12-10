@@ -4,13 +4,13 @@
 
 #include "chromeos/components/quick_answers/search_result_parsers/definition_result_parser.h"
 
+#include <optional>
 #include <string>
 
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace quick_answers {
@@ -251,7 +251,7 @@ std::unique_ptr<PhoneticsInfo> DefinitionResultParser::ParsePhoneticsInfo(
   }
 
   // Check if tts audio is enabled for the query.
-  absl::optional<bool> tts_audio_enabled =
+  std::optional<bool> tts_audio_enabled =
       first_phonetics->FindBool(kPhoneticsTtsAudioEnabledKey);
   if (tts_audio_enabled) {
     phonetics_info->tts_audio_enabled = tts_audio_enabled.value();

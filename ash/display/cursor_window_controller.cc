@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -47,7 +48,7 @@ namespace {
 
 const int kMinLargeCursorSize = 25;
 const int kMaxLargeCursorSize = 64;
-const int kWideDisplayThreshold = 2400;
+const int kMaxExtraLargeCursorSize = 128;
 
 SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
                                 SkColor cursor_color) {
@@ -266,7 +267,10 @@ void CursorWindowController::RemoveObserver(Observer* observer) {
 void CursorWindowController::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip) {
   large_cursor_size_in_dip =
-      std::min(large_cursor_size_in_dip, kMaxLargeCursorSize);
+      std::min(large_cursor_size_in_dip,
+               ::features::IsAccessibilityExtraLargeCursorEnabled()
+                   ? kMaxExtraLargeCursorSize
+                   : kMaxLargeCursorSize);
   large_cursor_size_in_dip =
       std::max(large_cursor_size_in_dip, kMinLargeCursorSize);
 
@@ -318,23 +322,6 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
       display_manager->IsInUnifiedMode() ||
       display_manager->screen_capture_is_active()) {
     return true;
-  }
-
-  // On specific CrOS devices (e.g. herobrine), driving a wide display requires
-  // more display hardware resources than a lower-resolution panel. If a wide
-  // display is connected as an external monitor, we can run out of hardware
-  // planes to display a separate cursor. As a result, we need to force the
-  // software cursor in this scenario.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSwCursorOnWideDisplays) &&
-      display_manager->num_connected_displays() > 1) {
-    for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-      DCHECK(display.is_valid());
-      if (display.is_valid() &&
-          display.size().width() >= kWideDisplayThreshold) {
-        return true;
-      }
-    }
   }
 
   if (shell->fullscreen_magnifier_controller()->IsEnabled())
@@ -553,13 +540,22 @@ void CursorWindowController::UpdateCursorImage() {
   std::vector<gfx::ImageSkia> images;
   gfx::Point hot_point_in_physical_pixels;
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
-    const SkBitmap& bitmap = cursor_.custom_bitmap();
+    SkBitmap bitmap = cursor_.custom_bitmap();
+    gfx::Point hotspot = cursor_.custom_hotspot();
     if (bitmap.isNull()) {
       return;
     }
     cursor_scale = cursor_.image_scale_factor();
+
+    // Custom cursor's bitmap is already rotated. Revert the rotation because
+    // software cursor's rotation is handled by viz.
+    const display::Display::Rotation inverted_rotation =
+        static_cast<display::Display::Rotation>(
+            (4 - static_cast<int>(display_.rotation())) % 4);
+    wm::ScaleAndRotateCursorBitmapAndHotpoint(1.0f, inverted_rotation, &bitmap,
+                                              &hotspot);
     images.push_back(gfx::ImageSkia::CreateFromBitmap(bitmap, cursor_scale));
-    hot_point_in_physical_pixels = cursor_.custom_hotspot();
+    hot_point_in_physical_pixels = hotspot;
   } else {
     // Do not use the device scale factor, as the cursor will be scaled
     // by compositor. HW cursor will not be scaled by display zoom, so the

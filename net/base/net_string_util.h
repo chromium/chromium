@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 // String conversion functions.  By default, they're implemented with ICU, but
@@ -19,31 +19,31 @@ extern const char* const kCharsetLatin1;
 
 // Converts |text| using |charset| to UTF-8, and writes it to |output|.
 // On failure, returns false and |output| is cleared.
-bool ConvertToUtf8(base::StringPiece text,
+bool ConvertToUtf8(std::string_view text,
                    const char* charset,
                    std::string* output);
 
 // Converts |text| using |charset| to UTF-8, normalizes the result, and writes
 // it to |output|.  On failure, returns false and |output| is cleared.
-bool ConvertToUtf8AndNormalize(base::StringPiece text,
+bool ConvertToUtf8AndNormalize(std::string_view text,
                                const char* charset,
                                std::string* output);
 
 // Converts |text| using |charset| to UTF-16, and writes it to |output|.
 // On failure, returns false and |output| is cleared.
-bool ConvertToUTF16(base::StringPiece text,
+bool ConvertToUTF16(std::string_view text,
                     const char* charset,
                     std::u16string* output);
 
 // Converts |text| using |charset| to UTF-16, and writes it to |output|.
 // Any characters that can not be converted are replaced with U+FFFD.
-bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
+bool ConvertToUTF16WithSubstitutions(std::string_view text,
                                      const char* charset,
                                      std::u16string* output);
 
 // Converts |str| to uppercase using the default locale, and writes it to
 // |output|. On failure returns false and |output| is cleared.
-NET_EXPORT_PRIVATE bool ToUpper(base::StringPiece16 str,
+NET_EXPORT_PRIVATE bool ToUpper(std::u16string_view str,
                                 std::u16string* output);
 
 }  // namespace net

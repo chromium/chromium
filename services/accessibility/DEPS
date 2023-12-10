@@ -6,4 +6,5 @@ include_rules = [
   "+ui/accessibility/ax_relative_bounds.h",
   "+ui/accessibility/ax_tree_id.h",
   "+ui/accessibility/ax_tree_update.h",
+  "+ui/base/l10n/l10n_util.h",
 ]

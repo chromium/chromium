@@ -259,8 +259,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
     // Fast path for when there is nothing complicated to write.
     // NOTE: size_t is written as two 32-bit zeros (see WriteSize()).
     WriteSimpleMultiple(
-        flags.color_, flags.width_, flags.miter_limit_, flags.blend_mode_,
-        flags.bitfields_uint_,
+        flags.color_, flags.width_, flags.miter_limit_, flags.bitfields_uint_,
         // flags.path_effect_.
         uint32_t{0}, uint32_t{0},
         // flags.mask_filter_.
@@ -279,7 +278,6 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
   WriteSimple(flags.color_);
   Write(flags.width_);
   Write(flags.miter_limit_);
-  Write(flags.blend_mode_);
   WriteSimple(flags.bitfields_uint_);
 
   WriteFlattenable(flags.path_effect_.get());
@@ -380,7 +378,7 @@ void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image) {
     return;
   }
 
-  absl::optional<uint32_t> id = decoded_draw_image.transfer_cache_entry_id();
+  std::optional<uint32_t> id = decoded_draw_image.transfer_cache_entry_id();
   // In the case of a decode failure, id may not be set. Send an invalid ID.
   WriteImage(id.value_or(kInvalidImageTransferCacheEntryId),
              decoded_draw_image.transfer_cache_entry_needs_mips());

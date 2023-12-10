@@ -17,9 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
-/**
- * Settings fragment containing Safety check. This class represents a View in the MVC paradigm.
- */
+/** Settings fragment containing Safety check. This class represents a View in the MVC paradigm. */
 public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
     private static final String SAFETY_CHECK_IMMEDIATE_RUN =
             "SafetyCheckSettingsFragment.safetyCheckImmediateRun";
@@ -31,18 +29,17 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
 
     private boolean mRunSafetyCheckImmediately;
 
-    /**
-     * Initializes all the objects related to the preferences page.
-     */
+    /** Initializes all the objects related to the preferences page. */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         // Add all preferences and set the title.
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_check_preferences);
         getActivity().setTitle(getString(R.string.prefs_safety_check));
 
-        mRunSafetyCheckImmediately = getArguments() != null
-                && getArguments().containsKey(SAFETY_CHECK_IMMEDIATE_RUN)
-                && getArguments().getBoolean(SAFETY_CHECK_IMMEDIATE_RUN);
+        mRunSafetyCheckImmediately =
+                getArguments() != null
+                        && getArguments().containsKey(SAFETY_CHECK_IMMEDIATE_RUN)
+                        && getArguments().getBoolean(SAFETY_CHECK_IMMEDIATE_RUN);
     }
 
     @Override

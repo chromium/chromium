@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -213,7 +215,7 @@ void HatsNextWebDialog::OnSurveyClosed() {
     // such as a survey still being in test mode, or an invalid survey ID.
     base::UmaHistogramEnumeration(
         kHatsShouldShowSurveyReasonHistogram,
-        HatsService::ShouldShowSurveyReasons::kNoRejectedByHatsService);
+        HatsServiceDesktop::ShouldShowSurveyReasons::kNoRejectedByHatsService);
     std::move(failure_callback_).Run();
   }
   CloseWidget();
@@ -284,12 +286,16 @@ HatsNextWebDialog::HatsNextWebDialog(
 }
 
 HatsNextWebDialog::~HatsNextWebDialog() {
+#if IS_ANDROID
+  NOTIMPLEMENTED();  // This class is for desktop only. Enforce assumption.
+#endif
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (otr_profile_) {
     otr_profile_->RemoveObserver(this);
     ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
-  auto* service = HatsServiceFactory::GetForProfile(browser_->profile(), false);
+  HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
+      HatsServiceFactory::GetForProfile(browser_->profile(), false));
   DCHECK(service);
   service->HatsNextDialogClosed();
 
@@ -340,7 +346,7 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
 void HatsNextWebDialog::LoadTimedOut() {
   base::UmaHistogramEnumeration(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoSurveyUnreachable);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoSurveyUnreachable);
   CloseWidget();
   std::move(failure_callback_).Run();
 }

@@ -30,16 +30,15 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
-#import "ios/chrome/browser/follow/follow_menu_updater.h"
-#import "ios/chrome/browser/follow/follow_tab_helper.h"
-#import "ios/chrome/browser/follow/follow_util.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/follow/model/follow_menu_updater.h"
+#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
+#import "ios/chrome/browser/follow/model/follow_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
@@ -69,7 +68,7 @@
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/webui/web_ui_url_constants.h"
@@ -604,7 +603,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   ClipboardRecentContent* clipboardRecentContent =
       ClipboardRecentContent::GetInstance();
   clipboardRecentContent->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
         [weakSelf searchCopiedImage:optionalImage usingLens:NO];
       }));
 }
@@ -614,7 +613,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   ClipboardRecentContent* clipboardRecentContent =
       ClipboardRecentContent::GetInstance();
   clipboardRecentContent->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
         [weakSelf searchCopiedImage:optionalImage usingLens:YES];
       }));
 }
@@ -1150,7 +1149,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 // Searches the copied image. If `usingLens` is set, then the search will be
 // performed with Lens.
-- (void)searchCopiedImage:(absl::optional<gfx::Image>)optionalImage
+- (void)searchCopiedImage:(std::optional<gfx::Image>)optionalImage
                 usingLens:(BOOL)usingLens {
   if (!optionalImage)
     return;

@@ -15,6 +15,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -43,15 +44,18 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-/**
- * Saves and restores {@link TabState} to and from files.
- */
+/** Saves and restores {@link TabState} to and from files. */
 public class TabStateFileManager {
     // Different variants will be experimented with and each variant will have
     // a different prefix.
@@ -79,12 +83,21 @@ public class TabStateFileManager {
     /** Overrides the Chrome channel/package name to test a variant channel-specific behaviour. */
     private static String sChannelNameOverrideForTest;
 
-    /**
-     * Enum representing the exception that occurred during {@link restoreTabState}.
-     */
-    @IntDef({RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION,
-            RestoreTabStateException.CLOSED_BY_INTERRUPT_EXCEPTION,
-            RestoreTabStateException.IO_EXCEPTION, RestoreTabStateException.NUM_ENTRIES})
+    private static Deque<FlatBufferMigrationTask> sPendingFlatBufferMigrations = new ArrayDeque<>();
+    private static List<FlatBufferMigrationTask> sExecutingFlatBufferMigrations =
+            new LinkedList<>();
+
+    private static boolean sDeferredStartupComplete;
+
+    private static final int MAX_CONCURRENT_FLATBUFFER_MIGRATIONS = 1;
+
+    /** Enum representing the exception that occurred during {@link restoreTabState}. */
+    @IntDef({
+        RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION,
+        RestoreTabStateException.CLOSED_BY_INTERRUPT_EXCEPTION,
+        RestoreTabStateException.IO_EXCEPTION,
+        RestoreTabStateException.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RestoreTabStateException {
         int FILE_NOT_FOUND_EXCEPTION = 0;
@@ -194,8 +207,10 @@ public class TabStateFileManager {
 
     private static void recordRestoreTabStateException(
             @RestoreTabStateException int restoreTabStateException) {
-        RecordHistogram.recordEnumeratedHistogram("Tabs.RestoreTabStateException",
-                restoreTabStateException, RestoreTabStateException.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tabs.RestoreTabStateException",
+                restoreTabStateException,
+                RestoreTabStateException.NUM_ENTRIES);
     }
 
     /**
@@ -248,13 +263,19 @@ public class TabStateFileManager {
             } else {
                 // If not, we can mmap the file directly, saving time and copies into the java heap.
                 FileChannel channel = input.getChannel();
-                tabState.contentsState = new WebContentsState(
-                        channel.map(MapMode.READ_ONLY, channel.position(), size));
+                tabState.contentsState =
+                        new WebContentsState(
+                                channel.map(MapMode.READ_ONLY, channel.position(), size));
                 // Skip ahead to avoid re-reading data that mmap'd.
                 long skipped = input.skip(size);
                 if (skipped != size) {
-                    Log.e(TAG,
-                            "Only skipped " + skipped + " bytes when " + size + " should've "
+                    Log.e(
+                            TAG,
+                            "Only skipped "
+                                    + skipped
+                                    + " bytes when "
+                                    + size
+                                    + " should've "
                                     + "been skipped. Tab restore may fail.");
                 }
             }
@@ -275,9 +296,11 @@ public class TabStateFileManager {
 
                 // Could happen if reading a version of a TabState that does not include the
                 // version id.
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read saved state version id from tab state. Assuming "
-                                + "version " + tabState.contentsState.version());
+                                + "version "
+                                + tabState.contentsState.version());
             }
             try {
                 // Skip obsolete sync ID.
@@ -288,7 +311,8 @@ public class TabStateFileManager {
                 boolean shouldPreserveNotUsed = stream.readBoolean();
             } catch (EOFException eof) {
                 // Could happen if reading a version of TabState without this flag set.
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read shouldPreserve flag from tab state. "
                                 + "Assuming shouldPreserve is false");
             }
@@ -298,7 +322,8 @@ public class TabStateFileManager {
             } catch (EOFException eof) {
                 // Could happen if reading a version of TabState without a theme color.
                 tabState.themeColor = TabState.UNSPECIFIED_THEME_COLOR;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read theme color from tab state. "
                                 + "Assuming theme color is TabState#UNSPECIFIED_THEME_COLOR");
             }
@@ -310,7 +335,8 @@ public class TabStateFileManager {
                 }
             } catch (EOFException eof) {
                 tabState.tabLaunchTypeAtCreation = null;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read tab launch type at creation from tab state. "
                                 + "Assuming tab launch type is null");
             }
@@ -318,7 +344,8 @@ public class TabStateFileManager {
                 tabState.rootId = stream.readInt();
             } catch (EOFException eof) {
                 tabState.rootId = Tab.INVALID_TAB_ID;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read tab root id from tab state. "
                                 + "Assuming root id is Tab.INVALID_TAB_ID");
             }
@@ -326,7 +353,8 @@ public class TabStateFileManager {
                 tabState.userAgent = stream.readInt();
             } catch (EOFException eof) {
                 tabState.userAgent = TabUserAgent.UNSET;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read tab user agent from tab state. "
                                 + "Assuming user agent is TabUserAgent.UNSET");
             }
@@ -334,10 +362,32 @@ public class TabStateFileManager {
                 tabState.lastNavigationCommittedTimestampMillis = stream.readLong();
             } catch (EOFException eof) {
                 tabState.lastNavigationCommittedTimestampMillis = TabState.TIMESTAMP_NOT_SET;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read last navigation committed timestamp from tab state."
                                 + " Assuming last navigation committed timestamp is"
                                 + " TabState.TIMESTAMP_NOT_SET");
+            }
+            // If FlatBuffer schema is enabled, but we restored using Legacy TabState, that
+            // means the FlatBuffer file doesn't exist yet (e.g. Tab has gone uninteracted with
+            // and there hasn't been an opportunity to migrate it to the FlatBuffer format).
+            // So a migration should be initiated.
+            if (isFlatBufferSchemaEnabled()) {
+                Pair<Integer, Boolean> params = parseInfoFromFilename(file.getName());
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_BEST_EFFORT,
+                        () -> {
+                            ThreadUtils.assertOnUiThread();
+                            sPendingFlatBufferMigrations.add(
+                                    new FlatBufferMigrationTask(
+                                            /* tabId= */ params.first,
+                                            /* isEncrypted= */ params.second,
+                                            tabState,
+                                            file.getParentFile()));
+                            if (sDeferredStartupComplete) {
+                                processNextFlatBufferMigration();
+                            }
+                        });
             }
             return tabState;
         } finally {
@@ -400,8 +450,10 @@ public class TabStateFileManager {
             if (encrypted) {
                 Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
                 if (cipher != null) {
-                    dataOutputStream = new DataOutputStream(new BufferedOutputStream(
-                            new CipherOutputStream(fileOutputStream, cipher)));
+                    dataOutputStream =
+                            new DataOutputStream(
+                                    new BufferedOutputStream(
+                                            new CipherOutputStream(fileOutputStream, cipher)));
                 } else {
                     // If cipher is null, getRandomBytes failed, which means encryption is
                     // meaningless. Therefore, do not save anything. This will cause users
@@ -556,8 +608,9 @@ public class TabStateFileManager {
     public static Pair<Integer, Boolean> parseInfoFromFilename(String name) {
         try {
             if (name.startsWith(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO)) {
-                int id = Integer.parseInt(
-                        name.substring(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO.length()));
+                int id =
+                        Integer.parseInt(
+                                name.substring(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO.length()));
                 return Pair.create(id, true);
             } else if (name.startsWith(SAVED_TAB_STATE_FILE_PREFIX)) {
                 int id = Integer.parseInt(name.substring(SAVED_TAB_STATE_FILE_PREFIX.length()));
@@ -598,5 +651,117 @@ public class TabStateFileManager {
 
     private static boolean isFlatBufferSchemaEnabled() {
         return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
+    }
+
+    /***
+     * Signal to {@link TabStateFileManager} that deferred startup has commenced.
+     */
+    public static void onDeferredStartup() {
+        if (!isFlatBufferSchemaEnabled()) {
+            return;
+        }
+        processNextFlatBufferMigration();
+        sDeferredStartupComplete = true;
+    }
+
+    /***
+     * Cancel migration of a {@link Tab} to FlatBuffer format (for example if a {@link Tab} is closed.
+     * @param tabId identifier for a {@link Tab}
+     * @param isEncrypted if a {@link Tab} is incognito or not.
+     */
+    public static void cancelMigration(int tabId, boolean isEncrypted) {
+        if (!isFlatBufferSchemaEnabled()) {
+            return;
+        }
+        Optional<FlatBufferMigrationTask> pendingFlatBufferMigrationTask =
+                sPendingFlatBufferMigrations.stream()
+                        .filter(f -> f.mTabId == tabId && f.mIsEncrypted == isEncrypted)
+                        .findFirst();
+        if (pendingFlatBufferMigrationTask.isPresent()) {
+            sPendingFlatBufferMigrations.remove(pendingFlatBufferMigrationTask.get());
+            return;
+        }
+        Optional<FlatBufferMigrationTask> sExecutingFlatBufferMigrationTask =
+                sExecutingFlatBufferMigrations.stream()
+                        .filter(f -> f.mTabId == tabId && f.mIsEncrypted == isEncrypted)
+                        .findFirst();
+        if (sExecutingFlatBufferMigrationTask.isPresent()) {
+            sExecutingFlatBufferMigrationTask.get().cancel(false);
+            sExecutingFlatBufferMigrations.remove(sExecutingFlatBufferMigrationTask.get());
+            processNextFlatBufferMigration();
+        }
+    }
+
+    private static class FlatBufferMigrationTask extends AsyncTask<Void> {
+        protected int mTabId;
+        protected boolean mIsEncrypted;
+        protected TabState mTabState;
+        protected File mStateDirectory;
+
+        FlatBufferMigrationTask(
+                int tabId, boolean isEncrypted, TabState tabState, File stateDirectory) {
+            mTabId = tabId;
+            mIsEncrypted = isEncrypted;
+            mTabState = tabState;
+            mStateDirectory = stateDirectory;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            saveStateInternal(
+                    getTabStateFile(
+                            mStateDirectory, mTabId, mIsEncrypted, /* isFlatbuffer= */ true),
+                    mTabState,
+                    mIsEncrypted);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            if (isCancelled()) {
+                deleteOnCancel();
+                return;
+            }
+            sExecutingFlatBufferMigrations.remove(this);
+            processNextFlatBufferMigration();
+        }
+
+        private void deleteOnCancel() {
+            PostTask.runOrPostTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> {
+                        ThreadUtils.assertOnBackgroundThread();
+                        File file =
+                                getTabStateFile(
+                                        mStateDirectory,
+                                        mTabId,
+                                        mIsEncrypted,
+                                        /* isFlatbuffer= */ true);
+                        if (file.exists() && !file.delete()) {
+                            Log.e(TAG, "Failed to delete TabState: " + file);
+                        }
+                    });
+        }
+    }
+
+    private static void processNextFlatBufferMigration() {
+        if (sPendingFlatBufferMigrations.isEmpty()
+                || sExecutingFlatBufferMigrations.size() >= MAX_CONCURRENT_FLATBUFFER_MIGRATIONS) {
+            return;
+        }
+        FlatBufferMigrationTask nextFlatBufferMigrationTask =
+                sPendingFlatBufferMigrations.removeFirst();
+        sExecutingFlatBufferMigrations.add(nextFlatBufferMigrationTask);
+        nextFlatBufferMigrationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static boolean isFinishedFlatBufferMigration() {
+        return sPendingFlatBufferMigrations.isEmpty() && sExecutingFlatBufferMigrations.isEmpty();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void resetDeferredStartupCompleteForTesting() {
+        sDeferredStartupComplete = false;
     }
 }

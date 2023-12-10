@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.preferences.AllPreferenceKeyRegistries;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -110,16 +111,12 @@ public class ChromeBrowserInitializer {
         }
     }
 
-    /**
-     * Initializes the Chrome browser process synchronously.
-     */
+    /** Initializes the Chrome browser process synchronously. */
     public void handleSynchronousStartup() {
         handleSynchronousStartupInternal(false);
     }
 
-    /**
-     * Initializes the Chrome browser process synchronously with GPU process warmup.
-     */
+    /** Initializes the Chrome browser process synchronously with GPU process warmup. */
     public void handleSynchronousStartupWithGpuWarmUp() {
         handleSynchronousStartupInternal(true);
     }
@@ -127,12 +124,13 @@ public class ChromeBrowserInitializer {
     private void handleSynchronousStartupInternal(final boolean startGpuProcess) {
         ThreadUtils.checkUiThread();
 
-        BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public boolean shouldStartGpuProcess() {
-                return startGpuProcess;
-            }
-        };
+        BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public boolean shouldStartGpuProcess() {
+                        return startGpuProcess;
+                    }
+                };
         handlePreNativeStartupAndLoadLibraries(parts);
         handlePostNativeStartup(false, parts);
     }
@@ -190,8 +188,11 @@ public class ChromeBrowserInitializer {
      * Running in an AsyncTask as pre-loading itself may cause I/O.
      */
     private void warmUpSharedPrefs() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> { DownloadManagerService.warmUpSharedPrefs(); });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    DownloadManagerService.warmUpSharedPrefs();
+                });
     }
 
     private void preInflationStartup() {
@@ -237,14 +238,15 @@ public class ChromeBrowserInitializer {
         if (!mPostInflationStartupComplete) {
             throw new IllegalStateException(
                     "ChromeBrowserInitializer.handlePostNativeStartup called before "
-                    + "ChromeBrowserInitializer.postInflationStartup has been run.");
+                            + "ChromeBrowserInitializer.postInflationStartup has been run.");
         }
         final ChainedTasks tasks = new ChainedTasks();
         // If full browser process is not going to be launched, it is up to individual service to
         // launch its required components.
         if (!delegate.startMinimalBrowser()
                 && !ProcessInitializationHandler.getInstance().postNativeInitializationComplete()) {
-            tasks.add(TaskTraits.UI_DEFAULT,
+            tasks.add(
+                    TaskTraits.UI_DEFAULT,
                     () -> ProcessInitializationHandler.getInstance().initializePostNative());
         }
 
@@ -252,34 +254,43 @@ public class ChromeBrowserInitializer {
             tasks.add(TaskTraits.UI_DEFAULT, this::initNetworkChangeNotifier);
         }
 
-        tasks.add(TaskTraits.UI_DEFAULT, () -> {
-            // This is not broken down as a separate task, since this:
-            // 1. Should happen as early as possible
-            // 2. Only submits asynchronous work
-            // 3. Is thus very cheap (profiled at 0.18ms on a Nexus 5 with Lollipop)
-            // It should also be in a separate task (and after) initNetworkChangeNotifier, as
-            // this posts a task to the UI thread that would interfere with preconneciton
-            // otherwise. By preconnecting afterwards, we make sure that this task has run.
-            delegate.maybePreconnect();
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // This is not broken down as a separate task, since this:
+                    // 1. Should happen as early as possible
+                    // 2. Only submits asynchronous work
+                    // 3. Is thus very cheap (profiled at 0.18ms on a Nexus 5 with Lollipop)
+                    // It should also be in a separate task (and after) initNetworkChangeNotifier,
+                    // as
+                    // this posts a task to the UI thread that would interfere with preconneciton
+                    // otherwise. By preconnecting afterwards, we make sure that this task has run.
+                    delegate.maybePreconnect();
 
-            onStartNativeInitialization();
-        });
+                    onStartNativeInitialization();
+                });
 
-        tasks.add(TaskTraits.UI_DEFAULT, () -> {
-            if (delegate.isActivityFinishingOrDestroyed()) return;
-            delegate.initializeCompositor();
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (delegate.isActivityFinishingOrDestroyed()) return;
+                    delegate.initializeCompositor();
+                });
 
-        tasks.add(TaskTraits.UI_DEFAULT, () -> {
-            if (delegate.isActivityFinishingOrDestroyed()) return;
-            delegate.initializeState();
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (delegate.isActivityFinishingOrDestroyed()) return;
+                    delegate.initializeState();
+                });
 
-        tasks.add(TaskTraits.UI_DEFAULT, () -> {
-            if (delegate.isActivityFinishingOrDestroyed()) return;
-            // Some tasks posted by this are on the critical path.
-            delegate.startNativeInitialization();
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (delegate.isActivityFinishingOrDestroyed()) return;
+                    // Some tasks posted by this are on the critical path.
+                    delegate.startNativeInitialization();
+                });
 
         if (!mNativeInitializationComplete) {
             tasks.add(TaskTraits.UI_DEFAULT, this::onFinishNativeInitialization);
@@ -291,16 +302,20 @@ public class ChromeBrowserInitializer {
 
         int startupMode =
                 getBrowserStartupController().getStartupMode(delegate.startMinimalBrowser());
-        tasks.add(TaskTraits.UI_DEFAULT, () -> {
-            BackgroundTaskSchedulerFactory.getUmaReporter().reportStartupMode(startupMode);
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    BackgroundTaskSchedulerFactory.getUmaReporter().reportStartupMode(startupMode);
+                });
 
         if (isAsync) {
             // We want to start this queue once the C++ startup tasks have run; allow the
             // C++ startup to run asynchonously, and set it up to start the Java queue once
             // it has finished.
-            startChromeBrowserProcessesAsync(delegate.shouldStartGpuProcess(),
-                    delegate.startMinimalBrowser(), new BrowserStartupController.StartupCallback() {
+            startChromeBrowserProcessesAsync(
+                    delegate.shouldStartGpuProcess(),
+                    delegate.startMinimalBrowser(),
+                    new BrowserStartupController.StartupCallback() {
                         @Override
                         public void onFailure() {
                             delegate.onStartupFailure(null);
@@ -317,13 +332,18 @@ public class ChromeBrowserInitializer {
         }
     }
 
-    private void startChromeBrowserProcessesAsync(boolean startGpuProcess,
-            boolean startMinimalBrowser, BrowserStartupController.StartupCallback callback) {
+    private void startChromeBrowserProcessesAsync(
+            boolean startGpuProcess,
+            boolean startMinimalBrowser,
+            BrowserStartupController.StartupCallback callback) {
         try {
             TraceEvent.begin("ChromeBrowserInitializer.startChromeBrowserProcessesAsync");
-            getBrowserStartupController().startBrowserProcessesAsync(
-                    LibraryProcessType.PROCESS_BROWSER, startGpuProcess, startMinimalBrowser,
-                    callback);
+            getBrowserStartupController()
+                    .startBrowserProcessesAsync(
+                            LibraryProcessType.PROCESS_BROWSER,
+                            startGpuProcess,
+                            startMinimalBrowser,
+                            callback);
         } finally {
             TraceEvent.end("ChromeBrowserInitializer.startChromeBrowserProcessesAsync");
         }
@@ -337,10 +357,12 @@ public class ChromeBrowserInitializer {
             LibraryLoader.getInstance().ensureInitialized();
             StrictMode.setThreadPolicy(oldPolicy);
             LibraryPrefetcher.asyncPrefetchLibrariesToMemory();
-            getBrowserStartupController().startBrowserProcessesSync(
-                    LibraryProcessType.PROCESS_BROWSER, /*singleProcess=*/false,
-                    /*startGpuProcess=*/startGpuProcess);
-            SigninCheckerProvider.get();
+            getBrowserStartupController()
+                    .startBrowserProcessesSync(
+                            LibraryProcessType.PROCESS_BROWSER,
+                            /* singleProcess= */ false,
+                            /* startGpuProcess= */ startGpuProcess);
+            SigninCheckerProvider.get(Profile.getLastUsedRegularProfile());
         } finally {
             TraceEvent.end("ChromeBrowserInitializer.startChromeBrowserProcessesSync");
         }
@@ -398,8 +420,9 @@ public class ChromeBrowserInitializer {
                 new ChildProcessCrashObserver.ChildCrashedCallback() {
                     @Override
                     public void childCrashed(int pid) {
-                        CrashFileManager crashFileManager = new CrashFileManager(
-                                ContextUtils.getApplicationContext().getCacheDir());
+                        CrashFileManager crashFileManager =
+                                new CrashFileManager(
+                                        ContextUtils.getApplicationContext().getCacheDir());
 
                         File minidump = crashFileManager.getMinidumpSansLogcatForPid(pid);
                         if (minidump != null) {

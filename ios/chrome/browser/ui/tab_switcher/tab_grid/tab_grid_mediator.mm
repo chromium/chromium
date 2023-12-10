@@ -9,10 +9,11 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
@@ -65,9 +66,8 @@
 
 - (void)setConsumer:(id<TabGridConsumer>)consumer {
   _consumer = consumer;
-  [_consumer
-      updateParentalControlStatus:supervised_user::IsSubjectToParentalControls(
-                                      _prefService)];
+  [_consumer updateParentalControlStatus:
+      supervised_user::IsSubjectToParentalControls(*_prefService)];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -77,7 +77,7 @@
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kSupervisedUserId) {
     [_consumer updateParentalControlStatus:
-                   supervised_user::IsSubjectToParentalControls(_prefService)];
+        supervised_user::IsSubjectToParentalControls(*_prefService)];
     [_consumer updateTabGridForIncognitoModeDisabled:IsIncognitoModeDisabled(
                                                          _prefService)];
   }
@@ -118,6 +118,14 @@
 
   // TODO(crbug.com/1462133): Implement the incognito grid or content visible
   // notification.
+}
+
+- (void)dragAndDropSessionStarted {
+  [self.toolbarsMutator setButtonsEnabled:NO];
+}
+
+- (void)dragAndDropSessionEnded {
+  [self.toolbarsMutator setButtonsEnabled:YES];
 }
 
 @end

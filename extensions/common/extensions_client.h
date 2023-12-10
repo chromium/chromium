@@ -154,9 +154,9 @@ class ExtensionsClient {
       std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const;
 
   // Returns the extended error code used by the embedder when an extension
-  // blocks a request. Returns absl::nullopt if the embedder doesn't define such
+  // blocks a request. Returns std::nullopt if the embedder doesn't define such
   // an error code.
-  virtual absl::optional<int> GetExtensionExtendedErrorCode() const;
+  virtual std::optional<int> GetExtensionExtendedErrorCode() const;
 
  private:
   // Performs common initialization and calls Initialize() to allow subclasses

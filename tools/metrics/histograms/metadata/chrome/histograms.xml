@@ -22,8 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Chrome.AppMenu.MenuHostInitToNextFramePresented" units="ms"
+    expires_after="2024-11-06">
+  <owner>temao@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records time from when Widget::Show() is called to when the first frame is
+    presented for the App Menu. It's logged every time the app menu opens.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.BuildState.BuildStateUpdateType"
-    enum="BuildStateUpdateType" expires_after="2024-03-30">
+    enum="BuildStateUpdateType" expires_after="2024-06-02">
   <owner>ajgo@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <summary>
@@ -33,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Frame.MouseDownCaptionHitTestInReservedGrabHandleSpace"
-    enum="Boolean" expires_after="2024-03-24">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>robliao@chromium.org</owner>
   <owner>pkasting@chromium.org</owner>
   <summary>
@@ -92,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -138,23 +148,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow"
-    units="%" expires_after="2023-07-25">
-  <obsolete>
-    This metric is reported on every dropped frame instead of every frame. It is
-    deprecated in favor of
-    Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2
-  </obsolete>
-  <owner>xiyuan@chromium.org</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow but emitted for the
-    browser UI of lacros-chrome.
-  </summary>
-</histogram>
-
 <histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2"
-    units="%" expires_after="2024-03-31">
+    units="%" expires_after="2024-06-02">
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -287,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2024-03-17">
+    enum="NetworkSandboxState" expires_after="2024-05-19">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -330,23 +325,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.WrenchMenu.MenuButtonPressedToMenuShown" units="ms"
-    expires_after="2024-05-31">
+    expires_after="2024-05-12">
   <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records the latency from when the app menu button is pressed to when the
     menu is shown. It's logged every time the button is pressed.
+
+    This metric will be removed after M121 and is replaced by
+    Chrome.AppMenu.MenuHostInitToNextFramePresented. We do not want to use menu
+    button's compositor to track the app menu creation time.
   </summary>
 </histogram>
 
 <histogram name="Chrome.WrenchMenu.MenuHostInitToNextFramePresented" units="ms"
-    expires_after="2024-08-10">
+    expires_after="2024-05-12">
   <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records time from when the menu host initialization is started to when the
     next frame is successfully presented. It's logged every time the app menu
     opens.
+
+    This metric will be removed after M121 and is replaced by
+    Chrome.AppMenu.MenuHostInitToNextFramePresented. We do not want to use menu
+    button's compositor to track the app menu creation time.
   </summary>
 </histogram>
 
@@ -365,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorType" enum="ChromeColorType"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -380,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.DynamicColorOnLoad"
-    enum="DynamicChromeColorsInfo" expires_after="2024-03-10">
+    enum="DynamicChromeColorsInfo" expires_after="2024-05-12">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -439,24 +442,6 @@ chromium-metrics-reviews@google.com.
     will be enabled in practice, as the heuristic detects the presence of third
     party software. Only recorded on Windows. This histogram was expired between
     M93 and M114.
-  </summary>
-</histogram>
-
-<histogram name="ChromeElf.ThirdPartyStatus" enum="ThirdPartyStatus"
-    expires_after="M121">
-  <obsolete>
-    Retained for historical data.
-  </obsolete>
-  <owner>pmonette@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
-  <summary>
-    Records the different status codes that are emitted by chrome_elf.dll while
-    initializing the NtMapViewOfSection hook used to blocked third-party DLLs.
-    Multiple status codes can be emitted per initialization since some of those
-    status codes represent non-fatal failures. E.g. Failure to clear the
-    previous failure codes. This also means that duplicates are possible. This
-    is recorded shortly after Chrome launches, since chrome_elf.dll doesn't have
-    access to the //base API. This histogram was expired between M82 and M114.
   </summary>
 </histogram>
 

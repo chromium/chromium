@@ -1,0 +1,67 @@
+This is a testharness.js-based test.
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] test unit: ex - ellipse(50ex 100ex at 50% 50%) - computed
+  assert_equals: expected "ellipse(640px 1280px at 50% 50%)" but got "ellipse(400px 800px at 50% 50%)"
+[FAIL] test unit: ex - ellipse(100ex 100px at 50% 50%) - computed
+  assert_equals: expected "ellipse(1280px 100px at 50% 50%)" but got "ellipse(800px 100px at 50% 50%)"
+[FAIL] test unit: ex - ellipse(50ex 25% at 50% 50%) - computed
+  assert_equals: expected "ellipse(640px 25% at 50% 50%)" but got "ellipse(400px 25% at 50% 50%)"
+[FAIL] test unit: ex - ellipse(25% 50ex at 50% 50%) - computed
+  assert_equals: expected "ellipse(25% 640px at 50% 50%)" but got "ellipse(25% 400px at 50% 50%)"
+[FAIL] test unit: ex - ellipse(25ex closest-side at 50% 50%) - computed
+  assert_equals: expected "ellipse(320px closest-side at 50% 50%)" but got "ellipse(200px closest-side at 50% 50%)"
+[FAIL] test unit: ex - ellipse(closest-side 75ex at 50% 50%) - computed
+  assert_equals: expected "ellipse(closest-side 960px at 50% 50%)" but got "ellipse(closest-side 600px at 50% 50%)"
+[FAIL] test unit: ex - ellipse(25ex farthest-side at 50% 50%) - computed
+  assert_equals: expected "ellipse(320px farthest-side at 50% 50%)" but got "ellipse(200px farthest-side at 50% 50%)"
+[FAIL] test unit: ex - ellipse(farthest-side 75ex at 50% 50%) - computed
+  assert_equals: expected "ellipse(farthest-side 960px at 50% 50%)" but got "ellipse(farthest-side 600px at 50% 50%)"
+[FAIL] test unit: ex - ellipse(50ex 100ex) - computed
+  assert_equals: expected "ellipse(640px 1280px)" but got "ellipse(400px 800px)"
+[FAIL] test unit: ex - ellipse(100ex 100px) - computed
+  assert_equals: expected "ellipse(1280px 100px)" but got "ellipse(800px 100px)"
+[FAIL] test unit: ex - ellipse(50ex 25%) - computed
+  assert_equals: expected "ellipse(640px 25%)" but got "ellipse(400px 25%)"
+[FAIL] test unit: ex - ellipse(25% 50ex) - computed
+  assert_equals: expected "ellipse(25% 640px)" but got "ellipse(25% 400px)"
+[FAIL] test unit: ex - ellipse(25ex closest-side) - computed
+  assert_equals: expected "ellipse(320px closest-side)" but got "ellipse(200px closest-side)"
+[FAIL] test unit: ex - ellipse(closest-side 75ex) - computed
+  assert_equals: expected "ellipse(closest-side 960px)" but got "ellipse(closest-side 600px)"
+[FAIL] test unit: ex - ellipse(25ex farthest-side) - computed
+  assert_equals: expected "ellipse(320px farthest-side)" but got "ellipse(200px farthest-side)"
+[FAIL] test unit: ex - ellipse(farthest-side 75ex) - computed
+  assert_equals: expected "ellipse(farthest-side 960px)" but got "ellipse(farthest-side 600px)"
+[FAIL] test unit: ch - ellipse(50ch 100ch at 50% 50%) - computed
+  assert_equals: expected "ellipse(800px 1600px at 50% 50%)" but got "ellipse(400px 800px at 50% 50%)"
+[FAIL] test unit: ch - ellipse(100ch 100px at 50% 50%) - computed
+  assert_equals: expected "ellipse(1600px 100px at 50% 50%)" but got "ellipse(800px 100px at 50% 50%)"
+[FAIL] test unit: ch - ellipse(50ch 25% at 50% 50%) - computed
+  assert_equals: expected "ellipse(800px 25% at 50% 50%)" but got "ellipse(400px 25% at 50% 50%)"
+[FAIL] test unit: ch - ellipse(25% 50ch at 50% 50%) - computed
+  assert_equals: expected "ellipse(25% 800px at 50% 50%)" but got "ellipse(25% 400px at 50% 50%)"
+[FAIL] test unit: ch - ellipse(25ch closest-side at 50% 50%) - computed
+  assert_equals: expected "ellipse(400px closest-side at 50% 50%)" but got "ellipse(200px closest-side at 50% 50%)"
+[FAIL] test unit: ch - ellipse(closest-side 75ch at 50% 50%) - computed
+  assert_equals: expected "ellipse(closest-side 1200px at 50% 50%)" but got "ellipse(closest-side 600px at 50% 50%)"
+[FAIL] test unit: ch - ellipse(25ch farthest-side at 50% 50%) - computed
+  assert_equals: expected "ellipse(400px farthest-side at 50% 50%)" but got "ellipse(200px farthest-side at 50% 50%)"
+[FAIL] test unit: ch - ellipse(farthest-side 75ch at 50% 50%) - computed
+  assert_equals: expected "ellipse(farthest-side 1200px at 50% 50%)" but got "ellipse(farthest-side 600px at 50% 50%)"
+[FAIL] test unit: ch - ellipse(50ch 100ch) - computed
+  assert_equals: expected "ellipse(800px 1600px)" but got "ellipse(400px 800px)"
+[FAIL] test unit: ch - ellipse(100ch 100px) - computed
+  assert_equals: expected "ellipse(1600px 100px)" but got "ellipse(800px 100px)"
+[FAIL] test unit: ch - ellipse(50ch 25%) - computed
+  assert_equals: expected "ellipse(800px 25%)" but got "ellipse(400px 25%)"
+[FAIL] test unit: ch - ellipse(25% 50ch) - computed
+  assert_equals: expected "ellipse(25% 800px)" but got "ellipse(25% 400px)"
+[FAIL] test unit: ch - ellipse(25ch closest-side) - computed
+  assert_equals: expected "ellipse(400px closest-side)" but got "ellipse(200px closest-side)"
+[FAIL] test unit: ch - ellipse(closest-side 75ch) - computed
+  assert_equals: expected "ellipse(closest-side 1200px)" but got "ellipse(closest-side 600px)"
+[FAIL] test unit: ch - ellipse(25ch farthest-side) - computed
+  assert_equals: expected "ellipse(400px farthest-side)" but got "ellipse(200px farthest-side)"
+[FAIL] test unit: ch - ellipse(farthest-side 75ch) - computed
+  assert_equals: expected "ellipse(farthest-side 1200px)" but got "ellipse(farthest-side 600px)"
+Harness: the test ran to completion.

@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
@@ -34,8 +32,7 @@
   if (self = [super init]) {
     CHECK(prefService);
     _prefService = prefService;
-    if (IsIOSSetUpListEnabled() &&
-        set_up_list_utils::IsSetUpListActive(_prefService, false)) {
+    if (set_up_list_utils::IsSetUpListActive(_prefService, false)) {
       _setUpListDisabled = [[PrefBackedBoolean alloc]
           initWithPrefService:_prefService
                      prefName:set_up_list_prefs::kDisabled];

@@ -103,24 +103,24 @@ class DeviceSyncCryptAuthGCMManagerImplTest
   }
 
   void OnReenrollMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override {
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override {
     OnReenrollMessageProxy(session_id, feature_type);
   }
 
   void OnResyncMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override {
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override {
     OnResyncMessageProxy(session_id, feature_type);
   }
 
   MOCK_METHOD1(OnGCMRegistrationResultProxy, void(bool));
   MOCK_METHOD2(OnReenrollMessageProxy,
-               void(absl::optional<std::string> session_id,
-                    absl::optional<CryptAuthFeatureType> feature_type));
+               void(std::optional<std::string> session_id,
+                    std::optional<CryptAuthFeatureType> feature_type));
   MOCK_METHOD2(OnResyncMessageProxy,
-               void(absl::optional<std::string> session_id,
-                    absl::optional<CryptAuthFeatureType> feature_type));
+               void(std::optional<std::string> session_id,
+                    std::optional<CryptAuthFeatureType> feature_type));
 
   testing::StrictMock<MockGCMDriver> gcm_driver_;
 
@@ -197,8 +197,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
        ReenrollmentMessagesReceived_RegistrationTickleType) {
   EXPECT_CALL(*this,
               OnReenrollMessageProxy(
-                  absl::optional<std::string>() /* session_id */,
-                  absl::optional<CryptAuthFeatureType>() /* feature_type */))
+                  std::optional<std::string>() /* session_id */,
+                  std::optional<CryptAuthFeatureType>() /* feature_type */))
       .Times(2);
 
   gcm::IncomingMessage message;
@@ -218,14 +218,12 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   {
     ::testing::InSequence dummy;
 
-    EXPECT_CALL(*this,
-                OnReenrollMessageProxy(
-                    absl::optional<std::string>(kSessionId1),
-                    absl::optional<CryptAuthFeatureType>(kFeatureType1)));
-    EXPECT_CALL(*this,
-                OnReenrollMessageProxy(
-                    absl::optional<std::string>(kSessionId2),
-                    absl::optional<CryptAuthFeatureType>(kFeatureType2)));
+    EXPECT_CALL(*this, OnReenrollMessageProxy(
+                           std::optional<std::string>(kSessionId1),
+                           std::optional<CryptAuthFeatureType>(kFeatureType1)));
+    EXPECT_CALL(*this, OnReenrollMessageProxy(
+                           std::optional<std::string>(kSessionId2),
+                           std::optional<CryptAuthFeatureType>(kFeatureType2)));
   }
 
   gcm::IncomingMessage message;
@@ -252,8 +250,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
        ResyncMessagesReceived_RegistrationTickleType) {
   EXPECT_CALL(*this,
               OnResyncMessageProxy(
-                  absl::optional<std::string>() /* session_id */,
-                  absl::optional<CryptAuthFeatureType>() /* feature_type */))
+                  std::optional<std::string>() /* session_id */,
+                  std::optional<CryptAuthFeatureType>() /* feature_type */))
       .Times(2);
 
   gcm::IncomingMessage message;
@@ -272,14 +270,12 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   {
     ::testing::InSequence dummy;
 
-    EXPECT_CALL(*this,
-                OnResyncMessageProxy(
-                    absl::optional<std::string>(kSessionId1),
-                    absl::optional<CryptAuthFeatureType>(kFeatureType1)));
-    EXPECT_CALL(*this,
-                OnResyncMessageProxy(
-                    absl::optional<std::string>(kSessionId2),
-                    absl::optional<CryptAuthFeatureType>(kFeatureType2)));
+    EXPECT_CALL(*this, OnResyncMessageProxy(
+                           std::optional<std::string>(kSessionId1),
+                           std::optional<CryptAuthFeatureType>(kFeatureType1)));
+    EXPECT_CALL(*this, OnResyncMessageProxy(
+                           std::optional<std::string>(kSessionId2),
+                           std::optional<CryptAuthFeatureType>(kFeatureType2)));
   }
 
   gcm::IncomingMessage message;
@@ -378,8 +374,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   // contained in the same GCM message. If they are, a valid "S" value is
   // arbitrarily preferred.
   EXPECT_CALL(*this, OnReenrollMessageProxy(
-                         absl::optional<std::string>(kSessionId1),
-                         absl::optional<CryptAuthFeatureType>(kFeatureType1)));
+                         std::optional<std::string>(kSessionId1),
+                         std::optional<CryptAuthFeatureType>(kFeatureType1)));
   EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
 
   gcm::IncomingMessage message;
@@ -405,8 +401,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   // invalid,, try the "registrationTickleType" value.
   EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
   EXPECT_CALL(*this, OnResyncMessageProxy(
-                         absl::optional<std::string>(kSessionId1),
-                         absl::optional<CryptAuthFeatureType>(kFeatureType1)));
+                         std::optional<std::string>(kSessionId1),
+                         std::optional<CryptAuthFeatureType>(kFeatureType1)));
 
   gcm::IncomingMessage message;
   message.data["registrationTickleType"] = "3";  // DEVICE_SYNC
@@ -426,8 +422,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, MissingFeatureType) {
   EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
   EXPECT_CALL(*this,
-              OnResyncMessageProxy(absl::optional<std::string>(kSessionId1),
-                                   absl::optional<CryptAuthFeatureType>()));
+              OnResyncMessageProxy(std::optional<std::string>(kSessionId1),
+                                   std::optional<CryptAuthFeatureType>()));
 
   // Do not include feature type key "F" in the message.
   gcm::IncomingMessage message;
@@ -447,8 +443,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, MissingFeatureType) {
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidFeatureType) {
   EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
   EXPECT_CALL(*this,
-              OnResyncMessageProxy(absl::optional<std::string>(kSessionId1),
-                                   absl::optional<CryptAuthFeatureType>()));
+              OnResyncMessageProxy(std::optional<std::string>(kSessionId1),
+                                   std::optional<CryptAuthFeatureType>()));
 
   // Do not include feature type key "F" in the message.
   gcm::IncomingMessage message;

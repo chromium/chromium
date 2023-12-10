@@ -59,6 +59,11 @@ class TestHandler : public ArcGraphicsTracingHandler {
     downloads_folder_ = downloads_folder;
   }
 
+  void VerifyNoUnrespondedCallback() {
+    DCHECK(after_start_.is_null());
+    DCHECK(after_stop_.is_null());
+  }
+
   void set_now(base::Time now) { now_ = now; }
   base::Time Now() override { return now_; }
   base::TimeTicks SystemTicksNow() override {
@@ -188,33 +193,32 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
 TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
   base::FilePath download_path = base::FilePath::FromASCII("/mnt/downloads");
   handler_->set_downloads_folder(download_path);
-
-  handler_->set_now(base::Time::UnixEpoch() + base::Seconds(1));
+  base::Time timestamp = base::Time::UnixEpoch() + base::Seconds(1);
 
   std::unique_ptr<icu::TimeZone> tz;
   SetTimeZone("America/Chicago");
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_test_title_1_1969-12-31_18-00-01.json"),
-            handler_->GetModelPathFromTitle("Test Title #:1"));
+            handler_->GetModelPathFromTitle("Test Title #:1", timestamp));
   SetTimeZone("Indian/Maldives");
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_0123456789012345678901234567890_"
                 "1970-01-01_05-00-01.json"),
             handler_->GetModelPathFromTitle(
-                "0123456789012345678901234567890123456789"));
+                "0123456789012345678901234567890123456789", timestamp));
 
   SetTimeZone("Etc/UTC");
-  handler_->set_now(base::Time::UnixEpoch() + base::Days(50));
+  timestamp = base::Time::UnixEpoch() + base::Days(50);
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_xyztitle_1970-02-20_00-00-00.json"),
-            handler_->GetModelPathFromTitle("xyztitle"));
+            handler_->GetModelPathFromTitle("xyztitle", timestamp));
 
   SetTimeZone("Japan");
   download_path = base::FilePath::FromASCII("/var/DownloadFolder");
   handler_->set_downloads_folder(download_path);
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_secret_app_1970-02-20_09-00-00.json"),
-            handler_->GetModelPathFromTitle("Secret App"));
+            handler_->GetModelPathFromTitle("Secret App", timestamp));
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
@@ -380,6 +384,51 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
   const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
   EXPECT_EQ(*dict.FindStringByDottedPath("information.title"), "the first app");
   EXPECT_TRUE(handler_->GetWebUIWindow()->HasFocus());
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowBeforeTraceStart) {
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s1, s2;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s1)
+                        .BuildOwnsNativeWidget();
+
+  auto other_arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetTaskId(88)
+                              .SetPackageName("net.differentapp")
+                              .SetTitle("i will be traced")
+                              .SetShellRootSurface(&s2)
+                              .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  other_arc_widget->ShowInactive();
+  SendStartStopKey();
+  other_arc_widget->Activate();
+
+  handler_->StartTracingOnControllerRespond();
+  FastForwardClockAndTaskQueue(base::Seconds(6));
+  handler_->VerifyNoUnrespondedCallback();
+
+  // We should be able to do a trace now - no trace state should be lingering.
+  // The web UI will be active - switch back to an ARC app.
+  other_arc_widget->Activate();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+  FastForwardClockAndTaskQueue(base::Seconds(6));
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
+  task_environment()->RunUntilIdle();
+
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+  EXPECT_EQ(*dict.FindStringByDottedPath("information.title"),
+            "i will be traced");
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {

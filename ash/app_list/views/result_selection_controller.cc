@@ -120,7 +120,7 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
     return;
 
   if (selected_result_)
-    selected_result_->SetSelected(false, absl::nullopt);
+    selected_result_->SetSelected(false, std::nullopt);
 
   selected_result_ = new_selection;
 
@@ -142,7 +142,7 @@ void ResultSelectionController::ClearSelection() {
   selected_location_details_ = nullptr;
   if (selected_result_) {
     // Reset the state of the previous selected result.
-    selected_result_->SetSelected(false, absl::nullopt);
+    selected_result_->SetSelected(false, std::nullopt);
     selected_result_id_ = std::string();
     selected_result_->set_is_default_result(false);
   }

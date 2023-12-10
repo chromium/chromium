@@ -8,7 +8,6 @@
  */
 
 import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -77,15 +76,6 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   };
 }
 
-/** Returns a |String16| from the specified |value|. */
-export function toString16(value: string): String16 {
-  const data = [];
-  for (let i = 0; i < value.length; ++i) {
-    data[i] = value.charCodeAt(i);
-  }
-  return {data};
-}
-
 /**
  * Returns a svg data url. This is useful in tests to force img on-load events
  * to fire so that wallpaper-grid-item resolves its loading state.
@@ -132,4 +122,36 @@ export function dispatchKeydown(element: HTMLElement, key: string) {
 /** Returns the active element in the given element's shadow DOM. */
 export function getActiveElement(element: Element): HTMLElement {
   return (element.shadowRoot!.activeElement as HTMLElement);
+}
+
+/**
+ * Get a sub-property in obj. Splits on '.'
+ */
+function getProperty(obj: object, key: string): unknown {
+  let ref: any = obj;
+  for (const part of key.split('.')) {
+    ref = ref[part];
+  }
+  return ref;
+}
+
+/**
+ * Returns a function that returns only nested subproperties in state.
+ */
+export function filterAndFlattenState(keys: string[]): (state: any) => any {
+  return (state) => {
+    const result: any = {};
+    for (const key of keys) {
+      result[key] = getProperty(state, key);
+    }
+    return result;
+  };
+}
+
+/**
+ * Forces typescript compiler to check that an anonymous value is a specific
+ * type.
+ */
+export function typeCheck<T>(value: T): T {
+  return value;
 }

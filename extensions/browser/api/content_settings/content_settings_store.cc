@@ -22,6 +22,7 @@
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -106,6 +107,36 @@ void ContentSettingsStore::SetExtensionContentSetting(
     ContentSettingsType type,
     ContentSetting setting,
     ChromeSettingScope scope) {
+  if (primary_pattern == ContentSettingsPattern::Wildcard()) {
+    if (secondary_pattern == ContentSettingsPattern::Wildcard()) {
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Extensions.ContentSettings."
+          "PrimaryPatternWildcardSecondaryPatternWildcard",
+          type);
+    } else {
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Extensions.ContentSettings."
+          "PrimaryPatternWildcardSecondaryPatternUnique",
+          type);
+    }
+  } else {  // primary_pattern != Wildcard
+    if (secondary_pattern == ContentSettingsPattern::Wildcard()) {
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Extensions.ContentSettings."
+          "PrimaryPatternUniqueSecondaryPatternWildcard",
+          type);
+    } else if (secondary_pattern == primary_pattern) {
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Extensions.ContentSettings."
+          "PrimaryPatternUniqueSecondaryPatternIdentical",
+          type);
+    } else {
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Extensions.ContentSettings."
+          "PrimaryPatternUniqueSecondaryPatternDifferent",
+          type);
+    }
+  }
   {
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);

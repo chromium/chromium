@@ -34,12 +34,20 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
      */
     public AddressAccessorySheetCoordinator(
             Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
-        super(context.getString(R.string.address_accessory_sheet_title),
+        super(
+                context.getString(R.string.address_accessory_sheet_title),
                 IconProvider.getIcon(context, R.drawable.gm_filled_location_on_24),
                 context.getString(R.string.address_accessory_sheet_toggle),
-                R.layout.address_accessory_sheet, AccessoryTabType.ADDRESSES, scrollListener);
-        mMediator = new AccessorySheetTabMediator(mModel, AccessoryTabType.ADDRESSES,
-                Type.ADDRESS_INFO, AccessoryAction.MANAGE_ADDRESSES, null);
+                R.layout.address_accessory_sheet,
+                AccessoryTabType.ADDRESSES,
+                scrollListener);
+        mMediator =
+                new AccessorySheetTabMediator(
+                        mModel,
+                        AccessoryTabType.ADDRESSES,
+                        Type.ADDRESS_INFO,
+                        AccessoryAction.MANAGE_ADDRESSES,
+                        null);
     }
 
     @Override
@@ -62,7 +70,9 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
     static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void> createAdapter(
             AccessorySheetTabItemsModel model) {
         return new RecyclerViewAdapter<>(
-                new SimpleRecyclerViewMcp<>(model, AccessorySheetDataPiece::getType,
+                new SimpleRecyclerViewMcp<>(
+                        model,
+                        AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
                 AddressAccessorySheetViewBinder::create);
     }

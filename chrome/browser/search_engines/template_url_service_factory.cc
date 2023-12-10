@@ -133,9 +133,7 @@ TemplateURLServiceFactory::BuildServiceInstanceForBrowserContext(
 void TemplateURLServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DefaultSearchManager::RegisterProfilePrefs(registry);
-  if (base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy)) {
-    EnterpriseSiteSearchManager::RegisterProfilePrefs(registry);
-  }
+  EnterpriseSiteSearchManager::RegisterProfilePrefs(registry);
   TemplateURLService::RegisterProfilePrefs(registry);
 }
 

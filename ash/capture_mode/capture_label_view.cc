@@ -13,7 +13,6 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
@@ -25,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
@@ -208,7 +208,7 @@ void CaptureLabelView::UpdateIconAndText() {
   CaptureModeController* controller = CaptureModeController::Get();
   const CaptureModeSource source = controller->source();
   const bool is_capturing_image = controller->type() == CaptureModeType::kImage;
-  const bool in_tablet_mode = TabletModeController::Get()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
   // Depending on the current state, only one of the two views
   // `capture_button_container_` or `label_` can be visible at a time.

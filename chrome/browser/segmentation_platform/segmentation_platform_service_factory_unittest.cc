@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include <memory>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -25,14 +26,12 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/result.h"
-#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/service_proxy.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
 
 namespace segmentation_platform {
 namespace {
@@ -55,12 +54,11 @@ class WaitServiceInitializedObserver : public ServiceProxy::Observer {
   base::OnceClosure closure_;
 };
 
-}  // namespace
-
 class SegmentationPlatformServiceFactoryTest : public testing::Test {
  protected:
   SegmentationPlatformServiceFactoryTest()
-      : task_environment_{base::test::TaskEnvironment::TimeSource::MOCK_TIME} {
+      : task_environment_{base::test::TaskEnvironment::TimeSource::MOCK_TIME},
+        test_utils_(std::make_unique<UkmDataManagerTestUtils>(&ukm_recorder_)) {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         kSegmentationPlatformRefreshResultsSwitch);
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
@@ -69,10 +67,12 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
   ~SegmentationPlatformServiceFactoryTest() override = default;
 
+  void SetUp() override { test_utils_->PreProfileInit({}); }
+
   void TearDown() override {
-    service_ = nullptr;
-    testing_profile_.reset();
     task_environment_.RunUntilIdle();
+    profile_.reset();
+    test_utils_.reset();
   }
 
   void InitServiceAndCacheResults(const std::string& segmentation_key) {
@@ -82,24 +82,18 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     // session. In the test environment, new session doesn't have prefs from
     // previous session, hence copying is required to get the cached result from
     // last session.
-    const std::string output =
-        testing_profile_->GetPrefs()->GetString(kSegmentationClientResultPrefs);
+    const std::string output = profile_->profile->GetPrefs()->GetString(
+        kSegmentationClientResultPrefs);
 
     // TODO(b/297091996): Remove this when leak is fixed.
     task_environment_.RunUntilIdle();
 
-    service_ = nullptr;
-    testing_profile_ = nullptr;
+    profile_.reset();
 
     // Creating profile and initialising segmentation service again with prefs
     // from the last session.
-    TestingProfile::Builder profile_builder1;
-    testing_profile_ = profile_builder1.Build();
+    profile_ = std::make_unique<ProfileData>(test_utils_.get(), output);
     // Copying the prefs from last session.
-    testing_profile_->GetPrefs()->SetString(kSegmentationClientResultPrefs,
-                                            output);
-    service_ = SegmentationPlatformServiceFactory::GetForProfile(
-        testing_profile_.get());
     WaitForServiceInit();
     // TODO(b/297091996): Remove this when leak is fixed.
     task_environment_.RunUntilIdle();
@@ -112,14 +106,12 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformUkmEngine, {}},
          {features::kContextualPageActionShareModel, {}},
          {features::kSegmentationPlatformTimeDelaySampling,
-          {{"SamplingRate", "1"}}}},
+          {{"SamplingRate", "1"}}},
+         {features::kSegmentationPlatformTabResumptionRanker, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
-    TestingProfile::Builder profile_builder;
-    testing_profile_ = profile_builder.Build();
-    service_ = SegmentationPlatformServiceFactory::GetForProfile(
-        testing_profile_.get());
+    profile_ = std::make_unique<ProfileData>(test_utils_.get(), "");
     WaitForServiceInit();
     clock_.SetNow(base::Time::Now());
     // TODO(b/297091996): Remove this when leak is fixed.
@@ -133,7 +125,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       PredictionStatus expected_status,
       absl::optional<std::vector<std::string>> expected_labels) {
     base::RunLoop loop;
-    service_->GetClassificationResult(
+    profile_->service->GetClassificationResult(
         segmentation_key, prediction_options, input_context,
         base::BindOnce(
             &SegmentationPlatformServiceFactoryTest::OnGetClassificationResult,
@@ -160,7 +152,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       scoped_refptr<InputContext> input_context,
       PredictionStatus expected_status) {
     base::RunLoop loop;
-    service_->GetAnnotatedNumericResult(
+    profile_->service->GetAnnotatedNumericResult(
         segmentation_key, prediction_options, input_context,
         base::BindOnce(&SegmentationPlatformServiceFactoryTest::
                            OnGetAnnotatedNumericResult,
@@ -180,19 +172,19 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   void WaitForServiceInit() {
     base::RunLoop wait_for_init;
     WaitServiceInitializedObserver wait_observer(wait_for_init.QuitClosure());
-    service_->GetServiceProxy()->AddObserver(&wait_observer);
+    profile_->service->GetServiceProxy()->AddObserver(&wait_observer);
 
     wait_for_init.Run();
-    ASSERT_TRUE(service_->IsPlatformInitialized());
-    service_->GetServiceProxy()->RemoveObserver(&wait_observer);
+    ASSERT_TRUE(profile_->service->IsPlatformInitialized());
+    profile_->service->GetServiceProxy()->RemoveObserver(&wait_observer);
   }
 
   bool HasClientResultPref(const std::string& segmentation_key) {
-    PrefService* pref_service_ = testing_profile_->GetPrefs();
+    PrefService* pref_service_ = profile_->profile->GetPrefs();
     std::unique_ptr<ClientResultPrefs> result_prefs_ =
         std::make_unique<ClientResultPrefs>(pref_service_);
-    return result_prefs_->ReadClientResultFromPrefs(segmentation_key)
-        .has_value();
+    return result_prefs_->ReadClientResultFromPrefs(segmentation_key) !=
+           nullptr;
   }
 
   void OnClientResultPrefUpdated(const std::string& segmentation_key) {
@@ -209,7 +201,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
     base::RunLoop wait_for_pref;
     wait_for_pref_callback_ = wait_for_pref.QuitClosure();
-    pref_registrar_.Init(testing_profile_->GetPrefs());
+    pref_registrar_.Init(profile_->profile->GetPrefs());
     pref_registrar_.Add(
         kSegmentationClientResultPrefs,
         base::BindRepeating(
@@ -307,6 +299,26 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     }
   }
 
+  struct ProfileData {
+    explicit ProfileData(UkmDataManagerTestUtils* test_utils,
+                         const std::string& result_pref)
+        : test_utils(test_utils), profile(TestingProfile::Builder().Build()) {
+      profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
+                                     result_pref);
+      test_utils->SetupForProfile(profile.get());
+      service =
+          SegmentationPlatformServiceFactory::GetForProfile(profile.get());
+    }
+
+    ~ProfileData() { test_utils->WillDestroyProfile(profile.get()); }
+
+    ProfileData(ProfileData&) = delete;
+
+    const raw_ptr<UkmDataManagerTestUtils> test_utils;
+    std::unique_ptr<TestingProfile> profile;
+    raw_ptr<SegmentationPlatformService> service;
+  };
+
   base::SimpleTestClock* clock() { return &clock_; }
 
   ukm::TestAutoSetUkmRecorder* test_recorder() { return &test_recorder_; }
@@ -316,10 +328,11 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   ukm::TestAutoSetUkmRecorder test_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
+  ukm::TestUkmRecorder ukm_recorder_;
+  std::unique_ptr<UkmDataManagerTestUtils> test_utils_;
   PrefChangeRegistrar pref_registrar_;
   base::OnceClosure wait_for_pref_callback_;
-  std::unique_ptr<TestingProfile> testing_profile_;
-  raw_ptr<SegmentationPlatformService> service_;
+  std::unique_ptr<ProfileData> profile_;
 };
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestPasswordManagerUserSegment) {
@@ -407,6 +420,23 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
       kDeviceSwitcherKey, prediction_options, input_context,
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/std::vector<std::string>(1, "NotSynced"));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
+  InitService();
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+  scoped_refptr<InputContext> input_context =
+      base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace(
+      "session_tag", processing::ProcessedValue(std::string("")));
+  input_context->metadata_args.emplace("tab_id", processing::ProcessedValue(1));
+  input_context->metadata_args.emplace(
+      "origin", processing::ProcessedValue(GURL("https://www.google.com")));
+  ExpectGetAnnotatedNumericResult(kTabResumptionClassifierKey,
+                                  prediction_options, input_context,
+                                  PredictionStatus::kSucceeded);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -529,4 +559,5 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFeedUserModel) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+}  // namespace
 }  // namespace segmentation_platform

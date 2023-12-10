@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -76,12 +78,11 @@ public class ContextMenuLoadUrlParamsTest {
         }
 
         public RecordingTabModelSelector(
-                Activity activity,
+                OneshotSupplier<ProfileProvider> profileProviderSupplier,
                 TabCreatorManager tabCreatorManager,
-                TabModelFilterFactory tabModelFilterFactory,
-                int selectorIndex) {
+                TabModelFilterFactory tabModelFilterFactory) {
             super(
-                    null,
+                    profileProviderSupplier,
                     tabCreatorManager,
                     tabModelFilterFactory,
                     () -> NextTabPolicy.HIERARCHICAL,
@@ -101,15 +102,14 @@ public class ContextMenuLoadUrlParamsTest {
                 new TabModelSelectorFactory() {
                     @Override
                     public TabModelSelector buildSelector(
-                            Activity activity,
+                            Context context,
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            int selectorIndex) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return new RecordingTabModelSelector(
-                                activity,
+                                profileProviderSupplier,
                                 tabCreatorManager,
-                                new ChromeTabModelFilterFactory(activity),
-                                selectorIndex);
+                                new ChromeTabModelFilterFactory(context));
                     }
                 });
     }

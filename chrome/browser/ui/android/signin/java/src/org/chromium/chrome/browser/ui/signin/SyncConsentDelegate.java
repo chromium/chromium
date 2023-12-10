@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.ui.signin;
 
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Defines the host interface for Sync Consent page.
- */
+/** Defines the host interface for Sync Consent page. */
 public interface SyncConsentDelegate {
-    /**
-     * Return the {@link WindowAndroid} for the host activity.
-     */
+    /** Return the {@link WindowAndroid} for the host activity. */
     WindowAndroid getWindowAndroid();
 }

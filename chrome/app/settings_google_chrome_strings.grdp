@@ -142,11 +142,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">
     Open PDFs in Chrome
   </message>
-  <if expr="not is_chromeos">
-    <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user will be signed out of Chrome each time they close all Chrome windows.">
-      When on, you'll also be signed out of Chrome
-    </message>
-  </if>
 
   <!-- Site Settings - Site Data Page-->
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL" desc="A description of the benefit/cost of choosing 'Sites can save content on your device. In short, a site will remember your preferences, shopping cart content, etc. during this browser session. But once you close all open windows, and then visit the site again, it's as if you're coming to the site for the first time.">
@@ -412,5 +407,19 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_RELAUNCH_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This string is for the accesibility label for the card to call out the click on card will result restarting the browser.">
     Relaunch Chrome
+  </message>
+
+    <!-- HTTPS-First Mode -->
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUBTITLE" desc="Subtitle for HTTPS-First Mode section in Security settings">
+    Chrome will try to upgrade navigations to HTTPS
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_SUBLABEL" desc="Sublabel for radio button to fully enable HTTPS-First Mode">
+    Chrome will warn you before loading any site using an insecure connection
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_INCOGNITO_SUBLABEL" desc="Sublabel for radio button to enable HTTPS-First Mode in Incognito">
+    When browsing in Incognito mode, Chrome will warn you before loading a site using an insecure connection
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_SUBLABEL" desc="Sublabel for radio button to disable HTTPS-First Mode">
+    When HTTPS isn't available, Chrome will use an insecure connection without warning you
   </message>
 </grit-part>

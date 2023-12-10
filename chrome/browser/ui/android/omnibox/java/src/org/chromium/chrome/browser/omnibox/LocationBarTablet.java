@@ -131,14 +131,10 @@ class LocationBarTablet extends LocationBarLayout {
     }
 
     private void setUrlActionContainerPadding() {
-        boolean modernizeVisualUpdate =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext());
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) return;
+
         int urlActionContainerPadding =
-                modernizeVisualUpdate && mUrlBar.hasFocus()
-                        ? 0
-                        : getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.location_bar_url_action_padding_small);
+                getResources().getDimensionPixelSize(R.dimen.location_bar_url_action_padding_small);
         boolean isRtl = mUrlActionContainer.getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         mUrlActionContainer.setPadding(
                 isRtl ? urlActionContainerPadding : mUrlActionContainer.getPaddingLeft(),

@@ -23,10 +23,11 @@ per-file luci-bisection*=nqmtuan@google.com
 per-file subprojects/chromium/ci/chromium.coverage.star=jeffyoon@google.com
 per-file subprojects/chromium/ci/chromium.coverage.star=pasthana@google.com
 
+# Dawn owners
+per-file subprojects/chromium/ci/chromium.dawn.star=file://infra/config/groups/sheriff-rotations/DAWN_OWNERS
+per-file subprojects/chromium/try/tryserver.chromium.dawn.star=file://infra/config/groups/sheriff-rotations/DAWN_OWNERS
+
 # Fuchsia owners
 per-file subprojects/chromium/ci/chromium.fuchsia.fyi.star=file://build/fuchsia/OWNERS
 per-file subprojects/chromium/ci/chromium.fuchsia.star=file://build/fuchsia/OWNERS
 per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/fuchsia/OWNERS
-
-# Chrome Browser Build owners
-per-file subprojects/chromium/ci/chromium.build.star=file://infra/config/groups/chrome-build/OWNERS

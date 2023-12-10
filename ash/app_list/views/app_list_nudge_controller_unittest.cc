@@ -19,6 +19,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
+#include "ui/display/screen.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/wm/core/window_util.h"
 
@@ -27,7 +28,7 @@ namespace ash {
 namespace {
 
 bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 // Returns the number of times the nudge has been shown. Note that the count

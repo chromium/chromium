@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -35,10 +36,12 @@ AutofillOfferData AutofillOfferData::FreeListingCouponOffer(
     const GURL& offer_details_url,
     const DisplayStrings& display_strings,
     const std::string& promo_code,
-    bool is_merchant_wide) {
+    bool is_merchant_wide,
+    std::optional<std::string> terms_and_conditions) {
   return AutofillOfferData(OfferType::FREE_LISTING_COUPON_OFFER, offer_id,
                            expiry, merchant_origins, offer_details_url,
-                           display_strings, promo_code, is_merchant_wide);
+                           display_strings, promo_code, is_merchant_wide,
+                           terms_and_conditions);
 }
 
 // static
@@ -183,14 +186,16 @@ AutofillOfferData::AutofillOfferData(
       offer_reward_amount_(offer_reward_amount),
       eligible_instrument_id_(eligible_instrument_id) {}
 
-AutofillOfferData::AutofillOfferData(OfferType offer_type,
-                                     int64_t offer_id,
-                                     const base::Time& expiry,
-                                     const std::vector<GURL>& merchant_origins,
-                                     const GURL& offer_details_url,
-                                     const DisplayStrings& display_strings,
-                                     const std::string& promo_code,
-                                     bool is_merchant_wide)
+AutofillOfferData::AutofillOfferData(
+    OfferType offer_type,
+    int64_t offer_id,
+    const base::Time& expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::string& promo_code,
+    bool is_merchant_wide,
+    std::optional<std::string> terms_and_conditions)
     : offer_type_(offer_type),
       offer_id_(offer_id),
       expiry_(expiry),
@@ -198,6 +203,7 @@ AutofillOfferData::AutofillOfferData(OfferType offer_type,
       merchant_origins_(merchant_origins),
       display_strings_(display_strings),
       promo_code_(promo_code),
-      is_merchant_wide_offer_(is_merchant_wide) {}
+      is_merchant_wide_offer_(is_merchant_wide),
+      terms_and_conditions_(terms_and_conditions) {}
 
 }  // namespace autofill

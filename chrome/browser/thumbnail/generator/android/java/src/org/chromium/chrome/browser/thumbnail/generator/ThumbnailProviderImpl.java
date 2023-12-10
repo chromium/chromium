@@ -95,7 +95,9 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      * @param bitmapCacheSizeByte The size in bytes of the in-memory LRU bitmap cache.
      * @param client The associated client type.
      */
-    public ThumbnailProviderImpl(DiscardableReferencePool referencePool, int bitmapCacheSizeByte,
+    public ThumbnailProviderImpl(
+            DiscardableReferencePool referencePool,
+            int bitmapCacheSizeByte,
             @ClientType int client) {
         ThreadUtils.assertOnUiThread();
         mBitmapCache = new BitmapCache(referencePool, bitmapCacheSizeByte);
@@ -207,8 +209,9 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      * @param request Parameters that describe the thumbnail being retrieved
      */
     private void handleCacheMiss(ThumbnailProvider.ThumbnailRequest request) {
-        boolean providedByThumbnailRequest = request.getThumbnail(
-                bitmap -> onThumbnailRetrieved(request.getContentId(), bitmap));
+        boolean providedByThumbnailRequest =
+                request.getThumbnail(
+                        bitmap -> onThumbnailRetrieved(request.getContentId(), bitmap));
 
         if (!providedByThumbnailRequest) {
             // Asynchronously process the file to make a thumbnail.

@@ -12,9 +12,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
 
-/**
- * This factory creates Tracker for the given {@link Profile}.
- */
+/** This factory creates Tracker for the given {@link Profile}. */
 public final class TrackerFactory {
     private static Tracker sTrackerForTesting;
 
@@ -62,6 +60,7 @@ public final class TrackerFactory {
     @NativeMethods
     interface Natives {
         Tracker getTrackerForProfile(Profile profile);
+
         void setTestingFactory(Profile profile, Tracker testTracker);
     }
 }

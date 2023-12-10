@@ -37,5 +37,4 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
     public SnackbarManager getSnackbarManager() {
         return mSnackbarManager;
     }
-
 }

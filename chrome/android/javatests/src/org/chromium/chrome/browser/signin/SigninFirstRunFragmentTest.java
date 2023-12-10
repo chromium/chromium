@@ -81,8 +81,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial.VariationsGroup;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -191,8 +189,6 @@ public class SigninFirstRunFragmentTest {
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.DEFAULT);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -459,7 +455,8 @@ public class SigninFirstRunFragmentTest {
 
         launchActivityWithFragment();
 
-        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
+        checkFragmentWithSelectedAccount(
+                TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* shouldShowSubtitle= */ false);
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
     }
 
@@ -841,7 +838,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_signing_in)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
+        onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
         onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));
         onView(withText(FULL_NAME1)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_selected_account_expand_icon))
@@ -1136,72 +1133,11 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
-    @Test
-    @MediumTest
-    public void testFragment_WelcomeToChrome() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mNativeInitializationPromise = new Promise<>();
-                });
-        launchActivityWithFragment();
-        onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
-
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    public void testFragment_WelcomeToChrome_MostOutOfChrome() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mNativeInitializationPromise = new Promise<>();
-                });
-        launchActivityWithFragment();
-        onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
-
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle_variation_1)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    public void testFragment_WelcomeToChrome_AdditionalFeatures() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mNativeInitializationPromise = new Promise<>();
-                });
-        launchActivityWithFragment();
-        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
-
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle_variation_2)).check(matches(isDisplayed()));
-    }
 
     @Test
     @MediumTest
     public void testFragment_WelcomeToChrome_EasierAcrossDevices() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
@@ -1209,62 +1145,21 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.title)).check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle_variation_3)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
     }
 
-    @Test
-    @MediumTest
-    public void testFragment_MostOutOfChrome() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MOST_OUT_OF_CHROME);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mNativeInitializationPromise = new Promise<>();
-                });
-        launchActivityWithFragment();
-        onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
-        onView(withText(R.string.signin_fre_title_variation_1)).check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    public void testFragment_MakeChromeYourOwn() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MAKE_CHROME_YOUR_OWN);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mNativeInitializationPromise = new Promise<>();
-                });
-        launchActivityWithFragment();
-        onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
-
-        onView(withText(R.string.signin_fre_title_variation_2)).check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
-    }
 
     @Test
     @MediumTest
     public void testFragmentWithChildAccount_doesNotApplyFREStringVariation() {
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.MAKE_CHROME_YOUR_OWN);
         mSigninTestRule.addAccount(
                 CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -1315,14 +1210,19 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock, never()).exitFirstRun();
     }
 
-    private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
+    private void checkFragmentWithSelectedAccount(
+            String email, String fullName, String givenName, boolean shouldShowSubtitle) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName, true);
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
+        if (shouldShowSubtitle) {
+            onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
+        } else {
+            onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
+        }
         onView(withText(email)).check(matches(isDisplayed()));
         if (fullName != null) {
             onView(withText(fullName)).check(matches(isDisplayed()));
@@ -1335,6 +1235,10 @@ public class SigninFirstRunFragmentTest {
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
+    }
+
+    private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
+        checkFragmentWithSelectedAccount(email, fullName, givenName, true);
     }
 
     private void checkFragmentWhenLoadingNativeAndPolicy() {

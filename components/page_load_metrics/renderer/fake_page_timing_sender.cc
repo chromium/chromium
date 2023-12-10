@@ -91,11 +91,14 @@ void FakePageTimingSender::PageTimingValidator::
 
 void FakePageTimingSender::PageTimingValidator::UpdateExpectedInteractionTiming(
     const base::TimeDelta interaction_duration,
-    mojom::UserInteractionType interaction_type) {
+    mojom::UserInteractionType interaction_type,
+    uint64_t interaction_offset,
+    const base::TimeTicks interaction_time) {
   expected_input_timing.num_interactions++;
   expected_input_timing.max_event_durations->get_user_interaction_latencies()
-      .emplace_back(mojom::UserInteractionLatency::New(interaction_duration,
-                                                       interaction_type));
+      .emplace_back(mojom::UserInteractionLatency::New(
+          interaction_duration, interaction_type, interaction_offset,
+          interaction_time));
 }
 void FakePageTimingSender::PageTimingValidator::
     VerifyExpectedInteractionTiming() const {
@@ -203,7 +206,9 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     actual_input_timing.max_event_durations->get_user_interaction_latencies()
         .emplace_back(mojom::UserInteractionLatency::New(
             user_interaction->interaction_latency,
-            user_interaction->interaction_type));
+            user_interaction->interaction_type,
+            user_interaction->interaction_offset,
+            user_interaction->interaction_time));
   }
 
   actual_subresource_load_metrics_ = subresource_load_metrics;

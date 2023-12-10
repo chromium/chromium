@@ -13,13 +13,13 @@
 
 namespace blink {
 
-class NGLayoutInputNode;
 class CustomLayoutChild;
 class LayoutBox;
-struct LogicalSize;
-class NGLayoutResult;
+class LayoutInputNode;
+class LayoutResult;
 class ScriptState;
 class ScriptValue;
+struct LogicalSize;
 
 // This represents the result of a layout (on a LayoutChild).
 //
@@ -29,15 +29,15 @@ class ScriptValue;
 // The web developer can position this child fragment (setting inlineOffset,
 // and blockOffset), which are relative to its parent.
 //
-// This should eventually mirror the information in a NGFragment, it has the
-// additional capability that it is exposed to web developers.
+// This should eventually mirror the information in a LogicalFragment, it has
+// the additional capability that it is exposed to web developers.
 class CustomLayoutFragment : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   CustomLayoutFragment(CustomLayoutChild*,
                        CustomLayoutToken*,
-                       const NGLayoutResult*,
+                       const LayoutResult*,
                        const LogicalSize& size,
                        const absl::optional<LayoutUnit> baseline,
                        v8::Isolate*);
@@ -58,8 +58,8 @@ class CustomLayoutFragment : public ScriptWrappable {
 
   ScriptValue data(ScriptState*) const;
 
-  const NGLayoutResult& GetLayoutResult() const;
-  const NGLayoutInputNode& GetLayoutNode() const;
+  const LayoutResult& GetLayoutResult() const;
+  const LayoutInputNode& GetLayoutNode() const;
 
   bool IsValid() const { return token_->IsValid(); }
 
@@ -83,7 +83,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   // that the last layout on the child wasn't with the same inputs, and force a
   // layout again.
 
-  Member<const NGLayoutResult> layout_result_;
+  Member<const LayoutResult> layout_result_;
 
   // The inline and block size on this object should never change.
   const double inline_size_;

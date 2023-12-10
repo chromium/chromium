@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -41,6 +42,7 @@ constexpr char kBackgroundSwitch[] = "background";
 constexpr char kListAppsSwitch[] = "list-apps";
 constexpr char kListUpdateSwitch[] = "list-update";
 constexpr char kListPoliciesSwitch[] = "list-policies";
+constexpr char kJSONFormatSwitch[] = "json";
 constexpr char kUpdateSwitch[] = "update";
 
 UpdaterScope Scope() {
@@ -57,6 +59,15 @@ UpdateService::Priority Priority() {
 
 std::string Quoted(const std::string& value) {
   return "\"" + value + "\"";
+}
+
+bool OutputInJSONFormat() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kJSONFormatSwitch);
+}
+
+std::string ValueToJSONString(const base::Value& value) {
+  std::string value_string;
+  return base::JSONWriter::Write(value, &value_string) ? value_string : "";
 }
 
 void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
@@ -174,8 +185,7 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
 
   std::cout << "Usage: "
             << base::CommandLine::ForCurrentProcess()->GetProgram().BaseName()
-            << " [action...] [parameters...]"
-            << R"(
+            << " [action...] [parameters...]" << R"(
     Actions:
         --update            Update app(s).
         --list-apps         List all registered apps.
@@ -184,7 +194,8 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
     Action parameters:
         --background        Use background priority.
         --product           ProductID.
-        --system            Use the system scope.)"
+        --system            Use the system scope.
+        --json              Use JSON as output format where applicable.)"
             << std::endl;
   Shutdown(error_message.empty() ? 0 : 1);
 }
@@ -193,12 +204,22 @@ void UpdaterUtilApp::ListApps() {
   service_proxy_->GetAppStates(base::BindOnce(
       [](base::OnceCallback<void(int)> cb,
          const std::vector<updater::UpdateService::AppState>& states) {
-        std::cout << "Registered apps : {" << std::endl;
-        for (updater::UpdateService::AppState app : states) {
-          std::cout << "\t" << Quoted(app.app_id) << " = "
-                    << Quoted(app.version.GetString()) << ';' << std::endl;
+        if (OutputInJSONFormat()) {
+          base::Value::Dict apps;
+          for (updater::UpdateService::AppState app : states) {
+            apps.Set(app.app_id, base::Value::Dict().Set(
+                                     "version", app.version.GetString()));
+          }
+          std::cout << ValueToJSONString(base::Value(std::move(apps)))
+                    << std::endl;
+        } else {
+          std::cout << "Registered apps : {" << std::endl;
+          for (updater::UpdateService::AppState app : states) {
+            std::cout << "\t" << Quoted(app.app_id) << " = "
+                      << Quoted(app.version.GetString()) << ';' << std::endl;
+          }
+          std::cout << '}' << std::endl;
         }
-        std::cout << '}' << std::endl;
         std::move(cb).Run(0);
       },
       base::BindOnce(&UpdaterUtilApp::Shutdown, this)));
@@ -260,14 +281,24 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
           [](scoped_refptr<AppState> app_state,
              base::OnceCallback<void(int)> cb, UpdateService::Result result) {
             if (result == UpdateService::Result::kSuccess) {
-              std::cout << Quoted(app_state->app_id()) << " : {" << std::endl;
-              std::cout << "\tCurrent Version = "
-                        << Quoted(app_state->current_version()) << ";"
-                        << std::endl;
-              std::cout << "\tAvailable Version = "
-                        << Quoted(app_state->next_version()) << ";"
-                        << std::endl;
-              std::cout << "}" << std::endl;
+              if (OutputInJSONFormat()) {
+                base::Value::Dict app;
+                app.Set(app_state->app_id(),
+                        base::Value::Dict()
+                            .Set("CurrentVersion", app_state->current_version())
+                            .Set("NextVersion", app_state->next_version()));
+                std::cout << ValueToJSONString(base::Value(std::move(app)))
+                          << std::endl;
+              } else {
+                std::cout << Quoted(app_state->app_id()) << " : {" << std::endl
+                          << "\tCurrent Version = "
+                          << Quoted(app_state->current_version()) << ";"
+                          << std::endl
+                          << "\tNext Version = "
+                          << Quoted(app_state->next_version()) << ";"
+                          << std::endl
+                          << "}" << std::endl;
+              }
               std::move(cb).Run(0);
             }
           },
@@ -312,13 +343,18 @@ void UpdaterUtilApp::ListPolicies() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce([] {
-        std::cout << "Updater policies: "
-                  << base::MakeRefCounted<Configurator>(
-                         CreateGlobalPrefs(Scope()),
-                         CreateDefaultExternalConstants())
-                         ->GetPolicyService()
-                         ->GetAllPoliciesAsString()
-                  << std::endl;
+        auto configurator = base::MakeRefCounted<Configurator>(
+            CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants());
+        if (OutputInJSONFormat()) {
+          std::cout << ValueToJSONString(
+                           configurator->GetPolicyService()->GetAllPolicies())
+                    << std::endl;
+        } else {
+          std::cout
+              << "Updater policies: "
+              << configurator->GetPolicyService()->GetAllPoliciesAsString()
+              << std::endl;
+        }
       }),
       base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0));
 }

@@ -151,7 +151,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
           quota_database->db_->GetCachedStatement(SQL_FROM_HERE, kSql));
       ASSERT_TRUE(statement.is_valid());
 
-      absl::optional<StorageKey> storage_key =
+      std::optional<StorageKey> storage_key =
           StorageKey::Deserialize(entry->storage_key);
       ASSERT_TRUE(storage_key.has_value());
 

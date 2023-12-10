@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Supprimer la page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode Caméra</translation>
 <translation id="1153190633558910465">Grille désactivée</translation>
-<translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> supprimée</translation>
 <translation id="1258009455399840361">Faire pivoter de 90 degrés dans le sens des aiguilles d'une montre</translation>
 <translation id="1417314334557041815">Modifier la page <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Traitement de la vidéo en cours…</translation>
 <translation id="3789724198583203151">Faire pivoter de 90 degrés dans le sens inverse des aiguilles d'une montre</translation>
 <translation id="3810838688059735925">Vidéo</translation>
-<translation id="3892148308691398805">Copier le texte</translation>
 <translation id="4060608699153044055">Vous ne pouvez pas enregistrer en raison du faible espace de stockage de l'appareil. Pour commencer l'enregistrement, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Interrompre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
 <translation id="414641094616694804">La résolution de cette caméra n'est pas modifiable</translation>
 <translation id="4176463684765177261">Désactivé</translation>
-<translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="428234092390943511">Miniature de la page</translation>
 <translation id="4349714250734879769">Échelonner les cadres par Chrome</translation>
 <translation id="4383571725254449280">Imprimer les journaux de performance</translation>
@@ -144,7 +141,6 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="7726641833034062494">Enregistrer une vidéo en mode Normal</translation>
 <translation id="7748344063862150053">Coin supérieur droit du document</translation>
 <translation id="7933675232020478311">Déplacement vers la partie inférieure droite</translation>
-<translation id="7983668134180549431">Texte détecté.</translation>
 <translation id="8079255378695216066">Impossible de commencer l'enregistrement</translation>
 <translation id="8120146556401698679">Panoramique, inclinaison, zoom</translation>
 <translation id="8131740175452115882">Confirmer</translation>
@@ -163,6 +159,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="8870695351537079478">Impossible de démarrer l'enregistrement</translation>
 <translation id="8880167521484863515">4 sur 3</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
+<translation id="8926890870105777777">Rejoindre le réseau « <ph name="WIFINAME" /> »</translation>
 <translation id="9045010116236796332">Placez l'intégralité du document dans le cadre</translation>
 <translation id="9045155556724273246">10 secondes</translation>
 <translation id="906331135292332864">Traitement de l'image en cours…</translation>

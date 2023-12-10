@@ -103,8 +103,7 @@ public class InMemorySharedPreferences implements SharedPreferences {
 
     @Override
     public void registerOnSharedPreferenceChangeListener(
-            SharedPreferences.OnSharedPreferenceChangeListener
-                    listener) {
+            SharedPreferences.OnSharedPreferenceChangeListener listener) {
         synchronized (mObservers) {
             mObservers.add(listener);
         }
@@ -237,5 +236,4 @@ public class InMemorySharedPreferences implements SharedPreferences {
             }
         }
     }
-
 }

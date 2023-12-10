@@ -6,9 +6,7 @@ package org.chromium.components.module_installer.engine;
 
 import org.chromium.base.BundleUtils;
 
-/**
- * Factory used to build concrete engines.
- */
+/** Factory used to build concrete engines. */
 public class EngineFactory {
     public InstallEngine getEngine() {
         if (!BundleUtils.isBundle()) {

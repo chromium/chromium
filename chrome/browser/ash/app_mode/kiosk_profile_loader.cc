@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <variant>
 
@@ -19,7 +20,6 @@
 #include "base/system/sys_info.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/retry_runner.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,7 +38,7 @@ namespace {
 enum class MountedState { kMounted, kNotMounted };
 
 using CryptohomeMountStateCallback =
-    base::OnceCallback<void(absl::optional<MountedState> result)>;
+    base::OnceCallback<void(std::optional<MountedState> result)>;
 
 bool IsTestOrLinuxChromeOS() {
   // This code should only run in Chrome OS, so not `IsRunningOnChromeOS()`
@@ -63,10 +62,10 @@ KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
   }
 }
 
-absl::optional<MountedState> ToResult(
-    absl::optional<user_data_auth::IsMountedReply> reply) {
+std::optional<MountedState> ToResult(
+    std::optional<user_data_auth::IsMountedReply> reply) {
   if (!reply.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (IsTestOrLinuxChromeOS()) {
     // In tests and in linux-chromeos there is no real cryptohome, and the fake
@@ -82,7 +81,7 @@ void CheckCryptohomeMountState(CryptohomeMountStateCallback on_done) {
   UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       [](CryptohomeMountStateCallback on_done, bool service_is_ready) {
         if (!service_is_ready || !UserDataAuthClient::Get()) {
-          return std::move(on_done).Run(absl::nullopt);
+          return std::move(on_done).Run(std::nullopt);
         }
 
         UserDataAuthClient::Get()->IsMounted(
@@ -260,7 +259,7 @@ KioskProfileLoader::~KioskProfileLoader() = default;
 void KioskProfileLoader::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = CheckCryptohome(base::BindOnce(
-      [](KioskProfileLoader* self, absl::optional<MountedState> result) {
+      [](KioskProfileLoader* self, std::optional<MountedState> result) {
         if (!result.has_value()) {
           return self->ReportLaunchResult(
               KioskAppLaunchError::Error::kCryptohomedNotRunning);

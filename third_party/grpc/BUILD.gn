@@ -23,6 +23,9 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+# WARNING: This config is public and applies to many targets that are first
+# party code. Keep this config to a minimum and do not disable any compiler
+# warnings here.
 config("grpc_config") {
   include_dirs = [
     "src/include",
@@ -48,13 +51,6 @@ config("grpc_config") {
     # included in shared library built for other platforms
     defines += [ "GRPC_NO_BINDER" ]
   }
-
-  cflags = [
-    "-Wno-implicit-fallthrough",
-    "-Wno-shadow",
-    "-Wno-unreachable-code-return",
-    "-Wno-unreachable-code-break",
-  ]
 
   if (is_android) {
     libs = [ "log" ]  # For __android_log_write
@@ -84,16 +80,17 @@ config("grpc_config") {
 }
 
 config("grpc_config_private") {
+  # TODO(b/311287092): Clean up the code and remove this list.
   cflags = [
     "-Wno-c++98-compat-extra-semi",
-    "-Wno-extra-semi",
-    "-Wno-sign-compare",
-    "-Wno-sometimes-uninitialized",
-    "-Wno-string-concatenation",
-    "-Wno-unreachable-code",
-    "-Wno-unused-variable",
-    "-Wno-unused-result",
     "-Wno-deprecated-copy",
+    "-Wno-extra-semi",
+    "-Wno-implicit-fallthrough",
+    "-Wno-shadow",
+    "-Wno-sign-compare",
+    "-Wno-unreachable-code",
+    "-Wno-unreachable-code-break",
+    "-Wno-unreachable-code-return",
   ]
 
   # TODO(b/260740023): Remove when gRPC has CFI checks enabled.
@@ -2291,8 +2288,11 @@ if (current_toolchain == host_toolchain) {
       ":grpc_plugin_support",
       "//third_party/protobuf:protoc_lib",
     ]
-    configs += [ "//third_party/protobuf:protobuf_config" ]
-    public_configs = [ ":grpc_config" ]
+    configs += [
+      "//third_party/protobuf:protobuf_config",
+      ":grpc_config_private",
+      ":grpc_config",
+    ]
   }
 }
 

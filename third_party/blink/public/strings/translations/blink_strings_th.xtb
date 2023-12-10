@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">โปรดย่อข้อความนี้ให้เหลือไม่เกิน <ph name="MAX_CHARACTERS" /> อักขระ (ขณะนี้ข้อความของคุณมี <ph name="CURRENT_LENGTH" /> อักขระ)</translation>
 <translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">แทร็ก <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">อนุญาตให้ใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="2393030564806080191">ค่าสีแบบฐานสิบหก</translation>
 <translation id="2398813069815436052">กล่องโต้ตอบเปิดอยู่</translation>
 <translation id="245932805758469625">จำนวนวินาทีที่เหลือของวิดีโอ</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี <ph name="CURRENT_LENGTH" /> ตัว)</translation>
 <translation id="383465348367842624">ส่วนที่ตามด้วย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
 <translation id="3846214748874656680">ออกจากการแสดงเต็มหน้าจอ</translation>
+<translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4103419683916926126">มิลลิวินาที</translation>
 <translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
 <translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
+<translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="4664250907885839816">ส่วนที่ต่อท้าย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
 <translation id="4718048029184481307">กำลังเล่นแบบการแสดงภาพซ้อนภาพ</translation>
 <translation id="4748357248530471599">สลับเป็นแบบเต็มหน้าจอสำหรับหน้าจอรอยบาก</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">ดาวน์โหลดสื่อ</translation>
 <translation id="698788488269350478">ขยายอยู่</translation>
 <translation id="6989848892321993519">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี 1 ตัว)</translation>
+<translation id="7080893216867146095">อนุญาตให้แชร์ตำแหน่ง</translation>
 <translation id="709897737746224366">โปรดจับคู่รูปแบบที่ร้องขอ</translation>
 <translation id="7102274145889307184">ตำแหน่งปัจจุบัน</translation>
 <translation id="7263440858009898357">โปรดเลือกรายการจากหน้ารายการ</translation>

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_MONITOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/proximity_auth/proximity_monitor.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace secure_channel {
@@ -68,7 +68,7 @@ class ProximityMonitorImpl : public ProximityMonitor {
 
   void OnGetConnectionMetadata(
       ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata);
-  void OnGetRssi(const absl::optional<int32_t>& rssi);
+  void OnGetRssi(const std::optional<int32_t>& rssi);
 
   // Resets the proximity state to |false|, and clears all member variables
   // tracking the proximity state.

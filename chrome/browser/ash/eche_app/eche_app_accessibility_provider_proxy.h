@@ -45,4 +45,4 @@ class EcheAppAccessibilityProviderProxy : public AccessibilityProviderProxy {
       this};
 };
 }  // namespace ash::eche_app
-#endif
+#endif  // CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_ACCESSIBILITY_PROVIDER_PROXY_H_

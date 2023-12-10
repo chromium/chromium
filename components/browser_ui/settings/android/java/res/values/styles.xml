@@ -68,6 +68,7 @@ found in the LICENSE file.
     </style>
 
     <style name="SwitchPreference" parent="Preference.SwitchPreferenceCompat.Material">
+        <item name="android:widgetLayout">@layout/preference_switch</item>
         <item name="allowDividerAbove">true</item>
         <item name="allowDividerBelow">true</item>
         <item name="iconSpaceReserved">false</item>

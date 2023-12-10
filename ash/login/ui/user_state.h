@@ -5,11 +5,12 @@
 #ifndef ASH_LOGIN_UI_USER_STATE_H_
 #define ASH_LOGIN_UI_USER_STATE_H_
 
+#include <optional>
+
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -35,7 +36,7 @@ class UserState {
   SmartLockState smart_lock_state = SmartLockState::kDisabled;
   bool auth_factor_is_hiding_password = false;
   // When present, indicates that the TPM is locked.
-  absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
+  std::optional<base::TimeDelta> time_until_tpm_unlock = std::nullopt;
 };
 
 }  // namespace ash

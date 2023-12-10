@@ -24,7 +24,7 @@
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -37,6 +37,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -484,7 +485,8 @@ class LockStateControllerAnimationTest
   // behavior, also sets other session related info to simulate being on a lock
   // screen with some other relevant user prefs.
   void PrepareSessionForUnlockAnimationInTabletModeTest() {
-    power_button_controller_->OnTabletModeStarted();
+    power_button_controller_->OnDisplayTabletStateChanged(
+        display::TabletState::kInTabletMode);
     // Advance mock clock to now. If we don't do this, PowerButtonController
     // will wrongly assume that we have accidental button presses due to all
     // timestamps zeroed.

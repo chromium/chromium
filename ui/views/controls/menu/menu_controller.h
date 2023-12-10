@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -292,6 +293,17 @@ class VIEWS_EXPORT MenuController
   // is safe to discard the handle after the menu controller has been destroyed.
   base::CallbackListSubscription AddAnnotationCallback(
       AnnotationCallback callback);
+
+  void SetShowMenuHostDurationHistogram(absl::optional<std::string> histogram) {
+    show_menu_host_duration_histogram_ = std::move(histogram);
+  }
+
+  absl::optional<std::string> TakeShowMenuHostDurationHistogram() {
+    absl::optional<std::string> value =
+        std::move(show_menu_host_duration_histogram_);
+    show_menu_host_duration_histogram_.reset();
+    return value;
+  }
 
  private:
   friend class internal::MenuRunnerImpl;
@@ -823,6 +835,10 @@ class VIEWS_EXPORT MenuController
   // parameter. See `AnnotationCallback` for more information.
   base::RepeatingCallbackList<void(bool&, const ui::LocatedEvent& event)>
       annotation_callbacks_;
+
+  // A histogram name for recording the time from menu host initialization to
+  // its successful presentation
+  absl::optional<std::string> show_menu_host_duration_histogram_;
 };
 
 }  // namespace views

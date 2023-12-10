@@ -13,12 +13,9 @@ import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 
-/**
- * LaunchCauseMetrics for WebappActivity.
- */
+/** LaunchCauseMetrics for WebappActivity. */
 public class WebappLaunchCauseMetrics extends LaunchCauseMetrics {
-    @Nullable
-    private WebappInfo mWebappInfo;
+    @Nullable private WebappInfo mWebappInfo;
 
     public WebappLaunchCauseMetrics(Activity activity, @Nullable WebappInfo info) {
         super(activity);

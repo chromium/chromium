@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
@@ -746,7 +748,7 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
 
   // Find the first of the duplicate versions and change it to a different
   // value. That should be sufficient to make the data parsable.
-  static constexpr base::StringPiece kU2Fv9 = "U2F_V9";
+  static constexpr std::string_view kU2Fv9 = "U2F_V9";
   uint8_t* first_version = base::ranges::search(get_info, kU2Fv9);
   ASSERT_TRUE(first_version);
   memcpy(first_version, "U2F_V3", 6);

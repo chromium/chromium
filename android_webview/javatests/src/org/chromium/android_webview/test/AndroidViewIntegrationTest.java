@@ -35,21 +35,21 @@ import javax.annotation.concurrent.GuardedBy;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AndroidViewIntegrationTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AndroidViewIntegrationTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public TestDependencyFactory createTestDependencyFactory() {
-                return new TestDependencyFactory() {
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
                     @Override
-                    public AwLayoutSizer createLayoutSizer() {
-                        return new TestAwLayoutSizer();
+                    public TestDependencyFactory createTestDependencyFactory() {
+                        return new TestDependencyFactory() {
+                            @Override
+                            public AwLayoutSizer createLayoutSizer() {
+                                return new TestAwLayoutSizer();
+                            }
+                        };
                     }
                 };
-            }
-        };
     }
 
     private static final String TAG = "AndroidViewTest"; // 20 max characters

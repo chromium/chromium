@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/network_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -18,7 +19,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -64,7 +64,7 @@ class NetworkScreenUnitTest : public testing::Test {
 
   raw_ptr<login::MockNetworkStateHelper, DanglingUntriaged | ExperimentalAsh>
       mock_network_state_helper_ = nullptr;
-  absl::optional<NetworkScreen::Result> last_screen_result_;
+  std::optional<NetworkScreen::Result> last_screen_result_;
 
  private:
   void HandleScreenExit(NetworkScreen::Result screen_result) {

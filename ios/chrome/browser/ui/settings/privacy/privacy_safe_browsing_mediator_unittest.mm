@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator+Testing.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator+internal.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_navigation_commands.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"

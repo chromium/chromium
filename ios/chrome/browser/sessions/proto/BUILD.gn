@@ -9,4 +9,5 @@ proto_library("proto") {
   generate_cc = true
   generate_python = false
   sources = [ "storage.proto" ]
+  deps = [ "//ios/web/public/session/proto" ]
 }

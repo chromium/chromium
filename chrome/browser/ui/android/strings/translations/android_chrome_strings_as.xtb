@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">হাইলাইট কৰা পাঠটো চুটি কৰা হৈছে</translation>
 <translation id="1111673857033749125">আপোনাৰ ডিভাইচত ছেভ কৰা বুকমাৰ্কবোৰ ইয়াত দেখা পোৱা যাব।</translation>
 <translation id="1113597929977215864">সৰলীকৃত ভিউ প্ৰদর্শন কৰক</translation>
-<translation id="1123070903960493543">আপুনি Chromeৰ সৈতে কেনেকৈ ব্যৱহাৰ কৰে, আপুনি বাছনি কৰা ছেটিং, Chrome ক্ৰেশ্বৰ সবিশেষ</translation>
 <translation id="1126013303640354461">Google Payৰ পৰা পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
 আপোনাৰ পাছফ্ৰেজ থকাগৰাকীয়েহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰিব। পাছফ্ৰেজটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰেজটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, তেন্তে আপুনি ছিংক ৰিছেট কৰিব লাগিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড অথবা এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা প্ৰদান নকৰে। Gmail আৰু Searchৰ দৰে অন্য Google সেৱাসমূহ, য’ত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো উপলব্ধ, সেইবিলাকত আপুনি তথাপি এই সুবিধাটো পাব।</translation>
@@ -140,6 +139,7 @@
 <translation id="1750259112639922169">টেবৰ গোট - <ph name="TAB_COUNT" /> টা টেব</translation>
 <translation id="17513872634828108">খুলি ৰখা টেবসমূহ</translation>
 <translation id="1757620656501361327">Google Password Managerৰ আপডে’ট</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{পৃষ্ঠা, সূচীত ১ খন পৃষ্ঠা আছে}one{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}other{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}}</translation>
 <translation id="1778457539567749232">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="1779766957982586368">ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="1791662854739702043">ইনষ্টল কৰা হ’ল</translation>
@@ -203,7 +203,6 @@
 <translation id="213279576345780926">বন্ধ <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">গৃহ স্ক্ৰীনত যোগ কৰক</translation>
 <translation id="2141396931810938595">আপোনাৰ ব্যৱহাৰৰ ওপৰত আধাৰিত</translation>
-<translation id="214888715418183969">আপুনি Chromeৰ সৈতে কি সহজে শ্বেয়াৰ কৰিব পাৰে সেয়া বাছনি কৰক। Chromeৰ সুবিধা, পাৰদৰ্শিতা আৰু স্থিৰতা উন্নত কৰাত সহায় কৰিবলৈ আপুনি শ্বেয়াৰ কৰা মেট্ৰিক্স ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2155214902713132423">এই ডিভাইচটোৰ বাবে এই সত্যাপনৰ পদ্ধতিটো উপলব্ধ নহয়। আপোনাৰ অন্য এটা ডিভাইচত এটা অন্য বিকল্প বাছনি কৰক।</translation>
 <translation id="2158408438301413340">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে</translation>
@@ -213,7 +212,6 @@
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="218608176142494674">শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
-<translation id="2200113223741723867">ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰাটো পৰিচালনা কৰক</translation>
 <translation id="22091350895006575">ব্যৱহাৰকাৰীৰ নাম যোগ দিয়ক</translation>
 <translation id="221494669172414749">এটা প্ৰ’ফাইল লকৰ অবিহনে Chrome খোলাটোৱে গাড়ীখনৰ পৰা আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পৰিশোধ পদ্ধতিসমূহ আঁতৰাব। এটা প্ৰ’ফাইল লক ব্যৱহাৰ কৰাটোৱে এই ডেটাখিনি সুৰক্ষিত কৰি ৰাখে।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
@@ -244,18 +242,17 @@
 <translation id="2364539095045928896">পৃষ্ঠাৰ ইনছাইটৰ হাবৰ গোপনীয়তাৰ জাননী বন্ধ কৰাৰ বুটাম।</translation>
 <translation id="2386938421315164605">বিষয়বস্তু লুকুৱাওক আৰু দেখুৱাওক</translation>
 <translation id="2390510615457643724">আপুনি <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> পুনৰ ডাউনল’ড কৰিব বিচাৰে নেকি?</translation>
-<translation id="2394602618534698961">আপুনি ডাউনল'ড কৰা ফাইলসমূহ ইয়াত প্ৰদর্শন কৰা হয়</translation>
 <translation id="2410754283952462441">কোনো একাউণ্ট বাছনি কৰক</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
 <translation id="2421705177906985956">এই মুহূৰ্তত দেখুৱাবলৈ কোনো ছাইট নাই</translation>
 <translation id="2426805022920575512">অইন এটা একাউণ্ট বাছনি কৰক</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{ভিডিঅ’, সূচীত ১ টা ভিডিঅ’ আছে}one{ভিডিঅ’, সূচীত # টা ভিডিঅ’ আছে}other{ভিডিঅ’, সূচীত # টা ভিডিঅ’ আছে}}</translation>
 <translation id="2433507940547922241">ৰূপ</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />ৰ পূৰ্বদৰ্শন</translation>
 <translation id="2450083983707403292">আপুনি <ph name="FILE_NAME" />ৰ ডাউনল’ড পুনৰ আৰম্ভ কৰিব বিচাৰে নেকি?</translation>
 <translation id="2453860139492968684">সম্পূর্ণ হ’ল</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
-<translation id="2472163211318554013">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক</translation>
 <translation id="247737702124049222">প্ৰতিচ্ছবিৰ বিৱৰণ অন আছে</translation>
 <translation id="2479148705183875116">ছেটিংসমূহলৈ যাওক</translation>
 <translation id="2482878487686419369">জাননী</translation>
@@ -373,7 +370,6 @@
 <translation id="2996932914629936323">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে</translation>
 <translation id="2997081575621687554">Googleৰ কোনো ছাইটে নিজৰ পৃষ্ঠাত থকা লিংকসমূহ গোপনে আগতীয়াকৈ ল’ড কৰিবলৈ অনুৰোধ কৰিলে Chromeএ কুকি অবিহনে Google ছাৰ্ভাৰৰ জৰিয়তে পৃষ্ঠাসমূহ এনক্ৰিপ্ট কৰি আগতীয়াকৈ ল’ড কৰে। ই আগতীয়াকৈ ল’ড কৰা ছাইটৰ পৰা আপোনাৰ পৰিচয় লুকুৱায়।</translation>
 <translation id="3003253259757197230">আপুনি ইয়াৰ পাছত কি ছাইট চাব সেয়া অনুমান কৰিবলৈ আৰু আপুনি চোৱা পৃষ্ঠাখনৰ অতিৰিক্ত তথ্য দেখুৱাবলৈ আপুনি চোৱা URLসমূহ Googleলৈ পঠিওৱা হয়</translation>
-<translation id="3006881078666935414">ব্যৱহাৰৰ কোনো ডেটা নাই</translation>
 <translation id="3016635187733453316">নিশ্চিত হৈ লওক যে এই ডিভাইচটো ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে</translation>
 <translation id="3026955690410463085">লিংক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="3027644380269727216">এটা ছাইটত আপোনাৰ কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অন হৈ আছে।</translation>
@@ -500,6 +496,7 @@
 <translation id="371230970611282515">বিপজ্জনক ঘটনাবোৰৰ সম্পর্কে অনুমান কৰে আৰু সেইবোৰ ঘটাৰ পূর্বে আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="3714981814255182093">সন্ধান বাৰ খোলক</translation>
 <translation id="3716182511346448902">এই পৃষ্ঠাটোৱে বহুত বেছি মেম’ৰি খৰচ কৰে, সেয়েহে Chromeএ ইয়াক প’জ কৰিছে৷</translation>
+<translation id="3720422586473670527">নালাগে, ধন্যবাদ</translation>
 <translation id="3721119614952978349">আপুনি আৰু Google</translation>
 <translation id="3737319253362202215">অনুবাদৰ ছেটিং</translation>
 <translation id="3737402728074743863">এই ডিভাইচটোক এটা সুৰক্ষা সম্পৰ্কীয় চাবি হিচাপে ব্যৱহাৰ কৰিবলৈ, এটা স্ক্ৰীন লক ছেট কৰক</translation>
@@ -509,7 +506,6 @@
 <translation id="3771033907050503522">ইনক’গনিট’ টেব</translation>
 <translation id="3771290962915251154">অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ অন হৈ থকাৰ বাবে এই ছেটিংটো অক্ষম কৰা হৈছে</translation>
 <translation id="3771694256347217732">Google সেৱাৰ চৰ্তাৱলী</translation>
-<translation id="3773856050682458546">প্ৰাথমিক ডেটাৰ লগতে আপুনি চোৱা ৱেবছাইট আৰু আপুনি ব্যৱহাৰ কৰা এপৰ বিষয়ে তথ্য</translation>
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3777796259512476958">অধিকাংশ ছাইটৰ পৰা আপোনাক ছাইন আউট কৰায়</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১ টা টেব}one{# টা টেব}other{# টা টেব}}</translation>
@@ -549,6 +545,7 @@
 <translation id="3985022125189960801">আপুনি কি ভাল পায় সেয়া অনুমান কৰিব পৰা ছাইটৰ সূচীত আপুনি ৰাখিবলৈ বিচৰা কোনো ছাইট পুনৰায় যোগ দিয়ক</translation>
 <translation id="3985215325736559418">আপুনি <ph name="FILE_NAME" /> পুনৰ ডাউনল'ড কৰিব খোজে নেকি?</translation>
 <translation id="3987993985790029246">লিংক প্ৰতিলিপি কৰক</translation>
+<translation id="3991055816270226534">তৃতীয় পক্ষৰ কুকি আৰু সুৰক্ষা ট্ৰেক কৰাটো পৰিচালনা কৰক</translation>
 <translation id="4000212216660919741">অফলাইন গৃহপৃষ্ঠা</translation>
 <translation id="4016425174436051808">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="4024768890073681126">আপোনাৰ অভিভাৱকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
@@ -556,7 +553,6 @@
 <translation id="4035877632587724847">অনুমতি নিদিব</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />লৈ অব্যাহত ৰাখক</translation>
 <translation id="4044708993631234325">তলৰ শ্বীট</translation>
-<translation id="4045764304651014138">ব্যৱহাৰৰ ডেটা</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
 <translation id="4062305924942672200">আইনী তথ্য</translation>
@@ -647,7 +643,6 @@
 আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত Googleৰ অন্য সেৱাত কৰা সন্ধান আৰু অন্যান্য কাৰ্যকলাপৰ দৰে ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="4523326818319942067">শেষ সময়</translation>
 <translation id="452750746583162491">আপোনাৰ ছিংক কৰা ডেটা পর্যালোচনা কৰক</translation>
-<translation id="4528638190900283934">অতিৰিক্ত সুবিধাৰ বাবে ছাইন ইন কৰক</translation>
 <translation id="4532845899244822526">ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="4543131175509360848">কোনো পাছকীৰ শ্বীট নাই</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা টেব}one{<ph name="TAB_COUNT_MANY" /> টা টেব, <ph name="TAB_COUNT_INCOGNITO" /> টা ইনক’গনিট’}other{<ph name="TAB_COUNT_MANY" /> টা টেব, <ph name="TAB_COUNT_INCOGNITO" /> টা ইনক’গনিট’}}</translation>
@@ -724,6 +719,7 @@
 <translation id="4864369630010738180">ছাইন ইন কৰি থকা হৈছে…</translation>
 <translation id="4866368707455379617">Chromeৰ কাৰণে <ph name="MODULE" /> ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="4871568871368204250">ছিংক অফ কৰক</translation>
+<translation id="4874961007154620743">অফ হৈ থাকিলে, আপুনি তথাপি Chromeএ স্থানীয়ভাৱে প্ৰদান কৰা পৰামৰ্শসমূহ দেখিব</translation>
 <translation id="4875775213178255010">সমলৰ পৰামৰ্শ</translation>
 <translation id="4877678010818027629">ইনক’গনিট’ ম’ডলৈ যাওক</translation>
 <translation id="4878404682131129617">প্ৰক্সী ছাৰ্ভাৰৰ জৰিয়তে এটা টানেল স্থাপন কৰাটো সম্ভৱ নহ‘ল</translation>
@@ -741,7 +737,6 @@
 <translation id="4925120120285606924">স্ক্ৰীনশ্বট <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">আপোনাৰ পাছৱৰ্ডসমূহ ৰপ্তানি কৰা হ’ব আৰু এটা পাঠ ফাইল হিচাপে ডাউনল’ড কৰা হ’ব। গন্তব্যস্থানৰ ফ’ল্ডাৰটোৰ এক্সেছ থকা যিকোনো লোক আৰু এপে সেয়া দেখা পাব।</translation>
 <translation id="4926901776383726965">আপুনি অফলাইনত চাবলৈ অথবা অন্য এপত শ্বেয়াৰ কৰিবলৈ প্ৰতিচ্ছবি আৰু ফাইল ছেভ কৰিব পাৰে</translation>
-<translation id="4928144016283278047">ট্ৰেকাৰৰ (তৃতীয় পক্ষৰ কুকি, IP ট্ৰেকিং, উলংঘনকাৰী লিপি আৰু অধিক) পৰা সুৰক্ষা</translation>
 <translation id="4932247056774066048">আপুনি যিহেতু <ph name="DOMAIN_NAME" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ লৈছে, সেয়ে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। এইটো আপোনাৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="4943703118917034429">ভাৰ্ছুৱেল ৰিয়েলিটি</translation>
 <translation id="4943872375798546930">কোনো ফলাফল নাই</translation>
@@ -770,7 +765,6 @@
 <translation id="5062960805900435602">পাছৱৰ্ড একত্ৰীকৰণ সম্পৰ্কীয় আপডে’ট বন্ধ হৈছে</translation>
 <translation id="5081960376148623587">পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰিব লাগেনে নাই বাছনি কৰক</translation>
 <translation id="5091199029769593641">অতি সোনকালে, আপুনি এটা নতুন টেব খুলিলে <ph name="SITE_NAME" />ৰ কাহিনী দেখা পাব। আপুনি ফ’ল’ কৰা ছাইটসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হয়। আপুনি সেইবোৰ ডিস্ক’ভাৰৰ ছেটিঙত পৰিচালনা কৰিব পাৰে।</translation>
-<translation id="5091249083535528968">বিস্তাৰিত ব্যৱহাৰৰ ডেটা</translation>
 <translation id="509429900233858213">কোনো আসোঁৱাহ হৈছে।</translation>
 <translation id="5097349930204431044">আপুনি চোৱা ছাইটসমূহে আপুনি কি ভাল পায় সেয়া নিৰ্ণয় কৰিব পাৰে আৰু তাৰ পাছত আপুনি ব্ৰাউজ কৰি থাকোঁতে বিজ্ঞাপনৰ পৰামৰ্শ দিব পাৰে</translation>
 <translation id="5099845111805573968">যেতিয়া আপুনি এবাৰ ডেস্কটপ ছাইট বাছনি কৰে, আপুনি প্ৰতিবাৰ চোৱাৰ সময়ত ছাইটটোত ছেটিংটো প্ৰয়োগ কৰা হয়</translation>
@@ -796,6 +790,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ফাইল ডাউনল’ড কৰি থকা হৈছে…}one{# টা ফাইল ডাউনল’ড কৰি থকা হৈছে…}other{# টা ফাইল ডাউনল’ড কৰি থকা হৈছে…}}</translation>
 <translation id="5210286577605176222">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
+<translation id="5216863793077689658">পৃষ্ঠাৰ অন্তৰ্দৃষ্টিত থকা আপোনাৰ কাৰ্যকলাপ আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" />ত ছেভ কৰা হয়।</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5226378907213531272">আপুনি প্ৰতিবাৰ গাড়ীখন ব্যৱহাৰ কৰোঁতে আপোনাৰ স্ক্ৰীনখন আনলক কৰিব</translation>
 <translation id="5227554086496586518">সন্ধানৰ ফলাফল চাবলৈ টিপক</translation>
@@ -881,6 +876,7 @@
 <translation id="5715150588940290235">ছেভ কৰি ৰখা সুৰক্ষা ক'ড মচিবনে?</translation>
 <translation id="572328651809341494">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>
 <translation id="5726692708398506830">পৃষ্ঠাটোৰ সকলো সমলৰ আকাৰ ডাঙৰ কৰক</translation>
+<translation id="5744751019568455640">আপোনাৰ ৱেব পৃষ্ঠাসমূহ পঢ়িবলৈ এয়া হৈছে আপুনি বাছনি কৰিব পৰা কণ্ঠধ্বনি। আপুনি যদি এই কণ্ঠধ্বনিটো পচন্দ কৰে আৰু মই এইটো ব্যৱহাৰ কৰি থকাটো বিচাৰে, মাত্ৰ কণ্ঠধ্বনিৰ নামটোত টিপক।</translation>
 <translation id="5748802427693696783">উন্নত টেব ব্যৱহাৰ কৰক</translation>
 <translation id="5749068826913805084">ফাইল ডাউনল’ড কৰিবলৈ Chromeক ষ্ট’ৰেজত এক্সেছৰ আৱশ্যক।</translation>
 <translation id="5749237766298580851">অফ আছে <ph name="SEPARATOR" /> চুপাৰিছ কৰা নহয়</translation>
@@ -908,7 +904,6 @@
 <translation id="5833984609253377421">লিংক শ্বেয়াৰ কৰক</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">পজ কৰা হ’ল</translation>
-<translation id="5854512288214985237">কোনো পৰিসংখ্যা অথবা ক্ৰেশ্ব ৰিপ’ৰ্ট Googleলৈ পঠিওৱা নহয়</translation>
 <translation id="5855546874025048181">পৰিষ্কৰণ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">কিবা ভুল হ’ল। ট্ৰেক কৰা মূল্য আপডে’ট কৰিব পৰা নগ’ল।</translation>
 <translation id="5859968346865909126">আপুনি ছেটিঙত এইটো অন অথবা অফ কৰিব পাৰে</translation>
@@ -998,6 +993,7 @@
 <translation id="6341580099087024258">ফাইল ক’ত ছেভ কৰিব লাগে সোধক</translation>
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}}</translation>
+<translation id="6344622098450209924">ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰাৰ সুবিধা</translation>
 <translation id="6345878117466430440">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="6356893102071098867">আপুনি সঠিক একাউণ্টটো বাছনি কৰিছেনে নাই পৰীক্ষা কৰক</translation>
 <translation id="6357653805084533597">আপুনি এই কিউআৰ ক’ডটো প্ৰদৰ্শন কৰি থকা ডিভাইচটোত ছাইন ইন কৰিবলৈ এই ফ’নটো ব্যৱহাৰ কৰিব পাৰে।</translation>
@@ -1012,7 +1008,6 @@
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="6406506848690869874">ছিংক কৰক</translation>
 <translation id="6407224748847589805">আপোনাৰ কম্পিউটাৰৰ সৈতে সংযোগ কৰিব নোৱাৰি। সত্যাপনৰ অন্য এটা বিকল্প ব্যৱহাৰ কৰি চাওক।</translation>
-<translation id="6410404864818553978">প্ৰাথমিক ব্যৱহাৰৰ ডেটা</translation>
 <translation id="6410883413783534063">একে সময়তে বেলেগ বেলেগ পৃষ্ঠালৈ যাবলৈ টেবসমূহ খোলক</translation>
 <translation id="6411219469806822692">ইয়াতকৈ ওপৰলৈ যাব নোৱাৰি। পৃষ্ঠাখনৰ অধিক ওপৰৰ পৰা চেষ্টা কৰি চাওক।</translation>
 <translation id="6412673304250309937">Chromeত ষ্ট'ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱর্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল'ড কৰাৰ সময়ত Chromeএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
@@ -1100,6 +1095,7 @@
 <translation id="6795633245022906657">ক্ষিপ্ৰভাৱে এটা নতুন টেব খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="6802555630140434547">ৱিণ্ড’খন বন্ধ কৰা হ’ব</translation>
 <translation id="6811034713472274749">পৃষ্ঠাটো চাবলৈ সাজু</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{প্ৰতিচ্ছবি, সূচীত ১ খন প্ৰতিচ্ছবি আছে}one{প্ৰতিচ্ছবি, সূচীত # খন প্ৰতিচ্ছবি আছে}other{প্ৰতিচ্ছবি, সূচীত # খন প্ৰতিচ্ছবি আছে}}</translation>
 <translation id="6813446258015311409">Chromeত ছাইন ইন কৰা হ’ল, খোলা আছে।</translation>
 <translation id="6817747507826986771">এই পৃষ্ঠাখন ক্ষিপ্ৰভাৱে শ্বেয়াৰ কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="6819199143469632133">সমগ্ৰ ডিভাইচত আপোনাৰ Googleৰ বস্তুবোৰ পাবলৈ ছাইন ইন কৰক</translation>
@@ -1113,6 +1109,7 @@
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>
 <translation id="6850409657436465440">আপোনাৰ ডাউনল’ড প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টা টেব বন্ধ কৰা হ’ল</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{অডিঅ’ ফাইল, সূচীত ১ টা অডিঅ’ ফাইল আছে}one{অডিঅ’ ফাইল, সূচীত # টা অডিঅ’ ফাইল আছে}other{অডিঅ’ ফাইল, সূচীত # টা অডিঅ’ ফাইল আছে}}</translation>
 <translation id="685850645784703949">Googleৰ Discover - অফ আছে</translation>
 <translation id="686366188661646310">পাছৱৰ্ড মচিবনে?</translation>
 <translation id="6864459304226931083">প্ৰতিচ্ছবি ডাউনল'ড কৰক</translation>
@@ -1200,7 +1197,6 @@
 <translation id="729975465115245577">পাছৱৰ্ডৰ ফাইলটো ষ্ট’ৰ কৰিবলৈ আপোনাৰ ডিভাইচত কোনো এপ্‌ নাই।</translation>
 <translation id="7304072650267745798">আপোনাৰ Android ডিভাইচত একেধৰণৰ এটা ছেটিং থাকিব পাৰে। যদি Chrome আৰু আপোনাৰ Android ডিভাইচত এই ছেটিংটো অন কৰা হয়, কোনো কোম্পানীয়ে আপুনি চোৱা সমগ্ৰ ছাইট আৰু আপুনি ব্যৱহাৰ কৰা এপত বিজ্ঞাপনৰ ফলপ্ৰসূতা জোখ-মাখ কৰিবলৈ সক্ষম হ’ব পাৰে।</translation>
 <translation id="7304873321153398381">অফলাইন হৈ আছে। Chromeএ আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে।</translation>
-<translation id="7313094438430838513">ট্ৰেকিং সুৰক্ষা</translation>
 <translation id="7313188324932846546">ছিংক ছেট আপ কৰিবলৈ টিপক</translation>
 <translation id="7324354302972299151">"ট্ৰেক নকৰিব" বুলি এটা অনুৰোধ পঠিয়াওক</translation>
 <translation id="7332075081379534664">সফলভাৱে ছাইন ইন কৰা হ’ল</translation>
@@ -1218,6 +1214,7 @@
 <translation id="7379900596734708416">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম উপলব্ধ</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="7397416715506917976">পৃষ্ঠাৰ অন্তৰ্দৃষ্টি চাওক</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{অন্য, সূচীত ১ টা ফাইল আছে}one{অন্য, সূচীত # টা ফাইল আছে}other{অন্য, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome প্ৰথমবাৰ চলোৱাৰ অভিজ্ঞতা</translation>
 <translation id="7411224099004328643">Google একাউণ্টৰ ব্যৱহাৰকাৰী</translation>
@@ -1290,10 +1287,10 @@
 <translation id="7691043218961417207">ফ’ল’ কৰিবলৈ সমল অন্বেষণ কৰক</translation>
 <translation id="7697383401610880082">টানি আনি এৰা হেণ্ডেল</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />ত ইমেইল সৃষ্টি কৰক</translation>
+<translation id="7702029078562412515">প্ৰশ্নৰ টাইল</translation>
 <translation id="7702388902581909985">আপোনাৰ ব্ৰাউজিঙৰ ডেটা মচাটোৱে আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট নকৰায়। এনে কৰিবলৈ, <ph name="BEGIN_LINK1" />Chromeৰ পৰা ছাইট আউট কৰক<ph name="END_LINK1" />।</translation>
 <translation id="7707922173985738739">ম’বাইল ডেটা ব্যৱহাৰ কৰক</translation>
 <translation id="7709918231054955894">আপোনাৰ আটাইবোৰ টেব পাওক</translation>
-<translation id="7725024127233776428">আপুনি বুকমাৰ্ক কৰি ৰখা পৃষ্ঠাবোৰ ইয়াত দেখা যাব</translation>
 <translation id="7733878270780732638">ডিভাইচত পৰ্যাপ্ত খালী ঠাই নাই।</translation>
 <translation id="7757787379047923882">পাঠ <ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
@@ -1311,9 +1308,9 @@
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7808889146555843082">এই পাছৱর্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব। অন্য লোকসকলৰ পৰা আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱর্ড সলনি কৰক অথবা <ph name="SITE" />ত আপোনাৰ একাউণ্টটো মচক।</translation>
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{আটাইবোৰ ফাইল, সূচীত ১ টা ফাইল আছে}one{আটাইবোৰ ফাইল, সূচীত # টা ফাইল আছে}other{আটাইবোৰ ফাইল, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
 <translation id="7822705602465980873">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, আপোনাক সমগ্ৰ Google সেৱাসমূহত সুৰক্ষিত কৰিবলৈ এই ডেটাখিনি আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হয়, উদাহৰণস্বৰূপে, কোনো সুৰক্ষা সম্পৰ্কীয় ঘটনাৰ পাছত Gmailত সুৰক্ষা বৃদ্ধি কৰা।</translation>
-<translation id="782705168687182233">আপোনাৰ কাৰ্যকলাপ আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" />ত ছেভ কৰা হয়।</translation>
 <translation id="78270725016672455">আপোনাৰ কম্পিউটাৰটোৱে এটা ছাইটত ছাইন ইন কৰিবলৈ এই ডিভাইচটো পঞ্জীয়ন কৰিব বিচাৰে</translation>
 <translation id="7844171778363018843">ছিংক কৰিবলৈ কোনো ডেটা বাছনি কৰা হোৱা নাই</translation>
 <translation id="7846296061357476882">Google সেৱাসমূহ</translation>
@@ -1379,7 +1376,6 @@
 <translation id="808747664143081553">ডিভাইচৰ সৈতে সংযোগ কৰা হ’ল</translation>
 <translation id="8088176524274673045">আশে-পাশে থকা লোকসকলৰ সৈতে শ্বেয়াৰ কৰিবলৈ তেওঁলোকক এই কিউআৰ ক’ডটো স্কেন কৰিবলৈ দিয়ক</translation>
 <translation id="8090732854597034573">আপোনাক সহায়ৰ প্ৰয়োজন হ’লে আপোনাৰ অভিভাৱকক কওক</translation>
-<translation id="8100969750121413114">Chrome ব্যক্তিগতকৰণ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />ৰ পৰা কোনো টেব নাই</translation>
 <translation id="8103578431304235997">ইনক’গনিট’ টেব</translation>
 <translation id="8105613260829665809">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_TOS_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" />ত সন্মত হৈছে।\nএপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_UMA_LINK" />পৰিচালনা কৰক<ph name="END_UMA_LINK" /></translation>
@@ -1535,6 +1531,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> সাজু আছে</translation>
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>
+<translation id="893938492099608175">আপোনাৰ ছেটিঙৰ ওপৰত নিৰ্ভৰ কৰি, Chromeএ লগতে কুকি আৰু আপোনাৰ বৰ্তমানৰ URL আৰু আপোনাৰ অৱস্থান পঠিয়াব পাৰে</translation>
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8955719471735800169">ওপৰলৈ যাওক</translation>

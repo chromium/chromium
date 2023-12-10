@@ -20,7 +20,7 @@ window.onIframeLoaded = function() {
     iframe.src = 'data:text/html,This frame should be visible when the test completes';
 }
 
-window.onIframeUnloaded = function() {
+window.onIframePageHidden = function() {
     iframeGeolocation.getCurrentPosition(function () {
         testFailed('Success callback invoked unexpectedly');
         finishJSTest();

@@ -210,7 +210,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webdriver_tests_suite",
+        "name": "webdriver_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -285,8 +285,7 @@
             "os": "Mac-10.15"
           },
           "hard_timeout": 2400,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"

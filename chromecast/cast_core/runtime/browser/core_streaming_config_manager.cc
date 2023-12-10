@@ -62,9 +62,9 @@ cast_streaming::ReceiverConfig CreateConfig(
     const PlatformInfoSerializer& deserializer) {
   cast_streaming::ReceiverConfig constraints;
 
-  const absl::optional<int> width = deserializer.MaxWidth();
-  const absl::optional<int> height = deserializer.MaxHeight();
-  const absl::optional<int> frame_rate = deserializer.MaxFrameRate();
+  const std::optional<int> width = deserializer.MaxWidth();
+  const std::optional<int> height = deserializer.MaxHeight();
+  const std::optional<int> frame_rate = deserializer.MaxFrameRate();
   if (width && *width && height && *height && frame_rate && *frame_rate) {
     cast_streaming::ReceiverConfig::Display display;
     display.dimensions = gfx::Rect{*width, *height};
@@ -209,7 +209,7 @@ bool CoreStreamingConfigManager::OnMessage(
 
   DCHECK(ports.empty());
 
-  absl::optional<PlatformInfoSerializer> deserializer =
+  std::optional<PlatformInfoSerializer> deserializer =
       PlatformInfoSerializer::Deserialize(message);
   if (!deserializer) {
     LOG(ERROR) << "AV Settings with invalid protobuf received: " << message;

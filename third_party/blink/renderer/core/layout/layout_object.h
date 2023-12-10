@@ -49,10 +49,10 @@
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/layout/outline_rect_collector.h"
+#include "third_party/blink/renderer/core/layout/outline_type.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
+#include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
@@ -153,21 +153,22 @@ class CORE_EXPORT AllowDestroyingLayoutObjectInFinalizerScope {
   ~AllowDestroyingLayoutObjectInFinalizerScope();
 };
 
-// The result of |LayoutObject::RecalcLayoutOverflow|.
-struct RecalcLayoutOverflowResult {
+// The result of |LayoutObject::RecalcScrollableOverflow|.
+struct RecalcScrollableOverflowResult {
   STACK_ALLOCATED();
 
  public:
-  // True if the layout-overflow (from the viewpoint of the parent) changed,
-  // indicating that the parent should also recalculate its layout-overflow.
-  bool layout_overflow_changed = false;
+  // True if the scrollable-overflow (from the viewpoint of the parent) changed,
+  // indicating that the parent should also recalculate its scrollable-overflow.
+  bool scrollable_overflow_changed = false;
 
   // True if parents should rebuild their fragments to ensure fragment tree
-  // consistency. This may be true even if |layout_overflow_changed| is false.
+  // consistency. This may be true even if |scrollable_overflow_changed| is
+  // false.
   bool rebuild_fragment_tree = false;
 
-  void Unite(const RecalcLayoutOverflowResult& other) {
-    layout_overflow_changed |= other.layout_overflow_changed;
+  void Unite(const RecalcScrollableOverflowResult& other) {
+    scrollable_overflow_changed |= other.scrollable_overflow_changed;
     rebuild_fragment_tree |= other.rebuild_fragment_tree;
   }
 };
@@ -313,6 +314,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // name of the object along with extra information about the layout object
   // state (e.g. positioning).
   String DecoratedName() const;
+
+  // Returns the decorated name, and DOM node info (tag name and style / class /
+  // id attributes, if present).
+  String ToString() const;
 
   // This is an inexact determination of whether the display of this objects is
   // altered or obscured by CSS effects.
@@ -717,10 +722,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   inline bool IsElementCaptureParticipant() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
-      if (Element* element = DynamicTo<Element>(GetNode())) {
-        return element->GetRestrictionTargetId();
-      }
+    if (Element* element = DynamicTo<Element>(GetNode())) {
+      return element->GetRestrictionTargetId();
     }
     return false;
   }
@@ -804,6 +807,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #endif
 
   void AddAbsoluteRectForLayer(gfx::Rect& result);
+
+ protected:
+  // A helper for AddChild().
   bool RequiresAnonymousTableWrappers(const LayoutObject*) const;
 
  public:
@@ -1111,7 +1117,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns true if the text is generated (from, e.g., list marker,
   // pseudo-element, ...) instead of from a DOM text node. See
-  // |NGTextType::kLayoutGenerated| for the other type of generated text.
+  // |TextFragmentType::kLayoutGenerated| for the other type of generated text.
   bool IsStyleGenerated() const;
 
   bool HasCounterNodeMap() const {
@@ -1123,10 +1129,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetHasCounterNodeMap(has_counter_node_map);
   }
 
-  // |NGPhysicalAnchorQuery| is built and propagated up in the fragment tree
+  // |PhysicalAnchorQuery| is built and propagated up in the fragment tree
   // during the layout. This function indicates whether |this| may have an
   // anchor query or not before the layout. When it returns false, |this| does
-  // not have an |NGPhysicalAnchorQuery|.
+  // not have an |PhysicalAnchorQuery|.
   bool MayHaveAnchorQuery() const {
     NOT_DESTROYED();
     return bitfields_.MayHaveAnchorQuery();
@@ -1459,24 +1465,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // For non-boxes, for better performance, the caller can prepare
   // |block_for_flipping| (= ContainingBlock()) if it will loop through many
   // rects/points to flip to avoid the cost of repeated ContainingBlock() calls.
-  [[nodiscard]] DeprecatedLayoutRect FlipForWritingMode(
-      const PhysicalRect& r,
-      const LayoutBox* box_for_flipping = nullptr) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return r.ToLayoutRect();
-    return {FlipForWritingModeInternal(r.X(), r.Width(), box_for_flipping),
-            r.Y(), r.Width(), r.Height()};
-  }
-  [[nodiscard]] PhysicalRect FlipForWritingMode(
-      const DeprecatedLayoutRect& r,
-      const LayoutBox* box_for_flipping = nullptr) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return PhysicalRect(r);
-    return {FlipForWritingModeInternal(r.X(), r.Width(), box_for_flipping),
-            r.Y(), r.Width(), r.Height()};
-  }
   [[nodiscard]] LayoutPoint FlipForWritingMode(
       const PhysicalOffset& p,
       const LayoutBox* box_for_flipping = nullptr) const {
@@ -1485,15 +1473,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       return p.ToLayoutPoint();
     return {FlipForWritingModeInternal(p.left, LayoutUnit(), box_for_flipping),
             p.top};
-  }
-  [[nodiscard]] PhysicalOffset FlipForWritingMode(
-      const LayoutPoint& p,
-      const LayoutBox* box_for_flipping = nullptr) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return PhysicalOffset(p);
-    return {FlipForWritingModeInternal(p.X(), LayoutUnit(), box_for_flipping),
-            p.Y()};
   }
 
   bool HasLayer() const {
@@ -1567,35 +1546,51 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(b);
   }
+  bool IndefiniteIntrinsicLogicalWidthsDirty() const {
+    NOT_DESTROYED();
+    return bitfields_.IndefiniteIntrinsicLogicalWidthsDirty();
+  }
+  void SetIndefiniteIntrinsicLogicalWidthsDirty(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetIndefiniteIntrinsicLogicalWidthsDirty(b);
+  }
+  bool DefiniteIntrinsicLogicalWidthsDirty() const {
+    NOT_DESTROYED();
+    return bitfields_.DefiniteIntrinsicLogicalWidthsDirty();
+  }
+  void SetDefiniteIntrinsicLogicalWidthsDirty(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetDefiniteIntrinsicLogicalWidthsDirty(b);
+  }
 
-  bool NeedsLayoutOverflowRecalc() const {
+  bool NeedsScrollableOverflowRecalc() const {
     NOT_DESTROYED();
-    return bitfields_.SelfNeedsLayoutOverflowRecalc() ||
-           bitfields_.ChildNeedsLayoutOverflowRecalc();
+    return bitfields_.SelfNeedsScrollableOverflowRecalc() ||
+           bitfields_.ChildNeedsScrollableOverflowRecalc();
   }
-  bool SelfNeedsLayoutOverflowRecalc() const {
+  bool SelfNeedsScrollableOverflowRecalc() const {
     NOT_DESTROYED();
-    return bitfields_.SelfNeedsLayoutOverflowRecalc();
+    return bitfields_.SelfNeedsScrollableOverflowRecalc();
   }
-  bool ChildNeedsLayoutOverflowRecalc() const {
+  bool ChildNeedsScrollableOverflowRecalc() const {
     NOT_DESTROYED();
-    return bitfields_.ChildNeedsLayoutOverflowRecalc();
+    return bitfields_.ChildNeedsScrollableOverflowRecalc();
   }
-  void SetSelfNeedsLayoutOverflowRecalc() {
+  void SetSelfNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetSelfNeedsLayoutOverflowRecalc(true);
+    bitfields_.SetSelfNeedsScrollableOverflowRecalc(true);
   }
-  void SetChildNeedsLayoutOverflowRecalc() {
+  void SetChildNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetChildNeedsLayoutOverflowRecalc(true);
+    bitfields_.SetChildNeedsScrollableOverflowRecalc(true);
   }
-  void ClearSelfNeedsLayoutOverflowRecalc() {
+  void ClearSelfNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetSelfNeedsLayoutOverflowRecalc(false);
+    bitfields_.SetSelfNeedsScrollableOverflowRecalc(false);
   }
-  void ClearChildNeedsLayoutOverflowRecalc() {
+  void ClearChildNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetChildNeedsLayoutOverflowRecalc(false);
+    bitfields_.SetChildNeedsScrollableOverflowRecalc(false);
   }
 
   // CSS clip only applies when position is absolute or fixed. Prefer this check
@@ -1810,6 +1805,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // instead of flex box. crbug.com/226252.
   bool BehavesLikeBlockContainer() const {
     NOT_DESTROYED();
+    // <rt> supports :first-letter for backward compatibility.
+    // <rt> had display:block, and :first-letter worked accidentally.
+    // Test: fast/ruby/ruby-first-letter.html.
+    // TODO(crbug.com/1501719): Remove rt:first-letter support.
+    if (IsRubyText() && IsA<HTMLRTElement>(GetNode())) {
+      return true;
+    }
     return (IsLayoutBlockFlow() && StyleRef().IsDisplayBlockContainer()) ||
            IsButton();
   }
@@ -1969,7 +1971,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and preferred width recalc. Also invalidates shaping on all text nodes.
   virtual void InvalidateSubtreeLayoutForFontUpdates();
 
-  void InvalidateIntersectionObserverCachedRects();
+  void DeprecatedInvalidateIntersectionObserverCachedRects();
 
   // Mark elements with a principal box and a computed position-fallback
   // different from 'none' for layout when @position-fallback rules are removed
@@ -2168,7 +2170,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual void Paint(const PaintInfo&) const;
 
-  virtual RecalcLayoutOverflowResult RecalcLayoutOverflow();
+  virtual RecalcScrollableOverflowResult RecalcScrollableOverflow();
 
   // Invalidate visual overflow, using a method that varies based
   // the object type and state of layout.
@@ -2334,7 +2336,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // or null if there is none.
   LayoutObject* NearestAncestorForElement() const;
 
-  const LayoutBlock* InclusiveContainingBlock() const;
+  LayoutBlock* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
 
   const LayoutBox* ContainingScrollContainer(
       bool ignore_layout_view_for_fixed_pos = false) const;
@@ -2547,9 +2549,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline const ComputedStyle* Style(bool first_line) const;
   inline const ComputedStyle& StyleRef(bool first_line) const;
 
-  const ComputedStyle& EffectiveStyle(NGStyleVariant style_variant) const {
+  const ComputedStyle& EffectiveStyle(StyleVariant style_variant) const {
     NOT_DESTROYED();
-    return style_variant == NGStyleVariant::kStandard
+    return style_variant == StyleVariant::kStandard
                ? StyleRef()
                : SlowEffectiveStyle(style_variant);
   }
@@ -2623,6 +2625,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool MapToVisualRectInAncestorSpace(
       const LayoutBoxModelObject* ancestor,
       PhysicalRect&,
+      VisualRectFlags = kDefaultVisualRectFlags) const;
+
+  bool MapToVisualRectInAncestorSpace(
+      const LayoutBoxModelObject* ancestor,
+      gfx::RectF&,
       VisualRectFlags = kDefaultVisualRectFlags) const;
 
   // Do not call this method directly. Call mapToVisualRectInAncestorSpace
@@ -2824,7 +2831,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // |iterator|. This method will also advance |iterator| to the next
   // FragmentData (and therefore also next fragmentainer), if any.
   Vector<PhysicalRect> CollectOutlineRectsAndAdvance(
-      NGOutlineType,
+      OutlineType,
       AccompaniedFragmentIterator& iterator) const;
 
   struct OutlineInfo {
@@ -2859,7 +2866,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // in the same space as the physical rects returned.
   Vector<PhysicalRect> OutlineRects(OutlineInfo*,
                                     const PhysicalOffset& additional_offset,
-                                    NGOutlineType) const;
+                                    OutlineType) const;
 
   // Collects rectangles that the outline of this object would be drawing along
   // the outside of, even if the object isn't styled with a outline for now.
@@ -2868,12 +2875,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual void AddOutlineRects(OutlineRectCollector&,
                                OutlineInfo*,
                                const PhysicalOffset& additional_offset,
-                               NGOutlineType) const {
+                               OutlineType) const {
     NOT_DESTROYED();
   }
 
-  static RespectImageOrientationEnum ShouldRespectImageOrientation(
-      const LayoutObject*);
+  // Get the 'image-orientation' value for a (potentially null) LayoutObject.
+  //
+  // Returns the initial value ('from-image') if passed a nullptr, else the
+  // value of the 'image-orientation' property. (If it is known at the callsite
+  // that the LayoutObject* is non-null then just access its ComputedStyle
+  // directly.)
+  static RespectImageOrientationEnum GetImageOrientation(const LayoutObject*);
 
   bool IsRelayoutBoundary() const;
 
@@ -3198,6 +3210,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     void SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(bool b) {
       layout_object_
           .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
+    }
+
+    void FragmentCountChanged() {
+      // Even if the fragment count has changed, the total stitched size of the
+      // object may be the same as before, although the size of the individual
+      // fragments may have changed. Full paint invalidation is required.
+      SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kLayout);
     }
 
     FragmentData& FirstFragment() { return *layout_object_.fragment_; }
@@ -3530,7 +3549,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #endif
   }
 
-  const ComputedStyle& SlowEffectiveStyle(NGStyleVariant style_variant) const;
+  const ComputedStyle& SlowEffectiveStyle(StyleVariant style_variant) const;
 
   // Updates only the local style ptr of the object.  Does not update the state
   // of the object, and so only should be called when the style is known not to
@@ -3566,7 +3585,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // The return value of this method is whether the fast path could be used.
   bool MapToVisualRectInAncestorSpaceInternalFastPath(
       const LayoutBoxModelObject* ancestor,
-      PhysicalRect&,
+      gfx::RectF&,
       VisualRectFlags,
       bool& intersects) const;
 
@@ -3690,6 +3709,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
  private:
+  void InvalidateIntersectionObserverCachedRects();
+
   gfx::QuadF LocalToAncestorQuadInternal(const gfx::QuadF&,
                                          const LayoutBoxModelObject* ancestor,
                                          MapCoordinatesFlags = 0) const;
@@ -3717,7 +3738,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool SelfPaintingLayerNeedsVisualOverflowRecalc() const;
   inline void MarkContainerChainForOverflowRecalcIfNeeded(
-      bool mark_container_chain_layout_overflow_recalc);
+      bool mark_container_chain_scrollable_overflow_recalc);
 
   inline void InvalidateContainerIntrinsicLogicalWidths();
 
@@ -3825,11 +3846,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         : self_needs_full_layout_(false),
           child_needs_full_layout_(false),
           needs_simplified_layout_(false),
-          self_needs_layout_overflow_recalc_(false),
-          child_needs_layout_overflow_recalc_(false),
+          self_needs_scrollable_overflow_recalc_(false),
+          child_needs_scrollable_overflow_recalc_(false),
           intrinsic_logical_widths_dirty_(false),
           intrinsic_logical_widths_depends_on_block_constraints_(true),
           intrinsic_logical_widths_child_depends_on_block_constraints_(true),
+          indefinite_intrinsic_logical_widths_dirty_(true),
+          definite_intrinsic_logical_widths_dirty_(true),
           needs_collect_inlines_(false),
           should_check_for_paint_invalidation_(true),
           subtree_should_check_for_paint_invalidation_(false),
@@ -3918,11 +3941,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // This is relatively cheap compuared to "full" layout.
     ADD_BOOLEAN_BITFIELD(needs_simplified_layout_, NeedsSimplifiedLayout);
 
-    ADD_BOOLEAN_BITFIELD(self_needs_layout_overflow_recalc_,
-                         SelfNeedsLayoutOverflowRecalc);
+    ADD_BOOLEAN_BITFIELD(self_needs_scrollable_overflow_recalc_,
+                         SelfNeedsScrollableOverflowRecalc);
 
-    ADD_BOOLEAN_BITFIELD(child_needs_layout_overflow_recalc_,
-                         ChildNeedsLayoutOverflowRecalc);
+    ADD_BOOLEAN_BITFIELD(child_needs_scrollable_overflow_recalc_,
+                         ChildNeedsScrollableOverflowRecalc);
 
     // This boolean marks the intrinsic logical widths for lazy recomputation.
     //
@@ -3942,6 +3965,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(
         intrinsic_logical_widths_child_depends_on_block_constraints_,
         IntrinsicLogicalWidthsChildDependsOnBlockConstraints);
+
+    // Indicates if the indefinite min/max sizes cache slot is dirty.
+    ADD_BOOLEAN_BITFIELD(indefinite_intrinsic_logical_widths_dirty_,
+                         IndefiniteIntrinsicLogicalWidthsDirty);
+
+    // Indicates if the definite min/max sizes cache slots are dirty.
+    ADD_BOOLEAN_BITFIELD(definite_intrinsic_logical_widths_dirty_,
+                         DefiniteIntrinsicLogicalWidthsDirty);
 
     // This flag is set on inline container boxes that need to run the
     // Pre-layout phase in LayoutNG. See InlineNode::CollectInlines().

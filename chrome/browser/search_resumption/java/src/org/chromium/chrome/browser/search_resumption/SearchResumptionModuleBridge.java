@@ -11,34 +11,35 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
-/**
- * Bridge, providing access to the native-side functionalities to fetch search suggestions.
- */
+/** Bridge, providing access to the native-side functionalities to fetch search suggestions. */
 @JNINamespace("search_resumption_module")
 public class SearchResumptionModuleBridge {
     interface OnSuggestionsReceivedCallback {
         void onSuggestionsReceived(String[] suggestionTexts, GURL[] suggestionUrls);
     }
+
     private long mSearchResumptionModuleBridge;
     private OnSuggestionsReceivedCallback mCallback;
 
     public SearchResumptionModuleBridge(Profile profile) {
-        mSearchResumptionModuleBridge = SearchResumptionModuleBridgeJni.get().create(
-                SearchResumptionModuleBridge.this, profile);
+        mSearchResumptionModuleBridge =
+                SearchResumptionModuleBridgeJni.get()
+                        .create(SearchResumptionModuleBridge.this, profile);
     }
 
     void fetchSuggestions(String url, OnSuggestionsReceivedCallback callback) {
         if (mSearchResumptionModuleBridge == 0) return;
 
         mCallback = callback;
-        SearchResumptionModuleBridgeJni.get().fetchSuggestions(
-                mSearchResumptionModuleBridge, SearchResumptionModuleBridge.this, url);
+        SearchResumptionModuleBridgeJni.get()
+                .fetchSuggestions(
+                        mSearchResumptionModuleBridge, SearchResumptionModuleBridge.this, url);
     }
 
     void destroy() {
         if (mSearchResumptionModuleBridge != 0) {
-            SearchResumptionModuleBridgeJni.get().destroy(
-                    mSearchResumptionModuleBridge, SearchResumptionModuleBridge.this);
+            SearchResumptionModuleBridgeJni.get()
+                    .destroy(mSearchResumptionModuleBridge, SearchResumptionModuleBridge.this);
             mSearchResumptionModuleBridge = 0;
         }
     }
@@ -51,8 +52,12 @@ public class SearchResumptionModuleBridge {
     @NativeMethods
     interface Natives {
         long create(SearchResumptionModuleBridge caller, Profile profile);
-        void fetchSuggestions(long nativeSearchResumptionModuleBridge,
-                SearchResumptionModuleBridge caller, String url);
+
+        void fetchSuggestions(
+                long nativeSearchResumptionModuleBridge,
+                SearchResumptionModuleBridge caller,
+                String url);
+
         void destroy(long nativeSearchResumptionModuleBridge, SearchResumptionModuleBridge caller);
     }
 }

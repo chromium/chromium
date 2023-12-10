@@ -47,8 +47,6 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
 
   ~AXImageAnnotator() override;
 
-  void Destroy();
-
   std::string GetImageAnnotation(blink::WebAXObject& image) const;
   ax::mojom::ImageAnnotationStatus GetImageAnnotationStatus(
       blink::WebAXObject& image) const;
@@ -105,9 +103,6 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   // This method is virtual to allow overriding it from tests.
   virtual std::string GenerateImageSourceId(
       const blink::WebAXObject& image) const;
-
-  // Removes the automatic image annotations from all images.
-  void MarkAllImagesDirty();
 
   // Marks a node in the accessibility tree dirty when an image annotation
   // changes. Also marks dirty a link or document that immediately contains

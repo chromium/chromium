@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+[FAIL] successful share
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with URL without a scheme
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with a path-only URL
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with a relative URL
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with an empty URL
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with percent-encoded URL characters
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with Unicode characters
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] successful share with long strings
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

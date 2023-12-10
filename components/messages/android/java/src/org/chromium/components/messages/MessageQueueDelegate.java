@@ -16,19 +16,13 @@ public interface MessageQueueDelegate {
      */
     void onRequestShowing(Runnable callback);
 
-    /**
-     * Called after all messages are finished hiding. Should be called only once after hiding.
-     */
+    /** Called after all messages are finished hiding. Should be called only once after hiding. */
     void onFinishHiding();
 
-    /**
-     * Called when a message animation is about to start.
-     */
+    /** Called when a message animation is about to start. */
     void onAnimationStart();
 
-    /**
-     * Called after a message animation has ended.
-     */
+    /** Called after a message animation has ended. */
     void onAnimationEnd();
 
     /**

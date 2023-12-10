@@ -58,7 +58,7 @@ class PushBufferPendingHandler : public AudioChannelPushBufferHandler {
   CmaBackend::BufferStatus PushBuffer(
       const PushBufferRequest& request) override;
   bool HasBufferedData() const override;
-  absl::optional<PushBufferRequest> GetBufferedData() override;
+  std::optional<PushBufferRequest> GetBufferedData() override;
 
  private:
   friend class PushBufferPendingHandlerTest;

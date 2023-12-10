@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1178581264944972037">Pauziraj</translation>
-<translation id="2558806128245168542">Idite nazad</translation>
-<translation id="3523426587027570423">Dodirnite da biste zatvorili plejer Slušajte ovu stranicu.</translation>
+<translation id="1921351128855867012">Premotajte <ph name="NUMBER_OF_SECONDS" /> sek unapred</translation>
+<translation id="1984328900355667246">Reprodukcija nije dostupna</translation>
+<translation id="3023502830214299618">Nažalost, reprodukcija trenutno nije dostupna za ovu stranicu. Probajte ponovo kasnije.</translation>
+<translation id="3807208219231826020">Reprodukcija prevlačenjem</translation>
+<translation id="385051799172605136">Nazad</translation>
 <translation id="4431240646217225907">Istakni tekst i omogući automatsko skrolovanje</translation>
 <translation id="4654641641922242357">Plejer Slušajte ovu stranicu.</translation>
-<translation id="4731877163452936634">Brzina reprodukcije: <ph name="PLAYBACK_SPEED" /> Kliknite da biste promenili.</translation>
+<translation id="4872475766448853257">Vratite se <ph name="NUMBER_OF_SECONDS" /> sek</translation>
 <translation id="5234971936051226002">Plejer Slušajte ovu stranicu je umanjen.</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="6315170314923504164">Glas</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6846298663435243399">Učitava se...</translation>
 <translation id="7587250070160020374">Chrome trenutno pušta</translation>
-<translation id="7945822420239537236">Premotajte <ph name="NUMBER_OF_SECONDS" /> sek unapred</translation>
-<translation id="7972866381678406344">Premotajte <ph name="NUMBER_OF_SECONDS" /> sek unazad</translation>
 <translation id="8136852699834914183">Reprodukcija nije dostupna za ovu stranicu.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> puta povećajte ili smanjite brzinu.</translation>
+<translation id="8407011429883244666">Zatvorite plejer.</translation>
 <translation id="8953618380150219653">Plejer Slušajte ovu stranicu je otvoren u punoj visini.</translation>
 </translationbundle>

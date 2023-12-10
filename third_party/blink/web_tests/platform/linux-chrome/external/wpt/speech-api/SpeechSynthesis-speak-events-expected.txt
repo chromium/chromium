@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] speechSynthesis.speak() fires start and end events with empty utterance
+  assert_equals: Expected start event, but got error event instead expected "start" but got "error"
+[FAIL] speechSynthesis.speak() fires start and end events
+  assert_equals: Expected start event, but got error event instead expected "start" but got "error"
+Harness: the test ran to completion.

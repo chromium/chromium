@@ -31,6 +31,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) P256PublicKey {
   static std::unique_ptr<PublicKey> ParseX962Uncompressed(
       int32_t algorithm,
       base::span<const uint8_t> input);
+
+  // Parse a public key from a DER-encoded X.509 SubjectPublicKeyInfo.
+  static std::unique_ptr<PublicKey> ParseSpkiDer(
+      int32_t algorithm,
+      base::span<const uint8_t> input);
 };
 
 }  // namespace device

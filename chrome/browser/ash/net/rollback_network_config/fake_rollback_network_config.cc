@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kEmptyConfig[] = "{\"NetworkConfigurations\":[]}";

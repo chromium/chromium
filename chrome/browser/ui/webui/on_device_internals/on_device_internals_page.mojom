@@ -11,7 +11,8 @@ import "services/on_device_model/public/mojom/on_device_model.mojom";
 interface OnDeviceInternalsPage {
   // Binds a new OnDeviceModel interface if possible using model assets loaded
   // from within `model_path`.
-  LoadModel(mojo_base.mojom.FilePath model_path) =>
+  LoadModel(mojo_base.mojom.FilePath model_path,
+            pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
       (on_device_model.mojom.LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.

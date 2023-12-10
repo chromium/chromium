@@ -1221,14 +1221,14 @@ TEST(ExtensionURLPatternTest, Intersection) {
 
     // Intersection of two URLPatterns should be identical regardless of which
     // is the "first".
-    absl::optional<URLPattern> intersection1 =
+    std::optional<URLPattern> intersection1 =
         pattern1.CreateIntersection(pattern2);
-    absl::optional<URLPattern> intersection2 =
+    std::optional<URLPattern> intersection2 =
         pattern2.CreateIntersection(pattern1);
 
     if (test_case.expected_intersection.empty()) {
-      EXPECT_EQ(absl::nullopt, intersection1) << intersection1->GetAsString();
-      EXPECT_EQ(absl::nullopt, intersection2) << intersection2->GetAsString();
+      EXPECT_EQ(std::nullopt, intersection1) << intersection1->GetAsString();
+      EXPECT_EQ(std::nullopt, intersection2) << intersection2->GetAsString();
     } else {
       ASSERT_TRUE(intersection1);
       EXPECT_EQ(test_case.expected_intersection, intersection1->GetAsString());
@@ -1266,14 +1266,14 @@ TEST(ExtensionURLPatternTest, ValidSchemeIntersection) {
     URLPattern pattern2(test_case.scheme2);
     ASSERT_EQ(URLPattern::ParseResult::kSuccess,
               pattern2.Parse(URLPattern::kAllUrlsPattern));
-    absl::optional<URLPattern> intersection1 =
+    std::optional<URLPattern> intersection1 =
         pattern1.CreateIntersection(pattern2);
-    absl::optional<URLPattern> intersection2 =
+    std::optional<URLPattern> intersection2 =
         pattern2.CreateIntersection(pattern1);
 
     if (test_case.expected_scheme == URLPattern::SCHEME_NONE) {
-      EXPECT_EQ(absl::nullopt, intersection1) << intersection1->GetAsString();
-      EXPECT_EQ(absl::nullopt, intersection2) << intersection2->GetAsString();
+      EXPECT_EQ(std::nullopt, intersection1) << intersection1->GetAsString();
+      EXPECT_EQ(std::nullopt, intersection2) << intersection2->GetAsString();
     } else {
       ASSERT_TRUE(intersection1);
       EXPECT_EQ(test_case.expected_scheme, intersection1->valid_schemes());

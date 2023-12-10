@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/cstring_builder.h"
+#include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 #if !BUILDFLAG(IS_WIN)
 #include <unistd.h>
@@ -14,9 +14,10 @@
 
 #include <cmath>
 #include <cstring>
+#include <limits>
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/check.h"
 #define PA_RAW_DCHECK PA_RAW_CHECK
 #else
 #define PA_RAW_DCHECK(x) \

@@ -74,6 +74,10 @@
     left: auto;
     right: var(--badge-offset);
   }
+
+  :host-context(body.revamp-wayfinding-enabled) #managedUserIcon {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
+  }
 </style>
 
 <settings-card header-text="$i18n{accountManagerPageTitle}">
@@ -88,7 +92,7 @@
    <template is="dom-if" if="[[isDeviceAccountManaged_]]">
     <div class="settings-box managed-message">
       <template is="dom-if" if="[[!isChildUser_]]">
-        <iron-icon icon="cr20:domain"></iron-icon>
+        <iron-icon id="managedUserIcon" icon="[[managedByIcon_]]"></iron-icon>
       </template>
       <template is="dom-if" if="[[isChildUser_]]">
         <cr-icon-button iron-icon="cr20:kite"

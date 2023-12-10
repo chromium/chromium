@@ -43,7 +43,7 @@ bool SearchResultBaseView::SkipDefaultKeyEventProcessing(
 }
 
 void SearchResultBaseView::SetSelected(bool selected,
-                                       absl::optional<bool> reverse_tab_order) {
+                                       std::optional<bool> reverse_tab_order) {
   if (selected_ == selected) {
     return;
   }
@@ -163,7 +163,7 @@ void SearchResultBaseView::ClearResult() {
   if (result_) {
     result_->RemoveObserver(this);
   }
-  SetSelected(false, absl::nullopt);
+  SetSelected(false, std::nullopt);
   result_ = nullptr;
 }
 

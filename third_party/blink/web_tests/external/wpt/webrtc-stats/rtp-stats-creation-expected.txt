@@ -7,6 +7,5 @@ This is a testharness.js-based test.
   assert_true: no outbound rtp stats before packets sent expected true got false
 [FAIL] No RTCInboundRtpStreamStats exist until packets have been received
   assert_true: no inbound rtp stats before packets received expected true got false
-[PASS] RTCAudioPlayoutStats should be present
 Harness: the test ran to completion.
 

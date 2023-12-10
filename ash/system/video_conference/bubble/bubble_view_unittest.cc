@@ -59,7 +59,7 @@ class SquareCinnamonCereal : public VcEffectsDelegate {
         base::BindRepeating(&SquareCinnamonCereal::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kTestEffect,
-                            /*value=*/absl::nullopt));
+                            /*value=*/std::nullopt));
     effect->AddState(std::move(state));
 
     AddEffect(std::move(effect));
@@ -69,11 +69,9 @@ class SquareCinnamonCereal : public VcEffectsDelegate {
   ~SquareCinnamonCereal() override = default;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override {
-    return 0;
-  }
+  std::optional<int> GetEffectState(VcEffectId effect_id) override { return 0; }
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override {}
+                                std::optional<int> state) override {}
 };
 
 // A fake `kSetValue` effect.
@@ -105,11 +103,9 @@ class SnackNationForever : public VcEffectsDelegate {
   ~SnackNationForever() override = default;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override {
-    return 0;
-  }
+  std::optional<int> GetEffectState(VcEffectId effect_id) override { return 0; }
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override {}
+                                std::optional<int> state) override {}
 };
 
 crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(

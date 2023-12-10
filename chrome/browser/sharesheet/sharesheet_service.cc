@@ -497,7 +497,6 @@ void SharesheetService::RecordTargetCountMetrics(
         ++web_app_count;
         break;
       case TargetType::kAction:
-        RecordShareActionMetrics(target.launch_name);
         break;
       case TargetType::kUnknown:
         NOTREACHED();
@@ -507,41 +506,7 @@ void SharesheetService::RecordTargetCountMetrics(
   SharesheetMetrics::RecordSharesheetWebAppCount(web_app_count);
 }
 
-void SharesheetService::RecordShareActionMetrics(
-    const std::u16string& target_name) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
-    SharesheetMetrics::RecordSharesheetShareAction(
-        SharesheetMetrics::UserAction::kNearbyAction);
-  } else if (target_name ==
-             l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL)) {
-    SharesheetMetrics::RecordSharesheetShareAction(
-        SharesheetMetrics::UserAction::kDriveAction);
-  } else if (target_name ==
-             l10n_util::GetStringUTF16(
-                 IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
-    SharesheetMetrics::RecordSharesheetShareAction(
-        SharesheetMetrics::UserAction::kCopyAction);
-  } else if (target_name == u"example") {
-    // This is a test. Do nothing.
-  } else {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 void SharesheetService::RecordShareDataMetrics(const apps::IntentPtr& intent) {
-  // Record whether or not we're sharing a drive folder.
-
-  // If |intent| has a |drive_share_url| but does not contain |share_text|,
-  // it is a Drive Folder.
-  const bool is_drive_folder = intent->drive_share_url.has_value() &&
-                               intent->drive_share_url.value().is_valid() &&
-                               intent->share_text.value_or("").empty();
-  SharesheetMetrics::RecordSharesheetIsDriveFolder(is_drive_folder);
-
   // Record file count.
   SharesheetMetrics::RecordSharesheetFilesSharedCount(intent->files.size());
 }

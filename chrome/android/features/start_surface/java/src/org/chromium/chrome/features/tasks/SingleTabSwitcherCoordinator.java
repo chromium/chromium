@@ -48,44 +48,69 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     private TabObserver mLastActiveTabObserver;
     private Tab mLastActiveTab;
 
-    @Nullable
-    private final Runnable mSnapshotParentViewRunnable;
+    @Nullable private final Runnable mSnapshotParentViewRunnable;
 
-    public SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
+    public SingleTabSwitcherCoordinator(
+            @NonNull Activity activity,
+            @NonNull ViewGroup container,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector, boolean isShownOnNtp,
-            boolean isTablet, boolean isScrollableMvtEnabled, Tab mostRecentTab,
+            @NonNull TabModelSelector tabModelSelector,
+            boolean isShownOnNtp,
+            boolean isTablet,
+            boolean isScrollableMvtEnabled,
+            Tab mostRecentTab,
             @Nullable Runnable singleTabCardClickedCallback,
             @Nullable Runnable snapshotParentViewRunnable,
-            @Nullable TabContentManager tabContentManager, @Nullable UiConfig uiConfig) {
+            @Nullable TabContentManager tabContentManager,
+            @Nullable UiConfig uiConfig) {
         mTabModelSelector = tabModelSelector;
         mIsShownOnNtp = isShownOnNtp;
         mLastActiveTab = mostRecentTab;
         mSnapshotParentViewRunnable = snapshotParentViewRunnable;
         boolean isSurfacePolishEnabled = isSurfacePolishEnabled();
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
-        int layoutId = isSurfacePolishEnabled ? R.layout.single_tab_module_layout
-                                              : R.layout.single_tab_view_layout;
+        int layoutId =
+                isSurfacePolishEnabled
+                        ? R.layout.single_tab_module_layout
+                        : R.layout.single_tab_view_layout;
         SingleTabView singleTabView =
                 (SingleTabView) LayoutInflater.from(activity).inflate(layoutId, container, false);
         mContainer = container;
         mContainer.addView(singleTabView);
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                propertyModel, singleTabView, SingleTabViewBinder::bind);
-        mTabListFaviconProvider = new TabListFaviconProvider(activity, false,
-                isSurfacePolishEnabled ? R.dimen.favicon_corner_radius_polished
-                                       : R.dimen.default_favicon_corner_radius);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        propertyModel, singleTabView, SingleTabViewBinder::bind);
+        mTabListFaviconProvider =
+                new TabListFaviconProvider(
+                        activity,
+                        false,
+                        isSurfacePolishEnabled
+                                ? R.dimen.favicon_corner_radius_polished
+                                : R.dimen.default_favicon_corner_radius);
         if (!mIsShownOnNtp) {
-            mMediator = new SingleTabSwitcherMediator(activity, propertyModel, tabModelSelector,
-                    mTabListFaviconProvider, isSurfacePolishEnabled ? tabContentManager : null,
-                    isSurfacePolishEnabled);
+            mMediator =
+                    new SingleTabSwitcherMediator(
+                            activity,
+                            propertyModel,
+                            tabModelSelector,
+                            mTabListFaviconProvider,
+                            isSurfacePolishEnabled ? tabContentManager : null,
+                            isSurfacePolishEnabled);
             mMediatorOnNtp = null;
         } else {
-            mMediatorOnNtp = new SingleTabSwitcherOnNtpMediator(activity, propertyModel,
-                    activityLifecycleDispatcher, tabModelSelector, mTabListFaviconProvider,
-                    mostRecentTab, isScrollableMvtEnabled, singleTabCardClickedCallback,
-                    isSurfacePolishEnabled ? tabContentManager : null,
-                    isSurfacePolishEnabled && isTablet ? uiConfig : null, isTablet);
+            mMediatorOnNtp =
+                    new SingleTabSwitcherOnNtpMediator(
+                            activity,
+                            propertyModel,
+                            activityLifecycleDispatcher,
+                            tabModelSelector,
+                            mTabListFaviconProvider,
+                            mostRecentTab,
+                            isScrollableMvtEnabled,
+                            singleTabCardClickedCallback,
+                            isSurfacePolishEnabled ? tabContentManager : null,
+                            isSurfacePolishEnabled && isTablet ? uiConfig : null,
+                            isTablet);
             mMediator = null;
         }
         if (ChromeFeatureList.sInstantStart.isEnabled()) {
@@ -93,83 +118,72 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         }
 
         // Most of these interfaces should be unused. They are invalid implementations.
-        mTabListDelegate = new TabSwitcher.TabListDelegate() {
-            @Override
-            public int getResourceId() {
-                return 0;
-            }
+        mTabListDelegate =
+                new TabSwitcher.TabListDelegate() {
+                    @Override
+                    public int getResourceId() {
+                        return 0;
+                    }
 
-            @Override
-            public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
-                assert false : "should not reach here";
-            }
+                    @Override
+                    public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
+                        assert false : "should not reach here";
+                    }
 
-            @Override
-            public int getBitmapFetchCountForTesting() {
-                assert false : "should not reach here";
-                return 0;
-            }
+                    @Override
+                    public int getBitmapFetchCountForTesting() {
+                        assert false : "should not reach here";
+                        return 0;
+                    }
 
-            @Override
-            public int getSoftCleanupDelayForTesting() {
-                assert false : "should not reach here";
-                return 0;
-            }
+                    @Override
+                    @VisibleForTesting
+                    public int getTabListTopOffset() {
+                        return 0;
+                    }
 
-            @Override
-            public int getCleanupDelayForTesting() {
-                assert false : "should not reach here";
-                return 0;
-            }
+                    @Override
+                    @VisibleForTesting
+                    public Rect getRecyclerViewLocation() {
+                        return null;
+                    }
 
-            @Override
-            @VisibleForTesting
-            public int getTabListTopOffset() {
-                return 0;
-            }
+                    @Override
+                    public int getListModeForTesting() {
+                        assert false : "should not reach here";
+                        return 0;
+                    }
 
-            @Override
-            @VisibleForTesting
-            public Rect getRecyclerViewLocation() {
-                return null;
-            }
+                    @Override
+                    public void prepareTabGridView() {
+                        assert false : "should not reach here";
+                    }
 
-            @Override
-            public int getListModeForTesting() {
-                assert false : "should not reach here";
-                return 0;
-            }
+                    @Override
+                    public boolean prepareTabSwitcherView() {
+                        return true;
+                    }
 
-            @Override
-            public void prepareTabGridView() {
-                assert false : "should not reach here";
-            }
+                    @Override
+                    public void postHiding() {}
 
-            @Override
-            public boolean prepareTabSwitcherView() {
-                return true;
-            }
+                    @Override
+                    public Rect getThumbnailLocationOfCurrentTab() {
+                        assert false : "should not reach here";
+                        return null;
+                    }
 
-            @Override
-            public void postHiding() {}
+                    @Override
+                    public Size getThumbnailSize() {
+                        assert false : "should not reach here";
+                        return null;
+                    }
 
-            @Override
-            public Rect getThumbnailLocationOfCurrentTab() {
-                assert false : "should not reach here";
-                return null;
-            }
-
-            @Override
-            public Size getThumbnailSize() {
-                assert false : "should not reach here";
-                return null;
-            }
-
-            @Override
-            public void runAnimationOnNextLayout(Runnable r) {
-                assert false : "should not reach here";
-            }
-        };
+                    @Override
+                    public void runAnimationOnNextLayout(Runnable r) {
+                        assert false : "should not reach here";
+                    }
+                };
 
         if (mLastActiveTab != null) {
             beginObserving();
@@ -179,21 +193,22 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     private void beginObserving() {
         if (mLastActiveTab == null) return;
 
-        mLastActiveTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onClosingStateChanged(Tab tab, boolean closing) {
-                if (closing) {
-                    updateTrackingTab(null);
-                    setVisibility(false);
-                    mLastActiveTab.removeObserver(mLastActiveTabObserver);
-                    mLastActiveTab = null;
-                    mLastActiveTabObserver = null;
-                    if (mSnapshotParentViewRunnable != null) {
-                        mSnapshotParentViewRunnable.run();
+        mLastActiveTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onClosingStateChanged(Tab tab, boolean closing) {
+                        if (closing) {
+                            updateTrackingTab(null);
+                            setVisibility(false);
+                            mLastActiveTab.removeObserver(mLastActiveTabObserver);
+                            mLastActiveTab = null;
+                            mLastActiveTabObserver = null;
+                            if (mSnapshotParentViewRunnable != null) {
+                                mSnapshotParentViewRunnable.run();
+                            }
+                        }
                     }
-                }
-            }
-        };
+                };
         mLastActiveTab.addObserver(mLastActiveTabObserver);
     }
 
@@ -207,7 +222,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     @Override
     public void initWithNative() {
         mTabListFaviconProvider.initWithNative(
-                mTabModelSelector.getModel(/*isIncognito=*/false).getProfile());
+                mTabModelSelector.getModel(/* isIncognito= */ false).getProfile());
         if (mMediator != null) {
             mMediator.initWithNative();
         }
@@ -231,11 +246,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     @Override
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return null;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
     }
 
     @Override
@@ -265,18 +275,14 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         showModule(true, mostRecentTab);
     }
 
-    /**
-     * Shows the single tab module.
-     */
+    /** Shows the single tab module. */
     public void showModule() {
         if (!mIsShownOnNtp) return;
 
         showModule(false, null);
     }
 
-    /**
-     * Hides the single tab module.
-     */
+    /** Hides the single tab module. */
     public void hide() {
         if (!mIsShownOnNtp) return;
 
@@ -297,6 +303,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         }
         setVisibility(hasTabToTrack);
     }
+
     /**
      * Update the most recent tab to track in the single tab card.
      * @param tabToTrack The tab to track as the most recent tab.

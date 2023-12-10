@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Usuń stronę <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Tryb kamery</translation>
 <translation id="1153190633558910465">Siatka wyłączona</translation>
-<translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Usunięto stronę <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Obróć o 90 stopni w prawo</translation>
 <translation id="1417314334557041815">Edytuj stronę <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Przetwarzam film…</translation>
 <translation id="3789724198583203151">Obróć o 90 stopni w lewo</translation>
 <translation id="3810838688059735925">Wideo</translation>
-<translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="4060608699153044055">Nie możesz nagrywać, ponieważ na urządzeniu brakuje miejsca. Najpierw musisz zwolnić miejsce.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpix</translation>
 <translation id="4118525110028899586">Wstrzymaj nagrywanie</translation>
 <translation id="4121305183798804752">Wykryto dokument</translation>
 <translation id="414641094616694804">Ta kamera nie umożliwia zmiany rozdzielczości</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
-<translation id="4269820728363426813">Kopiuj adres linku</translation>
 <translation id="428234092390943511">Miniatura strony</translation>
 <translation id="4349714250734879769">Skaluj ramki według Chrome</translation>
 <translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>
@@ -144,7 +141,6 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7726641833034062494">Nagraj zwykły film</translation>
 <translation id="7748344063862150053">Prawy górny róg dokumentu</translation>
 <translation id="7933675232020478311">Przesuwam w kierunku prawego dolnego rogu</translation>
-<translation id="7983668134180549431">Wykryto tekst.</translation>
 <translation id="8079255378695216066">Nie można rozpocząć nagrywania</translation>
 <translation id="8120146556401698679">Przesuń, przechyl, powiększ</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
@@ -163,6 +159,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="8870695351537079478">Nie udało się rozpocząć nagrywania</translation>
 <translation id="8880167521484863515">4 na 3</translation>
 <translation id="8903921497873541725">Powiększ</translation>
+<translation id="8926890870105777777">Dołącz do sieci „<ph name="WIFINAME" />”</translation>
 <translation id="9045010116236796332">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Przetwarzam obraz...</translation>

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
+
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
@@ -11,6 +14,7 @@
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_service.h"
+#include "components/metrics/structured/test/test_event_storage.h"
 #include "components/metrics/structured/test/test_key_data_provider.h"
 #include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -55,13 +59,6 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &recording_state_);
 
-  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-
-  auto recorder =
-      std::unique_ptr<StructuredMetricsRecorder>(new StructuredMetricsRecorder(
-          /*write_delay=*/base::Milliseconds(0),
-          system_profile_provider_.get()));
-
   base::FilePath device_keys_path =
       temp_dir_.GetPath()
           .Append(FILE_PATH_LITERAL("structured"))
@@ -70,9 +67,11 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("profile"));
 
   // Create test key data provider and initialize key data provider.
-  auto test_key_data_provider =
-      std::make_unique<TestKeyDataProvider>(device_keys_path);
-  recorder->InitializeKeyDataProvider(std::move(test_key_data_provider));
+  // TODO(andrewbregger) make sure that all tests that rely on the persistent
+  // storage are moved.
+  auto recorder = std::make_unique<StructuredMetricsRecorder>(
+      std::make_unique<TestKeyDataProvider>(device_keys_path),
+      std::make_unique<TestEventStorage>());
 
   // TODO(b/282057109): Cleanup provider code once feature is removed.
   if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
@@ -118,7 +117,7 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
     return events_vector;
   }
 
-  const EventsProto& events = *GetRecorder()->events();
+  const EventsProto& events = *GetEventStorage()->events();
   for (const auto& event : events.non_uma_events()) {
     if (event.project_name_hash() == project_name_hash &&
         event.event_name_hash() == event_name_hash) {
@@ -131,7 +130,6 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
 void StructuredMetricsMixin::WaitUntilEventRecorded(uint64_t project_name_hash,
                                                     uint64_t event_name_hash) {
   // Check if event already exists.
-  GetRecorder()->WriteNowForTest();
   absl::optional<StructuredEventProto> event =
       FindEvent(project_name_hash, event_name_hash);
   if (event.has_value()) {
@@ -142,7 +140,6 @@ void StructuredMetricsMixin::WaitUntilEventRecorded(uint64_t project_name_hash,
   record_run_loop_ = std::make_unique<base::RunLoop>();
   base::RepeatingClosure callback =
       base::BindLambdaForTesting([project_name_hash, event_name_hash, this]() {
-        GetRecorder()->WriteNowForTest();
         absl::optional<StructuredEventProto> event =
             FindEvent(project_name_hash, event_name_hash);
 
@@ -204,6 +201,12 @@ StructuredMetricsMixin::GetUmaProto() {
     return nullptr;
   }
   return uma_proto;
+}
+
+TestEventStorage* StructuredMetricsMixin::GetEventStorage() {
+  // The mix-in initializes the recorder with a `TestEventStorage`, making this
+  // safe to do.
+  return static_cast<TestEventStorage*>(GetRecorder()->event_storage());
 }
 
 }  // namespace metrics::structured

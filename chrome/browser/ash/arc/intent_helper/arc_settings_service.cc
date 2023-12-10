@@ -16,6 +16,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
@@ -111,7 +112,7 @@ arc::mojom::CaptionColorPtr GetCaptionColorFromPrefs(
   // generic, it does some redundant stuffs (like utf16 conversion, removing rgb
   // prefix). But since this path is frequently used, the benefit of reusing
   // method outweighs the cons.
-  absl::optional<SkColor> sk_color =
+  std::optional<SkColor> sk_color =
       ui::metadata::SkColorConverter::FromString(base::UTF8ToUTF16(color_str));
   if (!sk_color) {
     return nullptr;
@@ -185,7 +186,9 @@ bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
   if (!proxy_list || proxy_list->IsEmpty())
     return false;
 
-  const net::ProxyServer& server = proxy_list->Get();
+  const net::ProxyChain& chain = proxy_list->First();
+  CHECK(chain.is_single_proxy());
+  const net::ProxyServer& server = chain.GetProxyServer(/*chain_index=*/0);
   *host = server.host_port_pair().host();
   *port = server.host_port_pair().port();
   return !host->empty() && *port;
@@ -277,7 +280,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncBackupEnabled() const;
   void SyncCaptionStyle() const;
   void SyncConsumerAutoUpdateToggle() const;
-  void SyncGIOBetaEnabled() const;
   void SyncLocale() const;
   void SyncLocationServiceEnabled() const;
   void SyncProxySettings() const;
@@ -356,7 +358,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   std::string default_network_name_;
 
   // Proxy configuration of the default network.
-  absl::optional<base::Value::Dict> default_proxy_config_;
+  std::optional<base::Value::Dict> default_proxy_config_;
 
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
@@ -412,7 +414,7 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     SyncAccessibilityLargeMouseCursorEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     SyncAccessibilityVirtualKeyboardEnabled();
-  } else if (pref_name == ash::prefs::kUserGeolocationAllowed) {
+  } else if (pref_name == ash::prefs::kUserGeolocationAccessLevel) {
     SyncUserGeolocation();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
@@ -534,7 +536,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(ash::prefs::kAccessibilitySwitchAccessEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
   AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
-  AddPrefToObserve(ash::prefs::kUserGeolocationAllowed);
+  AddPrefToObserve(ash::prefs::kUserGeolocationAccessLevel);
   AddPrefToObserve(onc::prefs::kDeviceOpenNetworkConfiguration);
   AddPrefToObserve(onc::prefs::kOpenNetworkConfiguration);
   AddPrefToObserve(proxy_config::prefs::kProxy);
@@ -580,7 +582,6 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   SyncAccessibilityVirtualKeyboardEnabled();
   SyncCaptionStyle();
   SyncConsumerAutoUpdateToggle();
-  SyncGIOBetaEnabled();
   SyncProxySettings();
   SyncReportingConsent(/*initial_sync=*/false);
   SyncPictureInPictureEnabled();
@@ -875,19 +876,23 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
                         extras);
 }
 
-void ArcSettingsServiceImpl::SyncGIOBetaEnabled() const {
-  SendBoolValueSettingsBroadcast(
-      ash::features::IsArcInputOverlayBetaEnabled(), /*managed=*/false,
-      "org.chromium.arc.intent_helper.ACTION_SET_GIO_BETA_ENABLED");
-}
-
 void ArcSettingsServiceImpl::SyncUserGeolocation() const {
   // We are purposefully not calling SyncUserGeolocation() at boot,
   // as we sync this property from Android. We might need to sync
   // in case of disable but not in case of enable (default).
 
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kUserGeolocationAllowed,
+  // We need to map tri-state of ChromeOS toggle to boolean ARC++ toggle.
+  const PrefService::Preference* pref = registrar_.prefs()->FindPreference(
+      ash::prefs::kUserGeolocationAccessLevel);
+  DCHECK(pref);
+  DCHECK(pref->GetValue()->is_int());
+
+  bool enabled_for_arc =
+      ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
+          static_cast<ash::GeolocationAccessLevel>(pref->GetValue()->GetInt()));
+
+  SendBoolValueSettingsBroadcast(
+      enabled_for_arc, !pref->IsUserModifiable(),
       "org.chromium.arc.intent_helper.SET_USER_GEOLOCATION");
 }
 

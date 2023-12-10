@@ -48,9 +48,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class ConfirmSyncDataStateMachine
         implements ConfirmImportSyncDataDialogCoordinator.Listener,
-                   ConfirmManagedSyncDataDialogCoordinator.Listener {
-    @IntDef({State.BEFORE_OLD_ACCOUNT_DIALOG, State.BEFORE_NEW_ACCOUNT_DIALOG,
-            State.AFTER_NEW_ACCOUNT_DIALOG, State.DONE})
+                ConfirmManagedSyncDataDialogCoordinator.Listener {
+    @IntDef({
+        State.BEFORE_OLD_ACCOUNT_DIALOG,
+        State.BEFORE_NEW_ACCOUNT_DIALOG,
+        State.AFTER_NEW_ACCOUNT_DIALOG,
+        State.DONE
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface State {
         int BEFORE_OLD_ACCOUNT_DIALOG = 0; // Start of state B.
@@ -99,8 +103,11 @@ public class ConfirmSyncDataStateMachine
      * @param listener the listener to receive the result of this state machine
      * @param delegate the delegate responsible of showing dialogs
      */
-    public ConfirmSyncDataStateMachine(ConfirmSyncDataStateMachineDelegate delegate,
-            @Nullable String oldAccountName, String newAccountName, Listener listener) {
+    public ConfirmSyncDataStateMachine(
+            ConfirmSyncDataStateMachineDelegate delegate,
+            @Nullable String oldAccountName,
+            String newAccountName,
+            Listener listener) {
         ThreadUtils.assertOnUiThread();
         assert !TextUtils.isEmpty(newAccountName) : "New account name must be provided.";
 
@@ -194,9 +201,10 @@ public class ConfirmSyncDataStateMachine
         assert mState == State.AFTER_NEW_ACCOUNT_DIALOG;
 
         if (mNewAccountManaged) {
-            // Show 'logging into managed account' dialog
+            // Show 'logging into managed account' dialog.
             // This will call back into onConfirm on success.
-            mDelegate.showSignInToManagedAccountDialog(this,
+            mDelegate.showSignInToManagedAccountDialog(
+                    this,
                     IdentityServicesProvider.get()
                             .getSigninManager(Profile.getLastUsedRegularProfile())
                             .extractDomainName(mNewAccountName));

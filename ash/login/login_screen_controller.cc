@@ -109,7 +109,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -125,7 +125,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       // Set a dummy authentication stage so that |IsAuthenticating| returns
       // true.
       LOG(WARNING) << "crbug.com/1339004 : Dummy auth state";
-      authentication_stage_ = AuthenticationStage::kDoAuthenticate;
+      SetAuthenticationStage(AuthenticationStage::kDoAuthenticate);
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
@@ -136,7 +136,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
   }
 
   LOG(WARNING) << "crbug.com/1339004 : started authentication";
-  authentication_stage_ = AuthenticationStage::kDoAuthenticate;
+  SetAuthenticationStage(AuthenticationStage::kDoAuthenticate);
 
   if (authenticated_by_pin) {
     DCHECK(base::ContainsOnlyChars(password, "0123456789"));
@@ -166,11 +166,11 @@ void LoginScreenController::AuthenticateUserWithChallengeResponse(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(/*success=*/absl::nullopt);
+    std::move(callback).Run(/*success=*/std::nullopt);
     return;
   }
 
-  authentication_stage_ = AuthenticationStage::kDoAuthenticate;
+  SetAuthenticationStage(AuthenticationStage::kDoAuthenticate);
   client_->AuthenticateUserWithChallengeResponse(
       account_id,
       base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
@@ -195,6 +195,12 @@ bool LoginScreenController::GetSecurityTokenPinRequestCanceled() const {
 }
 
 void LoginScreenController::OnFocusPod(const AccountId& account_id) {
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE) {
+    // b/308840749 do not propagate OnFocusPod while a user is mid login.
+    return;
+  }
   GetModel()->NotifyFocusPod(account_id);
   if (!client_) {
     return;
@@ -236,6 +242,14 @@ void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
     return;
   }
   client_->ShowGaiaSignin(prefilled_account);
+}
+
+void LoginScreenController::StartUserRecovery(
+    const AccountId& account_to_recover) {
+  if (!client_) {
+    return;
+  }
+  client_->StartUserRecovery(account_to_recover);
 }
 
 void LoginScreenController::ShowOsInstallScreen() {
@@ -432,6 +446,15 @@ void LoginScreenController::ConfigureKioskCallbacks(
       ->ConfigureKioskCallbacks(launch_app, on_show_menu);
 }
 
+void LoginScreenController::SetAuthenticationStage(
+    AuthenticationStage authentication_stage) {
+  if (authentication_stage == authentication_stage_) {
+    return;
+  }
+  authentication_stage_ = authentication_stage;
+  login_data_dispatcher_.AuthenticationStageChange(authentication_stage);
+}
+
 void LoginScreenController::HandleAccelerator(
     ash::LoginAcceleratorAction action) {
   if (!client_) {
@@ -464,10 +487,10 @@ void LoginScreenController::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
   LOG(WARNING) << "crbug.com/1339004 : authentication complete";
-  authentication_stage_ = AuthenticationStage::kUserCallback;
-  std::move(callback).Run(absl::make_optional<bool>(success));
+  SetAuthenticationStage(AuthenticationStage::kUserCallback);
+  std::move(callback).Run(std::make_optional<bool>(success));
   LOG(WARNING) << "crbug.com/1339004 : triggered callback";
-  authentication_stage_ = AuthenticationStage::kIdle;
+  SetAuthenticationStage(AuthenticationStage::kIdle);
 
   // During smart card login flow, multiple security token requests can be made.
   // If the user cancels one, all others should also be canceled.
@@ -509,7 +532,7 @@ void LoginScreenController::OnLockScreenDestroyed() {
   }
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
-  authentication_stage_ = AuthenticationStage::kIdle;
+  SetAuthenticationStage(AuthenticationStage::kIdle);
   SetSystemTrayVisibility(SystemTrayVisibility::kAll);
 }
 
@@ -520,14 +543,13 @@ void LoginScreenController::NotifyLoginScreenShown() {
   client_->OnLoginScreenShown();
 }
 
-std::ostream& operator<<(std::ostream& ostream,
-                         LoginScreenController::AuthenticationStage stage) {
+std::ostream& operator<<(std::ostream& ostream, AuthenticationStage stage) {
   switch (stage) {
-    case LoginScreenController::AuthenticationStage::kIdle:
+    case AuthenticationStage::kIdle:
       return ostream << "kIdle";
-    case LoginScreenController::AuthenticationStage::kDoAuthenticate:
+    case AuthenticationStage::kDoAuthenticate:
       return ostream << "kDoAuthenticate";
-    case LoginScreenController::AuthenticationStage::kUserCallback:
+    case AuthenticationStage::kUserCallback:
       return ostream << "kUserCallback";
   }
 }

@@ -8,7 +8,9 @@
 #include <type_traits>
 
 #include "base/notreached.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
@@ -37,6 +39,79 @@ using EnableIfIsVariantAlternative =
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr absl::optional<T> GetAsOptional(const V& v) {
   return base::OptionalFromPtr(absl::get_if<T>(&v));
+}
+
+// Returns true iff any element of `vs`, a vector of variants of type V,
+// currently holds an alternative of type T.
+
+// Look up `T` in `variant<T, ...>`.
+template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+constexpr bool VariantVectorContains(const std::vector<V>& vs) {
+  for (const V& v : vs) {
+    if (absl::holds_alternative<T>(v)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Look up `const T` in `variant<T, ...>`.
+template <typename ConstT,
+          typename V,
+          std::enable_if_t<std::is_const_v<ConstT>, bool> = true,
+          EnableIfIsVariantAlternative<std::remove_const_t<ConstT>, V> = true>
+constexpr bool VariantVectorContains(const std::vector<V>& vs) {
+  for (const V& v : vs) {
+    if (absl::holds_alternative<std::remove_const_t<ConstT>>(v)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// If at least one element of `vs`, a vector of variants of type V, currently
+// holds an alternative of type T, returns a reference to the first such
+// element. Otherwise returns nullopt.
+
+// Look up `T` in `variant<T, ...>`, return `optional_ref<T>`.
+template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+constexpr base::optional_ref<T> GetFromVariantVector(std::vector<V>& vs) {
+  for (V& v : vs) {
+    T* t = absl::get_if<T>(&v);
+    if (t) {
+      return t;
+    }
+  }
+  return absl::nullopt;
+}
+
+// Look up `T` in `variant<T, ...>`, return `optional_ref<const T>`.
+template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+constexpr base::optional_ref<const T> GetFromVariantVector(
+    const std::vector<V>& vs) {
+  for (const V& v : vs) {
+    const T* t = absl::get_if<T>(&v);
+    if (t) {
+      return t;
+    }
+  }
+  return absl::nullopt;
+}
+
+// Look up `const T` in `variant<T, ...>`, return `optional_ref<const T>`.
+template <typename ConstT,
+          typename V,
+          std::enable_if_t<std::is_const_v<ConstT>, bool> = true,
+          EnableIfIsVariantAlternative<std::remove_const_t<ConstT>, V> = true>
+constexpr base::optional_ref<ConstT> GetFromVariantVector(
+    const std::vector<V>& vs) {
+  for (const V& v : vs) {
+    ConstT* t = absl::get_if<std::remove_const_t<ConstT>>(&v);
+    if (t) {
+      return t;
+    }
+  }
+  return absl::nullopt;
 }
 
 // Extended comparators for variants, allowing a variant to be compared with any

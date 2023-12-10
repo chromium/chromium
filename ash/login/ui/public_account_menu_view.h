@@ -8,12 +8,15 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/combobox/combobox.h"
 
 namespace ash {
 
 // Implements a menu view for the login screen's expanded public account view.
 class ASH_EXPORT PublicAccountMenuView : public views::Combobox {
+  METADATA_HEADER(PublicAccountMenuView, views::Combobox)
+
  public:
   struct Item {
     Item();

@@ -306,7 +306,7 @@ TEST_F(DualReadingListModelTest, MetaDataClearedBeforeModelLoaded) {
   ResetStorage();
   static_cast<syncer::ClientTagBasedModelTypeProcessor*>(
       account_model_ptr_->GetSyncBridgeForTest()->change_processor())
-      ->ClearMetadataWhileStopped();
+      ->ClearMetadataIfStopped();
 
   EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates).Times(0);
   EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates).Times(0);

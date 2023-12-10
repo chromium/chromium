@@ -24,6 +24,7 @@ using ::media_message_center::test::MockMediaNotificationItem;
 using ::media_session::mojom::MediaSessionAction;
 using ::testing::_;
 using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace {
 
@@ -207,20 +208,33 @@ TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorViewCheck) {
   EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
   EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 
+  // Add devices to the list to show the start casting button.
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
-      .WillOnce(testing::Return(false));
+      .WillOnce(Return(false));
   view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
   EXPECT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
   EXPECT_TRUE(view()->GetDeviceSelectorForTesting()->GetVisible());
   EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 
-  EXPECT_CALL(*device_selector(), ShowOrHideDeviceList());
+  // Click the start casting button to show devices.
+  EXPECT_CALL(*device_selector(), ShowDevices());
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
-      .WillOnce(testing::Return(true));
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_TRUE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
+
+  // Click the start casting button to hide devices.
+  EXPECT_CALL(*device_selector(), HideDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 }
 
 TEST_F(MediaNotificationViewAshImplTest, FooterViewCheck) {

@@ -25,7 +25,7 @@ class TestHistoryDeleter : public HistoryDeleter {
   ~TestHistoryDeleter() override {}
 
   bool deleted_all() const { return deleted_all_; }
-  absl::optional<TimeInterval> deleted_interval() const {
+  std::optional<TimeInterval> deleted_interval() const {
     return deleted_interval_;
   }
   const std::set<GURL>& deleted_urls() const { return deleted_urls_; }
@@ -48,7 +48,7 @@ class TestHistoryDeleter : public HistoryDeleter {
 
  private:
   bool deleted_all_ = false;
-  absl::optional<TimeInterval> deleted_interval_ = absl::nullopt;
+  std::optional<TimeInterval> deleted_interval_ = std::nullopt;
   std::set<GURL> deleted_urls_;
   base::RunLoop wait_loop_;
 };

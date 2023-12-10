@@ -47,8 +47,9 @@ public class TraceEventAdder extends ByteCodeRewriter {
         args = ByteCodeRewriter.expandArgs(args);
 
         if (args.length < 2) {
-            System.err.println("Expected arguments: <':' separated list of input jar paths> "
-                    + "<':' separated list of output jar paths>");
+            System.err.println(
+                    "Expected arguments: <':' separated list of input jar paths> "
+                            + "<':' separated list of output jar paths>");
             System.exit(1);
         }
 
@@ -56,9 +57,11 @@ public class TraceEventAdder extends ByteCodeRewriter {
         String[] outputJars = args[1].split(":");
 
         assert inputJars.length >= outputJars.length
-            : "Input list must be a superset of the output list, where the "
+                : "Input list must be a superset of the output list, where the "
                         + "first N entries match, and N is the length of the output list."
-                        + inputJars.length + " Outputs: " + outputJars.length;
+                        + inputJars.length
+                        + " Outputs: "
+                        + outputJars.length;
 
         // outputJars[n] must be the same as inputJars[n] but with a suffix, validate this.
         for (int i = 0; i < outputJars.length; i++) {
@@ -94,23 +97,35 @@ public class TraceEventAdder extends ByteCodeRewriter {
 
     @Override
     protected boolean shouldRewriteClass(ClassReader classReader) {
-        mMethodsToTrace = new ArrayList<>(Arrays.asList(
-                // Methods on View.java
-                new MethodDescription(
-                        "dispatchTouchEvent", "(Landroid/view/MotionEvent;)Z", Opcodes.ACC_PUBLIC),
-                new MethodDescription("draw", "(Landroid/graphics/Canvas;)V", Opcodes.ACC_PUBLIC),
-                new MethodDescription("onMeasure", "(II)V", Opcodes.ACC_PROTECTED),
-                new MethodDescription("onLayout", "(ZIIII)V", Opcodes.ACC_PROTECTED),
-                // Methods on RecyclerView.java in AndroidX
-                new MethodDescription("scrollStep", "(II[I)V", 0),
-                // Methods on Animator.AnimatorListener
-                new MethodDescription(
-                        "onAnimationStart", "(Landroid/animation/Animator;)V", Opcodes.ACC_PUBLIC),
-                new MethodDescription(
-                        "onAnimationEnd", "(Landroid/animation/Animator;)V", Opcodes.ACC_PUBLIC),
-                // Methods on ValueAnimator.AnimatorUpdateListener
-                new MethodDescription("onAnimationUpdate", "(Landroid/animation/ValueAnimator;)V",
-                        Opcodes.ACC_PUBLIC)));
+        mMethodsToTrace =
+                new ArrayList<>(
+                        Arrays.asList(
+                                // Methods on View.java
+                                new MethodDescription(
+                                        "dispatchTouchEvent",
+                                        "(Landroid/view/MotionEvent;)Z",
+                                        Opcodes.ACC_PUBLIC),
+                                new MethodDescription(
+                                        "draw", "(Landroid/graphics/Canvas;)V", Opcodes.ACC_PUBLIC),
+                                new MethodDescription("onMeasure", "(II)V", Opcodes.ACC_PROTECTED),
+                                new MethodDescription(
+                                        "onLayout", "(ZIIII)V", Opcodes.ACC_PROTECTED),
+                                // Methods on RecyclerView.java in AndroidX
+                                new MethodDescription("scrollStep", "(II[I)V", 0),
+                                // Methods on Animator.AnimatorListener
+                                new MethodDescription(
+                                        "onAnimationStart",
+                                        "(Landroid/animation/Animator;)V",
+                                        Opcodes.ACC_PUBLIC),
+                                new MethodDescription(
+                                        "onAnimationEnd",
+                                        "(Landroid/animation/Animator;)V",
+                                        Opcodes.ACC_PUBLIC),
+                                // Methods on ValueAnimator.AnimatorUpdateListener
+                                new MethodDescription(
+                                        "onAnimationUpdate",
+                                        "(Landroid/animation/ValueAnimator;)V",
+                                        Opcodes.ACC_PUBLIC)));
 
         // This adapter will modify mMethodsToTrace to indicate which methods already exist in the
         // class and which ones need to be overridden. In case the class is not an Android view

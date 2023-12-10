@@ -13,12 +13,12 @@ bool StructTraits<url::mojom::OriginDataView, url::Origin>::Read(
     url::mojom::OriginDataView data,
     url::Origin* out) {
   std::string_view scheme, host;
-  absl::optional<base::UnguessableToken> nonce_if_opaque;
+  std::optional<base::UnguessableToken> nonce_if_opaque;
   if (!data.ReadScheme(&scheme) || !data.ReadHost(&host) ||
       !data.ReadNonceIfOpaque(&nonce_if_opaque))
     return false;
 
-  absl::optional<url::Origin> creation_result =
+  std::optional<url::Origin> creation_result =
       nonce_if_opaque
           ? url::Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
                 scheme, host, data.port(), url::Origin::Nonce(*nonce_if_opaque))

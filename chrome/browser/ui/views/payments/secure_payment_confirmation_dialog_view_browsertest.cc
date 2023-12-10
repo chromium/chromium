@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,7 +18,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -84,9 +85,8 @@ class SecurePaymentConfirmationDialogViewTest
 
     model_.set_merchant_label(
         l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
-    model_.set_merchant_name(absl::optional<std::u16string>(u"Test Merchant"));
-    model_.set_merchant_origin(
-        absl::optional<std::u16string>(u"merchant1.com"));
+    model_.set_merchant_name(std::optional<std::u16string>(u"Test Merchant"));
+    model_.set_merchant_origin(std::optional<std::u16string>(u"merchant1.com"));
 
     model_.set_instrument_label(l10n_util::GetStringUTF16(
         IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
@@ -291,15 +291,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_TRUE(confirm_pressed_);
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(opt_out_clicked_);
-
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
 }
 
 // Test that the 'Accept' button is protected against accidental inputs.
@@ -323,26 +314,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   // ignored.
   ClickButton(test_delegate_->dialog_view()->GetOkButton());
   EXPECT_FALSE(confirm_pressed_);
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      0);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 0);
 
   // However a subsequent press should be accepted.
   ClickButton(test_delegate_->dialog_view()->GetOkButton());
   EXPECT_TRUE(confirm_pressed_);
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
 }
 
 // Test that clicking the 'Cancel' button triggers the expected path and closes
@@ -357,15 +332,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_TRUE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
   EXPECT_FALSE(opt_out_clicked_);
-
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kCanceled, 1);
 }
 
 // Test that the progress bar is visible in the view when requested by the
@@ -407,8 +373,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   model_.set_title(u"Test Title");
   model_.set_merchant_label(u"Test merchant");
   model_.set_merchant_name(
-      absl::optional<std::u16string>(u"Test merchant value"));
-  model_.set_merchant_origin(absl::optional<std::u16string>(u"merchant2.com"));
+      std::optional<std::u16string>(u"Test merchant value"));
+  model_.set_merchant_origin(std::optional<std::u16string>(u"merchant2.com"));
   model_.set_instrument_label(u"Test instrument");
   model_.set_instrument_value(u"Test instrument value");
   model_.set_total_label(u"Test total");
@@ -483,8 +449,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   CreateModel();
 
   // Both merchant name and origin
-  model_.set_merchant_name(absl::optional<std::u16string>(u"Test Merchant"));
-  model_.set_merchant_origin(absl::optional<std::u16string>(u"merchant.com"));
+  model_.set_merchant_name(std::optional<std::u16string>(u"Test Merchant"));
+  model_.set_merchant_origin(std::optional<std::u16string>(u"merchant.com"));
   InvokeSecurePaymentConfirmationUI();
   ExpectViewMatchesModel();
   ExpectLabelText(
@@ -492,8 +458,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
       SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
 
   // Only merchant name, no origin
-  model_.set_merchant_name(absl::optional<std::u16string>(u"Test Merchant 2"));
-  model_.set_merchant_origin(absl::optional<std::u16string>());
+  model_.set_merchant_name(std::optional<std::u16string>(u"Test Merchant 2"));
+  model_.set_merchant_origin(std::optional<std::u16string>());
   test_delegate_->dialog_view()->OnModelUpdated();
   ExpectViewMatchesModel();
   ExpectLabelText(
@@ -501,8 +467,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
       SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
 
   // Only merchant origin, no name
-  model_.set_merchant_name(absl::optional<std::u16string>());
-  model_.set_merchant_origin(absl::optional<std::u16string>(u"merchant2.com"));
+  model_.set_merchant_name(std::optional<std::u16string>());
+  model_.set_merchant_origin(std::optional<std::u16string>(u"merchant2.com"));
   test_delegate_->dialog_view()->OnModelUpdated();
   ExpectViewMatchesModel();
   ExpectLabelText(
@@ -597,15 +563,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
   EXPECT_TRUE(opt_out_clicked_);
-
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kOptOut, 1);
 }
 
 }  // namespace payments

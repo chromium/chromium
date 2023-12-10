@@ -352,7 +352,7 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
   video_config.matrix = static_cast<MatrixID>(config.color_space_info().matrix);
   video_config.range = static_cast<RangeID>(config.color_space_info().range);
 
-  absl::optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
+  std::optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
   if (hdr_metadata) {
     video_config.have_hdr_metadata = true;
 

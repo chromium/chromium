@@ -12,7 +12,6 @@
 @protocol PermissionsConsumer;
 
 // Mediator that configures the modal UI for permissions infobar.
-API_AVAILABLE(ios(15.0))
 @interface PermissionsInfobarModalOverlayMediator
     : InfobarModalOverlayMediator <InfobarModalDelegate, PermissionsDelegate>
 

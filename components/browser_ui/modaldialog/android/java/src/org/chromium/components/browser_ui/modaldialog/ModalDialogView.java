@@ -24,9 +24,7 @@ import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
-/**
- * Generic dialog view for app modal or tab modal alert dialogs.
- */
+/** Generic dialog view for app modal or tab modal alert dialogs. */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
     private static boolean sEnableButtonTapProtection = true;
 
@@ -55,9 +53,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // this kind of tap-jacking protection.
     private long mButtonTapProtectionDurationMs;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ModalDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -165,9 +161,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleView.setMaxLines(maxLines);
     }
 
-    /**
-     * @param drawable The icon drawable on the title.
-     */
+    /** @param drawable The icon drawable on the title. */
     public void setTitleIcon(Drawable drawable) {
         mTitleIcon.setImageDrawable(drawable);
         updateContentVisibility();
@@ -186,8 +180,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         // should not be shown at the same time.
         mTitleContainer.setVisibility(View.GONE);
 
-        mTitleContainer = findViewById(
-                titleScrollable ? R.id.scrollable_title_container : R.id.title_container);
+        mTitleContainer =
+                findViewById(
+                        titleScrollable ? R.id.scrollable_title_container : R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
         setTitle(title);
@@ -235,17 +230,19 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private void setupFilterTouchForSecurity() {
         Button positiveButton = getButton(ModalDialogProperties.ButtonType.POSITIVE);
         Button negativeButton = getButton(ModalDialogProperties.ButtonType.NEGATIVE);
-        View.OnTouchListener onTouchListener = (View v, MotionEvent ev) -> {
-            boolean shouldBlockTouchEvent = false;
-            if ((ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0) {
-                shouldBlockTouchEvent = true;
-            }
-            if (shouldBlockTouchEvent && mOnTouchFilteredCallback != null
-                    && ev.getAction() == MotionEvent.ACTION_DOWN) {
-                mOnTouchFilteredCallback.run();
-            }
-            return shouldBlockTouchEvent;
-        };
+        View.OnTouchListener onTouchListener =
+                (View v, MotionEvent ev) -> {
+                    boolean shouldBlockTouchEvent = false;
+                    if ((ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0) {
+                        shouldBlockTouchEvent = true;
+                    }
+                    if (shouldBlockTouchEvent
+                            && mOnTouchFilteredCallback != null
+                            && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                        mOnTouchFilteredCallback.run();
+                    }
+                    return shouldBlockTouchEvent;
+                };
 
         positiveButton.setFilterTouchesWhenObscured(true);
         positiveButton.setOnTouchListener(onTouchListener);
@@ -300,7 +297,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             mCustomButtonBarViewContainer.addView(view);
             mCustomButtonBarViewContainer.setVisibility(View.VISIBLE);
             assert mCustomButtonBarViewContainer.getChildCount() > 0
-                : "The CustomButtonBar cannot be empty.";
+                    : "The CustomButtonBar cannot be empty.";
 
         } else {
             mCustomButtonBarViewContainer.setVisibility(View.GONE);
@@ -308,9 +305,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateButtonVisibility();
     }
 
-    /**
-     * @param buttonType Indicates which button should be returned.
-     */
+    /** @param buttonType Indicates which button should be returned. */
     private Button getButton(@ModalDialogProperties.ButtonType int buttonType) {
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
@@ -334,17 +329,19 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateButtonVisibility();
     }
 
-    /**
-     * @param drawable The icon drawable on the positive button.
-     */
+    /** @param drawable The icon drawable on the positive button. */
     void setPositiveButtonIcon(Drawable drawable) {
         Button button = getButton(ModalDialogProperties.ButtonType.POSITIVE);
         button.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null);
-        button.setCompoundDrawablePadding(getResources().getDimensionPixelSize(
-                R.dimen.modal_dialog_button_with_icon_text_padding));
-        button.setPaddingRelative(getResources().getDimensionPixelSize(
-                                          R.dimen.modal_dialog_button_with_icon_start_padding),
-                button.getPaddingTop(), button.getPaddingEnd(), button.getPaddingBottom());
+        button.setCompoundDrawablePadding(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.modal_dialog_button_with_icon_text_padding));
+        button.setPaddingRelative(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.modal_dialog_button_with_icon_start_padding),
+                button.getPaddingTop(),
+                button.getPaddingEnd(),
+                button.getPaddingBottom());
         updateButtonVisibility();
     }
 
@@ -378,8 +375,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean titleContainerVisible = titleVisible || titleIconVisible;
         boolean messageParagraph1Visibile = !TextUtils.isEmpty(mMessageParagraph1.getText());
         boolean messageParagraph2Visible = !TextUtils.isEmpty(mMessageParagraph2.getText());
-        boolean scrollViewVisible = (mTitleScrollable && titleContainerVisible)
-                || messageParagraph1Visibile || messageParagraph2Visible;
+        boolean scrollViewVisible =
+                (mTitleScrollable && titleContainerVisible)
+                        || messageParagraph1Visibile
+                        || messageParagraph2Visible;
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
 
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);

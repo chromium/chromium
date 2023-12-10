@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
 
+#include <optional>
 #include <utility>
 
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -22,7 +22,7 @@ class TotalDiskSpaceTestAPI {
 
   void StartCalculation() { total_disk_space_calculator_.StartCalculation(); }
 
-  void SimulateOnGetRootDeviceSize(absl::optional<uint64_t> reply) {
+  void SimulateOnGetRootDeviceSize(std::optional<uint64_t> reply) {
     total_disk_space_calculator_.OnGetRootDeviceSize(reply);
   }
 
@@ -43,7 +43,7 @@ class FreeDiskSpaceTestAPI {
 
   void StartCalculation() { free_disk_space_calculator_.StartCalculation(); }
 
-  void SimulateOnGetUserFreeDiskSpace(absl::optional<int64_t> reply) {
+  void SimulateOnGetUserFreeDiskSpace(std::optional<int64_t> reply) {
     free_disk_space_calculator_.OnGetUserFreeDiskSpace(reply);
   }
 
@@ -180,7 +180,7 @@ class OtherUsersSizeTestAPI {
   }
 
   void SimulateOnGetOtherUserSize(
-      absl::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
+      std::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
     other_users_size_calculator_.OnGetOtherUserSize(reply);
   }
 

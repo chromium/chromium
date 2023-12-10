@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 
+#include <functional>
 #include <numeric>
 
 #include "base/metrics/histogram_functions.h"
@@ -185,7 +186,7 @@ bool OmniboxPedal::SynonymGroup::EraseMatchesIn(
   auto eraser = fully_erase ? &TokenSequence::Erase : &TokenSequence::Consume;
   bool changed = false;
   for (const auto& synonym : synonyms_) {
-    if (base::invoke(eraser, remaining, synonym, match_once_)) {
+    if (std::invoke(eraser, remaining, synonym, match_once_)) {
       changed = true;
       if (match_once_) {
         break;

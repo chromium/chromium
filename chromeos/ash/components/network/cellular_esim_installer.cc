@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,35 +27,12 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using ash::cellular_setup::mojom::ProfileInstallMethod;
 
 namespace ash {
 namespace {
-
-// Measures the time from which this function is called to when |callback|
-// is expected to run. The measured time difference should capture the time it
-// took for a profile to be fully downloaded from a provided activation code.
-CellularESimInstaller::InstallProfileFromActivationCodeCallback
-CreateTimedInstallProfileCallback(
-    CellularESimInstaller::InstallProfileFromActivationCodeCallback callback) {
-  return base::BindOnce(
-      [](CellularESimInstaller::InstallProfileFromActivationCodeCallback
-             callback,
-         base::Time installation_start_time, HermesResponseStatus result,
-         absl::optional<dbus::ObjectPath> esim_profile_path,
-         absl::optional<std::string> service_path) -> void {
-        std::move(callback).Run(result, esim_profile_path, service_path);
-        if (result != HermesResponseStatus::kSuccess)
-          return;
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
-            base::Time::Now() - installation_start_time);
-      },
-      std::move(callback), base::Time::Now());
-}
 
 void AppendRequiredCellularProperties(
     const dbus::ObjectPath& euicc_path,
@@ -170,7 +149,7 @@ void CellularESimInstaller::RecordInstallESimProfileResultLegacy(
 
 // static
 void CellularESimInstaller::RecordInstallESimProfileResult(
-    absl::optional<HermesResponseStatus> status,
+    std::optional<HermesResponseStatus> status,
     bool is_managed,
     bool is_initial_install,
     ProfileInstallMethod install_method) {
@@ -223,8 +202,7 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
           &CellularESimInstaller::PerformInstallProfileFromActivationCode,
           weak_ptr_factory_.GetWeakPtr(), activation_code, confirmation_code,
           euicc_path, std::move(new_shill_properties), is_initial_install,
-          install_method,
-          CreateTimedInstallProfileCallback(std::move(callback))));
+          install_method, std::move(callback)));
 }
 
 void CellularESimInstaller::PerformInstallProfileFromActivationCode(
@@ -249,13 +227,13 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
         is_initial_install, is_install_via_qr_code);
     if (ash::features::IsSmdsSupportEnabled()) {
       RecordInstallESimProfileResult(
-          /*status=*/absl::nullopt, is_managed, is_initial_install,
+          /*status=*/std::nullopt, is_managed, is_initial_install,
           install_method);
     }
 
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                            /*profile_path=*/absl::nullopt,
-                            /*service_path=*/absl::nullopt);
+                            /*profile_path=*/std::nullopt,
+                            /*service_path=*/std::nullopt);
     return;
   }
 
@@ -269,7 +247,7 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(inhibit_lock), euicc_path,
                      std::move(new_shill_properties), is_initial_install,
-                     install_method));
+                     install_method, base::Time::Now()));
 }
 
 void CellularESimInstaller::OnProfileInstallResult(
@@ -279,6 +257,7 @@ void CellularESimInstaller::OnProfileInstallResult(
     const base::Value::Dict& new_shill_properties,
     bool is_initial_install,
     ProfileInstallMethod install_method,
+    const base::Time installation_start_time,
     HermesResponseStatus status,
     dbus::DBusResult dbusResult,
     const dbus::ObjectPath* profile_path) {
@@ -301,10 +280,14 @@ void CellularESimInstaller::OnProfileInstallResult(
                                      install_method);
     }
 
-    std::move(callback).Run(status, /*profile_path=*/absl::nullopt,
-                            /*service_path=*/absl::nullopt);
+    std::move(callback).Run(status, /*profile_path=*/std::nullopt,
+                            /*service_path=*/std::nullopt);
     return;
   }
+
+  UMA_HISTOGRAM_LONG_TIMES_100(
+      "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
+      base::Time::Now() - installation_start_time);
 
   RecordInstallESimProfileResultLegacy(InstallESimProfileResult::kSuccess,
                                        is_managed, is_initial_install,
@@ -334,7 +317,7 @@ void CellularESimInstaller::ConfigureESimService(
     NET_LOG(ERROR)
         << "Error configuring eSIM profile. Default profile not initialized.";
     std::move(callback).Run(
-        /*service_path=*/absl::nullopt);
+        /*service_path=*/std::nullopt);
     return;
   }
 
@@ -371,14 +354,14 @@ void CellularESimInstaller::OnShillConfigurationCreationFailure(
     const std::string& error_message) {
   NET_LOG(ERROR) << "Create shill configuration failed, error:" << error_name
                  << ", message: " << error_message;
-  std::move(callback).Run(/*service_path=*/absl::nullopt);
+  std::move(callback).Run(/*service_path=*/std::nullopt);
 }
 
 void CellularESimInstaller::EnableProfile(
     InstallProfileFromActivationCodeCallback callback,
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& profile_path,
-    absl::optional<dbus::ObjectPath> service_path) {
+    std::optional<dbus::ObjectPath> service_path) {
   auto it = pending_inhibit_locks_.find(profile_path);
   DCHECK(it != pending_inhibit_locks_.end());
 
@@ -444,7 +427,7 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
   NET_LOG(ERROR) << "Error enabling newly created profile path="
                  << profile_path.value() << ", service path=" << service_path
                  << ", error_name=" << error_name;
-  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+  if (ash::features::IsSmdsSupportEnabled()) {
     // Propagate |profile_path| and |service_path| so that the code that
     // initiated the installation can handle the case where the profile was
     // successfully installed, but the installation process failed for some
@@ -454,8 +437,8 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
                             /*service_path=*/service_path);
   } else {
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                            /*profile_path=*/absl::nullopt,
-                            /*service_path=*/absl::nullopt);
+                            /*profile_path=*/std::nullopt,
+                            /*service_path=*/std::nullopt);
   }
 }
 

@@ -110,22 +110,28 @@ class WaylandEventSource : public PlatformEventSource,
   // WaylandPointer::Delegate
   void OnPointerFocusChanged(WaylandWindow* window,
                              const gfx::PointF& location,
+                             base::TimeTicks timestamp,
                              wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerButtonEvent(EventType evtype,
                             int changed_button,
+                            base::TimeTicks timestamp,
                             WaylandWindow* window,
                             wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerButtonEvent(EventType evtype,
                             int changed_button,
+                            base::TimeTicks timestamp,
                             WaylandWindow* window,
                             wl::EventDispatchPolicy dispatch_policy,
                             bool allow_release_of_unpressed_button) override;
   void OnPointerMotionEvent(const gfx::PointF& location,
+                            base::TimeTicks timestamp,
                             wl::EventDispatchPolicy dispatch_policy) override;
-  void OnPointerAxisEvent(const gfx::Vector2dF& offset) override;
+  void OnPointerAxisEvent(const gfx::Vector2dF& offset,
+                          base::TimeTicks timestamp) override;
   void OnPointerFrameEvent() override;
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
-  void OnPointerAxisStopEvent(uint32_t axis) override;
+  void OnPointerAxisStopEvent(uint32_t axis,
+                              base::TimeTicks timestamp) override;
   void OnResetPointerFlags() override;
   const gfx::PointF& GetPointerLocation() const override;
   bool IsPointerButtonPressed(EventFlags button) const override;
@@ -172,7 +178,8 @@ class WaylandEventSource : public PlatformEventSource,
 
   // WaylandZwpRelativePointerManager::Delegate:
   void SetRelativePointerMotionEnabled(bool enabled) override;
-  void OnRelativePointerMotion(const gfx::Vector2dF& delta) override;
+  void OnRelativePointerMotion(const gfx::Vector2dF& delta,
+                               base::TimeTicks timestamp) override;
 
  private:
   struct PointerScrollData {
@@ -189,6 +196,7 @@ class WaylandEventSource : public PlatformEventSource,
     float dy = 0.0f;
     base::TimeDelta dt;
     bool is_axis_stop = false;
+    absl::optional<base::TimeTicks> timestamp;
 
     void DumpState(std::ostream& out) const;
   };
@@ -233,7 +241,8 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchReleaseInternal(PointerId id);
 
   // Ensure a valid instance of the PointerScrollData class member.
-  PointerScrollData& EnsurePointerScrollData();
+  void EnsurePointerScrollData(
+      const absl::optional<base::TimeTicks>& timestamp);
 
   void ProcessPointerScrollData();
 

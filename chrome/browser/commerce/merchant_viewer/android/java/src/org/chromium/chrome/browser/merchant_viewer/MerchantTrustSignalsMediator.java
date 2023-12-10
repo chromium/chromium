@@ -29,34 +29,42 @@ class MerchantTrustSignalsMediator {
 
     private final CurrentTabObserver mCurrentTabObserver;
 
-    MerchantTrustSignalsMediator(ObservableSupplier<Tab> tabSupplier,
-            MerchantTrustSignalsCallback delegate, MerchantTrustMetrics metrics) {
-        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onDidFinishNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigation) {
-                if ((tab.isIncognito()) || (!navigation.hasCommitted())
-                        || (navigation.isPrimaryMainFrameFragmentNavigation())
-                        || (navigation.isErrorPage()) || (navigation.getUrl() == null)
-                        || (TextUtils.isEmpty(navigation.getUrl().getHost()))) {
-                    return;
-                }
+    MerchantTrustSignalsMediator(
+            ObservableSupplier<Tab> tabSupplier,
+            MerchantTrustSignalsCallback delegate,
+            MerchantTrustMetrics metrics) {
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onDidFinishNavigationInPrimaryMainFrame(
+                                    Tab tab, NavigationHandle navigation) {
+                                if ((tab.isIncognito())
+                                        || (!navigation.hasCommitted())
+                                        || (navigation.isPrimaryMainFrameFragmentNavigation())
+                                        || (navigation.isErrorPage())
+                                        || (navigation.getUrl() == null)
+                                        || (TextUtils.isEmpty(navigation.getUrl().getHost()))) {
+                                    return;
+                                }
 
-                metrics.updateRecordingMessageImpact(navigation.getUrl().getHost());
-                delegate.onFinishEligibleNavigation(
-                        new MerchantTrustMessageContext(navigation, tab.getWebContents()));
-            }
+                                metrics.updateRecordingMessageImpact(navigation.getUrl().getHost());
+                                delegate.onFinishEligibleNavigation(
+                                        new MerchantTrustMessageContext(
+                                                navigation, tab.getWebContents()));
+                            }
 
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                metrics.finishRecordingMessageImpact();
-            }
+                            @Override
+                            public void onHidden(Tab tab, @TabHidingType int type) {
+                                metrics.finishRecordingMessageImpact();
+                            }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                metrics.finishRecordingMessageImpact();
-            }
-        });
+                            @Override
+                            public void onDestroyed(Tab tab) {
+                                metrics.finishRecordingMessageImpact();
+                            }
+                        });
     }
 
     void destroy() {

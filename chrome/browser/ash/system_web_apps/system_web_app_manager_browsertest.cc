@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
     if (type_and_info.first == SystemWebAppType::TERMINAL)
       continue;
 
-    absl::optional<std::string> app_id =
+    std::optional<std::string> app_id =
         GetManager().GetAppIdForSystemApp(type_and_info.first);
     EXPECT_TRUE(app_id);
 
@@ -1340,8 +1340,8 @@ class SystemWebAppManagerAppSuspensionBrowserTest
     return readiness;
   }
 
-  absl::optional<apps::IconKey> GetAppIconKey(const webapps::AppId& app_id) {
-    absl::optional<apps::IconKey> icon_key;
+  std::optional<apps::IconKey> GetAppIconKey(const webapps::AppId& app_id) {
+    std::optional<apps::IconKey> icon_key;
     bool app_found =
         GetAppServiceProxy(browser()->profile())
             ->AppRegistryCache()
@@ -1367,7 +1367,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
   WaitForTestSystemAppInstall();
-  absl::optional<webapps::AppId> settings_id =
+  std::optional<webapps::AppId> settings_id =
       GetManager().GetAppIdForSystemApp(SystemWebAppType::SETTINGS);
   DCHECK(settings_id.has_value());
 
@@ -1397,7 +1397,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
       "screenplay-44570758-2d0f-4ed9-8172-102244523249");
 
   WaitForTestSystemAppInstall();
-  absl::optional<webapps::AppId> settings_id =
+  std::optional<webapps::AppId> settings_id =
       GetManager().GetAppIdForSystemApp(SystemWebAppType::SETTINGS);
   DCHECK(settings_id.has_value());
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));

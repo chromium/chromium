@@ -21,7 +21,7 @@ device::BluetoothDevice::BatteryInfo GetBatteryInfo(
   if (battery_info->percentage == -1) {
     return device::BluetoothDevice::BatteryInfo(
         battery_type,
-        /*percentage=*/absl::nullopt,
+        /*percentage=*/std::nullopt,
         battery_info->is_charging
             ? device::BluetoothDevice::BatteryInfo::ChargeState::kCharging
             : device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging);

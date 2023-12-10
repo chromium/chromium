@@ -22,6 +22,7 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
+#include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
@@ -310,11 +311,22 @@ bool UserPoliciesManager::IsUserPolicyStaleOrMissing(
     const std::wstring& sid) const {
   UserPolicies user_policies;
   if (!GetUserPolicies(sid, &user_policies)) {
+    LOGFN(VERBOSE) << "User policy file doesn't exist";
     return true;
   }
 
+  // if the policy file exists but is stale, check the internet connection and
+  // try to fetch the new policy file. If there's no internet connection, will
+  // return false and GCPW will continue to use the stale policy information.
   if (GetTimeDeltaSinceLastFetch(sid, kLastUserPolicyRefreshTimeRegKey) >
       kMaxTimeDeltaSinceLastUserPolicyRefresh) {
+    if (!InternetAvailabilityChecker::Get()->HasInternetConnection()) {
+      LOGFN(VERBOSE)
+          << "There's no internet connection to update stale policy file.";
+      return false;
+    }
+
+    LOGFN(VERBOSE) << "User policy file is stale";
     return true;
   }
 
@@ -336,6 +348,10 @@ void UserPoliciesManager::SetFakesForTesting(FakesForTesting* fakes) {
       fakes->fake_win_http_url_fetcher_creator);
   if (fakes->os_user_manager_for_testing) {
     OSUserManager::SetInstanceForTesting(fakes->os_user_manager_for_testing);
+  }
+  if (fakes->internet_availability_checker_for_testing) {
+    InternetAvailabilityChecker::SetInstanceForTesting(
+        fakes->internet_availability_checker_for_testing);
   }
 }
 

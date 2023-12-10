@@ -152,7 +152,7 @@
     Next
   </message>
   <message name="IDS_CELLULAR_SETUP_SKIP_DISCOVERY_LABEL" desc="Label for button that skips the multiple profile selection step and sets up a new profile during eSIM cellular setup">
-    Skip &amp; Set up new profile
+    Skip &amp; set up new profile
   </message>
   <message name="IDS_CELLULAR_SETUP_CONFIRM_LABEL" desc="Label for button that verifies the confirmation code entered during cellular setup">
     Confirm
@@ -212,7 +212,7 @@
     Looking for available eSIM profiles
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
-   This may cause your mobile network to disconnect for a few minutes.
+   This may cause your mobile network to disconnect for a few minutes
   </message>
   <message name="IDS_CELLULAR_SETUP_PROFILE_DISCOVERY_PAGE_TITLE" desc="Title message informing user that they can choose a profile from the list below to download.">
     Choose an eSIM profile to download
@@ -227,7 +227,7 @@
     We've found multiple profiles available to download. Select the ones you would like to download before proceeding.
   </message>
   <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE_WITH_LINK" desc="Label informing the user that they can choose to setup an eSIM profile manually.">
-    You can also setup an eSIM profile <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>manually<ph name="END_LINK">&lt;/a&gt;</ph>.
+    You can also set up an eSIM profile <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>manually<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
     Scan a QR Code using your device camera or enter the activation code provided by your carrier.
@@ -309,6 +309,9 @@
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_CANCEL" desc="Label for button to cancel and return to previous page.">
     Cancel
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CARRIER_LOCKED_DEVICE" desc="Label for informing the user this device is carrier locked.When carrier locked, device will only allow to connect to specific mobile provider">
+    Downloaded profile may not be usable if mobile network provider is locked. Contact your provider for support.
   </message>
 
   <!-- ChromeOS Strings -->
@@ -1435,8 +1438,8 @@
   <message name="IDS_LOGIN_QUICK_START_SETUP" desc="A label on the button. Used on multiple screens in OOBE to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
     Set up with Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT" desc="A label on the button. Used on OOBE's network screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
-    Connect to Wi-Fi with Android phone
+  <message name="IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT" desc="A label of the first item of the list of available networks. Used on OOBE's network screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
+    Automatically transfer WiFi from your Android phone
   </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP_SIGNIN_SCREEN_ENTRY_POINT" desc="A label on the button. Used on OOBE's sign-in screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
     Sign in with Android phone
@@ -1579,9 +1582,6 @@
   <message name="IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE" desc="Message displayed while waiting for the application to create its window in kiosk mode.">
     Waiting for application window...
   </message>
-  <message name="IDS_APP_START_WAIT_FOR_APP_WINDOW_INSTALL_FAILED_MESSAGE" desc="Message displayed when kiosk app meta-data obtention fails, but we try to run the app anyway without it.">
-    Failed to obtain app data, trying to run the app anyway...
-  </message>
   <message name="IDS_PASSWORD_SELECTION_TITLE" desc="Message displayed on the password selection screen.">
     Use a password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
@@ -1640,6 +1640,9 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_AND_DELETE_BUTTON" desc="Button to continue and delete data without providing old password on the data loss warning dialog.">
     Continue anyway
   </message>
+  <message name="IDS_LOCAL_DATA_LOSS_WARNING_POWERWASH_BUTTON" desc="Button to continue and powerwash without providing old password on the data loss warning dialog for owner user.">
+    Reset
+  </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_FORGOT_OLD_PASSWORD_BUTTON" desc="Forgot old password button on the recover local data dialog.">
     Forgot old password
   </message>
@@ -1689,6 +1692,12 @@
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_DONE_BUTTON" desc="Label for the done button to finish the Cryptohome recovery flow.">
     Done
   </message>
+  <message name="IDS_LOGIN_GENERIC_RETRY_BUTTON" desc="Label for the button to retry operation during login process.">
+    Retry
+  </message>
+  <message name="IDS_LOGIN_GENERIC_DONE_BUTTON" desc="Label for the button on the information dialogs to close the dialog and proceed as expected.">
+    Done
+  </message>
   <message name="IDS_LOGIN_SAML_NOTICE_SHORT" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
     Sign-in hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
   </message>
@@ -1713,13 +1722,13 @@
   <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_TITLE" desc="Title for the local password reset dialog.">
     Reset <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title for the local password setup done dialog.">
+  <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_SET_TITLE" desc="Title for the factor setup informational dialog to show that the local password was set successfully.">
     Your password is set
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_DONE_TITLE" desc="Title for the local password reset done dialog.">
+  <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_UPDATED_TITLE" desc="Title for the factor setup informational dialog to show that local password was updated successfuly.">
     Your password has been updated
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle for the local password setup done dialog.">
+  <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_SUBTITLE" desc="Subtitle for the factor setup informational dialog, shown when local password was set up (to indicate that it only applies to the current device).">
     You can use this password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">
@@ -4257,10 +4266,10 @@
     Screen context
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin.">
-    To get tailored responses when you ask questions, let your Assistant access a screenshot of what’s on your screen. This may also include info about songs or videos that are playing.
+    This allows Google Assistant to provide tailored responses when you ask questions.
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC_CHILD" desc="Description for assistant screen context optin, when a child account is in use.">
-    To get tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions, let Assistant access a screenshot of what’s on <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s screen. This may also include info about songs or videos that are playing.
+    This allows Google Assistant to provide tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE" desc="Title for assistant related info screen.">
     Allow your Assistant to use info on your screen to help
@@ -4281,15 +4290,9 @@
     Looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> can get even more out of Assistant by turning on Screen context on this device.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE" desc="Message to illustrate the use cases for assistant related info.">
-    You could ask “Hey Google, what song is this?” or “Hey Google, what's on my screen?”
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
-    Try “Hey Google, what song is this?” or “Hey Google, what's on my screen?”
-  </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_NEW" desc="Message to illustrate the use cases for assistant related info.">
     You could ask “Hey Google, what song is this?”
   </message>
-  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD_NEW" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
     Try “Hey Google, what song is this?”
   </message>
   <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
@@ -7294,6 +7297,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Your Google Account is the same account you use for Gmail, YouTube, Chrome, and other Google products.
     Use your account to easily access all of your bookmarks, files, and more. If you don't have an account, you can create one on the next screen.
   </message>
+  <message name="IDS_GAIA_INFO_DESCRIPTION_QUICK_START" desc="Additional description of the Gaia Info screen for quick start flow.">
+    If you don't have an account, select the first option to create one.
+  </message>
+  <message name="IDS_GAIA_INFO_MANUAL_FLOW" desc="Label for the option on the Gaia Info screen to manually enter account and credentials.">
+    Enter your Google Account and password
+  </message>
+  <message name="IDS_GAIA_INFO_QUICK_START_FLOW" desc="Label for the option on the Gaia Info screen to use quick start to enter account and credentials.">
+    Automatically get account from Android phone
+  </message>
 
   <!-- Floating Workspace -->
   <message name="IDS_FLOATING_WORKSPACE_NO_NETWORK_TITLE" desc="Title of Floating Workspace notification when there is no network connection.">
@@ -7304,6 +7316,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_FLOATING_WORKSPACE_NO_NETWORK_BUTTON" desc="Button to show network settings for Floating Workspace notification when is no network connection.">
     Network settings
+  </message>
+ <message name="IDS_FLOATING_WORKSPACE_SAFE_MODE_TITLE" desc="Title of Floating Workspace notification when ChromeOS is in safe mode." translateable="false">
+    Floating Workspace disabled
+  </message>
+  <message name="IDS_FLOATING_WORKSPACE_SAFE_MODE_MESSAGE" desc="Message for Floating Workspace notification when ChromeOS is in safe mode." translateable="false">
+    ChromeOS in safe mode because too many consecutive crashes, Floating Workspace is disabled.
   </message>
   <message name="IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_TITLE" desc="Title of Floating Workspace notification asking user to restore or not when a new remote desk arrives after an earlier restoration error occurs.">
     Resume previous session?
@@ -7338,6 +7356,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_PROMP_REMOVE_SHORTCUT_BUTTON"
     desc="Text for the remove button on the shortcut removal prompt">
     Remove
+  </message>
+
+  <!-- Shortcut Accessibility Label-->
+  <message name="IDS_APP_SHORTCUT_ACCESSIBILITY_LABEL"
+    desc="The accessibility label of an app shortcut. Example: 'Funny Cat Video, Google Chrome'">
+    <ph name="SHORTCUT_NAME">$1<ex>Funny Cat Video</ex></ph>, <ph name="APP_FULL_NAME">$2<ex>Google Chrome</ex></ph>
   </message>
 
   <!-- Remote activity notification dialog -->

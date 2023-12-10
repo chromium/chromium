@@ -134,7 +134,7 @@ class BrowsingDataModel {
   class Delegate {
    public:
     struct DelegateEntry {
-      DelegateEntry(DataKey data_key,
+      DelegateEntry(const DataKey& data_key,
                     StorageType storage_type,
                     uint64_t storage_size);
       DelegateEntry(const DelegateEntry& other);
@@ -149,7 +149,7 @@ class BrowsingDataModel {
         base::OnceCallback<void(std::vector<DelegateEntry>)> callback) = 0;
 
     // Removes all data that matches the data key.
-    virtual void RemoveDataKey(DataKey data_key,
+    virtual void RemoveDataKey(const DataKey& data_key,
                                StorageTypeSet storage_types,
                                base::OnceClosure callback) = 0;
 
@@ -157,14 +157,21 @@ class BrowsingDataModel {
     // StorageType, or nullopt if the delegate does not manage the entity that
     // owns the given data.
     virtual absl::optional<DataOwner> GetDataOwner(
-        DataKey data_key,
+        const DataKey& data_key,
         StorageType storage_type) const = 0;
 
     // Returns whether the delegate considers `storage_type` to be blocked by
-    // third party cookie blocking. Returns nullopt if the delegate does not
-    // manage the storage type.
+    // third party cookie blocking, utilizing `data_key` to exclude partitioned
+    // data. Returns nullopt if the delegate does not manage the storage type.
+    // This method isn't aware of the context in which the data key is being
+    // accessed and may return false positive in case it was called for a first
+    // party key in a first party context.
     virtual absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+        const DataKey& data_key,
         StorageType storage_type) const = 0;
+
+    // Returns whether cookie deletion for a given `url` is disabled.
+    virtual bool IsCookieDeletionDisabled(const GURL& url) = 0;
 
     virtual ~Delegate() = default;
   };
@@ -271,8 +278,12 @@ class BrowsingDataModel {
                                                base::OnceClosure completed);
 
   // Returns whether the provided `storage_type` is blocked when third party
-  // cookies are blocked.
-  bool IsBlockedByThirdPartyCookieBlocking(StorageType storage_type) const;
+  // cookies are blocked, utilizing `data_key` to exclude partitioned data.
+  // This method isn't aware of the context in which the data key is being
+  // accessed and may return false positive in case it was called for a first
+  // party key in a first party context.
+  bool IsBlockedByThirdPartyCookieBlocking(const DataKey& data_key,
+                                           StorageType storage_type) const;
 
  protected:
   friend class BrowsingDataModelTest;
@@ -282,6 +293,12 @@ class BrowsingDataModel {
       std::unique_ptr<Delegate> delegate,
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
           complete_callback);
+
+  // Takes a list of `browsing_data_entries` to remove from disk and runs
+  // `completed` callback on completion.
+  virtual void RemoveBrowsingDataEntriesFromDisk(
+      const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
+      base::OnceClosure completed);
 
   // Private as one of the static BuildX functions should be used instead.
   explicit BrowsingDataModel(

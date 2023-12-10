@@ -19,10 +19,7 @@ SharedBitmap::~SharedBitmap() {}
 
 // static
 SharedBitmapId SharedBitmap::GenerateId() {
-  SharedBitmapId id;
-  // Needs cryptographically-secure random numbers.
-  base::RandBytes(id.name, sizeof(id.name));
-  return id;
+  return gpu::Mailbox::GenerateLegacyMailboxForSharedBitmap();
 }
 
 }  // namespace viz

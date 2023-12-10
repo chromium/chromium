@@ -1,11 +1,21 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
 <input type="text" value="word another">
-<p>Tests double-clicking on a word. If the test succeeds, the word "word" should be selected.</p>
 <script>
-if (window.eventSender) {
-    eventSender.mouseMoveTo(15, 15);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-}
+test(() => {
+  eventSender.mouseMoveTo(15, 15);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+
+  const input = document.querySelector('input');
+  assert_equals(input.selectionStart, 0, 'input.selectionStart');
+
+  // On windows, selection is supposed to include the space after the word.
+  const expectedSelectionEnd = navigator.platform.includes('Win') ? 5 : 4;
+  assert_equals(input.selectionEnd, expectedSelectionEnd, 'input.selectionEnd');
+}, 'Double-clicking a word in an input element should select it.');
 </script>

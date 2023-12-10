@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] json response with no data: response property is null
-[PASS] json response with malformed data: response property is null
 [FAIL] JSON object roundtrip
   assert_equals: Response should be cached expected object "[object Object]" but got object "[object Object]"
 [FAIL] JSON roundtrip with Japanese text

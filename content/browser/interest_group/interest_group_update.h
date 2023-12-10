@@ -21,9 +21,9 @@ namespace content {
 
 // InterestGroupUpdate represents the results of parsing a JSON update for a
 // stored blink::InterestGroup file. It contains all updatable fields of a
-// InterestGroup - that is, everything but `name`, `origin`, `expiry`, and
-// `user_bidding_signals`. All fields are optional, even ones that are mandatory
-// in an InterestGroup, since the value of the original InterestGroup will be
+// InterestGroup - that is, everything but `name`, `origin`, and `expiry`.
+// All fields are optional, even ones that are mandatory in an InterestGroup,
+// since the value of the original InterestGroup will be
 // used when they're not present in an InterestGroupUpdate.
 struct CONTENT_EXPORT InterestGroupUpdate {
   InterestGroupUpdate();
@@ -47,6 +47,9 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   absl::optional<GURL> daily_update_url;
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
+  absl::optional<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>
+      trusted_bidding_signals_slot_size_mode;
+  absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
   absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>

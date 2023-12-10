@@ -60,6 +60,7 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
+    LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
@@ -73,7 +74,7 @@ void IdentityRequestDialogController::ShowFailureDialog(
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
-    SigninToIdPCallback signin_callback) {
+    LoginToIdPCallback login_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }

@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -278,6 +279,18 @@ bool ClickElement(const WebDocument& document,
   return true;
 }
 
+FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
+  return form_cache.UpdateFormCache(*base::MakeRefCounted<FieldDataManager>());
+}
+
+void ApplyFillFormAction(base::span<const FormFieldData> fields,
+                         const blink::WebFormControlElement& initiating_element,
+                         mojom::ActionPersistence action_persistence) {
+  ApplyFormAction(fields, initiating_element, mojom::ActionType::kFill,
+                  action_persistence,
+                  *base::MakeRefCounted<FieldDataManager>());
+}
+
 }  // namespace
 
 class FormAutofillTest : public ChromeRenderViewTest {
@@ -334,8 +347,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     const FormData& form = forms[0];
@@ -422,25 +434,24 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    FormData form_data;
+    FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form_data, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form_data.name);
-      EXPECT_EQ(GURL("http://abc.com"), form_data.action);
+      EXPECT_EQ(u"TestForm", form.name);
+      EXPECT_EQ(GURL("http://abc.com"), form.action);
     }
 
-    const std::vector<FormFieldData>& fields = form_data.fields;
+    const std::vector<FormFieldData>& fields = form.fields;
     ASSERT_EQ(number_of_field_cases, fields.size());
 
     FormFieldData expected;
@@ -466,14 +477,13 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.autocomplete_attribute = field_cases[i].autocomplete_attribute;
       EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[i]);
       // Fill the form_data for the field.
-      form_data.fields[i].value = ASCIIToUTF16(field_cases[i].autofill_value);
+      form.fields[i].value = ASCIIToUTF16(field_cases[i].autofill_value);
       // Set the is_autofilled property for the field.
-      form_data.fields[i].is_autofilled = field_cases[i].should_be_autofilled;
+      form.fields[i].is_autofilled = field_cases[i].should_be_autofilled;
     }
 
     // Autofill the form using the given fill form function.
-    ApplyFormAction(form_data, input_element, mojom::ActionType::kFill,
-                    action_persistence);
+    ApplyFillFormAction(form.fields, input_element, action_persistence);
 
     // Validate Autofill or Preview results.
     for (size_t i = 0; i < number_of_field_cases; ++i) {
@@ -664,8 +674,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -674,9 +683,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form and verify it's the correct form.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -723,8 +732,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the textarea element we want to find.
@@ -736,9 +744,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form and verify it's the correct form.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(textarea_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        textarea_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -791,8 +799,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -801,9 +808,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -840,15 +847,15 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name);
       EXPECT_EQ(GURL("http://abc.com"), form2.action);
@@ -887,8 +894,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -897,9 +903,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -928,15 +934,15 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].value = u"Brother";
     form.fields[1].value = u"Jonathan";
     form.fields[2].value = u"brotherj@example.com";
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name);
       EXPECT_EQ(GURL("http://abc.com"), form2.action);
@@ -967,8 +973,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -977,9 +982,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -1008,15 +1013,15 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].value = u"Wyatt";
     form.fields[1].value = u"Earp";
     form.fields[2].value = u"wyatt@example.com";
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name);
       EXPECT_EQ(GURL("http://abc.com"), form2.action);
@@ -1050,8 +1055,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     const size_t expected_size = unowned ? 1 : 2;
     ASSERT_EQ(expected_size, forms.size());
 
@@ -1061,9 +1065,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_TRUE(form.name.empty());
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -1099,15 +1103,15 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[unowned_offset + 0].is_autofilled = true;
     form.fields[unowned_offset + 1].is_autofilled = true;
     form.fields[unowned_offset + 2].is_autofilled = true;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     if (!unowned) {
       EXPECT_TRUE(form2.name.empty());
       EXPECT_EQ(GURL("http://abc.com"), form2.action);
@@ -1147,8 +1151,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1160,9 +1163,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -1224,22 +1227,22 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kPreview);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kPreview);
     // The selection should be set after the second character.
     EXPECT_EQ(2u, input_element.SelectionStart());
     EXPECT_EQ(2u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name);
       EXPECT_EQ(GURL("http://abc.com"), form2.action);
@@ -1304,8 +1307,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1322,7 +1324,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     // This will be considered as a value entered by the user.
     control_elements[1].SetValue(WebString::FromUTF16(u"Earp"));
-    control_elements[1].SetUserHasEditedTheFieldForTest();
+    control_elements[1].SetUserHasEditedTheField(true);
 
     // This will be ignored, the string will be sanitized into an empty string.
     control_elements[2].SetValue(WebString::FromUTF16(u"(___)-___-____"));
@@ -1335,14 +1337,13 @@ class FormAutofillTest : public ChromeRenderViewTest {
     control_elements[4].SetValue(WebString::FromUTF16(u"Enter your city.."));
 
     control_elements[5].SetValue(WebString::FromUTF16(u"AK"));
-    control_elements[5].SetUserHasEditedTheFieldForTest();
 
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     EXPECT_EQ(u"TestForm", form.name);
     EXPECT_EQ(GURL("http://abc.com"), form.action);
 
@@ -1362,22 +1363,22 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[3].is_autofilled = true;
     form.fields[4].is_autofilled = true;
     form.fields[5].is_autofilled = true;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kPreview);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kPreview);
     // The selection should be set after the fifth character.
     EXPECT_EQ(5u, input_element.SelectionStart());
     EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     EXPECT_EQ(u"TestForm", form2.name);
     EXPECT_EQ(GURL("http://abc.com"), form2.action);
 
@@ -1484,8 +1485,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1506,9 +1506,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     EXPECT_EQ(u"TestForm", form.name);
     EXPECT_EQ(GURL("http://abc.com"), form.action);
 
@@ -1522,22 +1522,22 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = false;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kPreview);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kPreview);
     // The selection should be set after the fifth character.
     EXPECT_EQ(5u, input_element.SelectionStart());
     EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     EXPECT_EQ(u"TestForm", form2.name);
     EXPECT_EQ(GURL("http://abc.com"), form2.action);
 
@@ -1602,8 +1602,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1619,14 +1618,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // This will be ignored.
     control_elements[1].SetValue(WebString::FromUTF16(u"____/__"));
     control_elements[2].SetValue(WebString::FromUTF16(u"John Smith"));
-    control_elements[2].SetUserHasEditedTheFieldForTest();
+    control_elements[2].SetUserHasEditedTheField(true);
 
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     EXPECT_EQ(u"TestForm", form.name);
     EXPECT_EQ(GURL("http://abc.com"), form.action);
 
@@ -1640,22 +1639,22 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kPreview);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kPreview);
     // The selection should be set after the 19th character.
     EXPECT_EQ(19u, input_element.SelectionStart());
     EXPECT_EQ(19u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     EXPECT_EQ(u"TestForm", form2.name);
     EXPECT_EQ(GURL("http://abc.com"), form2.action);
 
@@ -1719,8 +1718,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1736,7 +1734,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // This will be ignored.
     control_elements[1].SetValue(WebString::FromUTF16(u"____/__"));
     control_elements[2].SetValue(WebString::FromUTF16(u"john smith"));
-    control_elements[2].SetUserHasEditedTheFieldForTest();
+    control_elements[2].SetUserHasEditedTheField(true);
 
     // Sometimes the JS modifies the value entered by the user.
     ExecuteJavaScriptForTests(
@@ -1745,9 +1743,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form, &field));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     EXPECT_EQ(u"TestForm", form.name);
     EXPECT_EQ(GURL("http://abc.com"), form.action);
 
@@ -1761,22 +1759,22 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kPreview);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kPreview);
     // The selection should be set after the 19th character.
     EXPECT_EQ(19u, input_element.SelectionStart());
     EXPECT_EQ(19u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFormAction(form, input_element, mojom::ActionType::kFill,
-                    mojom::ActionPersistence::kFill);
+    ApplyFillFormAction(form.fields, input_element,
+                        mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
     FormData form2;
     FormFieldData field2;
-    EXPECT_TRUE(FindFormAndFieldForFormControlElement(input_element, nullptr,
-                                                      /*extract_options=*/{},
-                                                      &form2, &field2));
+    EXPECT_TRUE(FindFormAndFieldForFormControlElement(
+        input_element, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form2, &field2));
     EXPECT_EQ(u"TestForm", form2.name);
     EXPECT_EQ(GURL("http://abc.com"), form2.action);
 
@@ -1837,8 +1835,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Set the auto-filled attribute.
@@ -1856,7 +1853,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     notenabled.SetValue(WebString::FromUTF8("no clear"));
 
     // Clear the form.
-    EXPECT_TRUE(form_cache.ClearSectionWithElement(firstname));
+    scoped_refptr<FieldDataManager> field_data_manager(new FieldDataManager);
+    EXPECT_TRUE(
+        form_cache.ClearSectionWithElement(firstname, *field_data_manager));
 
     // Verify that the auto-filled attribute has been turned off.
     EXPECT_FALSE(firstname.IsAutofilled());
@@ -1865,7 +1864,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     FormData form;
     FormFieldData field;
     EXPECT_TRUE(FindFormAndFieldForFormControlElement(
-        firstname, nullptr, /*extract_options=*/{}, &form, &field));
+        firstname, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -1947,8 +1947,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Set the autofilled attribute and specify the section attribute.
@@ -1986,7 +1985,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     city_billing.SetAutofillSection("billing");
 
     // Clear the first (shipping) section.
-    EXPECT_TRUE(form_cache.ClearSectionWithElement(firstname_shipping));
+    scoped_refptr<FieldDataManager> field_data_manager(new FieldDataManager);
+    EXPECT_TRUE(form_cache.ClearSectionWithElement(firstname_shipping,
+                                                   *field_data_manager));
 
     // Verify that the autofilled attribute is false only for the shipping
     // section.
@@ -2001,7 +2002,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     FormData form;
     FormFieldData field;
     EXPECT_TRUE(FindFormAndFieldForFormControlElement(
-        firstname_shipping, nullptr, /*extract_options=*/{}, &form, &field));
+        firstname_shipping, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -2057,8 +2059,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Set the auto-filled attribute.
@@ -2074,7 +2075,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     state.SetAutofillState(WebAutofillState::kAutofilled);
 
     // Clear the form.
-    EXPECT_TRUE(form_cache.ClearSectionWithElement(firstname));
+    scoped_refptr<FieldDataManager> field_data_manager(new FieldDataManager);
+    EXPECT_TRUE(
+        form_cache.ClearSectionWithElement(firstname, *field_data_manager));
 
     // Verify that the auto-filled attribute has been turned off.
     EXPECT_FALSE(firstname.IsAutofilled());
@@ -2083,7 +2086,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     FormData form;
     FormFieldData field;
     EXPECT_TRUE(FindFormAndFieldForFormControlElement(
-        firstname, nullptr, /*extract_options=*/{}, &form, &field));
+        firstname, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{}, &form, &field));
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name);
       EXPECT_EQ(GURL("http://abc.com"), form.action);
@@ -2127,8 +2131,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     std::vector<WebFormControlElement> elements;
@@ -2180,8 +2183,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     std::vector<WebFormControlElement> elements;
@@ -2231,8 +2233,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     std::vector<WebFormControlElement> elements;
@@ -2283,8 +2284,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Set the autofilled attribute.
@@ -2298,7 +2298,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     phone.SetAutofillState(WebAutofillState::kAutofilled);
 
     // Clear the fields.
-    EXPECT_TRUE(form_cache.ClearSectionWithElement(firstname));
+    scoped_refptr<FieldDataManager> field_data_manager(new FieldDataManager);
+    EXPECT_TRUE(
+        form_cache.ClearSectionWithElement(firstname, *field_data_manager));
 
     // Verify only autofilled fields are cleared.
     EXPECT_EQ(u"Wyatt", firstname.Value().Utf16());
@@ -2353,7 +2355,6 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  element.SetSelectionRange(1, 4);
 
   FormFieldData result1;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
@@ -2368,8 +2369,6 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
 
   expected.value.clear();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
-  EXPECT_EQ(0u, result1.selection_start);
-  EXPECT_EQ(0u, result1.selection_end);
 
   FormFieldData result2;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
@@ -2377,10 +2376,6 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
 
   expected.value = u"value";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
-  EXPECT_EQ(1u, result2.selection_start);
-  EXPECT_EQ(4u, result2.selection_end);
-  EXPECT_EQ(u"alu", result2.GetSelection());
-  EXPECT_EQ(u"alu", result2.GetSelectionAsStringView());
 }
 
 // We should be able to extract a text field with autocomplete="off".
@@ -2977,8 +2972,9 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
 
   FormData form;
   FormFieldData field;
-  EXPECT_TRUE(WebFormElementToFormData(forms[0], input_element, nullptr,
-                                       {ExtractOption::kValue}, &form, &field));
+  EXPECT_TRUE(WebFormElementToFormData(
+      forms[0], input_element, *base::MakeRefCounted<FieldDataManager>(),
+      {ExtractOption::kValue}, &form, &field));
   EXPECT_EQ(u"TestForm", form.name);
   EXPECT_EQ(GetFormRendererId(forms[0]), form.unique_renderer_id);
   EXPECT_EQ(GURL("http://cnn.com/submit/"), form.action);
@@ -3059,9 +3055,10 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
   ASSERT_FALSE(web_form.IsNull());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                       nullptr, /*extract_options=*/{}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(web_form, WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               /*extract_options=*/{}, &form, nullptr));
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(1U, fields.size());
@@ -3090,9 +3087,9 @@ TEST_F(FormAutofillTest, WebFormElementToFormDataTooManyFields) {
 
   FormData form;
   FormFieldData field;
-  EXPECT_FALSE(WebFormElementToFormData(forms[0], input_element, nullptr,
-                                        {ExtractOption::kValue}, &form,
-                                        &field));
+  EXPECT_FALSE(WebFormElementToFormData(
+      forms[0], input_element, *base::MakeRefCounted<FieldDataManager>(),
+      {ExtractOption::kValue}, &form, &field));
 }
 
 // Tests that the |should_autocomplete| is set to false for all the fields when
@@ -3117,9 +3114,10 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
   ASSERT_FALSE(web_form.IsNull());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                       nullptr, /*extract_options=*/{}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(web_form, WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               /*extract_options=*/{}, &form, nullptr));
 
   for (const FormFieldData& field : form.fields) {
     EXPECT_FALSE(field.should_autocomplete);
@@ -3147,9 +3145,10 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
   ASSERT_FALSE(web_form.IsNull());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                       nullptr, /*extract_options=*/{}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(web_form, WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               /*extract_options=*/{}, &form, nullptr));
 
   ASSERT_EQ(3U, form.fields.size());
 
@@ -3173,10 +3172,11 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
   ASSERT_FALSE(web_form.IsNull());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                       /*field_data_manager=*/nullptr,
-                                       /*extract_options=*/{}, &form,
-                                       /*field=*/nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(web_form, WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               /*extract_options=*/{}, &form,
+                               /*field=*/nullptr));
 
   ASSERT_EQ(1U, form.fields.size());
   EXPECT_FALSE(form.fields[0].should_autocomplete);
@@ -3200,9 +3200,10 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
   ASSERT_FALSE(web_form.IsNull());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                       nullptr, /*extract_options=*/{}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(web_form, WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               /*extract_options=*/{}, &form, nullptr));
 
   EXPECT_EQ(3U, form.fields.size());
   EXPECT_EQ(u"firstname_field", form.fields[0].css_classes);
@@ -3229,9 +3230,10 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_IdAttributes) {
   ASSERT_FALSE(web_form.IsNull());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                       nullptr, /*extract_options=*/{}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(web_form, WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               /*extract_options=*/{}, &form, nullptr));
 
   EXPECT_EQ(4U, form.fields.size());
 
@@ -3282,8 +3284,7 @@ TEST_F(FormAutofillTest, ExtractMultipleForms) {
   ASSERT_NE(nullptr, web_frame);
 
   FormCache form_cache(web_frame);
-  std::vector<FormData> forms =
-      form_cache.UpdateFormCache(nullptr).updated_forms;
+  std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
   ASSERT_EQ(2U, forms.size());
 
   // First form.
@@ -3356,12 +3357,11 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
   ASSERT_NE(nullptr, web_frame);
 
   FormCache form_cache(web_frame);
-  std::vector<FormData> forms =
-      form_cache.UpdateFormCache(nullptr).updated_forms;
+  std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
   ASSERT_EQ(1U, forms.size());
 
   // Second call should give nothing as there are no new forms.
-  forms = form_cache.UpdateFormCache(nullptr).updated_forms;
+  forms = UpdateFormCache(form_cache).updated_forms;
   ASSERT_TRUE(forms.empty());
 
   // Append to the current form will re-extract.
@@ -3373,7 +3373,7 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
       "document.getElementById('testform').appendChild(newInput);");
   base::RunLoop().RunUntilIdle();
 
-  forms = form_cache.UpdateFormCache(nullptr).updated_forms;
+  forms = UpdateFormCache(form_cache).updated_forms;
   ASSERT_EQ(1U, forms.size());
 
   const std::vector<FormFieldData>& fields = forms[0].fields;
@@ -3434,7 +3434,7 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
   base::RunLoop().RunUntilIdle();
 
   web_frame = GetMainFrame();
-  forms = form_cache.UpdateFormCache(nullptr).updated_forms;
+  forms = UpdateFormCache(form_cache).updated_forms;
   ASSERT_EQ(1U, forms.size());
 
   const std::vector<FormFieldData>& fields2 = forms[0].fields;
@@ -3468,8 +3468,7 @@ TEST_F(FormAutofillTest, ExtractFormsNoFields) {
   ASSERT_NE(nullptr, web_frame);
 
   FormCache form_cache(web_frame);
-  std::vector<FormData> forms =
-      form_cache.UpdateFormCache(nullptr).updated_forms;
+  std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
   ASSERT_TRUE(forms.empty());
 }
 
@@ -3492,9 +3491,10 @@ TEST_F(FormAutofillTest, WebFormElementToFormDataAutocomplete) {
     WebFormElement web_form = web_forms[0];
 
     FormData form;
-    EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
-                                         nullptr, /*extract_options=*/{}, &form,
-                                         nullptr));
+    EXPECT_TRUE(
+        WebFormElementToFormData(web_form, WebFormControlElement(),
+                                 *base::MakeRefCounted<FieldDataManager>(),
+                                 /*extract_options=*/{}, &form, nullptr));
   }
 }
 
@@ -3629,7 +3629,8 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
   FormData form;
   // Simulate seeing an unowned form containing just the input "fieldID".
   UnownedFormElementsToFormData({GetFormControlElementById("fieldId")}, {},
-                                nullptr, GetMainFrame()->GetDocument(), nullptr,
+                                nullptr, GetMainFrame()->GetDocument(),
+                                *base::MakeRefCounted<FieldDataManager>(),
                                 /*extract_options=*/{}, &form, nullptr);
   ASSERT_EQ(form.fields.size(), 1u);
   FormFieldData& form_field_data = form.fields[0];
@@ -4822,9 +4823,10 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
   ASSERT_EQ(1U, forms.size());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(forms[0], WebFormControlElement(),
-                                       nullptr, {ExtractOption::kValue}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(forms[0], WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               {ExtractOption::kValue}, &form, nullptr));
   EXPECT_EQ(u"TestForm", form.name);
   EXPECT_EQ(GURL("http://cnn.com"), form.action);
 
@@ -4879,9 +4881,10 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   ASSERT_EQ(1U, forms.size());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(forms[0], WebFormControlElement(),
-                                       nullptr, {ExtractOption::kValue}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(forms[0], WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               {ExtractOption::kValue}, &form, nullptr));
   EXPECT_EQ(u"TestForm", form.name);
   EXPECT_EQ(GURL("http://cnn.com"), form.action);
 
@@ -5118,9 +5121,10 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   EXPECT_EQ(1U, forms.size());
 
   FormData form;
-  EXPECT_TRUE(WebFormElementToFormData(forms[0], WebFormControlElement(),
-                                       nullptr, {ExtractOption::kValue}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(forms[0], WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               {ExtractOption::kValue}, &form, nullptr));
 
   EXPECT_EQ(form.fields.size(), 6u);
   std::vector<FormFieldData> undo_fields;
@@ -5133,9 +5137,11 @@ TEST_F(FormAutofillTest, UndoAutofill) {
     undo_fields.push_back(form.fields[i]);
   }
 
+  scoped_refptr<FieldDataManager> field_data_manager(new FieldDataManager);
+
   form.fields = undo_fields;
-  ApplyFormAction(form, text_element_1, mojom::ActionType::kUndo,
-                  mojom::ActionPersistence::kFill);
+  ApplyFormAction(form.fields, text_element_1, mojom::ActionType::kUndo,
+                  mojom::ActionPersistence::kFill, *field_data_manager);
   EXPECT_THAT(text_element_1,
               HasAutofillValue("undo_text_1", WebAutofillState::kNotFilled));
   EXPECT_THAT(text_element_2, HasAutofillValue("autofill_text_2",
@@ -5424,7 +5430,8 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
 
   // Extract the country select-one value as text.
   EXPECT_TRUE(WebFormElementToFormData(
-      forms[0], WebFormControlElement(), nullptr,
+      forms[0], WebFormControlElement(),
+      *base::MakeRefCounted<FieldDataManager>(),
       {ExtractOption::kValue, ExtractOption::kOptionText}, &form, nullptr));
   EXPECT_EQ(u"TestForm", form.name);
   EXPECT_EQ(GURL("http://cnn.com"), form.action);
@@ -5460,9 +5467,10 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
 
   form.fields.clear();
   // Extract the country select-one value as value.
-  EXPECT_TRUE(WebFormElementToFormData(forms[0], WebFormControlElement(),
-                                       nullptr, {ExtractOption::kValue}, &form,
-                                       nullptr));
+  EXPECT_TRUE(
+      WebFormElementToFormData(forms[0], WebFormControlElement(),
+                               *base::MakeRefCounted<FieldDataManager>(),
+                               {ExtractOption::kValue}, &form, nullptr));
   EXPECT_EQ(u"TestForm", form.name);
   EXPECT_EQ(GURL("http://cnn.com"), form.action);
 
@@ -5520,8 +5528,9 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
 
   FormData form;
   EXPECT_TRUE(UnownedFormElementsToFormData(
-      control_elements, iframe_elements, nullptr, frame->GetDocument(), nullptr,
-      extract_options, &form, nullptr));
+      control_elements, iframe_elements, nullptr, frame->GetDocument(),
+      *base::MakeRefCounted<FieldDataManager>(), extract_options, &form,
+      nullptr));
 
   EXPECT_TRUE(form.name.empty());
   EXPECT_FALSE(form.action.is_valid());
@@ -5571,8 +5580,9 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithForm) {
 
   FormData form;
   EXPECT_FALSE(UnownedFormElementsToFormData(
-      control_elements, iframe_elements, nullptr, frame->GetDocument(), nullptr,
-      extract_options, &form, nullptr));
+      control_elements, iframe_elements, nullptr, frame->GetDocument(),
+      *base::MakeRefCounted<FieldDataManager>(), extract_options, &form,
+      nullptr));
 }
 
 TEST_F(FormAutofillTest, FormlessForms) {
@@ -5596,7 +5606,8 @@ TEST_F(FormAutofillTest, FormlessForms) {
     FormData form;
     EXPECT_TRUE(UnownedFormElementsToFormData(
         control_elements, iframe_elements, nullptr, frame->GetDocument(),
-        nullptr, extract_options, &form, nullptr));
+        *base::MakeRefCounted<FieldDataManager>(), extract_options, &form,
+        nullptr));
   }
 }
 
@@ -5670,8 +5681,7 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
     ASSERT_NE(nullptr, web_frame);
 
     FormCache form_cache(web_frame);
-    std::vector<FormData> forms =
-        form_cache.UpdateFormCache(nullptr).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     EXPECT_EQ(test_case.number_of_extracted_forms, forms.size());
     if (!forms.empty())
       EXPECT_EQ(test_case.is_form_tag, forms.back().is_form_tag);
@@ -5698,8 +5708,9 @@ TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
   ASSERT_FALSE(control_element.IsNull());
   FormData form;
   FormFieldData field;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, control_element, nullptr,
-                                       /*extract_options=*/{}, &form, &field));
+  EXPECT_TRUE(WebFormElementToFormData(
+      web_form, control_element, *base::MakeRefCounted<FieldDataManager>(),
+      /*extract_options=*/{}, &form, &field));
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(2U, fields.size());
@@ -5709,8 +5720,9 @@ TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
   frame->ExecuteScript(blink::WebScriptSource(
       WebString("document.getElementById('firstname').remove();")));
   form = {};
-  EXPECT_FALSE(WebFormElementToFormData(web_form, control_element, nullptr,
-                                        /*extract_options=*/{}, &form, &field));
+  EXPECT_FALSE(WebFormElementToFormData(
+      web_form, control_element, *base::MakeRefCounted<FieldDataManager>(),
+      /*extract_options=*/{}, &form, &field));
 }
 
 TEST_F(FormAutofillTest, AriaLabelAndDescription) {
@@ -5735,8 +5747,9 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription) {
   ASSERT_FALSE(control_element.IsNull());
   FormData form;
   FormFieldData field;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, control_element, nullptr,
-                                       /*extract_options=*/{}, &form, &field));
+  EXPECT_TRUE(WebFormElementToFormData(
+      web_form, control_element, *base::MakeRefCounted<FieldDataManager>(),
+      /*extract_options=*/{}, &form, &field));
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());
@@ -5776,8 +5789,9 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
   ASSERT_FALSE(control_element.IsNull());
   FormData form;
   FormFieldData field;
-  EXPECT_TRUE(WebFormElementToFormData(web_form, control_element, nullptr,
-                                       /*extract_options=*/{}, &form, &field));
+  EXPECT_TRUE(WebFormElementToFormData(
+      web_form, control_element, *base::MakeRefCounted<FieldDataManager>(),
+      /*extract_options=*/{}, &form, &field));
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());

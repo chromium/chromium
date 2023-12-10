@@ -10,7 +10,7 @@
 @class FormSuggestion;
 
 // Suggestions consumer for the passwords bottom sheet.
-@protocol PasswordSuggestionBottomSheetConsumer
+@protocol PasswordSuggestionBottomSheetConsumer <NSObject>
 
 // Sends the list of suggestions to be presented to the user on the bottom sheet
 // and the current page's domain.
@@ -22,8 +22,16 @@
 // own defaults or not display those at all.
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle;
 
+// Sends the image to be presented to the user on the bottom sheet. Might not be
+// called for every consumer, in which case they might set their own defaults or
+// not display it all.
+- (void)setAvatarImage:(UIImage*)avatarImage;
+
 // Request to dismiss the bottom sheet.
 - (void)dismiss;
+
+// Sets the primary action label.
+- (void)setPrimaryActionString:(NSString*)primaryActionString;
 
 @end
 

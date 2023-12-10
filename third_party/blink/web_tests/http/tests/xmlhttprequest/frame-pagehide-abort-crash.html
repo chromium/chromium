@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=25394">bug 25394</a>: crash in DocumentLoader::addResponse due to bad |this| pointer</p>
+<p>You should see a few messages followed by PASSED once. </p>
+<script>
+    var consoleMessages = document.createElement("ul");
+    document.body.appendChild(consoleMessages);
+
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+    }
+
+    function subframeLoaded()
+    {
+        var frameDiv = document.getElementById('framediv');
+        frameDiv.innerHTML = 'PASSED';
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+
+    function dumpRequestStatus(request)
+    {
+        try {
+            log("Ready State: " + request.readyState);
+        } catch (ex) {
+            log("Exception getting status: " + ex.message);
+        }
+    }
+
+    function log(message)
+    {
+        var item = document.createElement("li");
+        item.appendChild(document.createTextNode(message));
+        consoleMessages.appendChild(item);
+    }
+</script>
+<div id="framediv">
+<iframe src="resources/xmlhttprequest-in-pagehide.html" width=50 height=10 border=0></iframe>
+</div>
+</body>
+</html>

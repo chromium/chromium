@@ -14,7 +14,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
@@ -49,8 +48,7 @@ class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
   ~CmaAudioOutputStream() override;
 
   void SetRunning(bool running);
-  void Initialize(const std::string& application_session_id,
-                  chromecast::mojom::MultiroomInfoPtr multiroom_info);
+  void Initialize(const std::string& application_session_id);
   void Start(::media::AudioOutputStream::AudioSourceCallback* source_callback);
   void Stop(base::WaitableEvent* finished);
   void Flush(base::WaitableEvent* finished);

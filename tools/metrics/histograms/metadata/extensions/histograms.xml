@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionBlacklist.UnblacklistInstalled"
-    enum="ExtensionLocation" expires_after="2024-03-24">
+    enum="ExtensionLocation" expires_after="2024-05-26">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -118,36 +118,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExtensionContentVerifyJob.TimeSpentUS" units="microseconds"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    The time taken in computation (hashing actual bytes read and comparing
-    against expected computed hashes values) during an extension resource load.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ActionSetIconFailureType"
-    enum="ExtensionActionSetIconFailureType" expires_after="M88">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The cause for the failure in the setIcon() extension API function. This is
-    temporary logging to help track down the cause of a crash.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2024-03-31">
+    units="Extension Count" expires_after="2024-06-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -166,18 +138,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.AlarmManager.AlarmsLoadedCount" units="alarms"
-    expires_after="2023-12-01">
-  <obsolete>
-    Code removed 2023/06.
-  </obsolete>
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of alarms loaded from storage when an extension is loaded.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
     expires_after="2024-04-28">
   <owner>benwells@chromium.org</owner>
@@ -187,26 +147,6 @@ chromium-metrics-reviews@google.com.
     The number of times v1 apps are launched grouped by
     extension_misc::AppLaunchBuckets. See also Apps.AppLaunch for v2 apps. Note
     this was changed in 2023-02 to no longer count web app launches.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.AppLaunchSource" enum="AppLaunchSource"
-    expires_after="2022-06-30">
-  <owner>benwells@chromium.org</owner>
-  <owner>cylee@chromium.org</owner>
-  <summary>
-    The number of times apps are launched grouped by
-    extensions::AppLaunchSource.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.AppLoadedInTab" enum="AppLoadedInTabSource"
-    expires_after="M77">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    A platform app ended up in a regular tab either by the app page or its
-    background page. Note that this happens unexpectedly right now and we wish
-    to track its usage before removing the supporting code.
   </summary>
 </histogram>
 
@@ -230,22 +170,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.AttemptedToDowngradeVersionLocation"
-    enum="ExtensionLocation" expires_after="2022-11-18">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The extension install location of an extension that Chrome attempted to add,
-    but failed because it would downgrade the version. Tracking for
-    https://crbug.com/810799.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.BackgroundHostCreatedForExtension"
-    enum="BackgroundHostCreatedForExtensionValues" expires_after="2024-03-17">
+    enum="BackgroundHostCreatedForExtensionValues" expires_after="2024-05-19">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -277,17 +203,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.BackgroundPageType"
     enum="ExtensionBackgroundPageType" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The type (if any) of background page the extension has. Recorded for
     installed extensions on profile open.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -328,55 +253,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The reason a valid ExtensionSyncData could not be parsed from a SyncData
     received from sync.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.Bindings.NativeBindingCreationTime"
-    units="microseconds" expires_after="2023-01-22">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The elapsed time to create a new full instance of an extension API's
-    bindings using native bindings.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.BookmarkAppLaunchContainer"
-    enum="AppLaunchContainer" expires_after="2023-08-14">
-  <obsolete>
-    Replaced by WebApp.LaunchContainer in M113.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>benwells@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Records the container used for a web app launch, when the app is launched
-    (eg. via UI surfaces or intents). Not recorded when the web app is navigated
-    to via URL.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
-    expires_after="2023-07-09">
-  <obsolete>
-    Replaced by WebApp.LaunchSource in M113.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>benwells@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of times web apps are launched, grouped by
-    extensions::AppLaunchSource. The equivalent histogram on Android is called
-    Launch.HomeScreenSource.
   </summary>
 </histogram>
 
@@ -425,8 +301,79 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternDifferent"
+    enum="PermissionType" expires_after="2024-07-07">
+  <owner>erikchen@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    primary pattern is unique and secondary pattern is a different unique.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternIdentical"
+    enum="PermissionType" expires_after="2024-07-07">
+  <owner>erikchen@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    primary pattern is unique and secondary pattern is identical to the primary
+    pattern.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternWildcard"
+    enum="PermissionType" expires_after="2024-07-07">
+  <owner>erikchen@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    primary pattern is unique and secondary pattern is a wildcard.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentSettings.PrimaryPatternWildcardSecondaryPatternUnique"
+    enum="PermissionType" expires_after="2024-07-07">
+  <owner>erikchen@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    primary pattern is a wildcard and whose secondary pattern is unique.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentSettings.PrimaryPatternWildcardSecondaryPatternWildcard"
+    enum="PermissionType" expires_after="2024-07-07">
+  <owner>erikchen@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    primary and secondary pattern are both wildcard.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
-    enum="BooleanSuccess" expires_after="2023-12-01">
+    enum="BooleanSuccess" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -443,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallTime"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -458,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchFailureError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -473,7 +420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchResult"
-    enum="BooleanSuccess" expires_after="2024-03-17">
+    enum="BooleanSuccess" expires_after="2024-05-19">
   <owner>vkovalova@google.com</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -484,17 +431,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2022-02-01 to 2022-09-22; data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ContentVerification.ReadContentHashTime" units="ms"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Time spent by ContentVerifier for a request to create a ContentHash
-    instance. Recorded during an extension load completion or during an on
-    demand content verification that was triggered by ContentVerifyJob.
   </summary>
 </histogram>
 
@@ -509,45 +445,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.CorruptedExtensionLocation"
-    enum="ExtensionLocation" expires_after="2022-01-01">
-  <obsolete>
-    Obsolete in M100.
-  </obsolete>
-  <owner>ydago@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Records the manifest location of a corrupted extension that will be
-    reinstalled silently. Fires when we suspect corruption in an extension and
-    begin the process of reinstalling it.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.CorruptExtensionDisabledReason"
-    enum="CorruptExtensionDisabledReason" expires_after="2022-12-01">
+    enum="CorruptExtensionDisabledReason" expires_after="2024-11-20">
   <owner>lazyboy@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The reason why an extension was detected to be corrupted. Recorded each time
     an extension is disabled due to corruption detection.
+
+    Warning: this histogram was expired from 2022-12 to 2023-11; data will be
+    missing during this timeframe.
   </summary>
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionTotalDisables" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Logged once on profile open, this is the value of a counter that is
     incremented anytime we disable a corrupted extension because its content
     didn't match an expected content hash.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -567,7 +491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.CorruptPolicyExtensionDetected3"
-    enum="ExtensionPolicyReinstallReason" expires_after="2023-12-01">
+    enum="ExtensionPolicyReinstallReason" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -585,14 +509,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.CorruptPolicyExtensionResolved" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
-    Fires when we've successfully resinstalled a corrupt enterprise policy
+    Fires when we've successfully reinstalled a corrupt enterprise policy
     force-installed extension, with a value indicating how long it took
     end-to-end to complete the reinstall (including download time).
   </summary>
@@ -730,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime"
-    units="ms" expires_after="2024-03-17">
+    units="ms" expires_after="2024-05-19">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -879,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderChanged"
-    enum="WebRequest.RequestHeader" expires_after="2023-12-22">
+    enum="WebRequest.RequestHeader" expires_after="2024-12-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -891,7 +815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderRemoved"
-    enum="WebRequest.RequestHeader" expires_after="2023-12-12">
+    enum="WebRequest.RequestHeader" expires_after="2024-12-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -903,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderAdded"
-    enum="WebRequest.ResponseHeader" expires_after="2023-12-22">
+    enum="WebRequest.ResponseHeader" expires_after="2024-12-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -915,7 +839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderChanged"
-    enum="WebRequest.ResponseHeader" expires_after="2023-12-22">
+    enum="WebRequest.ResponseHeader" expires_after="2024-12-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -927,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderRemoved"
-    enum="WebRequest.ResponseHeader" expires_after="2023-12-22">
+    enum="WebRequest.ResponseHeader" expires_after="2024-12-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -980,24 +904,6 @@ chromium-metrics-reviews@google.com.
     rules. Logged every time an extension calls the addDynamicRules or
     removeDynamicRules extension function. Note: this histogram was expired from
     2023-06-26 to 2023-09-01; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.DeclarativeRulesStorageInitialization" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Time spent until rules storage delegate gets ready.</summary>
-</histogram>
-
-<histogram name="Extensions.DeclarativeSetIconWasVisible" enum="BooleanVisible"
-    expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether an icon specified in the declarativeContent.SetIcon API is
-    considered visible by our icon analysis code. This stat is emitted when we
-    create the underlying object that sets the icon when the declarative rule is
-    applied.
   </summary>
 </histogram>
 
@@ -1147,15 +1053,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Disabled" units="units" expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of extensions that are disabled at browser profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of extensions that are disabled at browser profile open.
   </summary>
 </histogram>
 
@@ -1173,16 +1078,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.DisabledForPermissions" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions that are disabled at browser profile open due to
     permissions increases.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -1330,6 +1234,18 @@ chromium-metrics-reviews@google.com.
     chosen based on when the majority of events are ack'd.
   </summary>
   <token key="BackgroundContextType">
+    <variant name="ExtensionPage"
+        summary="event page. However, unlike for other contexts that only
+                 emit if the the event fired in the background page of the
+                 extension, this will emit for all events that run in the
+                 event page extension renderer process (event page, tabs,
+                 popups, etc.). Note: this should not be used to perfectly
+                 compare against other contexts like service workers where
+                 the above is not true. But we are presuming that since the
+                 other pages that run in the process are persistent, they
+                 will generally never be stale and so won't skew the data
+                 significantly in the failure case and are therefore mostly
+                 comparable."/>
     <variant name="ExtensionServiceWorker2"
         summary="service worker. Replaced previous version because values
                  were inconsistent with excluding
@@ -1394,12 +1310,16 @@ chromium-metrics-reviews@google.com.
     API, and web view API events).
   </summary>
   <token key="BackgroundContextType">
-    <variant name="ExtensionEventPage2"
+    <variant name="ExtensionEventPage3"
         summary="event page. Emitted when extensions browser code receives
                  receives an ack from the renderer that it fired the event in
-                 the event page. Replaced previous version because values
-                 were inaccurate due to a bug with recording the dispatch
-                 start time 2023-08"/>
+                 the event page. It only counts events that ran in a event
+                 page background script, other listeners in the extension
+                 renderer that can receive the event are not counted.
+                 Replaced previous version because values were inaccurate due
+                 to a bug where we recorded this metric for all events for an
+                 extension, rather that just for those that ran in the lazy
+                 background page script 2023-10"/>
     <variant name="ExtensionServiceWorker2"
         summary="service worker. Emitted shortly after extensions browser
                  code receives the ack from the renderer that it fired the
@@ -1457,13 +1377,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Events.DispatchWithServiceWorkerBackground"
-    enum="ExtensionEvents" expires_after="2022-12-05">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    enum="ExtensionEvents" expires_after="2024-11-20">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded every time an event is dispatched to a service worker based
     extension background context. When this metric is recorded,
     Extensions.Events.Dispatch will also be recorded.
+
+    Warning: this histogram was expired from 2022-12 to 2023-11; data will be
+    missing during this timeframe.
   </summary>
 </histogram>
 
@@ -1497,7 +1420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheCount" units="units"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1508,7 +1431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1544,16 +1467,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionLocation" enum="ExtensionLocation"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The install location for a given extension. Recorded once per enabled
     extension on profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -1595,16 +1517,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.ExtensionRootPathLength" units="units"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Length of the Extensions dir path inside the profile directory.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ExtensionsWithPageActions" units="units"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1616,28 +1530,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ExtensionUninstalled" units="units"
-    expires_after="2022-05-01">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>An extension has been uninstalled.</summary>
-</histogram>
-
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>anunoy@chromium.org</owner>
   <summary>
     The number of sideloaded apps/extensions loaded on profile open grouped by
     enabled/disabled state.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -1653,15 +1556,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ExternalJsonCount" units="units"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of extensions referenced in the external extensions source at path
-    chrome::DIR_EXTERNAL_EXTENSIONS.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.FaviconResourceRequested" enum="ExtensionType"
     expires_after="2021-01-31">
   <owner>archanasimha@chromium.org</owner>
@@ -1672,27 +1566,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.FeatureProviderStaticInitTime" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during extensions::FeatureProvider::Static.
-    Only measured while in the browser process.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.FileAccessAllowed" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been given access to
@@ -1701,6 +1576,11 @@ chromium-metrics-reviews@google.com.
     up in chrome://extensions (platform apps, hosted apps, component
     extensions), policy-installed extensions, and unpacked extensions. See also
     Extensions.FileAccessNotAllowed.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -1722,12 +1602,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.FileAccessNotAllowed" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been given access to
@@ -1736,6 +1610,11 @@ chromium-metrics-reviews@google.com.
     up in chrome://extensions (platform apps, hosted apps, component
     extensions), policy-installed extensions, and unpacked extensions. See also
     Extensions.FileAccessAllowed.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -1999,7 +1878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2027,7 +1906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledStage2"
-    enum="ExtensionInstallationStage" expires_after="2023-12-01">
+    enum="ExtensionInstallationStage" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2156,31 +2035,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.ForceToolbarPinnedCount2" units="extensions"
-    expires_after="2022-04-24">
-  <owner>nicolaso@chromium.org</owner>
-  <owner>chrome-enterprise-team-core@google.com</owner>
-  <summary>
-    Number of force installed extensions that are &quot;force-pinned&quot; in
-    the ExtensionSettings policy. Recorded after policies are parsed, or
-    refreshed. Only recorded if non-zero.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.FromWebstoreInconsistency"
     enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>anunoy@chromium.org</owner>
   <summary>
     Number of apps/extensions loaded on profile open with an inconsistent
     &quot;from webstore&quot; state. This means an item that is flagged as
     from_webstore, but with either a non-webstore update_url or an external
     install location.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2274,28 +2141,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Functions.FailedTotalExecutionTime{IsKiosk}"
-    units="ms" expires_after="2022-08-21">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The total amount of time it took to execute an extension function that
-    failed from the time the extension function is called to the time the
-    function responds. Note that since some extension functions are inherently
-    slow (anything that requires user interaction, for instance), this is not a
-    definitive source for function performance. In M-102 this histogram was
-    split and events from kiosk extensions are recorded in the separate
-    Extensions.Functions.FailedTotalExecutionTime.Kiosk histogram.
-  </summary>
-  <token key="IsKiosk">
-    <variant name="" summary="from non-kiosk extension"/>
-    <variant name=".Kiosk" summary="from kiosk extension"/>
-  </token>
-</histogram>
-
 <histogram name="Extensions.Functions.HandleResponseElapsedTime" units="ms"
     expires_after="never">
 <!-- expires-never: Used for monitoring extension API performance. -->
@@ -2363,7 +2208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.SucceededTotalExecutionTime" units="ms"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2376,7 +2221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.SynchronousExecutionTime" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2466,12 +2311,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.HasPermissions_Install3" enum="Boolean"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2479,6 +2318,11 @@ chromium-metrics-reviews@google.com.
     installed . To find places where this histogram may be emitted, look for
     calls to ExtensionService::RecordPermissionMessagesHistogram with the
     argument Install. For Sync users, this is reported for each device.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2500,12 +2344,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.HasPermissions_Load3" enum="Boolean"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2513,6 +2351,11 @@ chromium-metrics-reviews@google.com.
     loaded (which happens at profile open or extension install). To find places
     where this histogram may be emitted, look for calls to
     ExtensionService::RecordPermissionMessagesHistogram with the argument Load.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2534,22 +2377,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.HomepageOverrides" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
     The number of enabled extensions with a homepage override specified in their
     manifest. Recorded once per profile at profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
 <histogram name="Extensions.HomepageOverrides2" units="units"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
@@ -2577,18 +2419,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.HostPermissions.GrantedAccess"
     enum="HostPermissionsAccess" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the host permissions access for a enabled extension as a result of
     the RuntimeHostPermissions feature. Recorded once per extension at profile
     initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2609,18 +2450,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.HostPermissions.GrantedAccessForBroadRequests"
     enum="HostPermissionsAccess" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the host permissions access for each enabled extension that
     specifies a host permission that matches an effective TLD. Recorded once per
     extension at profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2641,18 +2481,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.HostPermissions.GrantedAccessForTargetedRequests"
     enum="HostPermissionsAccess" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the host permissions access for each enabled extension that
     specifies hosts, but has no host permission that matches an effective TLD.
     Recorded once per extension at profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2673,12 +2512,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.IncognitoAllowed" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been allowed in
@@ -2687,6 +2520,11 @@ chromium-metrics-reviews@google.com.
     chrome://extensions (platform apps, hosted apps, component extensions),
     policy-installed extensions, and unpacked extensions. See also
     Extensions.IncognitoNotAllowed.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2710,12 +2548,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.IncognitoNotAllowed" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been allowed in
@@ -2724,6 +2556,11 @@ chromium-metrics-reviews@google.com.
     chrome://extensions (platform apps, hosted apps, component extensions),
     policy-installed extensions, and unpacked extensions. See also
     Extensions.IncognitoAllowed.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -2740,19 +2577,6 @@ chromium-metrics-reviews@google.com.
     profile&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed) initialization.
     See also Extensions.IncognitoAllowed.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.InitPrefGetExtensionsTime" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during the GetExtensions call within
-    ExtensionPrefs::InitPrefStore.
   </summary>
 </histogram>
 
@@ -2889,18 +2713,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.InstallSource" enum="ExtensionLocation"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its new versions
-    (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
-    only on profile open for &quot;user&quot; profiles (profiles where people
-    can install extensions, specifically profiles that can have non-component
-    extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Installs grouped by the location property in prefs. Emitted once per profile
     open.
+
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
+    only on profile open for &quot;user&quot; profiles (profiles where people
+    can install extensions, specifically profiles that can have non-component
+    extensions installed).
   </summary>
 </histogram>
 
@@ -2936,17 +2759,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.InstallType" enum="ExtensionType"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    Installs grouped by Extension::HistogramType emitted once per extension
+    install.
+
     Histogram is in the process of being removed in favor of its new versions
     (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
     only on profile open for &quot;user&quot; profiles (profiles where people
     can install extensions, specifically profiles that can have non-component
     extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Installs grouped by Extension::HistogramType emitted once per extension
-    install.
   </summary>
 </histogram>
 
@@ -2990,14 +2812,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadAll" units="units" expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of extensions and themes loaded at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>The number of extensions and themes loaded at profile open.</summary>
+  </summary>
 </histogram>
 
 <histogram name="Extensions.LoadAll2" units="units" expires_after="never">
@@ -3014,18 +2837,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadAllComponentTime" units="ms"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its new versions
-    (Extensions.LoadAllComponentTime.NonUser and
-    Extensions.LoadAllComponentTime.User) that emit only on profile open for
-    &quot;user&quot; profiles (profiles where people can install extensions,
-    specifically profiles that can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     Time taken to load all component extensions at profile open. This happens as
     part of the total initialization time of ExtensionService, measured in
     Extensions.ExtensionServiceInitTime.
+
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.LoadAllComponentTime.NonUser and
+    Extensions.LoadAllComponentTime.User) that emit only on profile open for
+    &quot;user&quot; profiles (profiles where people can install extensions,
+    specifically profiles that can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3061,18 +2883,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadAllTime2" units="ms" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its new versions
-    (Extensions.LoadAllTime2.NonUser and Extensions.LoadAllTime2.User) that emit
-    only on profile open for &quot;user&quot; profiles (profiles where people
-    can install extensions, specifically profiles that can have non-component
-    extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     Time taken to load all non-component extensions at profile open and record
     metrics. This happens as part of the total initialization time of
     ExtensionService, measured in Extensions.ExtensionServiceInitTime.
+
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.LoadAllTime2.NonUser and Extensions.LoadAllTime2.User) that emit
+    only on profile open for &quot;user&quot; profiles (profiles where people
+    can install extensions, specifically profiles that can have non-component
+    extensions installed).
   </summary>
 </histogram>
 
@@ -3108,14 +2929,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadApp" units="units" expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of apps loaded by each user at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>The number of apps loaded by each user at profile open.</summary>
+  </summary>
 </histogram>
 
 <histogram name="Extensions.LoadApp2" units="units" expires_after="never">
@@ -3132,16 +2954,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadAppExternal" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of externally managed apps loaded by each user at profile open.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3159,15 +2980,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadAppUser" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of user-installed apps loaded by each user at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of user-installed apps loaded by each user at profile open.
   </summary>
 </histogram>
 
@@ -3185,15 +3005,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadBrowserAction" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of browser action extensions loaded at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of browser action extensions loaded at profile open.
   </summary>
 </histogram>
 
@@ -3212,14 +3031,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadExtension" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of extensions loaded at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>The number of extensions loaded at profile open.</summary>
+  </summary>
 </histogram>
 
 <histogram name="Extensions.LoadExtension2" units="units" expires_after="never">
@@ -3236,16 +3056,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadExtensionExternal" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of externally managed extensions loaded at profile open.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3263,16 +3082,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadExtensionUser" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of user-installed extensions loaded at profile open.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3300,15 +3118,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadHostedApp" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of hosted apps loaded by each user at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of hosted apps loaded by each user at profile open.
   </summary>
 </histogram>
 
@@ -3326,16 +3143,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadNoExtensionAction" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions that had neither a page nor browser action
     specified in their manifest. Recorded at profile open.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3355,17 +3171,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadOffStoreItems" units="Number of items"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of enabled extensions or apps the user has installed that do not
     update from the Chrome Web Store. Recorded during profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3385,15 +3200,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadPackagedApp" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of legacy packaged apps loaded by each user at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The number of legacy packaged apps loaded by each user at profile open.
   </summary>
 </histogram>
 
@@ -3411,14 +3225,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadPlatformApp" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The number of platform apps loaded at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>The number of platform apps loaded at profile open.</summary>
+  </summary>
 </histogram>
 
 <histogram name="Extensions.LoadPlatformApp2" units="units"
@@ -3434,19 +3249,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadTheme" units="units" expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of themes loaded at profile open.
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>The number of themes loaded at profile open.</summary>
+  </summary>
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3458,17 +3274,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadType" enum="ExtensionType"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of extensions loaded at profile open grouped by
     Extension::HistogramType.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3486,16 +3301,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.LoadUserScript" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of converted user scripts loaded at profile open.
+
+
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3518,42 +3334,6 @@ chromium-metrics-reviews@google.com.
     Measures how long ExtensionManagement::Refresh takes. This reloads all
     enterprise-related policies for all extensions, and is called both at
     startup and any time the enterprise policy changes.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchFailureRetryCountGoogleUrl"
-    units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a google.com domain, before eventually giving up.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchFailureRetryCountOtherUrl"
-    units="units" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a non google.com domain, before eventually giving up.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchSuccessRetryCountGoogleUrl"
-    units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a google.com domain, before eventually succeeding.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchSuccessRetryCountOtherUrl"
-    units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a non google.com domain, before eventually succeeding.
   </summary>
 </histogram>
 
@@ -3590,14 +3370,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ManifestVersion" units="units"
     expires_after="2023-07-07">
-  <obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    The manifest version of each loaded extension.
+
+
+
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>The manifest version of each loaded extension.</summary>
+  </summary>
 </histogram>
 
 <histogram name="Extensions.ManifestVersion2" units="units"
@@ -3654,16 +3437,6 @@ chromium-metrics-reviews@google.com.
   <token key="ManifestLocation" variants="ManifestLocationGroup"/>
 </histogram>
 
-<histogram name="Extensions.MenuManager.MenuItemsCount" units="items"
-    expires_after="2024-03-31">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of context menu items loaded from storage when an extension is
-    loaded.
-  </summary>
-</histogram>
-
 <histogram
     name="Extensions.Messaging.ExtensionPortsCreated{ExtensionMessagingPortCreationTime}"
     units="number of ports" expires_after="M85">
@@ -3709,20 +3482,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Messaging.MessageSize" units="bytes"
-    expires_after="2022-11-18">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The size, in bytes, of a message sent from an extension using one of the
-    messaging APIs (e.g. chrome.runtime.sendMessage). All message sizes are
-    logged, but messages over 64 MB in size aren't sent.
-  </summary>
-</histogram>
-
 <histogram
     name="Extensions.Messaging.SetPortIdTime{ExtensionMessagingPortType}"
     units="ms" expires_after="M85">
@@ -3738,7 +3497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Navigation.Scheme" enum="ExtensionNavigationScheme"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>jkokatsu@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3766,22 +3525,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NewTabPageOverrides" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
     The number of enabled extensions with a New Tab Page override specified in
     their manifest. Recorded once per profile at profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
 <histogram name="Extensions.NewTabPageOverrides2" units="units"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
@@ -3794,16 +3552,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NonWebstoreLocation" enum="ExtensionLocation"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of apps/extensions with a non-webstore update_url loaded on
     profile open and grouped by Extension::Location.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3823,16 +3580,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>anunoy@chromium.org</owner>
   <summary>
     Number of non-WebStore extensions on profile open that override the new tab
     page.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3850,18 +3606,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NotAllowlistedDisabled" units="extensions"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total number of disabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for all users on profile
     initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3879,18 +3634,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NotAllowlistedDisabledAndEsbUser"
     units="extensions" expires_after="2023-10-01">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total number of disabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for only for Enhanced Safe Browsing
     users on profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3909,18 +3663,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NotAllowlistedEnabled" units="extensions"
     expires_after="2023-10-01">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total number of enabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for all users on profile
     initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3938,18 +3691,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.NotAllowlistedEnabledAndEsbUser" units="extensions"
     expires_after="2023-10-01">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total number of enabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for only for Enhanced Safe Browsing
     users on profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -3968,12 +3720,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.Permissions_Install3" enum="ExtensionPermission3"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3981,6 +3727,11 @@ chromium-metrics-reviews@google.com.
     places where this histogram may be emitted, look for calls to
     ExtensionService::RecordPermissionMessagesHistogram with the argument
     Install. For Sync users, this is reported for each device.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4003,12 +3754,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.Permissions_Load3" enum="ExtensionPermission3"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4016,6 +3761,11 @@ chromium-metrics-reviews@google.com.
     profile open or extension install). To find places where this histogram may
     be emitted, look for calls to
     ExtensionService::RecordPermissionMessagesHistogram with the argument Load.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4059,29 +3809,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ResetPermissionsIncrease" enum="Boolean"
-    expires_after="2022-12-01">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Whether the DISABLE_PERMISSIONS_INCREASE disable reason was removed from an
-    extension while checking for a permissions increase. Recorded during startup
-    and on reload and update, for each extension that has the
-    DISABLE_PERMISSIONS_INCREASE reason.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts"
     enum="BooleanHasWithheldHosts" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4090,6 +3819,11 @@ chromium-metrics-reviews@google.com.
     initialization if and only if the RuntimeHostPermissions feature is enabled
     and the extension requests any host permissions (i.e., could be affected by
     the feature).
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4111,12 +3845,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.RuntimeHostPermissions.GrantedHostCount"
     units="Granted hosts" expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4126,6 +3854,11 @@ chromium-metrics-reviews@google.com.
     initialization if and only if the RuntimeHostPermissions feature is enabled
     and the extension has had host permissions withheld. See also
     Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4173,14 +3906,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.SandboxUnpackHashCheck" enum="BooleanValidHashSum"
-    expires_after="M85">
-  <owner>achuith@chromium.org</owner>
-  <summary>
-    Whether a CRX file hash sum was the same as in an updater manifest.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.SandboxUnpackSuccess" units="units"
     expires_after="never">
 <!-- expires-never: Monitors core extension installation flows. -->
@@ -4192,17 +3917,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.SearchEngineOverrides" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
     The number of enabled extensions with a search engine override specified in
     their manifest. Recorded once per profile at profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4496,17 +4220,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.StartupPagesOverrides" units="units"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
     The number of enabled extensions with startup page overrides specified in
     their manifest. Recorded once per profile at profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4533,33 +4256,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: This histogram was expired from 2023-08-08 to 2023-10-16; data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.SyncGetMessageBundle" units="ms"
-    expires_after="2022-09-11">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of synchronous time spent retrieving an extension's message
-    bundle (the collection of its i18n resources) from the browser.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ThrottledNetworkRequestDelay" units="ms"
-    expires_after="2022-06-01">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The duration by which a network request was delayed while waiting for
-    extension user script load. Recorded once per request that is delayed, at
-    the time the resource resumes loading.
   </summary>
 </histogram>
 
@@ -4610,19 +4306,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.UninstallBookmarkApp" enum="Boolean"
-    expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in M110.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Tracks whether bookmark app uninstalling succeeded or not. This is emitted
-    whenever a bookmark app (which is deprecated) gets uninstalled.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.UninstallSource" enum="ExtensionUninstallSource"
     expires_after="never">
 <!-- expires-never: Monitoring core extension usage. -->
@@ -4644,25 +4327,6 @@ chromium-metrics-reviews@google.com.
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Uninstalls grouped by Extension::HistogramType.</summary>
-</histogram>
-
-<histogram name="Extensions.UpdateOnLoad" units="units" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of extensions that were updated at browser startup.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateSource" enum="ExtensionLocation"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Updates grouped by the location property in prefs.</summary>
-</histogram>
-
-<histogram name="Extensions.UpdateType" enum="ExtensionType"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Updates grouped by Extension::HistogramType.</summary>
 </histogram>
 
 <histogram name="Extensions.UsedMimeTypeHandler" enum="UsedMimeTypeHandler"
@@ -4900,12 +4564,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.WebRequestBlockingCount" units="extensions"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4913,6 +4571,11 @@ chromium-metrics-reviews@google.com.
     &quot;webRequestBlocking&quot; permission. Includes all kinds of extensions,
     including component and unpacked extensions. Recorded during profile
     initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -4933,18 +4596,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.WebRequestCount" units="extensions"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     Number of enabled extensions which have requested the &quot;webRequest&quot;
     permission. Includes all kinds of extensions, including component and
     unpacked extensions. Recorded during profile initialization.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 
@@ -5028,7 +4690,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
-    enum="ManifestInvalidError" expires_after="2023-12-01">
+    enum="ManifestInvalidError" expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -5086,18 +4748,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ExtensionToolbarModel.BrowserActionsCount" units="actions"
     expires_after="2023-07-07">
-  <obsolete>
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The total number of extensions that have an icon in the extension toolbar,
     including those that are unpinned and only show in the extensions menu.
     Measured once per (non-incognito) profile open.
+
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
   </summary>
 </histogram>
 

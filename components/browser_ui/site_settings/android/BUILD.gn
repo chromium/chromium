@@ -6,17 +6,11 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("site_settings_jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java" ]
 }
 
 source_set("android") {
   sources = [
-    "features.cc",
-    "features.h",
-    "site_settings_feature_map.cc",
     "storage_info_fetcher.cc",
     "storage_info_fetcher.h",
     "website_preference_bridge.cc",
@@ -74,7 +68,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/FourStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesActivityHolder.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocalStorageInfo.java",
@@ -89,9 +82,9 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessSubpageSettings.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessWebsitePreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
@@ -133,6 +126,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
@@ -242,7 +236,6 @@ android_resources("java_resources") {
     "java/res/layout/clear_reset_dialog.xml",
     "java/res/layout/clear_storage.xml",
     "java/res/layout/edit_site_dialog_content.xml",
-    "java/res/layout/four_state_cookie_settings_preference.xml",
     "java/res/layout/storage_preferences_view.xml",
     "java/res/layout/tri_state_cookie_settings_preference.xml",
     "java/res/layout/tri_state_site_settings_preference.xml",
@@ -257,6 +250,7 @@ android_resources("java_resources") {
     "java/res/xml/grouped_websites_preferences.xml",
     "java/res/xml/single_website_preferences.xml",
     "java/res/xml/site_settings_preferences.xml",
+    "java/res/xml/storage_access_settings.xml",
     "java/res/xml/website_preferences.xml",
   ]
 

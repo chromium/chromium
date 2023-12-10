@@ -44,17 +44,6 @@ def __step_config(ctx, step_config):
             "name": "android/turbine",
             "command_prefix": "python3 ../../build/android/gyp/turbine.py",
             "handler": "android_turbine",
-            # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
-            "inputs": [
-                "third_party/jdk/current/bin/java",
-                "third_party/android_sdk/public/platforms/android-34/android.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
-            ],
-            "outputs_map": {
-                # Slow actions that exceed deadline on the default worker pool.
-                "./obj/chrome/android/chrome_test_java.turbine.jar": {"platform_ref": "large"},
-            },
             "remote": remote_run,
             "platform_ref": "large",
             "canonicalize_dir": True,
@@ -84,12 +73,6 @@ def __step_config(ctx, step_config):
             "name": "android/compile_java",
             "command_prefix": "python3 ../../build/android/gyp/compile_java.py",
             "handler": "android_compile_java",
-            # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
-            "inputs": [
-                "third_party/jdk/current/bin/javac",
-                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
-            ],
             # Don't include files under --generated-dir.
             # This is probably optimization for local incrmental builds.
             # However, this is harmful for remote build cache hits.
@@ -104,13 +87,6 @@ def __step_config(ctx, step_config):
             "name": "android/dex",
             "command_prefix": "python3 ../../build/android/gyp/dex.py",
             "handler": "android_dex",
-            # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
-            "inputs": [
-                "third_party/jdk/current/bin/java",
-                "third_party/android_sdk/public/platforms/android-34/android.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
-                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
-            ],
             # TODO(crbug.com/1452038): include only required jar, dex files in GN config.
             "indirect_inputs": {
                 "includes": ["*.dex", "*.ijar.jar", "*.turbine.jar"],

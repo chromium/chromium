@@ -48,7 +48,6 @@
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -421,8 +420,6 @@ void WebAppProvider::StartSyncBridge() {
 void WebAppProvider::OnSyncBridgeReady() {
   DCHECK(!on_registry_ready_.is_signaled());
 
-  DoMigrateProfilePrefs(profile_);
-
   // Note: This does not wait for the call from the ChromeOS
   // SystemWebAppManager, which is a separate keyed service.
   int num_barrier_calls = 2;
@@ -471,19 +468,6 @@ void WebAppProvider::CheckIsConnected() const {
   DCHECK(connected_) << "Attempted to access Web App subsystem while "
                         "WebAppProvider is not connected. You may need to wait "
                         "for on_registry_ready().";
-}
-
-void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
-  std::map<webapps::AppId, int> sources =
-      TakeAllWebAppInstallSources(profile->GetPrefs());
-  ScopedRegistryUpdate update = sync_bridge_->BeginUpdate();
-  for (const auto& iter : sources) {
-    WebApp* web_app = update->UpdateApp(iter.first);
-    if (web_app && !web_app->latest_install_source()) {
-      web_app->SetLatestInstallSource(
-          static_cast<webapps::WebappInstallSource>(iter.second));
-    }
-  }
 }
 
 }  // namespace web_app

@@ -31,6 +31,8 @@
 #include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/services/unzip/in_process_unzipper.h"
+#include "components/update_client/activity_data_service.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/crx_update_item.h"
@@ -44,6 +46,7 @@
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client_errors.h"
@@ -270,14 +273,14 @@ class UpdateClientTest : public testing::Test {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
-  scoped_refptr<update_client::TestConfigurator> config_ =
-      base::MakeRefCounted<TestConfigurator>(pref_.get());
-  std::unique_ptr<update_client::PersistedData> metadata_ =
-      std::make_unique<PersistedData>(pref_.get(), nullptr);
+  scoped_refptr<update_client::TestConfigurator> config_;
+  std::unique_ptr<update_client::PersistedData> metadata_;
 };
 
 UpdateClientTest::UpdateClientTest() {
-  PersistedData::RegisterPrefs(pref_->registry());
+  RegisterPersistedDataPrefs(pref_->registry());
+  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
+  metadata_ = CreatePersistedData(pref_.get(), nullptr);
 }
 
 void UpdateClientTest::RunThreads() {
@@ -5559,11 +5562,13 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     base::RunLoop runloop;
     base::OnceClosure quit_closure = runloop.QuitClosure();
 
-    auto config = base::MakeRefCounted<TestConfigurator>();
     PuffinComponentUnpacker::Unpack(
         std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
         GetTestFilePath("runaction_test_win.crx3"),
-        config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
+        base::MakeRefCounted<UnzipChromiumFactory>(
+            base::BindRepeating(&unzip::LaunchInProcessUnzipper))
+            ->Create(),
+        crx_file::VerifierFormat::CRX3,
         base::BindOnce(
             [](base::FilePath* unpack_path, base::OnceClosure quit_closure,
                const PuffinComponentUnpacker::Result& result) {
@@ -6110,7 +6115,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(AtLeast(1))
-        .WillRepeatedly(Invoke([&cancel]() { cancel.Run(); }));
+        .WillRepeatedly(Invoke([&cancel] { cancel.Run(); }));
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
@@ -6288,7 +6293,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1)
-        .WillOnce(Invoke([&cancel]() { cancel.Run(); }));
+        .WillOnce(Invoke([&cancel] { cancel.Run(); }));
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);

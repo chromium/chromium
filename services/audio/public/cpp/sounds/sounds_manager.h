@@ -5,10 +5,11 @@
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
   // the flac audio data. Returns true if SoundsManager was successfully
   // initialized.
   virtual bool Initialize(SoundKey key,
-                          const base::StringPiece& data,
+                          const std::string_view& data,
                           media::AudioCodec codec) = 0;
 
   // Plays sound identified by |key|, returns false if SoundsManager

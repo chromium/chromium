@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
@@ -13,14 +13,14 @@
 namespace ash {
 
 KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
-  scoped_observations_.AddObservation(KioskAppManager::Get());
+  scoped_observations_.AddObservation(KioskChromeAppManager::Get());
   scoped_observations_.AddObservation(WebKioskAppManager::Get());
 }
 
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
 
 void KioskSessionInitializedWaiter::Wait() {
-  if (KioskAppManager::Get()->kiosk_system_session() ||
+  if (KioskChromeAppManager::Get()->kiosk_system_session() ||
       WebKioskAppManager::Get()->kiosk_system_session()) {
     return;
   }

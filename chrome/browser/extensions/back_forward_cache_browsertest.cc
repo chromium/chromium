@@ -30,11 +30,20 @@
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-shared.h"
 
 namespace extensions {
+
+using ContextType = ExtensionBrowserTest::ContextType;
+
+struct TestParams {
+  bool enable_disconnect_message_port_on_bfcache;
+  ContextType context_type;
+};
+
 class ExtensionBackForwardCacheBrowserTest
     : public ExtensionBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<TestParams> {
  public:
-  ExtensionBackForwardCacheBrowserTest() {
+  ExtensionBackForwardCacheBrowserTest()
+      : ExtensionBrowserTest(GetParam().context_type) {
     auto enabled_features =
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             {{features::kBackForwardCache, {}}});
@@ -52,7 +61,7 @@ class ExtensionBackForwardCacheBrowserTest
   }
 
   bool IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled() {
-    return GetParam();
+    return GetParam().enable_disconnect_message_port_on_bfcache;
   }
 
   void SetUpOnMainThread() override {
@@ -196,9 +205,26 @@ class ExtensionBackForwardCacheBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
                          ExtensionBackForwardCacheBrowserTest,
-                         ::testing::Bool());
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = false,
+                             .context_type = ContextType::kEventPage}));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
+                         ExtensionBackForwardCacheBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = false,
+                             .context_type = ContextType::kServiceWorker}));
+INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
+                         ExtensionBackForwardCacheBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = true,
+                             .context_type = ContextType::kEventPage}));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
+                         ExtensionBackForwardCacheBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = true,
+                             .context_type = ContextType::kServiceWorker}));
 
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
@@ -1179,9 +1205,26 @@ class ExtensionBackForwardCacheMetricsBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
                          ExtensionBackForwardCacheMetricsBrowserTest,
-                         ::testing::Bool());
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = false,
+                             .context_type = ContextType::kEventPage}));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
+                         ExtensionBackForwardCacheMetricsBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = false,
+                             .context_type = ContextType::kServiceWorker}));
+INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
+                         ExtensionBackForwardCacheMetricsBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = true,
+                             .context_type = ContextType::kEventPage}));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
+                         ExtensionBackForwardCacheMetricsBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = true,
+                             .context_type = ContextType::kServiceWorker}));
 
 namespace {
 
@@ -1365,9 +1408,26 @@ class ExtensionBackForwardCacheWithPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
                          ExtensionBackForwardCacheWithPrerenderBrowserTest,
-                         ::testing::Bool());
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = false,
+                             .context_type = ContextType::kEventPage}));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
+                         ExtensionBackForwardCacheWithPrerenderBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = false,
+                             .context_type = ContextType::kServiceWorker}));
+INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
+                         ExtensionBackForwardCacheWithPrerenderBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = true,
+                             .context_type = ContextType::kEventPage}));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
+                         ExtensionBackForwardCacheWithPrerenderBrowserTest,
+                         ::testing::Values(TestParams{
+                             .enable_disconnect_message_port_on_bfcache = true,
+                             .context_type = ContextType::kServiceWorker}));
 
 // Test the extension message port created during prerendering won't be closed
 // after the prerendered page is activated.

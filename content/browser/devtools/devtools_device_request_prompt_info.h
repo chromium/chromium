@@ -25,4 +25,4 @@ class DevtoolsDeviceRequestPromptInfo {
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_DEVICE_REQUEST_PROMPT_INFO_H_

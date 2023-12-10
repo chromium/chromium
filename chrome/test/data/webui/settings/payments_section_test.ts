@@ -4,15 +4,15 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {PaymentsManagerImpl, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import {CrButtonElement, CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
 import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 
 // clang-format on
@@ -565,7 +565,7 @@ suite('PaymentsSection', function() {
     });
 
     const creditCard = createCreditCardEntry();
-    creditCard.cvc = '***';
+    creditCard.cvc = '•••';
     const section = await createPaymentsSection(
         /*creditCards=*/[creditCard], /*ibans=*/[], {
           credit_card_enabled: {value: true},
@@ -597,7 +597,81 @@ suite('PaymentsSection', function() {
 
         assertTrue(!!cvcStorageToggle);
         assertEquals(
-            cvcStorageToggle.subLabelWithLink.toString(),
-            loadTimeData.getString('enableCvcStorageSublabel'));
+            loadTimeData.getString('enableCvcStorageSublabel'),
+            cvcStorageToggle.subLabelWithLink.toString());
       });
+
+  // Test to verify if bulk delete is triggered or not based on how user
+  // interacts with the deletion dialog window.
+  [true, false].forEach(shouldTriggerBulkDelete => {
+    test(
+        `verifyBulkDeleteCvcIsTriggered_${shouldTriggerBulkDelete}`,
+        async function() {
+          loadTimeData.overrideValues({
+            cvcStorageAvailable: true,
+          });
+          const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+          MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+          const creditCard = createCreditCardEntry();
+          creditCard.cvc = '•••';
+          const section = await createPaymentsSection(
+              /*creditCards=*/[creditCard], /*ibans=*/[], {
+                credit_card_enabled: {value: true},
+              });
+
+          const cvcStorageToggle =
+              section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#cvcStorageToggle');
+          assertTrue(!!cvcStorageToggle);
+          assertEquals(
+              loadTimeData.getString('enableCvcStorageDeleteDataSublabel'),
+              cvcStorageToggle.subLabelWithLink.toString());
+
+          const cvcStorageToggleSublabelLink =
+              cvcStorageToggle.$.labelWrapper
+                  .querySelector('#sub-label-text-with-link')!.querySelector(
+                      'a');
+          assertTrue(isVisible(cvcStorageToggleSublabelLink));
+          cvcStorageToggleSublabelLink!.click();
+          flush();
+
+          const bulkDeletionDialog =
+              section.shadowRoot!
+                  .querySelector<SettingsSimpleConfirmationDialogElement>(
+                      '#bulkDeleteCvcConfirmDialog');
+          assertTrue(!!bulkDeletionDialog);
+          await whenAttributeIs(bulkDeletionDialog.$.dialog, 'open', '');
+
+          if (shouldTriggerBulkDelete) {
+            bulkDeletionDialog.$.confirm.click();
+          } else {
+            bulkDeletionDialog.$.cancel.click();
+          }
+          flush();
+
+          // Wait for the dialog close event to propagate to the PaymentManager.
+          await eventToPromise('close', bulkDeletionDialog);
+
+          const paymentsManagerProxy =
+              PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+          const expectations = getDefaultExpectations();
+
+          assertEquals(2, testMetricsBrowserProxy.getCallCount('recordAction'));
+          assertEquals(
+              CvcDeletionUserAction.HYPERLINK_CLICKED,
+              testMetricsBrowserProxy.getArgs('recordAction')[0]);
+          if (shouldTriggerBulkDelete) {
+            expectations.bulkDeleteAllCvcs = 1;
+            assertEquals(
+                CvcDeletionUserAction.DIALOG_ACCEPTED,
+                testMetricsBrowserProxy.getArgs('recordAction')[1]);
+          } else {
+            assertEquals(
+                CvcDeletionUserAction.DIALOG_CANCELLED,
+                testMetricsBrowserProxy.getArgs('recordAction')[1]);
+          }
+          paymentsManagerProxy.assertExpectations(expectations);
+        });
+  });
 });

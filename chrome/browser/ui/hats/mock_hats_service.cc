@@ -12,7 +12,8 @@
 
 using ::testing::NiceMock;
 
-MockHatsService::MockHatsService(Profile* profile) : HatsService(profile) {}
+MockHatsService::MockHatsService(Profile* profile)
+    : HatsServiceDesktop(profile) {}
 
 MockHatsService::~MockHatsService() = default;
 

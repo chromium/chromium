@@ -14,8 +14,8 @@
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
-#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
-#import "ios/chrome/browser/web/annotations/annotations_util.h"
+#import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsShowLinkPreview,
   ItemTypeSettingsDefaultSiteMode,
   ItemTypeSettingsDetectAddresses,
+  ItemTypeSettingsDetectUnits,
   ItemTypeSettingsWebInspector,
 };
 
@@ -82,11 +83,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* detectAddressesEnabled;
 
+// PrefBackedBoolean for "Detect units" setting state.
+@property(nonatomic, strong, readonly) PrefBackedBoolean* detectUnitsEnabled;
+
 // The item related to the switch for the "Show Link Preview" setting.
 @property(nonatomic, strong) TableViewSwitchItem* linkPreviewItem;
 
 // The item related to the switch for the "Detect Addresses" setting.
 @property(nonatomic, strong) TableViewSwitchItem* detectAddressesItem;
+
+// The item related to the switch for the "Detect units" setting.
+@property(nonatomic, strong) TableViewSwitchItem* detectUnitsItem;
 
 // The item related to the default mode used to load the pages.
 @property(nonatomic, strong) TableViewDetailIconItem* defaultModeItem;
@@ -145,6 +152,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
         initWithPrefService:browserState->GetPrefs()
                    prefName:prefs::kDetectAddressesEnabled];
     [_detectAddressesEnabled setObserver:self];
+
+    _detectUnitsEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:browserState->GetPrefs()
+                   prefName:prefs::kDetectUnitsEnabled];
+    [_detectUnitsEnabled setObserver:self];
 
     _requestDesktopSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
@@ -231,6 +243,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 
+  if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
+    [model addItem:[self detectUnitItem]
+        toSectionWithIdentifier:SectionIdentifierSettings];
+  }
   if (web::features::IsWebInspectorSupportEnabled()) {
     self.webInspectorItem = [self webInspectorStateItem];
     [model addSectionWithIdentifier:SectionIdentifierDeveloperTools];
@@ -350,6 +366,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _detectAddressesItem;
 }
 
+- (TableViewSwitchItem*)detectUnitItem {
+  if (!_detectUnitsItem) {
+    _detectUnitsItem =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeSettingsDetectUnits];
+
+    _detectUnitsItem.text =
+        l10n_util::GetNSString(IDS_IOS_DETECT_UNITS_SETTING_TITLE);
+    _detectUnitsItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_DETECT_UNITS_SETTING_DESCRIPTION);
+    _detectUnitsItem.on = [self.detectUnitsEnabled value];
+    _detectUnitsItem.accessibilityIdentifier = kSettingsDetectUnitsCellId;
+  }
+  return _detectUnitsItem;
+}
+
 - (TableViewDetailIconItem*)webInspectorStateItem {
   _webInspectorStateItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSettingsWebInspector];
@@ -383,6 +414,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(detectAddressesSwitchToggled:)
+                    forControlEvents:UIControlEventValueChanged];
+  }
+
+  if (itemType == ItemTypeSettingsDetectUnits) {
+    TableViewSwitchCell* switchCell =
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(detectUnitsSwitchToggled:)
                     forControlEvents:UIControlEventValueChanged];
   }
   return cell;
@@ -485,6 +524,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL newSwitchValue = sender.isOn;
   self.detectAddressesItem.on = newSwitchValue;
   [self.detectAddressesEnabled setValue:newSwitchValue];
+}
+
+- (void)detectUnitsSwitchToggled:(UISwitch*)sender {
+  BOOL newSwitchValue = sender.isOn;
+  self.detectUnitsItem.on = newSwitchValue;
+  [self.detectUnitsEnabled setValue:newSwitchValue];
 }
 
 #pragma mark - Private

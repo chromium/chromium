@@ -76,7 +76,7 @@ TEST_F(LayoutTableTest, OverflowWithCollapsedBorders) {
   expected_self_visual_overflow.ExpandEdges(LayoutUnit(2), LayoutUnit(10),
                                             LayoutUnit(0), LayoutUnit(10));
   EXPECT_EQ(expected_self_visual_overflow, table->SelfVisualOverflowRect());
-  EXPECT_EQ(expected_self_visual_overflow, table->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(expected_self_visual_overflow, table->ScrollableOverflowRect());
   // The table's visual overflow covers self visual overflow and content visual
   // overflows.
   auto expected_visual_overflow = table->PhysicalContentBoxRect();

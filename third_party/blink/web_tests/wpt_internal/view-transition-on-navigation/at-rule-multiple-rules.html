@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<title>View Transitions: Multiple @view-transitions, last one wins.</title>
+<title>View Transitions: Multiple @view-transition, last one wins.</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-@view-transitions {
-  navigation-trigger: cross-document-same-origin;
+@view-transition {
+  navigation: auto;
 }
-@view-transitions {
-  navigation-trigger: none;
+@view-transition {
+  navigation: none;
 }
 </style>
 <script>

@@ -29,17 +29,26 @@ class TpcdSupportService
   // KeyedService overrides:
   void Shutdown() override;
 
+  void Update3pcdSupportSettingsForTesting(const url::Origin& origin,
+                                           const std::string& partition_site,
+                                           bool match_subdomains,
+                                           bool enabled);
+
  private:
-  // Updates ContentSettingsForOneType::TPCD_SUPPORT to reflect
+  // Updates `ContentSettingsForOneType::TPCD_SUPPORT` to reflect
   // the status of the trial for `origin` (when embedded by `partition_site`).
+  // If `match_subdomains` is true, a custom scope is used for the content
+  // setting to match all subdomains of `origin`.
   void Update3pcdSupportSettings(const url::Origin& origin,
                                  const std::string& partition_site,
+                                 bool match_subdomains,
                                  bool enabled);
   void ClearTpcdSupportSettings();
 
   // content::OriginTrialsControllerDelegate::Observer overrides:
   void OnStatusChanged(const url::Origin& origin,
                        const std::string& partition_site,
+                       bool match_subdomains,
                        bool enabled) override;
   void OnPersistedTokensCleared() override;
   std::string trial_name() override;

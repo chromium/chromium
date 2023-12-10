@@ -87,6 +87,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de
 <translation id="4195557071150719219">Ver pestañas recientes de Chromium</translation>
 <translation id="4408912345039114853">Ejecutar comprobación de seguridad de Chromium</translation>
 <translation id="4432744876818348753">Inicia sesión para sacarle el máximo partido a Chromium.</translation>
+<translation id="4498832288620833153">Añade las URLs introducidas a tu lista de lectura de Chromium.</translation>
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu cuenta de Google</translation>
 <translation id="4555020257205549924">Si esta función está activada, Chromium ofrecerá la posibilidad de traducir páginas escritas en otros idiomas con el Traductor de Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Abre la página de configuración de métodos de pago en Chromium.</translation>
@@ -107,6 +108,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de
 <translation id="5048795749726991615">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, usa Autocompletar en Chromium</translation>
 <translation id="5076601183701536878">Borrar datos de navegación en Chromium</translation>
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en que se usa Chromium.</translation>
+<translation id="5146749061471423558">Añadir marcadores a Chromium</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
 <translation id="5213683223491576284">Abre el Gestor de contraseñas en Chromium.</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
@@ -114,6 +116,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de
 
         Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="5308226104666789935">Chromium no puede comprobar si hay actualizaciones</translation>
+<translation id="5311557153294205270">Añade las URLs introducidas a tus marcadores de Chromium.</translation>
 <translation id="5396916991083608703">¿Establecer Chromium como predeterminado?</translation>
 <translation id="5453478652154926037">Chromium no puede comprobar tus contraseñas.</translation>
 <translation id="5521125884468363740">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chromium</translation>
@@ -165,7 +168,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="6911341667534646387">Sigue usando los datos de Chromium en tu cuenta de Google</translation>
 <translation id="7006920032187763988">Puedes usar las contraseñas que has guardado en el gestor de contraseñas en otras aplicaciones de tu iPad.</translation>
 <translation id="7018284295775193585">Chromium no se puede actualizar</translation>
-<translation id="7025471822960602362">Hacer un seguimiento de los paquetes detectados en Chromium</translation>
 <translation id="7045244423563602563">Personaliza Chromium a tu gusto</translation>
 <translation id="7055269218854630176">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chromium. Tu administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="7099326575020694068">Chromium no puede usar la cámara en el modo Vista dividida</translation>
@@ -195,6 +197,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7928628054454574139">Abre Chromium siempre que toques enlaces en otras aplicaciones</translation>
 <translation id="7931842119211730154">Bloquear pestañas de Incógnito al cerrar Chromium</translation>
 <translation id="7934404985878918282">Ver lista de lectura de Chromium</translation>
+<translation id="7971753607796745700">Añadir elemento de lista de lectura a Chromium</translation>
 <translation id="7980860476903281594">Chromium compartirá tu ubicación con los sitios que permitas.</translation>
 <translation id="7995166854192397899">Las sugerencias se basan en tu actividad de navegación en tus otros dispositivos. Para recibir sugerencias, inicia sesión en Chromium con todos tus dispositivos.</translation>
 <translation id="800195749539500647">Saca el máximo partido a Chromium</translation>

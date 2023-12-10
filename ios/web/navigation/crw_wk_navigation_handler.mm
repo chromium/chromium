@@ -32,6 +32,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_controller.h"
+#import "ios/web/public/navigation/form_warning_type.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/wk_web_view_security_util.h"
@@ -225,7 +226,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
 
     if (action.navigationType == WKNavigationTypeReload &&
-        web::wk_navigation_util::URLNeedsUserAgentType(URLForUserAgent)) {
+        web::wk_navigation_util::URLNeedsUserAgentType(URLForUserAgent) &&
+        webView.backForwardList.currentItem) {
       // When reloading the page, the UserAgent will be updated to the one for
       // the new page.
       web::NavigationItem* item = [[CRWNavigationItemHolder
@@ -1120,7 +1122,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
 - (void)webView:(WKWebView*)webView
      navigationAction:(WKNavigationAction*)navigationAction
-    didBecomeDownload:(WKDownload*)WKDownload API_AVAILABLE(ios(15)) {
+    didBecomeDownload:(WKDownload*)WKDownload {
   // As Chromium never return WKNavigationResponsePolicyDownload
   // when deciding the policy for an action, WebKit should never
   // invoke this delegate method.
@@ -1129,7 +1131,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
 - (void)webView:(WKWebView*)webView
     navigationResponse:(WKNavigationResponse*)navigationResponse
-     didBecomeDownload:(WKDownload*)WKDownload API_AVAILABLE(ios(15)) {
+     didBecomeDownload:(WKDownload*)WKDownload {
   // Send navigation callback if the download occurs in the main frame.
   if (navigationResponse.forMainFrame) {
     const GURL responseURL =
@@ -1162,7 +1164,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // in CRWWkNavigationHandler so method can interact with WKWebView. Returns NO
 // if the download cannot be started.
 - (BOOL)onDownloadNativeTaskBridgeReadyForDownload:
-    (DownloadNativeTaskBridge*)bridge API_AVAILABLE(ios(15)) {
+    (DownloadNativeTaskBridge*)bridge {
   __attribute__((objc_precise_lifetime))
   DownloadNativeTaskBridge* nativeTaskBridge = bridge;
   [_nativeTaskBridges removeObject:bridge];
@@ -1194,8 +1196,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 }
 
 - (void)resumeDownloadNativeTask:(NSData*)data
-               completionHandler:(void (^)(WKDownload*))completionHandler
-    API_AVAILABLE(ios(15)) {
+               completionHandler:(void (^)(WKDownload*))completionHandler {
   [self.delegate resumeDownloadWithData:data
                       completionHandler:completionHandler];
 }
@@ -1591,6 +1592,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       // Display the confirmation dialog if a form repost is detected.
       if (action.navigationType == WKNavigationTypeFormResubmitted) {
         self.webStateImpl->ShowRepostFormWarningDialog(
+            web::FormWarningType::kRepost,
             base::BindOnce(^(bool shouldContinue) {
               if (self.beingDestroyed) {
                 decisionHandler(WKNavigationActionPolicyCancel);
@@ -1695,29 +1697,16 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     // `didFailProvisionalNavigation:` will differ (it is the server-supplied
     // chain), thus if intermediates were considered, the keys would mismatch.
 
-    // TODO(crbug.com/1418068): Remove after minimum version required is >=
-    // iOS 15.
     scoped_refptr<net::X509Certificate> leafCert = nil;
-    if (@available(iOS 15.0, *)) {
-      base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
-          SecTrustCopyCertificateChain(trust));
-      SecCertificateRef secCertificate =
-          base::apple::CFCastStrict<SecCertificateRef>(
-              CFArrayGetValueAtIndex(certificateChain.get(), 0));
-      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-          base::apple::ScopedCFTypeRef<SecCertificateRef>(
-              secCertificate, base::scoped_policy::RETAIN),
-          {});
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-          base::apple::ScopedCFTypeRef<SecCertificateRef>(
-              SecTrustGetCertificateAtIndex(trust, 0),
-              base::scoped_policy::RETAIN),
-          {});
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
+        SecTrustCopyCertificateChain(trust));
+    SecCertificateRef secCertificate =
+        base::apple::CFCastStrict<SecCertificateRef>(
+            CFArrayGetValueAtIndex(certificateChain.get(), 0));
+    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+        base::apple::ScopedCFTypeRef<SecCertificateRef>(
+            secCertificate, base::scoped_policy::RETAIN),
+        {});
 
     if (leafCert) {
       bool is_recoverable =
@@ -2064,7 +2053,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   DCHECK_EQ(item->GetUniqueID(), context->GetNavigationItemUniqueID());
 
   net::SSLInfo info;
-  absl::optional<net::SSLInfo> ssl_info = absl::nullopt;
+  std::optional<net::SSLInfo> ssl_info = std::nullopt;
 
   if (web::IsWKWebViewSSLCertError(error)) {
     web::GetSSLInfoFromWKWebViewSSLCertError(error, &info);
@@ -2095,7 +2084,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                                 cacheHit);
         }
       }
-      ssl_info = absl::make_optional<net::SSLInfo>(info);
+      ssl_info = info;
     }
   }
   NSString* failingURLString =

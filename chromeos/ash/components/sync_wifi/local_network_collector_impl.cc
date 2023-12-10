@@ -143,7 +143,7 @@ void LocalNetworkCollectorImpl::GetSyncableNetwork(const std::string& guid,
   }
 
   if (!network) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -153,7 +153,7 @@ void LocalNetworkCollectorImpl::GetSyncableNetwork(const std::string& guid,
   StartGetNetworkDetails(network, request_guid);
 }
 
-absl::optional<NetworkIdentifier>
+std::optional<NetworkIdentifier>
 LocalNetworkCollectorImpl::GetNetworkIdentifierFromGuid(
     const std::string& guid) {
   for (const network_config::mojom::NetworkStatePropertiesPtr& network :
@@ -162,7 +162,7 @@ LocalNetworkCollectorImpl::GetNetworkIdentifierFromGuid(
       return NetworkIdentifier::FromMojoNetwork(network);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void LocalNetworkCollectorImpl::SetNetworkMetadataStore(
@@ -303,7 +303,7 @@ void LocalNetworkCollectorImpl::OnRequestFinished(
     std::vector<sync_pb::WifiConfigurationSpecifics>& list =
         request_guid_to_complete_protos_[request_guid];
     DCHECK(list.size() <= 1);
-    absl::optional<sync_pb::WifiConfigurationSpecifics> result;
+    std::optional<sync_pb::WifiConfigurationSpecifics> result;
     if (list.size() == 1) {
       result = list[0];
     }

@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">El Administrador de contraseñas de Google no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="1407843355326180937">Accede a este sitio y a Chrome para obtener tus favoritos y mucho más en todos tus dispositivos.</translation>
 <translation id="1436059927646026729">Abrir Mi pestaña más reciente en Chrome</translation>
+<translation id="1449241544691504574">Agregar favoritos a Chrome</translation>
 <translation id="1462727070346936664">Para aprovechar Chrome al máximo, accede a tu cuenta.</translation>
-<translation id="1479202195792305274">Chrome puede revisar las contraseñas solo cuando accedes con tu Cuenta de Google.</translation>
 <translation id="1491435845014430217">Activa la opción "Bloquear las pestañas de incógnito cuando cierras Chrome".</translation>
 <translation id="1493827051843127077">Establece Chrome como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
@@ -33,10 +33,10 @@ Aspectos que debes tener en cuenta:
         Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Agrega las URL ingresadas a tus favoritos en Chrome.</translation>
 <translation id="1843217788865538014">Usa Chrome automáticamente cuando presiones vínculos en mensajes, documentos y otras apps.</translation>
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
 <translation id="1987779152850321833">Completa estas acciones sugeridas para aprovechar Chrome al máximo.</translation>
-<translation id="2009224836393115614">Chrome no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="2056123005618757196">Realiza más tareas con una versión de Google Chrome más simple, segura y rápida que nunca.</translation>
 <translation id="2120238739383482109">Abre los favoritos de Chrome.</translation>
 <translation id="2147651015520127414">Chrome verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
@@ -58,7 +58,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2671426118752779020">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas de Google en otras apps de tu iPhone.</translation>
 <translation id="2689064829982324496">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
-<translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
+<translation id="2702250627063295552">Agregar el elemento de la Lista de lectura a Chrome</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2868822340714096138">Borrar los datos de navegación en Chrome</translation>
@@ -76,7 +76,6 @@ Aspectos que debes tener en cuenta:
 <translation id="3472587960215700950">Chrome usa Google Maps para brindarte instrucciones sobre cómo llegar, así como información local sobre las direcciones detectadas.</translation>
 <translation id="3503014945441706099">También obtén la Navegación segura mejorada para este perfil de Chrome</translation>
 <translation id="3522659714780527202">Para ver tus pestañas donde sea que uses Chrome, activa la sincronización</translation>
-<translation id="3533694711092285624">No hay contraseñas guardadas. Chrome puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="3577555362230509265">Usa Chrome en otras apps.</translation>
 <translation id="3594076341410558780">Ocultar "Aprovecha Chrome al máximo"</translation>
 <translation id="3655656110921623717">Esto significa que Chrome solicitará el sitio móvil cada vez.</translation>
@@ -85,6 +84,7 @@ Aspectos que debes tener en cuenta:
 <translation id="3744018071945602754">Administrar contraseñas en Chrome</translation>
 <translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
+<translation id="3863841106411295595">Agrega las URLs ingresadas a tu Lista de lectura en Chrome.</translation>
 <translation id="3901001113120561395">Aprovecha Chrome al máximo.</translation>
 <translation id="3967382818307165056">Administrar las formas de pago en Chrome</translation>
 <translation id="3980220367029651214">Estás cambiando la cuenta de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> administra tus datos de Chrome existentes. Esta acción borrará tus datos del dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
@@ -98,12 +98,10 @@ Aspectos que debes tener en cuenta:
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4251174643044751591">Abre la página de configuración de formas de pago en Chrome.</translation>
 <translation id="4453284704333523777">Administrar la configuración de Chrome</translation>
-<translation id="4471662743048412085">Realizar un seguimiento de los paquetes que se detectaron en Chrome</translation>
 <translation id="4508370294876102450">Abre Chrome desde cualquier app</translation>
 <translation id="4523886039239821078">Algunos complementos causan bloqueos en Chrome. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome no puede buscar actualizaciones</translation>
 <translation id="4636900170638246267">Accede a este sitio y a Chrome.</translation>
-<translation id="4698415050768537821">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
 <translation id="4761869838909035636">Ejecutar la Verificación de seguridad de Chrome</translation>
 <translation id="4819268619367838612">Para ayudarnos a mejorar la app, Chrome envía datos de uso y fallas a Google. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google.
@@ -161,7 +159,6 @@ Aspectos que debes tener en cuenta:
 <translation id="6815466750807582739">No se encriptarán las formas de pago ni las direcciones. No se sincronizará el historial de navegación de Chrome.
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="6851982868877411675">Abre la configuración de Chrome en iOS, presiona "App del navegador predeterminado" y selecciona Chrome.</translation>
 <translation id="6916015246697034114">Realizar búsquedas con la voz en Chrome</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>

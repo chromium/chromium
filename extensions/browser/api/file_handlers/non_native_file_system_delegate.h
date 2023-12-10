@@ -5,11 +5,10 @@
 #ifndef EXTENSIONS_BROWSER_API_FILE_HANDLERS_NON_NATIVE_FILE_SYSTEM_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_FILE_HANDLERS_NON_NATIVE_FILE_SYSTEM_DELEGATE_H_
 
+#include <optional>
 #include <string>
-
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -38,8 +37,7 @@ class NonNativeFileSystemDelegate {
   virtual void GetNonNativeLocalPathMimeType(
       content::BrowserContext* context,
       const base::FilePath& path,
-      base::OnceCallback<void(const absl::optional<std::string>&)>
-          callback) = 0;
+      base::OnceCallback<void(const std::optional<std::string>&)> callback) = 0;
 
   // Checks whether |path| points to a non-local filesystem directory and calls
   // |callback| with the result asynchronously.

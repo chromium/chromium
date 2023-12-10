@@ -7,16 +7,16 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {crostiniPlaceHolderKey} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 import {FilesToast} from '../elements/files_toast.js';
 
+import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
-import {CommandHandler} from './file_manager_commands.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 
@@ -60,8 +60,8 @@ export class CrostiniController {
     // Setup Linux files fake root.
     let crostiniNavigationModelItem;
     if (this.crostini_.isEnabled(constants.DEFAULT_CROSTINI_VM)) {
-      const crostiniEntry = new FakeEntryImpl(
-          str('LINUX_FILES_ROOT_LABEL'), VolumeManagerCommon.RootType.CROSTINI);
+      const crostiniEntry =
+          new FakeEntryImpl(str('LINUX_FILES_ROOT_LABEL'), RootType.CROSTINI);
       crostiniNavigationModelItem = new NavigationModelFakeItem(
           str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
           crostiniEntry);
@@ -100,7 +100,7 @@ export class CrostiniController {
 
       return new Promise(resolve => {
         chrome.fileManagerPrivate.getCrostiniSharedPaths(
-            maybeShowToast, vmName, (entries, firstForSession) => {
+            maybeShowToast, vmName, ({entries, firstForSession}) => {
               showToast = showToast && firstForSession;
               for (const entry of entries) {
                 this.crostini_.registerSharedPath(vmName, assert(entry));
@@ -120,7 +120,7 @@ export class CrostiniController {
         text: str(action),
         callback: () => {
           chrome.fileManagerPrivate.openSettingsSubpage(subPage);
-          CommandHandler.recordMenuItemSelected(umaItem);
+          recordMenuItemSelected(umaItem);
         },
       });
     };
@@ -138,18 +138,16 @@ export class CrostiniController {
         crostiniShareCount, 'FOLDER_SHARED_WITH_CROSTINI',
         'FOLDER_SHARED_WITH_CROSTINI_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'crostini/sharedPaths',
-        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING_TOAST_STARTUP);
+        MenuCommandsForUma.MANAGE_LINUX_SHARING_TOAST_STARTUP);
     toast(
         pluginVmShareCount, 'FOLDER_SHARED_WITH_PLUGIN_VM',
         'FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'app-management/pluginVm/sharedPaths',
-        CommandHandler.MenuCommandsForUMA
-            .MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
+        MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
     toast(
         bruschettaVmShareCount, 'FOLDER_SHARED_WITH_BRUSCHETTA',
         'FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'bruschetta/sharedPaths',
-        CommandHandler.MenuCommandsForUMA
-            .MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP);
+        MenuCommandsForUma.MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP);
   }
 }

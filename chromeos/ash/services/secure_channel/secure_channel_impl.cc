@@ -334,7 +334,7 @@ bool SecureChannelImpl::CheckForInvalidInputDevice(
     ClientConnectionParameters* client_connection_parameters,
     ConnectionMedium connection_medium,
     bool is_local_device) {
-  absl::optional<InvalidRemoteDeviceReason> potential_invalid_reason =
+  std::optional<InvalidRemoteDeviceReason> potential_invalid_reason =
       AddDeviceToCacheIfPossible(api_fn_name, device, connection_medium);
   if (!potential_invalid_reason)
     return false;
@@ -415,7 +415,7 @@ bool SecureChannelImpl::CheckIfBluetoothAdapterDisabledOrNotPresent(
   return false;
 }
 
-absl::optional<SecureChannelImpl::InvalidRemoteDeviceReason>
+std::optional<SecureChannelImpl::InvalidRemoteDeviceReason>
 SecureChannelImpl::AddDeviceToCacheIfPossible(
     ApiFunctionName api_fn_name,
     const multidevice::RemoteDevice& device,
@@ -444,7 +444,7 @@ SecureChannelImpl::AddDeviceToCacheIfPossible(
   }
 
   remote_device_cache_->SetRemoteDevices({device});
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& stream,

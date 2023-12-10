@@ -8,9 +8,9 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 // Stores local-device private certificates and remote-device public
 // certificates. Provides methods to help manage certificate expiration. Due to
@@ -21,7 +21,7 @@ class NearbyShareCertificateStorage {
   using ResultCallback = base::OnceCallback<void(bool)>;
   using PublicCertificateCallback = base::OnceCallback<void(
       bool,
-      std::unique_ptr<std::vector<nearbyshare::proto::PublicCertificate>>)>;
+      std::unique_ptr<std::vector<nearby::sharing::proto::PublicCertificate>>)>;
 
   NearbyShareCertificateStorage() = default;
   virtual ~NearbyShareCertificateStorage() = default;
@@ -57,7 +57,7 @@ class NearbyShareCertificateStorage {
   // Adds public certificates, or replaces existing certificates
   // by secret_id
   virtual void AddPublicCertificates(
-      const std::vector<nearbyshare::proto::PublicCertificate>&
+      const std::vector<nearby::sharing::proto::PublicCertificate>&
           public_certificates,
       ResultCallback callback) = 0;
 

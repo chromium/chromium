@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/login/localized_values_builder.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -44,7 +44,7 @@ void BaseWebUIHandler::InitAfterJavascriptAllowed() {}
 void BaseWebUIHandler::ShowScreenDeprecated(OobeScreenId screen) {
   if (!GetOobeUI())
     return;
-  GetOobeUI()->GetCoreOobe()->ShowScreenWithData(screen, absl::nullopt);
+  GetOobeUI()->GetCoreOobe()->ShowScreenWithData(screen, std::nullopt);
 }
 
 OobeUI* BaseWebUIHandler::GetOobeUI() {

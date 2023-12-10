@@ -25,6 +25,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -69,7 +70,7 @@ void StartReportLayerAnimationSmoothness(
 
 void StartRecordAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker) {
+    std::optional<ui::ThroughputTracker>& tracker) {
   // `widget` may not exist in tests.
   if (!widget) {
     return;
@@ -155,6 +156,8 @@ void FadeOutView(views::View* view,
 // depending on the expand state.
 class ReturnToAppExpandButton : public views::ImageView,
                                 ReturnToAppButton::Observer {
+  METADATA_HEADER(ReturnToAppExpandButton, views::ImageView)
+
  public:
   explicit ReturnToAppExpandButton(ReturnToAppButton* return_to_app_button)
       : return_to_app_button_(return_to_app_button) {
@@ -201,6 +204,9 @@ class ReturnToAppExpandButton : public views::ImageView,
   // the parent.
   const raw_ptr<ReturnToAppButton, ExperimentalAsh> return_to_app_button_;
 };
+
+BEGIN_METADATA(ReturnToAppExpandButton)
+END_METADATA
 
 }  // namespace
 
@@ -326,6 +332,9 @@ void ReturnToAppButton::UpdateAccessibleName() {
   SetAccessibleName(accessible_name);
 }
 
+BEGIN_METADATA(ReturnToAppButton)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // ReturnToAppContainer:
 
@@ -415,6 +424,9 @@ gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize()
   size.set_height(height_before_animation_ + extra_height);
   return size;
 }
+
+BEGIN_METADATA(ReturnToAppPanel, ReturnToAppContainer, views::View)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // ReturnToAppPanel:
@@ -538,5 +550,8 @@ void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
 void ReturnToAppPanel::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
+
+BEGIN_METADATA(ReturnToAppPanel)
+END_METADATA
 
 }  // namespace ash::video_conference

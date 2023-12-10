@@ -6,13 +6,12 @@
 #define EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORKING_PRIVATE_CHROMEOS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -105,8 +104,8 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
   void GetPropertiesCallback(const std::string& guid,
                              PropertiesCallback callback,
                              const std::string& service_path,
-                             absl::optional<base::Value::Dict> dictionary,
-                             absl::optional<std::string> error);
+                             std::optional<base::Value::Dict> dictionary,
+                             std::optional<std::string> error);
 
   // Populate ThirdPartyVPN.ProviderName with the provider name for third-party
   // VPNs. The provider name needs to be looked up from the list of extensions

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -82,7 +83,7 @@ constexpr int kBackToTabImageSize = 16;
 constexpr int kContentSettingIconSize = 16;
 
 // The height of the controls bar at the top of the window.
-constexpr int kTopControlsHeight = 30;
+constexpr int kTopControlsHeight = 34;
 
 #if BUILDFLAG(IS_LINUX)
 // Frame border when window shadow is not drawn.
@@ -631,8 +632,8 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
     return;
   }
 
-  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
-      pip_options = browser_view()->GetDocumentPictureInPictureOptions();
+  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
+      browser_view()->GetDocumentPictureInPictureOptions();
 
   if (!pip_options.has_value()) {
     return;
@@ -797,9 +798,13 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 
   // If the AutoPiP setting overlay is set, show the permission settings bubble.
   if (auto_pip_setting_overlay_) {
-    auto_pip_setting_overlay_->ShowBubble(
-        GetWidget()->GetNativeView(),
-        AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
+    auto_pip_setting_overlay_->ShowBubble(GetWidget()->GetNativeView());
+  }
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  if (tracker) {
+    tracker->OnPictureInPictureWidgetOpened(GetWidget());
   }
 
   BrowserNonClientFrameView::AddedToWidget();
@@ -916,6 +921,13 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
           /*closing_callback=*/base::DoNothing());
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  if (tracker) {
+    tracker->OnPictureInPictureWidgetOpened(bubble->GetWidget());
+  }
+
   return true;
 }
 
@@ -946,7 +958,7 @@ ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
                                         kWindowIconImageSize);
 }
 
-absl::optional<ui::ColorId>
+std::optional<ui::ColorId>
 PictureInPictureBrowserFrameView::GetLocationIconBackgroundColorOverride()
     const {
   return kColorPipWindowTopBarBackground;
@@ -1019,7 +1031,7 @@ void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
 void PictureInPictureBrowserFrameView::AnimationEnded(
     const gfx::Animation* animation) {
   if (animation == &top_bar_color_animation_) {
-    current_foreground_color_ = absl::nullopt;
+    current_foreground_color_ = std::nullopt;
     location_icon_view_->Update(/*suppress_animations=*/false);
   }
 }

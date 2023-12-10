@@ -31,9 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Collection of DOM-based utilities.
- */
+/** Collection of DOM-based utilities. */
 @JNINamespace("content")
 public class DOMUtils {
     private static final long MEDIA_TIMEOUT_SECONDS = 10L;
@@ -112,17 +110,21 @@ public class DOMUtils {
      * @param id The element's id to check.
      */
     public static void waitForMediaPlay(final WebContents webContents, final String id) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                // Playback can't be reliably detected until current time moves forward.
-                Criteria.checkThat(DOMUtils.isMediaPaused(webContents, id), Matchers.is(false));
-                Criteria.checkThat(
-                        DOMUtils.getCurrentTime(webContents, id), Matchers.greaterThan(0d));
-            } catch (TimeoutException e) {
-                // Intentionally do nothing
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        }, MEDIA_TIMEOUT_MILLISECONDS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        // Playback can't be reliably detected until current time moves forward.
+                        Criteria.checkThat(
+                                DOMUtils.isMediaPaused(webContents, id), Matchers.is(false));
+                        Criteria.checkThat(
+                                DOMUtils.getCurrentTime(webContents, id), Matchers.greaterThan(0d));
+                    } catch (TimeoutException e) {
+                        // Intentionally do nothing
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                MEDIA_TIMEOUT_MILLISECONDS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -131,15 +133,18 @@ public class DOMUtils {
      * @param id The element's id to check.
      */
     public static void waitForMediaPauseBeforeEnd(final WebContents webContents, final String id) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(DOMUtils.isMediaPaused(webContents, id), Matchers.is(true));
-                Criteria.checkThat(DOMUtils.isMediaEnded(webContents, id), Matchers.is(false));
-            } catch (TimeoutException e) {
-                // Intentionally do nothing
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                DOMUtils.isMediaPaused(webContents, id), Matchers.is(true));
+                        Criteria.checkThat(
+                                DOMUtils.isMediaEnded(webContents, id), Matchers.is(false));
+                    } catch (TimeoutException e) {
+                        // Intentionally do nothing
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     /**
@@ -238,7 +243,7 @@ public class DOMUtils {
      */
     public static boolean clickNode(final WebContents webContents, String nodeId)
             throws TimeoutException {
-        return clickNode(webContents, nodeId, true /* goThroughRootAndroidView */);
+        return clickNode(webContents, nodeId, /* goThroughRootAndroidView= */ true);
     }
 
     /**
@@ -248,10 +253,11 @@ public class DOMUtils {
      * @param goThroughRootAndroidView Whether the input should be routed through the Root View for
      *        the CVC.
      */
-    public static boolean clickNode(final WebContents webContents, String nodeId,
-            boolean goThroughRootAndroidView) throws TimeoutException {
+    public static boolean clickNode(
+            final WebContents webContents, String nodeId, boolean goThroughRootAndroidView)
+            throws TimeoutException {
         return clickNode(
-                webContents, nodeId, goThroughRootAndroidView, true /* shouldScrollIntoView */);
+                webContents, nodeId, goThroughRootAndroidView, /* shouldScrollIntoView= */ true);
     }
 
     /**
@@ -262,8 +268,11 @@ public class DOMUtils {
      *        the CVC.
      * @param shouldScrollIntoView Whether to scroll the node into view first.
      */
-    public static boolean clickNode(final WebContents webContents, String nodeId,
-            boolean goThroughRootAndroidView, boolean shouldScrollIntoView)
+    public static boolean clickNode(
+            final WebContents webContents,
+            String nodeId,
+            boolean goThroughRootAndroidView,
+            boolean shouldScrollIntoView)
             throws TimeoutException {
         if (shouldScrollIntoView) scrollNodeIntoView(webContents, nodeId);
         int[] clickTarget = getClickTargetForNode(webContents, nodeId);
@@ -330,14 +339,27 @@ public class DOMUtils {
      * @param stepCount How many move steps to include in the drag.
      * @param downTime When the drag was started, in millis since the epoch.
      */
-    public static void dragNodeTo(final WebContents webContents, String fromNodeId, String toNodeId,
-            int stepCount, long downTime) throws TimeoutException {
-        int[] fromTarget = getClickTargetForNodeByJs(
-                webContents, "document.getElementById('" + fromNodeId + "')");
-        int[] toTarget = getClickTargetForNodeByJs(
-                webContents, "document.getElementById('" + toNodeId + "')");
-        TouchCommon.dragTo(getActivity(webContents), fromTarget[0], fromTarget[1], toTarget[0],
-                toTarget[1], stepCount, downTime);
+    public static void dragNodeTo(
+            final WebContents webContents,
+            String fromNodeId,
+            String toNodeId,
+            int stepCount,
+            long downTime)
+            throws TimeoutException {
+        int[] fromTarget =
+                getClickTargetForNodeByJs(
+                        webContents, "document.getElementById('" + fromNodeId + "')");
+        int[] toTarget =
+                getClickTargetForNodeByJs(
+                        webContents, "document.getElementById('" + toNodeId + "')");
+        TouchCommon.dragTo(
+                getActivity(webContents),
+                fromTarget[0],
+                fromTarget[1],
+                toTarget[0],
+                toTarget[1],
+                stepCount,
+                downTime);
     }
 
     /**
@@ -459,8 +481,9 @@ public class DOMUtils {
      * @param nodeId The id of the node.
      * @return the value of the field.
      */
-    public static String getNodeField(String fieldName, final WebContents webContents,
-            String nodeId) throws TimeoutException {
+    public static String getNodeField(
+            String fieldName, final WebContents webContents, String nodeId)
+            throws TimeoutException {
         return getNodeField(fieldName, webContents, nodeId, String.class);
     }
 
@@ -471,15 +494,17 @@ public class DOMUtils {
      */
     public static void waitForNonZeroNodeBounds(
             final WebContents webContents, final String nodeId) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(
-                        DOMUtils.getNodeBounds(webContents, nodeId).isEmpty(), Matchers.is(false));
-            } catch (TimeoutException e) {
-                // Intentionally do nothing
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                DOMUtils.getNodeBounds(webContents, nodeId).isEmpty(),
+                                Matchers.is(false));
+                    } catch (TimeoutException e) {
+                        // Intentionally do nothing
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     /**
@@ -490,8 +515,9 @@ public class DOMUtils {
      * @param valueType The type of the value to read.
      * @return the field's value.
      */
-    public static <T> T getNodeField(String fieldName, final WebContents webContents, String nodeId,
-            Class<T> valueType) throws TimeoutException {
+    public static <T> T getNodeField(
+            String fieldName, final WebContents webContents, String nodeId, Class<T> valueType)
+            throws TimeoutException {
         StringBuilder sb = new StringBuilder();
         sb.append("(function() {");
         sb.append("  var node = document.getElementById('" + nodeId + "');");
@@ -501,7 +527,8 @@ public class DOMUtils {
 
         String jsonText =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
-        Assert.assertFalse("Failed to retrieve contents for " + nodeId,
+        Assert.assertFalse(
+                "Failed to retrieve contents for " + nodeId,
                 jsonText.trim().equalsIgnoreCase("null"));
         return readValue(jsonText, valueType);
     }
@@ -514,8 +541,9 @@ public class DOMUtils {
      * @param valueType The type of the value to read.
      * @return the attributes' value or null if there is no attribute with such attributeName.
      */
-    public static <T> T getNodeAttribute(String attributeName, final WebContents webContents,
-            String nodeId, Class<T> valueType) throws InterruptedException, TimeoutException {
+    public static <T> T getNodeAttribute(
+            String attributeName, final WebContents webContents, String nodeId, Class<T> valueType)
+            throws InterruptedException, TimeoutException {
         StringBuilder sb = new StringBuilder();
         sb.append("(function() {");
         sb.append("  var node = document.getElementById('" + nodeId + "');");
@@ -623,8 +651,9 @@ public class DOMUtils {
         // does not account for visual viewport offset.
         RenderCoordinatesImpl coord = ((WebContentsImpl) webContents).getRenderCoordinates();
         int clickX = (int) coord.fromLocalCssToPix(bounds.exactCenterX());
-        int clickY = (int) coord.fromLocalCssToPix(bounds.exactCenterY())
-                + getMaybeTopControlsHeight(webContents);
+        int clickY =
+                (int) coord.fromLocalCssToPix(bounds.exactCenterY())
+                        + getMaybeTopControlsHeight(webContents);
         return new int[] {clickX, clickY};
     }
 
@@ -663,7 +692,8 @@ public class DOMUtils {
         String jsonText =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
 
-        Assert.assertFalse("Failed to retrieve bounds for element: " + jsCode,
+        Assert.assertFalse(
+                "Failed to retrieve bounds for element: " + jsCode,
                 jsonText.trim().equalsIgnoreCase("null"));
 
         JsonReader jsonReader = new JsonReader(new StringReader(jsonText));
@@ -700,8 +730,11 @@ public class DOMUtils {
      * @param nodeId The id of the text input node.
      * @param input The text to be entered into the text field.
      */
-    public static void enterInputIntoTextField(WebContents webContents,
-            TestInputMethodManagerWrapper inputMethodManagerWrapper, String nodeId, String input)
+    public static void enterInputIntoTextField(
+            WebContents webContents,
+            TestInputMethodManagerWrapper inputMethodManagerWrapper,
+            String nodeId,
+            String input)
             throws TimeoutException {
         Assert.assertTrue(
                 "Input should be a non-empty string", input != null && input.length() > 0);
@@ -709,16 +742,18 @@ public class DOMUtils {
         DOMUtils.clickNode(webContents, nodeId);
 
         // Wait for the text field to get focused and the virtual keyboard to be activated.
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
-            } catch (TimeoutException e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-            Criteria.checkThat(
-                    inputMethodManagerWrapper.isActive(DOMUtils.getContainerView(webContents)),
-                    is(true));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
+                    } catch (TimeoutException e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                    Criteria.checkThat(
+                            inputMethodManagerWrapper.isActive(
+                                    DOMUtils.getContainerView(webContents)),
+                            is(true));
+                });
 
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(webContents);
         // Enter the text.
@@ -757,8 +792,11 @@ public class DOMUtils {
         String result =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, func.toString());
         if (RESULT_ELEMENT_NOT_FOUND.equals(result)) {
-            Assert.fail("The expected value of the element with id " + textFieldId
-                    + " is different from the expected value " + value);
+            Assert.fail(
+                    "The expected value of the element with id "
+                            + textFieldId
+                            + " is different from the expected value "
+                            + value);
         }
     }
 

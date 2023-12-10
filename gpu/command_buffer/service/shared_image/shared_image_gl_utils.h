@@ -5,9 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_GL_UTILS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_GL_UTILS_H_
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
@@ -28,10 +28,10 @@ class ScopedPackState {
   const raw_ptr<gl::GLApi> api_;
 
   GLint pack_buffer_ = 0;
-  absl::optional<gl::ScopedPixelStore> pack_alignment_;
-  absl::optional<gl::ScopedPixelStore> pack_row_length_;
-  absl::optional<gl::ScopedPixelStore> pack_skip_pixels_;
-  absl::optional<gl::ScopedPixelStore> pack_skip_rows_;
+  std::optional<gl::ScopedPixelStore> pack_alignment_;
+  std::optional<gl::ScopedPixelStore> pack_row_length_;
+  std::optional<gl::ScopedPixelStore> pack_skip_pixels_;
+  std::optional<gl::ScopedPixelStore> pack_skip_rows_;
 };
 
 // Sets GL state for upload and copy.
@@ -53,21 +53,21 @@ class ScopedUnpackState {
   GLint unpack_buffer_ = 0;
 
   // Always used when |uploading_data|.
-  absl::optional<gl::ScopedPixelStore> unpack_alignment_;
+  std::optional<gl::ScopedPixelStore> unpack_alignment_;
 
   // Used when |uploading_data_| and (|es3_capable| or
   // |supports_unpack_subimage|).
-  absl::optional<gl::ScopedPixelStore> unpack_row_length_;
-  absl::optional<gl::ScopedPixelStore> unpack_skip_pixels_;
-  absl::optional<gl::ScopedPixelStore> unpack_skip_rows_;
+  std::optional<gl::ScopedPixelStore> unpack_row_length_;
+  std::optional<gl::ScopedPixelStore> unpack_skip_pixels_;
+  std::optional<gl::ScopedPixelStore> unpack_skip_rows_;
 
   // Used when |uploading_data| and |es3_capable|.
-  absl::optional<gl::ScopedPixelStore> unpack_skip_images_;
-  absl::optional<gl::ScopedPixelStore> unpack_image_height_;
+  std::optional<gl::ScopedPixelStore> unpack_skip_images_;
+  std::optional<gl::ScopedPixelStore> unpack_image_height_;
 
   // Used when |desktop_gl|.
-  absl::optional<gl::ScopedPixelStore> unpack_swap_bytes_;
-  absl::optional<gl::ScopedPixelStore> unpack_lsb_first_;
+  std::optional<gl::ScopedPixelStore> unpack_swap_bytes_;
+  std::optional<gl::ScopedPixelStore> unpack_lsb_first_;
 };
 
 // Creates a new GL texture and returns GL texture ID.

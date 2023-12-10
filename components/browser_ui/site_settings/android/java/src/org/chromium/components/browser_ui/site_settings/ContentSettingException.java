@@ -15,9 +15,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 
-/**
- * Exception information for a given origin.
- */
+/** Exception information for a given origin. */
 public class ContentSettingException implements Serializable {
     private final @ContentSettingsType int mContentSettingType;
     private final String mPrimaryPattern;
@@ -31,6 +29,7 @@ public class ContentSettingException implements Serializable {
 
     /**
      * Construct a ContentSettingException.
+     *
      * @param type The content setting type this exception covers.
      * @param primaryPattern The primary host/domain pattern this exception covers.
      * @param secondaryPattern The secondary host/domain pattern this exception covers.
@@ -38,9 +37,14 @@ public class ContentSettingException implements Serializable {
      * @param source The source for this exception.
      * @param isEmbargoed Whether the site is under embargo for {@link type}.
      */
-    public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
-            String secondaryPattern, @ContentSettingValues @Nullable Integer setting, String source,
-            final Integer expirationInDays, boolean isEmbargoed) {
+    public ContentSettingException(
+            @ContentSettingsType int type,
+            String primaryPattern,
+            String secondaryPattern,
+            @ContentSettingValues @Nullable Integer setting,
+            String source,
+            final Integer expirationInDays,
+            boolean isEmbargoed) {
         mContentSettingType = type;
         mPrimaryPattern = primaryPattern;
         mSecondaryPattern = secondaryPattern;
@@ -50,14 +54,21 @@ public class ContentSettingException implements Serializable {
         mIsEmbargoed = isEmbargoed;
     }
 
-    /**
-     * Construct a ContentSettingException.
-     * Same as above but defaults secondaryPattern to wildcard.
-     */
-    public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
-            @ContentSettingValues @Nullable Integer setting, String source, boolean isEmbargoed) {
-        this(type, primaryPattern, SITE_WILDCARD, setting, source,
-                /* expirationInDays = */ null, isEmbargoed);
+    /** Construct a ContentSettingException. Same as above but defaults secondaryPattern to wildcard. */
+    public ContentSettingException(
+            @ContentSettingsType int type,
+            String primaryPattern,
+            @ContentSettingValues @Nullable Integer setting,
+            String source,
+            boolean isEmbargoed) {
+        this(
+                type,
+                primaryPattern,
+                SITE_WILDCARD,
+                setting,
+                source,
+                /* expirationInDays= */ null,
+                isEmbargoed);
     }
 
     public String getPrimaryPattern() {
@@ -96,13 +107,15 @@ public class ContentSettingException implements Serializable {
         return mIsEmbargoed;
     }
 
-    /**
-     * Sets the content setting value for this exception.
-     */
+    /** Sets the content setting value for this exception. */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
         mContentSetting = value;
-        WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
-                mContentSettingType, mPrimaryPattern, getSecondaryPatternSafe(), value);
+        WebsitePreferenceBridge.setContentSettingCustomScope(
+                browserContextHandle,
+                mContentSettingType,
+                mPrimaryPattern,
+                getSecondaryPatternSafe(),
+                value);
     }
 }

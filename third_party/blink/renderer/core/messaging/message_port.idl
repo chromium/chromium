@@ -40,4 +40,5 @@
     // event handlers
     attribute EventHandler onmessage;
     attribute EventHandler onmessageerror;
+    [RuntimeEnabled=MessagePortCloseEvent] attribute EventHandler onclose;
 };

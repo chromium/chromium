@@ -612,24 +612,17 @@ suite('CupsSavedPrintersTests', () => {
     // icon based on the printer status previously set.
     const printerListEntries = getPrinterEntries(savedPrintersElement);
     assertEquals(3, printerListEntries.length);
-    const jelly_enabled = loadTimeData.getValue('isJellyEnabled');
     for (const entry of printerListEntries) {
       let expectedPrinterIcon;
       switch (entry.printerEntry.printerInfo.printerId) {
         case 'id1':
-          expectedPrinterIcon = jelly_enabled ?
-              'os-settings:printer-status-illo-green' :
-              'os-settings:printer-status-green';
+          expectedPrinterIcon = 'os-settings:printer-status-illo-green';
           break;
         case 'id2':
-          expectedPrinterIcon = jelly_enabled ?
-              'os-settings:printer-status-illo-red' :
-              'os-settings:printer-status-red';
+          expectedPrinterIcon = 'os-settings:printer-status-illo-red';
           break;
         case 'id3':
-          expectedPrinterIcon = jelly_enabled ?
-              'os-settings:printer-status-illo-grey' :
-              'os-settings:printer-status-grey';
+          expectedPrinterIcon = 'os-settings:printer-status-illo-grey';
           break;
         default:
           assertNotReached();

@@ -42,5 +42,5 @@ found in the LICENSE file.
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_color">@color/baseline_primary_80</color>
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_hovered_color">@color/modern_white</color>
 
-    <color name="incognito_tab_selection_editor_toolbar_bg_color">@color/toolbar_background_primary_dark</color>
+    <color name="incognito_tab_list_editor_toolbar_bg_color">@color/toolbar_background_primary_dark</color>
 </resources>

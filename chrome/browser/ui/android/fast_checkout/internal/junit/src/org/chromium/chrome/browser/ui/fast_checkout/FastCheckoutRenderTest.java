@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
+import org.chromium.chrome.browser.ui.suggestion.Icon;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -77,7 +78,7 @@ public class FastCheckoutRenderTest {
                     /* obfuscatedNumber= */ "• • • • 5656",
                     /* month= */ "05",
                     /* year= */ AutofillTestHelper.nextYear(),
-                    /* issuerIconString= */ "visaCC");
+                    /* issuerIcon= */ Icon.CARD_VISA);
     private static final FastCheckoutCreditCard SERVER_CREDIT_CARD =
             FastCheckoutTestUtils.createDetailedCreditCard(
                     /* guid= */ "123",
@@ -88,7 +89,7 @@ public class FastCheckoutRenderTest {
                     /* obfuscatedNumber= */ "• • • • 5656",
                     /* month= */ "05",
                     /* year= */ AutofillTestHelper.nextYear(),
-                    /* issuerIconString= */ "visaCC");
+                    /* issuerIcon= */ Icon.CARD_VISA);
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =

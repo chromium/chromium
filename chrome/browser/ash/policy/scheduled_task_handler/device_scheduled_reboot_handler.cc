@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -25,7 +26,6 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace policy {
@@ -115,7 +115,7 @@ void DeviceScheduledRebootHandler::SetRebootDelayForTest(
   reboot_delay_for_testing_ = reboot_delay;
 }
 
-absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+std::optional<ScheduledTaskExecutor::ScheduledTaskData>
 DeviceScheduledRebootHandler::GetScheduledRebootDataForTest() const {
   return scheduled_reboot_data_;
 }
@@ -178,7 +178,7 @@ void DeviceScheduledRebootHandler::OnScheduledRebootDataChanged() {
 
   // Keep any old policy timers running if a new policy is ill-formed and can't
   // be used to set a new timer.
-  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+  std::optional<ScheduledTaskExecutor::ScheduledTaskData>
       scheduled_reboot_data =
           scheduled_task_util::ParseScheduledTask(*value, kTaskTimeFieldName);
   if (!scheduled_reboot_data) {
@@ -220,7 +220,7 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
     notifications_scheduler_->CancelRebootNotifications(
         RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
     skip_reboot_ = false;
-    scheduled_reboot_data_ = absl::nullopt;
+    scheduled_reboot_data_ = std::nullopt;
     return;
   }
 
@@ -246,7 +246,7 @@ void DeviceScheduledRebootHandler::ResetState() {
       RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
   scheduled_task_executor_->Reset();
   skip_reboot_ = false;
-  scheduled_reboot_data_ = absl::nullopt;
+  scheduled_reboot_data_ = std::nullopt;
 }
 
 const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {

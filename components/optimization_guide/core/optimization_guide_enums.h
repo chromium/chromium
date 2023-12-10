@@ -237,6 +237,89 @@ enum class FetcherRequestStatus {
   kMaxValue = kUserNotSignedIn
 };
 
+// Reasons for whether the on-device model was eligible for use.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelEligibilityReason {
+  kUnknown = 0,
+  // Success.
+  kSuccess = 1,
+  // The feature flag gating on-device model execution was disabled.
+  kFeatureNotEnabled = 2,
+  // There was no on-device model available.
+  kModelNotAvailable = 3,
+  // The on-device model was available but there was not an execution config
+  // available for the feature.
+  kConfigNotAvailableForFeature = 4,
+  // The GPU is blocked.
+  kGpuBlocked = 5,
+  // The on-device model process crashed too many times for this version.
+  kTooManyRecentCrashes = 6,
+  // The on-device model took too long too many times for this version.
+  kTooManyRecentTimeouts = 7,
+
+  // This must be kept in sync with
+  // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kTooManyRecentTimeouts,
+};
+
+// Performance class of this device.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelPerformanceClass {
+  kUnknown = 0,
+
+  // See on_device_model::mojom::PerformanceClass for explanation of these.
+  kError = 1,
+  kVeryLow = 2,
+  kLow = 3,
+  kMedium = 4,
+  kHigh = 5,
+  kVeryHigh = 6,
+
+  // The service crashed, so a valid value was not returned.
+  kServiceCrash = 7,
+
+  // GPU was blocklisted.
+  kGpuBlocked = 8,
+
+  // Native library failed to load.
+  kFailedToLoadLibrary = 9,
+
+  // This must be kept in sync with
+  // OnDeviceModelPerformanceClass in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kFailedToLoadLibrary,
+};
+
+// The result of loading an on-device model.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelLoadResult {
+  kUnknown = 0,
+
+  // Model loaded successfully.
+  kSuccess = 1,
+
+  // GPU was blocklisted.
+  kGpuBlocked = 2,
+
+  // Native library failed to load.
+  kFailedToLoadLibrary = 3,
+
+  // This must be kept in sync with
+  // OnDeviceModelLoadResult in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kFailedToLoadLibrary,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

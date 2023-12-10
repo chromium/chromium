@@ -6,12 +6,13 @@
 #define ASH_DISPLAY_DISPLAY_PREFS_H_
 
 #include <stdint.h>
+
 #include <array>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -73,7 +74,7 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
   // Stores the given |mixed_params| for tests. Clears stored parameters if
   // |mixed_params| is null.
   void StoreDisplayMixedMirrorModeParamsForTest(
-      const absl::optional<display::MixedMirrorModeParams>& mixed_params);
+      const std::optional<display::MixedMirrorModeParams>& mixed_params);
 
  protected:
   friend class DisplayPrefsTest;

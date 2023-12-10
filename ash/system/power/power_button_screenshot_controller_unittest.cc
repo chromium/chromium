@@ -15,11 +15,11 @@
 #include "ash/system/power/power_button_screenshot_controller_test_api.h"
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/wm/lock_state_controller_test_api.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/window_util.h"
 
@@ -104,7 +104,7 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
         "Ash.CaptureModeController.EntryPoint.ClamshellMode";
     constexpr char kTabletHistogram[] =
         "Ash.CaptureModeController.EntryPoint.TabletMode";
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       return histogram_tester_->GetBucketCount(
           kTabletHistogram, CaptureModeEntryType::kCaptureAllDisplays);
     }

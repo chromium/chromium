@@ -76,8 +76,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
  public:
   static const int kMaxAttachedShaders = 2;
 
-  enum VaryingsPackingOption { kCountOnlyStaticallyUsed, kCountAll };
-
   struct ProgramOutputInfo {
     ProgramOutputInfo(GLuint _color_name,
                       GLuint _index,
@@ -319,7 +317,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   // Performs glLinkProgram and related activities.
   bool Link(ShaderManager* manager,
-            VaryingsPackingOption varyings_packing_option,
             DecoderClient* client);
 
   // Performs glValidateProgram and related activities.
@@ -393,7 +390,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   // Return false if varyings can't be packed into the max available
   // varying registers.
-  bool CheckVaryingsPacking(VaryingsPackingOption option) const;
+  bool CheckVaryingsPacking() const;
 
   void TransformFeedbackVaryings(GLsizei count, const char* const* varyings,
       GLenum buffer_mode);

@@ -108,6 +108,16 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Registers `crosapi_subscriber_`.
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
 
+  // Sets the publisher for `app_type` is unavailable, to allow
+  // AppService to remove apps for `app_type`, and clean up launch requests,
+  // etc. This is used when the app platform is unavailable, e.g. GuestOS
+  // disabled, ARC disabled, etc.
+  //
+  // All apps for `app_type` will be deleted from AppRegistryCache and
+  // AppStorage. So this function should not be called for the normal shutdown
+  // process.
+  void SetPublisherUnavailable(AppType app_type);
+
   // Signals when AppServiceProxy becomes ready after reading the AppStorage
   // file, and init publishers.
   const base::OneShotEvent* OnReady() const {
@@ -117,6 +127,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::AppInstallService& AppInstallService();
 
   // apps::AppServiceProxyBase overrides:
+  void RegisterPublisher(AppType app_type, AppPublisher* publisher) override;
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
@@ -257,6 +268,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        IconType icon_type,
                        LoadIconCallback callback);
 
+  // Sets app locale for an app with the given `app_id`. Empty |locale_tag|
+  // indicates system language being chosen.
+  void SetAppLocale(const std::string& app_id, const std::string& locale_tag);
+
  private:
   // ShortcutInnerIconLoader is used to load icons for shortcuts, it follows the
   // same logic as the AppInnerIconLoader defined in AppServiceProxyBase, which
@@ -266,7 +281,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
     explicit ShortcutInnerIconLoader(AppServiceProxyAsh* host);
 
     // apps::IconLoader overrides.
-    absl::optional<IconKey> GetIconKey(const std::string& id) override;
+    std::optional<IconKey> GetIconKey(const std::string& id) override;
     std::unique_ptr<Releaser> LoadIconFromIconKey(
         const std::string& id,
         const IconKey& icon_key,
@@ -306,6 +321,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   using ShortcutRemovalDialogs =
       base::flat_map<apps::ShortcutId,
                      std::unique_ptr<apps::ShortcutRemovalDialog>>;
+
+  // Map of app ID to a list of launch params.
+  using LaunchRequests =
+      std::map<std::string, std::vector<std::unique_ptr<LaunchParams>>>;
 
   bool IsValidProfile() override;
   void Initialize() override;
@@ -364,6 +383,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
+  // Displays spinner, and store the launch parameters to implement the launch
+  // task when the publisher is ready.
+  void OnPublisherNotReadyForLaunch(
+      const std::string& app_id,
+      std::unique_ptr<LaunchParams> launch_request) override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
   void OnLaunched(LaunchCallback callback,
                   LaunchResult&& launch_result) override;
@@ -598,6 +622,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // from the outstanding callback queue.
   std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
       callback_list_;
+
+  // The launch requests when the publisher is not available.
+  LaunchRequests launch_requests_;
 
   base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
 

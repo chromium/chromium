@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"

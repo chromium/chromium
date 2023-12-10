@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -68,7 +69,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -83,7 +83,6 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
@@ -290,7 +289,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
+// TODO(crbug.com/1500064): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ThemeChange DISABLED_ThemeChange
+#else
+#define MAYBE_ThemeChange ThemeChange
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MAYBE_ThemeChange) {
   ASSERT_TRUE(https_server()->Start());
   const GURL app_url = https_server()->GetURL("/banners/theme-color.html");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
@@ -836,9 +841,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     }
   };
 
-  WebAppFrameToolbarBrowserTest_WindowControlsOverlay() {
-    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  }
+  WebAppFrameToolbarBrowserTest_WindowControlsOverlay() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -979,7 +982,6 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -1754,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   auto CheckCanResize = [&](bool browser_view_can_resize_expected,
-                            absl::optional<bool> web_api_can_resize_expected) {
+                            std::optional<bool> web_api_can_resize_expected) {
     EXPECT_EQ(helper()->browser_view()->CanResize(),
               browser_view_can_resize_expected);
     EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
@@ -1771,8 +1773,8 @@ IN_PROC_BROWSER_TEST_F(
   // This will be the default value.
   helper()->browser_view()->SetCanResize(true);
 
-  // Defaults to `absl::nullopt` -> Returns "fallback".
-  CheckCanResize(true, absl::nullopt);
+  // Defaults to `std::nullopt` -> Returns "fallback".
+  CheckCanResize(true, std::nullopt);
 
   // Explicitly set to false -> Returns false.
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
@@ -1783,11 +1785,11 @@ IN_PROC_BROWSER_TEST_F(
   CheckCanResize(true, true);
 
   // `window.setResizable()` API can only alter the resizability of
-  // `BrowserView` which `can_resize` is true. If it's false, then
-  // `SetCanResizeFromWebAPI` cannot override it.
+  // `BrowserView` which `can_resize` is true. Otherwise it cannot be overridden
+  // by the web API.
   helper()->browser_view()->SetCanResize(false);
-  helper()->browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
-  CheckCanResize(false, absl::nullopt);
+  web_contents->GetPrimaryPage().SetResizableForTesting(std::nullopt);
+  CheckCanResize(false, std::nullopt);
 
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
   CheckCanResize(false, false);
@@ -1804,13 +1806,13 @@ IN_PROC_BROWSER_TEST_F(
 
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 
   // Navigates to the second page of the app.
-  std::ignore = ui_test_utils::NavigateToURL(
-      helper()->browser_view()->browser(), second_page_url());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1825,10 +1827,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
 
   // Navigates to the second page of the app.
-  std::ignore = ui_test_utils::NavigateToURL(
-      helper()->browser_view()->browser(), second_page_url());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 
   // Sets the resizability true for the second page.
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
@@ -1841,8 +1843,7 @@ IN_PROC_BROWSER_TEST_F(
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              absl::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
   }
 
   // Navigates forward to the already visited second page.
@@ -1852,8 +1853,7 @@ IN_PROC_BROWSER_TEST_F(
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              absl::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
   }
 }
 
@@ -1871,10 +1871,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Another URL where resizability is not set resets the web API overridden
   // resizability.
-  std::ignore = ui_test_utils::NavigateToURL(
-      helper()->browser_view()->browser(), GURL("http://www.google.com/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
+                                           GURL("http://www.google.com/")));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
 
   // Returning to the original URL then reads the resizability from the BFCache
   // if it's enabled.
@@ -1883,10 +1883,51 @@ IN_PROC_BROWSER_TEST_F(
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              absl::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
   }
 }
+
+// TODO(crbug.com/1466855): Disabled on non-Aura due to WaitForResizeComplete()
+// not being implemented.
+#if defined(USE_AURA)
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableBlocksResizeToAndResizeByApis) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* browser_view = helper()->browser_view();
+  browser_view->SetCanResize(true);
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  auto CheckAreSameSize = [](const gfx::Size& s1, const gfx::Size& s2) {
+    return s1 == s2;
+  };
+
+  // Set the initial window size to something != 1000x1000.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(800,800);"));
+  WaitForResizeComplete(web_contents);
+
+  gfx::Size client_view_size_before =
+      browser_view->frame()->client_view()->size();
+
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_FALSE(browser_view->GetCanResizeFromWebAPI().value());
+  EXPECT_FALSE(browser_view->CanResize());
+
+  // window.resizeTo API no longer takes action.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
+  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
+                               browser_view->frame()->client_view()->size()));
+
+  // window.resizeBy API no longer takes action.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeBy(10,10);"));
+  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
+                               browser_view->frame()->client_view()->size()));
+}
+#endif  // defined(USE_AURA)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {

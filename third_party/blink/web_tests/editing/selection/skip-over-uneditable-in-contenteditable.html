@@ -28,6 +28,20 @@ selection_test(
 selection_test(
   [
     '<div contenteditable>',
+      '<span>^Before|<span contenteditable="false">Middle</span></span>After',
+    '</div>'
+  ],
+  selection => selection.modify('extend', 'forward', 'character'),
+  [
+    '<div contenteditable>',
+      '<span>^Before<span contenteditable="false">Middle</span></span>|After',
+    '</div>'
+  ],
+  'Extend by character before uneditable in one line');
+
+selection_test(
+  [
+    '<div contenteditable>',
       '<p>^Before|</p>',
       '<p contenteditable="false">Middle</p>',
       '<p>After</p>',

@@ -969,8 +969,8 @@ TEST_P(NonClientFrameViewAshFrameColorTest, WideFrameInitialColor) {
       std::make_unique<WideFrameView>(widget.get());
   chromeos::HeaderView* wide_header_view = wide_frame_view->header_view();
   DefaultFrameHeader* header = wide_header_view->GetFrameHeader();
-  EXPECT_EQ(new_active_color, header->active_frame_color_for_testing());
-  EXPECT_EQ(new_inactive_color, header->inactive_frame_color_for_testing());
+  EXPECT_EQ(new_active_color, header->active_frame_color_);
+  EXPECT_EQ(new_inactive_color, header->inactive_frame_color_);
 }
 
 // Tests to make sure that the NonClientFrameViewAsh tracks default frame colors

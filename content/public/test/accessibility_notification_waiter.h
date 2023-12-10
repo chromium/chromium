@@ -90,10 +90,6 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // Listen to all frames within the frame tree of this WebContents.
   void ListenToAllFrames(WebContents* web_contents);
 
-  // Called when iterating over guest web contents so we can listen to
-  // all frames within guests.
-  bool ListenToGuestWebContents(WebContents* web_contents);
-
   // Bind either the OnAccessibilityEvent or OnGeneratedEvent callback
   // for a given frame within the WebContent's frame tree.
   void ListenToFrame(RenderFrameHostImpl* frame_host);

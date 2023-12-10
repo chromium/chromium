@@ -25,6 +25,8 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import {getTemplate} from './managed_terms_of_service.html.js';
+
 
 // Enum that describes the current state of the Terms Of Service screen
 const ManagedTermsState = {
@@ -75,7 +77,7 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

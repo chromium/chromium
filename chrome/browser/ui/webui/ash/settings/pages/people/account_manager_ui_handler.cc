@@ -52,7 +52,7 @@ constexpr char kAccountRemovedToastId[] =
   DCHECK(id);
   DCHECK(!id->empty());
 
-  const absl::optional<int> account_type_value =
+  const std::optional<int> account_type_value =
       dictionary.FindInt("accountType");
   DCHECK(account_type_value);
   const int account_type_int = *account_type_value;
@@ -470,7 +470,7 @@ void AccountManagerUIHandler::HandleChangeArcAvailability(
   CHECK_GT(args.size(), 1u);
   const base::Value::Dict* account_dict = args[0].GetIfDict();
   CHECK(account_dict);
-  const absl::optional<bool> is_available = args[1].GetIfBool();
+  const std::optional<bool> is_available = args[1].GetIfBool();
   CHECK(is_available.has_value());
 
   const ::account_manager::Account account =

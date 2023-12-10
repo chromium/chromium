@@ -4,9 +4,10 @@
 
 #include "ios/chrome/browser/promos_manager/constants.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace promos_manager {
 
@@ -18,7 +19,7 @@ const int kNumDaysImpressionHistoryStored = 365;
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-absl::optional<Promo> PromoForName(base::StringPiece promo) {
+std::optional<Promo> PromoForName(base::StringPiece promo) {
   if (promo == "promos_manager::Promo::Test")
     return promos_manager::Promo::Test;
 
@@ -40,10 +41,6 @@ absl::optional<Promo> PromoForName(base::StringPiece promo) {
   if (promo == "promos_manager::Promo::WhatsNew")
     return promos_manager::Promo::WhatsNew;
 
-  if (promo == "promos_manager::Promo::Choice") {
-    return promos_manager::Promo::Choice;
-  }
-
   if (promo == "promos_manager::Promo::PostRestoreDefaultBrowserAlert") {
     return promos_manager::Promo::PostRestoreDefaultBrowserAlert;
   }
@@ -52,7 +49,11 @@ absl::optional<Promo> PromoForName(base::StringPiece promo) {
     return promos_manager::Promo::DefaultBrowserRemindMeLater;
   }
 
-  return absl::nullopt;
+  if (promo == "promos_manager::Promo::OmniboxPosition") {
+    return promos_manager::Promo::OmniboxPosition;
+  }
+
+  return std::nullopt;
 }
 
 std::string NameForPromo(Promo promo) {
@@ -75,35 +76,35 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "PostRestoreSignInAlert";
     case promos_manager::Promo::WhatsNew:
       return "WhatsNew";
-    case promos_manager::Promo::Choice:
-      return "Choice";
     case promos_manager::Promo::PostRestoreDefaultBrowserAlert:
       return "PostRestoreDefaultBrowserAlert";
     case promos_manager::Promo::DefaultBrowserRemindMeLater:
       return "DefaultBrowserRemindMeLater";
+    case promos_manager::Promo::OmniboxPosition:
+      return "OmniboxPosition";
   }
 }
 
-absl::optional<promos_manager::Impression> ImpressionFromDict(
+std::optional<promos_manager::Impression> ImpressionFromDict(
     const base::Value::Dict& dict) {
   const std::string* stored_promo =
       dict.FindString(promos_manager::kImpressionPromoKey);
-  absl::optional<int> stored_day =
+  std::optional<int> stored_day =
       dict.FindInt(promos_manager::kImpressionDayKey);
-  absl::optional<bool> stored_migration_complete = dict.FindBool(
+  std::optional<bool> stored_migration_complete = dict.FindBool(
       promos_manager::kImpressionFeatureEngagementMigrationCompletedKey);
 
   // Skip malformed impression history. (This should almost never happen.)
   if (!stored_promo || !stored_day.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager::PromoForName(*stored_promo);
 
   // Skip malformed impression history. (This should almost never happen.)
   if (!promo.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return promos_manager::Impression(promo.value(), stored_day.value(),

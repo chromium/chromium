@@ -18,7 +18,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -510,7 +510,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   if (!self.historyService)
     return;
 
+  // Validate indexes of items to delete and abort if any have been made invalid
+  // by a crossing actions (like query refresh or animations).
   NSArray* toDeleteIndexPaths = self.tableView.indexPathsForSelectedRows;
+  for (NSIndexPath* indexPath in toDeleteIndexPaths) {
+    if (![self.tableViewModel hasItemAtIndexPath:indexPath]) {
+      return;
+    }
+  }
 
   // Delete items from Browser History.
   std::vector<BrowsingHistoryService::HistoryEntry> entries;
@@ -606,7 +613,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     // Don't show the context menu when currently in editing mode.
     return nil;
   }
-
+  if (![self.tableViewModel hasItemAtIndexPath:indexPath]) {
+    // It's possible that indexPath is invalid due to crossing action (like
+    // query refresh or animations).
+    return nil;
+  }
   if (indexPath.section ==
       [self.tableViewModel
           sectionForSectionIdentifier:kEntriesStatusSectionIdentifier]) {

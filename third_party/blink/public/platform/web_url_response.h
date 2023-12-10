@@ -37,9 +37,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/http/http_response_info.h"
+#include "net/http/alternate_protocol_usage.h"
+#include "net/http/http_connection_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -56,6 +58,7 @@ enum class IPAddressSpace : int32_t;
 enum class PrivateNetworkAccessPreflightResult;
 class URLResponseHead;
 class LoadTimingInfo;
+class ServiceWorkerRouterInfo;
 }  // namespace mojom
 }  // namespace network
 
@@ -184,6 +187,10 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const;
   void SetServiceWorkerResponseSource(network::mojom::FetchResponseSource);
 
+  // See network.mojom.URLResponseHead.static_routing_info.
+  void SetServiceWorkerRouterInfo(
+      const network::mojom::ServiceWorkerRouterInfo&);
+
   // Flag whether a shared dictionary was used to decompress the response body.
   void SetDidUseSharedDictionary(bool);
 
@@ -251,8 +258,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetWasAlternateProtocolAvailable(bool);
 
   // Information about the type of connection used to fetch this resource.
-  net::HttpResponseInfo::ConnectionInfo ConnectionInfo() const;
-  void SetConnectionInfo(net::HttpResponseInfo::ConnectionInfo);
+  net::HttpConnectionInfo ConnectionInfo() const;
+  void SetConnectionInfo(net::HttpConnectionInfo);
 
   // Whether the response was cached and validated over the network.
   void SetIsValidated(bool);
@@ -265,6 +272,7 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetEncodedBodyLength(uint64_t);
 
   void SetIsSignedExchangeInnerResponse(bool);
+  void SetIsWebBundleInnerResponse(bool);
   void SetWasInPrefetchCache(bool);
   void SetWasCookieInRequest(bool);
   void SetRecursivePrefetchToken(const absl::optional<base::UnguessableToken>&);
@@ -276,9 +284,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // expected to be in reverse, from canonical name (i.e. address record name)
   // through to query name.
   void SetDnsAliases(const WebVector<WebString>&);
-
-  WebURL WebBundleURL() const;
-  void SetWebBundleURL(const WebURL&);
 
   void SetAuthChallengeInfo(const absl::optional<net::AuthChallengeInfo>&);
   const absl::optional<net::AuthChallengeInfo>& AuthChallengeInfo() const;
@@ -293,7 +298,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   bool ShouldUseSourceHashForJSCodeCache() const;
 
   void SetWasFetchedViaCache(bool);
-  void SetArrivalTimeAtRenderer(base::TimeTicks arrival);
 
 #if INSIDE_BLINK
  protected:

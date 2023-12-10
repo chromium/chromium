@@ -119,7 +119,7 @@ struct TypeConverter<std::vector<mojom::ACMatchClassificationPtr>,
 // Boilerplate for `mojom.field = proto.field`.
 #define PROTO_TO_MOJOM_SIGNAL(field) \
   mojom_signals->field =             \
-      signals.has_##field() ? absl::optional{signals.field()} : absl::nullopt;
+      signals.has_##field() ? std::optional{signals.field()} : std::nullopt;
 // Boilerplate for `proto.field = mojom.field`.
 #define MOJOM_TO_PROTO_SIGNAL(field)    \
   if (mojom_signals->field.has_value()) \
@@ -521,7 +521,8 @@ void OmniboxPageHandler::StartMl(mojom::SignalsPtr mojom_signals,
         mojo::ConvertTo<AutocompleteMatch::ScoringSignals>(mojom_signals);
     std::vector<AutocompleteScoringModelService::Result> result =
         service->BatchScoreAutocompleteUrlMatchesSync({&signals}, {""});
-    std::move(callback).Run(result.size() ? *std::get<0>(result[0]) : -1);
+    std::move(callback).Run(result.size() ? std::get<0>(result[0]).value_or(-1)
+                                          : -1);
   } else {
     std::move(callback).Run(-1);
   }
@@ -549,7 +550,7 @@ OmniboxPageHandler::GetAutocompleteControllerType(
 }
 
 AutocompleteScoringModelService* OmniboxPageHandler::GetMlService() {
-  return OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled()
+  return OmniboxFieldTrial::IsMlUrlScoringEnabled()
              ? AutocompleteScoringModelServiceFactory::GetInstance()
                    ->GetForProfile(profile_)
              : nullptr;

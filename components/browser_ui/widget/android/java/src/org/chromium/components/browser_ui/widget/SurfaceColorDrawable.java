@@ -43,15 +43,19 @@ public class SurfaceColorDrawable extends GradientDrawable {
     private float mDensity;
 
     @Override
-    public void inflate(@NonNull Resources resources, @NonNull XmlPullParser parser,
-            @NonNull AttributeSet attrs, @Nullable Theme theme)
+    public void inflate(
+            @NonNull Resources resources,
+            @NonNull XmlPullParser parser,
+            @NonNull AttributeSet attrs,
+            @Nullable Theme theme)
             throws XmlPullParserException, IOException {
         // All attributes must be read before we call super#inflate, which will advance the parser
         // which seems to change what attrs is pointing at.
         final TypedArray typedArray =
                 resources.obtainAttributes(attrs, R.styleable.SurfaceColorDrawable);
-        mElevation = typedArray.getDimensionPixelSize(
-                R.styleable.SurfaceColorDrawable_surfaceElevation, 0);
+        mElevation =
+                typedArray.getDimensionPixelSize(
+                        R.styleable.SurfaceColorDrawable_surfaceElevation, 0);
         typedArray.recycle();
 
         super.inflate(resources, parser, attrs, theme);
@@ -109,8 +113,12 @@ public class SurfaceColorDrawable extends GradientDrawable {
         final @ColorInt int colorSurface = AttrUtils.resolveColor(theme, R.attr.colorSurface);
 
         ElevationOverlayProvider elevationOverlayProvider =
-                new ElevationOverlayProvider(elevationOverlayEnabled, elevationOverlayColor,
-                        elevationOverlayAccentColor, colorSurface, mDensity);
+                new ElevationOverlayProvider(
+                        elevationOverlayEnabled,
+                        elevationOverlayColor,
+                        elevationOverlayAccentColor,
+                        colorSurface,
+                        mDensity);
         final @ColorInt int color =
                 elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(mElevation);
         if (getColors() == null) {

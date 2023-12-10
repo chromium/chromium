@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -35,14 +36,13 @@ constexpr char kTestUrl[] = "wss://test/";
 class FakeSafeBrowsing : public mojom::SafeBrowsing {
  public:
   FakeSafeBrowsing()
-      : render_frame_id_(),
-        load_flags_(-1),
+      : load_flags_(-1),
         request_destination_(),
         has_user_gesture_(false),
         originated_from_service_worker_(false) {}
 
   void CreateCheckerAndCheck(
-      int32_t render_frame_id,
+      const std::optional<blink::LocalFrameToken>& frame_token,
       mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
       const GURL& url,
       const std::string& method,
@@ -52,7 +52,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
       bool has_user_gesture,
       bool originated_from_service_worker,
       CreateCheckerAndCheckCallback callback) override {
-    render_frame_id_ = render_frame_id;
+    frame_token_ = frame_token;
     receiver_ = std::move(receiver);
     url_ = url;
     method_ = method;
@@ -71,7 +71,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
 
   void RunUntilCalled() { run_loop_.Run(); }
 
-  int32_t render_frame_id_;
+  std::optional<blink::LocalFrameToken> frame_token_;
   mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver_;
   GURL url_;
   std::string method_;
@@ -116,7 +116,7 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
   WebSocketSBHandshakeThrottleTest() : mojo_receiver_(&safe_browsing_) {
     mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
     throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
-        safe_browsing_remote_.get(), MSG_ROUTING_NONE);
+        safe_browsing_remote_.get(), std::nullopt);
   }
   void SetUp() override {
     feature_list_.InitAndDisableFeature(kSafeBrowsingSkipSubresources2);
@@ -140,7 +140,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, CheckArguments) {
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
-  EXPECT_EQ(MSG_ROUTING_NONE, safe_browsing_.render_frame_id_);
+  EXPECT_FALSE(safe_browsing_.frame_token_);
   EXPECT_EQ(GURL(kTestUrl), safe_browsing_.url_);
   EXPECT_EQ("GET", safe_browsing_.method_);
   EXPECT_TRUE(safe_browsing_.headers_.GetHeaderVector().empty());

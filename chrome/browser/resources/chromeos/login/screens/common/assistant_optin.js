@@ -15,6 +15,8 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 
+import {getTemplate} from './assistant_optin.html.js';
+
 
 /**
  * @constructor
@@ -33,7 +35,7 @@ class AssistantOptin extends AssistantOptinBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   get EXTERNAL_API() {

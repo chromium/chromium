@@ -272,7 +272,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return test_ambient_observer_.previews();
   }
 
-  absl::optional<ash::AmbientSettings>& settings() {
+  std::optional<ash::AmbientSettings>& settings() {
     return ambient_provider_->settings_;
   }
 
@@ -363,7 +363,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
 
   void ReplyFetchSettingsAndAlbums(
       bool success,
-      absl::optional<ash::AmbientSettings> settings = absl::nullopt) {
+      std::optional<ash::AmbientSettings> settings = std::nullopt) {
     fake_backend_controller_->ReplyFetchSettingsAndAlbums(success,
                                                           std::move(settings));
   }

@@ -116,15 +116,6 @@ typedef FILE* FileHandle;
 #include "base/fuchsia/scoped_fx_logger.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-// The fuzzing coverage display wants to record coverage even
-// for failure cases. It's Linux-only. So on Linux, dump coverage
-// before we immediately exit. We provide a weak symbol so that
-// this causes no link problems on configurations that don't involve
-// coverage.
-extern "C" void __attribute__((weak)) __llvm_profile_write_file() {}
-#endif
-
 namespace logging {
 
 namespace {
@@ -511,9 +502,9 @@ void TraceLogMessage(const char* file, int line, const std::string& message) {
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 // In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
-// determined at run-time. We default it to INFO, to avoid it triggering
+// determined at run-time. We default it to ERROR, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
-BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
+BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_ERROR;
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have
@@ -940,14 +931,6 @@ LogMessage::~LogMessage() {
         // debugging.
         DisplayDebugMessageInDialog(stream_.str());
       }
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-      // Write out any coverage information. This would normally have
-      // been written by a static initializer, but we won't be running those.
-      // This is primarily useful for the fuzzing coverage display, where
-      // we want to know even what failure paths have been explored.
-      __llvm_profile_write_file();
 #endif
 
       // Crash the process to generate a dump.

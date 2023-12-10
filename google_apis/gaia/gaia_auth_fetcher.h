@@ -207,6 +207,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
 
   bool IsReAuthApiUrl(const GURL& url);
 
+  bool IsListAccountsUrl(const GURL& url);
+
  private:
   // The format of the POST body to get OAuth2 token pair from auth code.
   static const char kOAuth2CodeToTokenPairBodyFormat[];

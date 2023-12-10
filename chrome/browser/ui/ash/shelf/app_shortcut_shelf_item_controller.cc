@@ -80,13 +80,13 @@ ash::ShelfAction ActivateContentOrMinimize(content::WebContents* content,
 // retrieves the window that is currently active, if available.
 // |activate_callback| will activate the next window selected by this function.
 template <class T>
-absl::optional<ash::ShelfAction> AdvanceApp(
+std::optional<ash::ShelfAction> AdvanceApp(
     const std::vector<T*>& items,
     base::OnceCallback<T*(const std::vector<T*>&, aura::Window**)>
         active_item_callback,
     base::OnceCallback<void(T*)> activate_callback) {
   if (items.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get the active item and associated aura::Window if it exists.
   aura::Window* active_item_window = nullptr;
@@ -209,7 +209,7 @@ class AppMatcher {
     // - The web app's scope gets matched.
     // - The shelf controller knows that the tab got created for this web app.
     const GURL tab_url = web_contents->GetURL();
-    absl::optional<GURL> app_scope = registrar_->GetAppScope(app_id_);
+    std::optional<GURL> app_scope = registrar_->GetAppScope(app_id_);
     DCHECK(app_scope.has_value());
 
     return ((!refocus_pattern_.match_all_urls() &&
@@ -535,11 +535,11 @@ std::vector<Browser*> AppShortcutShelfItemController::GetAppBrowsers(
   return browsers;
 }
 
-absl::optional<ash::ShelfAction>
+std::optional<ash::ShelfAction>
 AppShortcutShelfItemController::AdvanceToNextApp(
     const ItemFilterPredicate& filter_predicate) {
   if (!chrome::FindLastActive())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (IsWindowedWebApp()) {
     return AdvanceApp(GetAppBrowsers(filter_predicate),

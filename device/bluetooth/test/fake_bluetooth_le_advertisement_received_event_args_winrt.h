@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece_forward.h"
+#include <string_view>
 
 namespace device {
 
@@ -23,7 +23,7 @@ class FakeBluetoothLEAdvertisementReceivedEventArgsWinrt
  public:
   FakeBluetoothLEAdvertisementReceivedEventArgsWinrt(
       int16_t rssi,
-      base::StringPiece address,
+      std::string_view address,
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                                  IBluetoothLEAdvertisement> advertisement);
 

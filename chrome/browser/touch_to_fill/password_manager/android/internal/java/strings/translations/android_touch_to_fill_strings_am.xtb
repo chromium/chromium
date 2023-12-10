@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="am">
+<translation id="1220509181886849806">የተቀመጠውን የይለፍ ቃል ይጠቀማሉ?</translation>
+<translation id="1435940442311036198">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
+<translation id="1717486229951421299">በግማሽ ቁመት ላይ ሲነካ የሚሞሉ የመግቢያ ማስረጃዎች ዝርዝር።</translation>
+<translation id="2359808026110333948">ቀጥል</translation>
+<translation id="2364266287022099258">የተቀመጠ የይለፍ ቁልፍ ይጠቀሙ?</translation>
+<translation id="3399357656427473483">ሲነካ የሚሞሉ የመግቢያ ማስረጃዎች ዝርዝር።</translation>
+<translation id="3653689374478248324">በመለያ ወደ <ph name="SITE_NAME" /> ይገባሉ</translation>
+<translation id="3950820424414687140">በመለያ ይግቡ</translation>
+<translation id="4553044860350038560">ተጨማሪ የይለፍ ቁልፎች</translation>
+<translation id="4598345735110653698">የይለፍ ቁልፎችን አስተዳድር</translation>
+<translation id="4722735765955348426">የ<ph name="USERNAME" /> ይለፍ ቃል</translation>
+<translation id="4907224763885298217">የማያ ገፅ መቆለፊያዎን ይጠቀሙ</translation>
+<translation id="5012523644916800014">የይለፍ ቃላትን እና የይለፍ ቁልፎችን አስተዳድር</translation>
+<translation id="5441504010984421144">በሙሉ ቁመት ላይ ሲነካ የሚሞሉ የመግቢያ ማስረጃዎች ዝርዝር።</translation>
+<translation id="5591247451101092906">የተቀመጠ የይለፍ ቃል ወይም የይለፍ ቁልፍ ይጠቀሙ?</translation>
+<translation id="5624120631404540903">የይለፍ ቃሎችን አስተዳድር</translation>
+<translation id="6560306912274274630">ለ<ph name="USERNAME" /> የይለፍ ቁልፍ፣ የማያ ገፅ መቆለፊያዎን ይጠቀሙ</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ለዚህ ጣቢያ አዲስ የይለፍ ቃል}one{ለዚህ ጣቢያ አዲስ የይለፍ ቃል}other{ለዚህ ጣቢያ አዳዲስ የይለፍ ቃላት}}</translation>
+<translation id="7286867818472074330">የይለፍ ቁልፍ ምረጥ</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />፣ <ph name="ITEM_POSITION" /> ከ<ph name="ITEMS_TOTAL" />።</translation>
+<translation id="7738288782501322815">ለ<ph name="SITE_NAME" /> የይለፍ ቃሎች ደርስዎታል</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ለ<ph name="SITE_NAME" /> የይለፍ ቃል ከእርስዎ ጋር አጋርተዋል።</translation>
+<translation id="8891372124884726271">የመግቢያ ማስረጃዎች ዝርዝር ዝግ ነው።</translation>
+</translationbundle>

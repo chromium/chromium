@@ -9,7 +9,6 @@ import {Slice} from '../../lib/base_store.js';
 
 /**
  * @fileoverview Android apps slice of the store.
- * @suppress {checkTypes}
  *
  * Android App is something we get from private API
  * `chrome.fileManagerPrivate.getAndroidPickerApps`, it will be shown as a

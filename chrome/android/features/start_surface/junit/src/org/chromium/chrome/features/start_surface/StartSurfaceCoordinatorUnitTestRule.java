@@ -14,6 +14,8 @@ import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.NonNull;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -70,7 +72,7 @@ import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
-import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -87,18 +89,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Custom TestRule for tests using StartSurfaceCoordinator
- */
+/** Custom TestRule for tests using StartSurfaceCoordinator */
 public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
-    @Rule
-    public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
 
     private TabModelSelector mTabModelSelector;
     private ViewGroup mContainerView;
@@ -115,18 +111,25 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     private static class MockTabModelFilterProvider extends TabModelFilterProvider {
         public MockTabModelFilterProvider(Activity activity) {
             List<TabModel> tabModels = new ArrayList<>();
-            tabModels.add(new MockTabModel(Profile.getLastUsedRegularProfile(), null));
-            MockTabModel incognitoTabModel =
-                    new MockTabModel(
-                            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true), null);
-            incognitoTabModel.setAsActiveModelForTesting();
-            tabModels.add(incognitoTabModel);
+            MockTabModelSelector selector =
+                    new MockTabModelSelector(
+                            Profile.getLastUsedRegularProfile(),
+                            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                            0,
+                            0,
+                            null);
+            tabModels.add(selector.getModel(false));
+            tabModels.add(selector.getModel(true));
+            selector.selectModel(true);
 
-            init(new ChromeTabModelFilterFactory(activity), tabModels);
+            init(new ChromeTabModelFilterFactory(activity), selector, tabModels);
         }
 
         @Override
-        public void init(TabModelFilterFactory tabModelFilterFactory, List<TabModel> tabModels) {
+        public void init(
+                @NonNull TabModelFilterFactory tabModelFilterFactory,
+                @NonNull TabModelSelector tabModelSelector,
+                @NonNull List<TabModel> tabModels) {
             assert mTabModelFilterList.isEmpty();
             assert tabModels.size() > 0;
 
@@ -146,6 +149,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
             @Override
             public void evaluate() {
                 ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
+                ChromeFeatureList.sShowNtpAtStartupAndroid.setForTesting(false);
 
                 mTabModelSelector = Mockito.mock(TabModelSelector.class);
                 mContainerView = Mockito.mock(ViewGroup.class);
@@ -206,7 +210,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, Mockito.mock(FaviconHelper.Natives.class));
         mJniMocker.mock(
                 FeedServiceBridgeJni.TEST_HOOKS, Mockito.mock(FeedServiceBridge.Natives.class));
-        mJniMocker.mock(CookieControlsServiceBridgeJni.TEST_HOOKS,
+        mJniMocker.mock(
+                CookieControlsServiceBridgeJni.TEST_HOOKS,
                 Mockito.mock(CookieControlsServiceBridge.Natives.class));
         mJniMocker.mock(FeatureListJni.TEST_HOOKS, Mockito.mock(FeatureList.Natives.class));
     }
@@ -221,8 +226,10 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
         ViewGroup coordinatorView = Mockito.mock(ViewGroup.class);
         when(coordinatorView.generateLayoutParams(any()))
-                .thenReturn(new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                .thenReturn(
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
         when(coordinatorView.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view))
                 .thenReturn(Mockito.mock(TabGridDialogView.class));
         when(mActivity.findViewById(org.chromium.chrome.tab_ui.R.id.coordinator))
@@ -231,17 +238,21 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
     private void setUpCoordinator() {
         ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(mActivity, new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {
-                        // Intentional noop
-                    }
+                new ScrimCoordinator(
+                        mActivity,
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {
+                                // Intentional noop
+                            }
 
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {
-                        // Intentional noop
-                    }
-                }, mContainerView, Color.WHITE);
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {
+                                // Intentional noop
+                            }
+                        },
+                        mContainerView,
+                        Color.WHITE);
 
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0);
@@ -256,19 +267,35 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         when(voiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
         mIncognitoReauthControllerSupplier.set(Mockito.mock(IncognitoReauthController.class));
 
-        mCoordinator = new StartSurfaceCoordinator(mActivity, scrimCoordinator,
-                Mockito.mock(BottomSheetController.class), new OneshotSupplierImpl<>(),
-                new ObservableSupplierImpl<>(), false, windowAndroid, new PlaceholderJankTracker(),
-                mContainerView, new ObservableSupplierImpl<>(), mTabModelSelector,
-                browserControlsManager, snackbarManager, new ObservableSupplierImpl<>(),
-                ()
-                        -> omniboxStub,
-                tabContentManager, new FakeModalDialogManager(ModalDialogType.APP),
-                Mockito.mock(ChromeActivityNativeDelegate.class),
-                new ActivityLifecycleDispatcherImpl(mActivity), new MockTabCreatorManager(),
-                Mockito.mock(MenuOrKeyboardActionController.class),
-                new MultiWindowModeStateDispatcherImpl(mActivity), new ObservableSupplierImpl<>(),
-                new BackPressManager(), mIncognitoReauthControllerSupplier, null, mProfileSupplier);
+        mCoordinator =
+                new StartSurfaceCoordinator(
+                        mActivity,
+                        scrimCoordinator,
+                        Mockito.mock(BottomSheetController.class),
+                        new OneshotSupplierImpl<>(),
+                        new ObservableSupplierImpl<>(),
+                        false,
+                        windowAndroid,
+                        new PlaceholderJankTracker(),
+                        mContainerView,
+                        new ObservableSupplierImpl<>(),
+                        mTabModelSelector,
+                        browserControlsManager,
+                        snackbarManager,
+                        new ObservableSupplierImpl<>(),
+                        () -> omniboxStub,
+                        tabContentManager,
+                        new FakeModalDialogManager(ModalDialogType.APP),
+                        Mockito.mock(ChromeActivityNativeDelegate.class),
+                        new ActivityLifecycleDispatcherImpl(mActivity),
+                        new MockTabCreatorManager(),
+                        Mockito.mock(MenuOrKeyboardActionController.class),
+                        new MultiWindowModeStateDispatcherImpl(mActivity),
+                        new ObservableSupplierImpl<>(),
+                        new BackPressManager(),
+                        mIncognitoReauthControllerSupplier,
+                        null,
+                        mProfileSupplier);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

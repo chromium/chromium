@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="nav"]
+++++View textSize:16.00 style:4 fgColor:-16776978 bundle:[display="inline", href="/fake/", htmlTag="a"]
+++++++TextView text:"Don't click on me" textSize:16.00 style:4 fgColor:-16776978 bundle:[display="", htmlTag=""]

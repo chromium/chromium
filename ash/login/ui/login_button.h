@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 
@@ -14,6 +15,8 @@ namespace ash {
 
 // This class adds ripple effects for touch targets in the lockscreen.
 class ASH_EXPORT LoginButton : public views::ImageButton {
+  METADATA_HEADER(LoginButton, views::ImageButton)
+
  public:
   explicit LoginButton(PressedCallback callback);
 

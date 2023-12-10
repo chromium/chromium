@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.xsurface_provider.ProcessScopeDependencyProviderFactory;
 import org.chromium.chrome.browser.xsurface_provider.ProcessScopeDependencyProviderImpl;
 
-/**
- * Implements the provider factory.
- */
+/** Implements the provider factory. */
 @UsedByReflection("XSurfaceProcessScopeProvider")
 public class ProcessScopeDependencyProviderFactoryImpl
         implements ProcessScopeDependencyProviderFactory {

@@ -15,7 +15,7 @@ namespace autofill {
 // different popup surfaces a user can use to interact with Autofill, which may
 // lead to a different set of fields being filled. These sets/groups can be
 // either the full form, a group of related fields or a single field.
-enum class AutofillFillingMethod {
+enum class AutofillFillingMethod : uint8_t {
   // User chose to fill the whole form. Either from the main suggestion or from
   // the extended menu `PopupItemId::kFillEverything`.
   kFullForm = 0,
@@ -54,4 +54,4 @@ ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_GRANULAR_FILLING_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_

@@ -12,65 +12,14 @@ namespace url {
 
 namespace {
 
-// clang-format off
-//
-// For reference, here's what IE supports:
-// Key: 0 (disallowed: failure if present in the input)
-//      + (allowed either escaped or unescaped, and unmodified)
-//      U (allowed escaped or unescaped but always unescaped if present in
-//         escaped form)
-//      E (allowed escaped or unescaped but always escaped if present in
-//         unescaped form)
-//      % (only allowed escaped in the input, will be unmodified).
-//      I left blank alpha numeric characters.
-//
-//    00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
-//    -----------------------------------------------
-// 0   0  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-// 1   E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-// 2   E  +  E  E  +  E  +  +  +  +  +  +  +  U  U  0
-// 3                                 %  %  E  +  E  0  <-- Those are  : ; < = > ?
-// 4   %
-// 5                                    U  0  U  U  U  <-- Those are  [ \ ] ^ _
-// 6   E                                               <-- That's  `
-// 7                                    E  E  E  U  E  <-- Those are { | } ~ (UNPRINTABLE)
-//
-// NOTE: I didn't actually test all the control characters. Some may be
-// disallowed in the input, but they are all accepted escaped except for 0.
-// I also didn't test if characters affecting HTML parsing are allowed
-// unescaped, e.g. (") or (#), which would indicate the beginning of the path.
-// Surprisingly, space is accepted in the input and always escaped.
-//
-// TODO(https://crbug.com/1416013): Remove the above historical reference
-// information once we are 100% standard compliant to the URL Standard.
-//
 // This table lists the canonical version of all characters we allow in the
-// input, with 0 indicating it is disallowed. We use the magic kEscapedHostChar
-// value to indicate that this character should be escaped. We are a little more
-// restrictive than IE, but less restrictive than Firefox.
-//
+// input, with 0 indicating it is disallowed. We use the magic kEsc value to
+// indicate that this character should be escaped. At present, ' ' (SPACE) and
+// '*' (asterisk) are still non-compliant to the URL Standard. See
+// https://crbug.com/1416013 for details.
 const unsigned char kEsc = 0xff;
+// clang-format off
 const unsigned char kHostCharLookup[0x80] = {
-// 00-1f: all are invalid
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-//  ' '   !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
-   kEsc,kEsc,kEsc,kEsc,kEsc,  0, kEsc,kEsc,kEsc,kEsc,kEsc, '+',kEsc, '-', '.',  0,
-//   0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',  0 ,kEsc,kEsc,kEsc,  0 ,
-//   @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
-   kEsc, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-//   P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _
-    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '[',  0 , ']',  0 , '_',
-//   `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
-   kEsc, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-//   p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
-    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',kEsc,kEsc,kEsc,  0 ,  0 };
-
-// The following table is used when kStandardCompliantHostCharLookup feature is
-// enabled. See https://crbug.com/1416013 for details. At present, ' ' (SPACE)
-// and '*' (asterisk) are still non-compliant to the URL Standard.
-const unsigned char kStandardCompliantHostCharLookup[0x80] = {
 // 00-1f: all are invalid
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -169,12 +118,7 @@ bool DoSimpleHost(const INCHAR* host,
 
     if (source < 0x80) {
       // We have ASCII input, we can use our lookup table.
-      unsigned char replacement;
-      if (url::IsUsingStandardCompliantHostCharacters()) {
-        replacement = kStandardCompliantHostCharLookup[source];
-      } else {
-        replacement = kHostCharLookup[source];
-      }
+      unsigned char replacement = kHostCharLookup[source];
       if (!replacement) {
         // Invalid character, add it as percent-escaped and mark as failed.
         AppendEscapedChar(source, output);

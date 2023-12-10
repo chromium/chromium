@@ -285,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
          /*num_layout_shifts=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_MaxImpact) {
+// TODO(https://crbug.com/1400401): Fix and reenable the test.
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_Sources_MaxImpact) {
   RunWPT("sources-maximpact.html");
 }
 

@@ -57,7 +57,7 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
       FROM_HERE,
       base::BindOnce(std::move(callback), host_memory_pressure_response_->first,
                      host_memory_pressure_response_->second));
-  host_memory_pressure_response_ = absl::nullopt;
+  host_memory_pressure_response_ = std::nullopt;
 }
 
 void FakeProcessInstance::RequestLowMemoryKillCounts(

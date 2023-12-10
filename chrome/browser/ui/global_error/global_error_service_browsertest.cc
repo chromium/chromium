@@ -20,7 +20,7 @@
 namespace {
 
 // An error that has a bubble view.
-class BubbleViewError : public GlobalErrorWithStandardBubble {
+class BubbleViewError final : public GlobalErrorWithStandardBubble {
  public:
   BubbleViewError() : bubble_view_close_count_(0) { }
 
@@ -53,9 +53,13 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
   }
   void BubbleViewAcceptButtonPressed(Browser* browser) override {}
   void BubbleViewCancelButtonPressed(Browser* browser) override {}
+  base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   int bubble_view_close_count_;
+  base::WeakPtrFactory<BubbleViewError> weak_ptr_factory_{this};
 };
 
 } // namespace

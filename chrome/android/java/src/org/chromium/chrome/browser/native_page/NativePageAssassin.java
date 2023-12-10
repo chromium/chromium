@@ -32,8 +32,8 @@ public class NativePageAssassin {
      * The most recently hidden tabs, limited to MAX_RECENT_TABS elements, ordered from oldest to
      * newest. Visible tabs are not included in this list.
      */
-    private ArrayList<WeakReference<Tab>> mRecentTabs = new ArrayList<WeakReference<Tab>>(
-            MAX_RECENT_TABS + 1);
+    private ArrayList<WeakReference<Tab>> mRecentTabs =
+            new ArrayList<WeakReference<Tab>>(MAX_RECENT_TABS + 1);
 
     private NativePageAssassin() {}
 
@@ -73,9 +73,7 @@ public class NativePageAssassin {
         freeze(mRecentTabs.remove(0).get());
     }
 
-    /**
-     * Freezes all hidden NativePages that aren't already frozen.
-     */
+    /** Freezes all hidden NativePages that aren't already frozen. */
     public void freezeAllHiddenPages() {
         for (int i = 0; i < mRecentTabs.size(); i++) {
             freeze(mRecentTabs.get(i).get());

@@ -85,20 +85,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.ArchiveManager.ArchiveDirsCreationResult2"
-    enum="PlatformFileError" expires_after="2021-06-25">
-  <obsolete>
-    Obsoleted April 2023. Histogram was removed after expiration.
-  </obsolete>
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    This is recorded every time the archive directory is being created. It
-    doesn't include the case which the archive directory exists. It has suffixes
-    indicating results for temporary or persistent archives directories.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
     units="units" expires_after="2021-06-25">
   <owner>dougarnett@chromium.org</owner>
@@ -120,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.CachedOfflineStatusValid" enum="BooleanMatched"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>pnoland@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -152,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="2024-03-17">
+    enum="Boolean" expires_after="2024-05-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -226,25 +212,6 @@ chromium-metrics-reviews@google.com.
   <owner>jianli@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>Size of the saved copy of an offline page.</summary>
-</histogram>
-
-<histogram name="OfflinePages.PublishArchive.PublishSource"
-    enum="OfflinePagesPublishSource" expires_after="M85">
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    When publishing an offline page, a page might not be found. This returns the
-    publishing path that was used (ex: by Guid or by OfflineId).
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.SavePage.PercentLoaded" units="%"
-    expires_after="M77">
-  <owner>twellington@chromium.org</owner>
-  <owner>ianwen@chromium.org</owner>
-  <summary>
-    The percentage of the page load completed when the button to save an offline
-    page is pressed.
-  </summary>
 </histogram>
 
 <histogram name="OfflinePages.SQLStorage.StoreEvent"

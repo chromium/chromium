@@ -39,6 +39,12 @@
     "embedded_setup_windows_url": {
       "url": "https://accounts.example.com/embedded/setup/windows"
     },
+    "embedded_reauth_chromeos_url": {
+      "url": "https://accounts.example.com/embedded/reauth/chromeos"
+    },
+    "saml_redirect_chromeos_url": {
+      "url": "https://accounts.example.com/samlredirect"
+    },
     "signin_chrome_sync_dice": {
       "url": "https://accounts.example.com/signin/chrome/sync?ssp=1"
     },

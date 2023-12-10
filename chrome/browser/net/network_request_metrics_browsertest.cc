@@ -30,7 +30,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -186,9 +186,8 @@ class NetworkRequestMetricsBrowserTest
                                       -expected_net_error, 1);
 
       if (headers_received == HeadersReceived::kHeadersReceived) {
-        histograms_->ExpectUniqueSample(
-            "Net.ConnectionInfo.MainFrame",
-            net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1, 1);
+        histograms_->ExpectUniqueSample("Net.ConnectionInfo.MainFrame",
+                                        net::HttpConnectionInfo::kHTTP1_1, 1);
       } else {
         histograms_->ExpectTotalCount("Net.ConnectionInfo.MainFrame", 0);
       }
@@ -233,9 +232,8 @@ class NetworkRequestMetricsBrowserTest
     // A subresource load requires a main frame load, which is only logged for
     // network URLs.
     if (network_accessed == NetworkAccessed::kNetworkAccessed) {
-      histograms_->ExpectUniqueSample(
-          "Net.ConnectionInfo.MainFrame",
-          net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1, 1);
+      histograms_->ExpectUniqueSample("Net.ConnectionInfo.MainFrame",
+                                      net::HttpConnectionInfo::kHTTP1_1, 1);
       if (headers_received == HeadersReceived::kHeadersReceived) {
         // Favicon request may or may not have received a response.
         size_t subresources =
@@ -255,8 +253,9 @@ class NetworkRequestMetricsBrowserTest
   // The request identified by GetParam() is expected to fail with
   // net::ERR_ABORTED.
   void CheckHistogramsAfterMainFrameInterruption() {
-    // Some metrics may come from the renderer. This call ensures that those
+    // Some metrics may come from the renderer. These call ensures that those
     // metrics are available.
+    FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     if (GetParam() == RequestType::kMainFrame) {
@@ -516,9 +515,8 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
         << "Found unexpected load with result: " << bucket.min;
   }
 
-  histograms()->ExpectUniqueSample(
-      "Net.ConnectionInfo.MainFrame",
-      net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1, 1);
+  histograms()->ExpectUniqueSample("Net.ConnectionInfo.MainFrame",
+                                   net::HttpConnectionInfo::kHTTP1_1, 1);
   // Favicon request may or may not have received a response.
   size_t subresources =
       histograms()->GetAllSamples("Net.ConnectionInfo.SubResource").size();

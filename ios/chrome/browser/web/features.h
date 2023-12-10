@@ -18,12 +18,6 @@ BASE_DECLARE_FEATURE(kWebPageAlternativeTextZoom);
 // Reneables text zoom on iPad.
 BASE_DECLARE_FEATURE(kWebPageTextZoomIPad);
 
-// Feature flag for to use native session restoration.
-BASE_DECLARE_FEATURE(kRestoreSessionFromCache);
-
-// Whether native session restoration cache is enabled.
-bool UseNativeSessionRestorationCache();
-
 }  // namespace web
 
 #endif  // IOS_CHROME_BROWSER_WEB_FEATURES_H_

@@ -13,9 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * A util class for crash logs.
- */
+/** A util class for crash logs. */
 public class CrashLoggingUtils {
     private static final String TAG = "CrashLogging";
 

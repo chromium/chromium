@@ -226,4 +226,9 @@ interface AnchorElementMetricsHost {
   // This is called for all anchor elements.
   ProcessPointerEventUsingMLModel(
     AnchorElementPointerEventForMLModel pointer_event);
+
+  // Asks the browser whether to send subsequent updates immediately
+  // instead of rate limiting.
+  // Skipping the delays is only expected to be done for testing.
+  ShouldSkipUpdateDelays() => (bool should_skip_for_testing);
 };

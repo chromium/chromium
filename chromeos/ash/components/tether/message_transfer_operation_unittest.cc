@@ -110,7 +110,7 @@ class TestOperation : public MessageTransferOperation {
 
   bool has_operation_finished() { return has_operation_finished_; }
 
-  absl::optional<int> last_sequence_number() { return last_sequence_number_; }
+  std::optional<int> last_sequence_number() { return last_sequence_number_; }
 
  private:
   base::flat_map<multidevice::RemoteDeviceRef, bool> device_authenticated_map_;
@@ -122,7 +122,7 @@ class TestOperation : public MessageTransferOperation {
   bool should_unregister_device_on_message_received_ = false;
   bool has_operation_started_ = false;
   bool has_operation_finished_ = false;
-  absl::optional<int> last_sequence_number_;
+  std::optional<int> last_sequence_number_;
 };
 
 TetherAvailabilityResponse CreateTetherAvailabilityResponse() {

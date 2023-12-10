@@ -230,8 +230,7 @@ void MojoBlobReader::ReadMore() {
                                     TRACE_ID_LOCAL(this));
   CHECK_GT(static_cast<uint32_t>(std::numeric_limits<int>::max()), num_bytes);
   DCHECK(pending_write_);
-  auto buf =
-      base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_write_.get());
+  auto buf = base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_write_);
   int bytes_read = 0;
   BlobReader::Status read_status = blob_reader_->Read(
       buf.get(), static_cast<int>(num_bytes), &bytes_read,

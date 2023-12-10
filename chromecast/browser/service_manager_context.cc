@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -43,7 +44,6 @@
 #include "services/service_manager/service_manager.h"
 #include "services/service_manager/service_process_host.h"
 #include "services/service_manager/service_process_launcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
@@ -316,7 +316,7 @@ ServiceManagerContext::ServiceManagerContext(
   manifests.push_back(GetBrowserManifest());
   manifests.push_back(GetSystemManifest(cast_content_browser_client_));
   for (auto& manifest : manifests) {
-    absl::optional<service_manager::Manifest> overlay =
+    std::optional<service_manager::Manifest> overlay =
         cast_content_browser_client_->GetServiceManifestOverlay(
             manifest.service_name);
     if (overlay)

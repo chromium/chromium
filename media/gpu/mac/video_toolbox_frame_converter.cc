@@ -19,7 +19,7 @@
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -234,7 +234,9 @@ void VideoToolboxFrameConverter::Convert(
       IsMultiPlaneFormatForHardwareVideoEnabled()
           ? SharedImageFormatType::kSharedImageFormat
           : SharedImageFormatType::kLegacy);
-  frame->metadata().frame_duration = metadata->duration;
+  if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
+    frame->metadata().frame_duration = metadata->duration;
+  }
   frame->metadata().allow_overlay = true;
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).

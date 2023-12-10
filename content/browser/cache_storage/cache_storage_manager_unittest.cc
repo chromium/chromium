@@ -56,6 +56,7 @@
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/http/http_connection_info.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -680,8 +681,7 @@ class CacheStorageManagerTest : public testing::Test {
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
         /*side_data_blob_for_cache_put=*/nullptr,
-        network::mojom::ParsedHeaders::New(),
-        net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+        network::mojom::ParsedHeaders::New(), net::HttpConnectionInfo::kUNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
         /*auth_challenge_info=*/absl::nullopt,

@@ -139,7 +139,7 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
       </LinearLayout>
 
-      <androidx.appcompat.widget.SwitchCompat
+      <com.google.android.material.materialswitch.MaterialSwitch
           android:id="@+id/price_tracking_switch"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"

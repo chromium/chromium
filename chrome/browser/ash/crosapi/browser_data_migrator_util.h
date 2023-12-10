@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/sync/base/model_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace base {
@@ -501,7 +501,7 @@ void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
 
 // Given a `original_contents` string containing the original Preferences
 // file, return the migrated Ash and Lacros versions of Preferences.
-absl::optional<PreferencesContents> MigratePreferencesContents(
+std::optional<PreferencesContents> MigratePreferencesContents(
     const base::StringPiece original_contents);
 
 // Migrate Preferences to Ash and Lacros.

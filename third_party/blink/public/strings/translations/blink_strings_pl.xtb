@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Skróć ten tekst do maksymalnie <ph name="MAX_CHARACTERS" /> znaków (w tej chwili korzystasz z <ph name="CURRENT_LENGTH" /> znaków).</translation>
 <translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Zezwolono na dostęp do kamery i mikrofonu</translation>
 <translation id="2393030564806080191">Wartość szesnastkowego kodu koloru</translation>
 <translation id="2398813069815436052">okno zostało otwarte.</translation>
 <translation id="245932805758469625">pozostały czas filmu w sekundach</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Wydłuż ten tekst przynajmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz <ph name="CURRENT_LENGTH" /> znaków).</translation>
 <translation id="383465348367842624">Część przed znakiem „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Zamknij pełny ekran</translation>
+<translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
 <translation id="4103419683916926126">Milisekundy</translation>
 <translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
 <translation id="4360991593054037559">Podaj prawidłową wartość. Dwie najbliższe prawidłowe wartości to <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
+<translation id="4663373278480897665">Zezwolono na dostęp do kamery</translation>
 <translation id="4664250907885839816">Część po znaku „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Odtwarzam w trybie obrazu w obrazie</translation>
 <translation id="4748357248530471599">przełącz z wycięcia w ekranie na tryb pełnoekranowy</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">pobierz multimedia</translation>
 <translation id="698788488269350478">rozwinięto.</translation>
 <translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
+<translation id="7080893216867146095">Udostępnianie lokalizacji dozwolone</translation>
 <translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>
 <translation id="7102274145889307184">bieżąca lokalizacja</translation>
 <translation id="7263440858009898357">Wybierz element z listy.</translation>

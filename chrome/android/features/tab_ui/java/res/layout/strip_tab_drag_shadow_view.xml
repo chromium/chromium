@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.compositor.overlays.strip.StripTabDragShadowView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/strip_tab_drag_shadow_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="invisible">
+
+  <include layout="@layout/tab_grid_card_item"/>
+
+</org.chromium.chrome.browser.compositor.overlays.strip.StripTabDragShadowView>

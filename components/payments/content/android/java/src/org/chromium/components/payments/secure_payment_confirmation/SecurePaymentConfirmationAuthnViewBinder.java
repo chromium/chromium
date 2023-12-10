@@ -56,13 +56,17 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
                     getOptOutText(view.mContext, info.mRpId, info.mOptOutCallback));
         } else if (SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK
                 == propertyKey) {
-            view.mContinueButton.setOnClickListener((v) -> {
-                model.get(SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK).run();
-            });
+            view.mContinueButton.setOnClickListener(
+                    (v) -> {
+                        model.get(SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK)
+                                .run();
+                    });
         } else if (SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK == propertyKey) {
-            view.mCancelButton.setOnClickListener((v) -> {
-                model.get(SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK).run();
-            });
+            view.mCancelButton.setOnClickListener(
+                    (v) -> {
+                        model.get(SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK)
+                                .run();
+                    });
         }
     }
 
@@ -77,11 +81,18 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 
     private static SpannableString getOptOutText(
             Context context, String rpId, Runnable optOutCallback) {
-        String deviceString = context.getResources().getString(isTablet(context)
-                        ? R.string.secure_payment_confirmation_this_tablet_label
-                        : R.string.secure_payment_confirmation_this_phone_label);
-        String optOut = context.getResources().getString(
-                R.string.secure_payment_confirmation_opt_out_label, deviceString, rpId);
+        String deviceString =
+                context.getResources()
+                        .getString(
+                                isTablet(context)
+                                        ? R.string.secure_payment_confirmation_this_tablet_label
+                                        : R.string.secure_payment_confirmation_this_phone_label);
+        String optOut =
+                context.getResources()
+                        .getString(
+                                R.string.secure_payment_confirmation_opt_out_label,
+                                deviceString,
+                                rpId);
         NoUnderlineClickableSpan requestToDeleteSpan =
                 new NoUnderlineClickableSpan(context, (widget) -> optOutCallback.run());
         return SpanApplier.applySpans(

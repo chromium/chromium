@@ -154,7 +154,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 /// `requestedRect`.
 - (void)drawTextInRect:(CGRect)requestedRect {
   const CGFloat lineHeight = self.font.lineHeight;
-  if (!lineHeight || !self.attributedText) {
+  if (!lineHeight || !self.attributedText || CGRectIsEmpty(requestedRect)) {
     return;
   }
 

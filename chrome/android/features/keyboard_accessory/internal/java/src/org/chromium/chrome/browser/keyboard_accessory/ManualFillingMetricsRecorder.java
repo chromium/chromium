@@ -29,9 +29,7 @@ public class ManualFillingMetricsRecorder {
             "CreditCards";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_ADDRESSES = "Addresses";
 
-    /**
-     * The Recorder itself should be stateless and have no need for an instance.
-     */
+    /** The Recorder itself should be stateless and have no need for an instance. */
     private ManualFillingMetricsRecorder() {}
 
     /**
@@ -65,13 +63,15 @@ public class ManualFillingMetricsRecorder {
     public static void recordSheetTrigger(
             @AccessoryTabType int tabType, @AccessorySheetTrigger int bucket) {
         RecordHistogram.recordEnumeratedHistogram(
-                getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED, tabType), bucket,
+                getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED, tabType),
+                bucket,
                 AccessorySheetTrigger.COUNT);
         if (tabType != AccessoryTabType.ALL) { // Record count for all tab types exactly once!
             RecordHistogram.recordEnumeratedHistogram(
                     getHistogramForType(
                             UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED, AccessoryTabType.ALL),
-                    bucket, AccessorySheetTrigger.COUNT);
+                    bucket,
+                    AccessorySheetTrigger.COUNT);
         }
     }
 
@@ -121,12 +121,13 @@ public class ManualFillingMetricsRecorder {
      * @param isFieldObfuscated denotes whether a field is obfuscated (e.g. a password field).
      */
     static void recordSuggestionSelected(@AccessoryTabType int tabType, boolean isFieldObfuscated) {
-        @AccessorySuggestionType
-        int suggestionRecordingType = AccessorySuggestionType.COUNT;
+        @AccessorySuggestionType int suggestionRecordingType = AccessorySuggestionType.COUNT;
         switch (tabType) {
             case AccessoryTabType.PASSWORDS:
-                suggestionRecordingType = isFieldObfuscated ? AccessorySuggestionType.PASSWORD
-                                                            : AccessorySuggestionType.USERNAME;
+                suggestionRecordingType =
+                        isFieldObfuscated
+                                ? AccessorySuggestionType.PASSWORD
+                                : AccessorySuggestionType.USERNAME;
                 break;
             case AccessoryTabType.CREDIT_CARDS:
                 suggestionRecordingType = AccessorySuggestionType.PAYMENT_INFO;
@@ -145,9 +146,11 @@ public class ManualFillingMetricsRecorder {
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramForType(
                         UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED, AccessoryTabType.ALL),
-                suggestionRecordingType, AccessorySuggestionType.COUNT);
+                suggestionRecordingType,
+                AccessorySuggestionType.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED, tabType),
-                suggestionRecordingType, AccessorySuggestionType.COUNT);
+                suggestionRecordingType,
+                AccessorySuggestionType.COUNT);
     }
 }

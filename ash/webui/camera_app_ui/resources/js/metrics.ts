@@ -509,6 +509,7 @@ export function sendBarcodeEnabledEvent(): void {
 export enum BarcodeContentType {
   TEXT = 'text',
   URL = 'url',
+  WIFI = 'wifi',
 }
 
 interface BarcodeDetectedEventParam {
@@ -519,12 +520,17 @@ interface BarcodeDetectedEventParam {
  * Sends the barcode detected event.
  */
 export function sendBarcodeDetectedEvent(
-    {contentType}: BarcodeDetectedEventParam): void {
-  sendEvent({
-    eventCategory: 'barcode',
-    eventAction: 'detect',
-    eventLabel: contentType,
-  });
+    {contentType}: BarcodeDetectedEventParam,
+    wifiSecurityType: string = ''): void {
+  sendEvent(
+      {
+        eventCategory: 'barcode',
+        eventAction: 'detect',
+        eventLabel: contentType,
+      },
+      new Map([
+        [GaMetricDimension.WIFI_SECURITY_TYPE, wifiSecurityType],
+      ]));
 }
 
 /**

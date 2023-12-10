@@ -79,10 +79,12 @@ int GetTemperatureFontDescent() {
 GlanceableInfoView::GlanceableInfoView(
     AmbientViewDelegate* delegate,
     GlanceableInfoView::Delegate* glanceable_info_view_delegate,
-    int time_font_size_dip)
+    int time_font_size_dip,
+    bool add_text_shadow)
     : delegate_(delegate),
       glanceable_info_view_delegate_(glanceable_info_view_delegate),
-      time_font_size_dip_(time_font_size_dip) {
+      time_font_size_dip_(time_font_size_dip),
+      add_text_shadow_(add_text_shadow) {
   DCHECK(delegate);
   DCHECK_GT(time_font_size_dip_, 0);
   SetID(AmbientViewID::kAmbientGlanceableInfoView);
@@ -105,15 +107,17 @@ void GlanceableInfoView::OnWeatherInfoUpdated() {
 
 void GlanceableInfoView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  gfx::ShadowValues text_shadow_values =
-      ambient::util::GetTextShadowValues(GetColorProvider());
-  time_view_->SetTextShadowValues(text_shadow_values);
   time_view_->SetTextColor(
       glanceable_info_view_delegate_->GetTimeTemperatureFontColor(),
       /*auto_color_readability_enabled=*/false);
-  temperature_->SetShadows(text_shadow_values);
   temperature_->SetEnabledColor(
       glanceable_info_view_delegate_->GetTimeTemperatureFontColor());
+  if (add_text_shadow_) {
+    gfx::ShadowValues text_shadow_values =
+        ambient::util::GetTextShadowValues(GetColorProvider());
+    time_view_->SetTextShadowValues(text_shadow_values);
+    temperature_->SetShadows(text_shadow_values);
+  }
 }
 
 void GlanceableInfoView::Show() {
@@ -156,8 +160,11 @@ void GlanceableInfoView::InitLayout() {
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
 
-  gfx::Insets shadow_insets =
-      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
+  gfx::Insets shadow_insets;
+  if (add_text_shadow_) {
+    shadow_insets = gfx::ShadowValue::GetMargin(
+        ambient::util::GetTextShadowValues(nullptr));
+  }
 
   // Inits the time view.
   time_view_ = AddChildView(

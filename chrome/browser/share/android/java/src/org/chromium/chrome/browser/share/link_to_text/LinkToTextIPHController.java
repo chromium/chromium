@@ -27,9 +27,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-/**
- * This class is responsible for rendering an IPH, when receiving a link-to-text.
- */
+/** This class is responsible for rendering an IPH, when receiving a link-to-text. */
 public class LinkToTextIPHController {
     private static final String FEATURE_NAME =
             FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE;
@@ -44,40 +42,44 @@ public class LinkToTextIPHController {
      *         will be rendered.
      * @param TabModelSelector The {@link TabModelSelector} to open a new tab.
      */
-    public LinkToTextIPHController(ObservableSupplier<Tab> tabSupplier,
-            TabModelSelector tabModelSelector, ObservableSupplier<Profile> profileSupplier) {
+    public LinkToTextIPHController(
+            ObservableSupplier<Tab> tabSupplier,
+            TabModelSelector tabModelSelector,
+            ObservableSupplier<Profile> profileSupplier) {
         mTabModelSelector = tabModelSelector;
-        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (!ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-                    return;
-                }
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onPageLoadFinished(Tab tab, GURL url) {
+                                if (!ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
+                                    return;
+                                }
 
-                if (!LinkToTextHelper.hasTextFragment(url)) return;
+                                if (!LinkToTextHelper.hasTextFragment(url)) return;
 
-                Profile profile = profileSupplier.get();
-                // In some cases, ProfileSupplier.get() will return null. See
-                // https://crbug.com/1346710 and https://crbug.com/1353138.
-                if (profile == null) {
-                    profile = Profile.getLastUsedRegularProfile();
-                }
-                if (profile == null) {
-                    return;
-                }
-                mTracker = TrackerFactory.getTrackerForProfile(profile);
-                if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
-                    return;
-                }
+                                Profile profile = profileSupplier.get();
+                                if (profile == null) {
+                                    assert false : "Unexpected null profile";
+                                    return;
+                                }
+                                mTracker = TrackerFactory.getTrackerForProfile(profile);
+                                if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
+                                    return;
+                                }
 
-                LinkToTextHelper.hasExistingSelectors(tab, (hasSelectors) -> {
-                    if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
-                        showMessageIPH(tab);
-                    }
-                });
-            }
-        }, null);
+                                LinkToTextHelper.hasExistingSelectors(
+                                        tab,
+                                        (hasSelectors) -> {
+                                            if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
+                                                showMessageIPH(tab);
+                                            }
+                                        });
+                            }
+                        },
+                        null);
     }
 
     private void showMessageIPH(Tab tab) {
@@ -85,20 +87,28 @@ public class LinkToTextIPHController {
                 MessageDispatcherProvider.from(tab.getWindowAndroid());
         PropertyModel model =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.SHARED_HIGHLIGHTING)
-                        .with(MessageBannerProperties.ICON,
+                        .with(
+                                MessageBannerProperties.ICON,
                                 TraceEventVectorDrawableCompat.create(
-                                        tab.getContext().getResources(), R.drawable.ink_highlighter,
+                                        tab.getContext().getResources(),
+                                        R.drawable.ink_highlighter,
                                         tab.getContext().getTheme()))
-                        .with(MessageBannerProperties.TITLE,
-                                tab.getContext().getResources().getString(
-                                        R.string.iph_message_shared_highlighting_title))
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                                tab.getContext().getResources().getString(
-                                        R.string.iph_message_shared_highlighting_button))
+                        .with(
+                                MessageBannerProperties.TITLE,
+                                tab.getContext()
+                                        .getResources()
+                                        .getString(R.string.iph_message_shared_highlighting_title))
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                tab.getContext()
+                                        .getResources()
+                                        .getString(R.string.iph_message_shared_highlighting_button))
                         .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
-                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
                                 this::onMessageButtonClicked)
                         .build();
         mMessageDispatcher.enqueueMessage(
@@ -116,7 +126,10 @@ public class LinkToTextIPHController {
     }
 
     private void onOpenInChrome(String linkUrl) {
-        mTabModelSelector.openNewTab(new LoadUrlParams(linkUrl), TabLaunchType.FROM_LINK,
-                mTabModelSelector.getCurrentTab(), mTabModelSelector.isIncognitoSelected());
+        mTabModelSelector.openNewTab(
+                new LoadUrlParams(linkUrl),
+                TabLaunchType.FROM_LINK,
+                mTabModelSelector.getCurrentTab(),
+                mTabModelSelector.isIncognitoSelected());
     }
 }

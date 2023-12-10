@@ -33,6 +33,7 @@ const char kLogUnsentCountKey[] = "unsent_samples_count";
 const char kLogSentCountKey[] = "sent_samples_count";
 const char kLogPersistedSizeInKbKey[] = "unsent_persisted_size_in_kb";
 const char kLogUserIdKey[] = "user_id";
+const char kLogSourceType[] = "type";
 
 std::string EncodeToBase64(const std::string& to_convert) {
   DCHECK(to_convert.data());
@@ -73,7 +74,11 @@ class LogsPrefWriter {
     dict_value.Set(kLogSignatureKey, EncodeToBase64(log->signature));
     dict_value.Set(kLogDataKey, EncodeToBase64(log->compressed_log_data));
     dict_value.Set(kLogTimestampKey, log->timestamp);
-
+    if (log->log_metadata.log_source_type.has_value()) {
+      dict_value.Set(
+          kLogSourceType,
+          static_cast<int>(log->log_metadata.log_source_type.value()));
+    }
     auto user_id = log->log_metadata.user_id;
     if (user_id.has_value()) {
       dict_value.Set(kLogUserIdKey,
@@ -226,6 +231,11 @@ const std::string& UnsentLogStore::staged_log_timestamp() const {
 absl::optional<uint64_t> UnsentLogStore::staged_log_user_id() const {
   DCHECK(has_staged_log());
   return list_[staged_log_index_]->log_metadata.user_id;
+}
+
+const LogMetadata UnsentLogStore::staged_log_metadata() const {
+  DCHECK(has_staged_log());
+  return std::move(list_[staged_log_index_]->log_metadata);
 }
 
 // static
@@ -464,6 +474,12 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
     info->hash = DecodeFromBase64(info->hash);
     info->signature = DecodeFromBase64(info->signature);
     // timestamp doesn't need to be decoded.
+
+    absl::optional<int> log_source_type = dict->FindInt(kLogSourceType);
+    if (log_source_type.has_value()) {
+      info->log_metadata.log_source_type =
+          static_cast<UkmLogSourceType>(log_source_type.value());
+    }
 
     // Extract user id of the log if it exists.
     const std::string* user_id_str = dict->FindString(kLogUserIdKey);

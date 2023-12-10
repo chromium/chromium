@@ -146,6 +146,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
       XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
       XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
+      XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
   };
@@ -194,7 +195,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(
-      device_test::mojom::InteractionProfileType type);
+      device::mojom::OpenXrInteractionProfileType type);
   bool IsSessionRunning() const;
   XrResult ValidateXrCompositionLayerProjectionView(
       const XrCompositionLayerProjectionView& projection_view,

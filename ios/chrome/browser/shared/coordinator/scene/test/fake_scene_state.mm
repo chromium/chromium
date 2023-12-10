@@ -32,6 +32,7 @@
 @synthesize browserProviderInterface = _browserProviderInterface;
 
 @synthesize window = _window;
+@synthesize appState = _appState;
 
 - (instancetype)initWithAppState:(AppState*)appState
                     browserState:(ChromeBrowserState*)browserState {
@@ -40,6 +41,7 @@
     DCHECK(!browserState->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
     self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
+    self.appState = appState;
 
     _browser = std::make_unique<TestBrowser>(browserState);
     base::apple::ObjCCastStrict<StubBrowserProvider>(

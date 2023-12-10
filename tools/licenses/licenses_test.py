@@ -211,6 +211,7 @@ class LicensesTest(unittest.TestCase):
         'Authorization date': 'N/A'
     }]
 
+    expected.sort(key=lambda item: item['Library Name'])
     self.assertEqual(csv_rows, expected)
 
   def test_generate_license_file_txt(self):

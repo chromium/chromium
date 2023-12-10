@@ -153,14 +153,13 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
   stats::RecordSegmentSelectionFailure(
       *config, stats::GetSuccessOrFailureReason(result_state));
 
-  proto::PredictionResult pred_result = result->result;
-  stats::RecordClassificationResultComputed(*config, pred_result);
+  stats::RecordClassificationResultComputed(*config, result->result);
 
   proto::ClientResult client_result =
-      metadata_utils::CreateClientResultFromPredResult(pred_result,
-                                                       base::Time::Now());
+      metadata_utils::CreateClientResultFromPredResult(
+          std::move(result->result), base::Time::Now());
   bool is_pref_updated = cached_result_writer_->UpdatePrefsIfExpired(
-      config, client_result, platform_options_);
+      config, std::move(client_result), platform_options_);
   if (is_pref_updated) {
     CollectTrainingDataIfNeeded(config, execution_service_);
   }

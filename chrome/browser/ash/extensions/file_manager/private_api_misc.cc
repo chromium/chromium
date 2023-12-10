@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
+#include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -60,6 +61,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -89,8 +91,8 @@ namespace fsp = ash::file_system_provider;
 namespace fmp = api::file_manager_private;
 namespace fmpi = api::file_manager_private_internal;
 
-using absl::optional;
 using fmp::ProfileInfo;
+using std::optional;
 
 // Thresholds for mountCrostini() API.
 constexpr base::TimeDelta kMountCrostiniSlowOperationThreshold =
@@ -332,7 +334,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
-  const std::vector<ProfileInfo>& profiles = GetLoggedInProfileInfoList();
+  fmp::ProfilesResponse response;
+  response.profiles = GetLoggedInProfileInfoList();
 
   // Obtains the display profile ID.
   AppWindow* const app_window = GetCurrentAppWindow(this);
@@ -345,10 +348,12 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
                                          app_window->GetNativeWindow())
                                    : EmptyAccountId();
 
-  return RespondNow(ArgumentList(fmp::GetProfiles::Results::Create(
-      profiles, current_profile_id.GetUserEmail(),
-      display_profile_id.is_valid() ? display_profile_id.GetUserEmail()
-                                    : current_profile_id.GetUserEmail())));
+  response.current_profile_id = current_profile_id.GetUserEmail();
+  response.displayed_profile_id = display_profile_id.is_valid()
+                                      ? display_profile_id.GetUserEmail()
+                                      : current_profile_id.GetUserEmail();
+
+  return RespondNow(WithArguments(response.ToValue()));
 }
 
 ExtensionFunction::ResponseAction
@@ -360,17 +365,20 @@ FileManagerPrivateOpenInspectorFunction::Run() {
   switch (params->type) {
     case fmp::InspectionType::kNormal:
       // Open inspector for foreground page.
-      DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents());
+      DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents(),
+                                         DevToolsOpenedByAction::kUnknown);
       break;
     case fmp::InspectionType::kConsole:
       // Open inspector for foreground page and bring focus to the console.
       DevToolsWindow::OpenDevToolsWindow(
-          GetSenderWebContents(), DevToolsToggleAction::ShowConsolePanel());
+          GetSenderWebContents(), DevToolsToggleAction::ShowConsolePanel(),
+          DevToolsOpenedByAction::kUnknown);
       break;
     case fmp::InspectionType::kElement:
       // Open inspector for foreground page in inspect element mode.
       DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents(),
-                                         DevToolsToggleAction::Inspect());
+                                         DevToolsToggleAction::Inspect(),
+                                         DevToolsOpenedByAction::kUnknown);
       break;
     case fmp::InspectionType::kBackground:
       // Open inspector for background page if extension pointer is not null.
@@ -378,7 +386,8 @@ FileManagerPrivateOpenInspectorFunction::Run() {
       // page.
       if (extension()) {
         devtools_util::InspectBackgroundPage(
-            extension(), Profile::FromBrowserContext(browser_context()));
+            extension(), Profile::FromBrowserContext(browser_context()),
+            DevToolsOpenedByAction::kUnknown);
       } else {
         return RespondNow(
             Error(base::StringPrintf("Inspection type(%d) not supported.",
@@ -769,6 +778,8 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
   auto shared_paths =
       guest_os_share_path->GetPersistedSharedPaths(params->vm_name);
   base::Value::List entries;
+  fmpi::CrostiniSharedPathResponse response;
+  response.first_for_session = first_for_session;
   for (const base::FilePath& path : shared_paths) {
     std::string mount_name;
     std::string file_system_name;
@@ -779,19 +790,19 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
                  << Redact(path);
       continue;
     }
-    base::Value::Dict entry;
-    entry.Set("fileSystemRoot", storage::GetExternalFileSystemRootURIString(
-                                    source_url(), mount_name));
-    entry.Set("fileSystemName", file_system_name);
-    entry.Set("fileFullPath", full_path);
+
+    auto& entry = response.entries.emplace_back();
+    entry.file_system_root =
+        storage::GetExternalFileSystemRootURIString(source_url(), mount_name);
+    entry.file_system_name = file_system_name;
+    entry.file_full_path = full_path;
     // All shared paths should be directories.  Even if this is not true,
     // it is fine for foreground/js/crostini.js class to think so. We
     // verify that the paths are in fact valid directories before calling
     // seneschal/9p in GuestOsSharePath::CallSeneschalSharePath().
-    entry.Set("fileIsDirectory", true);
-    entries.Append(std::move(entry));
+    entry.file_is_directory = true;
   }
-  return RespondNow(WithArguments(std::move(entries), first_for_session));
+  return RespondNow(WithArguments(response.ToValue()));
 }
 
 ExtensionFunction::ResponseAction
@@ -855,16 +866,16 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
 
 void FileManagerPrivateInternalInstallLinuxPackageFunction::
     OnInstallLinuxPackage(crostini::CrostiniResult result) {
-  fmp::InstallLinuxPackageResponse response;
+  fmp::InstallLinuxPackageStatus response;
   switch (result) {
     case crostini::CrostiniResult::SUCCESS:
-      response = fmp::InstallLinuxPackageResponse::kStarted;
+      response = fmp::InstallLinuxPackageStatus::kStarted;
       break;
     case crostini::CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED:
-      response = fmp::InstallLinuxPackageResponse::kFailed;
+      response = fmp::InstallLinuxPackageStatus::kFailed;
       break;
     case crostini::CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE:
-      response = fmp::InstallLinuxPackageResponse::kInstallAlreadyActive;
+      response = fmp::InstallLinuxPackageStatus::kInstallAlreadyActive;
       break;
     default:
       NOTREACHED();
@@ -978,7 +989,10 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  ash::RecentModel* model = ash::RecentModel::GetForProfile(profile);
+  ash::RecentModel* model = ash::RecentModelFactory::GetForProfile(profile);
+  if (!model) {
+    return RespondNow(Error("Failed to get recent model"));
+  }
 
   ash::RecentModel::FileType file_type;
   if (!file_manager::util::ToRecentSourceFileType(params->file_category,

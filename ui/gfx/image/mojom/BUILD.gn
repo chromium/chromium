@@ -5,35 +5,34 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_java = true
   sources = [ "image.mojom" ]
 
   webui_module_path = "chrome://resources/mojo/ui/gfx/image/mojom"
-
-  # Generate WebUI bindings in TypeScript.
-  use_typescript_sources = true
 
   # Used by content/common so need legacy JS bindings for Blink.
   generate_legacy_js_bindings = true
 
   public_deps = [ "//skia/public/mojom" ]
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "gfx.mojom.ImageSkia"
-          cpp = "::gfx::ImageSkia"
-          nullable_is_same_type = true
-        },
-        {
-          mojom = "gfx.mojom.ImageSkiaRep"
-          cpp = "::gfx::ImageSkiaRep"
-        },
-      ]
-      traits_headers = [ "image_skia_mojom_traits.h" ]
-      traits_public_deps = [ ":mojom_traits" ]
-    },
-  ]
+  shared_cpp_typemap = {
+    types = [
+      {
+        mojom = "gfx.mojom.ImageSkia"
+        cpp = "::gfx::ImageSkia"
+        nullable_is_same_type = true
+      },
+      {
+        mojom = "gfx.mojom.ImageSkiaRep"
+        cpp = "::gfx::ImageSkiaRep"
+      },
+    ]
+    traits_headers = [ "image_skia_mojom_traits.h" ]
+    traits_public_deps = [ ":mojom_traits" ]
+  }
+
+  cpp_typemaps = [ shared_cpp_typemap ]
+  blink_cpp_typemaps = [ shared_cpp_typemap ]
 }
 
 source_set("mojom_traits") {

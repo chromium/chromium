@@ -9,7 +9,7 @@
 #include <string>
 
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/extension_id.h"
 
 class ExtensionTestMessageListener;

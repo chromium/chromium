@@ -5,6 +5,7 @@
 module audio.mojom;
 
 import "media/mojo/mojom/audio_stream_factory.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/audio/public/mojom/debug_recording.mojom";
 import "services/audio/public/mojom/device_notifications.mojom";
@@ -15,21 +16,26 @@ import "services/audio/public/mojom/testing_api.mojom";
 // The main interface to the Audio service. This is a privileged interface and
 // must only be bound by trusted processes, e.g. a browser process. Note that
 // the sandbox can be disabled (to kNoSandbox) by policy.
-[ServiceSandbox=sandbox.mojom.Sandbox.kAudio]
+[ServiceSandbox=sandbox.mojom.Sandbox.kAudio,
+ RequireContext=sandbox.mojom.Context.kBrowswer]
 interface AudioService {
   // Binds a SystemInfo interface receiver.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindSystemInfo(pending_receiver<SystemInfo> receiver);
 
   // Binds a DebugRecording interface receiver.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindDebugRecording(pending_receiver<DebugRecording> receiver);
 
   // Binds a StreamFactory interface receiver.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindStreamFactory(pending_receiver<media.mojom.AudioStreamFactory> receiver);
 
   // Binds a DeviceNotifier interface receiver.
   BindDeviceNotifier(pending_receiver<DeviceNotifier> receiver);
 
   // Binds a LogFactoryManager interface receiver.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindLogFactoryManager(pending_receiver<LogFactoryManager> receiver);
 
   // Binds a TestingApi interface receiver. Only callable in some test

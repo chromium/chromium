@@ -15,8 +15,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/translate/core/browser/translate_model_service.h"
 #import "components/translate/core/common/translate_util.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

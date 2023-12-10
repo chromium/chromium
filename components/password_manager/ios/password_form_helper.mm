@@ -348,7 +348,7 @@ const char kFrameIdKey[] = "frame_id";
     return HandleSubmittedFormStatus::kRejectedNoDelegate;
   }
 
-  absl::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
   if (!pageURL) {
     return HandleSubmittedFormStatus::kRejectedNoTrustedUrl;
   }

@@ -23,7 +23,7 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
+#include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,7 +42,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -99,7 +99,7 @@ const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
 const char kPhReportingUrl[] = "https://foobar.com/";
 const char kExpsRegistrationSuccessUrl[] = "https://foobar.com/experiments";
 
-const char kRelativeVisualSearchUrl[] = "/test_visual.html";
+const char kRelativeVisualQueryUrl[] = "/test_visual.html";
 
 const char kExpectedNewTabLinkMetadata[] =
     "{\"openAction\":1,\"isSearchCompanionPinnedByDefault\":false}";
@@ -114,7 +114,7 @@ base::FilePath model_file_path() {
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("companion_visual_search")
+      .AppendASCII("companion_visual_query")
       .AppendASCII("test-model-quantized.tflite");
 }
 
@@ -152,21 +152,21 @@ struct CompanionScriptBuilder {
 
   // The rest of the arguments are optional. If the value is set, will be added
   // to the postmessage.
-  absl::optional<PromoType> promo_type;
-  absl::optional<PromoAction> promo_action;
-  absl::optional<PhFeedback> ph_feedback;
-  absl::optional<bool> is_exps_opted_in;
-  absl::optional<std::string> url_for_open_in_new_tab;
-  absl::optional<std::string> url_to_open;
-  absl::optional<bool> use_new_tab;
-  absl::optional<UiSurface> ui_surface;
-  absl::optional<int> ui_surface_position;
-  absl::optional<int> child_element_available_count;
-  absl::optional<int> child_element_shown_count;
-  absl::optional<std::string> text_directive;
-  absl::optional<std::vector<std::string>> cq_text_directives;
-  absl::optional<int> click_position;
-  absl::optional<LoadingState> loading_state;
+  std::optional<PromoType> promo_type;
+  std::optional<PromoAction> promo_action;
+  std::optional<PhFeedback> ph_feedback;
+  std::optional<bool> is_exps_opted_in;
+  std::optional<std::string> url_for_open_in_new_tab;
+  std::optional<std::string> url_to_open;
+  std::optional<bool> use_new_tab;
+  std::optional<UiSurface> ui_surface;
+  std::optional<int> ui_surface_position;
+  std::optional<int> child_element_available_count;
+  std::optional<int> child_element_shown_count;
+  std::optional<std::string> text_directive;
+  std::optional<std::vector<std::string>> cq_text_directives;
+  std::optional<int> click_position;
+  std::optional<LoadingState> loading_state;
 
   // Useful in case chrome sends a postmessage in response. Companion waits for
   // the message in response and resolves the promise that was sent back to
@@ -278,7 +278,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     page_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     companion_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    vss_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    vqs_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
 
     // Register a handler to inspect the URL and examine the proto.
     // Nevertheless, it returns null which causes the default handler to be
@@ -288,7 +288,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(page_url_server_.Start());
     ASSERT_TRUE(companion_server_.Start());
-    ASSERT_TRUE(vss_url_server_.Start());
+    ASSERT_TRUE(vqs_url_server_.Start());
     SetUpFeatureList();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     InProcessBrowserTest::SetUp();
@@ -460,10 +460,10 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return nullptr;
   }
 
-  absl::optional<companion::proto::CompanionUrlParams>
+  std::optional<companion::proto::CompanionUrlParams>
   GetLastCompanionProtoFromUrlLoad() {
     auto proto_copy = last_proto_from_url_load_;
-    last_proto_from_url_load_ = absl::nullopt;
+    last_proto_from_url_load_ = std::nullopt;
     return proto_copy;
   }
 
@@ -503,13 +503,13 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return proto;
   }
 
-  absl::optional<companion::proto::CompanionUrlParams>
+  std::optional<companion::proto::CompanionUrlParams>
   GetLastCompanionProtoFromPostMessage() {
     companion::proto::CompanionUrlParams proto;
     content::EvalJsResult eval_js_result =
         EvalJs("getLastReceivedCompanionProto()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     std::string companion_proto_encoded = eval_js_result.ExtractString();
@@ -517,18 +517,26 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return proto;
   }
 
-  absl::optional<GURL> GetLastLinkOpenedUrlFromPostMessage() {
+  std::optional<GURL> GetLastLinkOpenedUrlFromPostMessage() {
     content::EvalJsResult eval_js_result =
         EvalJs("getLastReceivedLinkOpenedUrl()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return GURL(eval_js_result.ExtractString());
   }
 
-  absl::optional<std::string> GetLastLinkOpenedMetadataFromPostMessage() {
+  std::optional<std::string> GetLastLinkOpenedMetadataFromPostMessage() {
     content::EvalJsResult eval_js_result =
         EvalJs("getLastReceivedLinkOpenedMetadata()");
+    if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
+      return std::nullopt;
+    }
+    return eval_js_result.ExtractString();
+  }
+
+  absl::optional<std::string> GetLastPageTitleFromPostMessage() {
+    content::EvalJsResult eval_js_result = EvalJs("getLastReceivedPageTitle()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
       return absl::nullopt;
     }
@@ -554,6 +562,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     EnableMsbb(msbb);
     browser()->profile()->GetPrefs()->SetBoolean(
         companion::kExpsOptInStatusGrantedPref, exps);
+  }
+
+  void EnablePco(bool enable_pco) {
+    auto* pref_service = browser()->profile()->GetPrefs();
+    pref_service->SetBoolean(
+        unified_consent::prefs::kPageContentCollectionEnabled, enable_pco);
   }
 
   virtual void SetUpFeatureList() {
@@ -592,13 +606,18 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     if (enable_feature_side_panel_companion_) {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion, params);
+    } else {
+      disabled_features.emplace_back(
+          companion::features::internal::kSidePanelCompanion);
     }
 
-    if (enable_feature_visual_search_) {
+    if (enable_feature_visual_query_) {
       enabled_features.emplace_back(base::test::FeatureRefAndParams(
-          companion::visual_search::features::kVisualSearchSuggestions,
+          companion::visual_query::features::kVisualQuerySuggestions,
           /*params*/ {}));
     }
+    enabled_features.emplace_back(base::test::FeatureRefAndParams(
+        companion::features::kCompanionEnablePageContent, /*params*/ {}));
     enabled_features.emplace_back(
         companion::features::internal::
             kCompanionEnabledByObservingExpsNavigations,
@@ -695,10 +714,9 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer page_url_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer companion_server_{net::EmbeddedTestServer::TYPE_HTTP};
-  net::EmbeddedTestServer vss_url_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer vqs_url_server_{net::EmbeddedTestServer::TYPE_HTTP};
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  absl::optional<companion::proto::CompanionUrlParams>
-      last_proto_from_url_load_;
+  std::optional<companion::proto::CompanionUrlParams> last_proto_from_url_load_;
   size_t requests_received_on_server_ = 0;
   std::string last_sourcelang_;
   std::string last_targetlang_;
@@ -706,7 +724,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   std::string last_viewport_height_param_;
   std::string enable_feature_companion_image_search_ = "true";
   bool enable_feature_side_panel_companion_ = true;
-  bool enable_feature_visual_search_ = true;
+  bool enable_feature_visual_query_ = true;
   bool enable_feature_lens_standalone_ = true;
 };
 
@@ -955,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
             SidePanelEntry::Id::kSearchCompanion);
   EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
 
-  // Set Search Comapnion iframe to to an untrusted domain
+  // Set Search Companion iframe to to an untrusted domain
   content::WebContents* companion_web_contents =
       GetCompanionWebContents(browser());
   std::string script =
@@ -984,7 +1002,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1009,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1035,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1116,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1135,7 +1153,28 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       OpenCompanionPageWithVssEnabled) {
+                       PageTitleNotifiesViaPostMessage) {
+  EnablePco(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,"
+                      "<head><title>Title of the page</title></head>")));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  CompanionScriptBuilder builder(MethodType::kCompanionLoadingState);
+  builder.loading_state = LoadingState::kStartedLoading;
+  builder.wait_for_message = true;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Ensure browser sent post message
+  EXPECT_EQ("Title of the page", GetLastPageTitleFromPostMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenCompanionPageWithVqsEnabled) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(
@@ -1149,7 +1188,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), vss_url_server_.GetURL(kHost, kRelativeVisualSearchUrl)));
+      browser(), vqs_url_server_.GetURL(kHost, kRelativeVisualQueryUrl)));
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   WaitForCompanionToBeLoaded();
@@ -1173,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
     histogram_tester.ExpectBucketCount(
         "Companion.VisualQuery.ClassificationResultsSize", 1, 1);
     histogram_tester.ExpectBucketCount(
-        "Companion.VisualSearch.EndClassificationSuccess", true, 1);
+        "Companion.VisualQuery.EndClassificationSuccess", true, 1);
     histogram_tester.ExpectBucketCount(
         "Companion.VisualQuery.SendVisualResultSuccess", true, 1);
   }
@@ -1326,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1390,7 +1429,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1438,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1470,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenUrlInBrowser) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -1502,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SigninLoadsInNewTab) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -1534,7 +1573,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearch) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1566,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OnExpsOptInStatusAvailable) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1594,7 +1633,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenInNewTabButtonClicked) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1641,7 +1680,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -1675,7 +1714,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1700,7 +1739,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   GURL url = page_url_server_.GetURL(kHost, kRelativeUrl1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion companion via toolbar entry point.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -1855,7 +1894,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion from entry point via dropdown.
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
@@ -1881,7 +1920,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Load a page on the active tab.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Open companion from pinned entry point.
   side_panel_coordinator()->Show(
@@ -2221,6 +2260,8 @@ class SidePanelCompanion2BrowserEnabledTest : public CompanionPageBrowserTest {
       disabled_features.emplace_back(lens::features::kLensStandalone);
     }
 
+    disabled_features.emplace_back(
+        companion::features::internal::kSidePanelCompanion);
     if (enable_feature_side_panel_companion_) {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion2, enabled_params);
@@ -2232,8 +2273,6 @@ class SidePanelCompanion2BrowserEnabledTest : public CompanionPageBrowserTest {
         EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
       }
     } else {
-      disabled_features.emplace_back(
-          companion::features::internal::kSidePanelCompanion);
       disabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion2);
       disabled_features.emplace_back(

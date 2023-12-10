@@ -12,6 +12,7 @@
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +51,30 @@ base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
   DCHECK(success);
 
   return base::Token(high, low);
+}
+
+WebContents* SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
+    GlobalRenderFrameHostId rfh_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(crbug.com/1499083): Remove this redundant check.
+  if (rfh_id == GlobalRenderFrameHostId()) {
+    return nullptr;
+  }
+
+  RenderFrameHostImpl* rfhi = RenderFrameHostImpl::FromID(rfh_id);
+  if (!rfhi || !rfhi->IsActive()) {
+    return nullptr;
+  }
+  rfhi = rfhi->GetMainFrame();  // TODO(crbug.com/1499083): Remove this line.
+
+  if (GetContentClient()
+          ->browser()
+          ->UseOutermostMainFrameOrEmbedderForSubCaptureTargets()) {
+    rfhi = rfhi->GetOutermostMainFrameOrEmbedder();
+  }
+
+  return WebContents::FromRenderFrameHost(rfhi);
 }
 
 SubCaptureTargetIdWebContentsHelper::SubCaptureTargetIdWebContentsHelper(

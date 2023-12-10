@@ -9,7 +9,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -27,21 +26,11 @@ class HotspotIconTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kHotspot);
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
     AshTestBase::SetUp();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    cros_hotspot_config_test_helper_.reset();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
-      cros_hotspot_config_test_helper_;
 };
 
 TEST_F(HotspotIconTest, HotspotEnabledIcon) {

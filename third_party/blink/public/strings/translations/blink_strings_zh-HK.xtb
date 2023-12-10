@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">請將這段文字刪減至 <ph name="MAX_CHARACTERS" /> 個字元以下 (目前的字數為 <ph name="CURRENT_LENGTH" /> 個)。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年，第 <ph name="WEEKNUMBER" /> 週</translation>
 <translation id="2277199496770840904">曲目 <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">已允許使用相機和麥克風</translation>
 <translation id="2393030564806080191">十六進制顏色值</translation>
 <translation id="2398813069815436052">開咗對話框。</translation>
 <translation id="245932805758469625">影片淨番嘅秒數</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">請將這段文字加長至 <ph name="MIN_CHARACTERS" /> 個字元或以上 (目前的字數為 <ph name="CURRENT_LENGTH" /> 個)。</translation>
 <translation id="383465348367842624">「<ph name="ATSIGN" />」後面的部分不應包含「<ph name="INVALIDCHARACTER" />」符號。</translation>
 <translation id="3846214748874656680">關閉全屏幕模式</translation>
+<translation id="4031179711345676612">已允許使用麥克風</translation>
 <translation id="4103419683916926126">毫秒</translation>
 <translation id="4201051445878709314">顯示上個月</translation>
 <translation id="4360991593054037559">請輸入有效值。最接近的兩個有效值分別是 <ph name="VALID_VALUE_LOW" /> 和 <ph name="VALID_VALUE_HIGHER" />。</translation>
 <translation id="4522570452068850558">詳情</translation>
+<translation id="4663373278480897665">已允許使用相機</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」後面的部分不應包含「<ph name="INVALIDCHARACTER" />」符號。</translation>
 <translation id="4718048029184481307">正在畫中畫播放</translation>
 <translation id="4748357248530471599">切換顯示屏凹口全螢幕</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">下載媒體</translation>
 <translation id="698788488269350478">展開咗。</translation>
 <translation id="6989848892321993519">請將這段文字加長至 <ph name="MIN_CHARACTERS" /> 個字元以上 (目前已有 1 個字元)。</translation>
+<translation id="7080893216867146095">已允許分享位置</translation>
 <translation id="709897737746224366">請配對要求的格式。</translation>
 <translation id="7102274145889307184">目前位置</translation>
 <translation id="7263440858009898357">請選取一個清單中的項目。</translation>

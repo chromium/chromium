@@ -101,7 +101,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   const mojom::GeopositionResult* GetLastPosition() const;
 #endif
 
- protected:
   SystemGeolocationSource& SystemGeolocationSourceForTest();
 
  private:

@@ -13,14 +13,14 @@ namespace chrome_apps {
 namespace api {
 
 template <typename T>
-void SetValueOptional(T value, absl::optional<T>& destination) {
+void SetValueOptional(T value, std::optional<T>& destination) {
   if (value >= 0)
     destination = value;
 }
 
 template <>
 void SetValueOptional(std::string value,
-                      absl::optional<std::string>& destination) {
+                      std::optional<std::string>& destination) {
   if (!value.empty())
     destination = std::move(value);
 }

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/unguessable_token.h"
+#include "content/browser/media/audio_stream_broker_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -48,7 +49,7 @@ AudioLoopbackStreamBroker::AudioLoopbackStreamBroker(
   // Notify the source that we are capturing from it.
   source_->AddLoopbackSink(this);
 
-  NotifyProcessHostOfStartedStream(render_process_id);
+  NotifyFrameHostOfAudioStreamStarted(render_process_id, render_frame_id);
 }
 
 AudioLoopbackStreamBroker::~AudioLoopbackStreamBroker() {
@@ -57,7 +58,7 @@ AudioLoopbackStreamBroker::~AudioLoopbackStreamBroker() {
   if (source_)
     source_->RemoveLoopbackSink(this);
 
-  NotifyProcessHostOfStoppedStream(render_process_id());
+  NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id());
 }
 
 void AudioLoopbackStreamBroker::CreateStream(

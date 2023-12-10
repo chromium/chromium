@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: testRunner is not defined
+[TIMEOUT] Tests that watchPosition does not report position changes when the page is not visible.
+  Test timed out
+Harness: the test ran to completion.

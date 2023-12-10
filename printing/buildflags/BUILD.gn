@@ -13,7 +13,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [
-    "ENABLE_PRINTING=$enable_printing",
+    "ENABLE_PRINTING=$enable_printing || $enable_printing_tests",
     "ENABLE_PRINT_PREVIEW=$enable_print_preview",
     "ENABLE_BASIC_PRINT_DIALOG=$enable_basic_print_dialog",
     "ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS=$enable_concurrent_basic_print_dialogs",

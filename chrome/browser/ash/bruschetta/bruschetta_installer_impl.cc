@@ -45,7 +45,7 @@ std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
 
 struct BruschettaInstallerImpl::Fds {
   base::ScopedFD boot_disk;
-  absl::optional<base::ScopedFD> pflash;
+  std::optional<base::ScopedFD> pflash;
 };
 
 BruschettaInstallerImpl::BruschettaInstallerImpl(
@@ -275,9 +275,9 @@ std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     return nullptr;
   }
 
-  absl::optional<base::ScopedFD> pflash_fd;
+  std::optional<base::ScopedFD> pflash_fd;
   if (pflash_path.empty()) {
-    pflash_fd = absl::nullopt;
+    pflash_fd = std::nullopt;
   } else {
     base::File pflash(pflash_path,
                       base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -335,7 +335,7 @@ void BruschettaInstallerImpl::CreateVmDisk() {
 }
 
 void BruschettaInstallerImpl::OnCreateVmDisk(
-    absl::optional<vm_tools::concierge::CreateDiskImageResponse> result) {
+    std::optional<vm_tools::concierge::CreateDiskImageResponse> result) {
   if (MaybeClose()) {
     return;
   }
@@ -386,7 +386,7 @@ void BruschettaInstallerImpl::InstallPflash() {
 }
 
 void BruschettaInstallerImpl::OnInstallPflash(
-    absl::optional<vm_tools::concierge::InstallPflashResponse> result) {
+    std::optional<vm_tools::concierge::InstallPflashResponse> result) {
   if (MaybeClose()) {
     return;
   }
@@ -462,7 +462,7 @@ void BruschettaInstallerImpl::StartVm() {
 
 void BruschettaInstallerImpl::OnStartVm(
     RunningVmPolicy launch_policy,
-    absl::optional<vm_tools::concierge::StartVmResponse> result) {
+    std::optional<vm_tools::concierge::StartVmResponse> result) {
   if (MaybeClose()) {
     return;
   }

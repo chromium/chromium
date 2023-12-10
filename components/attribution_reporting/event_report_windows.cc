@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -51,7 +51,7 @@ bool IsReportWindowValid(base::TimeDelta report_window) {
 }
 
 bool IsStrictlyIncreasing(const std::vector<base::TimeDelta>& end_times) {
-  return base::ranges::adjacent_find(end_times, base::not_fn(std::less{})) ==
+  return base::ranges::adjacent_find(end_times, std::not_fn(std::less{})) ==
          end_times.end();
 }
 
@@ -315,6 +315,16 @@ void EventReportWindows::Serialize(base::Value::Dict& dict) const {
 
 bool EventReportWindows::IsValidForExpiry(base::TimeDelta expiry) const {
   return start_time_ <= expiry && *end_times_.rbegin() <= expiry;
+}
+
+base::Time LastTriggerTimeForReportTime(base::Time report_time) {
+  // TODO(apaseltiner): `base::Time` has microsecond resolution, so we should
+  // probably use `base::Microseconds(1)` instead.
+  constexpr base::TimeDelta kWindowTinyOffset = base::Milliseconds(1);
+
+  // `kWindowTinyOffset` is needed as the window is not selected right at
+  // `report_time`.
+  return report_time - kWindowTinyOffset;
 }
 
 }  // namespace attribution_reporting

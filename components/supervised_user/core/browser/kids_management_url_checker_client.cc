@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -51,6 +52,14 @@ ClassifyURL(signin::IdentityManager* identity_manager,
       *identity_manager, url_loader_factory, request, config);
 }
 
+supervised_user::FetcherConfig GetFetcherConfig() {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kHighestRequestPriorityForClassifyUrl)) {
+    return supervised_user::kClassifyUrlConfigWithHighestPriority;
+  }
+  return supervised_user::kClassifyUrlConfig;
+}
+
 }  // namespace
 
 KidsManagementURLCheckerClient::KidsManagementURLCheckerClient(
@@ -65,7 +74,7 @@ KidsManagementURLCheckerClient::KidsManagementURLCheckerClient(
           &ClassifyURL,
           kids_chrome_management_client->identity_manager(),
           kids_chrome_management_client->url_loader_factory(),
-          supervised_user::kClassifyUrlConfig)) {
+          GetFetcherConfig())) {
   DCHECK(kids_chrome_management_client_);
 }
 
@@ -77,7 +86,7 @@ namespace {
 void OnResponse(
     const GURL& url,
     safe_search_api::URLCheckerClient::ClientCheckCallback client_callback,
-    supervised_user::ProtoFetcherStatus status,
+    const supervised_user::ProtoFetcherStatus& status,
     std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
         classify_url_response) {
   DVLOG(1) << "URL classification = "

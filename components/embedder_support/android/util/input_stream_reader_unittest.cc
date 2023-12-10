@@ -130,7 +130,7 @@ TEST_F(InputStreamReaderTest, SeekMoreThanAvailable) {
 
 TEST_F(InputStreamReaderTest, ReadFailure) {
   const int bytesToRead = 128;
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(bytesToRead);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(bytesToRead);
   EXPECT_CALL(input_stream_, Read(buffer.get(), bytesToRead, NotNull()))
       .WillOnce(Return(false));
 
@@ -140,7 +140,7 @@ TEST_F(InputStreamReaderTest, ReadFailure) {
 TEST_F(InputStreamReaderTest, ReadNothing) {
   const int bytesToRead = 0;
   // Size of net::IOBuffer can't be 0.
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(1);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
   EXPECT_CALL(input_stream_, Read(buffer.get(), bytesToRead, NotNull()))
       .Times(0);
 
@@ -149,7 +149,7 @@ TEST_F(InputStreamReaderTest, ReadNothing) {
 
 TEST_F(InputStreamReaderTest, ReadSuccess) {
   const int bytesToRead = 128;
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(bytesToRead);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(bytesToRead);
 
   EXPECT_CALL(input_stream_, Read(buffer.get(), bytesToRead, NotNull()))
       .WillOnce(DoAll(SetArgPointee<2>(bytesToRead), Return(true)));

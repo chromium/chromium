@@ -4,14 +4,14 @@
 
 #include "third_party/blink/renderer/core/layout/inline/score_line_breaker.h"
 
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/leading_floats.h"
 #include "third_party/blink/renderer/core/layout/inline/line_break_point.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info_list.h"
 #include "third_party/blink/renderer/core/layout/inline/line_widths.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -19,7 +19,7 @@ namespace blink {
 namespace {
 
 LayoutUnit FragmentWidth(const InlineNode& node) {
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       node.GetLayoutBox()->GetPhysicalFragment(0);
   return fragment->Size().width;
 }
@@ -27,7 +27,7 @@ LayoutUnit FragmentWidth(const InlineNode& node) {
 void TestLinesAreContiguous(const LineInfoList& line_info_list) {
   for (wtf_size_t i = 1; i < line_info_list.Size(); ++i) {
     EXPECT_EQ(line_info_list[i].Start(),
-              line_info_list[i - 1].BreakToken()->Start());
+              line_info_list[i - 1].GetBreakToken()->Start());
   }
 }
 
@@ -60,7 +60,7 @@ class ScoreLineBreakerTest : public RenderingTest {
 
   Vector<float> ComputeScores(const InlineNode& node) {
     const LayoutUnit width = FragmentWidth(node);
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineWidths line_widths(width);
     const InlineBreakToken* break_token = nullptr;
     ExclusionSpace exclusion_space;
@@ -97,7 +97,7 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
   )HTML");
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
@@ -121,14 +121,14 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
     const LineInfo& line_info0 = line_info_list.Get(break_token, is_cached);
     EXPECT_TRUE(is_cached);
     EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines() - 1);
-    break_token = line_info0.BreakToken();
+    break_token = line_info0.GetBreakToken();
     // Running again should cache one more line.
     optimizer.OptimalBreakPoints(empty_leading_floats, context);
     EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines());
     TestLinesAreContiguous(line_info_list);
   }
   // All is done. The `BreakToken` should be null, and there should be 6 lines.
-  EXPECT_FALSE(line_info_list.Back().BreakToken());
+  EXPECT_FALSE(line_info_list.Back().GetBreakToken());
   constexpr wtf_size_t target_num_lines = 6;
   EXPECT_EQ(count, target_num_lines - optimizer.MaxLines());
 }
@@ -195,7 +195,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
       has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : ""));
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
@@ -253,7 +253,7 @@ TEST_F(ScoreLineBreakerTest, ForcedBreak) {
   )HTML");
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
@@ -386,7 +386,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
 
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   const InlineBreakToken* break_token = nullptr;

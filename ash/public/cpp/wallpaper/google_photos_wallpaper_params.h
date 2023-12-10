@@ -5,12 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_GOOGLE_PHOTOS_WALLPAPER_PARAMS_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_GOOGLE_PHOTOS_WALLPAPER_PARAMS_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -20,7 +20,7 @@ struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
                               bool daily_refresh_enabled,
                               WallpaperLayout layout,
                               bool preview_mode,
-                              absl::optional<std::string> dedup_key);
+                              std::optional<std::string> dedup_key);
 
   GooglePhotosWallpaperParams(const GooglePhotosWallpaperParams& other);
 
@@ -49,7 +49,7 @@ struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
   // Note that the same photo appearing in multiple albums will have a unique
   // `id` for each album in which it appears, but the `dedup_key` is shared
   // across albums.
-  absl::optional<std::string> dedup_key;
+  std::optional<std::string> dedup_key;
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(

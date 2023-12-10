@@ -233,6 +233,87 @@ var availableTests = [
           'Fake DLC file content', new TextDecoder().decode(contents));
       chrome.test.succeed();
     });
+  },
+
+  function testGetTtsDlcContentsDlcNotOnDevice() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.LITE;
+    const error = 'Error: TTS language pack with locale is not installed: ' +
+        'es-us';
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetTtsDlcContentsSuccess() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.LITE;
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(
+          'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetVariantTtsDlcContentsDlcNotOnDevice() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.STANDARD;
+    const error = 'Error: TTS language pack with locale is not installed: ' +
+        'es-us';
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetVariantTtsDlcContentsSuccess() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.STANDARD;
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(
+          'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  },
+
+  function testSetCursorPosition() {
+    chrome.accessibilityPrivate.setCursorPosition({x: 450, y: 350});
+    chrome.test.succeed();
+  },
+
+  function testGetDisplayBoundsSimple() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":600,"left":0,"top":0,"width":800}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDisplayBoundsHighDPI() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":400,"left":0,"top":0,"width":500}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDisplayBoundsMultipleDisplays() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":300,"left":0,"top":0,"width":400},' +
+          '{"height":300,"left":400,"top":0,"width":400}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
   }
 ];
 

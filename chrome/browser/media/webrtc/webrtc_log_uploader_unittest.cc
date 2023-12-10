@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -172,6 +173,27 @@ class WebRtcLogUploaderTest : public testing::Test {
     EXPECT_EQ("Content-Type: application/gzip", lines[i + 1]);
     EXPECT_EQ("", lines[i + 2]);
     EXPECT_EQ(dump_content, lines[i + 3]);
+  }
+
+  std::string GetValueFromMultipart(const std::string& post_data,
+                                    const std::string& value_name) {
+    std::vector<std::string> lines = base::SplitStringUsingSubstr(
+        post_data, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+    std::string name_line = "Content-Disposition: form-data; name=\"";
+    name_line.append(value_name);
+    name_line.append("\"");
+
+    size_t i = 0;
+    for (; i < lines.size(); ++i) {
+      if (lines[i] == name_line) {
+        break;
+      }
+    }
+
+    EXPECT_LT(i, lines.size() - 2);
+
+    return lines[i + 2];
   }
 
   static void AddLocallyStoredLogInfoToUploadListFile(
@@ -353,6 +375,78 @@ TEST_F(WebRtcLogUploaderTest, DisableUploadOfMultipartData) {
   EXPECT_FALSE(future.Get<0>());
   EXPECT_EQ("", future.Get<1>());
   EXPECT_EQ(WebRtcLogUploader::kLogUploadDisabledMsg, future.Get<2>());
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, ProductHasNoSuffixWithoutFeature) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::string post_data;
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  webrtc_log_uploader->OverrideUploadWithBufferForTesting(&post_data);
+
+  WebRtcLogUploader::UploadDoneData upload_done_data;
+  upload_done_data.paths.directory = temp_dir.GetPath().AppendASCII("log");
+
+  std::unique_ptr<WebRtcLogBuffer> log(new WebRtcLogBuffer());
+  log->SetComplete();
+
+  base::RunLoop run_loop;
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
+                     base::Unretained(webrtc_log_uploader.get()),
+                     std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
+                     std::move(upload_done_data),
+                     /*is_text_log_upload_allowed=*/true),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Version should have a webrtc suffix, Product should not.
+  EXPECT_EQ(GetValueFromMultipart(post_data, "prod").find("_webrtc"),
+            std::string::npos);
+  EXPECT_NE(GetValueFromMultipart(post_data, "ver").find("-webrtc"),
+            std::string::npos);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, ProductHasSuffixWithFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kWebRTCLogUploadSuffix);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::string post_data;
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  webrtc_log_uploader->OverrideUploadWithBufferForTesting(&post_data);
+
+  WebRtcLogUploader::UploadDoneData upload_done_data;
+  upload_done_data.paths.directory = temp_dir.GetPath().AppendASCII("log");
+
+  std::unique_ptr<WebRtcLogBuffer> log(new WebRtcLogBuffer());
+  log->SetComplete();
+
+  base::RunLoop run_loop;
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
+                     base::Unretained(webrtc_log_uploader.get()),
+                     std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
+                     std::move(upload_done_data),
+                     /*is_text_log_upload_allowed=*/true),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Product should have a webrtc suffix, Version should not.
+  EXPECT_NE(GetValueFromMultipart(post_data, "prod").find("_webrtc"),
+            std::string::npos);
+  EXPECT_EQ(GetValueFromMultipart(post_data, "ver").find("-webrtc"),
+            std::string::npos);
 
   webrtc_log_uploader->Shutdown();
   FlushRunLoop();

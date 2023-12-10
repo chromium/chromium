@@ -104,7 +104,7 @@ void TooltipViewAura::ResetDisplayRect() {
   render_text_->SetDisplayRect(gfx::Rect(0, 0, max_width_, 100000));
 }
 
-BEGIN_METADATA(TooltipViewAura, views::View)
+BEGIN_METADATA(TooltipViewAura)
 END_METADATA
 
 }  // namespace views::corewm

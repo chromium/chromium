@@ -89,21 +89,6 @@ SensorHalDispatcher::SensorHalDispatcher() : receiver_(this) {
                           base::Unretained(this)));
 }
 
-base::UnguessableToken SensorHalDispatcher::GetTokenForTrustedClient() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto token = base::UnguessableToken::Create();
-  client_token_set_.insert(token);
-  return token;
-}
-
-bool SensorHalDispatcher::AuthenticateClient(
-    const base::UnguessableToken& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::Contains(client_token_set_, token);
-}
-
 void SensorHalDispatcher::TryToEstablishMojoChannelByServiceManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

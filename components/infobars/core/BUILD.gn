@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 
 if (is_android) {
@@ -25,8 +26,13 @@ static_library("core") {
     "simple_alert_infobar_delegate.h",
   ]
 
+  if (is_chrome_for_testing) {
+    sources += [ "infobars_switches.h" ]
+  }
+
   public_deps = [
     "//base",
+    "//build:branding_buildflags",
     "//skia",
     "//ui/base",
   ]

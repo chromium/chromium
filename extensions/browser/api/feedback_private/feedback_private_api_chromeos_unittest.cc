@@ -9,6 +9,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "components/feedback/feedback_common.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
@@ -85,25 +86,25 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     scoped_refptr<FeedbackPrivateReadLogSourceFunction> function =
         base::MakeRefCounted<FeedbackPrivateReadLogSourceFunction>();
 
-    absl::optional<base::Value> result_value =
+    std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), ParamsToJSON(params));
     if (!result_value)
       return testing::AssertionFailure() << "No result";
 
-    ReadLogSourceResult result;
-    if (!ReadLogSourceResult::Populate(*result_value, result)) {
+    auto result = ReadLogSourceResult::FromValue(*result_value);
+    if (!result) {
       return testing::AssertionFailure()
              << "Unable to parse a valid result from " << *result_value;
     }
 
-    if (result.log_lines.size() != 1) {
+    if (result->log_lines.size() != 1) {
       return testing::AssertionFailure()
              << "Expected |log_lines| to contain 1 string, actual number: "
-             << result.log_lines.size();
+             << result->log_lines.size();
     }
 
-    *result_reader_id = result.reader_id;
-    *result_string = result.log_lines[0];
+    *result_reader_id = result->reader_id;
+    *result_string = result->log_lines[0];
 
     return testing::AssertionSuccess();
   }
@@ -127,7 +128,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     base::Value values = base::test::ParseJson(args);
     EXPECT_TRUE(values.is_list());
 
-    absl::optional<api::feedback_private::SendFeedback::Params> params =
+    std::optional<api::feedback_private::SendFeedback::Params> params =
         api::feedback_private::SendFeedback::Params::Create(values.GetList());
     EXPECT_TRUE(params);
 
@@ -136,7 +137,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
     auto function = base::MakeRefCounted<FeedbackPrivateSendFeedbackFunction>();
 
-    absl::optional<base::Value> result_value =
+    std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), args);
     EXPECT_TRUE(result_value);
 
@@ -706,4 +707,51 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
   EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
 }
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackAiFlow) {
+  const std::string args = R"([
+  {
+    "aiMetadata": "test-ai-metadata",
+    "categoryTag": "test-category",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "",
+    "flow": "ai",
+  }
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(-1, feedback_data->product_id());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-category", feedback_data->category_tag());
+  EXPECT_EQ("test-ai-metadata", feedback_data->ai_metadata());
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackInfoAiFlow) {
+  extensions::FeedbackPrivateAPI* api =
+      FeedbackPrivateAPI::GetFactoryInstance()->Get(browser_context());
+
+  std::string unused;
+  auto feedback_info = api->CreateFeedbackInfo(
+      /*description_template=*/unused, /*description_placeholder_text=*/unused,
+      /*category_tag=*/unused, /*extra_diagnostics=*/unused,
+      /*page_url=*/GURL(),
+      /*flow=*/api::feedback_private::FeedbackFlow::kAi,
+      /*from_assistant=*/false, /*include_bluetooth_logs=*/false,
+      /*show_questionnaire=*/false, /*from_chrome_labs_or_kaleidoscope=*/false,
+      /*from_autofill=*/false, /*autofill_metadata=*/base::Value::Dict(),
+      /*ai_metadata=*/base::Value::Dict());
+
+  EXPECT_EQ(FeedbackCommon::GetChromeBrowserProductId(),
+            feedback_info->product_id);
+}
+
 }  // namespace extensions

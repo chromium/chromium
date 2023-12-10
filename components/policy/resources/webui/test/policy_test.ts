@@ -12,7 +12,8 @@ import {PolicyTestTableElement} from './policy_test_table.js';
 const policyTestBrowserProxy: PolicyTestBrowserProxy =
     PolicyTestBrowserProxy.getInstance();
 
-function initialize() {
+async function initialize() {
+  await initializeTable();
   getRequiredElement('import-policies-file-input')
       .addEventListener('change', uploadPoliciesFile);
   getRequiredElement('apply-policies').addEventListener('click', applyPolicies);
@@ -40,6 +41,22 @@ function uploadPoliciesFile() {
   if (jsonFile) {
     applyPoliciesFromFile(jsonFile!);
   }
+}
+
+async function initializeTable() {
+  const policies = await policyTestBrowserProxy.getAppliedTestPolicies();
+  if (policies.length === 0) {
+    return;
+  }
+  const policyTable =
+      getRequiredElement<PolicyTestTableElement>('policy-test-table');
+  // Empty policy table
+  policyTable.clearRows();
+  policies.forEach((policy: PolicyInfo) => {
+    policyTable.addRow(policy);
+  });
+  getRequiredElement<HTMLButtonElement>('revert-applied-policies').disabled =
+      false;
 }
 
 function applyPoliciesFromFile(jsonFile: File) {
@@ -102,7 +119,7 @@ function convertToPolicyInfo(policyName: string, value: {[key: string]: any}) {
         PolicyScope.SCOPE_USER_VAL,
     level: Number(LevelNamesToValues[value['level']]) ??
         PolicyLevel.LEVEL_MANDATORY_VAL,
-    value: JSON.stringify(value['value']),
+    value: value['value'],
   };
 
   return policy;

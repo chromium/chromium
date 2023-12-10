@@ -177,10 +177,10 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
         .WillByDefault(Invoke(
             [read_success, correct_eid](
                 BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
-              absl::optional<BluetoothGattService::GattErrorCode> error_code;
+              std::optional<BluetoothGattService::GattErrorCode> error_code;
               std::vector<uint8_t> value;
               if (read_success) {
-                error_code = absl::nullopt;
+                error_code = std::nullopt;
                 value =
                     correct_eid ? GetCorrectEidValue() : GetIncorrectEidValue();
               } else {

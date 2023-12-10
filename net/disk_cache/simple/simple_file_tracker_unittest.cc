@@ -348,8 +348,7 @@ TEST_F(SimpleFileTrackerTest, OverLimit) {
   UpdateEntryFileKey(entries[1].get(), key);
   base::FilePath new_path =
       entries[1]->GetFilenameForSubfile(SimpleFileTracker::SubFile::FILE_0);
-  EXPECT_TRUE(base::StartsWith(new_path.BaseName().MaybeAsASCII(), "todelete_",
-                               base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(new_path.BaseName().MaybeAsASCII().starts_with("todelete_"));
   EXPECT_TRUE(base::Move(old_path, new_path));
 
   // Now re-acquire everything again; this time reading.

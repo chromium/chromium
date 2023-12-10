@@ -4,7 +4,7 @@
 
 #include "components/variations/cros_evaluate_seed/cros_safe_seed_manager.h"
 
-#include "components/variations/service/safe_seed_manager_interface.h"
+#include "components/variations/service/safe_seed_manager_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations::cros_early_boot::evaluate_seed {

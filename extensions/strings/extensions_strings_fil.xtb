@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Hala! Nabigong mabuo ang random RSA pribadong key.</translation>
 <translation id="1445572445564823378">Pinapabagal ng extension na ito ang <ph name="PRODUCT_NAME" />. Dapat mo itong huwag paganahin upang ipanumbalik ang pagganap ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Hindi sinusuportahan ang WebGL.</translation>
+<translation id="1610570795592207282">Hindi ma-load ang css '<ph name="RELATIVE_PATH" />' para sa script.</translation>
 <translation id="1803557475693955505">Maaaring hindi mai-load ang pahina ng background '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Hindi ma-decode ang larawan: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Ginamit ang localization , subalit hindi natukoy ang default_locale sa manipesto.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa vendor na <ph name="VENDOR_ID" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nabigong palitan ang crx na file. Tingnan upang malaman kung ginagamit ang file.</translation>
 <translation id="3163201441334626963">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa vendor na <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Hindi ma-load ang css '<ph name="RELATIVE_PATH" />' para sa script ng nilalaman.</translation>
 <translation id="3369521687965833290">Hindi ma-unpack ang extension.  Upang ligtas na ma-unpack ang isang extension, dapat na mayroong daanan patungo sa iyong direktoryo ng profile na nagsisimula sa isang drive letter at walang nilalamang junction, mount point, o symlink.  Walang ganoong daanan ang umiiral para sa iyong profile.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> mula sa vendor na <ph name="VENDOR_ID" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Dapat na wastong path ang input na halaga para sa pribadong key.</translation>
 <translation id="388442998277590542">Hindi ma-load ang pahina ng mga pagpipilian na '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Nagka-error habang linalagdaan ang extension.</translation>
-<translation id="39964277676607559">Maaaring hindi mai-load ang javascript '<ph name="RELATIVE_PATH" />' para sa script ng nilalaman.</translation>
 <translation id="4115165561519362854">Iniaatas ng administrator ng computer na ito sa <ph name="EXTENSION_NAME" /> na magkaroon ng minimum na bersyon na <ph name="EXTENSION_VERSION" />. Hindi ito mae-enable hanggang sa ma-update ito sa bersyong iyon (o mas bago).</translation>
 <translation id="4233778200880751280">Hindi ma-load ang page na tungkol dito na '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Nabigong ilabas ang pribadong key.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Nabigong i-export ang pampublikong key.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Hindi mahanap ang ganap na daanan sa direktoryo sa pack.</translation>
+<translation id="5160071981665899014">Hindi ma-load ang javascript '<ph name="RELATIVE_PATH" />' para sa script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Hindi sinusuportahan ang mga may hugis na window.</translation>
 <translation id="5456409301717116725">Kasama sa extension na ito ang key file na '<ph name="KEY_PATH" />'. Malamang na hindi mo iyon gustong gawin.</translation>

@@ -31,8 +31,9 @@ public class MissingDeviceLockView extends LinearLayout {
     }
 
     public static MissingDeviceLockView create(LayoutInflater inflater) {
-        MissingDeviceLockView view = (MissingDeviceLockView) inflater.inflate(
-                R.layout.missing_device_lock_view, null, false);
+        MissingDeviceLockView view =
+                (MissingDeviceLockView)
+                        inflater.inflate(R.layout.missing_device_lock_view, null, false);
         view.setClipToOutline(true);
         return view;
     }
@@ -44,15 +45,25 @@ public class MissingDeviceLockView extends LinearLayout {
         mDescription = findViewById(R.id.missing_device_lock_description);
         mCheckBox = findViewById(R.id.missing_device_lock_remove_local_data);
 
-        mCreateDeviceLockButton = DualControlLayout.createButtonForLayout(getContext(), false,
-                getResources().getString(R.string.device_lock_create_lock_button), null);
-        mCreateDeviceLockButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mCreateDeviceLockButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(),
+                        false,
+                        getResources().getString(R.string.device_lock_create_lock_button),
+                        null);
+        mCreateDeviceLockButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        mContinueButton = DualControlLayout.createButtonForLayout(
-                getContext(), true, getResources().getString(R.string.delete_and_continue), null);
-        mContinueButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mContinueButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(),
+                        true,
+                        getResources().getString(R.string.delete_and_continue),
+                        null);
+        mContinueButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);

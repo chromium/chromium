@@ -19,8 +19,11 @@ public interface MessageDispatcher {
      * @param scopeType The {@link MessageScopeType} of the message.
      * @param highPriority True if the message should be displayed ASAP.
      */
-    void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
-            @MessageScopeType int scopeType, boolean highPriority);
+    void enqueueMessage(
+            PropertyModel messageProperties,
+            WebContents webContents,
+            @MessageScopeType int scopeType,
+            boolean highPriority);
 
     /**
      * Enqueues a message defined by its properties. This message will be of a

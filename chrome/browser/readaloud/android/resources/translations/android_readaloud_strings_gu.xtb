@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1178581264944972037">થોભો</translation>
-<translation id="2558806128245168542">પાછળ નૅવિગેટ કરો</translation>
-<translation id="3523426587027570423">"આ પેજને સાંભળો" પ્લેયરને બંધ કરવા માટે ટૅપ કરો.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> સેકન્ડ ફાસ્ટ ફૉરવર્ડ કરો</translation>
+<translation id="1984328900355667246">પ્લેબૅક અનુપલબ્ધ છે</translation>
+<translation id="3023502830214299618">કમનસીબે, આ સમયે આ પેજ માટે પ્લેબૅક અનુપલબ્ધ છે. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="3807208219231826020">પ્લેબૅક સ્ક્રબ કરો</translation>
+<translation id="385051799172605136">પાછળ</translation>
 <translation id="4431240646217225907">ટેક્સ્ટ અને ઑટો સ્ક્રોલને હાઇલાઇટ કરો</translation>
 <translation id="4654641641922242357">"આ પેજને સાંભળો" પ્લેયર.</translation>
-<translation id="4731877163452936634">પ્લેબૅકની સ્પીડ: <ph name="PLAYBACK_SPEED" />. બદલવા માટે ક્લિક કરો.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> સેકન્ડ પાછળ જાઓ</translation>
 <translation id="5234971936051226002">"આ પેજને સાંભળો" પ્લેયરને નાનું કર્યું.</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="6315170314923504164">અવાજ</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6846298663435243399">લોડ કરી રહ્યાં છે…</translation>
 <translation id="7587250070160020374">Chrome પરનું પેજ હમણાં સંભળાવવામાં આવી રહ્યું છે</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> સેકન્ડ ફૉરવર્ડ કરો</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> સેકન્ડ પાછળ કરો</translation>
 <translation id="8136852699834914183">આ પેજ માટે પ્લેબૅક સુવિધા ઉપલબ્ધ નથી.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x સ્પીડ વધારો/ઘટાડો.</translation>
+<translation id="8407011429883244666">પ્લેયર બંધ કરો.</translation>
 <translation id="8953618380150219653">"આ પેજને સાંભળો" પ્લેયર સંપૂર્ણ સ્ક્રીન પર ખૂલ્યું છે.</translation>
 </translationbundle>

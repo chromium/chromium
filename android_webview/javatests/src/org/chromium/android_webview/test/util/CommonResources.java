@@ -14,9 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Auxiliary class providing common HTML and base64 resources using for testing.
- */
+/** Auxiliary class providing common HTML and base64 resources using for testing. */
 public class CommonResources {
 
     // Content-type headers used for HTML code.
@@ -53,7 +51,9 @@ public class CommonResources {
                 + "    </script>"
                 + "  </head>"
                 + "  <body onload='updateTitle();'>"
-                + "    <img id='img' onload='updateTitle();' src='" + imageSrc + "'>"
+                + "    <img id='img' onload='updateTitle();' src='"
+                + imageSrc
+                + "'>"
                 + "  </body>"
                 + "</html>";
     }
@@ -68,37 +68,39 @@ public class CommonResources {
 
     // HTML code of a static simple page with a favicon.
     public static final String FAVICON_STATIC_HTML =
-            "<html><head><link rel=\"icon\" type=\"image/png\" href=\"" + FAVICON_FILENAME + "\">"
-            + "</head><body>Favicon example</body></html>";
+            "<html><head><link rel=\"icon\" type=\"image/png\" href=\""
+                    + FAVICON_FILENAME
+                    + "\">"
+                    + "</head><body>Favicon example</body></html>";
 
     // Base64 data of a 256x256 png with all pixels having colour value 0x0000ff
     public static final String BLUE_PNG_BASE64 =
             "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAACvUlEQVR4nO3TMQEA"
-            + "IAzAsIF/zyBjRxMFfXpm3kDV3Q6ATQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCk"
-            + "GYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5Bm"
-            + "ANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoB"
-            + "SDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYg"
-            + "zQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0"
-            + "A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIM"
-            + "QJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMA"
-            + "aQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCk"
-            + "GYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5Bm"
-            + "ANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoB"
-            + "SDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYg"
-            + "zQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0"
-            + "A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIM"
-            + "QJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMA"
-            + "aQYgzQCkGYA0A5BmANIMQNoHVyEC/zTGc0UAAAAASUVORK5CYII=";
+                    + "IAzAsIF/zyBjRxMFfXpm3kDV3Q6ATQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCk"
+                    + "GYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5Bm"
+                    + "ANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoB"
+                    + "SDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYg"
+                    + "zQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0"
+                    + "A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIM"
+                    + "QJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMA"
+                    + "aQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCk"
+                    + "GYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5Bm"
+                    + "ANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoB"
+                    + "SDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYg"
+                    + "zQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0"
+                    + "A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIM"
+                    + "QJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMAaQYgzQCkGYA0A5BmANIMQJoBSDMA"
+                    + "aQYgzQCkGYA0A5BmANIMQNoHVyEC/zTGc0UAAAAASUVORK5CYII=";
 
     // Base64 data of a favicon image resource.
     public static final String FAVICON_DATA_BASE64 =
             "iVBORw0KGgoAAAANSUhEUgAAABAAAAAFCAYAAABM6GxJAAAABHNCSVQICAgIfAhkiAAAASJJREFU"
-            + "GJU9yDtLQnEYwOHfOZ40L3gZDJKgJCKaamvpGzS09wUaormh7xA0S5C0ZDTkZJsNUltkkpAUZkIX"
-            + "L3g9FzzH/9vm9vAgoqRUGUu20JHTXFfafUdERJSIKJnOPFUTERHpqIYclY5nb2QKFumky95OlO+W"
-            + "TSgATqOO5k3xr6ZxelXmDFDhdaqfLkPRWQglULaN/V5DPzl3iIb9xCI+Eskog/wdyhowLlb4vThE"
-            + "giF8zRsurx55beg8lMfMezZW9hqz20M/Owhwe2/yUrPI5Ds8//mRehN7JYWxvIX6eWJkbLK9laL8"
-            + "ZrKxFETzxTBNB5SOJjKV/mhCq+uSjGvE4hHc4QA9YGAEwnhWF1ePkCtOWFv0+PiasL8bR3QDr93h"
-            + "HyFup9LWUksHAAAAAElFTkSuQmCC";
+                    + "GJU9yDtLQnEYwOHfOZ40L3gZDJKgJCKaamvpGzS09wUaormh7xA0S5C0ZDTkZJsNUltkkpAUZkIX"
+                    + "L3g9FzzH/9vm9vAgoqRUGUu20JHTXFfafUdERJSIKJnOPFUTERHpqIYclY5nb2QKFumky95OlO+W"
+                    + "TSgATqOO5k3xr6ZxelXmDFDhdaqfLkPRWQglULaN/V5DPzl3iIb9xCI+Eskog/wdyhowLlb4vThE"
+                    + "giF8zRsurx55beg8lMfMezZW9hqz20M/Owhwe2/yUrPI5Ds8//mRehN7JYWxvIX6eWJkbLK9laL8"
+                    + "ZrKxFETzxTBNB5SOJjKV/mhCq+uSjGvE4hHc4QA9YGAEwnhWF1ePkCtOWFv0+PiasL8bR3QDr93h"
+                    + "HyFup9LWUksHAAAAAElFTkSuQmCC";
 
     // Default name for an example 'about' HTML page.
     public static final String ABOUT_FILENAME = "about.html";
@@ -109,13 +111,15 @@ public class CommonResources {
     // HTML code of an 'about' example.
     public static final String ABOUT_HTML =
             "<html>"
-            + "  <head>"
-            + "    <title>" + ABOUT_TITLE + "</title>"
-            + "  </head>"
-            + "  <body>"
-            + "    This is the Google!"
-            + "  </body>"
-            + "</html>";
+                    + "  <head>"
+                    + "    <title>"
+                    + ABOUT_TITLE
+                    + "</title>"
+                    + "  </head>"
+                    + "  <body>"
+                    + "    This is the Google!"
+                    + "  </body>"
+                    + "</html>";
 
     public static String makeHtmlPageFrom(String headers, String body) {
         return "<html>"
@@ -139,8 +143,11 @@ public class CommonResources {
     public static final int LINK_COLOR = Color.BLUE;
 
     public static String makeHtmlPageWithSimpleLinkTo(String headers, String destination) {
-        return makeHtmlPageFrom(headers,
-                "<a href=\"" + destination + "\" id=\"link\">"
+        return makeHtmlPageFrom(
+                headers,
+                "<a href=\""
+                        + destination
+                        + "\" id=\"link\">"
                         + "  <img class=\"big\" />"
                         + "</a>"
                         + "<div>Some text</div>");
@@ -151,26 +158,25 @@ public class CommonResources {
     }
 
     public static String makeHtmlPageWithSimplePostFormTo(String destination) {
-        return makeHtmlPageFrom("",
-                "<form action=\"" + destination + "\" method=\"post\">"
-                + "  <input type=\"submit\" value=\"post\" id=\"link\">"
-                + "</form>");
+        return makeHtmlPageFrom(
+                "",
+                "<form action=\""
+                        + destination
+                        + "\" method=\"post\">"
+                        + "  <input type=\"submit\" value=\"post\" id=\"link\">"
+                        + "</form>");
     }
 
     public static String makeAssetFile(String fingerprint) {
         try {
-            return (new JSONArray().put(
-                            new JSONObject()
-                                    .put("relation",
-                                            new JSONArray().put(
-                                                    "delegate_permission/common.handle_all_urls"))
-                                    .put("target",
-                                            new JSONObject()
-                                                    .put("namespace", "android_app")
-                                                    .put("package_name",
-                                                            "org.chromium.android_webview.shell")
-                                                    .put("sha256_cert_fingerprints",
-                                                            new JSONArray().put(fingerprint)))))
+            var relationArr = new JSONArray().put("delegate_permission/common.handle_all_urls");
+            var targetObj =
+                    new JSONObject()
+                            .put("namespace", "android_app")
+                            .put("package_name", "org.chromium.android_webview.shell")
+                            .put("sha256_cert_fingerprints", new JSONArray().put(fingerprint));
+            return new JSONArray()
+                    .put(new JSONObject().put("relation", relationArr).put("target", targetObj))
                     .toString();
         } catch (JSONException e) {
         }

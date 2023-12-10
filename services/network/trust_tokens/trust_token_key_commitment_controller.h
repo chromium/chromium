@@ -6,11 +6,11 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENT_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "url/gurl.h"
@@ -72,7 +72,7 @@ class TrustTokenKeyCommitmentController final {
    public:
     virtual ~Parser() = default;
     virtual mojom::TrustTokenKeyCommitmentResultPtr Parse(
-        base::StringPiece response_body) = 0;
+        std::string_view response_body) = 0;
   };
 
   // Constructor. Immediately starts a request:

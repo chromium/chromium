@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -30,13 +31,14 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -63,14 +65,23 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private boolean mSlideDownAnimation; // Slide down to bottom when closing the sheet.
     private boolean mSheetOnRight;
 
-    public PartialCustomTabSideSheetStrategy(Activity activity,
+    public PartialCustomTabSideSheetStrategy(
+            Activity activity,
             BrowserServicesIntentDataProvider intentData,
             CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
             CustomTabHeightStrategy.OnActivityLayoutCallback onActivityLayoutCallback,
-            FullscreenManager fullscreenManager, boolean isTablet, boolean startMaximized,
+            FullscreenManager fullscreenManager,
+            boolean isTablet,
+            boolean startMaximized,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        super(activity, intentData, onResizedCallback, onActivityLayoutCallback, fullscreenManager,
-                isTablet, handleStrategyFactory);
+        super(
+                activity,
+                intentData,
+                onResizedCallback,
+                onActivityLayoutCallback,
+                fullscreenManager,
+                isTablet,
+                handleStrategyFactory);
 
         mUnclampedInitialWidth = intentData.getInitialActivityWidth();
         mShowMaximizeButton = intentData.showSideSheetMaximizeButton();
@@ -79,8 +90,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         mRoundedCornersPosition = intentData.getActivitySideSheetRoundedCornersPosition();
         mIsMaximized = startMaximized;
         mSheetOnRight = isSheetOnRight(intentData.getSideSheetPosition());
-        mSlideDownAnimation = intentData.getSideSheetSlideInBehavior()
-                == CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
+        mSlideDownAnimation =
+                intentData.getSideSheetSlideInBehavior()
+                        == CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
         setupAnimator();
     }
 
@@ -92,8 +104,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         // Take RTL and position extra from the Intent (start or end) into account to determine
         // the right side (right or left).
         boolean isRtl = LocalizationUtils.isLayoutRtl();
-        boolean isAtStart =
-                sheetPosition == CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
+        boolean isAtStart = sheetPosition == ACTIVITY_SIDE_SHEET_POSITION_START;
         return !(isRtl ^ isAtStart);
     }
 
@@ -140,14 +151,19 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
         CustomTabToolbar.HandleStrategy handleStrategy =
-                mHandleStrategyFactory.create(getStrategyType(), mActivity, this::isFullHeight,
-                        () -> 0, null, this::handleCloseAnimation);
+                mHandleStrategyFactory.create(
+                        getStrategyType(),
+                        mActivity,
+                        this::isFullHeight,
+                        () -> 0,
+                        null,
+                        this::handleCloseAnimation);
         if (mShowMaximizeButton) {
             toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
         }
         toolbar.setHandleStrategy(handleStrategy);
         toolbar.setMinimizeButtonEnabled(false);
-        updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
+        updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -181,11 +197,13 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             start = windowLayout.width;
             end = mIsMaximized ? displayWidth : clampedInitialWidth;
             View content = (ViewGroup) mActivity.findViewById(R.id.compositor_view_holder);
-            updateListener = (anim) -> {
-                // Switch the invisibility type to GONE to prevent sluggish resizing artifacts.
-                if (content.getVisibility() != View.GONE) content.setVisibility(View.GONE);
-                setWindowWidth((int) anim.getAnimatedValue());
-            };
+            updateListener =
+                    (anim) -> {
+                        // Switch the invisibility type to GONE to prevent sluggish resizing
+                        // artifacts.
+                        if (content.getVisibility() != View.GONE) content.setVisibility(View.GONE);
+                        setWindowWidth((int) anim.getAnimatedValue());
+                    };
         }
         // Keep the WebContents invisible during the animation to hide the jerky visual artifacts
         // of the contents due to resizing.
@@ -199,8 +217,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         if (visible) {
             // Set a slight delay in restoring the view to hide the visual glitch caused by
             // the resized web contents.
-            new Handler().postDelayed(
-                    () -> content.setVisibility(View.VISIBLE), SIDE_SHEET_UI_DELAY);
+            new Handler()
+                    .postDelayed(() -> content.setVisibility(View.VISIBLE), SIDE_SHEET_UI_DELAY);
         } else {
             content.setVisibility(View.INVISIBLE);
         }
@@ -215,16 +233,19 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             setContentVisible(true);
         } else {
             // System UI dimensions are not settled yet. Post the task.
-            new Handler().post(() -> {
-                if (mSheetOnRight) configureLayoutBeyondScreen(false);
-                maybeResetFocusForScreenReaders();
-                initializeSize();
-                if (shouldDrawDividerLine()) drawDividerLine();
-                // We have a delay before showing the resized web contents so it has to be done
-                // for the shadow as well.
-                new Handler().postDelayed(this::updateShadowOffset, SIDE_SHEET_UI_DELAY);
-                maybeInvokeResizeCallback();
-            });
+            new Handler()
+                    .post(
+                            () -> {
+                                if (mSheetOnRight) configureLayoutBeyondScreen(false);
+                                maybeResetFocusForScreenReaders();
+                                initializeSize();
+                                if (shouldDrawDividerLine()) drawDividerLine();
+                                // We have a delay before showing the resized web contents so it has
+                                // to be done for the shadow as well.
+                                new Handler()
+                                        .postDelayed(this::updateShadowOffset, SIDE_SHEET_UI_DELAY);
+                                maybeInvokeResizeCallback();
+                            });
         }
     }
 
@@ -233,16 +254,23 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             // After resizing the view, notify the window state change to let screen reader
             // focus navigation work as before.
             mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
-            new Handler().postDelayed(() -> {
-                // Move the focus and accessibility focus from the leftmost button back to maximize
-                // the button. This happens when double-tapping on the button causes the sheet to be
-                // resized to full width when a screen reader is running. Some delay is required
-                // for this to work as expected.
-                var maximizeButton = mToolbarView.findViewById(R.id.custom_tabs_sidepanel_maximize);
-                maximizeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                maximizeButton.sendAccessibilityEvent(
-                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
-            }, 200);
+            new Handler()
+                    .postDelayed(
+                            () -> {
+                                // Move the focus and accessibility focus from the leftmost button
+                                // back to maximize the button. This happens when double-tapping
+                                // on the button causes the sheet to be resized to full width when
+                                // a screen reader is running. Some delay
+                                // is required for this to work as expected.
+                                var maximizeButton =
+                                        mToolbarView.findViewById(
+                                                R.id.custom_tabs_sidepanel_maximize);
+                                maximizeButton.sendAccessibilityEvent(
+                                        AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                                maximizeButton.sendAccessibilityEvent(
+                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                            },
+                            200);
         }
     }
 
@@ -253,7 +281,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected int getHandleHeight() {
-        return isFullscreen() || mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE
+        return isFullscreen()
+                        || mRoundedCornersPosition
+                                == CustomTabsIntent
+                                        .ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE
                 ? 0
                 : mToolbarCornerRadius;
     }
@@ -308,7 +339,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected void adjustCornerRadius(GradientDrawable d, int radius) {
-        if (mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE) {
+        if (mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE) {
             radius = 0;
         }
 
@@ -323,8 +354,17 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
         d.mutate();
         // Inner top rounded corner (depends on side sheet positioning)
-        d.setCornerRadii(new float[] {topLeftCornerRadius, topLeftCornerRadius,
-                topRightCornerRadius, topRightCornerRadius, 0, 0, 0, 0});
+        d.setCornerRadii(
+                new float[] {
+                    topLeftCornerRadius,
+                    topLeftCornerRadius,
+                    topRightCornerRadius,
+                    topRightCornerRadius,
+                    0,
+                    0,
+                    0,
+                    0
+                });
     }
 
     @Override
@@ -333,7 +373,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    protected @ActivityLayoutState int getActivityLayoutState() {
+    protected @CustomTabsCallback.ActivityLayoutState int getActivityLayoutState() {
         if (isFullscreen()) {
             return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
         } else if (isMaximized()) {
@@ -359,8 +399,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         }
     }
 
-    private void startAnimation(int start, int end, AnimatorUpdateListener updateListener,
-            Runnable endRunnable, boolean animate) {
+    private void startAnimation(
+            int start,
+            int end,
+            AnimatorUpdateListener updateListener,
+            Runnable endRunnable,
+            boolean animate) {
         if (animate) {
             startAnimation(start, end, updateListener, endRunnable);
         } else {
@@ -376,11 +420,11 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         positionOnWindow();
         setCoordinatorLayoutHeight(MATCH_PARENT);
 
-        updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
+        updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
 
         if (mIsMaximized) {
             mIsMaximized = false;
-            toggleMaximize(/*animate=*/false);
+            toggleMaximize(/* animate= */ false);
         }
         setContentVisible(true);
     }
@@ -391,8 +435,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         attrs.width = calculateWidth(mUnclampedInitialWidth);
 
         attrs.y = mStatusbarHeight;
-        attrs.x = (mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0)
-                + mVersionCompat.getXOffset();
+        attrs.x =
+                (mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0)
+                        + mVersionCompat.getXOffset();
         attrs.gravity = Gravity.TOP | Gravity.START;
         mActivity.getWindow().setAttributes(attrs);
     }
@@ -400,9 +445,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private int calculateWidth(int unclampedWidth) {
         int displayWidth = mVersionCompat.getDisplayWidth();
         int displayWidthDp = mVersionCompat.getDisplayWidthDp();
-        float minWidthRatio = displayWidthDp < WINDOW_WIDTH_EXPANDED_CUTOFF_DP
-                ? MINIMAL_WIDTH_RATIO_MEDIUM
-                : MINIMAL_WIDTH_RATIO_EXPANDED;
+        float minWidthRatio =
+                displayWidthDp < WINDOW_WIDTH_EXPANDED_CUTOFF_DP
+                        ? MINIMAL_WIDTH_RATIO_MEDIUM
+                        : MINIMAL_WIDTH_RATIO_EXPANDED;
         return MathUtils.clamp(unclampedWidth, displayWidth, (int) (displayWidth * minWidthRatio));
     }
 

@@ -63,6 +63,26 @@ TEST_F(LegacyURLMatcherTest, NotMatch) {
   EXPECT_FALSE(matcher.GetMatchedURL(GURL("https://chat.example2.com")));
 }
 
+TEST_F(LegacyURLMatcherTest, SubDomain) {
+  LegacyTechURLMatcher matcher{profile()};
+  SetPolicy({"www.example.com", "example2.com", ".example3.com"});
+
+  // Only subdomain www is matched
+  EXPECT_FALSE(matcher.GetMatchedURL(GURL("https://example.com")));
+  EXPECT_FALSE(matcher.GetMatchedURL(GURL("https://chat.example.com")));
+  EXPECT_TRUE(matcher.GetMatchedURL(GURL("https://www.example.com")));
+
+  // All subdomains are matched.
+  EXPECT_TRUE(matcher.GetMatchedURL(GURL("https://example2.com")));
+  EXPECT_TRUE(matcher.GetMatchedURL(GURL("https://chat.example2.com")));
+  EXPECT_TRUE(matcher.GetMatchedURL(GURL("https://www.example2.com")));
+  EXPECT_TRUE(matcher.GetMatchedURL(GURL("https://s1.s2.example2.com")));
+
+  // Subdomain wildcard matching is disabled with prefix dot.
+  EXPECT_TRUE(matcher.GetMatchedURL(GURL("https://example3.com")));
+  EXPECT_FALSE(matcher.GetMatchedURL(GURL("https://chat.example3.com")));
+}
+
 TEST_F(LegacyURLMatcherTest, PathPrecedence) {
   LegacyTechURLMatcher matcher{profile()};
   SetPolicy({"www.example.com", "www.example.com/p1", "www.example.com/p1/p2"});
@@ -102,6 +122,15 @@ TEST_F(LegacyURLMatcherTest, Localhost) {
   SetPolicy({"localhost", "localhost/path"});
   EXPECT_EQ("localhost/path",
             *matcher.GetMatchedURL(GURL("https://localhost/path2")));
+}
+
+TEST_F(LegacyURLMatcherTest, IP) {
+  LegacyTechURLMatcher matcher{profile()};
+  SetPolicy({"192.168.1.1", "192.168.1./path"});
+
+  EXPECT_EQ("192.168.1.1",
+            *matcher.GetMatchedURL(GURL("https://192.168.1.1/path2")));
+  EXPECT_FALSE(matcher.GetMatchedURL(GURL("https://192.168.1.2/path")));
 }
 
 TEST_F(LegacyURLMatcherTest, File) {

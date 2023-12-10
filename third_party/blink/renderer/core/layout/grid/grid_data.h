@@ -21,32 +21,9 @@ struct CORE_EXPORT GridPlacementData {
   GridPlacementData(GridPlacementData&&) = default;
   GridPlacementData& operator=(GridPlacementData&&) = default;
 
-  explicit GridPlacementData(const ComputedStyle& grid_style,
-                             wtf_size_t column_auto_repetitions,
-                             wtf_size_t row_auto_repetitions)
-      : line_resolver(grid_style,
-                      column_auto_repetitions,
-                      row_auto_repetitions) {}
+  explicit GridPlacementData(const GridLineResolver& line_resolver)
+      : line_resolver(line_resolver) {}
 
-  // Subgrids need to map named lines from every parent grid. This constructor
-  // should be used exclusively by subgrids to differentiate such scenario.
-  GridPlacementData(const ComputedStyle& grid_style,
-                    const GridLineResolver& parent_line_resolver,
-                    GridArea subgrid_area,
-                    wtf_size_t column_auto_repetitions,
-                    wtf_size_t row_auto_repetitions)
-      : line_resolver(grid_style,
-                      parent_line_resolver,
-                      subgrid_area,
-                      column_auto_repetitions,
-                      row_auto_repetitions) {}
-
-  // This constructor only copies inputs to the auto-placement algorithm.
-  GridPlacementData(const GridPlacementData& other)
-      : line_resolver(other.line_resolver) {}
-
-  // This method compares the fields computed by the auto-placement algorithm in
-  // |GridPlacement| and it's only intended to validate the cached data.
   bool operator==(const GridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
            column_start_offset == other.column_start_offset &&
@@ -58,23 +35,9 @@ struct CORE_EXPORT GridPlacementData {
     return !(*this == other);
   }
 
-  // TODO(kschmi): Remove placement data from `GridPlacement` as well as
-  // these helpers.
-  bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const {
-    return line_resolver.HasStandaloneAxis(track_direction);
-  }
-
-  wtf_size_t AutoRepetitions(GridTrackSizingDirection track_direction) const {
-    return line_resolver.AutoRepetitions(track_direction);
-  }
-
   wtf_size_t AutoRepeatTrackCount(
       GridTrackSizingDirection track_direction) const {
     return line_resolver.AutoRepeatTrackCount(track_direction);
-  }
-
-  wtf_size_t SubgridSpanSize(GridTrackSizingDirection track_direction) const {
-    return line_resolver.SubgridSpanSize(track_direction);
   }
 
   wtf_size_t ExplicitGridTrackCount(
@@ -82,15 +45,20 @@ struct CORE_EXPORT GridPlacementData {
     return line_resolver.ExplicitGridTrackCount(track_direction);
   }
 
+  bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const {
+    return line_resolver.HasStandaloneAxis(track_direction);
+  }
+
   wtf_size_t StartOffset(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? column_start_offset
                                             : row_start_offset;
   }
 
-  GridLineResolver line_resolver;
+  wtf_size_t SubgridSpanSize(GridTrackSizingDirection track_direction) const {
+    return line_resolver.SubgridSpanSize(track_direction);
+  }
 
-  // These fields are computed in |GridPlacement::RunAutoPlacementAlgorithm|,
-  // so they're not considered inputs to the grid placement step.
+  GridLineResolver line_resolver;
   Vector<GridArea> grid_item_positions;
   wtf_size_t column_start_offset{0};
   wtf_size_t row_start_offset{0};
@@ -180,7 +148,7 @@ class CORE_EXPORT GridLayoutData {
 
 // Subgrid layout relies on the root grid to perform the track sizing algorithm
 // for every level of nested subgrids. This class contains the finalized layout
-// data of every node in a grid tree (see `ng_grid_subtree.h`), which will be
+// data of every node in a grid tree (see `grid_subtree.h`), which will be
 // passed down to the constraint space of a subgrid to perform layout.
 //
 // Note that this class allows subtrees to be compared for equality; this is
@@ -190,18 +158,19 @@ class CORE_EXPORT GridLayoutData {
 class GridLayoutTree : public RefCounted<GridLayoutTree> {
  public:
   struct GridTreeNode {
+    GridTreeNode(const GridLayoutData& layout_data, wtf_size_t subtree_size)
+        : layout_data(layout_data),
+          subtree_size(subtree_size),
+          has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
+                                  layout_data.Rows().HasIndefiniteSet()) {}
+
     GridLayoutData layout_data;
     wtf_size_t subtree_size;
+    bool has_unresolved_geometry;
   };
 
-  explicit GridLayoutTree(wtf_size_t initial_capacity) {
-    tree_data_.ReserveInitialCapacity(initial_capacity);
-  }
-
-  void Append(const GridLayoutData& layout_data, wtf_size_t subtree_size) {
-    GridTreeNode grid_node_data{layout_data, subtree_size};
-    tree_data_.emplace_back(std::move(grid_node_data));
-  }
+  explicit GridLayoutTree(Vector<GridTreeNode, 16>&& tree_data)
+      : tree_data_(std::move(tree_data)) {}
 
   bool AreSubtreesEqual(wtf_size_t subtree_root,
                         const GridLayoutTree& other,
@@ -219,6 +188,11 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
       }
     }
     return true;
+  }
+
+  bool HasUnresolvedGeometry(wtf_size_t index) const {
+    DCHECK_LT(index, tree_data_.size());
+    return tree_data_[index].has_unresolved_geometry;
   }
 
   const GridLayoutData& LayoutData(wtf_size_t index) const {
@@ -248,8 +222,9 @@ class GridLayoutSubtree
  public:
   GridLayoutSubtree() = default;
 
-  explicit GridLayoutSubtree(scoped_refptr<const GridLayoutTree>&& layout_tree)
-      : GridSubtree(std::move(layout_tree)) {}
+  explicit GridLayoutSubtree(scoped_refptr<const GridLayoutTree> layout_tree,
+                             wtf_size_t subtree_root = 0)
+      : GridSubtree(std::move(layout_tree), subtree_root) {}
 
   GridLayoutSubtree(const scoped_refptr<const GridLayoutTree>& layout_tree,
                     wtf_size_t parent_end_index,
@@ -263,6 +238,11 @@ class GridLayoutSubtree
                ? grid_tree_->AreSubtreesEqual(subtree_root_, *other.grid_tree_,
                                               other.subtree_root_)
                : !grid_tree_ && !other.grid_tree_;
+  }
+
+  bool HasUnresolvedGeometry() const {
+    DCHECK(grid_tree_);
+    return grid_tree_->HasUnresolvedGeometry(subtree_root_);
   }
 
   const GridLayoutData& LayoutData() const {

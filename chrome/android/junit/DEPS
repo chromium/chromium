@@ -44,11 +44,3 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/android/java/src/org/chromium/content/browser/RenderCoordinatesImpl.java",
 ]
-
-specific_include_rules = {
-  # Added to allow tests to mock JNI methods within the implementation. Tests
-  # use the public API classes where possible.
-  "Fido2CredentialRequestRobolectricTest.java": [
-    "+content/public/android/java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
-  ]
-}

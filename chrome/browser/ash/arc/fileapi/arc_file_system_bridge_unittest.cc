@@ -105,12 +105,11 @@ TEST_F(ArcFileSystemBridgeTest, GetFileName) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindLambdaForTesting(
-          [&](const absl::optional<std::string>& result) {
-            run_loop.Quit();
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ("hello.txt", result.value());
-          }));
+      base::BindLambdaForTesting([&](const std::optional<std::string>& result) {
+        run_loop.Quit();
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ("hello.txt", result.value());
+      }));
   run_loop.Run();
 }
 
@@ -124,12 +123,11 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindLambdaForTesting(
-          [&](const absl::optional<std::string>& result) {
-            run_loop.Quit();
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(filename, result.value());
-          }));
+      base::BindLambdaForTesting([&](const std::optional<std::string>& result) {
+        run_loop.Quit();
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(filename, result.value());
+      }));
   run_loop.Run();
 }
 
@@ -141,12 +139,11 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameLockIcon) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindLambdaForTesting(
-          [&](const absl::optional<std::string>& result) {
-            run_loop.Quit();
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ("\xF0\x9F\x94\x92", result.value());
-          }));
+      base::BindLambdaForTesting([&](const std::optional<std::string>& result) {
+        run_loop.Quit();
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ("\xF0\x9F\x94\x92", result.value());
+      }));
   run_loop.Run();
 }
 
@@ -157,11 +154,10 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameEscapedPathSeparator) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindLambdaForTesting(
-          [&](const absl::optional<std::string>& result) {
-            run_loop.Quit();
-            ASSERT_FALSE(result.has_value());
-          }));
+      base::BindLambdaForTesting([&](const std::optional<std::string>& result) {
+        run_loop.Quit();
+        ASSERT_FALSE(result.has_value());
+      }));
   run_loop.Run();
 }
 
@@ -183,7 +179,7 @@ TEST_F(ArcFileSystemBridgeTest, GetLastModified) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetLastModified(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)),
-      base::BindLambdaForTesting([&](const absl::optional<base::Time> result) {
+      base::BindLambdaForTesting([&](const std::optional<base::Time> result) {
         ASSERT_TRUE(result.has_value());
         EXPECT_EQ(expected, result.value());
         run_loop.Quit();
@@ -195,12 +191,11 @@ TEST_F(ArcFileSystemBridgeTest, GetFileType) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileType(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindLambdaForTesting(
-          [&](const absl::optional<std::string>& result) {
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(kTestFileType, result.value());
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const std::optional<std::string>& result) {
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(kTestFileType, result.value());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -216,8 +211,8 @@ TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetVirtualFileId(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& id) {
-        ASSERT_NE(absl::nullopt, id);
+      base::BindLambdaForTesting([&](const std::optional<std::string>& id) {
+        ASSERT_NE(std::nullopt, id);
         EXPECT_EQ(kId, id.value());
         run_loop.Quit();
       }));

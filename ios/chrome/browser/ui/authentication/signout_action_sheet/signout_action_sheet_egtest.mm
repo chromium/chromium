@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"

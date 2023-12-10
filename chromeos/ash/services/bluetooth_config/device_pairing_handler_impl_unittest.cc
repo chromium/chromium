@@ -237,7 +237,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
 
   void InvokePendingConnectCallback(
-      absl::optional<ConnectErrorCode> error_code) {
+      std::optional<ConnectErrorCode> error_code) {
     std::move(connect_callback_).Run(error_code);
     device_pairing_handler_->FlushForTesting();
   }
@@ -275,7 +275,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
                        ((sizeof(kTestDeviceIdSuffix) - 1) / sizeof(char)));
   }
 
-  const absl::optional<mojom::PairingResult>& pairing_result() const {
+  const std::optional<mojom::PairingResult>& pairing_result() const {
     return pairing_result_;
   }
   size_t num_cancel_pairing_calls() const { return num_cancel_pairing_calls_; }
@@ -308,7 +308,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
 
   base::HistogramTester histogram_tester;
 
-  absl::optional<mojom::PairingResult> pairing_result_;
+  std::optional<mojom::PairingResult> pairing_result_;
 
   // Properties set by device::BluetoothDevice methods.
   device::BluetoothDevice::ConnectCallback connect_callback_;
@@ -383,7 +383,7 @@ TEST_F(DevicePairingHandlerImplTest, MultipleDevicesPairAuthNone) {
 
   EXPECT_TRUE(HasPendingConnectCallback());
   FastForwardOperation(kTestDuration);
-  InvokePendingConnectCallback(/*error_code=*/absl::nullopt);
+  InvokePendingConnectCallback(/*error_code=*/std::nullopt);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kSuccess);
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/2, /*failure_count=*/1,
@@ -474,7 +474,7 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerAfterConnectFinishes) {
 
   EXPECT_TRUE(HasPendingConnectCallback());
   FastForwardOperation(kTestDuration);
-  InvokePendingConnectCallback(/*error_code=*/absl::nullopt);
+  InvokePendingConnectCallback(/*error_code=*/std::nullopt);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kSuccess);
 
   DestroyHandler();

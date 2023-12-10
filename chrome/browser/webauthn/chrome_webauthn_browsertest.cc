@@ -155,7 +155,8 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
   scoped_refptr<device::MockBluetoothAdapter> mock_bluetooth_adapter_ = nullptr;
   device::FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnRelatedOrigin};
 };
 
 static constexpr char kGetAssertionCredID1234[] = R"((() => {
@@ -254,6 +255,27 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       "webauthn: OK",
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAssertionCredID1234));
+
+  static constexpr char kMakeCredentialCrossDomain[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { id: "example.com", name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
+})())";
+
+  // This should fail with INVALID_PROTOCOL and never one of the errors from
+  // related-origin processing because extensions don't participate in that
+  // system.
+  EXPECT_THAT(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredentialCrossDomain)
+          .ExtractString(),
+      testing::HasSubstr("Public-key credentials are only available to"));
 }
 
 #if BUILDFLAG(IS_WIN)

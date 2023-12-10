@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/mime_util.h"

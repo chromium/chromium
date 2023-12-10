@@ -135,7 +135,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
     return bubble_tracker_.view();
   }
 
-  absl::optional<permissions::PermissionRequestManager*>
+  std::optional<permissions::PermissionRequestManager*>
   active_permission_request_manager_for_testing() {
     CHECK_IS_TEST();
     return active_chip_permission_request_manager_;
@@ -227,7 +227,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // The model of a permission prompt if one is present.
   std::unique_ptr<PermissionPromptChipModel> permission_prompt_model_;
 
-  absl::optional<permissions::PermissionRequestManager*>
+  std::optional<permissions::PermissionRequestManager*>
       active_chip_permission_request_manager_;
 
   views::ViewTracker bubble_tracker_;

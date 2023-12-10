@@ -35,22 +35,26 @@ public class ListMutationController {
 
     private int mFilterType = Filters.FilterType.NONE;
 
-    private final ListConsumer mModelConsumer = new ListConsumer() {
-        @Override
-        public ListConsumer setListConsumer(ListConsumer nextConsumer) {
-            return null;
-        }
+    private final ListConsumer mModelConsumer =
+            new ListConsumer() {
+                @Override
+                public ListConsumer setListConsumer(ListConsumer nextConsumer) {
+                    return null;
+                }
 
-        @Override
-        public void onListUpdated(List<ListItem> inputList) {
-            mModel.set(inputList);
-            mModel.dispatchLastEvent();
-        }
-    };
+                @Override
+                public void onListUpdated(List<ListItem> inputList) {
+                    mModel.set(inputList);
+                    mModel.dispatchLastEvent();
+                }
+            };
 
     /** Constructor. */
-    public ListMutationController(DownloadManagerUiConfig config, JustNowProvider justNowProvider,
-            DateOrderedListMutator mutator, ListItemModel model) {
+    public ListMutationController(
+            DownloadManagerUiConfig config,
+            JustNowProvider justNowProvider,
+            DateOrderedListMutator mutator,
+            ListItemModel model) {
         mUiConfig = config;
         mMutator = mutator;
         mModel = model;
@@ -64,38 +68,38 @@ public class ListMutationController {
         mDefaultDateSorter = new DateSorter(justNowProvider);
         mDefaultDateLabelAdder = new DateLabelAdder(config, justNowProvider);
         mPrefetchSorter = new DateSorterForCards();
-        mPrefetchLabelAdder = mUiConfig.supportsGrouping ? new GroupCardLabelAdder(mCardPaginator)
-                                                         : mNoopListConsumer;
+        mPrefetchLabelAdder =
+                mUiConfig.supportsGrouping
+                        ? new GroupCardLabelAdder(mCardPaginator)
+                        : mNoopListConsumer;
         mListItemPropertySetter = new ListItemPropertySetter(mUiConfig);
 
         resetPipeline();
         mMutator.reload();
     }
 
-    /**
-     * To be called when this mediator should filter its content based on {@code filter}.
-     */
+    /** To be called when this mediator should filter its content based on {@code filter}. */
     public void onFilterTypeSelected(@Filters.FilterType int filter) {
         if (mDefaultListPaginator != null) mDefaultListPaginator.reset();
         if (mPrefetchListPaginator != null) mPrefetchListPaginator.reset();
         mCardPaginator.reset();
 
-        boolean filterTypeSame = mFilterType == filter
-                || (mFilterType != Filters.FilterType.PREFETCHED
-                        && filter != Filters.FilterType.PREFETCHED);
+        boolean filterTypeSame =
+                mFilterType == filter
+                        || (mFilterType != Filters.FilterType.PREFETCHED
+                                && filter != Filters.FilterType.PREFETCHED);
         if (mFilterType != -1 && filterTypeSame) return;
 
         mFilterType = filter;
         resetPipeline();
     }
 
-    /**
-     * Called to add more pages to show in the list.
-     */
+    /** Called to add more pages to show in the list. */
     public void loadMorePages() {
         DateOrderedListMutator.ListPaginator paginator =
-                mFilterType == Filters.FilterType.PREFETCHED ? mPrefetchListPaginator
-                                                             : mDefaultListPaginator;
+                mFilterType == Filters.FilterType.PREFETCHED
+                        ? mPrefetchListPaginator
+                        : mDefaultListPaginator;
         paginator.loadMorePages();
         mMutator.reload();
     }

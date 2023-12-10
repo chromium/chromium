@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1000498691615767391">Pasirinkite norimą atidaryti aplanką</translation>
+<translation id="1014208178561091457">Nepavyko nukopijuoti failo „<ph name="FILE_NAME" />“, nes jis šifruotas.</translation>
 <translation id="1047956942837015229">Ištrinama elementų: <ph name="COUNT" />...</translation>
 <translation id="1049926623896334335">Rašyklės dokumentas</translation>
 <translation id="1056775291175587022">Nėra tinklų</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439919885608649279">Žmogus su gėlėmis</translation>
 <translation id="1458457385801829801">Pašalinti <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Nepavyko nukopijuoti failų (iš viso: <ph name="NUMBER_OF_FILES" />), nes jie šifruoti.</translation>
 <translation id="1471718551822868769">Slovakų k.</translation>
 <translation id="1482884275703521657">Suomių k.</translation>
 <translation id="148466539719134488">Šveicarų</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Nepasiekiama</translation>
 <translation id="3254434849914415189">Keisti numatytąją <ph name="FILE_TYPE" /> failų programą:</translation>
 <translation id="3255159654094949700">Arabų k.</translation>
+<translation id="326396468955264502">Nepavyko perkelti failų (iš viso: <ph name="NUMBER_OF_FILES" />), nes jie šifruoti.</translation>
 <translation id="3264582393905923483">Kontekstas</translation>
 <translation id="3272909651715601089">Nepavyko atidaryti „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Ruošiama</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Vienas aplankas bendrinamas su „<ph name="VM_NAME" />“</translation>
 <translation id="3524311639100184459">Perspėjimas: šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Aplankas</translation>
+<translation id="3529424493985988200">Jei reikia išsamios informacijos, susisiekite su administratoriumi.</translation>
 <translation id="3548125359243647069">Per daug kartų įvestas netinkamas PIN kodas.</translation>
 <translation id="3549797760399244642">Eiti į drive.google.com...</translation>
 <translation id="3553048479571901246">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia nukopijuokite juos į „Windows“ failų aplanką.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Šis failas atidarytas kitame darbalaukyje. Perkelkite failus <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), kad peržiūrėtumėte juos.</translation>
 <translation id="6394388407447716302">Tik skaitoma</translation>
 <translation id="6395575651121294044">Elementų: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Nepavyko perkelti failo „<ph name="FILE_NAME" />“, nes jis šifruotas.</translation>
 <translation id="642282551015776456">Šio pavadinimo negalima naudoti kaip aplanko pavadinimo</translation>
 <translation id="6423031066725912715">Vietnamiečių k. su TCVN klaviatūra</translation>
 <translation id="6430271654280079150">Liko vienas bandymas.</translation>

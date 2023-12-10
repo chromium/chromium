@@ -22,7 +22,8 @@ class RouterRule;
 // This is not a regular Mojo converter because we need `ExceptionState&`
 // to tell errors.
 MODULES_EXPORT absl::optional<ServiceWorkerRouterRule>
-ConvertV8RouterRuleToBlink(const RouterRule* input,
+ConvertV8RouterRuleToBlink(v8::Isolate* isolate,
+                           const RouterRule* input,
                            const KURL& url_pattern_base_url,
                            ExceptionState& exception_state);
 

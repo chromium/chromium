@@ -1,0 +1,79 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("search_engine_choice") {
+  sources = [
+    "search_engine_choice_consumer.h",
+    "search_engine_choice_coordinator.h",
+    "search_engine_choice_coordinator.mm",
+    "search_engine_choice_mediator.h",
+    "search_engine_choice_mediator.mm",
+    "search_engine_choice_ui_util.h",
+    "search_engine_choice_ui_util.mm",
+    "search_engine_choice_view_controller.h",
+    "search_engine_choice_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
+    "//ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "search_engine_choice_constants.h",
+    "search_engine_choice_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_engine_choice_coordinator_unittest.mm" ]
+  deps = [
+    ":search_engine_choice",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/prefs:test_support",
+    "//components/search_engines",
+    "//components/strings",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/browser_view",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

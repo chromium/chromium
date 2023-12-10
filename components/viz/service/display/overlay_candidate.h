@@ -94,19 +94,32 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   OverlayCandidate(const OverlayCandidate& other);
   ~OverlayCandidate();
 
-  // Transformation to apply to layer during composition.
-  // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
-  // does not affect |display_rect|.
-  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
-      gfx::OVERLAY_TRANSFORM_NONE;
-  // Format of the buffer to scanout.
-  gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
-  // ColorSpace of the buffer for scanout.
-  gfx::ColorSpace color_space;
-  // Optional HDR Metadata for the buffer.
-  gfx::HDRMetadata hdr_metadata;
-  // Size of the resource, in pixels.
-  gfx::Size resource_size_in_pixels;
+  // If the quad doesn't require blending.
+  bool is_opaque : 1 = false;
+  // If the quad has a mask filter.
+  bool has_mask_filter : 1 = false;
+  // To be modified by the implementer if this candidate can go into
+  // an overlay.
+  bool overlay_handled : 1 = false;
+
+  // Is true if an HW overlay is required for the quad content.
+  bool requires_overlay = false;
+
+  // Helps to identify whether this is a solid color quad or not.
+  bool is_solid_color : 1 = false;
+
+  // Helps to identify whether this candidate has rounded-display masks or not.
+  bool has_rounded_display_masks : 1 = false;
+
+  // Whether this overlay candidate represents the root render pass.
+  bool is_root_render_pass : 1 = false;
+
+  // Whether this overlay candidate is a render pass draw quad.
+  bool is_render_pass_draw_quad : 1 = false;
+
+  // If we need nearest neighbor filter for displaying this overlay.
+  bool nearest_neighbor_filter : 1 = false;
+
   // Rect in content space that, when combined with |transform|, is the bounds
   // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
   // this is the bounds of the quad rect with its transform applied, so that
@@ -115,22 +128,33 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Implementer must convert to integer coordinates if setting
   // |overlay_handled| to true.
   gfx::RectF display_rect;
+
+  // Format of the buffer to scanout.
+  gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+
+  gfx::ProtectedVideoType protected_video_type =
+      gfx::ProtectedVideoType::kClear;
+
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+
+  // ColorSpace of the buffer for scanout.
+  gfx::ColorSpace color_space;
+  // Optional HDR Metadata for the buffer.
+  gfx::HDRMetadata hdr_metadata;
+  // Size of the resource, in pixels.
+  gfx::Size resource_size_in_pixels;
+
   // Crop within the buffer to be placed inside |display_rect|.
   gfx::RectF uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
   // Clip rect in the target space after composition, or nullopt if the quad is
   // not clipped.
   absl::optional<gfx::Rect> clip_rect;
-  // If the quad doesn't require blending.
-  bool is_opaque = false;
-  // If the quad has a mask filter.
-  bool has_mask_filter = false;
+
   // Texture resource to present in an overlay.
   ResourceId resource_id = kInvalidResourceId;
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
-
-  gfx::ProtectedVideoType protected_video_type =
-      gfx::ProtectedVideoType::kClear;
 
 #if BUILDFLAG(IS_WIN)
   // Indication of the overlay to be detected as possible full screen
@@ -175,10 +199,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // which is 0. Signed to allow for "underlays".
   int plane_z_order = 0;
 
-  // To be modified by the implementer if this candidate can go into
-  // an overlay.
-  bool overlay_handled = false;
-
   // The total area in square pixels of damage for this candidate's quad. This
   // is an estimate when 'EstimateOccludedDamage' function is used.
   float damage_area_estimate = 0.f;
@@ -190,48 +210,32 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Damage index for |SurfaceDamageRectList|.
   uint32_t overlay_damage_index = kInvalidDamageIndex;
 
-  // Is true if an HW overlay is required for the quad content.
-  bool requires_overlay = false;
-
   // Represents either a background of this overlay candidate or a color of a
   // solid color quad, which can be checked via the |is_solid_color|.
   absl::optional<SkColor4f> color;
-
-  // Helps to identify whether this is a solid color quad or not.
-  bool is_solid_color = false;
-
-  // Helps to identify whether this candidate has rounded-display masks or not.
-  bool has_rounded_display_masks = false;
 
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into the buffer backing of a render pass.
   // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
   // platform specific code.
   RAW_PTR_EXCLUSION const AggregatedRenderPassDrawQuad* rpdq = nullptr;
-  // The DDL for generating render pass overlay buffer with SkiaRenderer. This
-  // is the recorded output of rendering the |rpdq|.
-  sk_sp<GrDeferredDisplayList> ddl;
 
   // Quad |shared_quad_state| opacity is ubiquitous for quad types
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
   // context must support non opaque opacity for these types.
   float opacity = 1.0f;
 
-  // Hints for overlay prioritization when delegated composition is used.
-  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
-
   // Specifies the rounded corners of overlay candidate, in target space.
   gfx::RRectF rounded_corners;
 
+#if BUILDFLAG(IS_APPLE)
   // Layers in a non-zero sorting context exist in the same 3D space and should
   // intersect.
   unsigned sorting_context_id = 0;
 
   // The edge anti-aliasing mask property for the CALayer.
   unsigned edge_aa_mask = 0;
-
-  // If we need nearest neighbor filter for displaying this overlay.
-  bool nearest_neighbor_filter = false;
+#endif  // BUILDFLAG(IS_APPLE)
 
   // A (ideally) unique key used to temporally identify a specific overlay
   // candidate. This key can have collisions more that would be expected by the
@@ -240,11 +244,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
 
-  // Whether this overlay candidate represents the root render pass.
-  bool is_root_render_pass = false;
-
-  // Whether this overlay candidate is a render pass draw quad.
-  bool is_render_pass_draw_quad = false;
+  // Transformation to apply to layer during composition.
+  // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
+  // does not affect |display_rect|.
+  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+      gfx::OVERLAY_TRANSFORM_NONE;
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

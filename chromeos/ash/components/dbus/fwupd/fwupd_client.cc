@@ -41,6 +41,9 @@ const uint64_t kInternalDeviceFlag = 1;
 // "100000000"(9th bit) is the bit release flag for a trusted report.
 // Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
+// "10000"(5th bit) is the fwupd feature flag to allow interactive requests.
+// Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
+const uint64_t kRequestsFeatureFlag = 1llu << 4;
 
 base::FilePath GetFilePathFromUri(const GURL uri) {
   const std::string filepath = uri.spec();
@@ -116,6 +119,24 @@ class FwupdClientImpl : public FwupdClient {
                                     weak_ptr_factory_.GetWeakPtr()));
     properties_->ConnectSignals();
     properties_->GetAll();
+
+    SetFwupdFeatureFlags();
+  }
+
+  void SetFwupdFeatureFlags() override {
+    // Enable interactive updates in fwupd by setting the "requests"
+    // FwupdFeatureFlag when the Firmware Updates v2 feature flag is enabled.
+    if (base::FeatureList::IsEnabled(features::kFirmwareUpdateUIV2)) {
+      dbus::MethodCall method_call(kFwupdServiceInterface,
+                                   kFwupdSetFeatureFlagsMethodName);
+      dbus::MessageWriter writer(&method_call);
+      writer.AppendInt64(kRequestsFeatureFlag);
+
+      proxy_->CallMethodWithErrorResponse(
+          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+          base::BindOnce(&FwupdClientImpl::SetFeatureFlagsCallback,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   void RequestUpdates(const std::string& device_id) override {
@@ -265,11 +286,11 @@ class FwupdClientImpl : public FwupdClient {
 
       const std::string* version = dict.FindString("Version");
       const std::string* description = dict.FindString("Description");
-      absl::optional<int> priority = dict.FindInt("Urgency");
+      std::optional<int> priority = dict.FindInt("Urgency");
       const std::string* uri = dict.FindString("Uri");
       const std::string* checksum = dict.FindString("Checksum");
       const std::string* remote_id = dict.FindString("RemoteId");
-      absl::optional<bool> trusted_report = dict.FindBool("TrustFlags");
+      std::optional<bool> trusted_report = dict.FindBool("TrustFlags");
       bool has_trusted_report =
           !base::FeatureList::IsEnabled(
               features::kUpstreamTrustedReportsFirmware) ||
@@ -361,7 +382,7 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
-      absl::optional<bool> flags = dict.FindBool("Flags");
+      std::optional<bool> flags = dict.FindBool("Flags");
       const std::string* name = dict.FindString("Name");
       if (flags.has_value() && flags.value()) {
         if (name) {
@@ -421,6 +442,15 @@ class FwupdClientImpl : public FwupdClient {
   void OnPropertyChanged(const std::string& name) {
     for (auto& observer : observers_)
       observer.OnPropertiesChangedResponse(properties_.get());
+  }
+
+  void SetFeatureFlagsCallback(dbus::Response* response,
+                               dbus::ErrorResponse* error_response) {
+    // No need to take any specific action here.
+    if (!response) {
+      LOG(ERROR) << "No D-Bus response received from fwupd.";
+      return;
+    }
   }
 
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;

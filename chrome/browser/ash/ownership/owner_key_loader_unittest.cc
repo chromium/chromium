@@ -7,8 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
@@ -19,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ownership/mock_owner_key_util.h"
+#include "components/ownership/owner_key_util_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,16 +31,27 @@
 using PublicKeyRefPtr = scoped_refptr<ownership::PublicKey>;
 using PrivateKeyRefPtr = scoped_refptr<ownership::PrivateKey>;
 using base::Bucket;
-using testing::ElementsAre;
 
 namespace ash {
 
 constexpr char kUserEmail[] = "user@example.com";
 
-std::vector<uint8_t> ExtractBytes(
+std::vector<uint8_t> ExtractSpkiDer(
     const std::unique_ptr<crypto::RSAPrivateKey>& key) {
   std::vector<uint8_t> bytes;
   key->ExportPublicKey(&bytes);
+  return bytes;
+}
+
+std::vector<uint8_t> ExtractSpkiDer(const crypto::ScopedSECKEYPrivateKey& key) {
+  crypto::ScopedSECKEYPublicKey public_key(
+      SECKEY_ConvertToPublicKey(key.get()));
+
+  SECItem* public_key_bytes = PK11_DEREncodePublicKey(public_key.get());
+  std::vector<uint8_t> bytes(public_key_bytes->data,
+                             public_key_bytes->data + public_key_bytes->len);
+  SECITEM_FreeItem(public_key_bytes, PR_TRUE);
+
   return bytes;
 }
 
@@ -64,8 +78,9 @@ class OwnerKeyLoaderTestBase : public testing::Test {
         AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/false,
         user_type_, profile_.get());
 
-    FakeNssService::InitializeForBrowserContext(profile_.get(),
-                                                /*enable_system_slot=*/false);
+    nss_service_ = FakeNssService::InitializeForBrowserContext(
+        profile_.get(),
+        /*enable_system_slot=*/false);
 
     key_loader_ = std::make_unique<OwnerKeyLoader>(
         profile_.get(), &device_settings_service_, owner_key_util_,
@@ -85,6 +100,15 @@ class OwnerKeyLoaderTestBase : public testing::Test {
     return policy_builder.GetSigningKey();
   }
 
+  // Checks whether the private key for `public_key_spki` is in the `slot`.
+  bool IsKeyInSlot(const std::vector<uint8_t> public_key_spki,
+                   PK11SlotInfo* slot) {
+    scoped_refptr<ownership::OwnerKeyUtil> key_util =
+        base::MakeRefCounted<ownership::OwnerKeyUtilImpl>(
+            /*public_key_file=*/base::FilePath());
+    return bool(key_util->FindPrivateKeyInSlot(public_key_spki, slot));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
@@ -96,6 +120,7 @@ class OwnerKeyLoaderTestBase : public testing::Test {
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   FakeSessionManagerClient session_manager_client_;
   std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<FakeNssService> nss_service_ = nullptr;
   ash::DeviceSettingsService device_settings_service_;
   std::unique_ptr<OwnerKeyLoader> key_loader_;
   base::test::TestFuture<PublicKeyRefPtr, PrivateKeyRefPtr> result_observer_;
@@ -108,9 +133,15 @@ class RegularOwnerKeyLoaderTest : public OwnerKeyLoaderTestBase {
       : OwnerKeyLoaderTestBase(user_manager::USER_TYPE_REGULAR) {}
 };
 
-// Test that the first user generates a new owner key (when the user is a
-// regular user).
-TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
+// Test that the first user generates a new owner key in the public slot (when
+// the user is a regular user and the related experiment is disabled).
+TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyInPublicSlot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
+                             ash::features::kMigrateOwnerKeyToPrivateSlot});
+
   // In real code DeviceSettingsService must call this for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
   // Do not prepare any keys, so key_loader_ has to generate a new one.
@@ -121,12 +152,44 @@ TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
   EXPECT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+  EXPECT_TRUE(IsKeyInSlot(result_observer_.Get<PublicKeyRefPtr>()->data(),
+                          nss_service_->GetPublicSlot()));
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
-          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1),
+          Bucket(OwnerKeyUmaEvent::kPublicSlotKeyGenerationSuccess, 1)));
+}
+
+// Test that the first user generates a new owner key in the private slot (when
+// the user is a regular user and the related experiment is enabled).
+TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyInPrivateSlot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+
+  // In real code DeviceSettingsService must call this for the first user.
+  device_settings_service_.MarkWillEstablishConsumerOwnership();
+  // Do not prepare any keys, so key_loader_ has to generate a new one.
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  EXPECT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+  EXPECT_TRUE(IsKeyInSlot(result_observer_.Get<PublicKeyRefPtr>()->data(),
+                          nss_service_->GetPrivateSlot()));
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(
+          Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1),
+          Bucket(OwnerKeyUmaEvent::kPrivateSlotKeyGenerationSuccess, 1)));
 }
 
 // Test that the first user generates owner key after a crash. If during the
@@ -148,7 +211,7 @@ TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyAfterCrash) {
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           Bucket(
               OwnerKeyUmaEvent::kRegeneratingOwnerKeyBasedOnLocalStateSuccess,
               1),
@@ -168,20 +231,26 @@ TEST_F(RegularOwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
   ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
-            ExtractBytes(signing_key));
+            ExtractSpkiDer(signing_key));
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-              ElementsAre(Bucket(
+              BucketsInclude(Bucket(
                   OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnPolicySuccess, 1)));
 }
 
 // Test that an owner user gets recognized as the owner when it's mentioned in
-// the existing device policies and owns the key.
-TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKey) {
+// the existing device policies and owns the key in the public slot.
+TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPublicSlot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
-  owner_key_util_->ImportPrivateKeyAndSetPublicKey(signing_key->Copy());
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPublicSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -189,33 +258,103 @@ TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKey) {
   ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
-            ExtractBytes(signing_key));
+            ExtractSpkiDer(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-              ElementsAre(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1),
+                     Bucket(OwnerKeyUmaEvent::kOwnerKeyInPublicSlotTrue, 1)));
 }
 
-// Test that even without existing device policies the owner key gets loaded
-// (that will help Chrome to recognize the current user as the owner).
-TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyWithoutPolicies) {
-  policy::DevicePolicyBuilder policy_builder;
-  auto signing_key = policy_builder.GetSigningKey();
+// Test that an owner user gets recognized as the owner when it's mentioned in
+// the existing device policies and owns the key in the private slot.
+TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPrivateSlot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
 
-  owner_key_util_->ImportPrivateKeyAndSetPublicKey(signing_key->Copy());
+  // Configure existing device policies and the owner key.
+  auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPrivateSlot());
+  device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
 
   ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
-            ExtractBytes(signing_key));
+            ExtractSpkiDer(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-              ElementsAre(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1),
+                     Bucket(OwnerKeyUmaEvent::kOwnerKeyInPublicSlotFalse, 1)));
+}
+
+// Test that even without existing device policies the owner key gets loaded
+// from the public slot (that will help Chrome to recognize the current user as
+// the owner).
+TEST_F(RegularOwnerKeyLoaderTest,
+       OwnerUserLoadsExistingKeyFromPublicSlotWithoutPolicies) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+
+  policy::DevicePolicyBuilder policy_builder;
+  auto signing_key = policy_builder.GetSigningKey();
+
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPublicSlot());
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
+            ExtractSpkiDer(signing_key));
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1)));
+}
+
+// Test that even without existing device policies the owner key gets loaded
+// from the private slot (that will help Chrome to recognize the current user as
+// the owner).
+TEST_F(RegularOwnerKeyLoaderTest,
+       OwnerUserLoadsExistingKeyFromPrivateSlotWithoutPolicies) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+
+  policy::DevicePolicyBuilder policy_builder;
+  auto signing_key = policy_builder.GetSigningKey();
+
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPrivateSlot());
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
+            ExtractSpkiDer(signing_key));
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1)));
 }
 
 // Test that the second user is not falsely recognized as the owner even if
@@ -231,12 +370,12 @@ TEST_F(RegularOwnerKeyLoaderTest, SecondaryUserWithoutPolicies) {
   ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
-            ExtractBytes(signing_key));
+            ExtractSpkiDer(signing_key));
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(Bucket(OwnerKeyUmaEvent::kUnsureUserNotAnOwnerSuccess, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kUnsureUserNotAnOwnerSuccess, 1)));
 }
 
 // Test that an owner user still gets recognized as the owner when it's
@@ -255,13 +394,13 @@ TEST_F(RegularOwnerKeyLoaderTest,
   ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   EXPECT_NE(result_observer_.Get<PublicKeyRefPtr>()->data(),
-            ExtractBytes(signing_key));
+            ExtractSpkiDer(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           Bucket(OwnerKeyUmaEvent::kRegeneratingOwnerKeyBasedOnPolicySuccess,
                  1),
           Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
@@ -286,13 +425,13 @@ TEST_F(RegularOwnerKeyLoaderTest,
   ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   EXPECT_NE(result_observer_.Get<PublicKeyRefPtr>()->data(),
-            ExtractBytes(signing_key));
+            ExtractSpkiDer(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           // "Fail" means that the existence of the public key is unexpected.
           Bucket(OwnerKeyUmaEvent::kRegeneratingOwnerKeyBasedOnLocalStateFail,
                  1),
@@ -315,7 +454,7 @@ TEST_F(RegularOwnerKeyLoaderTest, KeyGenerationRetriedSuccessfully) {
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
           // "Fail" means that there were generation errors before it succeeded.
           Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedFail, 1)));
@@ -335,7 +474,7 @@ TEST_F(RegularOwnerKeyLoaderTest, KeyGenerationRetriedUnsuccessfully) {
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
           Bucket(OwnerKeyUmaEvent::kFailedToGenerateOwnerKeyFail, 1)));
 }
@@ -362,8 +501,167 @@ TEST_F(RegularOwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
   // Check that the private key wasn't loaded.
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
 
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kManagedDeviceSuccess, 1)));
+}
+
+// Test that the owner key from the public slot is migrated into the private
+// slot when the feature flags is enabled.
+TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPublicToPrivateSlot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
+                            ash::features::kMigrateOwnerKeyToPrivateSlot},
+      /*disabled_features=*/{});
+
+  // Configure existing device policies and the owner key.
+  auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPublicSlot());
+  device_settings_service_.LoadImmediately();  // Reload policies.
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  EXPECT_NE(result_observer_.Get<PublicKeyRefPtr>()->data(),
+            ExtractSpkiDer(signing_key));
+  EXPECT_EQ(ExtractSpkiDer(key_loader_->ExtractOldOwnerKey()),
+            ExtractSpkiDer(signing_key));
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+  EXPECT_TRUE(IsKeyInSlot(result_observer_.Get<PublicKeyRefPtr>()->data(),
+                          nss_service_->GetPrivateSlot()));
+
   EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-              ElementsAre(Bucket(OwnerKeyUmaEvent::kManagedDeviceSuccess, 1)));
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeyInPublicSlotTrue, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kPrivateSlotKeyGenerationSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted, 1)));
+}
+
+// Test that the owner key from the public slot is not migrated when the feature
+// flag is disabled.
+TEST_F(RegularOwnerKeyLoaderTest, NotMigratedFromPublicToPrivateSlot) {
+  base::test::ScopedFeatureList feature_list;
+  // With this config Chrome should generate new keys in the private slot, but
+  // not migrate existing keys from the public slot.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+
+  // Configure existing device policies and the owner key.
+  auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPublicSlot());
+  device_settings_service_.LoadImmediately();  // Reload policies.
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
+            ExtractSpkiDer(signing_key));
+  EXPECT_EQ(key_loader_->ExtractOldOwnerKey(), nullptr);
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+  EXPECT_FALSE(IsKeyInSlot(result_observer_.Get<PublicKeyRefPtr>()->data(),
+                           nss_service_->GetPrivateSlot()));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeyInPublicSlotTrue, 1),
+                  Bucket(OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted, 0)));
+}
+
+// Test that the owner key from the private slot is not migrated back into the
+// public slot when the feature flags are enabled.
+TEST_F(RegularOwnerKeyLoaderTest, NotMigratedFromPrivateToPublicSlot) {
+  base::test::ScopedFeatureList feature_list;
+  // With this config Chrome should generate new keys in the private slot, but
+  // not migrate existing keys from the public slot.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
+                            ash::features::kMigrateOwnerKeyToPrivateSlot},
+      /*disabled_features=*/{});
+
+  // Configure existing device policies and the owner key.
+  auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPrivateSlot());
+  device_settings_service_.LoadImmediately();  // Reload policies.
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
+            ExtractSpkiDer(signing_key));
+  EXPECT_EQ(key_loader_->ExtractOldOwnerKey(), nullptr);
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+  EXPECT_FALSE(IsKeyInSlot(result_observer_.Get<PublicKeyRefPtr>()->data(),
+                           nss_service_->GetPublicSlot()));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeyInPublicSlotFalse, 1),
+                  Bucket(OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted, 0)));
+}
+
+// Test that the owner key from the private slot is migrated back into the
+// public slot when the feature flags are disabled.
+TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPrivateToPublicSlot) {
+  base::test::ScopedFeatureList feature_list;
+  // With this config Chrome should generate new keys in the private slot, but
+  // not migrate existing keys from the public slot.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
+                             ash::features::kMigrateOwnerKeyToPrivateSlot});
+
+  // Configure existing device policies and the owner key.
+  auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      signing_key->Copy(), nss_service_->GetPrivateSlot());
+  device_settings_service_.LoadImmediately();  // Reload policies.
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  EXPECT_NE(result_observer_.Get<PublicKeyRefPtr>()->data(),
+            ExtractSpkiDer(signing_key));
+  EXPECT_EQ(ExtractSpkiDer(key_loader_->ExtractOldOwnerKey()),
+            ExtractSpkiDer(signing_key));
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeyInPublicSlotFalse, 1),
+                  Bucket(OwnerKeyUmaEvent::kMigrationToPublicSlotStarted, 1)));
+}
+
+// Test that OwnerKeyLoader silently exits if it was started after the shutdown
+// had started.
+TEST_F(RegularOwnerKeyLoaderTest, ExitOnShutdown) {
+  // In real code DeviceSettingsService must call this for the first user.
+  device_settings_service_.MarkWillEstablishConsumerOwnership();
+  // Do not prepare any keys, so key_loader_ has to generate a new one.
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+
+  key_loader_->Run();
+
+  EXPECT_FALSE(result_observer_.Get<PublicKeyRefPtr>());
+  EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kOwnerKeyHistogramName), 0);
 }
 
 class ChildOwnerKeyLoaderTest : public OwnerKeyLoaderTestBase {
@@ -388,7 +686,7 @@ TEST_F(ChildOwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
-      ElementsAre(
+      BucketsInclude(
           Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
           Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
 }

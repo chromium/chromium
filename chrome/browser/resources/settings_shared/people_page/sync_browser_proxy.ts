@@ -13,6 +13,7 @@ export interface StoredAccount {
   fullName?: string;
   givenName?: string;
   email: string;
+  isPrimaryAccount?: boolean;  // With sign in consent level, unrelated to sync.
   avatarImage?: string;
 }
 

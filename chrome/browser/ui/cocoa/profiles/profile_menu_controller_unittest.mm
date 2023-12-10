@@ -200,7 +200,8 @@ TEST_F(ProfileMenuControllerTest, InitialActiveBrowser) {
 // Note: BrowserList::SetLastActive() is typically called as part of
 // BrowserWindow::Show() and when a Browser becomes active. We don't need a full
 // BrowserWindow, so it is called manually.
-TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
+// TODO(crbug.com/1500327) This test is disabled because it causes UAF problems.
+TEST_F(ProfileMenuControllerTest, DISABLED_SetActiveAndRemove) {
   // Set the name of the default profile, so that's it's not empty.
   const std::u16string kDefaultProfileName = u"DefaultProfile";
   g_browser_process->profile_manager()

@@ -20,8 +20,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * ordering when the initial text fragment is short.
  * Details in this issue: crbug.com/651389.
  */
-public abstract class OverlayPanelTextViewInflater
-        extends OverlayPanelRepaddingTextView implements OnLayoutChangeListener {
+public abstract class OverlayPanelTextViewInflater extends OverlayPanelRepaddingTextView
+        implements OnLayoutChangeListener {
     private static final float SHORTNESS_FACTOR = 0.5f;
 
     private boolean mDidAdjustViewDirection;
@@ -39,10 +39,23 @@ public abstract class OverlayPanelTextViewInflater
      * @param peekedDimension   The dimension resource for the padding when the Overlay is Peeked.
      * @param expandedDimension The dimension resource for the padding when the Overlay is Expanded.
      */
-    public OverlayPanelTextViewInflater(OverlayPanel panel, int layoutId, int viewId,
-            Context context, ViewGroup container, DynamicResourceLoader resourceLoader,
-            int peekedDimension, int expandedDimension) {
-        super(panel, layoutId, viewId, context, container, resourceLoader, peekedDimension,
+    public OverlayPanelTextViewInflater(
+            OverlayPanel panel,
+            int layoutId,
+            int viewId,
+            Context context,
+            ViewGroup container,
+            DynamicResourceLoader resourceLoader,
+            int peekedDimension,
+            int expandedDimension) {
+        super(
+                panel,
+                layoutId,
+                viewId,
+                context,
+                container,
+                resourceLoader,
+                peekedDimension,
                 expandedDimension);
     }
 
@@ -57,8 +70,13 @@ public abstract class OverlayPanelTextViewInflater
      * @param container         The container View used to inflate the View.
      * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
-    public OverlayPanelTextViewInflater(OverlayPanel panel, int layoutId, int viewId,
-            Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
+    public OverlayPanelTextViewInflater(
+            OverlayPanel panel,
+            int layoutId,
+            int viewId,
+            Context context,
+            ViewGroup container,
+            DynamicResourceLoader resourceLoader) {
         super(panel, layoutId, viewId, context, container, resourceLoader, 0, 0);
     }
 
@@ -68,9 +86,9 @@ public abstract class OverlayPanelTextViewInflater
      */
     protected abstract TextView getTextView();
 
-    //========================================================================================
+    // ========================================================================================
     // OverlayPanelInflater overrides
-    //========================================================================================
+    // ========================================================================================
 
     @Override
     protected void onFinishInflate() {
@@ -81,8 +99,16 @@ public abstract class OverlayPanelTextViewInflater
     }
 
     @Override
-    public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View view,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         TextView textView = getTextView();
         if (!mDidAdjustViewDirection && textView != null) {
             // We only adjust the view once, based on the initial value set at layout time.
@@ -91,9 +117,9 @@ public abstract class OverlayPanelTextViewInflater
         }
     }
 
-    //========================================================================================
+    // ========================================================================================
     // Private methods
-    //========================================================================================
+    // ========================================================================================
 
     /**
      * Adjusts the given {@code TextView} to have a layout direction that matches the UI direction

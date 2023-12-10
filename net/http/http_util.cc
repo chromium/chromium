@@ -8,9 +8,9 @@
 #include "net/http/http_util.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -700,7 +700,7 @@ std::string HttpUtil::AssembleRawHeaders(base::StringPiece input) {
   // Use '\0' as the canonical line terminator. If the input already contained
   // any embeded '\0' characters we will strip them first to avoid interpreting
   // them as line breaks.
-  base::Erase(raw_headers, '\0');
+  std::erase(raw_headers, '\0');
 
   std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
 
@@ -1103,7 +1103,7 @@ bool HttpUtil::ParseAcceptEncoding(const std::string& accept_encoding,
     if (qvalue.empty())
       return false;
     if (qvalue[0] == '1') {
-      if (base::StartsWith("1.000", qvalue)) {
+      if (std::string_view("1.000").starts_with(qvalue)) {
         allowed_encodings->insert(base::ToLowerASCII(encoding));
         continue;
       }

@@ -9,6 +9,7 @@ include_rules = [
   "+ui/gfx/geometry",
   "+url",
   "+mojo/public/cpp/bindings/type_converter.h",
+  "+net/base",
 ]
 
 specific_include_rules = {

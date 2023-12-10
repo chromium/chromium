@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -84,7 +85,7 @@ bool RulesetConverter::SetInputFiles(
     const base::CommandLine::StringType& comma_separated_paths) {
 #if BUILDFLAG(IS_WIN)
   std::wstring separatorw = L",";
-  base::WStringPiece separator(separatorw);
+  std::wstring_view separator(separatorw);
 #else
   base::StringPiece separator(",");
 #endif

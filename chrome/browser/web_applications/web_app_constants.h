@@ -14,6 +14,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
@@ -218,14 +219,6 @@ enum class RunOnOsLoginPolicy {
   kRunWindowed = 2,
 };
 
-// Number of times IPH can be ignored for this app before it's muted.
-constexpr int kIphMuteAfterConsecutiveAppSpecificIgnores = 3;
-// Number of times IPH can be ignored for any app before it's muted.
-constexpr int kIphMuteAfterConsecutiveAppAgnosticIgnores = 4;
-// Number of days to mute IPH after it's ignored for this app.
-constexpr int kIphAppSpecificMuteTimeSpanDays = 90;
-// Number of days to mute IPH after it's ignored for any app.
-constexpr int kIphAppAgnosticMuteTimeSpanDays = 14;
 // Default threshold for site engagement score if it's not set by field trial
 // param.
 constexpr int kIphFieldTrialParamDefaultSiteEngagementThreshold = 10;
@@ -332,4 +325,4 @@ constexpr WebAppManagementTypes kUserDrivenInstallSources = {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H

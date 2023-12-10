@@ -35,7 +35,7 @@ MediaPerceptionPrivateSetStateFunction ::
 
 ExtensionFunction::ResponseAction
 MediaPerceptionPrivateSetStateFunction::Run() {
-  absl::optional<extensions::api::media_perception_private::SetState::Params>
+  std::optional<extensions::api::media_perception_private::SetState::Params>
       params =
           extensions::api::media_perception_private::SetState::Params::Create(
               args());
@@ -127,7 +127,7 @@ MediaPerceptionPrivateSetAnalyticsComponentFunction::
 
 ExtensionFunction::ResponseAction
 MediaPerceptionPrivateSetAnalyticsComponentFunction::Run() {
-  absl::optional<
+  std::optional<
       extensions::api::media_perception_private::SetAnalyticsComponent::Params>
       params = extensions::api::media_perception_private::
           SetAnalyticsComponent::Params::Create(args());
@@ -158,8 +158,8 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::
 
 ExtensionFunction::ResponseAction
 MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
-  absl::optional<extensions::api::media_perception_private::
-                     SetComponentProcessState::Params>
+  std::optional<extensions::api::media_perception_private::
+                    SetComponentProcessState::Params>
       params = extensions::api::media_perception_private::
           SetComponentProcessState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);

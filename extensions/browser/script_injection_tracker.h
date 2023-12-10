@@ -5,11 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 #define EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 
+#include <optional>
 #include "base/debug/crash_logging.h"
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 struct HostID;
@@ -26,6 +26,7 @@ namespace extensions {
 class Extension;
 class ExtensionWebContentsObserver;
 class UserScriptLoader;
+class PermissionsUpdater;
 class RequestContentScript;
 class ScriptExecutor;
 
@@ -115,10 +116,18 @@ class ScriptInjectionTracker {
                               content::RenderFrameHost* frame,
                               const Extension& extension);
 
-  // Called before the given renderer `process` is notified about new scripts.
-  static void WillUpdateScriptsInRenderer(
+  // Called right after the given renderer `process` is notified about new
+  // scripts.
+  static void DidUpdateScriptsInRenderer(
       base::PassKey<UserScriptLoader> pass_key,
       const mojom::HostID& host_id,
+      content::RenderProcessHost& process);
+
+  // Called right after the given renderer `process` is notified about
+  // permission updates.
+  static void DidUpdatePermissionsInRenderer(
+      base::PassKey<PermissionsUpdater> pass_key,
+      const Extension& extension,
       content::RenderProcessHost& process);
 
  private:
@@ -157,19 +166,20 @@ class ScopedScriptInjectionTrackerFailureCrashKeys {
   base::debug::ScopedCrashKeyString registry_status_crash_key_;
   base::debug::ScopedCrashKeyString is_incognito_crash_key_;
 
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       last_committed_origin_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       last_committed_url_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString> lifecycle_state_crash_key_;
+  std::optional<base::debug::ScopedCrashKeyString> lifecycle_state_crash_key_;
+  std::optional<base::debug::ScopedCrashKeyString> is_guest_crash_key_;
 
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_web_view_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_static_content_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_dynamic_content_scripts_match_crash_key_;
-  absl::optional<base::debug::ScopedCrashKeyString>
+  std::optional<base::debug::ScopedCrashKeyString>
       do_user_scripts_match_crash_key_;
 };
 

@@ -238,6 +238,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void UpdateBadgeIcon();
   void UpdateBigTitleContainer();
   void UpdateBigTitleSuperscriptContainer();
+  void UpdateIconAndBadgeIcon();
   void UpdateTitleContainer();
   void UpdateDetailsContainer();
   void UpdateKeyboardShortcutContainer();
@@ -285,6 +286,11 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   bool IsInlineSearchResult();
 
+  // Uses icon view bounds to calculate the host badge view bounds.
+  gfx::Rect GetIconBadgeViewBounds(const gfx::Rect& icon_view_bounds) const;
+  gfx::Size CalculateRegularIconImageSize(
+      const gfx::ImageSkia& icon_image) const;
+
   // Parent list view. Owned by views hierarchy.
   const raw_ptr<SearchResultListView, ExperimentalAsh> list_view_;
 
@@ -294,9 +300,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                 DanglingUntriaged | ExperimentalAsh>
       dialog_controller_;
 
-  raw_ptr<MaskedImageView, ExperimentalAsh> icon_ =
+  raw_ptr<MaskedImageView, ExperimentalAsh> icon_view_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> badge_icon_ =
+  raw_ptr<views::ImageView, ExperimentalAsh> badge_icon_view_ =
       nullptr;  // Owned by views hierarchy.
 
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> text_container_ =
@@ -360,6 +366,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // Used to insert a `progress_bar_container_` within the
   // `title_and_details_container_` when the result has a set bar chart.
   bool is_progress_bar_answer_card_ = false;
+
+  // Whether the app should show icon halo and the mothership host badge (i.e.
+  // an App Shortcut).
+  bool use_webapp_shortcut_style_ = false;
 
   SearchResultViewType view_type_;
 

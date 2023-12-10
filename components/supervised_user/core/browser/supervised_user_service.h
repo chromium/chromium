@@ -99,12 +99,6 @@ class SupervisedUserService : public KeyedService,
   // is empty, or the empty string if there is no second custodian.
   std::string GetSecondCustodianName() const;
 
-  // Returns true if the extensions permissions parental control is enabled.
-  bool AreExtensionsPermissionsEnabled() const;
-
-  // Returns true if the URL filtering parental control is enabled.
-  bool IsURLFilteringEnabled() const;
-
   // Returns true if there is a custodian for the child.  A child can have
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
@@ -127,12 +121,6 @@ class SupervisedUserService : public KeyedService,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Returns true if both: the user is a type of Family Link supervised account
-  // and the platform supports Family Link supervision features.
-  // This method should be prefered on gating child-specific features if there
-  // is no dedicated method for the feature (e.g IsURLFilteringEnabled).
-  virtual bool IsSubjectToParentalControls() const;
-
   // Updates the kFirstTimeInterstitialBannerState pref to indicate that the
   // user has been shown the interstitial banner. This will only update users
   // who haven't yet seen the banner.
@@ -140,10 +128,6 @@ class SupervisedUserService : public KeyedService,
 
   // Returns true if the interstitial banner needs to be shown to user.
   bool ShouldShowFirstTimeInterstitialBanner() const;
-
-  // Some Google-affiliated domains are not allowed to delete cookies for
-  // supervised users.
-  bool IsCookieDeletionDisabled(const GURL& origin) const;
 
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -153,7 +137,7 @@ class SupervisedUserService : public KeyedService,
       KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
-      syncer::SyncService& sync_service,
+      syncer::SyncService* sync_service,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
@@ -187,8 +171,6 @@ class SupervisedUserService : public KeyedService,
 
   void OnDefaultFilteringBehaviorChanged();
 
-  bool IsSafeSitesEnabled() const;
-
   void OnSafeSitesSettingChanged();
 
   void UpdateAsyncUrlChecker();
@@ -206,7 +188,7 @@ class SupervisedUserService : public KeyedService,
   const raw_ref<supervised_user::SupervisedUserSettingsService>
       settings_service_;
 
-  const raw_ref<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 

@@ -35,8 +35,10 @@ class HoldingSpacePersistenceDelegate
   // NOTE: Any changes to persistence must be backwards compatible.
   static constexpr char kPersistencePath[] = "ash.holding_space.items";
 
-  // Callback to invoke when holding space persistence has been restored.
-  using PersistenceRestoredCallback = base::OnceClosure;
+  // Callback to invoke when holding space persistence has been restored to
+  // add the restored items to the holding space model.
+  using PersistenceRestoredCallback =
+      base::OnceCallback<void(std::vector<HoldingSpaceItemPtr>)>;
 
   HoldingSpacePersistenceDelegate(
       HoldingSpaceKeyedService* service,

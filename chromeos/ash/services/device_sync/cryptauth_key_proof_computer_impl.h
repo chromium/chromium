@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_PROOF_COMPUTER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/services/device_sync/cryptauth_key_proof_computer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,21 +39,21 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
   ~CryptAuthKeyProofComputerImpl() override;
 
   // CryptAuthKeyProofComputer:
-  absl::optional<std::string> ComputeKeyProof(
+  std::optional<std::string> ComputeKeyProof(
       const CryptAuthKey& key,
       const std::string& payload,
       const std::string& salt,
-      const absl::optional<std::string>& info) override;
+      const std::optional<std::string>& info) override;
 
  private:
   CryptAuthKeyProofComputerImpl();
 
-  absl::optional<std::string> ComputeSymmetricKeyProof(
+  std::optional<std::string> ComputeSymmetricKeyProof(
       const CryptAuthKey& symmetric_key,
       const std::string& payload,
       const std::string& salt,
       const std::string& info);
-  absl::optional<std::string> ComputeAsymmetricKeyProof(
+  std::optional<std::string> ComputeAsymmetricKeyProof(
       const CryptAuthKey& asymmetric_key,
       const std::string& payload,
       const std::string& salt);

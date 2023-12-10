@@ -28,9 +28,11 @@ public final class GlueApiHelperForP {
      */
     public static TracingController createTracingControllerAdapter(
             WebViewChromiumFactoryProvider provider, WebViewChromiumAwInit awInit) {
-        return new TracingControllerAdapter(new SharedTracingControllerAdapter(
-                awInit.getRunQueue(), awInit.getAwTracingController()));
+        return new TracingControllerAdapter(
+                new SharedTracingControllerAdapter(
+                        awInit.getRunQueue(), awInit.getAwTracingController()));
     }
+
     public static String getDataDirectorySuffix(WebViewDelegate webViewDelegate) {
         return webViewDelegate.getDataDirectorySuffix();
     }

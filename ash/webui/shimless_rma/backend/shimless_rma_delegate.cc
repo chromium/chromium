@@ -4,11 +4,11 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::shimless_rma {
 
@@ -18,7 +18,7 @@ ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult::
         const std::string& extension_id,
         const web_package::SignedWebBundleId& iwa_id,
         const std::string& name,
-        const absl::optional<std::string>& permission_message)
+        const std::optional<std::string>& permission_message)
     : context(context),
       extension_id(extension_id),
       iwa_id(iwa_id),

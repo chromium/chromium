@@ -33,6 +33,8 @@ namespace {
 using base::test::TestFuture;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
+constexpr char kRemoteAdminEmail[] = "admin@domain.com";
+
 // Matcher that checks if the result of a `StartSupportSession` request
 // indicates we failed to start the session
 auto IsError() {
@@ -43,7 +45,7 @@ auto IsError() {
 
 // Matcher that checks if the result of a `StartSupportSession` request
 // indicates we could start the session.
-auto IsSuccessfull() {
+auto IsSuccessful() {
   return testing::Pointee(testing::Property(
       &mojom::StartSupportSessionResponse::is_support_session_error,
       testing::Eq(false)));
@@ -68,9 +70,20 @@ class FakeIt2MeHost : public It2MeHost {
     connect_waiter_.SetValue();
   }
   void Disconnect() override {}
-  void set_chrome_os_enterprise_params(
-      ChromeOsEnterpriseParams value) override {
-    enterprise_params_ = value;
+
+  absl::optional<ReconnectParams> CreateReconnectParams() const override {
+    if (is_enterprise_session() && enterprise_params().allow_reconnections) {
+      ReconnectParams reconnect_params;
+      reconnect_params.support_id = "1234567";
+      reconnect_params.host_secret = "12345";
+      reconnect_params.private_key = std::string(384, 'a');
+      reconnect_params.ftl_device_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+      reconnect_params.client_ftl_address =
+          "admin@enterprise.com"
+          "/chromoting_ftl_11111111-2222-3333-4444-555555555555";
+      return reconnect_params;
+    }
+    return absl::nullopt;
   }
 
   bool WaitForConnectCall() {
@@ -80,8 +93,8 @@ class FakeIt2MeHost : public It2MeHost {
   }
 
   std::string user_name() const { return user_name_; }
-  ChromeOsEnterpriseParams enterprise_params() const {
-    return enterprise_params_;
+  const ChromeOsEnterpriseParams& enterprise_params() const {
+    return chrome_os_enterprise_params();
   }
 
   It2MeHost::Observer& observer() {
@@ -96,7 +109,6 @@ class FakeIt2MeHost : public It2MeHost {
 
   base::WeakPtr<It2MeHost::Observer> observer_;
   std::string user_name_;
-  ChromeOsEnterpriseParams enterprise_params_;
   TestFuture<void> connect_waiter_;
 };
 
@@ -179,12 +191,12 @@ class InMemorySessionStorage : public SessionStorage {
     std::move(on_done).Run();
   }
   void RetrieveSession(
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)> on_done)
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
       override {
     if (session_.has_value()) {
       std::move(on_done).Run(session_.value().Clone());
     } else {
-      std::move(on_done).Run(absl::nullopt);
+      std::move(on_done).Run(std::nullopt);
     }
   }
   void HasSession(base::OnceCallback<void(bool)> on_done) const override {
@@ -192,7 +204,7 @@ class InMemorySessionStorage : public SessionStorage {
   }
 
  private:
-  absl::optional<base::Value::Dict> session_;
+  std::optional<base::Value::Dict> session_;
 };
 
 bool HasSession(SessionStorage& storage) {
@@ -216,17 +228,19 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   mojom::SupportSessionParams GetSupportSessionParams() {
     mojom::SupportSessionParams params;
     params.user_name = "<the-user>";
+    params.oauth_access_token = "VALID_ACCESS_TOKEN";
+    params.authorized_helper = kRemoteAdminEmail;
     return params;
   }
 
   mojom::StartSupportSessionResponsePtr StartSession(
-      absl::optional<ChromeOsEnterpriseParams> enterprise_params) {
+      std::optional<ChromeOsEnterpriseParams> enterprise_params) {
     return StartSession(GetSupportSessionParams(), enterprise_params);
   }
 
   mojom::StartSupportSessionResponsePtr StartSession(
       const mojom::SupportSessionParams& params,
-      absl::optional<ChromeOsEnterpriseParams> enterprise_params) {
+      std::optional<ChromeOsEnterpriseParams> enterprise_params) {
     TestFuture<mojom::StartSupportSessionResponsePtr> connect_result;
     support_host().StartSession(params, enterprise_params,
                                 connect_result.GetCallback());
@@ -238,7 +252,8 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   mojom::StartSupportSessionResponsePtr ReconnectToSession(
       SessionId id = kEnterpriseSessionId) {
     TestFuture<mojom::StartSupportSessionResponsePtr> connect_result;
-    support_host().ReconnectToSession(id, connect_result.GetCallback());
+    support_host().ReconnectToSession(id, "faux access token",
+                                      connect_result.GetCallback());
     return connect_result.Take();
   }
 
@@ -260,10 +275,9 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 
   bool StoreReconnectableSessionInformation(
       mojom::SupportSessionParams params,
-      ChromeOsEnterpriseParams enterprise_params = {.allow_reconnections =
-                                                        true},
-      std::string remote_user_email = "remote-user@email.com") {
-    // Only reconnectable sessions can be stored as reconnectable sessions.
+      ChromeOsEnterpriseParams enterprise_params = {
+          .allow_reconnections = true}) {
+    // Reconnectable sessions can only be stored if reconnections are allowed.
     CHECK(enterprise_params.allow_reconnections);
 
     // We do not want our test to make any assumptions about how the
@@ -278,7 +292,7 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 
     support_host.StartSession(params, enterprise_params, base::DoNothing());
     EXPECT_TRUE(it2me_host->WaitForConnectCall());
-    it2me_host->observer().OnClientAuthenticated(remote_user_email);
+    it2me_host->observer().OnClientAuthenticated(kRemoteAdminEmail);
     it2me_host->observer().OnStateChanged(It2MeHostState::kConnected,
                                           protocol::ErrorCode::OK);
 
@@ -335,13 +349,14 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameToIt2MeHostWhenStarting) {
   EXPECT_EQ(it2me_host().user_name(), params.user_name);
 }
 
-TEST_F(RemoteSupportHostAshTest, ShouldPassOAuthTokenToIt2MeHostWhenStarting) {
+// TODO(b/309958013): Remove this test when we remove the oauth prefix logic.
+TEST_F(RemoteSupportHostAshTest, ValidLegacyAccessTokenFormatSucceeds) {
   mojom::SupportSessionParams params = GetSupportSessionParams();
-  params.oauth_access_token = "<the-oauth-token>";
+  params.oauth_access_token = "oauth2:<the-oauth-token>";
 
   StartSession(params, ChromeOsEnterpriseParams{});
 
-  EXPECT_EQ(it2me_host().user_name(), params.user_name);
+  EXPECT_TRUE(it2me_host().WaitForConnectCall());
 }
 
 TEST_P(RemoteSupportHostAshTest,
@@ -456,7 +471,7 @@ TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfEnterpriseParamsAreUnset) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
-  StartSession(absl::nullopt);
+  StartSession(std::nullopt);
   SignalHostStateConnected();
 
   ASSERT_FALSE(HasSession(session_storage()));
@@ -468,7 +483,7 @@ TEST_F(RemoteSupportHostAshTest,
 
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
 
-  EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsSuccessfull());
+  EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsSuccessful());
 }
 
 TEST_F(RemoteSupportHostAshTest,
@@ -641,12 +656,11 @@ TEST_F(RemoteSupportHostAshTest,
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
   ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(), {.allow_reconnections = true},
-      "the-remote-user@domain.com"));
+      GetSupportSessionParams(), {.allow_reconnections = true}));
 
   ReconnectToSession(kEnterpriseSessionId);
 
-  EXPECT_EQ(it2me_host().authorized_helper(), "the-remote-user@domain.com");
+  EXPECT_EQ(it2me_host().authorized_helper(), kRemoteAdminEmail);
 }
 
 TEST_F(RemoteSupportHostAshTest,
@@ -670,7 +684,7 @@ TEST_F(RemoteSupportHostAshTest,
   it2me_host().WaitForConnectCall();
   ASSERT_TRUE(HasSession(session_storage()));
 
-  StartSession(/*enterprise_params=*/absl::nullopt);
+  StartSession(/*enterprise_params=*/std::nullopt);
 
   EXPECT_FALSE(HasSession(session_storage()));
 }

@@ -78,7 +78,7 @@ def CleanUpFeaturesPlist() -> None:
   """
     whats_new_plist_file = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/'
-        'resources/whats_new_entries_m116.plist')
+        'resources/whats_new_entries.plist')
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
         plist_data['Features'] = []
@@ -88,7 +88,7 @@ def CleanUpFeaturesPlist() -> None:
 
 def UpdateWhatsNewPlist(feature_dict: dict[str, str],
                         feature_type: int) -> None:
-    """Updates whats_new_entries_m116.plist with the new feature entry.
+    """Updates whats_new_entries.plist with the new feature entry.
 
   Args:
       feature_dict: Data for the new What's New feature.
@@ -116,7 +116,7 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
     }
     whats_new_plist_file = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/'
-        'resources/whats_new_entries_m116.plist')
+        'resources/whats_new_entries.plist')
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
         plist_data['Features'].append(new_entry)
@@ -160,8 +160,10 @@ def CopyAnimationFilesToResources(feature_dict: dict[str, str],
     feature_name = feature_dict['Feature name']
     animation_name_darkmode = feature_dict['Animation darkmode']
     animation_name = feature_dict['Animation']
+    milestone = feature_dict['Milestone'].lower()
     DEST_DIR = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/resources')
+        BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/resources',
+        milestone)
     darkmode_src_file = os.path.join(path_to_milestone_folder, feature_name,
                                      animation_name_darkmode)
     new_darkmode_dst_file = os.path.join(DEST_DIR,
@@ -181,6 +183,7 @@ def UpdateResourcesBuildFile(feature_dict: dict[str, str]) -> None:
   """
     feature_name = feature_dict['Feature name']
     screenshots_lists_regex = r'screenshots_lists\s*=\s*(\[.*?\])'
+    milestone = feature_dict['Milestone'].lower()
     whats_new_resources_build_file = os.path.join(
         BASE_DIR,
         '../ios/chrome/browser/ui/whats_new/data_source/resources/BUILD.gn')
@@ -193,8 +196,9 @@ def UpdateResourcesBuildFile(feature_dict: dict[str, str]) -> None:
                           re.DOTALL)
         assert match
         in_app_images = ast.literal_eval(match.group(1))
-        in_app_images.append(feature_name + '.json')
-        in_app_images.append(feature_name + '_darkmode.json')
+        in_app_images.append(os.path.join(milestone, feature_name + '.json'))
+        in_app_images.append(
+            os.path.join(milestone, feature_name + '_darkmode.json'))
         in_app_images_serialized = json.dumps(in_app_images)
         data = original_file_content.replace(match.group(1),
                                              in_app_images_serialized)
@@ -211,7 +215,7 @@ def AddStrings(feature_dict: dict[str, str],
       path_to_milestone_folder: Path to the milestone folder.
   """
     feature_name = feature_dict['Feature name']
-    milestone = feature_dict['Milestone']
+    milestone = feature_dict['Milestone'].lower()
     strings_doc_file = os.path.join(path_to_milestone_folder, feature_name,
                                     'strings.docx')
     paragraphs_string_builder = []
@@ -222,7 +226,7 @@ def AddStrings(feature_dict: dict[str, str],
                 paragraphs_string_builder.append(paragraph.text)
     milestone_string_grd_file = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings/',
-        milestone.lower() + '_strings.grdp')
+        milestone + '_strings.grdp')
     if not os.path.exists(milestone_string_grd_file):
         #Create new file and add to grd main
         with open(milestone_string_grd_file, 'w') as grd_file_handler:
@@ -246,8 +250,7 @@ def AddStrings(feature_dict: dict[str, str],
             match_grdp_part = re.search(r'<part file="(.*?)_strings.grdp" />',
                                         read_data, re.DOTALL)
             assert match_grdp_part
-            new_str_entry = '<part file="' + milestone.lower(
-            ) + '_strings.grdp" />'
+            new_str_entry = '<part file="' + milestone + '_strings.grdp" />'
             data = read_data.replace(match_grdp_part.group(0), new_str_entry)
             file.seek(0)
             file.write(data)
@@ -255,7 +258,7 @@ def AddStrings(feature_dict: dict[str, str],
         #search for '</grit-part>' and add above
         feature_strings_grd_file = os.path.join(
             BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings/',
-            milestone.lower() + '_strings.grdp')
+            milestone + '_strings.grdp')
         with open(feature_strings_grd_file, 'r+', encoding='utf-8',
                   newline='') as file:
             read_data = file.read()
@@ -275,7 +278,7 @@ def UploadScreenshots(feature_dict: dict[str, str],
       path_to_milestone_folder: Path to the milestone folder.
   """
     titles = []
-    milestone = feature_dict['Milestone']
+    milestone = feature_dict['Milestone'].lower()
     feature_name = feature_dict['Feature name']
     titles.append(feature_dict['Title'])
     titles.append(feature_dict['Subtitle'])
@@ -285,7 +288,7 @@ def UploadScreenshots(feature_dict: dict[str, str],
     titles.extend(json.loads(a)['value'] for a in animation_texts_string)
     screenshot_dir = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
-        milestone.lower() + '_strings_grdp')
+        milestone + '_strings_grdp')
     os.makedirs(screenshot_dir, exist_ok=True)
     for title in titles:
         src_file = os.path.join(path_to_milestone_folder, feature_name,
@@ -300,3 +303,81 @@ def UploadScreenshots(feature_dict: dict[str, str],
     # Remove the pngs
     for title in titles:
         os.remove(os.path.join(screenshot_dir, title + '.png'))
+
+
+def RemoveStringsForMilestone(milestone: str) -> None:
+    """Removes the strings for a specific milestone.
+
+      Args:
+        milestone: milestone for which the strings will be removed.
+    """
+    whats_new_strings_grd_file = os.path.join(
+        BASE_DIR, '../ios/chrome/browser/ui/whats_new',
+        'strings/ios_whats_new_strings.grd')
+    with open(whats_new_strings_grd_file, 'r+', encoding='utf-8',
+              newline='') as file:
+        read_data = file.read()
+        match_grdp_part = re.search(r'<part file="(.*?)_strings.grdp" />',
+                                    read_data, re.DOTALL)
+        assert match_grdp_part
+        if match_grdp_part.group(1) == milestone:
+            raise AssertionError(
+                'The strings are still being referenced in '
+                'ios_whats_new_strings.grd. Please upload new features '
+                'to What\s New before removing strings and assets. '
+                'Please see "tools/whats_new/upload_whats_new_features" '
+                'for more information.')
+    try:
+        screenshot_milestone_dir = os.path.join(
+            BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
+            milestone + '_strings_grdp')
+        shutil.rmtree(screenshot_milestone_dir)
+    except:
+        print('The strings grdp directory for this milestone has already '
+              'been removed.')
+    try:
+        strings_file = os.path.join(
+            BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
+            milestone + '_strings.grdp')
+        os.remove(strings_file)
+    except:
+        print(
+            'The strings grdp file for this milestone has already been removed.'
+        )
+
+
+def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
+    """Removes the animation assets for a specific milestone.
+
+      Args:
+        milestone: milestone for which the animations will be removed.
+    """
+    try:
+        whats_new_milestone_resource_dir = os.path.join(
+            BASE_DIR,
+            '../ios/chrome/browser/ui/whats_new/data_source/resources',
+            milestone)
+        shutil.rmtree(whats_new_milestone_resource_dir)
+    except:
+        print('The animation assets for this milestone have already'
+              'been removed.')
+    screenshots_lists_regex = r'screenshots_lists\s*=\s*(\[.*?\])'
+    whats_new_resources_build_file = os.path.join(
+        BASE_DIR,
+        '../ios/chrome/browser/ui/whats_new/data_source/resources/BUILD.gn')
+    with open(whats_new_resources_build_file,
+              'r+',
+              encoding='utf-8',
+              newline='') as file:
+        original_file_content = file.read()
+        match = re.search(screenshots_lists_regex, original_file_content,
+                          re.DOTALL)
+        assert match
+        in_app_images = ast.literal_eval(match.group(1))
+        regex = re.compile(rf'{milestone}/(.*?)')
+        filtered = [i for i in in_app_images if not regex.match(i)]
+        in_app_images_serialized = json.dumps(filtered)
+        data = original_file_content.replace(match.group(1),
+                                             in_app_images_serialized)
+        file.seek(0)
+        file.write(data)

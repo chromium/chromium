@@ -69,6 +69,7 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
 
   void set_test_loader_host(const std::string& host);
+  void set_test_loader_scheme(const std::string& scheme);
 
  private:
   // Helper that performs setup steps normally done by test_loader.html, invoked
@@ -84,6 +85,12 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // `chrome::kChromeUIWebUITestHost`.
   // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_host_;
+
+  // The scheme to use when invoking the test_loader URL, like
+  // "<scheme>://webui-test/test_loader.html=...". Defaults to
+  // content::kChromeUIScheme.
+  // Note: It is also used by RunTest even when |skip_test_loader| is true.
+  std::string test_loader_scheme_;
 
   // Handles collection of code coverage.
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;

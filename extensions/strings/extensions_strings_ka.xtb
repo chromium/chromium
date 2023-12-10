@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">შემთხვევითი RSA პირადი გასაღები ვერ დაგენერირდა.</translation>
 <translation id="1445572445564823378">ეს გაფართოება ანელებს <ph name="PRODUCT_NAME" />-ის მუშაობას. უნდა გამორთოთ, რათა აღადგინოთ <ph name="PRODUCT_NAME" />-ის ეფექტურობა.</translation>
 <translation id="1468038450257740950">WebGL არ არის მხარდაჭერილი.</translation>
+<translation id="1610570795592207282">css „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
 <translation id="1803557475693955505">ფონური გვერდი ვერ ჩაიტვირთა „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">გამოსახულების გაშიფვრა ვერ მოხერხდა: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">გამოყენებულია ლოკალიზაცია, მაგრამ ნაგულისხმევი ლოკალი არ არის მითითებული მანიფესტში.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ფაილის შეცვლა ვერ მოხერხდა. შეამოწმეთ, რომ ფაილი არ გამოიყენება.</translation>
 <translation id="3163201441334626963">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">css „<ph name="RELATIVE_PATH" />“-ის ჩატვირთვა შიგთავსის სკრიპტისთვის ვერ მოხერხდა.</translation>
 <translation id="3369521687965833290">გაფართოების ფაილების ამოღება ვერ ხერხდება. იმისათვის, რომ უსაფრთხოდ ამოიღოთ გაფართოების ფაილები, უნდა არსებობდეს თქვენი პროფილის დირექტორიის მისამართი, რომელიც იწყება დისკის ასოთი და არ შეიცავს შეერთებას, დაკავშირების წერტილს ან სიმბოლურ ბმულს. ასეთი მისამართი თქვენი პროფილისთვის არ არსებობს.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">შეყვანილი მნიშვნელობა პირადი გასაღებისთვის უნდა იყოს სწორი მისამართი.</translation>
 <translation id="388442998277590542">პარამეტრების გვერდი „<ph name="OPTIONS_PAGE" />“ ვერ ჩაიტვირთა.</translation>
 <translation id="3984413272403535372">შეცდომა გაფართოების ხელმოწერისას.</translation>
-<translation id="39964277676607559">javascript „<ph name="RELATIVE_PATH" />“-ის ჩატვირთვა შიგთავსის სკრიპტისთვის ვერ მოხერხდა.</translation>
 <translation id="4115165561519362854">ამ მექანიზმის ადმინისტრატორი მოითხოვს <ph name="EXTENSION_NAME" /> მინიმალურ ვერსიას <ph name="EXTENSION_VERSION" />. ის ვერ ჩაირთვება სანამ არ მოხდება ამ ვერსიაზე (ან უფრო ახალზე) განახლება.</translation>
 <translation id="4233778200880751280">ინფორმაციის გვერდი ვერ ჩაიტვირთა: '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">პირადი კოდის მიღება ვერ მოხერხდა.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">საჯარო გასაღების ექსპორტი ვერ განხორციელდა.</translation>
 <translation id="5026754133087629784">ვებგვერდის ხედი: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">შეუძლებელია აბსოლუტური მდებარეობის პოვნა პაკეტის დირექტორიისკენ.</translation>
+<translation id="5160071981665899014">javascript „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
 <translation id="5356315618422219272">პროგრამის ხედი: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ფორმიანი ფანჯრები არ არის მხარდაჭერილი.</translation>
 <translation id="5456409301717116725">ეს გაფართოება შეიცავს მთვარ ფაილს „<ph name="KEY_PATH" />“. თქვენ ალბათ არ გსურთ ამის გაკეთება.</translation>

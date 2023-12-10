@@ -33,9 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * An infobar for saving credit card information.
- */
+/** An infobar for saving credit card information. */
 public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
     private final @Nullable String mAccountFooterEmail;
@@ -64,16 +62,28 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
      * only shown if both this and |accountFooterEmail| are provided.
      */
-    private AutofillSaveCardInfoBar(long nativeAutofillSaveCardInfoBar, int iconId,
-            Bitmap iconBitmap, String message, String linkText, String buttonOk,
-            String buttonCancel, boolean isGooglePayBrandingEnabled,
-            @Nullable String accountFooterEmail, @Nullable Bitmap accountFooterAvatar) {
+    private AutofillSaveCardInfoBar(
+            long nativeAutofillSaveCardInfoBar,
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String buttonOk,
+            String buttonCancel,
+            boolean isGooglePayBrandingEnabled,
+            @Nullable String accountFooterEmail,
+            @Nullable Bitmap accountFooterAvatar) {
         // If Google Pay branding is enabled, no icon is specified here; it is rather added in
         // |createContent|. This hides the ImageView that normally shows the icon and gets rid of
         // the left padding of the infobar content.
-        super(isGooglePayBrandingEnabled ? 0 : iconId,
-                isGooglePayBrandingEnabled ? 0 : R.color.infobar_icon_drawable_color, iconBitmap,
-                message, linkText, buttonOk, buttonCancel);
+        super(
+                isGooglePayBrandingEnabled ? 0 : iconId,
+                isGooglePayBrandingEnabled ? 0 : R.color.infobar_icon_drawable_color,
+                iconBitmap,
+                message,
+                linkText,
+                buttonOk,
+                buttonCancel);
         mIconDrawableId = iconId;
         mTitleText = message;
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
@@ -99,13 +109,28 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @return A new instance of the infobar.
      */
     @CalledByNative
-    private static AutofillSaveCardInfoBar create(long nativeAutofillSaveCardInfoBar, int iconId,
-            Bitmap iconBitmap, String message, String linkText, String buttonOk,
-            String buttonCancel, boolean isGooglePayBrandingEnabled,
-            @Nullable String accountFooterEmail, @Nullable Bitmap accountFooterAvatar) {
-        return new AutofillSaveCardInfoBar(nativeAutofillSaveCardInfoBar, iconId, iconBitmap,
-                message, linkText, buttonOk, buttonCancel, isGooglePayBrandingEnabled,
-                accountFooterEmail, accountFooterAvatar);
+    private static AutofillSaveCardInfoBar create(
+            long nativeAutofillSaveCardInfoBar,
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String buttonOk,
+            String buttonCancel,
+            boolean isGooglePayBrandingEnabled,
+            @Nullable String accountFooterEmail,
+            @Nullable Bitmap accountFooterAvatar) {
+        return new AutofillSaveCardInfoBar(
+                nativeAutofillSaveCardInfoBar,
+                iconId,
+                iconBitmap,
+                message,
+                linkText,
+                buttonOk,
+                buttonCancel,
+                isGooglePayBrandingEnabled,
+                accountFooterEmail,
+                accountFooterAvatar);
     }
 
     /**
@@ -170,21 +195,31 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
         for (int i = 0; i < mCardDetails.size(); i++) {
             CardDetail detail = mCardDetails.get(i);
-            control.addIcon(detail.issuerIconDrawableId, 0, detail.label, detail.subLabel,
+            control.addIcon(
+                    detail.issuerIconDrawableId,
+                    0,
+                    detail.label,
+                    detail.subLabel,
                     R.dimen.infobar_descriptive_text_size);
         }
 
         for (LegalMessageLine line : mLegalMessageLines) {
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
-                text.setSpan(new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        AutofillSaveCardInfoBarJni.get().onLegalMessageLinkClicked(
-                                mNativeAutofillSaveCardInfoBar, AutofillSaveCardInfoBar.this,
-                                link.url);
-                    }
-                }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                text.setSpan(
+                        new ClickableSpan() {
+                            @Override
+                            public void onClick(View view) {
+                                AutofillSaveCardInfoBarJni.get()
+                                        .onLegalMessageLinkClicked(
+                                                mNativeAutofillSaveCardInfoBar,
+                                                AutofillSaveCardInfoBar.this,
+                                                link.url);
+                            }
+                        },
+                        link.start,
+                        link.end,
+                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
             control.addDescription(text);
         }
@@ -194,16 +229,19 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
             int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
             int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
 
-            LinearLayout footer = (LinearLayout) LayoutInflater.from(layout.getContext())
-                                          .inflate(R.layout.infobar_footer, null, false);
+            LinearLayout footer =
+                    (LinearLayout)
+                            LayoutInflater.from(layout.getContext())
+                                    .inflate(R.layout.infobar_footer, null, false);
 
             TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
             emailView.setText(mAccountFooterEmail);
 
             RoundedCornerImageView profilePicView =
                     (RoundedCornerImageView) footer.findViewById(R.id.infobar_footer_profile_pic);
-            Bitmap resizedProfilePic = Bitmap.createScaledBitmap(
-                    mAccountFooterAvatar, smallIconSize, smallIconSize, false);
+            Bitmap resizedProfilePic =
+                    Bitmap.createScaledBitmap(
+                            mAccountFooterAvatar, smallIconSize, smallIconSize, false);
             profilePicView.setRoundedCorners(
                     smallIconSize / 2, smallIconSize / 2, smallIconSize / 2, smallIconSize / 2);
             profilePicView.setImageBitmap(resizedProfilePic);

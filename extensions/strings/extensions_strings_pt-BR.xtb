@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ops! Falha ao gerar a chave privada RSA aleatória.</translation>
 <translation id="1445572445564823378">Esta extensão está deixando <ph name="PRODUCT_NAME" /> mais lento. Você deve desativá-lo para restaurar o desempenho de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">O WebGL não é suportado.</translation>
+<translation id="1610570795592207282">Não foi possível carregar "<ph name="RELATIVE_PATH" />" em css para o script.</translation>
 <translation id="1803557475693955505">Não foi possível carregar a página de fundo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Não foi possível decodificar a imagem: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Localização utilizada, mas default_locale não foi especificada no manifesto.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Produto <ph name="PRODUCT_ID" /> desconhecido do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Falha ao substituir arquivo crx. Verifique se o arquivo está em uso.</translation>
 <translation id="3163201441334626963">Produto <ph name="PRODUCT_ID" /> desconhecido do fornecedor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Não foi possível carregar "<ph name="RELATIVE_PATH" />" em css para o script de conteúdo.</translation>
 <translation id="3369521687965833290">Não é possível abrir a extensão. Para abrir uma extensão com segurança, deve haver um caminho para o diretório de seu perfil que comece com uma letra de drive e não contenha uma junção, um mount point ou um symlink. Não existe um caminho assim para seu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor inserido para a chave privada deve ser um caminho válido.</translation>
 <translation id="388442998277590542">Não foi possível carregar a página de opções "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro ao assinar a extensão.</translation>
-<translation id="39964277676607559">Não foi possível carregar "<ph name="RELATIVE_PATH" />" em javascript para o script de conteúdo.</translation>
 <translation id="4115165561519362854">O administrador desta máquina requer que <ph name="EXTENSION_NAME" /> tenha, no mínimo, a versão <ph name="EXTENSION_VERSION" /> . Ele não pode ser ativado até que tenha sido atualizado para essa versão (ou superior).</translation>
 <translation id="4233778200880751280">Não foi possível carregar a página "Sobre" '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Falha ao emitir a chave privada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Falha ao exportar chave pública.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Não é possível encontrar o caminho absoluto para o diretório do pacote.</translation>
+<translation id="5160071981665899014">Não foi possível carregar "<ph name="RELATIVE_PATH" />" em javascript para o script.</translation>
 <translation id="5356315618422219272">Visualização do app: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Janelas com formas não são suportadas.</translation>
 <translation id="5456409301717116725">Esta extensão inclui o arquivo de chave '<ph name="KEY_PATH" />'. Você provavelmente não quer fazer isso.</translation>

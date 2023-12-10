@@ -42,6 +42,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -69,15 +70,6 @@ namespace {
 using ::testing::_;
 
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
-
-const gfx::Image CreateTestImage(int width,
-                                 int height,
-                                 SkColor color = SK_ColorGREEN) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
-}
 
 class NotificationTestDelegate : public message_center::NotificationDelegate {
  public:
@@ -212,7 +204,7 @@ class AshNotificationViewTestBase : public AshTestBase,
       bool has_message = true,
       message_center::NotificationType notification_type =
           message_center::NOTIFICATION_TYPE_SIMPLE,
-      const absl::optional<base::FilePath>& image_path = absl::nullopt) {
+      const std::optional<base::FilePath>& image_path = std::nullopt) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
@@ -225,15 +217,15 @@ class AshNotificationViewTestBase : public AshTestBase,
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         notification_type, base::NumberToString(current_id_++), u"title",
-        message, ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+        message, ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
         u"display source", GURL(),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, delegate_);
-    notification->set_small_image(CreateTestImage(16, 16));
+    notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
 
     if (has_image) {
-      notification->set_image(CreateTestImage(320, 240));
+      notification->set_image(gfx::test::CreateImage(320, 240));
     }
 
     message_center::MessageCenter::Get()->AddNotification(
@@ -246,7 +238,7 @@ class AshNotificationViewTestBase : public AshTestBase,
   // will belong to the same group.
   std::unique_ptr<Notification> CreateTestNotificationInAGroup(
       bool has_image = false,
-      const absl::optional<base::FilePath>& image_path = absl::nullopt) {
+      const std::optional<base::FilePath>& image_path = std::nullopt) {
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
@@ -259,13 +251,13 @@ class AshNotificationViewTestBase : public AshTestBase,
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         base::NumberToString(current_id_++), u"title", u"message",
-        ui::ImageModel::FromImage(CreateTestImage(80, 80)), u"display source",
-        GURL(u"http://test-url.com"), notifier_id, rich_notification_data,
-        delegate_);
-    notification->set_small_image(CreateTestImage(16, 16));
+        ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
+        u"display source", GURL(u"http://test-url.com"), notifier_id,
+        rich_notification_data, delegate_);
+    notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
 
     if (has_image) {
-      notification->set_image(CreateTestImage(320, 240));
+      notification->set_image(gfx::test::CreateImage(320, 240));
     }
 
     message_center::MessageCenter::Get()->AddNotification(
@@ -653,7 +645,7 @@ TEST_F(AshNotificationViewTest, GroupedNotificationExpandState) {
 TEST_F(AshNotificationViewTest, GroupedNotificationChildIcon) {
   auto notification = CreateTestNotification();
   notification->set_icon(
-      ui::ImageModel::FromImage(CreateTestImage(16, 16, SK_ColorBLUE)));
+      ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16, SK_ColorBLUE)));
   notification->SetGroupChild();
   notification_view()->UpdateWithNotification(*notification.get());
 
@@ -815,6 +807,23 @@ TEST_F(AshNotificationViewTest, SnoozeButtonVisibility) {
 
   // Snooze button should be visible if notification does use it.
   EXPECT_TRUE(GetSnoozeButton(notification_view())->GetVisible());
+}
+
+// Test to ensure the snooze button is correctly displayed after a notification
+// update.
+TEST_F(AshNotificationViewTest, SnoozeButtonVisibilityAfterNotificationUpdate) {
+  auto notification =
+      CreateTestNotification(/*has_image=*/false, /*show_snooze_button=*/true);
+  notification_view()->UpdateWithNotification(*notification);
+
+  // Make sure the notification is expanded.
+  notification_view()->ToggleExpand();
+  ASSERT_TRUE(notification_view()->IsExpanded());
+
+  // Simulate an update to a notification which is already displayed.
+  notification_view()->UpdateWithNotification(*notification);
+  // The actions row which contains the snooze button should be visible.
+  EXPECT_TRUE(GetActionsRow(notification_view())->GetVisible());
 }
 
 TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
@@ -1379,7 +1388,7 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
   // coordinates.
   gfx::Point GetDragAreaCenterInScreen(
       const AshNotificationView& notification_view) {
-    const absl::optional<gfx::Rect> drag_area_bounds =
+    const std::optional<gfx::Rect> drag_area_bounds =
         notification_view.GetDragAreaBounds();
     EXPECT_TRUE(drag_area_bounds);
     gfx::Rect drag_area_in_screen = *drag_area_bounds;
@@ -1526,7 +1535,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Verifies the drag-and-drop of an orindary notification view.
 TEST_P(AshNotificationViewDragTest, Basics) {
   // Add an image notification.
-  absl::optional<base::FilePath> image_file_path;
+  std::optional<base::FilePath> image_file_path;
   if (IsImageFileBacked()) {
     // Use a dummy file path for the file-backed image notification.
     image_file_path.emplace("dummy_path.png");
@@ -1587,7 +1596,7 @@ TEST_P(AshNotificationViewDragTest, Basics) {
 // Verifies the drag-and-drop of a grouped notification view.
 TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   // Add two image notification views belonging to the same group.
-  absl::optional<base::FilePath> image_file_path;
+  std::optional<base::FilePath> image_file_path;
   if (IsImageFileBacked()) {
     // Use a dummy file path for the file-backed image notification.
     image_file_path.emplace("dummy_path.png");
@@ -1713,7 +1722,7 @@ TEST_P(AshNotificationViewDragAsyncDropTest, Basics) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1750,17 +1759,19 @@ TEST_P(AshNotificationViewDragAsyncDropTest,
     // Configure `dlp_controller_` to hold all drop callbacks.
     testing::InSequence s;
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          first_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              first_drop_callback = std::move(drop_cb);
+            });
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          second_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              second_drop_callback = std::move(drop_cb);
+            });
   }
 
   // Add one image notification then perform drag-and-drop.
@@ -1807,17 +1818,19 @@ TEST_P(AshNotificationViewDragAsyncDropTest, InterruptAsyncDropWithViewDrag) {
     // Configure `dlp_controller_` to hold all drop callbacks.
     testing::InSequence s;
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          first_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              first_drop_callback = std::move(drop_cb);
+            });
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          second_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              second_drop_callback = std::move(drop_cb);
+            });
   }
 
   // Add one image notification then perform drag-and-drop.
@@ -1928,7 +1941,7 @@ TEST_F(DragAfterNotificationRemovalTest, Basics) {
   std::unique_ptr<Notification> notification = CreateTestNotification(
       /*has_image=*/true, /*show_snooze_button=*/false, /*has_message=*/false,
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      absl::make_optional<base::FilePath>("dummy_file_path"));
+      std::make_optional<base::FilePath>("dummy_file_path"));
 
   // Wait until the notification popup shows.
   MessagePopupAnimationWaiter(

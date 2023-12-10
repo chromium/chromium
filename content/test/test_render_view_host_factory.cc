@@ -38,7 +38,7 @@ void TestRenderViewHostFactory::set_render_process_host_factory(
       rph_factory);
 }
 
-RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
+RenderViewHostImpl* TestRenderViewHostFactory::CreateRenderViewHost(
     FrameTree* frame_tree,
     SiteInstanceGroup* group,
     const StoragePartitionConfig& storage_partition_config,
@@ -48,12 +48,14 @@ RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
     int32_t main_frame_routing_id,
     int32_t widget_routing_id,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
-    CreateRenderViewHostCase create_case) {
+    CreateRenderViewHostCase create_case,
+    absl::optional<viz::FrameSinkId> frame_sink_id) {
   return new TestRenderViewHost(
       frame_tree, group, storage_partition_config,
       TestRenderWidgetHost::Create(
           frame_tree, widget_delegate,
-          RenderWidgetHostImpl::DefaultFrameSinkId(*group, routing_id),
+          frame_sink_id.value_or(
+              RenderWidgetHostImpl::DefaultFrameSinkId(*group, routing_id)),
           group->GetSafeRef(), widget_routing_id, false),
       delegate, routing_id, main_frame_routing_id,
       std::move(main_browsing_context_state), create_case);

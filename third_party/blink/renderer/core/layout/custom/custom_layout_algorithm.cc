@@ -9,21 +9,21 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_result_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_fragment.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_scope.h"
 #include "third_party/blink/renderer/core/layout/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/custom/layout_worklet_global_scope_proxy.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
 CustomLayoutAlgorithm::CustomLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params), params_(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params), params_(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
@@ -53,12 +53,12 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
   LogicalSize border_box_size{
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
-          ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
-                                    BorderScrollbarPadding()),
+          GetConstraintSpace(), Style(), BorderPadding(),
+          CalculateDefaultBlockSize(GetConstraintSpace(), Node(),
+                                    GetBreakToken(), BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->IntrinsicSizes(
-          ConstraintSpace(), document, Node(), border_box_size,
+          GetConstraintSpace(), document, Node(), border_box_size,
           BorderScrollbarPadding(), ChildAvailableSize().block_size, &scope,
           &intrinsic_sizes_result_options, &depends_on_block_constraints)) {
     // TODO(ikilpatrick): Report this error to the developer.
@@ -78,8 +78,8 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
-const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
-  DCHECK(!IsBreakInside(BreakToken()));
+const LayoutResult* CustomLayoutAlgorithm::Layout() {
+  DCHECK(!IsBreakInside(GetBreakToken()));
 
   if (!Node().IsCustomLayoutLoaded())
     return FallbackLayout();
@@ -107,11 +107,11 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   LogicalSize border_box_size{
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
-          ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
-                                    BorderScrollbarPadding()),
+          GetConstraintSpace(), Style(), BorderPadding(),
+          CalculateDefaultBlockSize(GetConstraintSpace(), Node(),
+                                    GetBreakToken(), BorderScrollbarPadding()),
           container_builder_.InlineSize())};
-  if (!instance->Layout(ConstraintSpace(), document, Node(), border_box_size,
+  if (!instance->Layout(GetConstraintSpace(), document, Node(), border_box_size,
                         BorderScrollbarPadding(), &scope,
                         fragment_result_options, &fragment_result_data)) {
     // TODO(ikilpatrick): Report this error to the developer.
@@ -121,7 +121,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   const HeapVector<Member<CustomLayoutFragment>>& child_fragments =
       fragment_result_options->childFragments();
 
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   for (auto fragment : child_fragments) {
     if (!fragment->IsValid()) {
       // TODO(ikilpatrick): Report this error to the developer.
@@ -167,7 +167,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
       BorderScrollbarPadding().BlockSum(),
       LayoutUnit::FromDoubleRound(fragment_result_options->autoBlockSize()));
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), auto_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), auto_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   // TODO(ikilpatrick): Allow setting both the first/last baseline instead of a
@@ -182,7 +182,7 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(auto_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -192,22 +192,22 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
 //
 // |child| will end up being the next inflow child, or empty.
 void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
-    NGLayoutInputNode* child) {
+    LayoutInputNode* child) {
   DCHECK(child);
   while (*child && child->IsOutOfFlowPositioned()) {
     container_builder_.AddOutOfFlowChildCandidate(
-        To<NGBlockNode>(*child), BorderScrollbarPadding().StartOffset());
+        To<BlockNode>(*child), BorderScrollbarPadding().StartOffset());
     *child = child->NextSibling();
   }
 }
 
 MinMaxSizesResult CustomLayoutAlgorithm::FallbackMinMaxSizes(
     const MinMaxSizesFloatInput& input) const {
-  return NGBlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
+  return BlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
 }
 
-const NGLayoutResult* CustomLayoutAlgorithm::FallbackLayout() {
-  return NGBlockLayoutAlgorithm(params_).Layout();
+const LayoutResult* CustomLayoutAlgorithm::FallbackLayout() {
+  return BlockLayoutAlgorithm(params_).Layout();
 }
 
 }  // namespace blink

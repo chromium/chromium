@@ -7,23 +7,20 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
-
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
 namespace blink {
 
-class NGBlockNode;
-class NGBlockBreakToken;
+class BlockBreakToken;
+class BlockNode;
 
 class CORE_EXPORT TableSectionLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
-  explicit TableSectionLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit TableSectionLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     // Table layout doesn't compute min/max sizes on table sections.

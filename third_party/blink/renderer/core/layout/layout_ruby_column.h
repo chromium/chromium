@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_COLUMN_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -36,6 +36,7 @@ class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
   LayoutRubyBase* RubyBase() const;
   // Creates the base if it doesn't already exist
   LayoutRubyBase& EnsureRubyBase();
+  void RemoveAllChildren();
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child,
@@ -46,8 +47,7 @@ class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
   void UpdateAnonymousChildStyle(const LayoutObject* child,
                                  ComputedStyleBuilder& builder) const override;
 
- private:
-  LayoutRubyBase& CreateRubyBase() const;
+  static LayoutRubyBase& CreateRubyBase(const LayoutObject& reference);
 };
 
 template <>

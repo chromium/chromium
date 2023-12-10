@@ -11,6 +11,8 @@ option java_outer_classname = "TabOrganizationProto";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
 message TabOrganization {
   // The label that describes this tab organization.
   string label = 1;
@@ -33,6 +35,9 @@ message Tab {
 message TabOrganizationRequest {
   // The tabs that are requested to be organized.
   repeated Tab tabs = 1;
+
+  // The tab that was active at the time the user requested tab organization.
+  int64 active_tab_id = 2;
 }
 
 message TabOrganizationResponse {
@@ -46,8 +51,34 @@ message TabOrganizationResponse {
   repeated TabOrganization tab_organizations = 1;
 }
 
-// TODO(b/307689471): Add model quality data for tab organization feature.
-message TabOrganizationQuality {}
+message TabOrganizationQuality {
+  message Organization {
+    // What the user decided to do with the organization. NOT_USED means that
+    // the user either didn't choose an action when presented with the
+    // organization or it wasnt shown to the user. Accepted means the
+    // organization was used. Rejected means the user did not want the
+    // organization.
+    enum Choice {
+      NOT_USED = 0;
+      ACCEPTED = 1;
+      REJECTED = 2;
+    }
+
+    // The label of the organization if it was accepted. |edited| signifies that the label was
+    // edited.
+    message Label {
+      bool edited = 1;
+    }
+
+    // Any tabs that were removed from the organization before accepting.
+    repeated int64 removed_tab_ids = 1;
+    Label label = 2;
+    Choice choice = 3;
+    UserFeedback user_feedback = 4;
+  }
+
+  repeated Organization organizations = 1;
+}
 
 // TabOrganizationLoggingData consists of model execution Request,
 // Response and Quality data.

@@ -49,7 +49,7 @@ class FakePlusAddressService : public PlusAddressService {
   std::string plus_address_ = kFakeEmailAddressForCallback;
   std::string facet_ = "facet.bar";
 
-  absl::optional<std::string> GetPrimaryEmail() override {
+  std::optional<std::string> GetPrimaryEmail() override {
     return "plus+primary@plus.plus";
   }
 };

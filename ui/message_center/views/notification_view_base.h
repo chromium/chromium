@@ -42,6 +42,8 @@ class ProportionalImageView;
 // CompactTitleMessageView shows notification title and message in a single
 // line. This view is used for NOTIFICATION_TYPE_PROGRESS.
 class CompactTitleMessageView : public views::View {
+  METADATA_HEADER(CompactTitleMessageView, views::View)
+
  public:
   CompactTitleMessageView();
   CompactTitleMessageView(const CompactTitleMessageView&) = delete;

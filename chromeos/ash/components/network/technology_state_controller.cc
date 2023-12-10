@@ -90,7 +90,6 @@ void TechnologyStateController::OnPrepareEnableWifiCompleted(
     network_handler::ErrorCallback error_callback,
     bool success) {
   DCHECK(ash::features::IsHotspotEnabled());
-
   if (success) {
     network_state_handler_->SetTechnologiesEnabled(type, /*enabled=*/true,
                                                    std::move(error_callback));

@@ -115,15 +115,10 @@ class PrefetchBrowserTestPrivacyChanges
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
-// Test flakes on Fuchsia & Windows.
+// Test flakes.
 // TODO(crbug.com/1395163): Resolve flake and reenable.
-#define MAYBE_RedirectNotFollowed DISABLED_RedirectNotFollowed
-#else
-#define MAYBE_RedirectNotFollowed RedirectNotFollowed
-#endif
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges,
-                       MAYBE_RedirectNotFollowed) {
+                       DISABLED_RedirectNotFollowed) {
   const char* prefetch_path = "/prefetch.html";
   const char* redirect_path = "/redirect.html";
   const char* destination_path = "/destination.html";

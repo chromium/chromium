@@ -1,0 +1,14 @@
+{
+  "name": "send message on pagehide",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Sends a message on tab unload",
+  "background": {
+    "persistent": true,
+    "scripts": ["test.js"]
+  },
+  "content_scripts": [{
+    "matches": ["*://*/*"],
+    "js": ["content_script.js"]
+  }]
+}

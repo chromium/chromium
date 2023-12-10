@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'postMessage' on 'ServiceWorker': Value at index 0 does not have a transferable type.
+[TIMEOUT] offerer data channel in service worker
+  Test timed out
+Harness: the test ran to completion.

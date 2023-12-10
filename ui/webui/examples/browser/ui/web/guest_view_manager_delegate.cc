@@ -24,14 +24,14 @@ void GuestViewManagerDelegate::DispatchEvent(const std::string& event_name,
                                              int instance_id) {}
 
 bool GuestViewManagerDelegate::IsGuestAvailableToContext(
-    guest_view::GuestViewBase* guest) {
+    const guest_view::GuestViewBase* guest) const {
   // Verify that we're only running this in a WebUI.
   CHECK(guest->owner_rfh()->GetMainFrame()->GetWebUI());
   return true;
 }
 
 bool GuestViewManagerDelegate::IsOwnedByExtension(
-    guest_view::GuestViewBase* guest) {
+    const guest_view::GuestViewBase* guest) {
   return false;
 }
 

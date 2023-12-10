@@ -26,18 +26,18 @@ VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
     .max_num_ref_frames = 4,
 };
 
-VideoEncodeAccelerator::Config kDefaultVEAConfig(
-    PIXEL_FORMAT_I420,
-    gfx::Size(1280, 720),
-    H264PROFILE_BASELINE,
-    Bitrate::ConstantBitrate(14000000u)
-    /* = maximum bitrate in bits per second for level 3.1 */,
-    VideoEncodeAccelerator::kDefaultFramerate,
-    absl::nullopt /* gop_length */,
-    absl::nullopt /* h264 output level*/,
-    false /* is_constrained_h264 */,
-    VideoEncodeAccelerator::Config::StorageType::kShmem,
-    VideoEncodeAccelerator::Config::ContentType::kCamera);
+VideoEncodeAccelerator::Config DefaultVEAConfig() {
+  VideoEncodeAccelerator::Config vea_config(
+      PIXEL_FORMAT_I420, gfx::Size(1280, 720), H264PROFILE_BASELINE,
+      /* = maximum bitrate in bits per second for level 3.1 */
+      Bitrate::ConstantBitrate(14000000u));
+
+  vea_config.initial_framerate = VideoEncodeAccelerator::kDefaultFramerate;
+  vea_config.storage_type = VideoEncodeAccelerator::Config::StorageType::kShmem;
+  vea_config.content_type =
+      VideoEncodeAccelerator::Config::ContentType::kCamera;
+  return vea_config;
+}
 
 MATCHER_P2(MatchVABufferDescriptor, va_buffer_type, va_buffer_size, "") {
   return arg.type == va_buffer_type && arg.size == va_buffer_size &&
@@ -164,14 +164,14 @@ class H264VaapiVideoEncoderDelegateTest
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
   auto va_surface = base::MakeRefCounted<VASurface>(
-      next_surface_id_++, kDefaultVEAConfig.input_visible_size,
+      next_surface_id_++, DefaultVEAConfig().input_visible_size,
       VA_RT_FORMAT_YUV420, base::DoNothing());
   scoped_refptr<H264Picture> picture(new VaapiH264Picture(va_surface));
 
   constexpr VABufferID kDummyVABufferID = 12;
   auto scoped_va_buffer = ScopedVABuffer::CreateForTesting(
       kDummyVABufferID, VAEncCodedBufferType,
-      kDefaultVEAConfig.input_visible_size.GetArea());
+      DefaultVEAConfig().input_visible_size.GetArea());
 
   // TODO(b/229358029): Set a valid timestamp and check the timestamp in
   // metadata.
@@ -194,7 +194,7 @@ void H264VaapiVideoEncoderDelegateTest::SetUp() {
 
 bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
     uint8_t num_temporal_layers) {
-  auto vea_config = kDefaultVEAConfig;
+  auto vea_config = DefaultVEAConfig();
   vea_config.spatial_layers.resize(1u);
   auto& sl = vea_config.spatial_layers[0];
   sl.width = vea_config.input_visible_size.width();
@@ -296,7 +296,7 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
 }
 
 TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
-  auto vea_config = kDefaultVEAConfig;
+  auto vea_config = DefaultVEAConfig();
   const auto vea_delegate_config = kDefaultVEADelegateConfig;
   EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
   // Profile is unspecified, H264VaapiVideoEncoderDelegate will select the
@@ -311,11 +311,11 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
 }
 
 TEST_F(H264VaapiVideoEncoderDelegateTest, ChangeBitrateModeFails) {
-  auto vea_config = kDefaultVEAConfig;
+  auto vea_config = DefaultVEAConfig();
   const auto vea_delegate_config = kDefaultVEADelegateConfig;
   EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
 
-  const uint32_t new_bitrate_bps = kDefaultVEAConfig.bitrate.target_bps();
+  const uint32_t new_bitrate_bps = DefaultVEAConfig().bitrate.target_bps();
   VideoBitrateAllocation new_allocation =
       VideoBitrateAllocation(Bitrate::Mode::kVariable);
   new_allocation.SetBitrate(0, 0, new_bitrate_bps);
@@ -326,7 +326,7 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, ChangeBitrateModeFails) {
 }
 
 TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrate_Initialize) {
-  auto vea_config = kDefaultVEAConfig;
+  auto vea_config = DefaultVEAConfig();
   const uint32_t bitrate_bps = vea_config.bitrate.target_bps();
   vea_config.bitrate = Bitrate::VariableBitrate(bitrate_bps, 2u * bitrate_bps);
   const auto vea_delegate_config = kDefaultVEADelegateConfig;
@@ -342,11 +342,11 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
   if (!initialize_success)
     return;
 
-  EXPECT_EQ(encoder_->GetCodedSize(), kDefaultVEAConfig.input_visible_size);
+  EXPECT_EQ(encoder_->GetCodedSize(), DefaultVEAConfig().input_visible_size);
   EXPECT_EQ(encoder_->GetMaxNumOfRefFrames(),
             base::checked_cast<size_t>(num_temporal_layers - 1));
   EXPECT_EQ(encoder_->GetSVCLayerResolutions(),
-            std::vector<gfx::Size>{kDefaultVEAConfig.input_visible_size});
+            std::vector<gfx::Size>{DefaultVEAConfig().input_visible_size});
 
   size_t kKeyFrameInterval = 10;
   for (size_t frame_num = 0; frame_num < 30; ++frame_num) {

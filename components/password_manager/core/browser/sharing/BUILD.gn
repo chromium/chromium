@@ -28,16 +28,14 @@ source_set("sharing") {
     "recipients_fetcher.h",
     "recipients_fetcher_impl.cc",
     "recipients_fetcher_impl.h",
-    "sharing_invitations.cc",
-    "sharing_invitations.h",
   ]
   deps = [
     "//base",
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/features:utils",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager",

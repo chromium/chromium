@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
-[PASS] ORB shouldn't block opaque range of image/png starting at zero: fetch(..., {mode: "no-cors"})
-[PASS] ORB should block opaque range of image/png not starting at zero, that isn't subsequent: fetch(..., {mode: "no-cors"})
 Harness: the test ran to completion.
 

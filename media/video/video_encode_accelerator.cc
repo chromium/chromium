@@ -54,39 +54,21 @@ absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
 }
 
 VideoEncodeAccelerator::Config::Config()
-    : input_format(PIXEL_FORMAT_UNKNOWN),
-      output_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
-      bitrate(Bitrate::ConstantBitrate(0u)),
-      content_type(ContentType::kCamera) {}
+    : Config(PIXEL_FORMAT_UNKNOWN,
+             gfx::Size(),
+             VIDEO_CODEC_PROFILE_UNKNOWN,
+             Bitrate::ConstantBitrate(0u)) {}
 
 VideoEncodeAccelerator::Config::Config(const Config& config) = default;
 
-VideoEncodeAccelerator::Config::Config(
-    VideoPixelFormat input_format,
-    const gfx::Size& input_visible_size,
-    VideoCodecProfile output_profile,
-    const Bitrate& bitrate,
-    absl::optional<uint32_t> initial_framerate,
-    absl::optional<uint32_t> gop_length,
-    absl::optional<uint8_t> h264_output_level,
-    bool is_constrained_h264,
-    absl::optional<StorageType> storage_type,
-    ContentType content_type,
-    const std::vector<SpatialLayer>& spatial_layers,
-    SVCInterLayerPredMode inter_layer_pred)
+VideoEncodeAccelerator::Config::Config(VideoPixelFormat input_format,
+                                       const gfx::Size& input_visible_size,
+                                       VideoCodecProfile output_profile,
+                                       const Bitrate& bitrate)
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
-      bitrate(bitrate),
-      initial_framerate(initial_framerate.value_or(
-          VideoEncodeAccelerator::kDefaultFramerate)),
-      gop_length(gop_length),
-      h264_output_level(h264_output_level),
-      is_constrained_h264(is_constrained_h264),
-      storage_type(storage_type),
-      content_type(content_type),
-      spatial_layers(spatial_layers),
-      inter_layer_pred(inter_layer_pred) {}
+      bitrate(bitrate) {}
 
 VideoEncodeAccelerator::Config::~Config() = default;
 
@@ -232,9 +214,11 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   RequestEncodingParametersChange(
-      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate);
+      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate,
+      size);
 }
 
 bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,

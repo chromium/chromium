@@ -1,21 +1,4 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Partial interface Navigator: member names are unique
-[PASS] Partial interface mixin NavigatorID: member names are unique
-[PASS] Navigator includes NavigatorBadge: member names are unique
-[PASS] WorkerNavigator includes NavigatorBadge: member names are unique
-[PASS] Navigator includes NavigatorID: member names are unique
-[PASS] Navigator includes NavigatorLanguage: member names are unique
-[PASS] Navigator includes NavigatorOnLine: member names are unique
-[PASS] Navigator includes NavigatorContentUtils: member names are unique
-[PASS] Navigator includes NavigatorCookies: member names are unique
-[PASS] Navigator includes NavigatorPlugins: member names are unique
-[PASS] Navigator includes NavigatorConcurrentHardware: member names are unique
-[PASS] WorkerNavigator includes NavigatorID: member names are unique
-[PASS] WorkerNavigator includes NavigatorLanguage: member names are unique
-[PASS] WorkerNavigator includes NavigatorOnLine: member names are unique
-[PASS] WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
 [FAIL] WorkerNavigator interface: operation setAppBadge(optional unsigned long long)
   assert_own_property: interface prototype object missing non-static operation expected property "setAppBadge" missing
 [FAIL] WorkerNavigator interface: operation clearAppBadge()

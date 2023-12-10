@@ -75,9 +75,7 @@ class AutofillStructuredAddress : public testing::Test {
  public:
   AutofillStructuredAddress() {
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2,
+        {features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers},
         {});
   }
@@ -368,8 +366,6 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .house_number = "12",
        .floor = "13",
        .apartment_num = "14",
-       .landmark = "Red tree",
-       .between_streets = "Via Blanca y Rotaria",
        .admin_level_2 = "Guanajuato"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - 14",
@@ -378,8 +374,6 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .house_number = "12",
        .floor = "",
        .apartment_num = "14",
-       .landmark = "Old house",
-       .between_streets = "Marcos y Oliva",
        .admin_level_2 = "Oaxaca"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - Piso 13",
@@ -388,8 +382,6 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .house_number = "12",
        .floor = "13",
        .apartment_num = "",
-       .landmark = "Pine in the corner",
-       .between_streets = "Rosario y Alfonso",
        .admin_level_2 = "Puebla"},
       // Examples for Spain.
       {.country_code = "ES",

@@ -22,6 +22,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {OobeScreensList, ScreenItem} from '../../components/oobe_screens_list.js';
 
+import {getTemplate} from './choobe.html.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -69,7 +71,7 @@ class ChoobeScreen extends ChoobeScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

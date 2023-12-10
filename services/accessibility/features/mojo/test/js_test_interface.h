@@ -38,6 +38,7 @@ class JSTestInterface : public axtest::mojom::TestBindingInterface,
   void SendEnumToTestInterface(axtest::mojom::TestEnum num) override;
   void Disconnect() override;
   void TestComplete(bool success) override;
+  void Log(const std::string& log_string) override;
 
  private:
   base::OnceCallback<void(bool)> on_complete_;

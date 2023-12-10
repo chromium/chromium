@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -52,7 +53,9 @@ void AppServiceShortcutIconLoader::FetchImage(const std::string& id) {
   ShortcutIDToIconMap::const_iterator it = icon_map_.find(id);
   if (it != icon_map_.end()) {
     if (!it->second.image.isNull()) {
-      delegate()->OnAppImageUpdated(id, it->second.image, it->second.badge);
+      delegate()->OnAppImageUpdated(id, it->second.image,
+                                    /*is_placeholder_icon=*/false,
+                                    it->second.badge);
     }
     return;
   }
@@ -71,7 +74,9 @@ void AppServiceShortcutIconLoader::UpdateImage(const std::string& id) {
     return;
   }
 
-  delegate()->OnAppImageUpdated(id, it->second.image, it->second.badge);
+  delegate()->OnAppImageUpdated(id, it->second.image,
+                                /*is_placeholder_icon=*/false,
+                                it->second.badge);
 }
 
 void AppServiceShortcutIconLoader::OnShortcutUpdated(
@@ -111,15 +116,16 @@ void AppServiceShortcutIconLoader::OnLoadIcon(
     apps::IconValuePtr icon_value,
     apps::IconValuePtr badge_icon_value) {
   const gfx::ImageSkia image =
-      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()
+      ash::features::IsSeparateWebAppShortcutBadgeIconEnabled()
           ? icon_value->uncompressed
           : gfx::ImageSkiaOperations::CreateIconWithBadge(
                 icon_value->uncompressed, badge_icon_value->uncompressed);
   const gfx::ImageSkia badge =
-      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()
+      ash::features::IsSeparateWebAppShortcutBadgeIconEnabled()
           ? badge_icon_value->uncompressed
           : gfx::ImageSkia();
 
   icon_map_[shortcut_id.value()] = {.image = image, .badge = badge};
-  delegate()->OnAppImageUpdated(shortcut_id.value(), image, badge);
+  delegate()->OnAppImageUpdated(shortcut_id.value(), image,
+                                /*is_placeholder_icon=*/false, badge);
 }

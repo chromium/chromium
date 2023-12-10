@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace autofill {
 struct PasswordFormFillData;
@@ -60,7 +60,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 autofill::PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
     const std::vector<const PasswordForm*>& matches,
-    absl::optional<PasswordForm> preferred_match,
+    std::optional<PasswordForm> preferred_match,
     const url::Origin& main_frame_origin,
     bool wait_for_username);
 

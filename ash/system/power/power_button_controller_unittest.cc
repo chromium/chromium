@@ -19,8 +19,7 @@
 #include "ash/test_media_client.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
@@ -29,6 +28,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
@@ -126,7 +126,7 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
   // Press the power button to show the menu.
   void OpenPowerButtonMenu() {
     PressPowerButton();
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
       ASSERT_TRUE(power_button_test_api_->TriggerPowerButtonMenuTimeout());
     }
@@ -1160,7 +1160,7 @@ class PowerButtonControllerWithPositionTest
 
   // Returns true if it is in tablet mode.
   bool IsTabletMode() const {
-    return Shell::Get()->tablet_mode_controller()->InTabletMode();
+    return display::Screen::GetScreen()->InTabletMode();
   }
 
   // Returns true if the menu is at the center of the display.

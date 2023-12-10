@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>CSS Anchor Positioning Test: Automatic anchor fallbacks interact with cascade</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=cb>
+  <div id=anchor></div>
+  <div id=abs></div>
+</div>
+<style>
+  #cb {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background: lightpink;
+  }
+  #anchor {
+    position: absolute;
+    anchor-name: --a;
+    background: darkorange;
+    width: 25px;
+    height: 25px;
+    left: 20px;
+    top: 20px;
+  }
+  #abs {
+    left: 50px !important;
+  }
+  #abs {
+    position: absolute;
+    background: darkcyan;
+    width: 25px;
+    height: 25px;
+
+    /* Equivalent to bottom:anchor(--a top), however, #abs does not fit there,
+       so we automatically fall back to flipped-bocks,
+       i.e. top:anchor(--a bottom). */
+    bottom: anchor(--a auto);
+    left: anchor(--a auto);
+  }
+</style>
+<script>
+  test(() => {
+    // 45px comes from the automatic fallback,
+    // effectively top:anchor(--a bottom).
+    assert_equals(getComputedStyle(abs).top, '45px');
+
+    // 50px comes from the !important declaration. The automatic fallback
+    // also added left:anchor(--a auto) to the cascade, but it lost.
+    assert_equals(getComputedStyle(abs).left, '50px');
+  }, 'Important declarations win over automatic fallbacks');
+</script>

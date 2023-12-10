@@ -323,11 +323,16 @@ PrefService* TestSessionControllerClient::GetUserPrefService(
   return prefs_provider_ ? prefs_provider_->GetUserPrefs(account_id) : nullptr;
 }
 
+base::FilePath TestSessionControllerClient::GetProfilePath(
+    const AccountId& account_id) {
+  return base::FilePath("/profile/path").Append(account_id.GetUserEmail());
+}
+
 bool TestSessionControllerClient::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }
 
-absl::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
+std::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
   return existing_users_count_;
 }
 

@@ -90,6 +90,11 @@ class WebFrameTestProxy : public RenderFrameImpl,
       bool should_reset_browser_interface_broker,
       const blink::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header) override;
+  void HandleWebAccessibilityEventForTest(
+      const blink::WebAXObject& object,
+      const char* event_name,
+      const std::vector<ui::AXEventIntent>& event_intents) override;
+  void HandleWebAccessibilityEventForTest(const ui::AXEvent& event) override;
 
   // mojom::WebTestRenderFrame implementation.
   void SynchronouslyCompositeAfterTest(
@@ -105,11 +110,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
  private:
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::WebTestRenderFrame> receiver);
-
-  void HandleWebAccessibilityEvent(
-      const blink::WebAXObject& object,
-      const char* event_name,
-      const std::vector<ui::AXEventIntent>& event_intents);
 
   TestRunner* test_runner();
 

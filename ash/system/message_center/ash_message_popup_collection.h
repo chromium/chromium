@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_event_filter.h"
@@ -25,7 +24,8 @@
 
 namespace display {
 class Screen;
-}
+enum class TabletState;
+}  // namespace display
 
 namespace views {
 class Widget;
@@ -119,7 +119,7 @@ class ASH_EXPORT AshMessagePopupCollection
   // baseline.
   class NotifierCollisionHandler : public ShelfObserver,
                                    public SystemTrayObserver,
-                                   public TabletModeObserver {
+                                   public display::DisplayObserver {
    public:
     explicit NotifierCollisionHandler(
         AshMessagePopupCollection* popup_collection);
@@ -164,9 +164,8 @@ class ASH_EXPORT AshMessagePopupCollection
     // Records surface type when there are popup(s) on top of that surface.
     void RecordSurfaceType();
 
-    // TabletModeObserver:
-    void OnTabletModeStarted() override;
-    void OnTabletModeEnded() override;
+    // display::DisplayObserver:
+    void OnDisplayTabletStateChanged(display::TabletState state) override;
 
     // ShelfObserver:
     void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
@@ -186,6 +185,8 @@ class ASH_EXPORT AshMessagePopupCollection
     // True if bubble changes are being handled in
     // `HandleBubbleVisibilityOrBoundsChanged()`.
     bool is_handling_bubble_change_ = false;
+
+    display::ScopedDisplayObserver display_observer_{this};
   };
 
   // message_center::MessageView::Observer:
@@ -213,7 +214,7 @@ class ASH_EXPORT AshMessagePopupCollection
 
   std::unique_ptr<NotifierCollisionHandler> notifier_collision_handler_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   raw_ptr<display::Screen, ExperimentalAsh> screen_;
   gfx::Rect work_area_;
@@ -222,7 +223,7 @@ class ASH_EXPORT AshMessagePopupCollection
   std::set<views::Widget*> tracked_widgets_;
 
   // Tracks the smoothness of popup animation.
-  absl::optional<ui::ThroughputTracker> animation_tracker_;
+  std::optional<ui::ThroughputTracker> animation_tracker_;
 
   // Keeps track of number of items that are animating. This is used when we
   // have more than one popup appear in the screen and different animations are

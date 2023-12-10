@@ -13,6 +13,7 @@ enum TriggerRegistrationError {
   kFiltersWrongType = 2,
   kFiltersListWrongType = 5,
   kFiltersValueWrongType = 7,
+  kFiltersUsingReservedKey = 36,
 
   kAggregatableValuesWrongType = 9,
   kAggregatableValuesKeyTooLong = 11,
@@ -44,4 +45,7 @@ enum TriggerRegistrationError {
 
   kAggregatableSourceRegistrationTimeWrongType = 34,
   kAggregatableSourceRegistrationTimeUnknownValue = 35,
+
+  kTriggerContextIdInvalidValue = 37,
+  kTriggerContextIdInvalidSourceRegistrationTimeConfig = 38,
 };

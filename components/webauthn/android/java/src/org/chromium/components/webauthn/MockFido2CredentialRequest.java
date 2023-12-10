@@ -20,18 +20,27 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
     }
 
     @Override
-    public void handleMakeCredentialRequest(Context context,
-            PublicKeyCredentialCreationOptions options, RenderFrameHost frameHost,
-            byte[] maybeClientDataHash, Origin origin, MakeCredentialResponseCallback callback,
+    public void handleMakeCredentialRequest(
+            Context context,
+            PublicKeyCredentialCreationOptions options,
+            RenderFrameHost frameHost,
+            byte[] maybeClientDataHash,
+            Origin origin,
+            MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
         errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
     }
 
     @Override
-    public void handleGetAssertionRequest(Context context,
-            PublicKeyCredentialRequestOptions options, RenderFrameHost frameHost,
-            byte[] maybeClientDataHash, Origin callerOrigin, Origin topOrigin,
-            PaymentOptions payment, GetAssertionResponseCallback callback,
+    public void handleGetAssertionRequest(
+            Context context,
+            PublicKeyCredentialRequestOptions options,
+            RenderFrameHost frameHost,
+            byte[] maybeClientDataHash,
+            Origin callerOrigin,
+            Origin topOrigin,
+            PaymentOptions payment,
+            GetAssertionResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
         errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
     }

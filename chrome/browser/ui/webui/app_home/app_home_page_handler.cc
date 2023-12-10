@@ -397,7 +397,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
                              blink::mojom::DisplayMode::kBrowser;
 
-  app_info->store_page_url = absl::nullopt;
+  app_info->store_page_url = std::nullopt;
   app_info->may_uninstall =
       web_app_provider_->registrar_unsafe().CanUserUninstallWebApp(app_id);
   app_info->is_deprecated_app = false;
@@ -439,7 +439,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   app_info->is_locally_installed =
       !extension->is_hosted_app() ||
       extensions::BookmarkAppIsLocallyInstalled(profile_, extension);
-  app_info->store_page_url = absl::nullopt;
+  app_info->store_page_url = std::nullopt;
   if (extension->from_webstore()) {
     GURL store_url = GURL(base::StrCat(
         {"https://chrome.google.com/webstore/detail/", extension->id()}));

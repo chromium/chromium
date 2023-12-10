@@ -119,25 +119,6 @@ const questionThunderboltDisplays = '[Thunderbolt] If you are having trouble ' +
     'dock, what are the make and model of the displays? Which ports on the ' +
     'dock are they connected to?';
 
-const questionAudioApp = '[Audio] When the issue occurred, which specific ' +
-    'app were you using?';
-
-const questionAudioDevice = '[Audio] What audio devices are you using? Are ' +
-  'you using the built-in speaker and mic? If not, please provide more ' +
-  'details about the brand and model name of your audio devices and how ' +
-  'they are connected to your Chromebook?';
-
-const questionAudioMeet = '[Audio] If it’s a Meet issue, please provide the ' +
-    'affected Meeting Id.';
-
-const questionAudioFeedback =
-    '[Audio] To help us get the most relevant logs, Please:\n'+
-    '   * File this report first while audio is trying to play.\n' +
-    '   * Reboot your device. （It clears previous logs.)\n' +
-    '   * Try to reproduce the issue again.\n' +
-    '   * File another report if the issue is reproduced. (Don’t stop the ' +
-    'playback or recording while filing the second feedback report).\n';
-
 export const domainQuestions: {
   bluetooth: string[],
   wifi: string[],
@@ -145,7 +126,6 @@ export const domainQuestions: {
   display: string[],
   usb: string[],
   thunderbolt: string[],
-  audio: string[],
 } = {
   'bluetooth': [
     questionGeneralTimestamp,
@@ -195,13 +175,5 @@ export const domainQuestions: {
     questionThunderboltDevice,
     questionThunderboltCable,
     questionThunderboltDisplays,
-  ],
-  'audio': [
-    questionGeneralTimestamp,
-    questionAudioApp,
-    questionAudioDevice,
-    questionGeneralReproducibility,
-    questionAudioMeet,
-    questionAudioFeedback,
   ],
 };

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_CAPABILITIES_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   void OnShuttingDown() override;
 
   // Callback to handle the manager properties with hotspot related properties.
-  void OnManagerProperties(absl::optional<base::Value::Dict> properties);
+  void OnManagerProperties(std::optional<base::Value::Dict> properties);
 
   // Update the hotspot allow status with the given |new_allow_status|
   // and then notify observers if it changes.

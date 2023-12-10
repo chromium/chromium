@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 
@@ -23,7 +22,7 @@ public class TestTabModel extends EmptyTabModel {
 
     public void addTab(final String title) {
         mMaxId++;
-        final TabImpl mockTab = mock(TabImpl.class);
+        final Tab mockTab = mock(Tab.class);
         final int tabId = mMaxId;
         when(mockTab.getId()).thenReturn(tabId);
         when(mockTab.getTitle()).thenReturn(title);

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -20,6 +21,8 @@ class PrivacyScreenToastController;
 // The view shown inside the privacy screen toast bubble.
 class ASH_EXPORT PrivacyScreenToastView : public views::View,
                                           public views::ViewObserver {
+  METADATA_HEADER(PrivacyScreenToastView, views::View)
+
  public:
   PrivacyScreenToastView(PrivacyScreenToastController* controller,
                          views::Button::PressedCallback callback);

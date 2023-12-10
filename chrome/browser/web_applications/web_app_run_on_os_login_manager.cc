@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -60,6 +61,9 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
       continue;
     }
 
+    std::string app_name = lock.registrar().GetAppShortName(app_id);
+    app_names.push_back(std::move(app_name));
+
     // In case of already opened/restored apps, we do not launch them again
     if (lock.ui_manager().GetNumWindowsForApp(app_id) > 0) {
       continue;
@@ -73,29 +77,15 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOsLogin);
 
-    std::string app_name = lock.registrar().GetAppShortName(app_id);
-    app_names.push_back(std::move(app_name));
-
     // Schedule launch here, show notification when the app window pops up.
-    provider_->scheduler().LaunchAppWithCustomParams(
-        std::move(params),
-        base::BindOnce(
-            [](base::WeakPtr<WebAppProvider> provider,
-               base::WeakPtr<Profile> profile,
-               std::vector<std::string> app_names,
-               base::WeakPtr<Browser> browser,
-               base::WeakPtr<content::WebContents> web_contents,
-               apps::LaunchContainer container) {
-              if (app_names.empty()) {
-                return;
-              }
-              provider->ui_manager().DisplayRunOnOsLoginNotification(
-                  app_names, std::move(profile));
-            },
-            provider_->AsWeakPtr(), profile_->GetWeakPtr(),
-            std::move(app_names)));
+    provider_->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                     base::DoNothing());
   }
 
+  if (!app_names.empty()) {
+    provider_->ui_manager().DisplayRunOnOsLoginNotification(
+        app_names, profile_->GetWeakPtr());
+  }
 }
 
 base::WeakPtr<WebAppRunOnOsLoginManager>

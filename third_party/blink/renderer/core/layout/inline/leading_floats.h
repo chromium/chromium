@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LEADING_FLOATS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
+#include "third_party/blink/renderer/core/layout/floats_utils.h"
+#include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ struct CORE_EXPORT LeadingFloats {
 
  public:
   wtf_size_t handled_index = 0;
-  NGPositionedFloatVector floats;
+  PositionedFloatVector floats;
 };
 
 }  // namespace blink

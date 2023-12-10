@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileData} from '../../externs/ts/state.js';
 import {TaskHistory} from '../../foreground/js/task_history.js';
 
-import {FileType} from './file_type.js';
+import {getIcon} from './file_type.js';
 import {str} from './translations.js';
 import {LEGACY_FILES_EXTENSION_ID, SWA_APP_ID, SWA_FILES_APP_URL, toFilesAppURL} from './url_constants.js';
 
@@ -90,7 +91,7 @@ export function getDefaultTask(
  */
 export function annotateTasks(
     tasks: chrome.fileManagerPrivate.FileTask[],
-    entries: Entry[]|FileData[]): AnnotatedTask[] {
+    entries: Array<Entry|FilesAppEntry>|FileData[]): AnnotatedTask[] {
   const result: AnnotatedTask[] = [];
   for (const task of tasks) {
     const {appId, taskType, actionId} = task.descriptor;
@@ -112,7 +113,7 @@ export function annotateTasks(
         if (entries.length > 1) {
           annotateTask.iconType = 'generic';
         } else {  // Use specific icon.
-          annotateTask.iconType = FileType.getIcon(entries[0]!);
+          annotateTask.iconType = getIcon(entries[0]!);
         }
         annotateTask.title = str('TASK_OPEN');
       } else if (parsedActionId === 'open-hosted-gdoc') {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_AUTH_LEGACY_FINGERPRINT_ENGINE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 class PrefService;

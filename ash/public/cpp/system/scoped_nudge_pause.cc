@@ -11,17 +11,21 @@
 namespace ash {
 
 ScopedNudgePause::ScopedNudgePause() {
-  if (features::IsSystemNudgeV2Enabled()) {
-    AnchoredNudgeManager::Get()->Pause();
+  AnchoredNudgeManager::Get()->Pause();
+  // The old system nudge blocker can be deprecated once all nudges are migrated
+  // to the new component.
+  if (!features::IsSystemNudgeMigrationEnabled()) {
+    SystemNudgePauseManager::Get()->Pause();
   }
-  SystemNudgePauseManager::Get()->Pause();
 }
 
 ScopedNudgePause::~ScopedNudgePause() {
-  if (features::IsSystemNudgeV2Enabled()) {
-    AnchoredNudgeManager::Get()->Resume();
+  AnchoredNudgeManager::Get()->Resume();
+  // The old system nudge blocker can be deprecated once all nudges are migrated
+  // to the new component.
+  if (!features::IsSystemNudgeMigrationEnabled()) {
+    SystemNudgePauseManager::Get()->Resume();
   }
-  SystemNudgePauseManager::Get()->Resume();
 }
 
 }  // namespace ash

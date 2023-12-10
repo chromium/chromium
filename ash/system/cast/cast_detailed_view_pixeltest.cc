@@ -24,7 +24,7 @@ class CastDetailedViewPixelTest : public AshTestBase {
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -66,7 +66,7 @@ TEST_F(CastDetailedViewPixelTest, Basics) {
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/6, detailed_view));
+      /*revision_number=*/10, detailed_view));
 }
 
 }  // namespace

@@ -110,7 +110,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     GURL accounts;
     GURL client_metadata;
     GURL metrics;
-    GURL revoke;
+    GURL disconnect;
   };
 
   struct CONTENT_EXPORT WellKnown {
@@ -156,7 +156,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kTokenEndpointInvalidResponse = 402,
   };
 
-  enum class RevokeResponse {
+  enum class DisconnectResponse {
     kSuccess,
     kError,
   };
@@ -223,7 +223,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using ParseJsonCallback =
       base::OnceCallback<void(FetchStatus,
                               data_decoder::DataDecoder::ValueOrError)>;
-  using RevokeCallback =
+  using DisconnectCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult)>;
@@ -294,11 +294,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
-  // Send a revoke request to the IDP.
-  virtual void SendRevokeRequest(const GURL& revoke_url,
-                                 const std::string& account_hint,
-                                 const std::string& client_id,
-                                 RevokeCallback callback);
+  // Send a disconnect request to the IDP.
+  virtual void SendDisconnectRequest(const GURL& disconnect_url,
+                                     const std::string& account_hint,
+                                     const std::string& client_id,
+                                     DisconnectCallback callback);
 
  private:
   // Starts download request using `url_loader`. Calls `parse_json_callback`

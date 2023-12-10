@@ -25,12 +25,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -125,6 +127,7 @@ public class PageInfoViewDarkModeTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testShowOnSecureWebsiteDark() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteDark");

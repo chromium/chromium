@@ -1,5 +1,5 @@
 <?php
-$url = $_GET['Redirect'];
+$url = $_GET['Redirect'] ?? null;
 $path = '/fetch/resources/redirect-loop.php';
 if (isset($_GET['Count'])) {
   $count = intval($_GET['Count']) - 1;

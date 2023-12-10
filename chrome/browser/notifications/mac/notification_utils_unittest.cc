@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/path_service.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,9 +28,11 @@ class NotificationUtilsMacTest : public testing::Test {
     auto notification_identifier =
         mac_notifications::mojom::NotificationIdentifier::New(
             "notification_id", std::move(profile_identifier));
+    base::FilePath user_data_dir;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
     return mac_notifications::mojom::NotificationMetadata::New(
         std::move(notification_identifier), /*notification_type=*/0,
-        /*origin_url=*/GURL(), base::GetCurrentProcId());
+        /*origin_url=*/GURL(), user_data_dir.value());
   }
 
   mac_notifications::mojom::NotificationActionInfoPtr

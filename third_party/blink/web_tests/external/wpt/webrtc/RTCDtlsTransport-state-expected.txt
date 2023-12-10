@@ -1,8 +1,5 @@
 This is a testharness.js-based test.
-[PASS] DTLS transport goes to connected state
 [FAIL] close() causes the local transport to close immediately
   assert_false: close() should not see a statechange event on close expected false got true
-[PASS] close() causes the other end's DTLS transport to close
-[PASS] stop bundled transceiver retains dtls transport state
 Harness: the test ran to completion.
 

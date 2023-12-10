@@ -76,7 +76,7 @@ class LoginTabHelper : public content::WebContentsObserver,
   explicit LoginTabHelper(content::WebContents* web_contents);
 
   void HandleCredentials(
-      const absl::optional<net::AuthCredentials>& credentials);
+      const std::optional<net::AuthCredentials>& credentials);
 
   void RegisterExtensionCancelledNavigation(
       const content::GlobalRequestID& request_id);

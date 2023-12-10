@@ -152,6 +152,12 @@ void DataDevice::OnClipboardDataChanged() {
   SetSelectionToCurrentClipboardData();
 }
 
+void DataDevice::OnSurfaceCreated(Surface* surface) {
+  if (delegate_->CanAcceptDataEventsForSurface(surface)) {
+    aura::client::SetDragDropDelegate(surface->window(), this);
+  }
+}
+
 void DataDevice::OnSurfaceFocused(Surface* gained_surface,
                                   Surface* lost_focused,
                                   bool has_focused_surface) {
@@ -165,24 +171,12 @@ void DataDevice::OnSurfaceFocused(Surface* gained_surface,
     return;
   }
 
-  // Technically speaking, we don't have to reset the delegate on previously
-  // focused window because a surface will not be moved to another application,
-  // which will have its own data device.  This is just for the safety reason.
-  if (focused_surface_ && focused_surface_->get()) {
-    aura::client::SetDragDropDelegate(focused_surface_->get()->window(),
-                                      nullptr);
-  }
-
   std::unique_ptr<ScopedSurface> last_focused_surface =
       std::move(focused_surface_);
 
   focused_surface_ = next_focused_surface ? std::make_unique<ScopedSurface>(
                                                 next_focused_surface, this)
                                           : nullptr;
-  if (focused_surface_) {
-    aura::client::SetDragDropDelegate(focused_surface_->get()->window(), this);
-  }
-
   // Check if the client newly obtained focus.
   if (focused_surface_ && !last_focused_surface)
     SetSelectionToCurrentClipboardData();
@@ -199,8 +193,13 @@ void DataDevice::OnDataOfferDestroying(DataOffer* data_offer) {
 }
 
 void DataDevice::OnSurfaceDestroying(Surface* surface) {
-  if (focused_surface_ && focused_surface_->get() == surface)
+  if (focused_surface_ && focused_surface_->get() == surface) {
+    DCHECK(surface->window());
+    if (surface->window()) {
+      aura::client::SetDragDropDelegate(surface->window(), nullptr);
+    }
     focused_surface_.reset();
+  }
 }
 
 Surface* DataDevice::GetEffectiveTargetForEvent(

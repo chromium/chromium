@@ -5,11 +5,11 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -29,7 +29,7 @@ class ASH_EXPORT ClipboardHistoryUrlTitleFetcher {
   // is run asynchronously with the title of the page `url` points to if the
   // profile has visited the `url`; otherwise, it is run with an absent result.
   using OnHistoryQueryCompleteCallback =
-      base::OnceCallback<void(absl::optional<std::u16string>)>;
+      base::OnceCallback<void(std::optional<std::u16string>)>;
   virtual void QueryHistory(const GURL& url,
                             OnHistoryQueryCompleteCallback callback) = 0;
 

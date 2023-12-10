@@ -13,7 +13,7 @@ public class ChromeMediaNotificationControllerServices {
     public static class PlaybackListenerService extends SplitCompatService {
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
-                + "ChromeMediaNotificationControllerDelegate$PlaybackListenerServiceImpl";
+                        + "ChromeMediaNotificationControllerDelegate$PlaybackListenerServiceImpl";
 
         public PlaybackListenerService() {
             super(sImplClassName);
@@ -24,7 +24,7 @@ public class ChromeMediaNotificationControllerServices {
     public static class PresentationListenerService extends SplitCompatService {
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
-                + "ChromeMediaNotificationControllerDelegate$PresentationListenerServiceImpl";
+                        + "ChromeMediaNotificationControllerDelegate$PresentationListenerServiceImpl";
 
         public PresentationListenerService() {
             super(sImplClassName);
@@ -35,7 +35,7 @@ public class ChromeMediaNotificationControllerServices {
     public static class CastListenerService extends SplitCompatService {
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
-                + "ChromeMediaNotificationControllerDelegate$CastListenerServiceImpl";
+                        + "ChromeMediaNotificationControllerDelegate$CastListenerServiceImpl";
 
         public CastListenerService() {
             super(sImplClassName);

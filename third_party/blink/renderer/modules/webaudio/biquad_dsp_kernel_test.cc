@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/modules/webaudio/biquad_dsp_kernel.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(HasConstantValuesTest, RegressionTest) {
+  test::TaskEnvironment task_environment;
   const int frames_to_process = 7;
   float values[frames_to_process] = {0};
 

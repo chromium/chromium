@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-forward.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -154,7 +155,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // and signed exchange (SXG) fallback redirect.
   void FallbackToNonInterceptedRequest(
       bool reset_subresource_loader_params,
-      const net::LoadTimingInfo& timing_info = net::LoadTimingInfo());
+      const ResponseHeadUpdateParams& head_update_params);
 
   scoped_refptr<network::SharedURLLoaderFactory>
   PrepareForNonInterceptedRequest();
@@ -303,7 +304,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // (eg: NavigationLoaderInterceptor for loading a local Web Bundle file).
   bool bypass_redirect_checks_ = false;
 
-  network::mojom::URLResponseHeadPtr head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
 
   // Factories to handle navigation requests for non-network resources.
@@ -351,6 +351,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // it, we still expose the worker timing as part of the response.
   base::TimeTicks intercepting_worker_start_time_;
   base::TimeTicks intercepting_worker_ready_time_;
+
+  network::mojom::ServiceWorkerRouterInfoPtr intercepting_worker_router_info_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

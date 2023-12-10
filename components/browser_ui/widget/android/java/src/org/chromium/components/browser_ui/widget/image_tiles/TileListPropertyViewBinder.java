@@ -10,9 +10,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
-/**
- * Binds the {@link TileListModel} with the {@link TileListView}.
- */
+/** Binds the {@link TileListModel} with the {@link TileListView}. */
 class TileListPropertyViewBinder implements ViewBinder<PropertyModel, RecyclerView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, RecyclerView view, PropertyKey propertyKey) {}

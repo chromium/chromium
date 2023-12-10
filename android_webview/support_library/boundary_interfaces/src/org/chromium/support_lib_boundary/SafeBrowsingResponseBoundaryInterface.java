@@ -4,11 +4,11 @@
 
 package org.chromium.support_lib_boundary;
 
-/**
- * Boundary interface for SafeBrowsingResponseCompat.
- */
+/** Boundary interface for SafeBrowsingResponseCompat. */
 public interface SafeBrowsingResponseBoundaryInterface {
     void showInterstitial(boolean allowReporting);
+
     void proceed(boolean report);
+
     void backToSafety(boolean report);
 }

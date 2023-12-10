@@ -51,7 +51,7 @@ class NaClFileHostTest : public testing::Test {
 
   void TearDown() override {
     nacl_browser_delegate_ = nullptr;
-    nacl::NaClBrowser::ClearAndDeleteDelegateForTest();
+    nacl::NaClBrowser::ClearAndDeleteDelegate();
   }
 
   FileHostTestNaClBrowserDelegate* nacl_browser_delegate() {

@@ -17,6 +17,7 @@
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
+#include "components/reporting/util/rate_limiter_slide_window.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting::metrics {
@@ -102,6 +103,13 @@ class MetricReportingManagerDelegateBase {
       bool setting_enabled_default_value,
       EventDrivenTelemetryCollectorPool* collector_pool,
       base::TimeDelta init_delay = base::TimeDelta());
+
+  // Creates a new instance of the sliding window rate limiter with the
+  // specified total size, time window and bucket count.
+  virtual std::unique_ptr<RateLimiterSlideWindow>
+  CreateSlidingWindowRateLimiter(size_t total_size,
+                                 base::TimeDelta time_window,
+                                 size_t bucket_count);
 
   // Checks for profile affiliation and returns true if affiliated. False
   // otherwise.

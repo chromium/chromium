@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.content.Intent;
-
-/**
- * Constants used in more than a single Notification class, e.g. intents and extra names.
- */
+/** Constants used in more than a single Notification class, e.g. intents and extra names. */
 public class NotificationConstants {
     // These actions have to be synchronized with the receiver defined in AndroidManifest.xml.
     static final String ACTION_CLICK_NOTIFICATION =
@@ -17,19 +13,19 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION";
 
     /**
-     * Name of the Intent extra set by the framework when a notification preferences intent has
-     * been triggered from there, which could be one of the setting gears in system UI.
+     * Name of the Intent extra set by the framework when a notification preferences intent has been
+     * triggered from there, which could be one of the setting gears in system UI.
      */
     static final String EXTRA_NOTIFICATION_TAG = "notification_tag";
 
     /**
      * Names of the Intent extras used for Intents related to notifications. These intents are set
      * and owned by Chromium.
-     *
-     * When adding a new extra, as well as setting it on the intent in NotificationPlatformBridge,
-     * it *must* also be set in {@link NotificationJobService#getJobExtrasFromIntent(Intent)}
      */
+    // When adding a new extra, as well as setting it on the intent in NotificationPlatformBridge,
+    // it *must* also be set in {@link NotificationJobService#getJobExtrasFromIntent(Intent)}.
     public static final String EXTRA_NOTIFICATION_ID = "notification_id";
+
     static final String EXTRA_NOTIFICATION_TYPE = "notification_type";
     static final String EXTRA_NOTIFICATION_INFO_ORIGIN = "notification_info_origin";
     static final String EXTRA_NOTIFICATION_INFO_SCOPE = "notification_info_scope";
@@ -45,29 +41,23 @@ public class NotificationConstants {
     static final String EXTRA_JOB_STARTED_TIME_MS = "notification_job_started_time_ms";
 
     /**
-     * Unique identifier for a single sync notification. Since the notification ID is reused,
-     * old notifications will be overwritten.
+     * Unique identifier for a single sync notification. Since the notification ID is reused, old
+     * notifications will be overwritten.
      */
     public static final int NOTIFICATION_ID_SYNC = 1;
-    /**
-     * Unique identifier for the "Signed in to Chrome" notification.
-     */
+
+    /** Unique identifier for the "Signed in to Chrome" notification. */
     @SuppressWarnings("unused")
     public static final int NOTIFICATION_ID_SIGNED_IN = 2;
-    /**
-     * Unique identifier for the Physical Web notification. No longer used.
-     */
+
+    /** Unique identifier for the Physical Web notification. No longer used. */
     @SuppressWarnings("unused")
     public static final int NOTIFICATION_ID_PHYSICAL_WEB = 3;
 
-    /**
-     * Unique identifier for Browser Actions notification.
-     */
+    /** Unique identifier for Browser Actions notification. */
     public static final int NOTIFICATION_ID_BROWSER_ACTIONS = 4;
 
-    /**
-     * Unique identifier for standalone Web App actions notification.
-     */
+    /** Unique identifier for standalone Web App actions notification. */
     public static final int NOTIFICATION_ID_WEBAPP_ACTIONS = 5;
 
     /**
@@ -84,36 +74,26 @@ public class NotificationConstants {
     public static final int NOTIFICATION_ID_PREPARING_VR = 7;
 
     /**
-     * Unique identifier for the summary notification for downloads.  Using the ID this summary was
+     * Unique identifier for the summary notification for downloads. Using the ID this summary was
      * going to have before it was migrated here.
-     * TODO(dtrainor): Clean up this ID and make sure it's in line with existing id counters without
-     * tags.
      */
+    // TODO(dtrainor): Clean up this ID and make sure it's in line with existing id counters without
+    // tags.
     public static final int NOTIFICATION_ID_DOWNLOAD_SUMMARY = 999999;
 
-    /**
-     * Unique identifier for a single update notification.
-     */
+    /** Unique identifier for a single update notification. */
     public static final int NOTIFICATION_ID_UPDATE = 8;
 
-    /**
-     * Unique identifier for ClickToCall notifications.
-     */
+    /** Unique identifier for ClickToCall notifications. */
     public static final int NOTIFICATION_ID_CLICK_TO_CALL = 9;
 
-    /**
-     * Unique identifier for Shared Clipboard incoming notifications.
-     */
+    /** Unique identifier for Shared Clipboard incoming notifications. */
     public static final int NOTIFICATION_ID_SHARED_CLIPBOARD_INCOMING = 10;
 
-    /**
-     * Unique identifier for Shared Clipboard outgoing notifications.
-     */
+    /** Unique identifier for Shared Clipboard outgoing notifications. */
     public static final int NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING = 11;
 
-    /**
-     * Unique identifier for ClickToCall error notification.
-     */
+    /** Unique identifier for ClickToCall error notification. */
     public static final int NOTIFICATION_ID_CLICK_TO_CALL_ERROR = 12;
 
     /**
@@ -128,14 +108,12 @@ public class NotificationConstants {
      */
     public static final int NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT = 14;
 
-    /**
-     * Unique identifier for Sms Fetcher incoming notifications.
-     */
+    /** Unique identifier for Sms Fetcher incoming notifications. */
     public static final int NOTIFICATION_ID_SMS_FETCHER_INCOMING = 15;
 
     /**
-     * Unique identifier for notifications indicating that the phone can be
-     * used as a security key with another device.
+     * Unique identifier for notifications indicating that the phone can be used as a security key
+     * with another device.
      */
     public static final int NOTIFICATION_ID_SECURITY_KEY = 16;
 
@@ -145,17 +123,13 @@ public class NotificationConstants {
      */
     public static final int NOTIFICATION_ID_UPM = 17;
 
-    /**
-     * Separator used to separate the notification origin from additional data such as the
-     * developer specified tag. This and the prefix following it need to be the same as the one
-     * specified in notification_id_generator.cc.
-     */
+    // Separator used to separate the notification origin from additional data such as the developer
+    // specified tag. This and the prefix following it need to be the same as the one specified in
+    // notification_id_generator.cc.
     static final String NOTIFICATION_TAG_SEPARATOR = "#";
     static final String PERSISTENT_NOTIFICATION_TAG_PREFIX = "p";
 
-    /**
-     * Key for retrieving the results of user input from notification text action intents.
-     */
+    /** Key for retrieving the results of user input from notification text action intents. */
     static final String KEY_TEXT_REPLY = "key_text_reply";
 
     // Notification groups for features that show notifications to the user.

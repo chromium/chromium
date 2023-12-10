@@ -82,4 +82,4 @@ void SetIsMultiCaptureAllowedForTesting(bool is_multi_capture_allowed);
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_LOW_DISK_NOTIFICATION_H_
+#endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_MULTI_CAPTURE_NOTIFICATIONS_H_

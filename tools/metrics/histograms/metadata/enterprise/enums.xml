@@ -1,0 +1,2303 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ActiveDirectoryDomainJoinType">
+  <summary>
+    This list corresponds to the ways device could be joined to the Active
+    Directory domain.
+  </summary>
+  <int value="0" label="Joined without streamline configuration"/>
+  <int value="1"
+      label="Had streamline configuration set but did not unlock it"/>
+  <int value="2" label="Joined using streamline configuration"/>
+</enum>
+
+<enum name="BooleanWarned">
+  <int value="0" label="Not Warned"/>
+  <int value="1" label="Warned"/>
+</enum>
+
+<enum name="DeviceIdentifierStatus">
+  <int value="0" label="all device identifiers are present"/>
+  <int value="1" label="serial number is missing"/>
+  <int value="2" label="rlz_brand_code is missing"/>
+  <int value="3" label="all device identifiers are missing"/>
+</enum>
+
+<enum name="DeviceSettingsStatus">
+  <int value="0" label="STORE_SUCCESS"/>
+  <int value="1" label="STORE_KEY_UNAVAILABLE"/>
+  <int value="2" label="STORE_OPERATION_FAILED"/>
+  <int value="3" label="STORE_NO_POLICY"/>
+  <int value="4" label="STORE_INVALID_POLICY"/>
+  <int value="5" label="STORE_VALIDATION_ERROR"/>
+</enum>
+
+<enum name="DeviceSignalsParsingError">
+  <int value="0" label="Hit max data size"/>
+  <int value="1" label="Data malformed"/>
+  <int value="2" label="Base64 decoding failed"/>
+  <int value="3" label="JSON parsing failed"/>
+  <int value="4" label="Missing required property"/>
+</enum>
+
+<enum name="DeviceSignalsSignalCollectionError">
+  <int value="0" label="Consent Required"/>
+  <int value="1" label="Unaffiliated User"/>
+  <int value="2" label="Unsupported"/>
+  <int value="3" label="Missing System Service"/>
+  <int value="4" label="Missing Bundle"/>
+  <int value="5" label="Invalid User"/>
+  <int value="6" label="Missing Parameters"/>
+  <int value="7" label="Parsing Failed"/>
+  <int value="8" label="Unexpected Value"/>
+</enum>
+
+<enum name="DeviceSignalsSignalName">
+  <int value="0" label="Anti-Virus"/>
+  <int value="1" label="Hotfixes"/>
+  <int value="2" label="File System Info"/>
+  <int value="3" label="System Settings"/>
+  <int value="4" label="Agent"/>
+</enum>
+
+<enum name="DeviceSignalsUserPermission">
+  <int value="0" label="Unaffiliated"/>
+  <int value="1" label="Missing Consent"/>
+  <int value="2" label="Consumer User"/>
+  <int value="3" label="Unknown User"/>
+  <int value="4" label="Missing User"/>
+  <int value="5" label="Granted"/>
+  <int value="6" label="Unsupported"/>
+</enum>
+
+<enum name="DeviceSignalsWmiParsingError">
+  <int value="0" label="Failed to iterate results"/>
+  <int value="1" label="Failed to get name"/>
+  <int value="2" label="Failed to get state"/>
+  <int value="3" label="State invalid"/>
+  <int value="4" label="Failed to get ID"/>
+</enum>
+
+<enum name="DeviceSignalsWscParsingError">
+  <int value="0" label="Failed to get item"/>
+  <int value="1" label="Failed to get state"/>
+  <int value="2" label="State invalid"/>
+  <int value="3" label="Failed to get name"/>
+  <int value="4" label="Failed to get ID"/>
+</enum>
+
+<enum name="DeviceSignalsWscQueryError">
+  <int value="0" label="Failed to create instance"/>
+  <int value="1" label="Failed to initialize product list"/>
+  <int value="2" label="Failed to get product count"/>
+</enum>
+
+<enum name="DeviceTrustKeyRotationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unable to generate a new signing key"/>
+  <int value="2" label="Unable to save the new signing key to storage"/>
+  <int value="3" label="Unable to build upload request"/>
+  <int value="4" label="Unable to upload new signing key to server"/>
+  <int value="5"
+      label="Unable to upload new signing key to server after maximum retries"/>
+  <int value="6"
+      label="Unable to upload new signing key to server and failed to restore
+             old key"/>
+  <int value="7"
+      label="Unable to upload new signing key to server after maximum retries
+             and failed to restore old key"/>
+  <int value="8"
+      label="Unable to store the signing key due to signing key file
+             permissions failure."/>
+  <int value="9" label="Invalid key rotation params"/>
+  <int value="10" label="Invalid DM server URL"/>
+  <int value="11" label="Invalid DM token"/>
+</enum>
+
+<enum name="DTAttestationFunnelStep">
+  <int value="0" label="Attestation Flow Started"/>
+  <int value="1" label="Challenge Received"/>
+  <int value="2" label="Signals Collected"/>
+  <int value="3" label="Challenge Response Sent"/>
+</enum>
+
+<enum name="DTAttestationPolicyLevel">
+  <int value="0" label="No policy enabled for the inline flow"/>
+  <int value="1" label="Unknown policy for the Inline flow"/>
+  <int value="2" label="Inline flow for browser"/>
+  <int value="3" label="Inline flow for user"/>
+  <int value="4" label="Inline flow for user and browser"/>
+</enum>
+
+<enum name="DTAttestationResult">
+  <int value="0" label="Missing Core Signals"/>
+  <int value="1" label="Missing Signing Key"/>
+  <int value="2" label="Bad Challenge Format"/>
+  <int value="3" label="Bad Challenge Source"/>
+  <int value="4" label="Failed to Serialize KeyInfo"/>
+  <int value="5" label="Failed to Generate a Response"/>
+  <int value="6" label="Failed to Sign the Response"/>
+  <int value="7" label="Failed to Serialize the Response"/>
+  <int value="8" label="Serialized Response is Empty"/>
+  <int value="9" label="Success"/>
+  <int value="10" label="Failed to Serialize the Signals"/>
+  <int value="11" label="Success, but Without a Key Signature"/>
+</enum>
+
+<enum name="DTEnrollmentStatus">
+  <int value="0" label="Managed"/>
+  <int value="1" label="Unmanaged"/>
+</enum>
+
+<enum name="DTHandshakeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Failed to parse challenge"/>
+  <int value="4" label="Failed to create response"/>
+</enum>
+
+<enum name="DTKeyPersistenceError">
+  <int value="0" label="Failed to attain a lock on the persistence storage."/>
+  <int value="1" label="Failed to open the persistence storage."/>
+  <int value="2" label="Failed to read from the persistence storage."/>
+  <int value="3" label="Failed to write to the persistence storage."/>
+  <int value="4"
+      label="Failed to retrieve the permissions of the persistence storage."/>
+  <int value="5" label="Invalid permissions for the persistence storage."/>
+  <int value="6" label="Failed to JSON format the signing key pair."/>
+  <int value="7"
+      label="Failed to delete the signing key pair from persistence storage."/>
+  <int value="8" label="Invalid format for the signing key pair."/>
+  <int value="9"
+      label="The signing key pair is missing the trust level details."/>
+  <int value="10"
+      label="The signing key pair is missing the signing key details."/>
+  <int value="11" label="Invalid trust level for the signing key pair."/>
+  <int value="12" label="Invalid signing key for the signing key pair."/>
+  <int value="13" label="Failed to decode the signing key."/>
+  <int value="14"
+      label="Failed to create a signing key pair object from the signing key."/>
+  <int value="15" label="Failed to create an OS signing key."/>
+  <int value="16" label="Failed to create a hardware signing key."/>
+</enum>
+
+<enum name="DTKeyRotationCommandError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="COM Class not registered"/>
+  <int value="3" label="COM Class not implementing the interface"/>
+  <int value="4" label="Updater concurrency"/>
+  <int value="5" label="User installation"/>
+  <int value="6" label="Missing Management service"/>
+  <int value="7" label="Process invalid"/>
+</enum>
+
+<enum name="DTKeyRotationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Timed Out"/>
+  <int value="3" label="Failed Key Conflict"/>
+  <int value="4" label="Failed OS Restriction"/>
+  <int value="5" label="Failed Invalid Permissions"/>
+  <int value="6" label="Failed Invalid Installation"/>
+  <int value="7" label="Failed Invalid DM Token Storage"/>
+  <int value="8" label="Failed Invalid DM Token"/>
+  <int value="9" label="Failed Invalid Management Service"/>
+  <int value="10" label="Failed Invalid DM Server URL"/>
+  <int value="11" label="Failed Invalid Command"/>
+</enum>
+
+<enum name="DTKeyTrustLevel">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="TPM"/>
+  <int value="2" label="OS"/>
+</enum>
+
+<enum name="DTKeyType">
+  <int value="0" label="RSA"/>
+  <int value="1" label="EC"/>
+</enum>
+
+<enum name="DTLoadPersistedKeyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not Found"/>
+  <int value="2" label="Malformed Key"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<enum name="DTManagementServiceError">
+  <int value="0" label="The device is missing the management group id."/>
+  <int value="1"
+      label="The management-service binary is missing the management group
+             id."/>
+  <int value="2"
+      label="Could not get the path to the management-service binary."/>
+  <int value="3"
+      label="Failure when retrieving the pipe name from the rotate command."/>
+  <int value="4" label="The Rotate command is missing the pipe name."/>
+  <int value="5" label="The Rotate command is missing the dm token."/>
+  <int value="6" label="The Rotate command is missing the dm server url."/>
+  <int value="7" label="The pending remote url loader factory is invalid."/>
+  <int value="8"
+      label="Failure binding the remote url loader factory to the browser
+             process."/>
+  <int value="9"
+      label="Failure connecting the remote url loader factory to the browser
+             process."/>
+  <int value="10" label="Invalid command to rotate."/>
+  <int value="11"
+      label="An argument used in the rotate request is incorrectly encoded."/>
+  <int value="12"
+      label="Invalid platform channel endpoint in key rotation command."/>
+  <int value="13" label="Invalid mojo invitation."/>
+  <int value="14" label="Invalid message pipe handle in mojo invitation."/>
+</enum>
+
+<enum name="DTOrigin">
+  <int value="0" label="In session"/>
+  <int value="1" label="On login screen"/>
+</enum>
+
+<enum name="DTSecureEnclaveOperationStatus">
+  <int value="0" label="Unable to create a key in the Secure Enclave"/>
+  <int value="1" label="Unable to copy the Secure Enclave key reference"/>
+  <int value="2"
+      label="Unable to copy the Secure Enclave key reference from the data
+             protection keychain"/>
+  <int value="3" label="Unable to delete the Secure Enclave key."/>
+  <int value="4"
+      label="Unable to delete the Secure Enclave key from the data protection
+             keychain"/>
+  <int value="5" label="Unable to update the Secure Enclave key label"/>
+  <int value="6"
+      label="Unable to update the Secure Enclave key label in the data
+             protection keychain"/>
+</enum>
+
+<enum name="DTSynchronizationError">
+  <int value="0" label="Missing Key Pair"/>
+  <int value="1" label="Invalid DM Token"/>
+  <int value="2" label="Invalid Server URL"/>
+  <int value="3" label="Cannot Build Request"/>
+</enum>
+
+<enum name="EnrollmentNudgePolicyFetchResult">
+  <summary>
+    Enrollment nudge policy can be fetched during OOBE consumer sign-in flow.
+  </summary>
+  <int value="0" label="Unknown server response"/>
+  <int value="1" label="Policy is not set in the response"/>
+  <int value="2" label="Policy requires enrollment"/>
+  <int value="3" label="Policy allows consumer sign-in"/>
+</enum>
+
+<enum name="EnrollmentNudgeUserAction">
+  <summary>
+    Corresponds to the buttons available on the enrollment nudge pop-up on the
+    Gaia screen.
+  </summary>
+  <int value="0" label="Enterprise Enrollment button clicked"/>
+  <int value="1" label="Use Another Account button clicked"/>
+</enum>
+
+<enum name="EnterpriseAccountStatus">
+  <summary>Account status fetched before enrollment process starts.</summary>
+  <int value="0" label="Unknown account"/>
+  <int value="1" label="Consumer account with consumer domain"/>
+  <int value="2" label="Consumer account with business domain"/>
+  <int value="3" label="Organisational account, domain is not verified"/>
+  <int value="4" label="Organisational account, domain is verified"/>
+  <int value="5" label="Dasher account"/>
+</enum>
+
+<enum name="EnterpriseAttributesTPMConsistencyType">
+  <int value="0" label="no attributes, other mode, TPM unlocked">
+    valid: machine in pristine state
+  </int>
+  <int value="1" label="locked attributes, other mode, TPM unlocked">
+    rare: install attributes locked but TPM clear (could happen if taking TPM
+    ownership carries over a reboot)
+  </int>
+  <int value="2" label="no attributes, enterprise mode, TPM unlocked">
+    impossible: non-existent install attributes cannot yield enterprise mode
+  </int>
+  <int value="3" label="locked attributes, enterprise mode, TPM unlocked">
+    rare: install attributes locked but TPM clear (could happen if taking TPM
+    ownership carries over a reboot)
+  </int>
+  <int value="4" label="no attributes, other mode, TPM locked">
+    inconsistent: install attributes clear but TPM locked
+  </int>
+  <int value="5" label="locked attributes, other mode, TPM locked">
+    valid: consumer owned
+  </int>
+  <int value="6" label="no attributes, enterprise mode, TPM locked">
+    impossible: non-existent install attributes cannot yield enterprise mode
+  </int>
+  <int value="7" label="locked attributes, enterprise mode, TPM locked">
+    valid: enterprise enrolled
+  </int>
+  <int value="8" label="TPM unreachable">error: cryptohomed unreachable</int>
+</enum>
+
+<enum name="EnterpriseAutoEnrollmentControllerTimeoutReport">
+  <summary>Timeout status for AutoEnrollmentController</summary>
+  <int value="0" label="Timeout cancelled"/>
+  <int value="1" label="Timeout encountered during forced re-enrollment"/>
+  <int value="2" label="Timeout on a consumer device"/>
+</enum>
+
+<enum name="EnterpriseBrowserSigninPolicy">
+  <summary>Value for BrowserSignin policy</summary>
+  <int value="0" label="Disable browser sign-in"/>
+  <int value="1" label="Enable browser sign-in"/>
+  <int value="2" label="Force users to sign-in to use the browser"/>
+</enum>
+
+<enum name="EnterpriseCloudExtensionRequestListUpdate">
+  <summary>Extension request pending list update event.</summary>
+  <int value="0" label="New request added"/>
+  <int value="1" label="Existing request removed"/>
+</enum>
+
+<enum name="EnterpriseCloudManagementEnrollmentTokenLocationMac">
+  <summary>CBCM enrollment token location on Mac.</summary>
+  <int value="0" label="Load token from policy"/>
+  <int value="1" label="Load token from file"/>
+</enum>
+
+<enum name="EnterpriseCloudReportingResponse">
+  <summary>Result of uploading an enterprise report.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Temporary server error"/>
+  <int value="3" label="DDS concurrency error"/>
+  <int value="4" label="Request too large error"/>
+  <int value="5" label="Other error"/>
+</enum>
+
+<enum name="EnterpriseCrdSessionResultCode">
+  <summary>Types of CRD sessions connection request result code.</summary>
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="FAILURE_SERVICES_NOT_READY"/>
+  <int value="2" label="FAILURE_UNSUPPORTED_USER_TYPE"/>
+  <int value="3" label="FAILURE_NOT_IDLE"/>
+  <int value="4" label="FAILURE_NO_OAUTH_TOKEN"/>
+  <int value="5" label="FAILURE_NO_ICE_CONFIG"/>
+  <int value="6" label="FAILURE_CRD_HOST_ERROR"/>
+  <int value="7" label="FAILURE_UNMANAGED_ENVIRONMENT"/>
+  <int value="8" label="FAILURE_DISABLED_BY_POLICY"/>
+  <int value="9" label="FAILURE_PEER_IS_OFFLINE"/>
+  <int value="10" label="FAILURE_SESSION_REJECTED"/>
+  <int value="11" label="FAILURE_INCOMPATIBLE_PROTOCOL"/>
+  <int value="12" label="FAILURE_AUTHENTICATION_FAILED"/>
+  <int value="13" label="FAILURE_INVALID_ACCOUNT"/>
+  <int value="14" label="FAILURE_CHANNEL_CONNECTION_ERROR"/>
+  <int value="15" label="FAILURE_SIGNALING_ERROR"/>
+  <int value="16" label="FAILURE_SIGNALING_TIMEOUT"/>
+  <int value="17" label="FAILURE_HOST_OVERLOAD"/>
+  <int value="18" label="FAILURE_MAX_SESSION_LENGTH"/>
+  <int value="19" label="FAILURE_HOST_CONFIGURATION_ERROR"/>
+  <int value="20" label="FAILURE_HOST_CERTIFICATE_ERROR"/>
+  <int value="21" label="FAILURE_HOST_REGISTRATION_ERROR"/>
+  <int value="22" label="FAILURE_EXISTING_ADMIN_SESSION"/>
+  <int value="23" label="FAILURE_AUTHZ_POLICY_CHECK_FAILED"/>
+  <int value="24" label="FAILURE_LOCATION_AUTHZ_POLICY_CHECK_FAILED"/>
+  <int value="25" label="FAILURE_UNAUTHORIZED_ACCOUNT"/>
+  <int value="26" label="FAILURE_HOST_POLICY_ERROR"/>
+  <int value="27" label="FAILURE_HOST_INVALID_DOMAIN_ERROR"/>
+  <int value="28" label="HOST_SESSION_DISCONNECTED"/>
+  <int value="29" label="FAILURE_UNKNOWN_ERROR"/>
+</enum>
+
+<enum name="EnterpriseDeviceManagementStatus">
+  <summary>
+    Status codes produced by DeviceManagementService for requests made to the
+    device management server as defined in
+    components/policy/core/common/cloud/cloud_policy_constants.h.
+  </summary>
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="REQUEST_INVALID"/>
+  <int value="2" label="REQUEST_FAILED"/>
+  <int value="3" label="TEMPORARY_UNAVAILABLE"/>
+  <int value="4" label="HTTP_STATUS_ERROR"/>
+  <int value="5" label="RESPONSE_DECODING_ERROR"/>
+  <int value="6" label="SERVICE_MANAGEMENT_NOT_SUPPORTED"/>
+  <int value="7" label="SERVICE_DEVICE_NOT_FOUND"/>
+  <int value="8" label="SERVICE_MANAGEMENT_TOKEN_INVALID"/>
+  <int value="9" label="SERVICE_ACTIVATION_PENDING"/>
+  <int value="10" label="SERVICE_INVALID_SERIAL_NUMBER"/>
+  <int value="11" label="SERVICE_DEVICE_ID_CONFLICT"/>
+  <int value="12" label="SERVICE_MISSING_LICENSES"/>
+  <int value="13" label="SERVICE_DEPROVISIONED"/>
+  <int value="14" label="SERVICE_DOMAIN_MISMATCH"/>
+  <int value="15" label="CANNOT_SIGN_REQUEST"/>
+  <int value="16" label="REQUEST_TOO_LARGE"/>
+  <int value="17" label="SERVICE_TOO_MANY_REQUESTS"/>
+  <int value="18" label="SERVICE_DEVICE_NEEDS_RESET"/>
+  <int value="902" label="SERVICE_POLICY_NOT_FOUND"/>
+  <int value="904" label="SERVICE_ARC_DISABLED"/>
+  <int value="905" label="SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE"/>
+  <int value="906"
+      label="SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL"/>
+  <int value="907" label="SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED"/>
+  <int value="908" label="SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE"/>
+  <int value="909" label="SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyCrOSAdaptorError">
+  <summary>
+    Type of errors triggered by the adaptor usage in the ChromeOS Data Leak
+    Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Invalid proto error"/>
+  <int value="2" label="Database not ready error"/>
+  <int value="3" label="Database connection error"/>
+  <int value="4" label="Inode retrieval error"/>
+  <int value="5" label="Create pipe error"/>
+  <int value="6" label="Restriction detection error"/>
+  <int value="7" label="Add file error"/>
+  <int value="8" label="FD dup error"/>
+  <int value="9" label="FD close error"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyCrOSDaemonInitError">
+  <summary>
+    Type of errors triggered when performing initialization operations in the
+    ChromeOS Data Leak Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Primary username retrieval error"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyCrOSFanotifyError">
+  <summary>
+    Type of errors triggered by fanotify usage in the ChromeOS Data Leak
+    Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="fanotify_mark error"/>
+  <int value="2" label="select error"/>
+  <int value="3" label="ioctl error"/>
+  <int value="4" label="fd error"/>
+  <int value="5" label="Metadata mismatch error"/>
+  <int value="6" label="fstat error"/>
+  <int value="7" label="Invalid file descriptor error"/>
+  <int value="8" label="Unexpected file handle type error"/>
+  <int value="9" label="Unexpected event info type error"/>
+  <int value="10" label="fanotify_init error"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyCrOSFileDatabaseError">
+  <summary>
+    Type of errors triggered when using the file database in the ChromeOS Data
+    Leak Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Connection error"/>
+  <int value="2" label="Create table error"/>
+  <int value="3" label="Insert error"/>
+  <int value="4" label="Select error"/>
+  <int value="5" label="Query error"/>
+  <int value="6" label="Multiple entries for same inode error"/>
+  <int value="7" label="Create directory error"/>
+  <int value="8" label="Set ownership error"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyFileAction">
+  <summary>
+    Types of restricted file actions checked by Data Leak Prevention policy.
+  </summary>
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kDownload"/>
+  <int value="2" label="kTransfer"/>
+  <int value="3" label="kUpload"/>
+  <int value="4" label="kCopy"/>
+  <int value="5" label="kMove"/>
+  <int value="6" label="kOpen"/>
+  <int value="7" label="kShare"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyRestriction">
+  <summary>
+    Type of restriction enforced by Data Leak Prevention policy.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Clipboard"/>
+  <int value="2" label="Screenshot"/>
+  <int value="3" label="Printing"/>
+  <int value="4" label="Privacy Screen"/>
+  <int value="5" label="Screenshare"/>
+  <int value="6" label="Files"/>
+</enum>
+
+<enum name="EnterpriseEnrollmentType">
+  <summary>
+    Result of device enrollment as defined in
+    components/policy/core/common/cloud/enterprise_metrics.h.
+  </summary>
+  <int value="0" label="Cancelled">
+    User pressed 'Cancel' during the enrollment process.
+  </int>
+  <int value="1" label="Started with valid credentials">
+    The user submitted valid credentials (GAIA or registration certificate) to
+    start the enrollment process.
+  </int>
+  <int value="2" label="OAuth fetch: network failed">
+    OAuth token fetch failed: network error.
+  </int>
+  <int value="3" label="Login Failed">
+    OAuth token fetch failed: login error.
+  </int>
+  <int value="4" label="Not Supported">
+    Registration / policy fetch failed: DM server reports management not
+    supported.
+  </int>
+  <int value="5" label="Policy Failed (unused)">
+    UNUSED: Enrollment failed because it failed to apply device policy.
+  </int>
+  <int value="6" label="Other Failed (unused)">
+    UNUSED: Enrollment failed due to an unexpected error. This currently happens
+    when the GAIA auth token is not issued for the DM service, the device cloud
+    policy subsystem isn't initialized, or when fetching GAIA tokens fails for
+    an unknown reason.
+  </int>
+  <int value="7" label="OK">Enrollment was successful.</int>
+  <int value="8" label="Registration/fetch: invalid Serial">
+    Registration / policy fetch failed: DM server reports that the serial number
+    we try to register is not assigned to the domain used.
+  </int>
+  <int value="9" label="Auto-enrollment Started (unused)">
+    UNUSED: Auto-enrollment started automatically after sign-in.
+  </int>
+  <int value="10" label="Auto-enrollment Failed (unused)">
+    UNUSED: Auto-enrollment failed.
+  </int>
+  <int value="11" label="Auto-enrollment Restarted (unused)">
+    UNUSED: Auto-enrollment started again after a failure.
+  </int>
+  <int value="12" label="Auto-enrollment Cancelled (unused)">
+    UNUSED: User opted-out of auto-enrollment.
+  </int>
+  <int value="13" label="Auto-enrollment OK (unused)">
+    UNUSED: Auto-enrollment OK.
+  </int>
+  <int value="14" label="Invalid enrollment mode">
+    Registration failed: DM server returns unknown/disallowed enrollment mode.
+  </int>
+  <int value="15" label="Auto-enrollment not supported (unused)">
+    UNUSED: Auto-enrollment is not supported for the mode supplied by the
+    server. This presently means trying to auto-enroll in kiosk mode.
+  </int>
+  <int value="16" label="Install attributes timeout">
+    Lockbox initialization took too long to complete.
+  </int>
+  <int value="17" label="Lockbox domain mismatch on re-enrollment">
+    Lockbox error on re-enrollment: domain does not match install attributes.
+  </int>
+  <int value="18" label="Registration/fetch: missing licenses">
+    Registration / policy fetch failed: DM server reports licenses expired or
+    exhausted.
+  </int>
+  <int value="19" label="Robot auth code fetch failed">
+    Failed to fetch device robot authorization code from DM Server.
+  </int>
+  <int value="20" label="Robot refresh token fetch failed">
+    Failed to fetch device robot refresh token from GAIA.
+  </int>
+  <int value="21" label="Robot refresh token store failed">
+    Failed to persist robot account refresh token on device.
+  </int>
+  <int value="22" label="Registration/fetch: deprovisioned device">
+    Registration / policy fetch failed: DM server reports administrator
+    deprovisioned the device.
+  </int>
+  <int value="23" label="Registration/fetch: domain mismatch">
+    Registration / policy fetch failed: DM server reports domain mismatch.
+  </int>
+  <int value="24" label="Triggered">
+    Enrollment has been triggered, the webui login screen has been shown.
+  </int>
+  <int value="25" label="Restarted with valid credentials">
+    The user submitted valid credentials (GAIA or registration certificate) to
+    start the enrollment process for the second (or further) time.
+  </int>
+  <int value="26" label="Store token and ID failed (unused)">
+    UNUSED: Failed to store DM token and device ID.
+  </int>
+  <int value="27" label="Error getting FRE state keys">
+    Failed to obtain FRE state keys.
+  </int>
+  <int value="28" label="Error validating policy">
+    Failed to validate policy.
+  </int>
+  <int value="29" label="Error in CloudPolicyStore">
+    Failed due to error in CloudPolicyStore.
+  </int>
+  <int value="30" label="Error locking device (unused)">
+    UNUSED: Failed to lock device.
+  </int>
+  <int value="31" label="Registration/fetch: request payload invalid">
+    Registration / policy fetch failed: DM server reports invalid request
+    payload.
+  </int>
+  <int value="32" label="Registration/fetch: device not found">
+    Registration / policy fetch failed: DM server reports device not found.
+  </int>
+  <int value="33" label="Registration/fetch: DM token invalid">
+    Registration / policy fetch failed: DM server reports DM token invalid.
+  </int>
+  <int value="34" label="Registration/fetch: activation pending">
+    Registration / policy fetch failed: DM server reports activation pending.
+  </int>
+  <int value="35" label="Registration/fetch: device ID conflict">
+    Registration / policy fetch failed: DM server reports device ID conflict.
+  </int>
+  <int value="36" label="Registration/fetch: policy not found">
+    Registration / policy fetch failed: DM server can't find policy.
+  </int>
+  <int value="37" label="Registration/fetch: HTTP request failed">
+    Registration / policy fetch failed: HTTP request failed.
+  </int>
+  <int value="38" label="Registration/fetch: temporary unavailable">
+    Registration / policy fetch failed: DM server reports temporary problem.
+  </int>
+  <int value="39" label="Registration/fetch: HTTP error response">
+    Registration / policy fetch failed: DM server returns non-success HTTP
+    status code.
+  </int>
+  <int value="40" label="Registration/fetch: invalid response">
+    Registration / policy fetch failed: can't decode DM server response.
+  </int>
+  <int value="41" label="OAuth fetch: account not signed up">
+    OAuth token fetch failed: account not signed up.
+  </int>
+  <int value="42" label="OAuth fetch: account deleted (unused)">
+    UNUSED: OAuth token fetch failed: account deleted.
+  </int>
+  <int value="43" label="OAuth fetch: account disabled (unused)">
+    UNUSED: OAuth token fetch failed: account disabled.
+  </int>
+  <int value="44" label="Re-enrollment: pre-check domain mismatch">
+    Re-enrollment pre-check failed: domain does not match install attributes.
+  </int>
+  <int value="45" label="Lockbox initialization failed">
+    Lockbox backend failed to initialize.
+  </int>
+  <int value="46" label="Lockbox already locked">
+    Lockbox backend (TPM) already locked.
+  </int>
+  <int value="47" label="Lockbox set attribute failed">
+    Lockbox failure setting attributes.
+  </int>
+  <int value="48" label="Lockbox locking failed">
+    Lockbox failure during locking.
+  </int>
+  <int value="49" label="Lockbox inconsistent read back">
+    Lockbox read back is inconsistent.
+  </int>
+  <int value="50" label="Device attributes update failed">
+    Failed to update device attributes.
+  </int>
+  <int value="51" label="Lockbox device mode mismatch">
+    Enrollment mode does not match already locked install attributes.
+  </int>
+  <int value="52" label="Registration certificate fetch fail">
+    A registration certificate could not be obtained from the PCA. This value
+    aggregates other specific registration certificate errors.
+  </int>
+  <int value="53" label="Cannot sign enrollment request">
+    The request to enroll could not be signed.
+  </int>
+  <int value="54" label="Device identification missing">
+    Device model or serial number missing from VPD.
+  </int>
+  <int value="55" label="AD policy fetch fail">
+    Active Directory policy fetch failed.
+  </int>
+  <int value="56" label="Store DM token failed">
+    Failed to store DM token into the local state.
+  </int>
+  <int value="57" label="License list fetch failed">
+    Failed to get available licenses from server.
+  </int>
+  <int value="58" label="Consumer account with packaged license">
+    Can't enroll a device with a packaged license to a consumer account.
+  </int>
+  <int value="59" label="Device not pre-provisioned">
+    The device is not pre-provisioned for Zero-Touch.
+  </int>
+  <int value="60" label="Enterprise account is not eligible to enroll">
+    The enterprise account is not eligible to enroll.
+  </int>
+  <int value="61" label="Tos is not accepted">
+    The term of service is not accepted by enterprise.
+  </int>
+  <int value="62" label="Too many requests">
+    Too many requests are uploaded within a short time.
+  </int>
+  <int value="63" label="Illegal account for packaged EDU license">
+    Illegal account for packaged EDU license.
+  </int>
+  <int value="64" label="May not block dev mode">
+    Dev mode would be blocked but this is prevented by a command-line switch.
+  </int>
+  <int value="65" label="Invalid packaged device for kiosk">
+    Packaged license device invalid for kiosk.
+  </int>
+  <int value="66"
+      label="Registration certificate fetch fail: unspecified failure">
+    A registration certificate could not be obtained from the PCA due to an
+    unspecified error.
+  </int>
+  <int value="67" label="Registration certificate fetch fail: bad request">
+    A registration certificate could not be obtained from the PCA due to a bad
+    request.
+  </int>
+  <int value="68" label="Registration certificate fetch fail: not available">
+    A registration certificate could not be obtained from the PCA due to the
+    attestation service not being available on the device.
+  </int>
+</enum>
+
+<enum name="EnterpriseFetchSupportPacketFailureType">
+  <int value="0" label="kNoFailure"/>
+  <int value="1" label="kFailedOnWrongCommandPayload"/>
+  <int value="2" label="kFailedOnCommandEnabledForUserCheck"/>
+  <int value="3" label="kFailedOnExportingSupportPacket"/>
+  <int value="4" label="kFailedOnEnqueueingEvent"/>
+</enum>
+
+<enum name="EnterpriseMacMDMStatusNew">
+  <summary>
+    The Mac MDM enrollment status (new API). See
+    https://blog.fleetsmith.com/what-is-user-approved-mdm-uamdm/ for more
+    details.
+  </summary>
+  <int value="0" label="API unavailable"/>
+  <int value="1" label="Unable to parse result"/>
+  <int value="2" label="No enrollment"/>
+  <int value="3" label="MDM enrollment (limited management capabilities)"/>
+  <int value="4" label="UAMDM enrollment (full management capabilities)"/>
+  <int value="5"
+      label="DEP Enrollment (automatically grants UAMDM status / full
+             management capabilities)"/>
+</enum>
+
+<enum name="EnterpriseMacMDMStatusOld">
+  <summary>The Mac MDM enrollment status (old API).</summary>
+  <int value="0" label="API unavailable"/>
+  <int value="1" label="Unable to parse result"/>
+  <int value="2" label="No enrollment"/>
+  <int value="3" label="MDM enrollment"/>
+</enum>
+
+<enum name="EnterprisePolicies">
+<!-- Generated from components/policy/resources/templates/policies.yaml -->
+
+  <int value="1" label="HomepageLocation"/>
+  <int value="2" label="HomepageIsNewTabPage"/>
+  <int value="3" label="DefaultBrowserSettingEnabled"/>
+  <int value="4" label="ApplicationLocaleValue"/>
+  <int value="5" label="AlternateErrorPagesEnabled"/>
+  <int value="6" label="SearchSuggestEnabled"/>
+  <int value="7" label="DnsPrefetchingEnabled"/>
+  <int value="8" label="DisableSpdy"/>
+  <int value="9" label="JavascriptEnabled"/>
+  <int value="10" label="IncognitoEnabled"/>
+  <int value="11" label="SavingBrowserHistoryDisabled"/>
+  <int value="12" label="PrintingEnabled"/>
+  <int value="13" label="CloudPrintProxyEnabled"/>
+  <int value="14" label="SafeBrowsingEnabled"/>
+  <int value="15" label="MetricsReportingEnabled"/>
+  <int value="16" label="PasswordManagerEnabled"/>
+  <int value="17" label="PasswordManagerAllowShowPasswords"/>
+  <int value="18" label="AutoFillEnabled"/>
+  <int value="19" label="DisabledPlugins"/>
+  <int value="20" label="SyncDisabled"/>
+  <int value="21" label="ProxyMode"/>
+  <int value="22" label="ProxyServerMode"/>
+  <int value="23" label="ProxyServer"/>
+  <int value="24" label="ProxyPacUrl"/>
+  <int value="25" label="ProxyBypassList"/>
+  <int value="26" label="AuthSchemes"/>
+  <int value="27" label="DisableAuthNegotiateCnameLookup"/>
+  <int value="28" label="EnableAuthNegotiatePort"/>
+  <int value="29" label="AuthServerWhitelist"/>
+  <int value="30" label="AuthNegotiateDelegateWhitelist"/>
+  <int value="31" label="GSSAPILibraryName"/>
+  <int value="32" label="ExtensionInstallBlacklist"/>
+  <int value="33" label="ExtensionInstallWhitelist"/>
+  <int value="34" label="ExtensionInstallForcelist"/>
+  <int value="35" label="ShowHomeButton"/>
+  <int value="36" label="DeveloperToolsDisabled"/>
+  <int value="37" label="RestoreOnStartup"/>
+  <int value="38" label="RestoreOnStartupURLs"/>
+  <int value="39" label="BlockThirdPartyCookies"/>
+  <int value="40" label="DefaultSearchProviderEnabled"/>
+  <int value="41" label="DefaultSearchProviderName"/>
+  <int value="42" label="DefaultSearchProviderKeyword"/>
+  <int value="43" label="DefaultSearchProviderSearchURL"/>
+  <int value="44" label="DefaultSearchProviderSuggestURL"/>
+  <int value="45" label="DefaultSearchProviderInstantURL"/>
+  <int value="46" label="DefaultSearchProviderIconURL"/>
+  <int value="47" label="DefaultSearchProviderEncodings"/>
+  <int value="48" label="DefaultCookiesSetting"/>
+  <int value="49" label="DefaultImagesSetting"/>
+  <int value="50" label="DefaultJavaScriptSetting"/>
+  <int value="51" label="DefaultPluginsSetting"/>
+  <int value="52" label="DefaultPopupsSetting"/>
+  <int value="53" label="DefaultNotificationsSetting"/>
+  <int value="54" label="DefaultGeolocationSetting"/>
+  <int value="55" label="Disable3DAPIs"/>
+  <int value="56" label="PolicyRefreshRate"/>
+  <int value="57" label="ChromeFrameRendererSettings"/>
+  <int value="58" label="RenderInChromeFrameList"/>
+  <int value="59" label="RenderInHostList"/>
+  <int value="60" label="ChromeFrameContentTypes"/>
+  <int value="61" label="ChromeOsLockOnIdleSuspend"/>
+  <int value="62" label="InstantEnabled"/>
+  <int value="63" label="UserDataDir"/>
+  <int value="64" label="DownloadDirectory"/>
+  <int value="65" label="ClearSiteDataOnExit"/>
+  <int value="66" label="DisablePluginFinder"/>
+  <int value="67" label="CookiesBlockedForUrls"/>
+  <int value="68" label="CookiesSessionOnlyForUrls"/>
+  <int value="69" label="ImagesAllowedForUrls"/>
+  <int value="70" label="ImagesBlockedForUrls"/>
+  <int value="71" label="JavaScriptAllowedForUrls"/>
+  <int value="72" label="JavaScriptBlockedForUrls"/>
+  <int value="73" label="PluginsAllowedForUrls"/>
+  <int value="74" label="PluginsBlockedForUrls"/>
+  <int value="75" label="PopupsAllowedForUrls"/>
+  <int value="76" label="PopupsBlockedForUrls"/>
+  <int value="77" label="CookiesAllowedForUrls"/>
+  <int value="78" label="EnabledPlugins"/>
+  <int value="79" label="DisabledPluginsExceptions"/>
+  <int value="80" label="TranslateEnabled"/>
+  <int value="81" label="AllowOutdatedPlugins"/>
+  <int value="82" label="BookmarkBarEnabled"/>
+  <int value="83" label="EditBookmarksEnabled"/>
+  <int value="84" label="AllowFileSelectionDialogs"/>
+  <int value="85" label="DisabledSchemes"/>
+  <int value="86" label="AlwaysAuthorizePlugins"/>
+  <int value="87" label="GCFUserDataDir"/>
+  <int value="88" label="DiskCacheDir"/>
+  <int value="89" label="AllowCrossOriginAuthPrompt"/>
+  <int value="90" label="DevicePolicyRefreshRate"/>
+  <int value="91" label="ChromeOsReleaseChannel"/>
+  <int value="92" label="MaxConnectionsPerProxy"/>
+  <int value="93" label="IncognitoModeAvailability"/>
+  <int value="94" label="RemoteAccessClientFirewallTraversal"/>
+  <int value="95" label="RemoteAccessHostFirewallTraversal"/>
+  <int value="96" label="HideWebStorePromo"/>
+  <int value="97" label="ImportBookmarks"/>
+  <int value="98" label="ImportHistory"/>
+  <int value="99" label="ImportHomepage"/>
+  <int value="100" label="ImportSearchEngine"/>
+  <int value="101" label="ImportSavedPasswords"/>
+  <int value="102" label="AutoSelectCertificateForUrls"/>
+  <int value="103" label="URLBlacklist"/>
+  <int value="104" label="URLWhitelist"/>
+  <int value="105" label="NotificationsAllowedForUrls"/>
+  <int value="106" label="NotificationsBlockedForUrls"/>
+  <int value="107" label="OpenNetworkConfiguration"/>
+  <int value="108" label="DeviceOpenNetworkConfiguration"/>
+  <int value="109" label="CloudPrintSubmitEnabled"/>
+  <int value="110" label="DiskCacheSize"/>
+  <int value="111" label="MediaCacheSize"/>
+  <int value="112" label="EnterpriseWebStoreURL"/>
+  <int value="113" label="EnterpriseWebStoreName"/>
+  <int value="116" label="ProxySettings"/>
+  <int value="117" label="DisablePrintPreview"/>
+  <int value="118" label="DisableSSLRecordSplitting"/>
+  <int value="119" label="ReportDeviceVersionInfo"/>
+  <int value="120" label="ReportDeviceActivityTimes"/>
+  <int value="121" label="ReportDeviceBootMode"/>
+  <int value="122" label="DeviceUserWhitelist"/>
+  <int value="123" label="DeviceAllowNewUsers"/>
+  <int value="124" label="DeviceGuestModeEnabled"/>
+  <int value="125" label="DeviceShowUserNamesOnSignin"/>
+  <int value="126" label="DeviceDataRoamingEnabled"/>
+  <int value="127" label="DeviceMetricsReportingEnabled"/>
+  <int value="128" label="DeviceEphemeralUsersEnabled"/>
+  <int value="129" label="EnableOnlineRevocationChecks"/>
+  <int value="130" label="DeviceIdleLogoutTimeout"/>
+  <int value="131" label="DeviceIdleLogoutWarningDuration"/>
+  <int value="132" label="DeviceLoginScreenSaverId"/>
+  <int value="133" label="DeviceLoginScreenSaverTimeout"/>
+  <int value="134" label="ChromeOsReleaseChannelDelegated"/>
+  <int value="135" label="DeviceAppPack"/>
+  <int value="136" label="DeviceAutoUpdateDisabled"/>
+  <int value="137" label="DeviceStartUpUrls"/>
+  <int value="138" label="BackgroundModeEnabled"/>
+  <int value="139" label="DriveDisabled"/>
+  <int value="140" label="DriveDisabledOverCellular"/>
+  <int value="141" label="AdditionalLaunchParameters"/>
+  <int value="142" label="DeviceTargetVersionPrefix"/>
+  <int value="143" label="ReportDeviceLocation"/>
+  <int value="144" label="PinnedLauncherApps"/>
+  <int value="145" label="DeviceUpdateScatterFactor"/>
+  <int value="146" label="DeviceUpdateAllowedConnectionTypes"/>
+  <int value="147" label="RestrictSigninToPattern"/>
+  <int value="148" label="ExtensionInstallSources"/>
+  <int value="149" label="DefaultMediaStreamSetting"/>
+  <int value="150" label="DisableSafeBrowsingProceedAnyway"/>
+  <int value="151" label="SpellCheckServiceEnabled"/>
+  <int value="152" label="ExternalStorageDisabled"/>
+  <int value="153" label="DisableScreenshots"/>
+  <int value="154" label="RemoteAccessHostDomain"/>
+  <int value="155" label="RemoteAccessHostRequireTwoFactor"/>
+  <int value="156" label="RemoteAccessHostTalkGadgetPrefix"/>
+  <int value="157" label="RemoteAccessHostRequireCurtain"/>
+  <int value="158" label="SystemTimezone"/>
+  <int value="159" label="AudioOutputAllowed"/>
+  <int value="160" label="AudioCaptureAllowed"/>
+  <int value="161" label="DefaultSearchProviderAlternateURLs"/>
+  <int value="162" label="ForceSafeSearch"/>
+  <int value="163" label="DeviceLocalAccounts"/>
+  <int value="164" label="ShowLogoutButtonInTray"/>
+  <int value="165" label="BuiltInDnsClientEnabled"/>
+  <int value="166" label="ShelfAutoHideBehavior"/>
+  <int value="167" label="VideoCaptureAllowed"/>
+  <int value="168" label="ExtensionAllowedTypes"/>
+  <int value="169" label="UserDisplayName"/>
+  <int value="170" label="SessionLengthLimit"/>
+  <int value="171" label="DefaultSearchProviderSearchTermsReplacementKey"/>
+  <int value="172" label="ScreenDimDelayAC"/>
+  <int value="173" label="ScreenOffDelayAC"/>
+  <int value="174" label="ScreenLockDelayAC"/>
+  <int value="175" label="IdleDelayAC"/>
+  <int value="176" label="ScreenDimDelayBattery"/>
+  <int value="177" label="ScreenOffDelayBattery"/>
+  <int value="178" label="ScreenLockDelayBattery"/>
+  <int value="179" label="IdleDelayBattery"/>
+  <int value="180" label="IdleAction"/>
+  <int value="181" label="LidCloseAction"/>
+  <int value="182" label="PowerManagementUsesAudioActivity"/>
+  <int value="183" label="PowerManagementUsesVideoActivity"/>
+  <int value="184" label="PresentationIdleDelayScale"/>
+  <int value="185" label="DeviceAllowRedeemChromeOsRegistrationOffers"/>
+  <int value="186" label="TermsOfServiceURL"/>
+  <int value="187" label="AllowDeletingBrowserHistory"/>
+  <int value="188" label="ShowAccessibilityOptionsInSystemTrayMenu"/>
+  <int value="189" label="HideWebStoreIcon"/>
+  <int value="190" label="SigninAllowed"/>
+  <int value="191" label="DeviceStartUpFlags"/>
+  <int value="192" label="UptimeLimit"/>
+  <int value="193" label="RebootAfterUpdate"/>
+  <int value="194" label="DeviceLocalAccountAutoLoginId"/>
+  <int value="195" label="DeviceLocalAccountAutoLoginDelay"/>
+  <int value="196" label="VariationsRestrictParameter"/>
+  <int value="197" label="IdleWarningDelayAC"/>
+  <int value="198" label="IdleWarningDelayBattery"/>
+  <int value="199" label="DeviceVariationsRestrictParameter"/>
+  <int value="200" label="AttestationEnabledForUser"/>
+  <int value="201" label="AttestationExtensionWhitelist"/>
+  <int value="202" label="DeviceLocalAccountAutoLoginBailoutEnabled"/>
+  <int value="203" label="AllowScreenWakeLocks"/>
+  <int value="207" label="AttestationEnabledForDevice"/>
+  <int value="208" label="AudioCaptureAllowedUrls"/>
+  <int value="209" label="VideoCaptureAllowedUrls"/>
+  <int value="210" label="UserActivityScreenDimDelayScale"/>
+  <int value="211" label="LargeCursorEnabled"/>
+  <int value="212" label="SpokenFeedbackEnabled"/>
+  <int value="213" label="HighContrastEnabled"/>
+  <int value="214" label="ScreenMagnifierType"/>
+  <int value="215" label="DeviceLoginScreenDefaultLargeCursorEnabled"/>
+  <int value="216" label="DeviceLoginScreenDefaultSpokenFeedbackEnabled"/>
+  <int value="217" label="DeviceLoginScreenDefaultHighContrastEnabled"/>
+  <int value="218" label="DeviceLoginScreenDefaultScreenMagnifierType"/>
+  <int value="219" label="SupervisedUsersEnabled"/>
+  <int value="220" label="PresentationScreenDimDelayScale"/>
+  <int value="221" label="SuppressChromeFrameTurndownPrompt"/>
+  <int value="222" label="IdleActionBattery"/>
+  <int value="223" label="SupervisedUserCreationEnabled"/>
+  <int value="224" label="ReportDeviceNetworkInterfaces"/>
+  <int value="225" label="DeviceLoginScreenPowerManagement"/>
+  <int value="226" label="IdleActionAC"/>
+  <int value="227" label="ManagedBookmarks"/>
+  <int value="228" label="MaxInvalidationFetchDelay"/>
+  <int value="229" label="DefaultSearchProviderImageURL"/>
+  <int value="230" label="DefaultSearchProviderSearchURLPostParams"/>
+  <int value="231" label="DefaultSearchProviderSuggestURLPostParams"/>
+  <int value="232" label="DefaultSearchProviderInstantURLPostParams"/>
+  <int value="233" label="DefaultSearchProviderImageURLPostParams"/>
+  <int value="234" label="RemoteAccessHostAllowClientPairing"/>
+  <int value="235" label="RequireOnlineRevocationChecksForLocalAnchors"/>
+  <int value="236" label="SystemUse24HourClock"/>
+  <int value="237" label="DefaultSearchProviderNewTabURL"/>
+  <int value="238" label="SkipMetadataCheck"/>
+  <int value="239" label="AttestationForContentProtectionEnabled"/>
+  <int value="240" label="FullscreenAllowed"/>
+  <int value="241" label="DataCompressionProxyEnabled"/>
+  <int value="242" label="DeviceAutoUpdateP2PEnabled"/>
+  <int value="243" label="DeviceUpdateHttpDownloadsEnabled"/>
+  <int value="244" label="ChromeOsMultiProfileUserBehavior"/>
+  <int value="245" label="ForceEphemeralProfiles"/>
+  <int value="246" label="AutoCleanUpStrategy"/>
+  <int value="247" label="WaitForInitialUserActivity"/>
+  <int value="248" label="ReportDeviceUsers"/>
+  <int value="249" label="UserAvatarImage"/>
+  <int value="250" label="DeviceLocalAccountPromptForNetworkWhenOffline"/>
+  <int value="251" label="NativeMessagingBlacklist"/>
+  <int value="252" label="NativeMessagingWhitelist"/>
+  <int value="253" label="NativeMessagingUserLevelHosts"/>
+  <int value="254" label="SAMLOfflineSigninTimeLimit"/>
+  <int value="255" label="VirtualKeyboardEnabled"/>
+  <int value="256" label="DeviceLoginScreenDefaultVirtualKeyboardEnabled"/>
+  <int value="257" label="RemoteAccessHostAllowGnubbyAuth"/>
+  <int value="258" label="PowerManagementIdleSettings"/>
+  <int value="259" label="ScreenLockDelays"/>
+  <int value="260" label="KeyboardDefaultToFunctionKeys"/>
+  <int value="261" label="WPADQuickCheckEnabled"/>
+  <int value="262" label="WallpaperImage"/>
+  <int value="263" label="RemoteAccessHostAllowRelayedConnection"/>
+  <int value="264" label="RemoteAccessHostUdpPortRange"/>
+  <int value="265" label="EnableDeprecatedWebBasedSignin"/>
+  <int value="266" label="DeviceBlockDevmode"/>
+  <int value="267" label="ShowAppsShortcutInBookmarkBar"/>
+  <int value="268" label="RegisteredProtocolHandlers"/>
+  <int value="269" label="TouchVirtualKeyboardEnabled"/>
+  <int value="270" label="EnableDeprecatedWebPlatformFeatures"/>
+  <int value="271" label="DeviceTransferSAMLCookies"/>
+  <int value="272" label="EasyUnlockAllowed"/>
+  <int value="273" label="NetworkPredictionOptions"/>
+  <int value="274" label="SessionLocales"/>
+  <int value="275" label="BrowserGuestModeEnabled"/>
+  <int value="276" label="BrowserAddPersonEnabled"/>
+  <int value="277" label="ImportAutofillFormData"/>
+  <int value="278" label="ExtensionSettings"/>
+  <int value="279" label="SSLVersionMin"/>
+  <int value="280" label="SSLVersionFallbackMin"/>
+  <int value="281" label="ContextualSearchEnabled"/>
+  <int value="282" label="ForceGoogleSafeSearch"/>
+  <int value="283" label="ForceYouTubeSafetyMode"/>
+  <int value="284" label="DeviceRebootOnShutdown"/>
+  <int value="285" label="RemoteAccessHostMatchUsername"/>
+  <int value="286" label="RemoteAccessHostTokenUrl"/>
+  <int value="287" label="RemoteAccessHostTokenValidationUrl"/>
+  <int value="288" label="RemoteAccessHostTokenValidationCertificateIssuer"/>
+  <int value="289" label="RemoteAccessHostDebugOverridePolicies"/>
+  <int value="290" label="ReportDeviceHardwareStatus"/>
+  <int value="291" label="ReportDeviceSessionStatus"/>
+  <int value="292" label="ReportUploadFrequency"/>
+  <int value="293" label="HeartbeatEnabled"/>
+  <int value="294" label="HeartbeatFrequency"/>
+  <int value="295" label="CaptivePortalAuthenticationIgnoresProxy"/>
+  <int value="296" label="ExtensionCacheSize"/>
+  <int value="297" label="DeviceLoginScreenDomainAutoComplete"/>
+  <int value="298" label="ForceMaximizeOnFirstRun"/>
+  <int value="299" label="SafeBrowsingExtendedReportingOptInAllowed"/>
+  <int value="300" label="SSLErrorOverrideAllowed"/>
+  <int value="301" label="QuicAllowed"/>
+  <int value="302" label="KeyPermissions"/>
+  <int value="303" label="WelcomePageOnOSUpgradeEnabled"/>
+  <int value="304" label="HardwareAccelerationModeEnabled"/>
+  <int value="305" label="AuthAndroidNegotiateAccountType"/>
+  <int value="306" label="LogUploadEnabled"/>
+  <int value="307" label="UnifiedDesktopEnabledByDefault"/>
+  <int value="308" label="DefaultPrinterSelection"/>
+  <int value="309" label="AllowDinosaurEasterEgg"/>
+  <int value="310" label="RC4Enabled"/>
+  <int value="311" label="DisplayRotationDefault"/>
+  <int value="312" label="SupervisedUserContentProviderEnabled"/>
+  <int value="313" label="DefaultKeygenSetting"/>
+  <int value="314" label="KeygenAllowedForUrls"/>
+  <int value="315" label="KeygenBlockedForUrls"/>
+  <int value="316" label="RemoteAccessHostClientDomain"/>
+  <int value="317" label="ArcEnabled"/>
+  <int value="318" label="ArcPolicy"/>
+  <int value="319" label="AllowKioskAppControlChromeVersion"/>
+  <int value="320" label="DefaultWebBluetoothGuardSetting"/>
+  <int value="321" label="LoginAuthenticationBehavior"/>
+  <int value="322" label="UsbDetachableWhitelist"/>
+  <int value="323" label="DeviceAllowBluetooth"/>
+  <int value="324" label="SuppressUnsupportedOSWarning"/>
+  <int value="325" label="DeviceQuirksDownloadEnabled"/>
+  <int value="326" label="SystemTimezoneAutomaticDetection"/>
+  <int value="327" label="TaskManagerEndProcessEnabled"/>
+  <int value="328" label="LoginVideoCaptureAllowedUrls"/>
+  <int value="329" label="AllowScreenLock"/>
+  <int value="330" label="ArcCertificatesSyncMode"/>
+  <int value="331" label="AllowedDomainsForApps"/>
+  <int value="332" label="PacHttpsUrlStrippingEnabled"/>
+  <int value="333" label="EnableMediaRouter"/>
+  <int value="334" label="DHEEnabled"/>
+  <int value="335" label="CertificateTransparencyEnforcementDisabledForUrls"/>
+  <int value="336" label="DeviceLoginScreenExtensions"/>
+  <int value="337" label="ArcBackupRestoreEnabled"/>
+  <int value="338" label="NTPContentSuggestionsEnabled"/>
+  <int value="339" label="WebRtcUdpPortRange"/>
+  <int value="340" label="EnableSha1ForLocalAnchors"/>
+  <int value="342" label="ComponentUpdatesEnabled"/>
+  <int value="343" label="ExternalStorageReadOnly"/>
+  <int value="344" label="RemoteAccessHostAllowUiAccessForRemoteAssistance"/>
+  <int value="345" label="Http09OnNonDefaultPortsEnabled"/>
+  <int value="346" label="ForceBrowserSignin"/>
+  <int value="347" label="AlwaysOpenPdfExternally"/>
+  <int value="348" label="ForceYouTubeRestrict"/>
+  <int value="349" label="ReportArcStatusEnabled"/>
+  <int value="350" label="NativePrinters"/>
+  <int value="351" label="NetworkThrottlingEnabled"/>
+  <int value="352" label="QuickUnlockModeWhitelist"/>
+  <int value="353" label="QuickUnlockTimeout"/>
+  <int value="354" label="PinUnlockMinimumLength"/>
+  <int value="355" label="PinUnlockMaximumLength"/>
+  <int value="356" label="PinUnlockWeakPinsAllowed"/>
+  <int value="357" label="DeviceWallpaperImage"/>
+  <int value="358" label="RoamingProfileSupportEnabled"/>
+  <int value="359" label="RoamingProfileLocation"/>
+  <int value="360" label="NewTabPageLocation"/>
+  <int value="361" label="SSLVersionMax"/>
+  <int value="362" label="ShowCastIconInToolbar"/>
+  <int value="363" label="ArcLocationServiceEnabled"/>
+  <int value="364" label="DeviceLoginScreenLocales"/>
+  <int value="365" label="DeviceLoginScreenInputMethods"/>
+  <int value="366" label="EnableCommonNameFallbackForLocalAnchors"/>
+  <int value="367" label="InstantTetheringAllowed"/>
+  <int value="368" label="RemoteAccessHostDomainList"/>
+  <int value="369" label="RemoteAccessHostClientDomainList"/>
+  <int value="370" label="BrowserNetworkTimeQueriesEnabled"/>
+  <int value="371" label="DownloadRestrictions"/>
+  <int value="372" label="DeviceSecondFactorAuthentication"/>
+  <int value="373" label="PrintPreviewUseSystemDefaultPrinter"/>
+  <int value="374" label="DeviceEcryptfsMigrationStrategy"/>
+  <int value="375" label="SafeBrowsingForTrustedSourcesEnabled"/>
+  <int value="376" label="EcryptfsMigrationStrategy"/>
+  <int value="377" label="NoteTakingAppsLockScreenWhitelist"/>
+  <int value="378" label="CastReceiverEnabled"/>
+  <int value="379" label="CastReceiverName"/>
+  <int value="380" label="DeviceOffHours"/>
+  <int value="381" label="CloudPolicyOverridesPlatformPolicy"/>
+  <int value="382" label="NativePrintersBulkConfiguration"/>
+  <int value="383" label="NativePrintersBulkAccessMode"/>
+  <int value="384" label="NativePrintersBulkBlacklist"/>
+  <int value="385" label="NativePrintersBulkWhitelist"/>
+  <int value="386" label="DeviceNativePrinters"/>
+  <int value="387" label="DeviceNativePrintersAccessMode"/>
+  <int value="388" label="DeviceNativePrintersBlacklist"/>
+  <int value="389" label="DeviceNativePrintersWhitelist"/>
+  <int value="390" label="TPMFirmwareUpdateSettings"/>
+  <int value="391" label="RunAllFlashInAllowMode"/>
+  <int value="392" label="AutofillCreditCardEnabled"/>
+  <int value="393" label="NtlmV2Enabled"/>
+  <int value="394" label="MinimumRequiredChromeVersion"/>
+  <int value="395" label="PromptForDownloadLocation"/>
+  <int value="396" label="DeviceLoginScreenAutoSelectCertificateForUrls"/>
+  <int value="397" label="UnaffiliatedArcAllowed"/>
+  <int value="398" label="IsolateOrigins"/>
+  <int value="399" label="SitePerProcess"/>
+  <int value="400" label="UnsafelyTreatInsecureOriginAsSecure"/>
+  <int value="401" label="DefaultDownloadDirectory"/>
+  <int value="402" label="SecurityKeyPermitAttestation"/>
+  <int value="403" label="DeviceHostnameTemplate"/>
+  <int value="404" label="AbusiveExperienceInterventionEnforce"/>
+  <int value="405" label="SpellcheckLanguage"/>
+  <int value="406" label="SecondaryGoogleAccountSigninAllowed"/>
+  <int value="407" label="ThirdPartyBlockingEnabled"/>
+  <int value="408" label="SpellcheckEnabled"/>
+  <int value="409" label="AdsSettingForIntrusiveAdsSites"/>
+  <int value="410" label="RestrictAccountsToPatterns"/>
+  <int value="411" label="PasswordProtectionWarningTrigger"/>
+  <int value="413" label="EnableSymantecLegacyInfrastructure"/>
+  <int value="414" label="WebDriverOverridesIncompatiblePolicies"/>
+  <int value="415" label="DeviceKerberosEncryptionTypes"/>
+  <int value="416" label="DeviceUserPolicyLoopbackProcessingMode"/>
+  <int value="417" label="DeviceLoginScreenIsolateOrigins"/>
+  <int value="418" label="DeviceLoginScreenSitePerProcess"/>
+  <int value="419" label="RelaunchNotification"/>
+  <int value="420" label="RelaunchNotificationPeriod"/>
+  <int value="421" label="VirtualMachinesAllowed"/>
+  <int value="422" label="SafeBrowsingWhitelistDomains"/>
+  <int value="423" label="PasswordProtectionLoginURLs"/>
+  <int value="424" label="PasswordProtectionChangePasswordURL"/>
+  <int value="425" label="DeviceMachinePasswordChangeRate"/>
+  <int value="426" label="DeviceRollbackAllowedMilestones"/>
+  <int value="427" label="DeviceRollbackToTargetVersion"/>
+  <int value="428" label="MachineLevelUserCloudPolicyEnrollmentToken"/>
+  <int value="429" label="SafeBrowsingExtendedReportingEnabled"/>
+  <int value="430" label="AutoplayAllowed"/>
+  <int value="431" label="AutoplayWhitelist"/>
+  <int value="432" label="TabUnderAllowed"/>
+  <int value="433" label="UserNativePrintersAllowed"/>
+  <int value="434" label="DefaultWebUsbGuardSetting"/>
+  <int value="435" label="CertificateTransparencyEnforcementDisabledForCas"/>
+  <int value="436"
+      label="CertificateTransparencyEnforcementDisabledForLegacyCas"/>
+  <int value="437" label="MediaRouterCastAllowAllIPs"/>
+  <int value="439" label="WebUsbAskForUrls"/>
+  <int value="440" label="WebUsbBlockedForUrls"/>
+  <int value="441" label="ChromeCleanupEnabled"/>
+  <int value="442" label="ChromeCleanupReportingEnabled"/>
+  <int value="443" label="DeveloperToolsAvailability"/>
+  <int value="444" label="AllowedLanguages"/>
+  <int value="445" label="IsolateOriginsAndroid"/>
+  <int value="446" label="SitePerProcessAndroid"/>
+  <int value="447" label="ArcAppInstallEventLoggingEnabled"/>
+  <int value="448" label="UsageTimeLimit"/>
+  <int value="449" label="ArcBackupRestoreServiceEnabled"/>
+  <int value="450" label="ArcGoogleLocationServicesEnabled"/>
+  <int value="451" label="EnableSyncConsent"/>
+  <int value="452" label="ContextualSuggestionsEnabled"/>
+  <int value="453" label="DeviceAutoUpdateTimeRestrictions"/>
+  <int value="454" label="PromotionalTabsEnabled"/>
+  <int value="455" label="SafeSitesFilterBehavior"/>
+  <int value="456" label="AllowedInputMethods"/>
+  <int value="457" label="OverrideSecurityRestrictionsOnInsecureOrigin"/>
+  <int value="458" label="DeviceUpdateStagingSchedule"/>
+  <int value="459" label="AutofillAddressEnabled"/>
+  <int value="460" label="TabFreezingEnabled"/>
+  <int value="461" label="UrlKeyedAnonymizedDataCollectionEnabled"/>
+  <int value="462" label="NetworkFileSharesAllowed"/>
+  <int value="463" label="DeviceLocalAccountManagedSessionEnabled"/>
+  <int value="464" label="WebRtcEventLogCollectionAllowed"/>
+  <int value="465" label="PowerSmartDimEnabled"/>
+  <int value="466" label="CoalesceH2ConnectionsWithClientCertificatesForHosts"/>
+  <int value="467" label="NetBiosShareDiscoveryEnabled"/>
+  <int value="468" label="WebAppInstallForceList"/>
+  <int value="469" label="SmsMessagesAllowed"/>
+  <int value="470" label="ReportVersionData"/>
+  <int value="471" label="ReportPolicyData"/>
+  <int value="472" label="ReportMachineIDData"/>
+  <int value="473" label="ReportUserIDData"/>
+  <int value="474" label="PrintingAllowedColorModes"/>
+  <int value="475" label="PrintingAllowedDuplexModes"/>
+  <int value="477" label="PrintingColorDefault"/>
+  <int value="478" label="PrintingDuplexDefault"/>
+  <int value="479" label="PrintingPaperSizeDefault"/>
+  <int value="480" label="PrintHeaderFooter"/>
+  <int value="481" label="CrostiniAllowed"/>
+  <int value="482" label="DeviceUnaffiliatedCrostiniAllowed"/>
+  <int value="483" label="EnterpriseHardwarePlatformAPIEnabled"/>
+  <int value="484" label="ReportCrostiniUsageEnabled"/>
+  <int value="485" label="VpnConfigAllowed"/>
+  <int value="486" label="WebUsbAllowDevicesForUrls"/>
+  <int value="487" label="BrowserSignin"/>
+  <int value="488" label="SmartLockSigninAllowed"/>
+  <int value="489" label="NTLMShareAuthenticationEnabled"/>
+  <int value="490" label="NetworkFileSharesPreconfiguredShares"/>
+  <int value="491" label="AllowWakeLocks"/>
+  <int value="492" label="ScreenBrightnessPercent"/>
+  <int value="493" label="CloudReportingEnabled"/>
+  <int value="494" label="AlternativeBrowserPath"/>
+  <int value="495" label="AlternativeBrowserParameters"/>
+  <int value="496" label="BrowserSwitcherUrlList"/>
+  <int value="497" label="BrowserSwitcherUrlGreylist"/>
+  <int value="498" label="BrowserSwitcherUseIeSitelist"/>
+  <int value="499" label="ReportExtensionsAndPluginsData"/>
+  <int value="500" label="ReportSafeBrowsingData"/>
+  <int value="501" label="DeviceWiFiFastTransitionEnabled"/>
+  <int value="502" label="DeviceDisplayResolution"/>
+  <int value="503" label="PluginVmAllowed"/>
+  <int value="504" label="PluginVmImage"/>
+  <int value="505" label="CloudManagementEnrollmentMandatory"/>
+  <int value="506" label="PrintingSendUsernameAndFilenameEnabled"/>
+  <int value="507" label="ParentAccessCodeConfig"/>
+  <int value="508" label="DeviceGpoCacheLifetime"/>
+  <int value="509" label="DeviceAuthDataCacheLifetime"/>
+  <int value="510" label="CloudManagementEnrollmentToken"/>
+  <int value="511" label="BrowserSwitcherExternalSitelistUrl"/>
+  <int value="512" label="ReportDevicePowerStatus"/>
+  <int value="513" label="ReportDeviceStorageStatus"/>
+  <int value="514" label="ReportDeviceBoardStatus"/>
+  <int value="515" label="PluginVmLicenseKey"/>
+  <int value="516" label="ExtensionAllowInsecureUpdates"/>
+  <int value="517" label="BrowserSwitcherEnabled"/>
+  <int value="518" label="ClientCertificateManagementAllowed"/>
+  <int value="519" label="BrowserSwitcherKeepLastChromeTab"/>
+  <int value="520" label="DeviceRebootOnUserSignout"/>
+  <int value="521" label="ForceNetworkInProcess"/>
+  <int value="522" label="SchedulerConfiguration"/>
+  <int value="523" label="CrostiniExportImportUIAllowed"/>
+  <int value="524" label="BrowserSwitcherDelay"/>
+  <int value="525" label="PrintingAllowedPinModes"/>
+  <int value="526" label="PrintingPinDefault"/>
+  <int value="527" label="VoiceInteractionContextEnabled"/>
+  <int value="528" label="AuthNegotiateDelegateByKdcPolicy"/>
+  <int value="529" label="VoiceInteractionHotwordEnabled"/>
+  <int value="530" label="BrowserSwitcherChromePath"/>
+  <int value="531" label="BrowserSwitcherChromeParameters"/>
+  <int value="532" label="DeviceWilcoDtcAllowed"/>
+  <int value="533" label="AllowPopupsDuringPageUnload"/>
+  <int value="534" label="RemoteAccessHostAllowFileTransfer"/>
+  <int value="535" label="DeviceWilcoDtcConfiguration"/>
+  <int value="536" label="SpellcheckLanguageBlacklist"/>
+  <int value="537" label="DeviceWiFiAllowed"/>
+  <int value="538" label="DevicePowerPeakShiftEnabled"/>
+  <int value="539" label="DevicePowerPeakShiftBatteryThreshold"/>
+  <int value="540" label="DevicePowerPeakShiftDayConfig"/>
+  <int value="541" label="DeviceBootOnAcEnabled"/>
+  <int value="542" label="SignedHTTPExchangeEnabled"/>
+  <int value="543" label="DeviceQuickFixBuildToken"/>
+  <int value="545" label="SamlInSessionPasswordChangeEnabled"/>
+  <int value="547" label="DeviceDockMacAddressSource"/>
+  <int value="548" label="DeviceAdvancedBatteryChargeModeEnabled"/>
+  <int value="549" label="DeviceAdvancedBatteryChargeModeDayConfig"/>
+  <int value="550" label="DeviceBatteryChargeMode"/>
+  <int value="551" label="DeviceBatteryChargeCustomStartCharging"/>
+  <int value="552" label="DeviceBatteryChargeCustomStopCharging"/>
+  <int value="553" label="DeviceUsbPowerShareEnabled"/>
+  <int value="554" label="PolicyListMultipleSourceMergeList"/>
+  <int value="555" label="SamlPasswordExpirationAdvanceWarningDays"/>
+  <int value="556" label="DeviceScheduledUpdateCheck"/>
+  <int value="557" label="KerberosEnabled"/>
+  <int value="558" label="KerberosRememberPasswordEnabled"/>
+  <int value="559" label="KerberosAddAccountsAllowed"/>
+  <int value="560" label="KerberosAccounts"/>
+  <int value="561" label="StickyKeysEnabled"/>
+  <int value="563" label="AppRecommendationZeroStateEnabled"/>
+  <int value="564" label="BrowserSwitcherExternalGreylistUrl"/>
+  <int value="565" label="PolicyDictionaryMultipleSourceMergeList"/>
+  <int value="566" label="CommandLineFlagSecurityWarningsEnabled"/>
+  <int value="567" label="RelaunchHeadsUpPeriod"/>
+  <int value="568" label="StartupBrowserWindowLaunchSuppressed"/>
+  <int value="570" label="UserFeedbackAllowed"/>
+  <int value="571" label="DevicePowerwashAllowed"/>
+  <int value="572" label="ExternalPrintServers"/>
+  <int value="573" label="SelectToSpeakEnabled"/>
+  <int value="574" label="BrowserGuestModeEnforced"/>
+  <int value="575" label="BuiltinCertificateVerifierEnabled"/>
+  <int value="576" label="CrostiniRootAccessAllowed"/>
+  <int value="577" label="VmManagementCliAllowed"/>
+  <int value="579" label="CACertificateManagementAllowed"/>
+  <int value="580" label="PasswordLeakDetectionEnabled"/>
+  <int value="581" label="LockScreenMediaPlaybackEnabled"/>
+  <int value="582" label="DnsOverHttpsMode"/>
+  <int value="584" label="PolicyAtomicGroupsEnabled"/>
+  <int value="592" label="DictationEnabled"/>
+  <int value="593" label="KeyboardFocusHighlightEnabled"/>
+  <int value="594" label="CursorHighlightEnabled"/>
+  <int value="595" label="CaretHighlightEnabled"/>
+  <int value="596" label="MonoAudioEnabled"/>
+  <int value="597" label="AutoclickEnabled"/>
+  <int value="598" label="RendererCodeIntegrityEnabled"/>
+  <int value="599" label="DeviceLoginScreenLargeCursorEnabled"/>
+  <int value="601" label="HSTSPolicyBypassList"/>
+  <int value="602" label="ReportDeviceOsUpdateStatus"/>
+  <int value="603" label="DeviceLoginScreenWebUsbAllowDevicesForUrls"/>
+  <int value="604" label="AllowSyncXHRInPageDismissal"/>
+  <int value="605" label="DeviceLoginScreenSpokenFeedbackEnabled"/>
+  <int value="606" label="DeviceLoginScreenHighContrastEnabled"/>
+  <int value="607" label="DeviceLoginScreenVirtualKeyboardEnabled"/>
+  <int value="608" label="CloudExtensionRequestEnabled"/>
+  <int value="609" label="DeviceLoginScreenSystemInfoEnforced"/>
+  <int value="610" label="SharedClipboardEnabled"/>
+  <int value="611" label="DeviceLoginScreenDictationEnabled"/>
+  <int value="612" label="DeviceLoginScreenSelectToSpeakEnabled"/>
+  <int value="613" label="DeviceLoginScreenCursorHighlightEnabled"/>
+  <int value="614" label="DeviceLoginScreenCaretHighlightEnabled"/>
+  <int value="615" label="DeviceLoginScreenMonoAudioEnabled"/>
+  <int value="616" label="TotalMemoryLimitMb"/>
+  <int value="617" label="DeviceLoginScreenAutoclickEnabled"/>
+  <int value="618" label="DeviceLoginScreenStickyKeysEnabled"/>
+  <int value="619" label="DeviceLoginScreenKeyboardFocusHighlightEnabled"/>
+  <int value="620" label="ShelfAlignment"/>
+  <int value="621" label="PrintingAllowedBackgroundGraphicsModes"/>
+  <int value="622" label="PrintingBackgroundGraphicsDefault"/>
+  <int value="623" label="LegacySameSiteCookieBehaviorEnabled"/>
+  <int value="624" label="LegacySameSiteCookieBehaviorEnabledForDomainList"/>
+  <int value="625" label="PrintJobHistoryExpirationPeriod"/>
+  <int value="626" label="TLS13HardeningForLocalAnchorsEnabled"/>
+  <int value="627" label="AudioSandboxEnabled"/>
+  <int value="628" label="DeviceLoginScreenScreenMagnifierType"/>
+  <int value="629" label="CorsMitigationList"/>
+  <int value="630" label="CorsLegacyModeEnabled"/>
+  <int value="631" label="ExternalPrintServersWhitelist"/>
+  <int value="632" label="ExternalProtocolDialogShowAlwaysOpenCheckbox"/>
+  <int value="633" label="DefaultInsecureContentSetting"/>
+  <int value="634" label="InsecureContentAllowedForUrls"/>
+  <int value="635" label="InsecureContentBlockedForUrls"/>
+  <int value="636" label="DeviceWebBasedAttestationAllowedUrls"/>
+  <int value="637" label="BlockExternalExtensions"/>
+  <int value="638" label="DeviceShowNumericKeyboardForPassword"/>
+  <int value="639" label="CrostiniAnsiblePlaybook"/>
+  <int value="640" label="WebRtcLocalIpsAllowedUrls"/>
+  <int value="641" label="PerAppTimeLimits"/>
+  <int value="642" label="DnsOverHttpsTemplates"/>
+  <int value="643" label="GloballyScopeHTTPAuthCacheEnabled"/>
+  <int value="644" label="WebComponentsV0Enabled"/>
+  <int value="645" label="ClickToCallEnabled"/>
+  <int value="646" label="DeviceLoginScreenShowOptionsInSystemTrayMenu"/>
+  <int value="647" label="PrinterTypeDenyList"/>
+  <int value="648" label="ForceLegacyDefaultReferrerPolicy"/>
+  <int value="649" label="SyncTypesListDisabled"/>
+  <int value="650" label="AmbientAuthenticationInPrivateModesEnabled"/>
+  <int value="651" label="PaymentMethodQueryEnabled"/>
+  <int value="652" label="StricterMixedContentTreatmentEnabled"/>
+  <int value="653" label="NTPCustomBackgroundEnabled"/>
+  <int value="654" label="DNSInterceptionChecksEnabled"/>
+  <int value="655" label="PrimaryMouseButtonSwitch"/>
+  <int value="656" label="ReportDeviceCpuInfo"/>
+  <int value="657" label="DeviceLoginScreenPrimaryMouseButtonSwitch"/>
+  <int value="658" label="PerAppTimeLimitsWhitelist"/>
+  <int value="659" label="AccessibilityShortcutsEnabled"/>
+  <int value="660" label="ReportDeviceGraphicsStatus"/>
+  <int value="661" label="DeviceLoginScreenAccessibilityShortcutsEnabled"/>
+  <int value="662" label="LocalDiscoveryEnabled"/>
+  <int value="663" label="ChromeVariations"/>
+  <int value="664" label="PrintingAPIExtensionsWhitelist"/>
+  <int value="665" label="ReportDeviceCrashReportInfo"/>
+  <int value="666" label="ScreenCaptureAllowed"/>
+  <int value="667" label="AdvancedProtectionDeepScanningEnabled"/>
+  <int value="670" label="DeviceMinimumVersion"/>
+  <int value="671" label="ReportDeviceTimezoneInfo"/>
+  <int value="672" label="SystemProxySettings"/>
+  <int value="673" label="UserDataSnapshotRetentionLimit"/>
+  <int value="674" label="DeviceChromeVariations"/>
+  <int value="675" label="NativeWindowOcclusionEnabled"/>
+  <int value="676" label="DeviceLoginScreenPrivacyScreenEnabled"/>
+  <int value="677" label="PrivacyScreenEnabled"/>
+  <int value="678" label="AllowNativeNotifications"/>
+  <int value="679" label="ForceLogoutUnauthenticatedUserEnabled"/>
+  <int value="680" label="RequiredClientCertificateForUser"/>
+  <int value="681" label="RequiredClientCertificateForDevice"/>
+  <int value="682" label="ReportDeviceMemoryInfo"/>
+  <int value="683" label="UseLegacyFormControls"/>
+  <int value="684" label="SafeBrowsingProtectionLevel"/>
+  <int value="685" label="AdvancedProtectionAllowed"/>
+  <int value="686" label="ReportDeviceBacklightInfo"/>
+  <int value="687" label="ScrollToTextFragmentEnabled"/>
+  <int value="688" label="ManagedGuestSessionAutoLaunchNotificationReduced"/>
+  <int value="689" label="SystemFeaturesDisableList"/>
+  <int value="690" label="CrostiniArcAdbSideloadingAllowed"/>
+  <int value="691" label="FloatingAccessibilityMenuEnabled"/>
+  <int value="692" label="PrintingMaxSheetsAllowed"/>
+  <int value="693" label="OnFileAttachedEnterpriseConnector"/>
+  <int value="694" label="VoiceInteractionQuickAnswersEnabled"/>
+  <int value="695" label="DeviceCrostiniArcAdbSideloadingAllowed"/>
+  <int value="696" label="OnFileDownloadedEnterpriseConnector"/>
+  <int value="697" label="OnBulkDataEntryEnterpriseConnector"/>
+  <int value="698" label="PluginVmUserId"/>
+  <int value="699" label="OnSecurityEventEnterpriseConnector"/>
+  <int value="700" label="AutoOpenFileTypes"/>
+  <int value="701" label="LoginDisplayPasswordButtonEnabled"/>
+  <int value="702" label="ReportDeviceAppInfo"/>
+  <int value="703" label="AccessibilityImageLabelsEnabled"/>
+  <int value="704" label="AppCacheForceEnabled"/>
+  <int value="705" label="UserPluginVmAllowed"/>
+  <int value="706" label="PrintRasterizationMode"/>
+  <int value="707" label="AutoOpenAllowedForURLs"/>
+  <int value="708" label="ReportDeviceBluetoothInfo"/>
+  <int value="709" label="ReportDeviceFanInfo"/>
+  <int value="710" label="ReportDeviceVpdInfo"/>
+  <int value="711" label="EnableExperimentalPolicies"/>
+  <int value="712" label="PluginVmDataCollectionAllowed"/>
+  <int value="713" label="IntensiveWakeUpThrottlingEnabled"/>
+  <int value="714" label="DeviceMinimumVersionAueMessage"/>
+  <int value="715" label="DefaultSearchProviderContextMenuAccessAllowed"/>
+  <int value="716" label="CrostiniPortForwardingAllowed"/>
+  <int value="717" label="VirtualKeyboardFeatures"/>
+  <int value="718" label="PinUnlockAutosubmitEnabled"/>
+  <int value="719" label="LockScreenReauthenticationEnabled"/>
+  <int value="720" label="DeletePrintJobHistoryAllowed"/>
+  <int value="721" label="EmojiSuggestionEnabled"/>
+  <int value="722" label="AutoLaunchProtocolsFromOrigins"/>
+  <int value="723" label="ManagedGuestSessionPrivacyWarningsEnabled"/>
+  <int value="724" label="PluginVmRequiredFreeDiskSpace"/>
+  <int value="725" label="UserAgentClientHintsEnabled"/>
+  <int value="726" label="SuggestedContentEnabled"/>
+  <int value="727" label="ExtensionInstallEventLoggingEnabled"/>
+  <int value="728" label="EnterpriseRealTimeUrlCheckMode"/>
+  <int value="729" label="AssistantOnboardingMode"/>
+  <int value="730" label="DeviceExternalPrintServers"/>
+  <int value="731" label="DeviceExternalPrintServersAllowlist"/>
+  <int value="732" label="SafeBrowsingAllowlistDomains"/>
+  <int value="733" label="DevicePrintersAccessMode"/>
+  <int value="734" label="DevicePrintersBlocklist"/>
+  <int value="735" label="DevicePrintersAllowlist"/>
+  <int value="736" label="URLBlocklist"/>
+  <int value="737" label="URLAllowlist"/>
+  <int value="738" label="ExtensionInstallAllowlist"/>
+  <int value="739" label="ShowFullUrlsInAddressBar"/>
+  <int value="740" label="ExtensionInstallBlocklist"/>
+  <int value="741" label="ReportDeviceSystemInfo"/>
+  <int value="742" label="AutoplayAllowlist"/>
+  <int value="743" label="DevicePrinters"/>
+  <int value="744" label="NativeMessagingBlocklist"/>
+  <int value="745" label="NativeMessagingAllowlist"/>
+  <int value="746" label="AuthNegotiateDelegateAllowlist"/>
+  <int value="747" label="AuthServerAllowlist"/>
+  <int value="748" label="InsecureFormsWarningsEnabled"/>
+  <int value="749" label="SpellcheckLanguageBlocklist"/>
+  <int value="750" label="ExternalPrintServersAllowlist"/>
+  <int value="751" label="DefaultSerialGuardSetting"/>
+  <int value="752" label="SerialAskForUrls"/>
+  <int value="753" label="SerialBlockedForUrls"/>
+  <int value="754" label="DefaultSensorsSetting"/>
+  <int value="755" label="SensorsAllowedForUrls"/>
+  <int value="756" label="SensorsBlockedForUrls"/>
+  <int value="757" label="DeviceChannelDowngradeBehavior"/>
+  <int value="758" label="BackForwardCacheEnabled"/>
+  <int value="759" label="NoteTakingAppsLockScreenAllowlist"/>
+  <int value="760" label="CCTToSDialogEnabled"/>
+  <int value="761" label="NearbyShareAllowed"/>
+  <int value="762" label="PerAppTimeLimitsAllowlist"/>
+  <int value="763" label="DeviceShowLowDiskSpaceNotification"/>
+  <int value="764" label="DeviceUserAllowlist"/>
+  <int value="765" label="UsbDetachableAllowlist"/>
+  <int value="766" label="InsecurePrivateNetworkRequestsAllowed"/>
+  <int value="767" label="InsecurePrivateNetworkRequestsAllowedForUrls"/>
+  <int value="768" label="UserPrintersAllowed"/>
+  <int value="769" label="Printers"/>
+  <int value="770" label="PrintersBulkConfiguration"/>
+  <int value="771" label="DeviceReleaseLtsTag"/>
+  <int value="772" label="PrintersBulkAccessMode"/>
+  <int value="773" label="DefaultFileSystemReadGuardSetting"/>
+  <int value="774" label="DefaultFileSystemWriteGuardSetting"/>
+  <int value="775" label="FileSystemReadAskForUrls"/>
+  <int value="776" label="FileSystemReadBlockedForUrls"/>
+  <int value="777" label="FileSystemWriteAskForUrls"/>
+  <int value="778" label="FileSystemWriteBlockedForUrls"/>
+  <int value="779" label="PrintersBulkBlocklist"/>
+  <int value="780" label="PrintersBulkAllowlist"/>
+  <int value="781" label="CloudPrintWarningsSuppressed"/>
+  <int value="782" label="LookalikeWarningAllowlistDomains"/>
+  <int value="783" label="PrintingAPIExtensionsAllowlist"/>
+  <int value="784" label="QuickUnlockModeAllowlist"/>
+  <int value="785" label="AttestationExtensionAllowlist"/>
+  <int value="786" label="DataLeakPreventionRulesList"/>
+  <int value="787" label="WebRtcAllowLegacyTLSProtocols"/>
+  <int value="788" label="MediaRecommendationsEnabled"/>
+  <int value="789" label="DeviceFamilyLinkAccountsAllowed"/>
+  <int value="790" label="EduCoexistenceToSVersion"/>
+  <int value="791" label="BrowsingDataLifetime"/>
+  <int value="792" label="IntranetRedirectBehavior"/>
+  <int value="793" label="LacrosAllowed"/>
+  <int value="794" label="DeviceArcDataSnapshotHours"/>
+  <int value="795" label="PhoneHubAllowed"/>
+  <int value="796" label="PhoneHubNotificationsAllowed"/>
+  <int value="797" label="PhoneHubTaskContinuationAllowed"/>
+  <int value="798" label="WifiSyncAndroidAllowed"/>
+  <int value="799" label="SecurityTokenSessionBehavior"/>
+  <int value="800" label="SecurityTokenSessionNotificationSeconds"/>
+  <int value="801" label="TosDialogBehavior"/>
+  <int value="802" label="TargetBlankImpliesNoOpener"/>
+  <int value="803" label="RemoteAccessHostEnableUserInterface"/>
+  <int value="804" label="FullscreenAlertEnabled"/>
+  <int value="805" label="NTPCardsVisible"/>
+  <int value="806" label="BasicAuthOverHttpEnabled"/>
+  <int value="807" label="SystemFeaturesDisableMode"/>
+  <int value="808" label="IntegratedWebAuthenticationAllowed"/>
+  <int value="809" label="ClearBrowsingDataOnExitList"/>
+  <int value="810" label="ProfilePickerOnStartupAvailability"/>
+  <int value="811" label="SigninInterceptionEnabled"/>
+  <int value="812" label="RemoteAccessHostAllowRemoteAccessConnections"/>
+  <int value="813" label="ManagedConfigurationPerOrigin"/>
+  <int value="814" label="RemoteAccessHostMaximumSessionDurationMinutes"/>
+  <int value="815" label="EnableDeprecatedPrivetPrinting"/>
+  <int value="816" label="BrowserLabsEnabled"/>
+  <int value="817" label="WindowOcclusionEnabled"/>
+  <int value="818" label="DeviceAllowMGSToStoreDisplayProperties"/>
+  <int value="819" label="SSLErrorOverrideAllowedForOrigins"/>
+  <int value="820" label="WebXRImmersiveArEnabled"/>
+  <int value="821" label="GaiaOfflineSigninTimeLimitDays"/>
+  <int value="823" label="DeviceSystemWideTracingEnabled"/>
+  <int value="824" label="WebAppSettings"/>
+  <int value="825" label="DevicePciPeripheralDataAccessEnabled"/>
+  <int value="826" label="ContextAwareAccessSignalsAllowlist"/>
+  <int value="827" label="FetchKeepaliveDurationSecondsOnShutdown"/>
+  <int value="828" label="AllowSystemNotifications"/>
+  <int value="829" label="SuppressDifferentOriginSubframeDialogs"/>
+  <int value="830" label="DeviceBorealisAllowed"/>
+  <int value="831" label="UserBorealisAllowed"/>
+  <int value="832" label="LacrosSecondaryProfilesAllowed"/>
+  <int value="833" label="GaiaLockScreenOfflineSigninTimeLimitDays"/>
+  <int value="834" label="SamlLockScreenOfflineSigninTimeLimitDays"/>
+  <int value="835" label="ReportDevicePrintJobs"/>
+  <int value="836" label="AudioProcessHighPriorityEnabled"/>
+  <int value="837" label="SerialAllowAllPortsForUrls"/>
+  <int value="838" label="SerialAllowUsbDevicesForUrls"/>
+  <int value="839" label="ForcedLanguages"/>
+  <int value="840" label="BrowserThemeColor"/>
+  <int value="841" label="CECPQ2Enabled"/>
+  <int value="842" label="HeadlessMode"/>
+  <int value="843" label="WebRtcIPHandling"/>
+  <int value="844" label="PdfAnnotationsEnabled"/>
+  <int value="845" label="DefaultFileHandlingGuardSetting"/>
+  <int value="846" label="FileHandlingAllowedForUrls"/>
+  <int value="847" label="FileHandlingBlockedForUrls"/>
+  <int value="848" label="DeviceAllowedBluetoothServices"/>
+  <int value="849" label="ExplicitlyAllowedNetworkPorts"/>
+  <int value="850" label="DeviceDebugPacketCaptureAllowed"/>
+  <int value="851" label="SuggestLogoutAfterClosingLastWindow"/>
+  <int value="852" label="SharedArrayBufferUnrestrictedAccessAllowed"/>
+  <int value="853" label="LensCameraAssistedSearchEnabled"/>
+  <int value="854" label="RelaunchWindow"/>
+  <int value="855" label="LacrosAvailability"/>
+  <int value="856" label="DataLeakPreventionReportingEnabled"/>
+  <int value="857" label="AdditionalDnsQueryTypesEnabled"/>
+  <int value="858" label="TripleDESEnabled"/>
+  <int value="859" label="CloudUserPolicyMerge"/>
+  <int value="860" label="ManagedAccountsSigninRestriction"/>
+  <int value="861" label="LockIconInAddressBarEnabled"/>
+  <int value="862" label="DeviceScheduledReboot"/>
+  <int value="863" label="ReportDeviceLoginLogout"/>
+  <int value="864" label="RemoteDebuggingAllowed"/>
+  <int value="865" label="DeviceAttributesAllowedForOrigins"/>
+  <int value="866" label="BrowserSwitcherParsingMode"/>
+  <int value="867" label="DefaultJavaScriptJitSetting"/>
+  <int value="868" label="JavaScriptJitAllowedForSites"/>
+  <int value="869" label="JavaScriptJitBlockedForSites"/>
+  <int value="870" label="HttpsOnlyMode"/>
+  <int value="871" label="DesktopSharingHubEnabled"/>
+  <int value="873" label="ReportDeviceAudioStatus"/>
+  <int value="874" label="DeviceHostnameUserConfigurable"/>
+  <int value="875" label="ReportDeviceNetworkConfiguration"/>
+  <int value="876" label="ReportDeviceNetworkStatus"/>
+  <int value="877" label="DataLeakPreventionClipboardCheckSizeLimit"/>
+  <int value="878" label="CrossOriginWebAssemblyModuleSharingEnabled"/>
+  <int value="879"
+      label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
+  <int value="880" label="DisplayCapturePermissionsPolicyEnabled"/>
+  <int value="881" label="ScreenCaptureAllowedByOrigins"/>
+  <int value="882" label="WindowCaptureAllowedByOrigins"/>
+  <int value="883" label="TabCaptureAllowedByOrigins"/>
+  <int value="884" label="SameOriginTabCaptureAllowedByOrigins"/>
+  <int value="885" label="AssistantVoiceMatchEnabledDuringOobe"/>
+  <int value="886" label="LensRegionSearchEnabled"/>
+  <int value="887" label="ArcAppToWebAppSharingEnabled"/>
+  <int value="888" label="EnhancedNetworkVoicesInSelectToSpeakAllowed"/>
+  <int value="889" label="PrintPdfAsImageAvailability"/>
+  <int value="890" label="PrintRasterizePdfDpi"/>
+  <int value="891" label="DeviceTargetVersionSelector"/>
+  <int value="892" label="ChromeAppsEnabled"/>
+  <int value="893" label="BrowserLegacyExtensionPointsBlocked"/>
+  <int value="894" label="DeviceRestrictedManagedGuestSessionEnabled"/>
+  <int value="895" label="PrintPostScriptMode"/>
+  <int value="896" label="PrintPdfAsImageDefault"/>
+  <int value="897" label="FullRestoreEnabled"/>
+  <int value="898" label="GhostWindowEnabled"/>
+  <int value="899" label="CloudUserPolicyOverridesCloudMachinePolicy"/>
+  <int value="900" label="ReportDeviceSecurityStatus"/>
+  <int value="901" label="EnableDeviceGranularReporting"/>
+  <int value="902" label="WebSQLInThirdPartyContextEnabled"/>
+  <int value="903" label="U2fSecurityKeyApiEnabled"/>
+  <int value="904"
+      label="DeviceLoginScreenPromptOnMultipleMatchingCertificates"/>
+  <int value="905" label="PromptOnMultipleMatchingCertificates"/>
+  <int value="906" label="SideSearchEnabled"/>
+  <int value="907" label="AccessCodeCastEnabled"/>
+  <int value="908" label="AccessCodeCastDeviceDuration"/>
+  <int value="909" label="NetworkServiceSandboxEnabled"/>
+  <int value="910" label="DeskTemplatesEnabled"/>
+  <int value="911" label="PreconfiguredDeskTemplates"/>
+  <int value="912" label="FastPairEnabled"/>
+  <int value="913" label="SandboxExternalProtocolBlocked"/>
+  <int value="914" label="ReportDeviceNetworkTelemetryCollectionRateMs"/>
+  <int value="915" label="ReportDeviceNetworkTelemetryEventCheckingRateMs"/>
+  <int value="916" label="KioskCRXManifestUpdateURLIgnored"/>
+  <int value="917" label="QuickAnswersEnabled"/>
+  <int value="918" label="QuickAnswersDefinitionEnabled"/>
+  <int value="919" label="QuickAnswersTranslationEnabled"/>
+  <int value="920" label="QuickAnswersUnitConversionEnabled"/>
+  <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
+  <int value="922" label="RemoteAccessHostClipboardSizeBytes"/>
+  <int value="923" label="RemoteAccessHostAllowRemoteSupportConnections"/>
+  <int value="924" label="UserAgentClientHintsGREASEUpdateEnabled"/>
+  <int value="925" label="DeviceI18nShortcutsEnabled"/>
+  <int value="926" label="HistoryClustersVisible"/>
+  <int value="927" label="ChromadToCloudMigrationEnabled"/>
+  <int value="928" label="CopyPreventionSettings"/>
+  <int value="929" label="ReportDeviceAudioStatusCheckingRateMs"/>
+  <int value="930" label="KeepFullscreenWithoutNotificationUrlAllowList"/>
+  <int value="931" label="OnPrintEnterpriseConnector"/>
+  <int value="932" label="UserAgentReduction"/>
+  <int value="933" label="OriginAgentClusterDefaultEnabled"/>
+  <int value="934" label="DeviceLoginScreenWebUILazyLoading"/>
+  <int value="935" label="ProjectorEnabled"/>
+  <int value="936" label="PhoneHubCameraRollAllowed"/>
+  <int value="937" label="EcheAllowed"/>
+  <int value="938" label="DeviceKeylockerForStorageEncryptionEnabled"/>
+  <int value="939" label="ReportCRDSessions"/>
+  <int value="940" label="DeviceRunAutomaticCleanupOnLogin"/>
+  <int value="941" label="NTPMiddleSlotAnnouncementVisible"/>
+  <int value="942" label="CloudProfileReportingEnabled"/>
+  <int value="943" label="DefaultWebHidGuardSetting"/>
+  <int value="944" label="WebHidAskForUrls"/>
+  <int value="945" label="WebHidBlockedForUrls"/>
+  <int value="946" label="PasswordDismissCompromisedAlertEnabled"/>
+  <int value="947"
+      label="ExemptDomainFileTypePairsFromFileTypeDownloadWarnings"/>
+  <int value="948" label="FirstPartySetsEnabled"/>
+  <int value="949" label="ForceMajorVersionToMinorPositionInUserAgent"/>
+  <int value="950" label="AllHttpAuthSchemesAllowedForOrigins"/>
+  <int value="951" label="DefaultWindowPlacementSetting"/>
+  <int value="952" label="ReportDevicePeripherals"/>
+  <int value="953" label="WebHidAllowAllDevicesForUrls"/>
+  <int value="954" label="WebHidAllowDevicesForUrls"/>
+  <int value="955" label="WebHidAllowDevicesWithHidUsagesForUrls"/>
+  <int value="956" label="SecondaryGoogleAccountUsage"/>
+  <int value="957" label="DeviceEncryptedReportingPipelineEnabled"/>
+  <int value="958" label="IsolatedAppsDeveloperModeAllowed"/>
+  <int value="959" label="FloatingWorkspaceEnabled"/>
+  <int value="960" label="WindowPlacementAllowedForUrls"/>
+  <int value="961" label="WindowPlacementBlockedForUrls"/>
+  <int value="962" label="CloudReportingUploadFrequency"/>
+  <int value="963" label="OptimizationGuideFetchingEnabled"/>
+  <int value="964" label="WebAuthnFactors"/>
+  <int value="965" label="WebAuthenticationRemoteProxiedRequestsAllowed"/>
+  <int value="966" label="WebSQLAccess"/>
+  <int value="967" label="SetTimeoutWithout1MsClampEnabled"/>
+  <int value="968" label="AllowChromeDataInBackups"/>
+  <int value="969" label="FirstPartySetsOverrides"/>
+  <int value="970" label="DownloadBubbleEnabled"/>
+  <int value="971" label="DevicePowerAdaptiveChargingEnabled"/>
+  <int value="972" label="GetDisplayMediaSetSelectAllScreensAllowedForUrls"/>
+  <int value="973" label="WarnBeforeQuittingEnabled"/>
+  <int value="974" label="SystemTerminalSshAllowed"/>
+  <int value="975" label="InsightsExtensionEnabled"/>
+  <int value="976" label="EnterpriseAuthenticationAppLinkPolicy"/>
+  <int value="977" label="DefaultLocalFontsSetting"/>
+  <int value="978" label="LocalFontsAllowedForUrls"/>
+  <int value="979" label="LocalFontsBlockedForUrls"/>
+  <int value="980" label="ProjectorDogfoodForFamilyLinkEnabled"/>
+  <int value="981" label="UrlParamFilterEnabled"/>
+  <int value="982" label="ScreenTimeEnabled"/>
+  <int value="983" label="DefaultClipboardSetting"/>
+  <int value="984" label="ClipboardAllowedForUrls"/>
+  <int value="985" label="ClipboardBlockedForUrls"/>
+  <int value="986" label="OsColorMode"/>
+  <int value="987" label="RendererAppContainerEnabled"/>
+  <int value="988" label="UnthrottledNestedTimeoutEnabled"/>
+  <int value="989" label="PolicyScopeDetection"/>
+  <int value="990" label="EventPathEnabled"/>
+  <int value="991" label="OnFileTransferEnterpriseConnector"/>
+  <int value="992" label="ChromeRootStoreEnabled"/>
+  <int value="993" label="WebSQLNonSecureContextEnabled"/>
+  <int value="994" label="IdleTimeout"/>
+  <int value="995" label="NewWindowsInKioskAllowed"/>
+  <int value="996" label="EncryptedClientHelloEnabled"/>
+  <int value="997" label="DeviceAutofillSAMLUsername"/>
+  <int value="998" label="EnterpriseProfileCreationKeepBrowsingData"/>
+  <int value="999" label="KerberosDomainAutocomplete"/>
+  <int value="1000" label="KerberosCustomPrefilledConfig"/>
+  <int value="1001" label="UnmanagedDeviceSignalsConsentFlowEnabled"/>
+  <int value="1002" label="PersistentQuotaEnabled"/>
+  <int value="1003"
+      label="DeviceLoginScreenContextAwareAccessSignalsAllowlist"/>
+  <int value="1004" label="PrefixedStorageInfoEnabled"/>
+  <int value="1005" label="LoadCryptoTokenExtension"/>
+  <int value="1006" label="HighEfficiencyModeEnabled"/>
+  <int value="1007" label="DevicePrintingClientNameTemplate"/>
+  <int value="1008" label="ReportDeviceSignalStrengthEventDrivenTelemetry"/>
+  <int value="1009" label="BatterySaverModeAvailability"/>
+  <int value="1010" label="TabDiscardingExceptions"/>
+  <int value="1011" label="AssistantWebEnabled"/>
+  <int value="1012" label="LacrosDataBackwardMigrationMode"/>
+  <int value="1013" label="StrictMimetypeCheckForWorkerScriptsEnabled"/>
+  <int value="1014" label="RecoveryFactorBehavior"/>
+  <int value="1015" label="CalendarIntegrationEnabled"/>
+  <int value="1016" label="DeviceReportXDREvents"/>
+  <int value="1017" label="TrashEnabled"/>
+  <int value="1018" label="ShoppingListEnabled"/>
+  <int value="1019" label="DeskAPIThirdPartyAccessEnabled"/>
+  <int value="1020" label="FileSystemSyncAccessHandleAsyncInterfaceEnabled"/>
+  <int value="1021" label="DefaultHandlersForFileExtensions"/>
+  <int value="1022" label="IsolatedWebAppInstallForceList"/>
+  <int value="1023" label="DeskAPIThirdPartyAllowlist"/>
+  <int value="1024" label="VirtualKeyboardResizesLayoutByDefault"/>
+  <int value="1025" label="HindiInscriptLayoutEnabled"/>
+  <int value="1026" label="DeviceKeyboardBacklightColor"/>
+  <int value="1027" label="LensDesktopNTPSearchEnabled"/>
+  <int value="1028"
+      label="AccessControlAllowMethodsInCORSPreflightSpecConformant"/>
+  <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
+  <int value="1030" label="ExtensionManifestV2Availability"/>
+  <int value="1031" label="OffsetParentNewSpecBehaviorEnabled"/>
+  <int value="1032"
+      label="OBSOLETE_SendMouseEventsDisabledFormControlsEnabled"/>
+  <int value="1033" label="BruschettaVMConfiguration"/>
+  <int value="1034" label="DnsOverHttpsSalt"/>
+  <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
+  <int value="1036" label="IdleTimeoutActions"/>
+  <int value="1037" label="ThrottleNonVisibleCrossOriginIframesAllowed"/>
+  <int value="1038" label="PdfLocalFileAccessAllowedForDomains"/>
+  <int value="1039" label="FloatingWorkspaceV2Enabled"/>
+  <int value="1041" label="NewBaseUrlInheritanceBehaviorAllowed"/>
+  <int value="1042" label="ShowCastSessionsStartedByOtherDevices"/>
+  <int value="1043" label="CloudAPAuthEnabled"/>
+  <int value="1044" label="UsbDetectorNotificationEnabled"/>
+  <int value="1045" label="LacrosSelection"/>
+  <int value="1046" label="UseMojoVideoDecoderForPepperAllowed"/>
+  <int value="1047" label="PPAPISharedImagesSwapChainAllowed"/>
+  <int value="1048" label="PrivacySandboxPromptEnabled"/>
+  <int value="1049" label="PrivacySandboxAdTopicsEnabled"/>
+  <int value="1050" label="PrivacySandboxSiteEnabledAdsEnabled"/>
+  <int value="1051" label="PrivacySandboxAdMeasurementEnabled"/>
+  <int value="1052" label="AppStoreRatingEnabled"/>
+  <int value="1053" label="KerberosUseCustomPrefilledConfig"/>
+  <int value="1054" label="DeviceHindiInscriptLayoutEnabled"/>
+  <int value="1055" label="DeviceLoginScreenExtensionManifestV2Availability"/>
+  <int value="1056" label="KioskTroubleshootingToolsEnabled"/>
+  <int value="1057" label="ForceEnablePepperVideoDecoderDevAPI"/>
+  <int value="1058" label="DomainReliabilityAllowed"/>
+  <int value="1059" label="ScreensaverLockScreenEnabled"/>
+  <int value="1060" label="ScreensaverLockScreenIdleTimeoutSeconds"/>
+  <int value="1061" label="ScreensaverLockScreenImageDisplayIntervalSeconds"/>
+  <int value="1062" label="ScreensaverLockScreenImages"/>
+  <int value="1063" label="DeviceScreensaverLoginScreenEnabled"/>
+  <int value="1064" label="DeviceScreensaverLoginScreenIdleTimeoutSeconds"/>
+  <int value="1065"
+      label="DeviceScreensaverLoginScreenImageDisplayIntervalSeconds"/>
+  <int value="1066" label="DeviceScreensaverLoginScreenImages"/>
+  <int value="1067" label="DefaultWindowManagementSetting"/>
+  <int value="1068" label="WindowManagementAllowedForUrls"/>
+  <int value="1069" label="WindowManagementBlockedForUrls"/>
+  <int value="1070" label="OutOfProcessSystemDnsResolutionEnabled"/>
+  <int value="1071" label="ExtensionUnpublishedAvailability"/>
+  <int value="1072" label="MixedContentAutoupgradeEnabled"/>
+  <int value="1073" label="ChromeAppsWebViewPermissiveBehaviorAllowed"/>
+  <int value="1074"
+      label="ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls"/>
+  <int value="1075" label="DeviceActivityHeartbeatEnabled"/>
+  <int value="1076" label="DeviceActivityHeartbeatCollectionRateMs"/>
+  <int value="1077" label="WallpaperGooglePhotosIntegrationEnabled"/>
+  <int value="1078" label="WebRtcTextLogCollectionAllowed"/>
+  <int value="1079" label="EnforceLocalAnchorConstraintsEnabled"/>
+  <int value="1080" label="ShowTouchpadScrollScreenEnabled"/>
+  <int value="1081" label="DeviceSystemAecEnabled"/>
+  <int value="1082" label="HttpAllowlist"/>
+  <int value="1083" label="HttpsUpgradesEnabled"/>
+  <int value="1085" label="MandatoryExtensionsForIncognitoNavigation"/>
+  <int value="1086" label="CredentialProviderPromoEnabled"/>
+  <int value="1087"
+      label="RemoteAccessHostAllowEnterpriseRemoteSupportConnections"/>
+  <int value="1089" label="UserAvatarCustomizationSelectorsEnabled"/>
+  <int value="1090" label="DefaultThirdPartyStoragePartitioningSetting"/>
+  <int value="1091" label="ThirdPartyStoragePartitioningBlockedForOrigins"/>
+  <int value="1092" label="ScreenCaptureWithoutGestureAllowedForOrigins"/>
+  <int value="1093"
+      label="FileOrDirectoryPickerWithoutGestureAllowedForOrigins"/>
+  <int value="1094" label="AppLaunchAutomation"/>
+  <int value="1095" label="InsecureHashesInTLSHandshakesEnabled"/>
+  <int value="1096" label="DeviceLoginScreenGeolocationAccessLevel"/>
+  <int value="1097" label="DeviceReportNetworkEvents"/>
+  <int value="1098" label="SafeBrowsingExtensionProtectionAllowed"/>
+  <int value="1099" label="ShowDisplaySizeScreenEnabled"/>
+  <int value="1100" label="EssentialSearchEnabled"/>
+  <int value="1101" label="LegacyTechReportAllowlist"/>
+  <int value="1102" label="ReportAppInventory"/>
+  <int value="1103" label="ReportAppUsage"/>
+  <int value="1104" label="ReportAppUsageCollectionRateMs"/>
+  <int value="1105" label="BrowserContextAwareAccessSignalsAllowlist"/>
+  <int value="1106" label="UserContextAwareAccessSignalsAllowlist"/>
+  <int value="1107" label="GoogleSearchSidePanelEnabled"/>
+  <int value="1108" label="PdfUseSkiaRendererEnabled"/>
+  <int value="1109" label="DataUrlInSvgUseEnabled"/>
+  <int value="1110" label="RSAKeyUsageForLocalAnchorsEnabled"/>
+  <int value="1111" label="BeforeunloadEventCancelByPreventDefaultEnabled"/>
+  <int value="1112" label="PolicyTestPageEnabled"/>
+  <int value="1113" label="UrlKeyedMetricsAllowed"/>
+  <int value="1114"
+      label="AllowBackForwardCacheForCacheControlNoStorePageEnabled"/>
+  <int value="1115" label="DeviceLoginScreenWebHidAllowDevicesForUrls"/>
+  <int value="1116" label="SafeBrowsingProxiedRealTimeChecksAllowed"/>
+  <int value="1117" label="PostQuantumKeyAgreementEnabled"/>
+  <int value="1118" label="PhysicalKeyboardAutocorrect"/>
+  <int value="1119" label="PhysicalKeyboardPredictiveWriting"/>
+  <int value="1120" label="ColorCorrectionEnabled"/>
+  <int value="1121" label="NativeClientForceAllowed"/>
+  <int value="1122" label="EmojiPickerGifSupportEnabled"/>
+  <int value="1123" label="DeviceChargingSoundsEnabled"/>
+  <int value="1124" label="DeviceLowBatterySoundEnabled"/>
+  <int value="1125" label="ArcVmDataMigrationStrategy"/>
+  <int value="1126" label="AccessibilityPerformanceFilteringAllowed"/>
+  <int value="1127" label="RemoteAccessHostAllowEnterpriseFileTransfer"/>
+  <int value="1128" label="DefaultMidiSetting"/>
+  <int value="1129" label="MidiAllowedForUrls"/>
+  <int value="1130" label="MidiBlockedForUrls"/>
+  <int value="1131" label="GlanceablesEnabled"/>
+  <int value="1132" label="DeviceAuthenticationURLBlocklist"/>
+  <int value="1133" label="DeviceAuthenticationURLAllowlist"/>
+  <int value="1134" label="DeviceReportRuntimeCounters"/>
+  <int value="1135" label="DeviceReportRuntimeCountersCheckingRateMs"/>
+  <int value="1136" label="BruschettaInstallerConfiguration"/>
+  <int value="1137" label="ForcePermissionPolicyUnloadDefaultEnabled"/>
+  <int value="1138" label="ReportWebsiteActivityAllowlist"/>
+  <int value="1139" label="ReportWebsiteTelemetryAllowlist"/>
+  <int value="1140" label="ReportWebsiteTelemetryCollectionRateMs"/>
+  <int value="1141" label="SafeBrowsingSurveysEnabled"/>
+  <int value="1142" label="BlockTruncatedCookies"/>
+  <int value="1143" label="ReportWebsiteTelemetry"/>
+  <int value="1144" label="CompressionDictionaryTransportEnabled"/>
+  <int value="1145" label="MicrosoftOfficeCloudUpload"/>
+  <int value="1146" label="GoogleWorkspaceCloudUpload"/>
+  <int value="1147" label="ShortcutCustomizationAllowed"/>
+  <int value="1148" label="MicrosoftOneDriveMount"/>
+  <int value="1149" label="ExtensionOAuthRedirectUrls"/>
+  <int value="1150" label="CreatePasskeysInICloudKeychain"/>
+  <int value="1151" label="QuickOfficeForceFileDownloadEnabled"/>
+  <int value="1152" label="ProfileSeparationSettings"/>
+  <int value="1153" label="ProfileSeparationDataMigrationSettings"/>
+  <int value="1154" label="ProfileSeparationDomainExceptionList"/>
+  <int value="1155" label="FullRestoreMode"/>
+  <int value="1157" label="SafeBrowsingDeepScanningEnabled"/>
+  <int value="1158" label="DriveFileSyncAvailable"/>
+  <int value="1159" label="DeviceSwitchFunctionKeysBehaviorEnabled"/>
+  <int value="1160" label="DeviceDlcPredownloadList"/>
+  <int value="1161" label="DataControlsRules"/>
+  <int value="1162" label="DeviceEphemeralNetworkPoliciesEnabled"/>
+  <int value="1163" label="PPAPISharedImagesForVideoDecoderAllowed"/>
+  <int value="1164" label="ProfileReauthPrompt"/>
+  <int value="1165" label="RelatedWebsiteSetsEnabled"/>
+  <int value="1166" label="DeviceExtendedFkeysModifier"/>
+  <int value="1167" label="UnaffiliatedDeviceArcAllowed"/>
+  <int value="1168" label="RelatedWebsiteSetsOverrides"/>
+  <int value="1169" label="ShowHumanPresenceSensorScreenEnabled"/>
+  <int value="1170" label="PasswordSharingEnabled"/>
+  <int value="1171" label="ZstdContentEncodingEnabled"/>
+  <int value="1172" label="IPv6ReachabilityOverrideEnabled"/>
+  <int value="1173" label="UserFeedbackWithLowLevelDebugDataAllowed"/>
+  <int value="1174" label="MicrosoftOneDriveAccountRestrictions"/>
+  <int value="1175" label="DeviceFlexHwDataForProductImprovementEnabled"/>
+  <int value="1176" label="SiteSearchSettings"/>
+  <int value="1177" label="PrivateNetworkAccessRestrictionsEnabled"/>
+  <int value="1178" label="ContextMenuPhotoSharingSettings"/>
+  <int value="1179" label="ExtensionInstallTypeBlocklist"/>
+  <int value="1180" label="ParcelTrackingEnabled"/>
+  <int value="1181" label="NativeHostsExecutablesLaunchDirectly"/>
+  <int value="1182" label="FeedbackSurveysEnabled"/>
+  <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
+  <int value="1184" label="OopPrintDriversEnabled"/>
+  <int value="1185" label="DeviceHardwareVideoDecodingEnabled"/>
+  <int value="1186" label="TabOrganizationAllowed"/>
+  <int value="1187" label="ComposeAllowed"/>
+  <int value="1188" label="WallpaperSearchAllowed"/>
+  <int value="1189" label="ListenToThisPageEnabled"/>
+</enum>
+
+<enum name="EnterprisePoliciesSources">
+  <int value="0" label="Cloud only">
+    All policies are set from cloud. This also includes cloud_ash policy source
+  </int>
+  <int value="1" label="Cloud only except enrollment">
+    All policies are set from cloud except CBCM enrollment token and option.
+  </int>
+  <int value="2" label="Platform only">
+    All policies are set from platform management tool. This also includes AD
+    policies on CrOS.
+  </int>
+  <int value="3" label="Hybrid">Policies are set with multiple tools.</int>
+  <int value="4" label="EnrollmentOnly">
+    There is no policy except CBCM enrollment token and option.
+  </int>
+</enum>
+
+<enum name="EnterprisePolicyInvalidations">
+  <summary>
+    Defined as PolicyInvalidationType in
+    components/policy/core/common/cloud/enterprise_metrics.h.
+  </summary>
+  <int value="0" label="No payload; not expired"/>
+  <int value="1" label="Payload; not expired"/>
+  <int value="3" label="No payload; expired"/>
+  <int value="4" label="Payload; expired"/>
+</enum>
+
+<enum name="EnterprisePolicyLoadStatus">
+  <summary>
+    Status codes produced by the policy loaders that pull policy settings from
+    the platform-specific management infrastructure, such as Windows Group
+    Policy. Defined as PolicyLoadStatus in
+    components/policy/core/common/policy_load_status.h.
+  </summary>
+  <int value="0" label="STARTED">
+    Policy load attempt started. This gets logged for each policy load attempt
+    to get a baseline on the number of requests, and an arbitrary number of the
+    below status codes may get added in addition.
+  </int>
+  <int value="1" label="QUERY_FAILED">
+    System failed to determine whether there's policy.
+  </int>
+  <int value="2" label="NO_POLICY">No policy present.</int>
+  <int value="3" label="INACCCESSIBLE">
+    Data inaccessible, such as non-local policy file.
+  </int>
+  <int value="4" label="MISSING">
+    Data missing, such as policy file not present.
+  </int>
+  <int value="5" label="WOW64_REDIRECTION_DISABLED">
+    Trying with Wow64 redirection disabled.
+  </int>
+  <int value="6" label="READ_ERROR">
+    Data read error, for example file reading errors.
+  </int>
+  <int value="7" label="TOO_BIG">Data too large to process.</int>
+  <int value="8" label="PARSE_ERROR">Parse error.</int>
+</enum>
+
+<enum name="EnterprisePolicyRefresh">
+  <summary>
+    Defined as MetricPolicyRefresh in
+    components/policy/core/common/cloud/enterprise_metrics.h.
+  </summary>
+  <int value="0" label="Changed"/>
+  <int value="1" label="Changed; Invalidations disabled"/>
+  <int value="2" label="Unchanged"/>
+  <int value="3" label="Invalidated; Changed"/>
+  <int value="4" label="Invalidated; Unchanged"/>
+</enum>
+
+<enum name="EnterprisePolicyUserVerification">
+  <summary>
+    Defined as MetricPolicyUserVerification in
+    components/policy/core/common/cloud/cloud_policy_validator.cc.
+  </summary>
+  <int value="0" label="Gaia id check failed">
+    Gaia id check was used, but failed.
+  </int>
+  <int value="1" label="Gaia id check succeeded">
+    Gaia id check was used and succeeded.
+  </int>
+  <int value="2" label="Username check failed">
+    Gaia id is not present for user or in the policy, because of that username
+    check was used, but failed.
+  </int>
+  <int value="3" label="Username check succeeded">
+    Gaia id is not present for user, because of that username check was used and
+    succeeded.
+  </int>
+  <int value="4" label="Gaia id missing, username check succeeded">
+    Gaia id is present for user, but not in the policy. Because of that username
+    check was used and succeeded.
+  </int>
+</enum>
+
+<enum name="EnterpriseProfileIdError">
+  <int value="0" label="Failure retrieving the device id."/>
+  <int value="1" label="Failure retrieving the profile GUID."/>
+  <int value="2" label="Failure encoding the profile id."/>
+</enum>
+
+<enum name="EnterpriseReportingEventType">
+  <int value="0" label="Unknown event"/>
+  <int value="1" label="Password reuse event"/>
+  <int value="2" label="Password changed event"/>
+  <int value="3" label="Dangerous download event"/>
+  <int value="4" label="Interstitial event"/>
+  <int value="5" label="Sensitive data event"/>
+  <int value="6" label="Unscanned file event"/>
+  <int value="7" label="Login event"/>
+  <int value="8" label="Password breach event"/>
+  <int value="9" label="URL filtering interstitial event"/>
+  <int value="10" label="Extension install event"/>
+  <int value="11" label="Browser crash event"/>
+</enum>
+
+<enum name="EnterpriseUserPolicyChromeOSReregistrationResult">
+  <summary>Re-registration results after a failed policy fetch.</summary>
+  <int value="0" label="Re-registration triggered"/>
+  <int value="1" label="Re-registration successful"/>
+  <int value="2" label="Re-registration unsuccessful"/>
+</enum>
+
+<enum name="EnterpriseUserSessionLogins">
+  <summary>
+    Types of sign-in events as defined in
+    chrome/browser/ash/login/enterprise_user_session_metrics.h
+  </summary>
+  <int value="0" label="Regular user"/>
+  <int value="1" label="Manual public session"/>
+  <int value="2" label="Automatic public session"/>
+  <int value="3" label="Manual kiosk session"/>
+  <int value="4" label="Automatic kiosk session"/>
+</enum>
+
+<enum name="InvalidDevicePolicyFilesStatus">
+  <int value="0" label="All valid"/>
+  <int value="1" label="Some invalid"/>
+  <int value="2" label="All invalid"/>
+</enum>
+
+<enum name="IsFullyManagedBoolean">
+  <summary>
+    A boolean for whether a device is &quot;fully managed&quot;.
+  </summary>
+  <int value="0" label="Not fully managed"/>
+  <int value="1" label="Fully managed"/>
+</enum>
+
+<enum name="MachineLevelUserCloudPolicyEnrollmentResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to fetch DM Token from the server"/>
+  <int value="2" label="Failed to store DM Token to the device"/>
+</enum>
+
+<enum name="MachineLevelUserCloudPolicyEnrollmentStartupDialog">
+  <int value="0" label="Shown"/>
+  <int value="1" label="ClosedSuccess"/>
+  <int value="2" label="ClosedRelaunch"/>
+  <int value="3" label="ClosedFail"/>
+  <int value="4" label="ClosedAbort"/>
+  <int value="5" label="ClosedFailAndIgnore"/>
+</enum>
+
+<enum name="ManagedScreensaverImageDownloadResult">
+  <int value="0" label="Image downloaded successfully"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="File save error"/>
+  <int value="3" label="Write to filesystem error"/>
+  <int value="4" label="Image download cancelled"/>
+</enum>
+
+<enum name="OsSuite">
+  <int value="0" label="Windows Home Edition (or unknown)"/>
+  <int value="1" label="Windows Professional/Ultimate Editions"/>
+  <int value="2" label="Windows Server Edition"/>
+  <int value="3" label="Windows Enterprise Edition"/>
+  <int value="4" label="Windows Education Edition"/>
+  <int value="5" label="Windows Pro Education Edition">
+    Extracted from home/unknown editions in M93.
+  </int>
+</enum>
+
+<enum name="OwnershipStatus">
+  <int value="0" label="ownership unknown"/>
+  <int value="1" label="not yet owned"/>
+  <int value="2" label="ownership taken"/>
+</enum>
+
+<enum name="PrintScanningContext">
+  <int value="0" label="System print: Before system dialog"/>
+  <int value="1" label="Normal print: Before preview dialog"/>
+  <int value="2" label="System print: Before print document"/>
+  <int value="3" label="Normal print: Before print document"/>
+  <int value="4" label="System print: Before print job"/>
+  <int value="5" label="Normal print: Before print job"/>
+  <int value="6" label="Normal print: Open PDF in Preview"/>
+</enum>
+
+<enum name="PsmResult">
+  <int value="0" label="Successful Determination"/>
+  <int value="1" label="Create RLWE client library Error"/>
+  <int value="2" label="Create RLWE OPRF request library error"/>
+  <int value="3" label="Create RLWE query request library error"/>
+  <int value="4" label="Processing query response library error"/>
+  <int value="5" label="Empty RLWE OPRF response error"/>
+  <int value="6" label="Empty RLWE query response Error"/>
+  <int value="7" label="Connection Error"/>
+  <int value="8" label="Server Error"/>
+  <int value="9" label="Timeout"/>
+</enum>
+
+<enum name="RemoteCommandExecutionStatus">
+  <int value="0" label="Not initialized"/>
+  <int value="1" label="Invalid"/>
+  <int value="2" label="Expired"/>
+  <int value="3" label="Not started"/>
+  <int value="4" label="Running"/>
+  <int value="5" label="Succeeded"/>
+  <int value="6" label="Failed"/>
+  <int value="7" label="Terminated"/>
+  <int value="8" label="Acked"/>
+</enum>
+
+<enum name="RemoteCommandReceivedStatus">
+  <int value="0" label="Invalid: Invalid signature"/>
+  <int value="1" label="Invalid: Invalid (if no other error is applicable)"/>
+  <int value="2" label="Invalid: Unknown type"/>
+  <int value="3" label="Invalid: Duplicated"/>
+  <int value="4" label="Invalid: Invalid scope (user or device)"/>
+  <int value="5" label="Command echo test (should not appear)"/>
+  <int value="6" label="Reboot device command"/>
+  <int value="7" label="Screenshot command"/>
+  <int value="8" label="Set volume command"/>
+  <int value="9" label="Fetch status command"/>
+  <int value="10" label="ARC command"/>
+  <int value="11" label="Wipe users command"/>
+  <int value="12" label="Start CRD session command"/>
+  <int value="13" label="Powerwash command"/>
+  <int value="14" label="Refresh enterprise machine certificate command"/>
+  <int value="15" label="Get available diagnostic routines command"/>
+  <int value="16" label="Run diagnostic routine command"/>
+  <int value="17" label="Get diagnostic routine update command"/>
+  <int value="18" label="Clear the cache and cookies command"/>
+  <int value="19" label="Resets the cellular EUICC command"/>
+  <int value="20" label="Rotate attestation credentials command"/>
+  <int value="21" label="Fetch support packet command"/>
+</enum>
+
+<enum name="ReportSchedulerReportTrigger">
+  <int value="0" label="kTriggerNone"/>
+  <int value="1" label="kTriggerTimer">
+    The scheduler's periodic timer expired
+  </int>
+  <int value="2" label="kTriggerUpdate">An update was detected</int>
+  <int value="3" label="kTriggerNewVersion">A new version is running</int>
+  <int value="4" label="kTriggerExtensionRequest">
+    A new extension request is added
+  </int>
+  <int value="5" label="Obsolete_kExtensionRequestRealTime">
+    (Obsolete) A new extension request is added and uploaded with ERP.
+  </int>
+  <int value="6" label="kTriggerManual">User upload report manually</int>
+</enum>
+
+<enum name="SecondaryGoogleAccountUsagePolicyFetchStatus">
+  <int value="0" label="UnknownError"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="NetworkError"/>
+  <int value="3" label="HttpError"/>
+  <int value="4" label="ParsingResponseError"/>
+  <int value="5" label="UnsupportedAccountTypeError"/>
+  <int value="6" label="GetTokenError"/>
+  <int value="7" label="GetUserInfoError"/>
+</enum>
+
+<enum name="SystemFeature">
+  <summary>System Features to be disabled by a policy.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Camera"/>
+  <int value="2" label="Browser Settings"/>
+  <int value="3" label="OS Settings"/>
+  <int value="4" label="Scanning"/>
+  <int value="5" label="Web Store"/>
+  <int value="6" label="Canvas"/>
+  <int value="7" label="[Deprecated] Google News"/>
+  <int value="8" label="Explore"/>
+</enum>
+
+<enum name="VPDCacheReadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="File missing"/>
+  <int value="2" label="Parsing failed"/>
+</enum>
+
+<enum name="WmiQueryError">
+  <int value="0" label="Failed to create instance"/>
+  <int value="1" label="Failed to initialize product list"/>
+  <int value="2" label="Failed to get product count"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

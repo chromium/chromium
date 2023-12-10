@@ -22,15 +22,15 @@ FakeQuickStartDecoder::GetRemote() {
 }
 
 void FakeQuickStartDecoder::DecodeQuickStartMessage(
-    const absl::optional<std::vector<uint8_t>>& data,
+    const std::optional<std::vector<uint8_t>>& data,
     DecodeQuickStartMessageCallback callback) {
   CHECK(!results_.empty());
   auto [quick_start_message, error] = std::move(results_.front());
   results_.pop();
-  if (error != absl::nullopt) {
+  if (error != std::nullopt) {
     std::move(callback).Run(nullptr, error);
   } else {
-    std::move(callback).Run(std::move(quick_start_message), absl::nullopt);
+    std::move(callback).Run(std::move(quick_start_message), std::nullopt);
   }
 }
 
@@ -74,14 +74,17 @@ void FakeQuickStartDecoder::SetNotifySourceOfUpdateResponse(
 }
 
 void FakeQuickStartDecoder::SetBootstrapConfigurationsResponse(
-    const std::string& instance_id) {
+    const std::string& instance_id,
+    const bool is_supervised_account,
+    const std::string& email) {
   SetQuickStartMessage(mojom::QuickStartMessage::NewBootstrapConfigurations(
-      mojom::BootstrapConfigurations::New(instance_id)));
+      mojom::BootstrapConfigurations::New(instance_id, is_supervised_account,
+                                          email)));
 }
 
 void FakeQuickStartDecoder::SetQuickStartMessage(
     mojom::QuickStartMessagePtr quick_start_message) {
-  results_.emplace(std::move(quick_start_message), absl::nullopt);
+  results_.emplace(std::move(quick_start_message), std::nullopt);
 }
 
 void FakeQuickStartDecoder::SetDecoderError(

@@ -73,5 +73,10 @@ source_set("services_unittests") {
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
-  sources = [ "tts_service_unittest.cc" ]
+  sources = [
+    "tts_player_unittest.cc",
+    "tts_service_unittest.cc",
+    "tts_test_utils.cc",
+    "tts_test_utils.h",
+  ]
 }

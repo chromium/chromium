@@ -1788,6 +1788,21 @@ EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::ToMojom(
 }
 
 // static
+media::mojom::CameraAvailability EnumTraits<
+    media::mojom::CameraAvailability,
+    media::CameraAvailability>::ToMojom(media::CameraAvailability input) {
+  switch (input) {
+    case media::CameraAvailability::kAvailable:
+      return media::mojom::CameraAvailability::kAvailable;
+    case media::CameraAvailability::
+        kUnavailableExclusivelyUsedByOtherApplication:
+      return media::mojom::CameraAvailability::
+          kUnavailableExclusivelyUsedByOtherApplication;
+  }
+  NOTREACHED_NORETURN();
+}
+
+// static
 bool EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::
     FromMojom(media::mojom::VideoCaptureApi input,
               media::VideoCaptureApi* output) {
@@ -1830,6 +1845,23 @@ bool EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::
       return true;
     case media::mojom::VideoCaptureApi::UNKNOWN:
       *output = media::VideoCaptureApi::UNKNOWN;
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
+
+// static
+bool EnumTraits<media::mojom::CameraAvailability, media::CameraAvailability>::
+    FromMojom(media::mojom::CameraAvailability input,
+              media::CameraAvailability* output) {
+  switch (input) {
+    case media::mojom::CameraAvailability::kAvailable:
+      *output = media::CameraAvailability::kAvailable;
+      return true;
+    case media::mojom::CameraAvailability::
+        kUnavailableExclusivelyUsedByOtherApplication:
+      *output = media::CameraAvailability::
+          kUnavailableExclusivelyUsedByOtherApplication;
       return true;
   }
   NOTREACHED_NORETURN();
@@ -1922,6 +1954,9 @@ bool StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
     return false;
   if (!data.ReadFacingMode(&(output->facing)))
     return false;
+  if (!data.ReadAvailability(&(output->availability))) {
+    return false;
+  }
   if (!data.ReadCaptureApi(&(output->capture_api)))
     return false;
   media::VideoCaptureControlSupport control_support;

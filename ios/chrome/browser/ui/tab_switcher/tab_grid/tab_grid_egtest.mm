@@ -14,9 +14,9 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -594,6 +595,26 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests simulating a swipe with Voice Over from the Recent Tabs, making sure
+// that the new tab button is working as expected.
+- (void)testSwipeUsingVoiceOver {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Switch over to Recent Tabs.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGridScrollViewIdentifier)]
+      performAction:chrome_test_util::AccessibilitySwipeRight()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that Clear Browsing Data can be successfully done from tab grid.
@@ -2720,6 +2741,97 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Make sure that the tab is no longer present.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle1)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that "undo" is still possible after navigating to the "recently
+// closed tabs" panel.
+- (void)testClosedTabsAddedToRecentlyClosedTabsAfterConfirmation {
+  // Clear all recently closed tabs.
+  [self clearAllRecentlyClosedItems];
+
+  // Load some real URL (NTP is not added to recently closed tabs).
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Close all tabs
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridEditMenuCloseAllButton()]
+      performAction:grey_tap()];
+
+  // Ensure tabs were closed
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_nil()];
+
+  // Ensure undo button is visible and edit button is not visible
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridRegularTabsEmptyStateView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Navigate to the "recently closed" panel.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that there are no "recently closed" tabs visible.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Tap Undo button
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close all the tabs (again).
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridEditMenuCloseAllButton()]
+      performAction:grey_tap()];
+
+  // Open a new tab. This should result in closing the tab grid, which will
+  // confirm the close operation and add the tabs to recently closed.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Navigate to the "recently closed" panel.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the tabs closed are now visible.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Helper Methods

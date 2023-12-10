@@ -54,9 +54,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import javax.inject.Named;
 
-/**
- * Module for common dependencies in {@link ChromeActivity}.
- */
+/** Module for common dependencies in {@link ChromeActivity}. */
 @Module
 public class ChromeActivityCommonsModule {
     private final AppCompatActivity mActivity;

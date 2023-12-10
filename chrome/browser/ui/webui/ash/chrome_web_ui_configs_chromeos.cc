@@ -27,7 +27,6 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
-#include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
@@ -38,8 +37,8 @@
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/status_area_internals/status_area_internals_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "ash/webui/vc_background_ui/vc_background_ui.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
-#include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
@@ -59,6 +58,7 @@
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
@@ -102,10 +102,8 @@
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vc_tray_tester/vc_tray_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
-#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
-#include "chromeos/constants/chromeos_features.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -201,17 +199,6 @@ std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
   return std::make_unique<eche_app::EcheAppUIConfig>(create_controller_func);
 }
 
-std::unique_ptr<content::WebUIConfig> MakeGuestOSInstallerUIConfig() {
-  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-        return std::make_unique<GuestOSInstallerUI>(
-            web_ui, base::BindRepeating(&guest_os::InstallerDelegateFactory));
-      });
-
-  return std::make_unique<GuestOSInstallerUIConfig>(create_controller_func);
-}
-
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   //
@@ -225,6 +212,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
+  map.AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcGraphicsTracingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
   map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
@@ -255,7 +243,6 @@ void RegisterAshChromeWebUIConfigs() {
                                       file_manager::FileManagerUI,
                                       ChromeFileManagerUIDelegate>());
   map.AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
-  map.AddWebUIConfig(MakeGuestOSInstallerUIConfig());
   map.AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<HelpAppUIConfig, HelpAppUI,
@@ -321,11 +308,8 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<VcTrayTesterUIConfig>());
   map.AddWebUIConfig(std::make_unique<VmUIConfig>());
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosWebAppInstallDialog)) {
-    map.AddWebUIConfig(
-        std::make_unique<web_app_install::WebAppInstallDialogUIConfig>());
-  }
+  map.AddWebUIConfig(
+      std::make_unique<vc_background_ui::VcBackgroundUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());

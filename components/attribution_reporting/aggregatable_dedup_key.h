@@ -33,6 +33,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableDedupKey {
   AggregatableDedupKey(absl::optional<uint64_t> dedup_key, FilterPair);
 
   base::Value::Dict ToJson() const;
+
+  friend bool operator==(const AggregatableDedupKey&,
+                         const AggregatableDedupKey&) = default;
 };
 
 }  // namespace attribution_reporting

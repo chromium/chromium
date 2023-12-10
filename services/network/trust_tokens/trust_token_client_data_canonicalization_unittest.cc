@@ -5,7 +5,6 @@
 #include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/cbor/reader.h"

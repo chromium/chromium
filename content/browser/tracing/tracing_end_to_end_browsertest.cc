@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, SimpleTraceEvent) {
   absl::Status status = ttp.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
-  std::string query = "SELECT name from slice";
+  std::string query = "SELECT name FROM slice WHERE cat = 'foo'";
   auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value()) << result.error();
 
@@ -86,6 +86,43 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, SimpleTraceEvent) {
               ::testing::ElementsAre(std::vector<std::string>{"name"},
                                      std::vector<std::string>{"test_event"}));
 }
+
+#if defined(TEST_TRACE_PROCESSOR_ENABLED)
+// This test checks that TestTraceProcessor links against the correct version of
+// SQLite (sqlite_dev). This is important because the version of SQLite that
+// is shipped with regular Chrome does not support certain features (e.g. window
+// functions).
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, CorrectSqliteVersion) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(base::test::DefaultTraceConfig("foo", false));
+
+  {
+    TRACE_EVENT_INSTANT("foo", "event1");
+    TRACE_EVENT_INSTANT("foo", "event1");
+    TRACE_EVENT_INSTANT("foo", "event2");
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp.RunQuery(R"(
+    SELECT
+      name,
+      count() OVER (PARTITION BY name) AS same_name_count
+    FROM slice
+    WHERE category = 'foo'
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"name", "same_name_count"},
+                  std::vector<std::string>{"event1", "2"},
+                  std::vector<std::string>{"event1", "2"},
+                  std::vector<std::string>{"event2", "1"}));
+}
+
+#endif  // defined(TEST_TRACE_PROCESSOR_ENABLED)
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        MemoryInstrumentationBackground) {
@@ -234,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsSimple) {
   absl::Status status = ttp1.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
-  std::string query = "SELECT name from slice";
+  std::string query =
+      "SELECT name from slice WHERE cat IN ('foo', 'test', 'cat') ORDER BY ts";
   auto result1 = ttp1.RunQuery(query);
   ASSERT_TRUE(result1.has_value()) << result1.error();
   EXPECT_THAT(result1.value(),

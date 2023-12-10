@@ -5,51 +5,92 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORE_SOURCE_RESULT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORE_SOURCE_RESULT_H_
 
+#include <utility>
+
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
+#include "content/browser/attribution_reporting/store_source_result_internal.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
-struct CONTENT_EXPORT StoreSourceResult {
-  explicit StoreSourceResult(
-      attribution_reporting::mojom::StoreSourceResult status,
-      absl::optional<base::Time> min_fake_report_time = absl::nullopt,
-      absl::optional<int> max_destinations_per_source_site_reporting_site =
-          absl::nullopt,
-      absl::optional<int> max_sources_per_origin = absl::nullopt,
-      absl::optional<int>
-          max_destinations_per_rate_limit_window_reporting_origin =
-              absl::nullopt);
+class CONTENT_EXPORT StoreSourceResult {
+ public:
+  struct Success {};
 
-  ~StoreSourceResult();
+  struct InternalError {};
 
-  StoreSourceResult(const StoreSourceResult&);
-  StoreSourceResult(StoreSourceResult&&);
+  struct InsufficientSourceCapacity {
+    int limit;
+    explicit InsufficientSourceCapacity(int limit) : limit(limit) {}
+  };
 
-  StoreSourceResult& operator=(const StoreSourceResult&);
-  StoreSourceResult& operator=(StoreSourceResult&&);
+  struct InsufficientUniqueDestinationCapacity {
+    int limit;
+    explicit InsufficientUniqueDestinationCapacity(int limit) : limit(limit) {}
+  };
 
-  attribution_reporting::mojom::StoreSourceResult status;
+  struct ExcessiveReportingOrigins {};
 
-  // The earliest report time for any fake reports stored alongside the
-  // source, if any.
-  absl::optional<base::Time> min_fake_report_time;
+  struct ProhibitedByBrowserPolicy {};
 
-  // Only populated in case of
-  // `attribution_reporting::mojom::StoreSourceResult::kInsufficientUniqueDestinationCapacity`.
-  absl::optional<int> max_destinations_per_source_site_reporting_site;
+  struct SuccessNoised {
+    absl::optional<base::Time> min_fake_report_time;
+    explicit SuccessNoised(absl::optional<base::Time> min_fake_report_time)
+        : min_fake_report_time(min_fake_report_time) {}
+  };
 
-  // Only populated in case of
-  // `attribution_reporting::mojom::StoreSourceResult::kInsufficientSourceCapacity`.
-  absl::optional<int> max_sources_per_origin;
+  struct DestinationReportingLimitReached {
+    int limit;
+    explicit DestinationReportingLimitReached(int limit) : limit(limit) {}
+  };
 
-  // Populated in the cases of either
-  // `attribution_reporting::mojom::StoreSourceResult::kDestinationReportingLimitReached`
-  // or
-  // `attribution_reporting::mojom::StoreSourceResult::kDestinationBothLimitsReached`
-  absl::optional<int> max_destinations_per_rate_limit_window_reporting_origin;
+  struct DestinationGlobalLimitReached {};
+
+  struct DestinationBothLimitsReached {
+    int limit;
+    explicit DestinationBothLimitsReached(int limit) : limit(limit) {}
+  };
+
+  struct ReportingOriginsPerSiteLimitReached {};
+
+  struct ExceedsMaxChannelCapacity {};
+
+  using Result = absl::variant<Success,
+                               InternalError,
+                               InsufficientSourceCapacity,
+                               InsufficientUniqueDestinationCapacity,
+                               ExcessiveReportingOrigins,
+                               ProhibitedByBrowserPolicy,
+                               SuccessNoised,
+                               DestinationReportingLimitReached,
+                               DestinationGlobalLimitReached,
+                               DestinationBothLimitsReached,
+                               ReportingOriginsPerSiteLimitReached,
+                               ExceedsMaxChannelCapacity>;
+
+  // Allows implicit conversion from one of the variant types.
+  template <typename T,
+            internal::EnableIfIsVariantAlternative<T, Result> = true>
+  StoreSourceResult(T&& result)  // NOLINT
+      : result_(std::forward<T>(result)) {}
+
+  ~StoreSourceResult() = default;
+
+  StoreSourceResult(const StoreSourceResult&) = default;
+  StoreSourceResult(StoreSourceResult&&) = default;
+
+  StoreSourceResult& operator=(const StoreSourceResult&) = default;
+  StoreSourceResult& operator=(StoreSourceResult&&) = default;
+
+  attribution_reporting::mojom::StoreSourceResult status() const;
+
+  const Result& result() const { return result_; }
+
+ private:
+  Result result_;
 };
 
 }  // namespace content

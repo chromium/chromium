@@ -32,8 +32,7 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
 
   ~FakeClientConnectionParameters() override;
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
-  failure_reason() {
+  const std::optional<mojom::ConnectionAttemptFailureReason>& failure_reason() {
     return failure_reason_;
   }
 
@@ -68,7 +67,7 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   std::unique_ptr<mojo::Receiver<mojom::MessageReceiver>>
       message_receiver_receiver_;
 
-  absl::optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
+  std::optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
 
   mojo::Remote<mojom::Channel> channel_;
   uint32_t disconnection_reason_ = 0u;

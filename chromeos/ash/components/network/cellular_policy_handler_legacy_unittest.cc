@@ -87,7 +87,7 @@ void CheckShillConfiguration(bool is_installed) {
 
 std::string GenerateCellularPolicy(
     const std::string& smdp_address,
-    absl::optional<std::string> iccid = absl::nullopt) {
+    std::optional<std::string> iccid = std::nullopt) {
   if (!iccid) {
     return base::StringPrintf(
         R"({"GUID": "%s", "Type": "Cellular",
@@ -215,11 +215,10 @@ class CellularPolicyHandlerLegacyTest : public testing::Test {
                          const std::string& activation_code,
                          bool expect_install_success,
                          bool auto_connect = false) {
-    absl::optional<base::Value::Dict> policy =
+    std::optional<base::Value::Dict> policy =
         chromeos::onc::ReadDictionaryFromJson(onc_json);
     ASSERT_TRUE(policy.has_value());
     cellular_policy_handler_->InstallESim(activation_code, *policy);
-    FastForwardProfileRefreshDelay();
     base::RunLoop().RunUntilIdle();
 
     if (!expect_install_success) {

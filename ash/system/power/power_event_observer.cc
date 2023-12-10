@@ -278,7 +278,7 @@ PowerEventObserver::~PowerEventObserver() {
 }
 
 void PowerEventObserver::OnGetSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   if (!result.has_value()) {
     return;
   }

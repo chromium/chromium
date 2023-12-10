@@ -336,6 +336,15 @@ SelectPopup* WebContentsViewAndroid::GetSelectPopup() {
   return select_popup_.get();
 }
 
+SelectionPopupController*
+WebContentsViewAndroid::GetSelectionPopupController() {
+  SelectionPopupController* controller = nullptr;
+  if (auto* rwhva = GetRenderWidgetHostViewAndroid()) {
+    controller = rwhva->selection_popup_controller();
+  }
+  return controller;
+}
+
 void WebContentsViewAndroid::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
@@ -398,8 +407,8 @@ void WebContentsViewAndroid::StartDragging(
     return;
   }
 
-  if (selection_popup_controller_) {
-    selection_popup_controller_->HidePopupsAndPreserveSelection();
+  if (auto* selection_popup_controller = GetSelectionPopupController()) {
+    selection_popup_controller->HidePopupsAndPreserveSelection();
     // Hide the handles temporarily.
     auto* rwhva = GetRenderWidgetHostViewAndroid();
     if (rwhva)
@@ -527,8 +536,8 @@ void WebContentsViewAndroid::OnSystemDragEnded() {
   web_contents_->GetRenderViewHost()->GetWidget()->DragSourceSystemDragEnded();
 
   // Restore the selection popups and the text handles if necessary.
-  if (selection_popup_controller_) {
-    selection_popup_controller_->RestoreSelectionPopupsIfNecessary();
+  if (auto* selection_popup_controller = GetSelectionPopupController()) {
+    selection_popup_controller->RestoreSelectionPopupsIfNecessary();
     auto* rwhva = GetRenderWidgetHostViewAndroid();
     if (rwhva)
       rwhva->SetTextHandlesTemporarilyHidden(false);

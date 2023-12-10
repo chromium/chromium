@@ -415,12 +415,14 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
     }
     // If the warning is already shown check if the label needs to be updated
     // with a different message.
-    else if (connection_warning_label_->GetText() !=
-             GenerateLabelText(enterprise_monitored_web_requests)) {
-      connection_warning_label_->SetText(
-          GenerateLabelText(enterprise_monitored_web_requests));
+    else if (connection_warning_label_->GetText() != GenerateLabelText()) {
+      connection_warning_label_->SetText(GenerateLabelText());
     }
 
+    // The initial request to add a connection warning icon is missing
+    // information about the management status of VPN and proxy configurations.
+    // This call will request the managed network properties of the default
+    // network and the VPN network (if one is active).
     if (!enterprise_monitored_web_requests) {
       MaybeShowConnectionWarningManagedIcon(using_proxy);
     }
@@ -439,8 +441,6 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
 
 void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
     bool using_proxy) {
-  is_proxy_managed_.reset();
-  is_vpn_managed_.reset();
 
   // If the proxy is set, check if it's a managed setting.
   const NetworkStateProperties* default_network = model()->default_network();
@@ -501,7 +501,6 @@ void NetworkListViewControllerImpl::OnGetManagedPropertiesResult(
         properties->proxy_settings->type->policy_source !=
             chromeos::network_config::mojom::PolicySource::kNone;
   }
-
   // Check if the VPN is managed.
   if (guid == connected_vpn_guid_) {
     // TODO(b/261009968): Add check for managed WireGuard settings.
@@ -512,17 +511,8 @@ void NetworkListViewControllerImpl::OnGetManagedPropertiesResult(
             chromeos::network_config::mojom::PolicySource::kNone;
   }
 
-  bool setManagedIcon = is_proxy_managed_.has_value() &&
-                        is_vpn_managed_.has_value() &&
-                        (is_proxy_managed_.value() || is_vpn_managed_.value());
-
-  if (setManagedIcon) {
+  if (is_proxy_managed_ || is_vpn_managed_) {
     SetConnectionWarningIcon(connection_warning_, /*use_managed_icon=*/true);
-    if (!is_vpn_managed_.value()) {
-      // Managed proxies are considered a lower privacy risk.
-      connection_warning_label_->SetText(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING));
-    }
   }
 }
 
@@ -808,11 +798,6 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
         return;
       }
 
-      // If `add_esim_entry_` is added, don't show the no mobile network label.
-      if (ShouldAddESimEntry()) {
-        RemoveAndResetViewIfExists(&mobile_status_message_);
-        return;
-      }
       CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS,
                                         &mobile_status_message_);
       return;
@@ -950,10 +935,15 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
   return index;
 }
 
-std::u16string NetworkListViewControllerImpl::GenerateLabelText(
-    bool show_managed_icon) {
+std::u16string NetworkListViewControllerImpl::GenerateLabelText() {
+  const bool using_proxy =
+      model()->default_network() &&
+      model()->default_network()->proxy_mode != ProxyMode::kDirect;
+
   // If the device is not managed then the high risk disclosure should be shown.
-  if (!show_managed_icon) {
+  // VPN connections always show a high risk disclosure, regardless of the
+  // management state.
+  if ((using_proxy && !is_proxy_managed_) || !connected_vpn_guid_.empty()) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING);
   }
@@ -980,7 +970,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   // Set message label in middle of row.
   std::unique_ptr<views::Label> label =
       base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
-  label->SetText(GenerateLabelText(show_managed_icon));
+  label->SetText(GenerateLabelText());
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));

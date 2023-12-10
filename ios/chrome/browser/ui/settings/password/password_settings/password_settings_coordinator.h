@@ -23,6 +23,13 @@
 // manager requires authentication upon entry.
 @property(nonatomic) BOOL skipAuthenticationOnStart;
 
+// Stops the coordinator.
+// - shouldDismissUI: Whether stopping also dismisses the presented
+// UIViewController. Use NO when dismissing the whole Password Manager UI in one
+// animation instead of a cascade of animations (i.e. Password Settings is
+// dismissed and then the Password Manager).
+- (void)stopWithUIDismissal:(BOOL)shouldDismissUI;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_COORDINATOR_H_

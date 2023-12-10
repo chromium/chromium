@@ -5,6 +5,8 @@
 #include "services/preferences/tracked/pref_hash_store_impl.h"
 
 #include <stddef.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -56,7 +58,7 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   ~PrefHashStoreTransactionImpl() override;
 
   // PrefHashStoreTransaction implementation.
-  base::StringPiece GetStoreUMASuffix() const override;
+  std::string_view GetStoreUMASuffix() const override;
   ValueState CheckValue(const std::string& path,
                         const base::Value* value) const override;
   void StoreHash(const std::string& path, const base::Value* value) override;
@@ -156,7 +158,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::
   }
 }
 
-base::StringPiece
+std::string_view
 PrefHashStoreImpl::PrefHashStoreTransactionImpl::GetStoreUMASuffix() const {
   return contents_->GetUMASuffix();
 }

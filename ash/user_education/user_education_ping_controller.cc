@@ -351,14 +351,14 @@ bool UserEducationPingController::CreatePing(PingId ping_id,
   return true;
 }
 
-absl::optional<PingId> UserEducationPingController::GetPingId(
+std::optional<PingId> UserEducationPingController::GetPingId(
     const views::View* view) const {
   for (const auto& [id, ping] : pings_by_id_) {
     if (ping->view() == view) {
       return id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash

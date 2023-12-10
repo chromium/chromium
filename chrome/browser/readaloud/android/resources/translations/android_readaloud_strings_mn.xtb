@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1178581264944972037">Түр зогсоох</translation>
-<translation id="2558806128245168542">Буцаж шилжих</translation>
-<translation id="3523426587027570423">“Энэ хуудсыг сонсох”-ыг хаахын тулд товшино уу.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> секундээр хурдан урагшлуулах</translation>
+<translation id="1984328900355667246">Дахин тоглуулах боломжгүй</translation>
+<translation id="3023502830214299618">Харамсалтай нь одоогоор энэ хуудсанд дахин тоглуулах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
+<translation id="3807208219231826020">Дахин тоглуулахыг гулсуулах</translation>
+<translation id="385051799172605136">Буцах</translation>
 <translation id="4431240646217225907">Текстийг тодруулах болон автоматаар гүйлгэх</translation>
 <translation id="4654641641922242357">“Энэ хуудсыг сонсох” тоглуулагч.</translation>
-<translation id="4731877163452936634">Дахин тоглуулах хурд: <ph name="PLAYBACK_SPEED" />. Өөрчлөхийн тулд товшино уу.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> секунд ухраах</translation>
 <translation id="5234971936051226002">“Энэ хуудсыг сонсох” тоглуулагчийг багасгасан.</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="6315170314923504164">Дуу хоолой</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6846298663435243399">Ачаалж байна...</translation>
 <translation id="7587250070160020374">Chrome одоо тоглуулж байна</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> секунд урагшлуулах</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> секунд ухраах</translation>
 <translation id="8136852699834914183">Энэ хуудсанд дахин тоглуулах боломжгүй байна.</translation>
+<translation id="8264989794233974275">Хурдыг <ph name="PLAYBACK_SPEED" /> дахин нэмэх/хасах.</translation>
+<translation id="8407011429883244666">Тоглуулагчийг хаана уу.</translation>
 <translation id="8953618380150219653">“Энэ хуудсыг сонсох” тоглуулагчийг бүтэн өндөртэйгээр нээсэн.</translation>
 </translationbundle>

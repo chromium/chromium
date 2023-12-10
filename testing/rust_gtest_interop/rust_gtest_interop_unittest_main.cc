@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -17,17 +18,33 @@
 // Update this when adding a new test to rust_test_interop_unittest.rs.
 int kNumTests = 10;
 
-bool is_subprocess() {
-#if !BUILDFLAG(USE_BLINK)
-  // On iOS-without-blink a separate unit test launcher (base::LaunchUnitTests)
-  // is used which just runs the tests serially in process.
-  return true;
-#else
+bool IsSubprocess() {
+#if BUILDFLAG(USE_BLINK)
   // The test launching process spawns a subprocess to run tests, and it
   // includes this flag.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       base::kGTestFlagfileFlag);
+#else
+  // This function should only be called if the standard test launcher is
+  // being used.
+  NOTREACHED_NORETURN();
 #endif
+}
+
+int VerifyTestsRan() {
+  // Double-check that we actually ran all the tests. If this fails we'll
+  // see all the tests marked as "fail on exit" since the whole process is
+  // considered a failure.
+  auto succeed = testing::UnitTest::GetInstance()->successful_test_count();
+  int expected_success = kNumTests;
+  if (succeed != expected_success) {
+    std::cerr << "***ERROR***: Expected " << expected_success
+              << " tests to succeed, but we saw: " << succeed << '\n';
+    return 1;
+  } else {
+    std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
+    return 0;
+  }
 }
 
 int main(int argc, char** argv) {
@@ -51,23 +68,12 @@ int main(int argc, char** argv) {
 
     int Run() {
       int result = base::TestSuite::Run();
-
-      if (is_subprocess()) {
-        // Double-check that we actually ran all the tests. If this fails we'll
-        // see all the tests marked as "fail on exit" since the whole process is
-        // considered a failure.
-        auto succeed =
-            testing::UnitTest::GetInstance()->successful_test_count();
-        int expected_success = kNumTests;
-        if (succeed != expected_success) {
-          std::cerr << "***ERROR***: Expected " << expected_success
-                    << " tests to succeed, but we saw: " << succeed << '\n';
-          return 1;
-        } else {
-          std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
-        }
+#if !BUILDFLAG(USE_BLINK)
+      // If the tests ran in the main process (on iOS), we'll verify here.
+      if (!result) {
+        return VerifyTestsRan();
       }
-
+#endif
       return result;
     }
   };
@@ -75,7 +81,12 @@ int main(int argc, char** argv) {
   InteropTestSuite test_suite(my_argv.size() - 1u, my_argv.data());
   // Note: With the iOS test launcher, this does not return, so we do the check
   // for which tests ran in the TestSuite.
-  return base::LaunchUnitTests(
+  int result = base::LaunchUnitTests(
       my_argv.size() - 1u, my_argv.data(),
       base::BindOnce(&InteropTestSuite::Run, base::Unretained(&test_suite)));
+  // If the tests ran in a child process, we'll verify here.
+  if (!result && IsSubprocess()) {
+    return VerifyTestsRan();
+  }
+  return result;
 }

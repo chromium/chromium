@@ -38,6 +38,10 @@ per-file chromium.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gs
 per-file internal.chromeos.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file tryserver.chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 
+# Intelligence owners.
+per-file internal.optimization_guide.json=file://components/optimization_guide/OWNERS
+per-file internal.optimization_guide.json=mgeorgaklis@google.com
+
 # Perf owners
 per-file *chromium.perf*.json=johnchen@chromium.org
 per-file *chromium.perf*.json=wenbinzhang@google.com

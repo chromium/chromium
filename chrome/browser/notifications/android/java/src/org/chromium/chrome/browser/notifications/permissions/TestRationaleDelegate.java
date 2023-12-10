@@ -9,9 +9,7 @@ import org.chromium.chrome.browser.notifications.permissions.NotificationPermiss
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleUiResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
-/**
- * Test implementation of {@link RationaleDelegate}.
- */
+/** Test implementation of {@link RationaleDelegate}. */
 class TestRationaleDelegate implements RationaleDelegate {
     private Integer mDialogAction;
     private int mCallCount;
@@ -27,7 +25,7 @@ class TestRationaleDelegate implements RationaleDelegate {
         }
     }
 
-    /** Called by tests to set the user action to be taken when the dialog shows up.*/
+    /** Called by tests to set the user action to be taken when the dialog shows up. */
     void setDialogAction(@DialogDismissalCause Integer accept) {
         mDialogAction = accept;
     }

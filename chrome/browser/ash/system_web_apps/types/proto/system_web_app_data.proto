@@ -35,6 +35,7 @@ message SystemWebAppDataProto {
     FIRMWARE_UPDATE = 22;
     OS_FLAGS = 23;
     FACE_ML = 24;
+    VC_BACKGROUND = 25;
   };
 
   optional SystemWebAppType system_app_type = 1;

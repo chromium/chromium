@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -72,7 +72,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   // If |initial_category| has value, we will initialize the specified category,
   // otherwise all the categories will be intialized.
   void InitCategoriesTabbedPane(
-      absl::optional<ash::ShortcutCategory> initial_category);
+      std::optional<ash::ShortcutCategory> initial_category);
 
   // Update views' layout based on search box status.
   void UpdateViewsLayout();

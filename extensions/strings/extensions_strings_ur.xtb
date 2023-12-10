@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">‏اوہ! بے ترتیب RSA کی نجی کلید بنانے میں ناکام ہوگیا۔</translation>
 <translation id="1445572445564823378">یہ ایکسٹینشن <ph name="PRODUCT_NAME" /> کو سست کر رہی ہے۔ <ph name="PRODUCT_NAME" /> کی کارکردگی کو بحال کرنے کیلئے آپ کو اسے غیر فعال کر دینا چاہیے۔</translation>
 <translation id="1468038450257740950">‏WebGL تعاون یافتہ نہیں ہے۔</translation>
+<translation id="1610570795592207282">‏اسکرپٹ کے لیے CSS '<ph name="RELATIVE_PATH" />' لوڈ نہیں ہو سکا۔</translation>
 <translation id="1803557475693955505">پس منظر کا صفحہ '<ph name="BACKGROUND_PAGE" />' لوڈ نہں کیا جا سکا۔</translation>
 <translation id="2159915644201199628">تصویر کو ڈیکوڈ نہیں کیا جا سکا: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏لوکلائزیشن کا استعمال کیا گیا، لیکن مینی فیسٹ میں default_locale کی وضاحت نہیں کی گئی۔</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">وینڈر <ph name="VENDOR_ID" /> کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏crx فائل کو بدلنے میں ناکام۔ چیک کر کے دیکھیں کہ آیا فائل زیر استعمال ہے۔</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> وینڈر کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">‏مواد اسکرپٹ کیلئے css '<ph name="RELATIVE_PATH" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="3369521687965833290">ایکسٹینشن کو ان پیک نہیں کیا جا سکتا۔ اس ایکسٹینشن کو محفوظ طریقہ سے ان پیک کرنے کیلئے آپ کی پروفائل ڈائرکٹری میں ایک ایسا پاتھ ہونا چاہیے جو ڈرائیو لیٹر سے شروع ہوتا ہو اور جنکشن، ماؤنٹ پوائنٹ یا سملنک پر مشتمل نہ ہو۔  آپ کے پروفائل کیلئے ایسا کوئی پاتھ موجود نہیں ہے۔</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">وینڈر <ph name="VENDOR_ID" /> کی جانب سے <ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">نجی کلید کیلئے ان پٹ قدر ایک درست پاتھ ہونا ضروری ہے۔</translation>
 <translation id="388442998277590542">اختیارات صفحہ '<ph name="OPTIONS_PAGE" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="3984413272403535372">ایکسٹینشن پر سائن کرتے ہوئے خرابی۔</translation>
-<translation id="39964277676607559">‏مواد کی اسکرپٹ کیلئے ‎javascript '<ph name="RELATIVE_PATH" />'‎ لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="4115165561519362854">اس مشین کا منتظم <ph name="EXTENSION_VERSION" /> کے کم سے کم ورژن کیلئے <ph name="EXTENSION_NAME" /> کا تقاضہ کرتا ہے۔ اسے فعال نہیں کیا جا سکتا یہاں تک کہ اسے اس ورژن (یا اس سے بعد کے ورژن) میں اپ ڈيٹ کیا گیا ہو۔</translation>
 <translation id="4233778200880751280">تفصیل صفحہ '<ph name="ABOUT_PAGE" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="471800408830181311">نجی کلید کو آؤٹ پٹ کرنے میں ناکام۔</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">عوامی کلید کو دریافت کرنے کیلئے ناکام ہوگیا۔</translation>
 <translation id="5026754133087629784">ویب منظر: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">پیک کرنے کیلئے ڈائریکٹری کا مطلق پاتھ تلاش نہیں کیا جا سکتا۔</translation>
+<translation id="5160071981665899014">‏اسکرپٹ کے لیے JavaScript '<ph name="RELATIVE_PATH" />' لوڈ نہیں ہو سکا۔</translation>
 <translation id="5356315618422219272">ایپ ویو: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">شکل والی ونڈوز تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="5456409301717116725">اس ایکسٹیسشن میں کلیدی فائل '<ph name="KEY_PATH" />' شامل ہے۔ غالباً آپ کو ایسا کرنے کی ضرورت نہیں ہے۔</translation>

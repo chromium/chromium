@@ -222,7 +222,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     auto app_name = l10n_util::GetStringUTF16(name_id_);
     auto delegate = base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(
-        /*launch_app=*/absl::nullopt,
+        /*launch_app=*/std::nullopt,
         /*launch_settings=*/base::BindRepeating(
             &VmCameraMicManager::VmInfo::OpenSettings,
             weak_ptr_factory_.GetWeakPtr()));
@@ -341,8 +341,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   // message_center::NotificationObserver:
   //
   // This open the settings page if the button is clicked on the notification.
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     OpenSettings();
   }
 

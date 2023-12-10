@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_item_thumbnail_generator.h"
@@ -21,7 +21,6 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 namespace activity_services {

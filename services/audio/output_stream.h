@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/sync_socket.h"
 #include "base/timer/timer.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
@@ -79,7 +79,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   void OnControllerPlaying() final;
   void OnControllerPaused() final;
   void OnControllerError() final;
-  void OnLog(base::StringPiece message) final;
+  void OnLog(std::string_view message) final;
 
  private:
   void CreateAudioPipe(CreatedCallback created_callback);

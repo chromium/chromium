@@ -1,0 +1,10 @@
+{
+  "gn_args": {
+    "enable_nacl": false,
+    "is_component_build": true,
+    "is_debug": true,
+    "is_tsan": true,
+    "symbol_level": 1,
+    "use_remoteexec": true
+  }
+}

@@ -15,6 +15,18 @@ suite('SearchEngineChoiceTest', function() {
   let testElement: SearchEngineChoiceAppElement;
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
+  /**
+   * Async spin until predicate() returns true.
+   */
+  function waitFor(predicate: () => boolean): Promise<void> {
+    if (predicate()) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => setTimeout(() => {
+                         resolve(waitFor(predicate));
+                       }, 0));
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
@@ -39,24 +51,35 @@ suite('SearchEngineChoiceTest', function() {
     radioButtons[0]!.click();
   }
 
-  test('Submit button enabled on choice click', function() {
-    assertTrue(testElement.$.submitButton.disabled);
+  // This tests both forced scroll when clicking on the "More" button and
+  // manually scrolling because the test will trigger the same scroll event.
+  test('Action button changes state correctly on click', async function() {
+    const actionButton = testElement.$.actionButton;
 
+    // Test that the action button text is "More" and that it is initially
+    // enabled.
+    assertFalse(actionButton.disabled);
+    assertEquals(
+        actionButton.textContent!.trim(), testElement.i18n('moreButtonText'));
+
+    // The action button text should become "Set as default" after being clicked
+    // but still be disabled because we haven't yet made a choice.
+    actionButton.click();
+    await waitFor(
+        () => actionButton.textContent!.trim() ===
+            testElement.i18n('submitButtonText'));
+    assertTrue(actionButton.disabled);
+
+    // The action button should be enabled after making a choice.
     selectChoice();
-    assertFalse(testElement.$.submitButton.disabled);
-  });
+    assertFalse(actionButton.disabled);
 
-  test('Clicking submit button calls correct function', function() {
-    // Select a search engine to enable the submit button.
-    selectChoice();
-
-    testElement.$.submitButton.click();
+    actionButton.click();
     assertEquals(handler.getCallCount('handleSearchEngineChoiceSelected'), 1);
   });
 
   test('Click learn more link', function() {
     testElement.$.infoLink.click();
-
     assertTrue(testElement.$.infoDialog.open);
     assertEquals(handler.getCallCount('handleLearnMoreLinkClicked'), 1);
   });

@@ -6,9 +6,7 @@ package org.chromium.content_public.browser.test.util;
 
 import android.app.Instrumentation;
 
-/**
- * Collection of UI utilities.
- */
+/** Collection of UI utilities. */
 public class UiUtils {
     /**
      * Waits for the UI thread to settle down and then waits for another second.

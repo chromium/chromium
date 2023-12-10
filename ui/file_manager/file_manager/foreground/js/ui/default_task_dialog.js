@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
-
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 import {createList, List} from './list.js';
+import {createListItem} from './list_item.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 
@@ -35,7 +34,8 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     // assignable to type 'ListSelectionModel'.
     this.selectionModel_ = this.list_.selectionModel =
         new ListSingleSelectionModel();
-    this.dataModel_ = this.list_.dataModel = new ArrayDataModel([]);
+    this.dataModel_ = this.list_.dataModel = new ArrayDataModel(
+        /** @type {import('../task_controller.js').DropdownItem[]} */ ([]));
 
     // List has max-height defined at css, so that list grows automatically,
     // but doesn't exceed predefined size.
@@ -98,7 +98,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
    * @param {Object} item Item to render.
    */
   renderItem(item) {
-    const result = this.document_.createElement('li');
+    const result = createListItem();
 
     // Task label.
     const labelSpan = this.document_.createElement('span');
@@ -139,12 +139,6 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     // A11y - make it focusable and readable.
     result.setAttribute('tabindex', '-1');
 
-    Object.defineProperty(
-        result, 'lead', getPropertyDescriptor('lead', PropertyKind.BOOL_ATTR));
-    Object.defineProperty(
-        result, 'selected',
-        getPropertyDescriptor('selected', PropertyKind.BOOL_ATTR));
-
     return result;
   }
 
@@ -153,7 +147,8 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
    *
    * @param {string} title Title in dialog caption.
    * @param {string} message Message in dialog caption.
-   * @param {Array<Object>} items Items to render in the list.
+   * @param {Array<import('../task_controller.js').DropdownItem>} items Items to
+   *     render in the list.
    * @param {number} defaultIndex Item to select by default.
    * @param {function(*):void} onSelectedItem Callback which is called when an
    *     item is selected.
@@ -181,8 +176,8 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     this.list_.startBatchUpdates();
     // @ts-ignore: error TS2555: Expected at least 3 arguments, but got 2.
     this.dataModel_.splice(0, this.dataModel_.length);
-    for (let i = 0; i < items.length; i++) {
-      this.dataModel_.push(items[i]);
+    for (const item of items) {
+      this.dataModel_.push(item);
     }
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.classList.toggle('scrollable-list', items.length > 6);

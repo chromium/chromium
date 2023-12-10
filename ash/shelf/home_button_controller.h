@@ -10,8 +10,12 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ui {
 class GestureEvent;
@@ -26,7 +30,7 @@ class HomeButton;
 // action (for Assistant).
 // Behavior is tested indirectly in HomeButtonTest and ShelfViewInkDropTest.
 class HomeButtonController : public AppListControllerObserver,
-                             public TabletModeObserver,
+                             public display::DisplayObserver,
                              public AssistantStateObserver,
                              public AssistantUiModelObserver {
  public:
@@ -52,8 +56,8 @@ class HomeButtonController : public AppListControllerObserver,
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // AssistantStateObserver:
   void OnAssistantFeatureAllowedChanged(
@@ -64,8 +68,8 @@ class HomeButtonController : public AppListControllerObserver,
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   void OnAppListShown();
   void OnAppListDismissed();
@@ -81,6 +85,8 @@ class HomeButtonController : public AppListControllerObserver,
   // Owned by the button's view hierarchy.
   raw_ptr<AssistantOverlay, ExperimentalAsh> assistant_overlay_ = nullptr;
   std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

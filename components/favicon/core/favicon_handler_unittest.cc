@@ -30,6 +30,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace favicon {
 namespace {
@@ -84,16 +85,9 @@ MATCHER_P(ImageColorIs, expected_color, "") {
   return true;
 }
 
-SkBitmap CreateBitmapWithEdgeSize(int size, SkColor color) {
-  SkBitmap bmp;
-  bmp.allocN32Pixels(size, size);
-  bmp.eraseColor(color);
-  return bmp;
-}
-
 // Fill the given data buffer with valid png data.
 std::vector<unsigned char> FillBitmapWithEdgeSize(int size, SkColor color) {
-  SkBitmap bitmap = CreateBitmapWithEdgeSize(size, color);
+  SkBitmap bitmap = gfx::test::CreateBitmap(size, color);
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
   return output;
@@ -170,7 +164,7 @@ class FakeImageDownloader {
     response.http_status_code = 200;
     for (int size : original_sizes) {
       response.original_bitmap_sizes.push_back(gfx::Size(size, size));
-      response.bitmaps.push_back(CreateBitmapWithEdgeSize(size, color));
+      response.bitmaps.push_back(gfx::test::CreateBitmap(size, color));
     }
     responses_[icon_url] = response;
   }

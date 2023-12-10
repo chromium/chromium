@@ -14,9 +14,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/common/autofill_features.cc"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
-#import "components/autofill/ios/browser/child_frame_registration_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/dom_distiller/core/url_constants.h"
@@ -28,14 +26,14 @@
 #import "components/supervised_user/core/common/buildflags.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/follow/follow_java_script_feature.h"
+#import "ios/chrome/browser/follow/model/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
-#import "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
@@ -346,11 +344,6 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
   features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
-    features.push_back(
-        autofill::ChildFrameRegistrationJavaScriptFeature::GetInstance());
-  }
   features.push_back(FontSizeJavaScriptFeature::GetInstance());
   features.push_back(ImageFetchJavaScriptFeature::GetInstance());
   features.push_back(
@@ -386,7 +379,7 @@ void ChromeWebClient::PrepareErrorPage(
     NSError* error,
     bool is_post,
     bool is_off_the_record,
-    const absl::optional<net::SSLInfo>& ssl_info,
+    const std::optional<net::SSLInfo>& ssl_info,
     int64_t navigation_id,
     base::OnceCallback<void(NSString*)> callback) {
   OfflinePageTabHelper* offline_page_tab_helper =
@@ -501,12 +494,9 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
 }
 
 NSData* ChromeWebClient::FetchSessionFromCache(web::WebState* web_state) const {
-  if (!web::UseNativeSessionRestorationCache()) {
-    return nil;
-  }
-
-  return WebSessionStateTabHelper::FromWebState(web_state)
-      ->FetchSessionFromCache();
+  WebSessionStateTabHelper* tab_helper =
+      WebSessionStateTabHelper::FromWebState(web_state);
+  return tab_helper ? tab_helper->FetchSessionFromCache() : nil;
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {

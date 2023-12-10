@@ -422,10 +422,6 @@ void DownloadOfflineContentProvider::OnManagerGoingDown(
 }
 
 void DownloadOfflineContentProvider::OnDownloadStarted(DownloadItem* item) {
-  if (!base::FeatureList::IsEnabled(
-          download::features::kUseDownloadOfflineContentProvider)) {
-    return;
-  }
   item->RemoveObserver(this);
   item->AddObserver(this);
 

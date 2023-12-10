@@ -105,19 +105,19 @@ void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
   }
 }
 
-absl::optional<int32_t> FindAccessibilityWindowIdRecursive(
+std::optional<int32_t> FindAccessibilityWindowIdRecursive(
     aura::Window* window) {
-  if (const absl::optional<int32_t> window_id =
+  if (const std::optional<int32_t> window_id =
           exo::GetShellClientAccessibilityId(window)) {
     return window_id;
   }
   for (aura::Window* child : window->children()) {
-    if (const absl::optional<int32_t> window_id =
+    if (const std::optional<int32_t> window_id =
             FindAccessibilityWindowIdRecursive(child)) {
       return window_id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 extensions::api::accessibility_private::SetNativeChromeVoxResponse
@@ -587,11 +587,11 @@ bool ArcAccessibilityTreeTracker::EnableTree(const ui::AXTreeID& tree_id) {
     return false;
 
   ax::android::mojom::AccessibilityWindowKeyPtr window_key;
-  if (const absl::optional<int32_t> window_id_opt =
+  if (const std::optional<int32_t> window_id_opt =
           FindAccessibilityWindowIdRecursive(tree_source->window())) {
     window_key = ax::android::mojom::AccessibilityWindowKey::NewWindowId(
         window_id_opt.value());
-  } else if (const absl::optional<int32_t> task_id =
+  } else if (const std::optional<int32_t> task_id =
                  GetWindowTaskId(tree_source->window())) {
     window_key =
         ax::android::mojom::AccessibilityWindowKey::NewTaskId(task_id.value());

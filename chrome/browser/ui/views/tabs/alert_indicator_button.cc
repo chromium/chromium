@@ -96,6 +96,8 @@ ui::ImageModel GetTabAlertIndicatorImageForPressedState(
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
           TabAlertState::AUDIO_PLAYING, button_color);
     case TabAlertState::MEDIA_RECORDING:
+    case TabAlertState::AUDIO_RECORDING:
+    case TabAlertState::VIDEO_RECORDING:
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::BLUETOOTH_CONNECTED:
     case TabAlertState::USB_CONNECTED:
@@ -154,11 +156,11 @@ AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
 AlertIndicatorButton::~AlertIndicatorButton() = default;
 
 void AlertIndicatorButton::TransitionToAlertState(
-    absl::optional<TabAlertState> next_state) {
+    std::optional<TabAlertState> next_state) {
   if (next_state == alert_state_)
     return;
 
-  absl::optional<TabAlertState> previous_alert_showing_state =
+  std::optional<TabAlertState> previous_alert_showing_state =
       showing_alert_state_;
 
   if (next_state)
@@ -305,13 +307,17 @@ gfx::ImageSkia AlertIndicatorButton::GetImageToPaint() {
 
 std::unique_ptr<gfx::Animation>
 AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
-    absl::optional<TabAlertState> alert_state) {
+    std::optional<TabAlertState> alert_state) {
   if (alert_state == TabAlertState::MEDIA_RECORDING ||
+      alert_state == TabAlertState::AUDIO_RECORDING ||
+      alert_state == TabAlertState::VIDEO_RECORDING ||
       alert_state == TabAlertState::TAB_CAPTURING ||
       alert_state == TabAlertState::DESKTOP_CAPTURING) {
     if (base::FeatureList::IsEnabled(
             content_settings::features::kImprovedSemanticsActivityIndicators) &&
-        alert_state == TabAlertState::MEDIA_RECORDING &&
+        (alert_state == TabAlertState::MEDIA_RECORDING ||
+         alert_state == TabAlertState::AUDIO_RECORDING ||
+         alert_state == TabAlertState::VIDEO_RECORDING) &&
         camera_mic_indicator_start_time_ == base::Time()) {
       camera_mic_indicator_start_time_ = base::Time::Now();
     }
@@ -381,6 +387,8 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
       }
       break;
     case TabAlertState::MEDIA_RECORDING:
+    case TabAlertState::AUDIO_RECORDING:
+    case TabAlertState::VIDEO_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
       if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kRadioButtonCheckedIcon;
@@ -461,6 +469,8 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
     TabAlertState alert_state) {
   switch (alert_state) {
     case TabAlertState::MEDIA_RECORDING:
+    case TabAlertState::AUDIO_RECORDING:
+    case TabAlertState::VIDEO_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
           alert_state, kColorHoverCardTabAlertMediaRecordingIcon);

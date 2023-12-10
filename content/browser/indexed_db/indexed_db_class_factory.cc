@@ -21,8 +21,8 @@
 
 namespace content {
 namespace {
-DefaultLevelDBFactory* GetDefaultLevelDBFactory() {
-  static base::NoDestructor<DefaultLevelDBFactory> leveldb_factory(
+LevelDBFactory* GetLevelDBFactory() {
+  static base::NoDestructor<LevelDBFactory> leveldb_factory(
       IndexedDBClassFactory::GetLevelDBOptions(), "indexed-db");
   return leveldb_factory.get();
 }
@@ -42,7 +42,7 @@ IndexedDBClassFactory* IndexedDBClassFactory::Get() {
 }
 
 IndexedDBClassFactory::IndexedDBClassFactory()
-    : leveldb_factory_(GetDefaultLevelDBFactory()),
+    : leveldb_factory_(GetLevelDBFactory()),
       transactional_leveldb_factory_(GetDefaultTransactionalLevelDBFactory()) {}
 
 // static
@@ -85,14 +85,6 @@ void IndexedDBClassFactory::SetTransactionalLevelDBFactoryForTesting(
   } else {
     transactional_leveldb_factory_ = GetDefaultTransactionalLevelDBFactory();
   }
-}
-
-void IndexedDBClassFactory::SetLevelDBFactoryForTesting(
-    LevelDBFactory* leveldb_factory) {
-  if (leveldb_factory)
-    leveldb_factory_ = leveldb_factory;
-  else
-    leveldb_factory_ = GetDefaultLevelDBFactory();
 }
 
 }  // namespace content

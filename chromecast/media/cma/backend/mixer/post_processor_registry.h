@@ -11,11 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chromecast/public/media/audio_post_processor2_shlib.h"
 
 namespace chromecast {
 namespace media {
-
-class AudioPostProcessor2;
 
 // Global registry for built-in postprocessors.
 class PostProcessorRegistry {

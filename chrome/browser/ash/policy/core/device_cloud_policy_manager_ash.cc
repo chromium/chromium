@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
@@ -44,6 +44,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -264,9 +265,15 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     CreateStatusUploader(managed_session_service_.get());
     syslog_uploader_ =
         std::make_unique<SystemLogUploader>(nullptr, task_runner_);
-    heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
-        g_browser_process->gcm_driver(), client(), device_store_.get(),
-        install_attributes->GetDeviceId(), task_runner_);
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kKioskHeartbeatsViaERP)) {
+      // Do nothing as heartbeats go over ERP.
+    } else {
+      // Initialize legacy GCM heartbeat (default behaviour)
+      heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
+          g_browser_process->gcm_driver(), client(), device_store_.get(),
+          install_attributes->GetDeviceId(), task_runner_);
+    }
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
@@ -407,4 +414,8 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
       managed_session_service_.get());
 }
 
+HeartbeatScheduler*
+DeviceCloudPolicyManagerAsh::GetHeartbeatSchedulerForTesting() const {
+  return heartbeat_scheduler_.get();
+}
 }  // namespace policy

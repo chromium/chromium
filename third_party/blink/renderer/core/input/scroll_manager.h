@@ -5,16 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_SCROLL_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_SCROLL_MANAGER_H_
 
-#include "base/functional/callback_helpers.h"
-#include "cc/input/snap_fling_controller.h"
-#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -27,20 +21,19 @@ class LayoutBox;
 class LocalFrame;
 class PaintLayer;
 class PaintLayerScrollableArea;
-class Scrollbar;
-class WebGestureEvent;
 
 // Scroll directions used to check whether propagation is possible in a given
 // direction. Used in CanPropagate.
 enum class ScrollPropagationDirection { kHorizontal, kVertical, kBoth, kNone };
 
-// This class assists certain main-thread scroll operations such as keyboard
-// scrolls and middle-click autoscroll, as well as resizer-control interactions.
-// User scrolls from pointer devices (wheel/touch) are handled on the compositor
-// (cc::InputHandler). For Javascript scrolls, see ProgrammaticScrollAnimator
-// and the ScrollableArea APIs.
-// TODO(crbug.com/1369739): Now that scroll unification has launched, much of
-// this class can be deleted.
+// This class is deprecated as scrolling is now handled by cc::InputHandler.
+// It is still involved with the following main-thread operations:
+// - keyboard scrolls
+// - middle-click autoscroll
+// - resizer-control interactions
+// For Javascript scrolls, see ProgrammaticScrollAnimator.
+// Do not add new things to this class.
+// TODO(crbug.com/1503711): Remove keyboard scrolling.
 class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
  public:
   explicit ScrollManager(LocalFrame&);
@@ -80,18 +73,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
                       Node* mouse_press_node,
                       bool scrolling_via_key = false);
 
-  // TODO(crbug.com/616491): Consider moving all gesture related functions to
-  // another class.
-
-  // Handle the provided scroll gesture event, propagating down to child frames
-  // as necessary.
-  WebInputEventResult HandleGestureScrollEvent(const WebGestureEvent&);
-
-  bool IsScrollbarHandlingGestures() const;
-
-  // Returns true if the gesture event should be handled in ScrollManager.
-  bool CanHandleGestureEvent(const GestureEventWithHitTestResults&);
-
   // These functions are related to |m_resizeScrollableArea|.
   bool InResizeMode() const;
   void Resize(const WebMouseEvent&);
@@ -106,24 +87,12 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
                            ScrollPropagationDirection direction);
 
  private:
-  Node* NodeTargetForScrollableAreaElementId(
-      CompositorElementId scrollable_area_element_id) const;
-
-  bool HandleScrollGestureOnResizer(Node*, const WebGestureEvent&);
-
   void RecomputeScrollChain(const Node& start_node,
                             Deque<DOMNodeId>& scroll_chain,
                             bool is_autoscroll);
   bool CanScroll(const Node& current_node, bool for_autoscroll);
 
-  // NOTE: If adding a new field to this class please ensure that it is
-  // cleared in |ScrollManager::clear()|.
-
   const Member<LocalFrame> frame_;
-
-  Member<Node> scroll_gesture_handling_node_;
-
-  Member<Scrollbar> scrollbar_handling_scroll_gesture_;
 
   Member<PaintLayerScrollableArea> resize_scrollable_area_;
 

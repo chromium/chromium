@@ -83,11 +83,11 @@ TEST_F(HTMLSelectElementTest, SetAutofillValuePreservesEditedState) {
       "<option value='222'>222</option></select>");
   HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("sel"));
 
-  select->SetUserHasEditedTheField(false);
+  select->ClearUserHasEditedTheField();
   select->SetAutofillValue("222", WebAutofillState::kAutofilled);
   EXPECT_EQ(select->UserHasEditedTheField(), false);
 
-  select->SetUserHasEditedTheField(true);
+  select->SetUserHasEditedTheField();
   select->SetAutofillValue("111", WebAutofillState::kAutofilled);
   EXPECT_EQ(select->UserHasEditedTheField(), true);
 }

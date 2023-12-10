@@ -80,7 +80,7 @@ std::string GetTypeSignature(base::ValueView value) {
 
     std::string operator()(double) { return "d"; }
 
-    std::string operator()(base::StringPiece) { return "s"; }
+    std::string operator()(std::string_view) { return "s"; }
 
     std::string operator()(const base::Value::BlobStorage&) { return "ay"; }
 
@@ -232,7 +232,7 @@ void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
 
     void operator()(double value) { writer->AppendDouble(value); }
 
-    void operator()(base::StringPiece value) { writer->AppendString(value); }
+    void operator()(std::string_view value) { writer->AppendString(value); }
 
     void operator()(const base::Value::BlobStorage&) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;
@@ -278,7 +278,7 @@ void AppendValueData(MessageWriter* writer, base::ValueView value) {
       return AppendBasicTypeValueData(writer, value);
     }
 
-    void operator()(base::StringPiece value) {
+    void operator()(std::string_view value) {
       return AppendBasicTypeValueData(writer, value);
     }
 

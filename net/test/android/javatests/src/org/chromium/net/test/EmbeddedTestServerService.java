@@ -8,9 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-/**
- * A {@link android.app.Service} that creates a new {@link EmbeddedTestServer} when bound.
- */
+/** A {@link android.app.Service} that creates a new {@link EmbeddedTestServer} when bound. */
 public class EmbeddedTestServerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {

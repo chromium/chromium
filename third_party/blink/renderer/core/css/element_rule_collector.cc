@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
+#include "third_party/blink/renderer/core/css/seeker.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_statistics.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -163,42 +164,6 @@ bool AffectsAnimations(const RuleData& rule_data) {
   }
   return false;
 }
-
-// Sequentially scans a sorted list of RuleSet::Interval<T> and seeks
-// for the value for a rule (given by its position). Seek() must be called
-// with non-decreasing rule positions, so that we only need to go
-// through the layer list at most once for all Seek() calls.
-template <class T>
-class Seeker {
-  STACK_ALLOCATED();
-
- public:
-  explicit Seeker(const HeapVector<RuleSet::Interval<T>>& intervals)
-      : intervals_(intervals), iter_(intervals_.begin()) {}
-
-  const T* Seek(unsigned rule_position) {
-#if DCHECK_IS_ON()
-    DCHECK_GE(rule_position, last_rule_position_);
-    last_rule_position_ = rule_position;
-#endif
-
-    while (iter_ != intervals_.end() &&
-           iter_->start_position <= rule_position) {
-      ++iter_;
-    }
-    if (iter_ == intervals_.begin()) {
-      return nullptr;
-    }
-    return std::prev(iter_)->value.Get();
-  }
-
- private:
-  const HeapVector<RuleSet::Interval<T>>& intervals_;
-  const RuleSet::Interval<T>* iter_;
-#if DCHECK_IS_ON()
-  unsigned last_rule_position_ = 0;
-#endif
-};
 
 // A wrapper around Seeker<CascadeLayer> that also translates through the layer
 // map.
@@ -397,6 +362,20 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
 }
 
+void ElementRuleCollector::AddTryStyleProperties(
+    const CSSPropertyValueSet* property_set) {
+  if (!property_set) {
+    return;
+  }
+  auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
+  result_.AddMatchedProperties(
+      property_set, CascadeOrigin::kAuthor,
+      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
+       .valid_property_filter = ValidPropertyFilter::kPositionFallback,
+       .is_fallback_style = true});
+  result_.SetIsCacheable(false);
+}
+
 static bool RulesApplicableInCurrentTreeScope(
     const Element* element,
     const ContainerNode* scoping_node) {
@@ -447,8 +426,12 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
   context.vtt_originating_element = match_request.VTTOriginatingElement();
   context.style_scope_frame =
       &style_scope_frame.GetParentFrameOrThis(context_.GetElement());
-  bool is_initial = !style_recalc_context_.is_ensuring_style &&
-                    !style_recalc_context_.old_style;
+
+  // If we are _not_ in initial style, or we are just collecting rules,
+  // we must skip all rules marked with @starting-style.
+  bool reject_starting_styles = style_recalc_context_.is_ensuring_style ||
+                                style_recalc_context_.old_style ||
+                                mode_ != SelectorChecker::kResolvingStyle;
 
   CascadeLayerSeeker layer_seeker(stop_at_first_match ? nullptr : context.scope,
                                   context.vtt_originating_element,
@@ -472,10 +455,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-    if ((!is_initial || mode_ != SelectorChecker::kResolvingStyle) &&
-        rule_data.IsStartingStyle()) {
-      continue;
-    }
     if (can_use_fast_reject_ &&
         selector_filter_.FastRejectSelector(
             rule_data.DescendantSelectorIdentifierHashes(
@@ -494,6 +473,10 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         continue;
       }
       DCHECK_EQ(selector.Relation(), CSSSelector::kUAShadow);
+    }
+
+    if (reject_starting_styles && rule_data.IsStartingStyle()) {
+      continue;
     }
 
     SelectorChecker::MatchResult result;

@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "services/network/trust_tokens/boringssl_trust_token_state.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
@@ -73,7 +72,7 @@ BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
 
 absl::optional<std::string>
 BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
-    base::StringPiece response_header) {
+    std::string_view response_header) {
   if (!state_) {
     return absl::nullopt;
   }

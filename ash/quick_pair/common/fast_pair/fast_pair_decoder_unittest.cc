@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -89,12 +89,12 @@ TEST_F(FastPairDecoderTest, HasModelId_LongInvalidLength) {
 }
 
 TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_NoResultForNullData) {
-  EXPECT_EQ(GetHexModelIdFromServiceData(nullptr), absl::nullopt);
+  EXPECT_EQ(GetHexModelIdFromServiceData(nullptr), std::nullopt);
 }
 
 TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_NoResultForEmptyData) {
   std::vector<uint8_t> empty;
-  EXPECT_EQ(GetHexModelIdFromServiceData(&empty), absl::nullopt);
+  EXPECT_EQ(GetHexModelIdFromServiceData(&empty), std::nullopt);
 }
 
 TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_ThreeByteData) {

@@ -10,9 +10,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * These properties make up the model of the AccessorySheetTab component.
- */
+/** These properties make up the model of the AccessorySheetTab component. */
 class AccessorySheetTabProperties {
     static final ReadableObjectPropertyKey<AccessorySheetTabItemsModel> ITEMS =
             new ReadableObjectPropertyKey<>("items");

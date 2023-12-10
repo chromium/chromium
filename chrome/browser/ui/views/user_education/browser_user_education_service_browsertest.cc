@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <vector>
@@ -31,7 +32,6 @@
 #include "components/user_education/common/tutorial_identifier.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -51,7 +51,7 @@ enum class IPHFailureReason {
 struct IPHException {
   IPHException() = default;
   IPHException(const base::Feature* feature_,
-               absl::optional<IPHFailureReason> reason_,
+               std::optional<IPHFailureReason> reason_,
                const char* description_)
       : feature(feature_), reason(reason_), description(description_) {}
   IPHException(const IPHException& other) = default;
@@ -59,7 +59,7 @@ struct IPHException {
   ~IPHException() = default;
 
   raw_ptr<const base::Feature> feature = nullptr;
-  absl::optional<IPHFailureReason> reason;
+  std::optional<IPHFailureReason> reason;
   const char* description = nullptr;
 };
 
@@ -265,9 +265,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
       {&feature_engagement::kIPHHighEfficiencyModeFeature,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
-      {&feature_engagement::kIPHPriceTrackingChipFeature, absl::nullopt,
-       "crbug.com/1443063"},
-      {&feature_engagement::kIPHPriceTrackingInSidePanelFeature, absl::nullopt,
+      {&feature_engagement::kIPHPriceTrackingInSidePanelFeature, std::nullopt,
        "crbug.com/1443063"},
       {&feature_engagement::kIPHPowerBookmarksSidePanelFeature,
        IPHFailureReason::kWrongSessionRate,
@@ -282,11 +280,11 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        IPHFailureReason::kNotConfigured, "crbug.com/1443020"},
       {&feature_engagement::kIPHDesktopSharedHighlightingFeature,
        IPHFailureReason::kNotConfigured, "crbug.com/1443071"},
-      {&feature_engagement::kIPHReadingListInSidePanelFeature, absl::nullopt,
+      {&feature_engagement::kIPHReadingListInSidePanelFeature, std::nullopt,
        "crbug.com/1443078"},
-      {&feature_engagement::kIPHTabSearchFeature, absl::nullopt,
+      {&feature_engagement::kIPHTabSearchFeature, std::nullopt,
        "crbug.com/1443079"},
-      {&feature_engagement::kIPHWebUITabStripFeature, absl::nullopt,
+      {&feature_engagement::kIPHWebUITabStripFeature, std::nullopt,
        "crbug.com/1443082"},
 
       // Needs configuration.
@@ -331,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
         &configuration->GetFeatureConfig(*feature);
 
     // Fetch the configuration for the given feature.
-    absl::optional<feature_engagement::FeatureConfig> client_config;
+    std::optional<feature_engagement::FeatureConfig> client_config;
     if (!feature_config->valid) {
       // Disabled features don't read from feature_configurations.cc by default;
       // we have to do it manually to ensure that if Finch enables the feature

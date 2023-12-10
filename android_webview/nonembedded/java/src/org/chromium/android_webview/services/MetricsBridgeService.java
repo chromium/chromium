@@ -33,9 +33,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-/**
- * Service that keeps record of UMA method calls in nonembedded WebView processes.
- */
+/** Service that keeps record of UMA method calls in nonembedded WebView processes. */
 public final class MetricsBridgeService extends Service {
     private static final String TAG = "MetricsBridgeService";
 
@@ -59,8 +57,11 @@ public final class MetricsBridgeService extends Service {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @VisibleForTesting
-    @IntDef({ParsingLogResult.SUCCESS, ParsingLogResult.MALFORMED_PROTOBUF,
-            ParsingLogResult.IO_EXCEPTION})
+    @IntDef({
+        ParsingLogResult.SUCCESS,
+        ParsingLogResult.MALFORMED_PROTOBUF,
+        ParsingLogResult.IO_EXCEPTION
+    })
     public @interface ParsingLogResult {
         int SUCCESS = 0;
         int MALFORMED_PROTOBUF = 1;
@@ -92,8 +93,11 @@ public final class MetricsBridgeService extends Service {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @VisibleForTesting
-    @IntDef({RetrieveMetricsTaskStatus.SUCCESS, RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION,
-            RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION})
+    @IntDef({
+        RetrieveMetricsTaskStatus.SUCCESS,
+        RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION,
+        RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION
+    })
     public @interface RetrieveMetricsTaskStatus {
         int SUCCESS = 0;
         int EXECUTION_EXCEPTION = 1;
@@ -126,26 +130,27 @@ public final class MetricsBridgeService extends Service {
     @Override
     public void onCreate() {
         // Restore saved histograms from disk.
-        sSequencedTaskRunner.postTask(() -> {
-            File file = getMetricsLogFile();
-            if (!file.exists()) return;
-            try (FileInputStream in = new FileInputStream(file)) {
-                HistogramRecord proto;
-                while ((proto = HistogramRecord.parseDelimitedFrom(in)) != null) {
-                    // The proto message object isn't needed anymore, we will store its byte
-                    // serialization.
-                    mRecordsList.add(proto.toByteArray());
-                }
-                logParsingLogResult(ParsingLogResult.SUCCESS);
-            } catch (InvalidProtocolBufferException | IllegalStateException e) {
-                Log.e(TAG, "Malformed metrics log proto", e);
-                logParsingLogResult(ParsingLogResult.MALFORMED_PROTOBUF);
-                deleteMetricsLogFile();
-            } catch (IOException e) {
-                logParsingLogResult(ParsingLogResult.IO_EXCEPTION);
-                Log.e(TAG, "Failed reading proto log file", e);
-            }
-        });
+        sSequencedTaskRunner.postTask(
+                () -> {
+                    File file = getMetricsLogFile();
+                    if (!file.exists()) return;
+                    try (FileInputStream in = new FileInputStream(file)) {
+                        HistogramRecord proto;
+                        while ((proto = HistogramRecord.parseDelimitedFrom(in)) != null) {
+                            // The proto message object isn't needed anymore, we will store its byte
+                            // serialization.
+                            mRecordsList.add(proto.toByteArray());
+                        }
+                        logParsingLogResult(ParsingLogResult.SUCCESS);
+                    } catch (InvalidProtocolBufferException | IllegalStateException e) {
+                        Log.e(TAG, "Malformed metrics log proto", e);
+                        logParsingLogResult(ParsingLogResult.MALFORMED_PROTOBUF);
+                        deleteMetricsLogFile();
+                    } catch (IOException e) {
+                        logParsingLogResult(ParsingLogResult.IO_EXCEPTION);
+                        Log.e(TAG, "Failed reading proto log file", e);
+                    }
+                });
     }
 
     public MetricsBridgeService() {
@@ -158,65 +163,76 @@ public final class MetricsBridgeService extends Service {
         mLogFile = logFile;
     }
 
-    private final IMetricsBridgeService.Stub mBinder = new IMetricsBridgeService.Stub() {
-        @Override
-        public void recordMetrics(byte[] data) {
-            if (Binder.getCallingUid() != Process.myUid()) {
-                throw new SecurityException(
-                        "recordMetrics() may only be called by non-embedded WebView processes");
-            }
-            // If this is called within the same process, it will run on the caller thread, so we
-            // will always punt this to thread pool.
-            sSequencedTaskRunner.postTask(() -> {
-                // Make sure that we don't add records indefinitely in case of no embedded
-                // WebView connects to the service to retrieve and clear the records.
-                if (mRecordsList.size() >= MAX_HISTOGRAM_COUNT) {
-                    // TODO(https://crbug.com/1088467) add a histogram to log the number of dropped
-                    // histograms.
-                    Log.w(TAG, "retained records has reached the max capacity, dropping record");
-                    return;
+    private final IMetricsBridgeService.Stub mBinder =
+            new IMetricsBridgeService.Stub() {
+                @Override
+                public void recordMetrics(byte[] data) {
+                    if (Binder.getCallingUid() != Process.myUid()) {
+                        throw new SecurityException(
+                                "recordMetrics() may only be called by non-embedded WebView processes");
+                    }
+                    // If this is called within the same process, it will run on the caller thread,
+                    // so we will always punt this to thread pool.
+                    sSequencedTaskRunner.postTask(
+                            () -> {
+                                // Make sure that we don't add records indefinitely in case of no
+                                // embedded WebView connects to the service to retrieve and clear
+                                // the records.
+                                if (mRecordsList.size() >= MAX_HISTOGRAM_COUNT) {
+                                    // TODO(https://crbug.com/1088467) add a histogram to log the
+                                    // number of dropped histograms.
+                                    Log.w(
+                                            TAG,
+                                            "retained records has reached the max capacity, dropping record");
+                                    return;
+                                }
+                                try {
+                                    // Parse data to make sure it's valid HistogramRecord byte data.
+                                    HistogramRecord proto = HistogramRecord.parseFrom(data);
+                                    mRecordsList.add(data);
+                                    // Append the histogram record to log file.
+                                    FileOutputStream out = getMetricsLogOutputStream();
+                                    proto.writeDelimitedTo(out);
+                                    // Flush the stream to make sure the bytes are written to file
+                                    // in cases when the service isn't closed gracefully.
+                                    out.flush();
+                                } catch (InvalidProtocolBufferException e) {
+                                    Log.e(TAG, "Malformed metrics log proto", e);
+                                } catch (IOException e) {
+                                    Log.e(TAG, "Failed to write to file", e);
+                                }
+                            });
                 }
-                try {
-                    // Parse data to make sure it's valid HistogramRecord byte data.
-                    HistogramRecord proto = HistogramRecord.parseFrom(data);
-                    mRecordsList.add(data);
-                    // Append the histogram record to log file.
-                    FileOutputStream out = getMetricsLogOutputStream();
-                    proto.writeDelimitedTo(out);
-                    // Flush the stream to make sure the bytes are written to file in cases when the
-                    // service isn't closed gracefully.
-                    out.flush();
-                } catch (InvalidProtocolBufferException e) {
-                    Log.e(TAG, "Malformed metrics log proto", e);
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to write to file", e);
-                }
-            });
-        }
 
-        @Override
-        public List<byte[]> retrieveNonembeddedMetrics() {
-            FutureTask<List<byte[]>> retrieveFutureTask = new FutureTask<>(() -> {
-                List<byte[]> list = mRecordsList;
-                mRecordsList = new ArrayList<>();
-                deleteMetricsLogFile();
-                list.add(logRetrieveMetricsTaskStatus(RetrieveMetricsTaskStatus.SUCCESS));
-                return list;
-            });
-            sSequencedTaskRunner.postTask(retrieveFutureTask);
-            try {
-                return retrieveFutureTask.get();
-            } catch (ExecutionException e) {
-                Log.e(TAG, "error executing retrieveNonembeddedMetrics future task", e);
-                return Collections.singletonList(logRetrieveMetricsTaskStatus(
-                        RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION));
-            } catch (InterruptedException e) {
-                Log.e(TAG, "retrieveNonembeddedMetrics future task interrupted", e);
-                return Collections.singletonList(logRetrieveMetricsTaskStatus(
-                        RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION));
-            }
-        }
-    };
+                @Override
+                public List<byte[]> retrieveNonembeddedMetrics() {
+                    FutureTask<List<byte[]>> retrieveFutureTask =
+                            new FutureTask<>(
+                                    () -> {
+                                        List<byte[]> list = mRecordsList;
+                                        mRecordsList = new ArrayList<>();
+                                        deleteMetricsLogFile();
+                                        list.add(
+                                                logRetrieveMetricsTaskStatus(
+                                                        RetrieveMetricsTaskStatus.SUCCESS));
+                                        return list;
+                                    });
+                    sSequencedTaskRunner.postTask(retrieveFutureTask);
+                    try {
+                        return retrieveFutureTask.get();
+                    } catch (ExecutionException e) {
+                        Log.e(TAG, "error executing retrieveNonembeddedMetrics future task", e);
+                        return Collections.singletonList(
+                                logRetrieveMetricsTaskStatus(
+                                        RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION));
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "retrieveNonembeddedMetrics future task interrupted", e);
+                        return Collections.singletonList(
+                                logRetrieveMetricsTaskStatus(
+                                        RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION));
+                    }
+                }
+            };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -229,7 +245,7 @@ public final class MetricsBridgeService extends Service {
 
     private FileOutputStream getMetricsLogOutputStream() throws IOException {
         if (mFileOutputStream == null) {
-            mFileOutputStream = new FileOutputStream(getMetricsLogFile(), /* append */ true);
+            mFileOutputStream = new FileOutputStream(getMetricsLogFile(), /* append= */ true);
         }
         return mFileOutputStream;
     }

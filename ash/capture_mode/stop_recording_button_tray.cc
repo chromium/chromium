@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 
@@ -51,5 +52,8 @@ void StopRecordingButtonTray::OnThemeChanged() {
       kCaptureModeCircleStopIcon,
       GetColorProvider()->GetColor(kColorAshIconColorAlert)));
 }
+
+BEGIN_METADATA(StopRecordingButtonTray)
+END_METADATA
 
 }  // namespace ash

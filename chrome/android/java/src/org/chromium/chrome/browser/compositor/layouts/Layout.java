@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -35,11 +34,8 @@ import java.util.List;
  * alternative to the Android UI for lower level hardware accelerated rendering.
  * This layout also pass through all the events that may happen.
  */
-
 public abstract class Layout {
-    /**
-     * The orientation of the device.
-     */
+    /** The orientation of the device. */
     @IntDef({Orientation.UNSET, Orientation.PORTRAIT, Orientation.LANDSCAPE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Orientation {
@@ -49,31 +45,44 @@ public abstract class Layout {
     }
 
     /** The possible variations of the visible viewport that different layouts may need. */
-    @IntDef({ViewportMode.ALWAYS_FULLSCREEN, ViewportMode.ALWAYS_SHOWING_BROWSER_CONTROLS,
-            ViewportMode.DYNAMIC_BROWSER_CONTROLS,
-            ViewportMode.USE_PREVIOUS_BROWSER_CONTROLS_STATE})
+    @IntDef({
+        ViewportMode.ALWAYS_FULLSCREEN,
+        ViewportMode.ALWAYS_SHOWING_BROWSER_CONTROLS,
+        ViewportMode.DYNAMIC_BROWSER_CONTROLS,
+        ViewportMode.USE_PREVIOUS_BROWSER_CONTROLS_STATE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewportMode {
         /** The viewport is assumed to be always fullscreen. */
         int ALWAYS_FULLSCREEN = 0;
+
         /** The viewport is assuming that browser controls are permanently shown. */
         int ALWAYS_SHOWING_BROWSER_CONTROLS = 1;
+
         /** The viewport will account for animating browser controls (both shown and hidden). */
         int DYNAMIC_BROWSER_CONTROLS = 2;
+
         /** Use a viewport that accounts for the browser controls state in the previous layout. */
         int USE_PREVIOUS_BROWSER_CONTROLS_STATE = 3;
     }
 
-    @IntDef({LayoutState.STARTING_TO_SHOW, LayoutState.SHOWING, LayoutState.STARTING_TO_HIDE,
-            LayoutState.HIDDEN})
+    @IntDef({
+        LayoutState.STARTING_TO_SHOW,
+        LayoutState.SHOWING,
+        LayoutState.STARTING_TO_HIDE,
+        LayoutState.HIDDEN
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LayoutState {
         /** The layout is going to hide as soon as the animation finishes. */
         int STARTING_TO_SHOW = 0;
+
         /** Actively being showed, no ongoing animation. */
         int SHOWING = 1;
+
         /** The layout is going to show as soon as the animation finishes. */
         int STARTING_TO_HIDE = 2;
+
         /** Not currently showed, and no ongoing animation. */
         int HIDDEN = 3;
     }
@@ -109,9 +118,6 @@ public abstract class Layout {
 
     // Current state of the Layout.
     private @LayoutState int mLayoutState;
-
-    // The next id to show when the layout is hidden, or TabBase#INVALID_TAB_ID if no change.
-    protected int mNextTabId = Tab.INVALID_TAB_ID;
 
     // The ratio of dp to px.
     protected final float mDpToPx;
@@ -149,16 +155,11 @@ public abstract class Layout {
         return mUpdateHost.getAnimationHandler();
     }
 
-    /**
-     * Called when native initialization is completed.
-     */
+    /** Called when native initialization is completed. */
     public void onFinishNativeInitialization() {}
 
-    /**
-     * Cleans up any internal state.  This object should not be used after this call.
-     */
-    public void destroy() {
-    }
+    /** Cleans up any internal state. This object should not be used after this call. */
+    public void destroy() {}
 
     /**
      * @return The current {@link Context} instance associated with this {@link Layout}.
@@ -312,8 +313,11 @@ public abstract class Layout {
      * @param orientation                   The new orientation.  Valid values are defined by
      *                                      {@link Orientation}.
      */
-    final void sizeChanged(RectF visibleViewportPx, RectF screenViewportPx,
-            int topBrowserControlsHeightPx, int bottomBrowserControlsHeightPx,
+    final void sizeChanged(
+            RectF visibleViewportPx,
+            RectF screenViewportPx,
+            int topBrowserControlsHeightPx,
+            int bottomBrowserControlsHeightPx,
             @Orientation int orientation) {
         // 1. Pull out this Layout's width and height properties based on the viewport.
         float width = screenViewportPx.width() / mDpToPx;
@@ -322,11 +326,16 @@ public abstract class Layout {
         float bottomBrowserControlsHeightDp = bottomBrowserControlsHeightPx / mDpToPx;
 
         // 2. Check if any Layout-specific properties have changed.
-        boolean layoutPropertiesChanged = Float.compare(mWidthDp, width) != 0
-                || Float.compare(mHeightDp, height) != 0
-                || Float.compare(mTopBrowserControlsHeightDp, topBrowserControlsHeightDp) != 0
-                || Float.compare(mBottomBrowserControlsHeightDp, bottomBrowserControlsHeightDp) != 0
-                || mCurrentOrientation != orientation;
+        boolean layoutPropertiesChanged =
+                Float.compare(mWidthDp, width) != 0
+                        || Float.compare(mHeightDp, height) != 0
+                        || Float.compare(mTopBrowserControlsHeightDp, topBrowserControlsHeightDp)
+                                != 0
+                        || Float.compare(
+                                        mBottomBrowserControlsHeightDp,
+                                        bottomBrowserControlsHeightDp)
+                                != 0
+                        || mCurrentOrientation != orientation;
 
         // 3. Update the internal sizing properties.
         mWidthDp = width;
@@ -391,15 +400,10 @@ public abstract class Layout {
         updateCacheVisibleIdsAndPrimary(visible, Tab.INVALID_TAB_ID);
     }
 
-    /**
-     * To be called when the layout is starting a transition out of the view mode.
-     *
-     * @param nextTabId The id of the next tab.
-     */
-    public void startHiding(int nextTabId) {
+    /** To be called when the layout is starting a transition out of the view mode. */
+    public void startHiding() {
         mUpdateHost.startHiding();
         mLayoutState = LayoutState.STARTING_TO_HIDE;
-        mNextTabId = nextTabId;
     }
 
     /**
@@ -423,9 +427,7 @@ public abstract class Layout {
         return mTabModelSelector.isIncognitoSelected();
     }
 
-    /**
-     * To be called when the transition into the layout is done.
-     */
+    /** To be called when the transition into the layout is done. */
     public void doneShowing() {
         if (mLayoutState != LayoutState.STARTING_TO_SHOW) return;
 
@@ -441,29 +443,12 @@ public abstract class Layout {
         if (mLayoutState != LayoutState.STARTING_TO_HIDE) return;
 
         mLayoutState = LayoutState.HIDDEN;
-        if (mNextTabId != Tab.INVALID_TAB_ID) {
-            TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
-            if (model != null) {
-                TabModelUtils.setIndex(
-                        model, TabModelUtils.getTabIndexById(model, mNextTabId), false);
-            }
-            mNextTabId = Tab.INVALID_TAB_ID;
-        }
         mUpdateHost.doneHiding();
         if (mRenderHost != null && mRenderHost.getResourceManager() != null) {
             mRenderHost.getResourceManager().clearTintedResourceCache();
         }
 
         if (getSceneLayer() != null) getSceneLayer().removeFromParent();
-    }
-
-    /**
-     * Called when a tab is getting selected. Typically when exiting the overview mode.
-     * @param time  The current time of the app in ms.
-     * @param tabId The id of the selected tab.
-     */
-    public void onTabSelecting(long time, int tabId) {
-        startHiding(tabId);
     }
 
     /**
@@ -474,23 +459,18 @@ public abstract class Layout {
     public void show(long time, boolean animate) {
         // TODO(crbug.com/1108496): Remove after LayoutManager explicitly hide the old layout.
         mLayoutState = LayoutState.STARTING_TO_SHOW;
-        mNextTabId = Tab.INVALID_TAB_ID;
     }
 
     /**
      * Hands the layout an Android view to attach it's views to.
      * @param container The Android View to attach the layout's views to.
      */
-    public void attachViews(ViewGroup container) { }
+    public void attachViews(ViewGroup container) {}
 
-    /**
-     * Signal to the Layout to detach it's views from the container.
-     */
-    public void detachViews() { }
+    /** Signal to the Layout to detach it's views from the container. */
+    public void detachViews() {}
 
-    /**
-     * Forces the current animation to finish and broadcasts the proper event.
-     */
+    /** Forces the current animation to finish and broadcasts the proper event. */
     protected void forceAnimationToFinish() {}
 
     /**
@@ -540,16 +520,14 @@ public abstract class Layout {
         return false;
     }
 
-    /**
-     * Called by the LayoutManager when an animation should be killed.
-     */
-    public void unstallImmediately() { }
+    /** Called by the LayoutManager when an animation should be killed. */
+    public void unstallImmediately() {}
 
     /**
      * Called by the LayoutManager when an animation should be killed.
      * @param tabId The tab that the kill signal is associated with
      */
-    public void unstallImmediately(int tabId) { }
+    public void unstallImmediately(int tabId) {}
 
     /**
      * Called by the LayoutManager when they system back button is pressed.
@@ -567,8 +545,7 @@ public abstract class Layout {
      * @param prevId    The id of the previously selected tab.
      * @param incognito Whether or not the affected model was incognito.
      */
-    public void onTabSelected(long time, int tabId, int prevId, boolean incognito) {
-    }
+    public void onTabSelected(long time, int tabId, int prevId, boolean incognito) {}
 
     /**
      * Called when a tab is being closed. When called, the closing tab will not
@@ -578,8 +555,7 @@ public abstract class Layout {
      * @param nextTabId The id if the tab that is being switched to.
      * @param incognito Whether or not the affected model was incognito.
      */
-    public void onTabClosed(long time, int tabId, int nextTabId, boolean incognito) {
-    }
+    public void onTabClosed(long time, int tabId, int nextTabId, boolean incognito) {}
 
     /**
      * Called when all the tabs in the current stack will be closed.
@@ -593,7 +569,7 @@ public abstract class Layout {
      *
      * @param sourceTabId The id of the source tab.
      */
-    public void onTabCreating(int sourceTabId) { }
+    public void onTabCreating(int sourceTabId) {}
 
     /**
      * Called when a tab is created from the top left button.
@@ -608,24 +584,29 @@ public abstract class Layout {
      * @param originY        The Y screen coordinate in dp of the last touch down event that spawned
      *                       this tab.
      */
-    public void onTabCreated(long time, int tabId, int tabIndex, int sourceTabId,
-            boolean newIsIncognito, boolean background, float originX, float originY) {
-    }
+    public void onTabCreated(
+            long time,
+            int tabId,
+            int tabIndex,
+            int sourceTabId,
+            boolean newIsIncognito,
+            boolean background,
+            float originX,
+            float originY) {}
 
     /**
      * Called when a tab is restored (created FROM_RESTORE).
      * @param time  The current time of the app in ms.
      * @param tabId The id of the restored tab.
      */
-    public void onTabRestored(long time, int tabId) { }
+    public void onTabRestored(long time, int tabId) {}
 
     /**
      * Called when the current tabModel switched (e.g. standard -> incognito).
      *
      * @param incognito True if the new model is incognito.
      */
-    public void onTabModelSwitched(boolean incognito) {
-    }
+    public void onTabModelSwitched(boolean incognito) {}
 
     /**
      * Called when a tab is finally closed if the action was previously undoable.
@@ -633,7 +614,7 @@ public abstract class Layout {
      * @param id        The id of the Tab.
      * @param incognito True if the tab is incognito
      */
-    public void onTabClosureCommitted(long time, int id, boolean incognito) { }
+    public void onTabClosureCommitted(long time, int id, boolean incognito) {}
 
     /**
      * Steps the animation forward and updates all the animated values.
@@ -717,8 +698,11 @@ public abstract class Layout {
      * @return                  A {@link SceneLayer} that represents the content for this
      *                          {@link Layout}.
      */
-    public final SceneLayer getUpdatedSceneLayer(RectF viewport, RectF visibleViewport,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
+    public final SceneLayer getUpdatedSceneLayer(
+            RectF viewport,
+            RectF visibleViewport,
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {
         updateSceneLayer(
                 viewport, visibleViewport, tabContentManager, resourceManager, browserControls);
@@ -756,8 +740,11 @@ public abstract class Layout {
      * Update {@link SceneLayer} instance this layout holds. Any class inheriting {@link Layout}
      * should override this function in order for other functions to work.
      */
-    protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
+    protected void updateSceneLayer(
+            RectF viewport,
+            RectF contentViewport,
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {}
 
     /**

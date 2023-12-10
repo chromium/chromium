@@ -13,6 +13,8 @@ import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
+import dagger.Lazy;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -24,8 +26,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
 import javax.inject.Inject;
-
-import dagger.Lazy;
 
 /**
  * Shows the Trusted Web Activity disclosure when appropriate and notifies of its acceptance.
@@ -43,14 +43,12 @@ public class DisclosureInfobar
      * A {@link SnackbarManager.SnackbarController} that records the users acceptance of the
      * "Running in Chrome" disclosure.
      *
-     * It is also used as a key to for our snackbar so we can dismiss it when the user navigates
+     * <p>It is also used as a key to for our snackbar so we can dismiss it when the user navigates
      * to a page where they don't need to show the disclosure.
      */
     private final SnackbarManager.SnackbarController mSnackbarController =
             new SnackbarManager.SnackbarController() {
-                /**
-                 * To be called when the user accepts the Running in Chrome disclosure.
-                 */
+                /** To be called when the user accepts the Running in Chrome disclosure. */
                 @Override
                 public void onAction(Object actionData) {
                     mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureAccepted();
@@ -58,8 +56,11 @@ public class DisclosureInfobar
             };
 
     @Inject
-    DisclosureInfobar(Resources resources, Lazy<SnackbarManager> snackbarManager,
-            TrustedWebActivityModel model, ActivityLifecycleDispatcher lifecycleDispatcher) {
+    DisclosureInfobar(
+            Resources resources,
+            Lazy<SnackbarManager> snackbarManager,
+            TrustedWebActivityModel model,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mResources = resources;
         mSnackbarManager = snackbarManager;
         mModel = model;

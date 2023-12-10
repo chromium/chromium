@@ -11,6 +11,7 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
 class GestureEvent;
@@ -37,6 +38,8 @@ constexpr SkColor kProjectorDefaultPenColor = kProjectorMagentaPenColor;
 // Projector.
 class ProjectorAnnotationTray : public TrayBackgroundView,
                                 public SessionObserver {
+  METADATA_HEADER(ProjectorAnnotationTray, TrayBackgroundView)
+
  public:
   explicit ProjectorAnnotationTray(Shelf* shelf);
   ProjectorAnnotationTray(const ProjectorAnnotationTray&) = delete;

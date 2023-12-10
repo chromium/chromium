@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-/**
- * Implemented by entities that may host incognito tabs.
- */
+/** Implemented by entities that may host incognito tabs. */
 public interface IncognitoTabHost {
     /** Whether has any incognito tabs at the moment. */
     boolean hasIncognitoTabs();

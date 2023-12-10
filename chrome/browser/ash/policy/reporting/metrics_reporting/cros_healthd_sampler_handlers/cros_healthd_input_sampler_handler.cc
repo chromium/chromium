@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_input_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -20,7 +20,7 @@ CrosHealthdInputSamplerHandler::~CrosHealthdInputSamplerHandler() = default;
 void CrosHealthdInputSamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   const auto& input_result = result->input_result;
 
   if (!input_result.is_null()) {
@@ -39,7 +39,7 @@ void CrosHealthdInputSamplerHandler::HandleResult(
         }
 
         // Gather touch screen info.
-        metric_data = absl::make_optional<MetricData>();
+        metric_data = std::make_optional<MetricData>();
         auto* const touch_screen_info_out =
             metric_data->mutable_info_data()->mutable_touch_screen_info();
 
@@ -60,7 +60,7 @@ void CrosHealthdInputSamplerHandler::HandleResult(
         }
         // Don't report anything if no internal touchscreen was detected.
         if (touch_screen_info_out->touch_screen_devices().empty()) {
-          metric_data = absl::nullopt;
+          metric_data = std::nullopt;
         }
         break;
       }

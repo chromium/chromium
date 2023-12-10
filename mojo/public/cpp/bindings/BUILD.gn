@@ -212,6 +212,7 @@ component("bindings") {
     "receiver_set.h",
     "remote.h",
     "remote_set.h",
+    "runtime_features.h",
     "self_owned_associated_receiver.h",
     "self_owned_receiver.h",
     "sequence_local_sync_event_watcher.h",
@@ -273,6 +274,11 @@ source_set("struct_traits") {
     "struct_traits.h",
     "union_traits.h",
   ]
+
+  deps = [
+    ":bindings_base",
+    "//base",
+  ]
 }
 
 # This is provided as a separate target so other targets can use Mojo bindings
@@ -291,8 +297,6 @@ source_set("protobuf_support") {
 if (use_blink) {
   component("wtf_support") {
     sources = [
-      "array_traits_web_vector.h",
-      "array_traits_wtf_vector.h",
       "lib/string_traits_wtf.cc",
       "lib/wtf_clone_equals_util.h",
       "lib/wtf_hash_util.h",

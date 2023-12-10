@@ -10,6 +10,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -84,6 +85,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "x86",
+            "no_symbols",
+        ],
+    ),
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -108,6 +118,13 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-win-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
     ),
     builderless = True,
     cores = 32,
@@ -162,6 +179,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+            "x86",
+            "no_symbols",
+        ],
+    ),
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -196,6 +222,14 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-win-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = False,
     cores = 32,
@@ -272,6 +306,14 @@ ci.thin_tester(
 ci.builder(
     name = "Windows deterministic",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "x86",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",

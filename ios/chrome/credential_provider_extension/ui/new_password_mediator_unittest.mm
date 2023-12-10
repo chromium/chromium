@@ -99,7 +99,7 @@ NSUserDefaults* TestUserDefaults() {
 
 ArchivableCredential* TestCredential(NSString* recordIdentifier) {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                    keychainIdentifier:@"keychainIdentifier"
+                                              password:@"qwerty123"
                                                   rank:5
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:@"serviceIdentifier"

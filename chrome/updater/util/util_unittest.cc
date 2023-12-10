@@ -4,7 +4,9 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <optional>
 #include <sstream>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -26,7 +28,6 @@
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -49,10 +50,10 @@ TEST(Util, AppArgsAndAP) {
                                     "a69d9e530f96&appname=TestApp&ap=TestAP");
 
     // Test GetAppArgs.
-    EXPECT_EQ(GetAppArgs("NonExistentAppId"), absl::nullopt);
-    absl::optional<tagging::AppArgs> app_args =
+    EXPECT_EQ(GetAppArgs("NonExistentAppId"), std::nullopt);
+    std::optional<tagging::AppArgs> app_args =
         GetAppArgs("8a69f345-c564-463c-aff1-a69d9e530f96");
-    ASSERT_NE(app_args, absl::nullopt);
+    ASSERT_NE(app_args, std::nullopt);
     EXPECT_STREQ(app_args->app_id.c_str(),
                  "8a69f345-c564-463c-aff1-a69d9e530f96");
     EXPECT_STREQ(app_args->app_name.c_str(), "TestApp");
@@ -71,7 +72,7 @@ TEST(Util, WriteInstallerDataToTempFile) {
       directory.Append(FILE_PATH_LITERAL("NonExistentDirectory")),
       kInstallerData));
 
-  const absl::optional<base::FilePath> installer_data_file =
+  const std::optional<base::FilePath> installer_data_file =
       WriteInstallerDataToTempFile(directory, kInstallerData);
   ASSERT_TRUE(installer_data_file);
 
@@ -102,7 +103,7 @@ TEST(Util, GetTagArgsForCommandLine) {
 }
 
 TEST(Util, GetCrashDatabasePath) {
-  absl::optional<base::FilePath> crash_database_path(
+  std::optional<base::FilePath> crash_database_path(
       GetCrashDatabasePath(GetTestScope()));
   ASSERT_TRUE(crash_database_path);
   EXPECT_EQ(crash_database_path->BaseName().value(),
@@ -110,7 +111,7 @@ TEST(Util, GetCrashDatabasePath) {
 }
 
 TEST(Util, GetCrxDiffCacheDirectory) {
-  absl::optional<base::FilePath> diff_cache_directory(
+  std::optional<base::FilePath> diff_cache_directory(
       GetCrxDiffCacheDirectory(GetTestScope()));
   ASSERT_TRUE(diff_cache_directory);
   EXPECT_EQ(diff_cache_directory->BaseName().value(),

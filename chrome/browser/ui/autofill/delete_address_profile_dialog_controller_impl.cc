@@ -68,7 +68,7 @@ std::u16string DeleteAddressProfileDialogControllerImpl::GetDeclineButtonText()
 std::u16string
 DeleteAddressProfileDialogControllerImpl::GetDeleteConfirmationText() const {
   if (is_account_address_profile_) {
-    absl::optional<AccountInfo> account =
+    std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents_->GetBrowserContext());
     CHECK(account);

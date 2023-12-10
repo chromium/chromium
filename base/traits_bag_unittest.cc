@@ -27,9 +27,8 @@ struct TestTraits {
     ValidTrait(EnumTraitB);
   };
 
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   constexpr TestTraits(ArgTypes... args)
       : has_example_trait(trait_helpers::HasTrait<ExampleTrait, ArgTypes...>()),
         enum_trait_a(
@@ -44,9 +43,8 @@ struct TestTraits {
 
 // Like TestTraits, except ExampleTrait is filtered away.
 struct FilteredTestTraits : public TestTraits {
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   constexpr FilteredTestTraits(ArgTypes... args)
       : TestTraits(Exclude<ExampleTrait>::Filter(args)...) {}
 };
@@ -58,9 +56,8 @@ struct RequiredEnumTestTraits {
   };
 
   // We require EnumTraitA to be specified.
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   constexpr RequiredEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetEnum<EnumTraitA>(args...)) {}
 
@@ -74,9 +71,8 @@ struct OptionalEnumTestTraits {
   };
 
   // EnumTraitA can optionally be specified.
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   constexpr OptionalEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetOptionalEnum<EnumTraitA>(args...)) {}
 
@@ -174,8 +170,8 @@ TEST(TraitsBagTest, ValidTraitInheritance) {
     ValidTraitsB(EnumTraitB);
   };
 
-  static_assert(AreValidTraits<ValidTraitsA, EnumTraitA>(), "");
-  static_assert(AreValidTraits<ValidTraitsB, EnumTraitA, EnumTraitB>(), "");
+  static_assert(AreValidTraits<ValidTraitsA, EnumTraitA>, "");
+  static_assert(AreValidTraits<ValidTraitsB, EnumTraitA, EnumTraitB>, "");
 }
 
 TEST(TraitsBagTest, Filtering) {
@@ -213,7 +209,7 @@ TEST(TraitsBagTest, FilteredTestTraits) {
 }
 
 TEST(TraitsBagTest, EmptyTraitIsValid) {
-  static_assert(IsValidTrait<TestTraits::ValidTrait, EmptyTrait>(), "");
+  static_assert(IsValidTrait<TestTraits::ValidTrait, EmptyTrait>, "");
 }
 
 }  // namespace trait_helpers

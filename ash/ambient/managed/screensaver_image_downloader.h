@@ -6,6 +6,7 @@
 #define ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGE_DOWNLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,8 +17,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -142,7 +143,7 @@ class ASH_EXPORT ScreensaverImageDownloader {
   // attempt to start the next download, if any.
   void FinishImageDownload(const std::string& image_url,
                            ScreensaverImageDownloadResult result,
-                           absl::optional<base::FilePath> path);
+                           std::optional<base::FilePath> path);
 
   QueueState queue_state_ = QueueState::kWaiting;
 

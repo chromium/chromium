@@ -67,7 +67,7 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
   std::vector<std::pair<ContentSettingsPattern, int>> GetUpdatedReviewList(
       NotificationPermissionsReviewService* service) {
     safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
-    absl::optional<std::unique_ptr<SafetyHubService::Result>> result_opt =
+    std::optional<std::unique_ptr<SafetyHubService::Result>> result_opt =
         service->GetCachedResult();
     EXPECT_TRUE(result_opt.has_value());
     auto* result = static_cast<
@@ -92,7 +92,7 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
   GetNotificationPermissionsFromService() {
     auto* service =
         NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
-    absl::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+    std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
         service->GetCachedResult();
     EXPECT_TRUE(sh_result.has_value());
     return static_cast<NotificationPermissionsReviewService::

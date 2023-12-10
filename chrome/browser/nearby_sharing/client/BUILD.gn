@@ -17,7 +17,6 @@ source_set("client") {
     "//base",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/logging",
-    "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/client",
     "//components/cross_device/logging:logging",
     "//components/signin/public/identity_manager",
@@ -25,6 +24,10 @@ source_set("client") {
     "//net/traffic_annotation",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/nearby:certificate_rpc_proto",
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:device_rpc_proto",
+    "//third_party/nearby:rpc_resources_proto",
     "//url",
   ]
 }
@@ -41,8 +44,10 @@ source_set("test_support") {
     ":client",
     "//base",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/client",
+    "//third_party/nearby:certificate_rpc_proto",
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:device_rpc_proto",
   ]
 }
 
@@ -56,12 +61,15 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/client",
     "//components/signin/public/identity_manager:test_support",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gtest",
+    "//third_party/nearby:certificate_rpc_proto",
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:device_rpc_proto",
+    "//third_party/nearby:rpc_resources_proto",
   ]
 }

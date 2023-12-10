@@ -73,15 +73,6 @@ const char* RoleToString(const ERole role) {
 
 }  // namespace
 
-// static
-AUDCLNT_SHAREMODE
-WASAPIAudioOutputStream::GetShareMode() {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kEnableExclusiveAudio))
-    return AUDCLNT_SHAREMODE_EXCLUSIVE;
-  return AUDCLNT_SHAREMODE_SHARED;
-}
-
 WASAPIAudioOutputStream::WASAPIAudioOutputStream(
     AudioManagerWin* manager,
     const std::string& device_id,
@@ -101,7 +92,6 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
       endpoint_buffer_size_frames_(0),
       device_id_(device_id),
       device_role_(device_role),
-      share_mode_(GetShareMode()),
       num_written_frames_(0),
       source_(nullptr),
       log_callback_(std::move(log_callback)) {
@@ -223,86 +213,62 @@ bool WASAPIAudioOutputStream::Open() {
   }
 
   // Extra sanity to ensure that the provided device format is still valid.
-  if (!CoreAudioUtil::IsFormatSupported(audio_client.Get(), share_mode_,
-                                        &format_)) {
+  if (!CoreAudioUtil::IsFormatSupported(audio_client.Get(), &format_)) {
     RecordAudioFailure(kOpenFailureHistogram, GetLastError());
     SendLogMessage("%s => (ERROR: CAU::IsFormatSupported failed)", __func__);
     return false;
   }
 
-  HRESULT hr = S_FALSE;
-  if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
-    // Initialize the audio stream between the client and the device in shared
-    // mode and using event-driven buffer handling.
-    hr = CoreAudioUtil::SharedModeInitialize(
-        audio_client.Get(), &format_, audio_samples_render_event_.Get(),
-        requested_iaudioclient3_buffer_size_, &endpoint_buffer_size_frames_,
-        communications_device ? &kCommunicationsSessionId : nullptr);
-    if (FAILED(hr)) {
-      RecordAudioFailure(kOpenFailureHistogram, hr);
-      SendLogMessage("%s => (ERROR: IAudioClient::SharedModeInitialize=[%s])",
-                     __func__, ErrorToString(hr).c_str());
-      return false;
-    }
+  // Initialize the audio stream between the client and the device in shared
+  // mode and using event-driven buffer handling.
+  HRESULT hr = CoreAudioUtil::SharedModeInitialize(
+      audio_client.Get(), &format_, audio_samples_render_event_.Get(),
+      requested_iaudioclient3_buffer_size_, &endpoint_buffer_size_frames_,
+      communications_device ? &kCommunicationsSessionId : nullptr);
+  if (FAILED(hr)) {
+    RecordAudioFailure(kOpenFailureHistogram, hr);
+    SendLogMessage("%s => (ERROR: IAudioClient::SharedModeInitialize=[%s])",
+                   __func__, ErrorToString(hr).c_str());
+    return false;
+  }
 
-    REFERENCE_TIME device_period = 0;
-    if (FAILED(CoreAudioUtil::GetDevicePeriod(
-            audio_client.Get(), AUDCLNT_SHAREMODE_SHARED, &device_period))) {
-      RecordAudioFailure(kOpenFailureHistogram, GetLastError());
-      return false;
-    }
+  REFERENCE_TIME device_period = 0;
+  if (FAILED(CoreAudioUtil::GetDevicePeriod(
+          audio_client.Get(), AUDCLNT_SHAREMODE_SHARED, &device_period))) {
+    RecordAudioFailure(kOpenFailureHistogram, GetLastError());
+    return false;
+  }
 
-    const int preferred_frames_per_buffer = static_cast<int>(
-        format_.Format.nSamplesPerSec *
-            CoreAudioUtil::ReferenceTimeToTimeDelta(device_period)
-                .InSecondsF() +
-        0.5);
-    SendLogMessage("%s => (preferred_frames_per_buffer=[%d audio frames])",
-                   __func__, preferred_frames_per_buffer);
+  const int preferred_frames_per_buffer = static_cast<int>(
+      format_.Format.nSamplesPerSec *
+          CoreAudioUtil::ReferenceTimeToTimeDelta(device_period).InSecondsF() +
+      0.5);
+  SendLogMessage("%s => (preferred_frames_per_buffer=[%d audio frames])",
+                 __func__, preferred_frames_per_buffer);
 
-    // Packet size should always be an even divisor of the device period for
-    // best performance; things will still work otherwise, but may glitch for a
-    // couple of reasons.
-    //
-    // The first reason is if/when repeated RenderAudioFromSource() hit the
-    // shared memory boundary between the renderer and the browser.  The next
-    // audio buffer is always requested after the current request is consumed.
-    // With back-to-back calls the round-trip may not be fast enough and thus
-    // audio will glitch as we fail to deliver audio in a timely manner.
-    //
-    // The second reason is event wakeup efficiency.  We may have too few or too
-    // many frames to fill the output buffer requested by WASAPI.  If too few,
-    // we'll refuse the render event and wait until more output space is
-    // available.  If we have too many frames, we'll only partially fill and
-    // wait for the next render event.  In either case certain remainders may
-    // leave us unable to fulfill the request in a timely manner, thus glitches.
-    //
-    // Log a warning in these cases so we can help users in the field.
-    // Examples: 48kHz => 960 % 480, 44.1kHz => 896 % 448 or 882 % 441.
-    if (preferred_frames_per_buffer % packet_size_frames_) {
-      SendLogMessage(
-          "%s => (WARNING: Using output audio with a non-optimal buffer size)",
-          __func__);
-    }
-  } else {
+  // Packet size should always be an even divisor of the device period for
+  // best performance; things will still work otherwise, but may glitch for a
+  // couple of reasons.
+  //
+  // The first reason is if/when repeated RenderAudioFromSource() hit the
+  // shared memory boundary between the renderer and the browser.  The next
+  // audio buffer is always requested after the current request is consumed.
+  // With back-to-back calls the round-trip may not be fast enough and thus
+  // audio will glitch as we fail to deliver audio in a timely manner.
+  //
+  // The second reason is event wakeup efficiency.  We may have too few or too
+  // many frames to fill the output buffer requested by WASAPI.  If too few,
+  // we'll refuse the render event and wait until more output space is
+  // available.  If we have too many frames, we'll only partially fill and
+  // wait for the next render event.  In either case certain remainders may
+  // leave us unable to fulfill the request in a timely manner, thus glitches.
+  //
+  // Log a warning in these cases so we can help users in the field.
+  // Examples: 48kHz => 960 % 480, 44.1kHz => 896 % 448 or 882 % 441.
+  if (preferred_frames_per_buffer % packet_size_frames_) {
     SendLogMessage(
-        "%s => (WARNING: Using exclusive mode can lead to bad performance)",
+        "%s => (WARNING: Using output audio with a non-optimal buffer size)",
         __func__);
-    // TODO(henrika): break out to CoreAudioUtil::ExclusiveModeInitialize()
-    // when removing the enable-exclusive-audio flag.
-    hr = ExclusiveModeInitialization(audio_client.Get(),
-                                     audio_samples_render_event_.Get(),
-                                     &endpoint_buffer_size_frames_);
-    if (FAILED(hr))
-      return false;
-
-    // The buffer scheme for exclusive mode streams is not designed for max
-    // flexibility. We only allow a "perfect match" between the packet size set
-    // by the user and the actual endpoint buffer size.
-    if (endpoint_buffer_size_frames_ != packet_size_frames_) {
-      LOG(ERROR) << "Bailing out due to non-perfect timing.";
-      return false;
-    }
   }
 
   // Create an IAudioRenderClient client for an initialized IAudioClient.
@@ -363,24 +329,22 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   // been invalidated (AUDCLNT_E_DEVICE_INVALIDATED), we retry for all errors
   // for simplicity and due to large sites like YouTube reporting high success
   // rates with a simple retry upon detection of an audio output error.
-  if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
-    if (!CoreAudioUtil::FillRenderEndpointBufferWithSilence(
-            audio_client_.Get(), audio_render_client_.Get())) {
-      // Failed to prepare endpoint buffers with silence. Attempting recovery
-      // with a new IAudioClient and IAudioRenderClient."
-      SendLogMessage(
-          "%s => (WARNING: CAU::FillRenderEndpointBufferWithSilence failed)",
-          __func__);
-      opened_ = false;
-      audio_client_.Reset();
-      audio_render_client_.Reset();
-      if (!Open() || !CoreAudioUtil::FillRenderEndpointBufferWithSilence(
-                         audio_client_.Get(), audio_render_client_.Get())) {
-        RecordAudioFailure(kStartFailureHistogram, GetLastError());
-        SendLogMessage("%s => (ERROR: Recovery attempt failed)", __func__);
-        callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
-        return;
-      }
+  if (!CoreAudioUtil::FillRenderEndpointBufferWithSilence(
+          audio_client_.Get(), audio_render_client_.Get())) {
+    // Failed to prepare endpoint buffers with silence. Attempting recovery
+    // with a new IAudioClient and IAudioRenderClient."
+    SendLogMessage(
+        "%s => (WARNING: CAU::FillRenderEndpointBufferWithSilence failed)",
+        __func__);
+    opened_ = false;
+    audio_client_.Reset();
+    audio_render_client_.Reset();
+    if (!Open() || !CoreAudioUtil::FillRenderEndpointBufferWithSilence(
+                       audio_client_.Get(), audio_render_client_.Get())) {
+      RecordAudioFailure(kStartFailureHistogram, GetLastError());
+      SendLogMessage("%s => (ERROR: Recovery attempt failed)", __func__);
+      callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
+      return;
     }
   }
 
@@ -457,15 +421,12 @@ void WASAPIAudioOutputStream::Stop() {
   // Extra safety check to ensure that the buffers are cleared.
   // If the buffers are not cleared correctly, the next call to Start()
   // would fail with AUDCLNT_E_BUFFER_ERROR at IAudioRenderClient::GetBuffer().
-  // This check is is only needed for shared-mode streams.
-  if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
-    UINT32 num_queued_frames = 0;
-    audio_client_->GetCurrentPadding(&num_queued_frames);
-    DCHECK_EQ(0u, num_queued_frames);
-    if (num_queued_frames > 0) {
-      SendLogMessage("%s => (WARNING: Buffers are not cleared correctly)",
-                     __func__);
-    }
+  UINT32 num_queued_frames = 0;
+  audio_client_->GetCurrentPadding(&num_queued_frames);
+  DCHECK_EQ(0u, num_queued_frames);
+  if (num_queued_frames > 0) {
+    SendLogMessage("%s => (WARNING: Buffers are not cleared correctly)",
+                   __func__);
   }
 }
 
@@ -620,36 +581,23 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
   // engine has not yet read from the buffer.
   UINT32 num_available_frames = 0;
 
-  if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
-    // Get the padding value which represents the amount of rendering
-    // data that is queued up to play in the endpoint buffer.
-    hr = audio_client_->GetCurrentPadding(&num_queued_frames);
-    if (FAILED(hr)) {
-      RecordAudioFailure(kRenderFailureHistogram, hr);
-      LOG(ERROR) << "WAOS::" << __func__
-                 << " => (ERROR: IAudioClient::GetCurrentPadding=["
-                 << ErrorToString(hr).c_str() << "])";
-      return false;
-    }
-    TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("audio"),
-                      "IAudioClient_queued_frames", this, num_queued_frames);
-    if (!num_queued_frames) {
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"), "buffer empty",
-                           TRACE_EVENT_SCOPE_THREAD);
-    }
-    num_available_frames = endpoint_buffer_size_frames_ - num_queued_frames;
-  } else {
-    // While the stream is running, the system alternately sends one
-    // buffer or the other to the client. This form of double buffering
-    // is referred to as "ping-ponging". Each time the client receives
-    // a buffer from the system (triggers this event) the client must
-    // process the entire buffer. Calls to the GetCurrentPadding method
-    // are unnecessary because the packet size must always equal the
-    // buffer size. In contrast to the shared mode buffering scheme,
-    // the latency for an event-driven, exclusive-mode stream depends
-    // directly on the buffer size.
-    num_available_frames = endpoint_buffer_size_frames_;
+  // Get the padding value which represents the amount of rendering
+  // data that is queued up to play in the endpoint buffer.
+  hr = audio_client_->GetCurrentPadding(&num_queued_frames);
+  if (FAILED(hr)) {
+    RecordAudioFailure(kRenderFailureHistogram, hr);
+    LOG(ERROR) << "WAOS::" << __func__
+               << " => (ERROR: IAudioClient::GetCurrentPadding=["
+               << ErrorToString(hr).c_str() << "])";
+    return false;
   }
+  TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("audio"),
+                    "IAudioClient_queued_frames", this, num_queued_frames);
+  if (!num_queued_frames) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"), "buffer empty",
+                         TRACE_EVENT_SCOPE_THREAD);
+  }
+  num_available_frames = endpoint_buffer_size_frames_ - num_queued_frames;
 
   TRACE_EVENT(
       TRACE_DISABLED_BY_DEFAULT("audio"), "IAudioClient frames",
@@ -903,8 +851,6 @@ HRESULT WASAPIAudioOutputStream::ExclusiveModeInitialization(
     IAudioClient* client,
     HANDLE event_handle,
     uint32_t* endpoint_buffer_size) {
-  DCHECK_EQ(share_mode_, AUDCLNT_SHAREMODE_EXCLUSIVE);
-
   float f = (1000.0 * packet_size_frames_) / format_.Format.nSamplesPerSec;
   REFERENCE_TIME requested_buffer_duration =
       static_cast<REFERENCE_TIME>(f * 10000.0 + 0.5);

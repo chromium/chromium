@@ -31,7 +31,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/mock_notification_observer.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {

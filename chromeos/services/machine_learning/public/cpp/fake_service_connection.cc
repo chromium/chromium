@@ -4,11 +4,11 @@
 
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace machine_learning {
@@ -259,7 +259,7 @@ void FakeServiceConnectionImpl::SetWebPlatformModelComputeResult(
 }
 
 void FakeServiceConnectionImpl::SetOutputWebPlatformModelCompute(
-    absl::optional<base::flat_map<std::string, std::vector<uint8_t>>> output) {
+    std::optional<base::flat_map<std::string, std::vector<uint8_t>>> output) {
   web_platform_model_compute_output_ = output;
 }
 
@@ -351,7 +351,7 @@ void FakeServiceConnectionImpl::HandleCreateGraphExecutorCall(
 void FakeServiceConnectionImpl::HandleExecuteCall(
     mojom::GraphExecutor::ExecuteCallback callback) {
   if (execute_result_ != mojom::ExecuteResult::OK) {
-    std::move(callback).Run(execute_result_, absl::nullopt);
+    std::move(callback).Run(execute_result_, std::nullopt);
     return;
   }
 
@@ -679,7 +679,7 @@ void FakeServiceConnectionImpl::HandleComputeCall(
     std::move(callback).Run(ml::model_loader::mojom::ComputeResult::kOk,
                             web_platform_model_compute_output_);
   } else {
-    std::move(callback).Run(web_platform_model_compute_result_, absl::nullopt);
+    std::move(callback).Run(web_platform_model_compute_result_, std::nullopt);
   }
 }
 

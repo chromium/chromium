@@ -628,27 +628,27 @@ class PrivateNetworkAccessBrowserTestBlockFromUnknown
 };
 
 // Test with PNA checks for iframes enabled.
-class PrivateNetworkAccessBrowserTestForIframes
+class PrivateNetworkAccessBrowserTestForNavigations
     : public PrivateNetworkAccessBrowserTestBase {
  public:
-  PrivateNetworkAccessBrowserTestForIframes()
+  PrivateNetworkAccessBrowserTestForNavigations()
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kPrivateNetworkAccessForIframes,
+                features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
 
-// Test with PNA checks for iframes enabled in warning-only mode.
-class PrivateNetworkAccessBrowserTestForIframesWarningOnly
-    : public PrivateNetworkAccessBrowserTestForIframes {
+// Test with PNA checks for navigations enabled in warning-only mode.
+class PrivateNetworkAccessBrowserTestForNavigationsWarningOnly
+    : public PrivateNetworkAccessBrowserTestForNavigations {
  private:
   base::test::ScopedFeatureList feature_list_{
-      features::kPrivateNetworkAccessForIframesWarningOnly};
+      features::kPrivateNetworkAccessForNavigationsWarningOnly};
 };
 
 // Test with the feature to send preflights (unenforced) disabled, and insecure
@@ -744,7 +744,7 @@ class PrivateNetworkAccessBrowserTestNoBlocking
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kPrivateNetworkAccessForIframes,
+                features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessForWorkers,
                 features::kPrivateNetworkAccessSendPreflights,
                 network::features::kNetworkServiceMemoryCache,
@@ -3932,7 +3932,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - from an insecure page served from a public IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigationsWarningOnly,
                        IframeFromInsecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -3958,7 +3958,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
 //  - from an insecure page served from a public IP address
 //  - to a local IP address
 // are blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromInsecurePublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -3989,7 +3989,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 }
 
 // Same as above, testing the "treat-as-public-address" CSP directive.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
@@ -4008,7 +4008,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 // This test verifies that when an iframe navigation fails due to PNA, the
 // iframe navigates to an error page, even if it had previously committed a
 // document.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        FailedNavigationCommitsErrorPage) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -4049,7 +4049,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 //  - from a secure page served from a public IP address
 //  - to a local IP address
 // are preceded by a preflight request which is allowed to fail.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigationsWarningOnly,
                        IframeFromSecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -4074,7 +4074,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
 //  - from a secure page served from a public IP address
 //  - to a local IP address
 // are preceded by a preflight request which must succeed.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromSecurePublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -4108,7 +4108,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 //  - to a local IP address
 // are preceded by a preflight request, to which the server must respond
 // correctly.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromSecurePublicToLocalIsNotBlocked) {
   GURL initiator_url = SecurePublicURL(kDefaultPath);
   EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
@@ -4134,7 +4134,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 }
 
 // Same as above, testing the "treat-as-public-address" CSP directive.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromSecureTreatAsPublicToLocalIsNotBlocked) {
   GURL initiator_url = SecureLocalURL(kTreatAsPublicAddressPath);
   EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
@@ -4156,8 +4156,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestForIframes,
-    FormSubmissionFromInsecurePublicToLocalIsNotBlockedInMainFrame) {
+    PrivateNetworkAccessBrowserTestForNavigations,
+    FormSubmissionFromInsecurePublicToLocalIsBlockedInMainFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   GURL url = InsecureLocalURL(kDefaultPath);
@@ -4175,16 +4175,12 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
-  // Check that the child iframe was not blocked.
-  EXPECT_TRUE(navigation_manager.was_successful());
-
-  EXPECT_EQ(url, EvalJs(root_frame_host(), "document.location.href"));
-  EXPECT_EQ(url, root_frame_host()->GetLastCommittedURL());
-  EXPECT_FALSE(root_frame_host()->GetLastCommittedOrigin().opaque());
+  // Check that the form submission was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestForIframes,
+    PrivateNetworkAccessBrowserTestForNavigations,
     FormSubmissionFromInsecurePublicToLocalIsBlockedInChildFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -4225,7 +4221,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestForIframes,
+    PrivateNetworkAccessBrowserTestForNavigations,
     FormSubmissionGetFromInsecurePublicToLocalIsBlockedInChildFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -4270,7 +4266,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        SiblingNavigationFromInsecurePublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 

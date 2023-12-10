@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
@@ -17,6 +18,8 @@ namespace ash {
 // A label for system nudges which automatically updates text color on theme
 // changes and supports inline embedding of custom views.
 class ASH_EXPORT SystemNudgeLabel : public views::View {
+  METADATA_HEADER(SystemNudgeLabel, views::View)
+
  public:
   SystemNudgeLabel(std::u16string text, int fixed_width);
 

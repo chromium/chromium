@@ -86,13 +86,11 @@ class SyncExtensionHelper {
   struct ExtensionState {
     enum EnabledState { DISABLED, PENDING, ENABLED };
 
-    ExtensionState();
-    ~ExtensionState();
-    bool Equals(const ExtensionState& other) const;
+    bool operator==(const ExtensionState& other) const = default;
 
-    EnabledState enabled_state;
-    int disable_reasons;
-    bool incognito_enabled;
+    EnabledState enabled_state = ENABLED;
+    int disable_reasons = 0;
+    bool incognito_enabled = false;
   };
 
   using ExtensionStateMap = std::map<std::string, ExtensionState>;
@@ -126,7 +124,7 @@ class SyncExtensionHelper {
   ProfileExtensionNameMap profile_extensions_;
   StringMap id_to_name_;
   TypeMap id_to_type_;
-  bool setup_completed_;
+  bool setup_completed_ = false;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_HELPER_H_

@@ -26,6 +26,7 @@ found in the LICENSE file.
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
+        <item name="colorSurfaceContainerHighest">@color/default_bg_color_elev_5_baseline</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
@@ -60,6 +61,12 @@ found in the LICENSE file.
         <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
         <item name="globalLinkTextColor">?attr/colorPrimary</item>
         <item name="globalClickableSpanColor">?attr/colorPrimary</item>
+
+        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
+
+        <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
+         using the theme for SettingsActivity (e.g. PageInfoView) -->
+        <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
     </style>
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
@@ -67,7 +74,7 @@ found in the LICENSE file.
         <!-- Control styles -->
         <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
         <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
-        <item name="switchStyle">@style/Widget.BrowserUI.Switch</item>
+        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
 
         <!-- Window Properties -->
         <item name="android:windowBackground">@macro/default_bg_color</item>
@@ -121,6 +128,7 @@ found in the LICENSE file.
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
+        <item name="colorSurfaceContainerHighest">@color/default_bg_color_elev_5_baseline</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorError">@color/baseline_error_40</item>
 
@@ -153,6 +161,12 @@ found in the LICENSE file.
         <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
         <item name="globalLinkTextColor">?attr/colorPrimary</item>
         <item name="globalClickableSpanColor">?attr/colorPrimary</item>
+
+        <!-- Widgets style override-->
+        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
+        <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
+         using the theme for SettingsActivity (e.g. PageInfoView) -->
+        <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
     </style>
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
@@ -179,6 +193,7 @@ found in the LICENSE file.
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
+        <item name="colorSurfaceContainerHighest">@color/default_bg_color_elev_5_baseline</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
@@ -219,6 +234,10 @@ found in the LICENSE file.
 
         <!--  Overriding AppCompat values -->
         <item name="spinnerStyle">@style/SpinnerStyle</item>
+        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
+        <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
+         using the theme for SettingsActivity (e.g. PageInfoView) -->
+        <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
 
         <!-- Depending on if the support library or framework is inflating the
              dialog, a different layout is used, that names this style slightly

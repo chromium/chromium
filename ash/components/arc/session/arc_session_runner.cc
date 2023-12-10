@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/session/arc_session_runner.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
@@ -11,7 +12,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -35,7 +35,7 @@ void RecordInstanceRestartAfterCrashUma(size_t restart_after_crash_count) {
 
 // Gets an ArcContainerLifetimeEvent value to record. Returns nullopt when no
 // UMA recording is needed.
-absl::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
+std::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
     size_t restart_after_crash_count,
     ArcStopReason stop_reason,
     bool was_running) {
@@ -44,13 +44,13 @@ absl::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
   // container restart might be recorded. Each CONTAINER_STARTED event can
   // be paired up to one non-START event.
   if (restart_after_crash_count)
-    return absl::nullopt;
+    return std::nullopt;
 
   switch (stop_reason) {
     case ArcStopReason::SHUTDOWN:
     case ArcStopReason::LOW_DISK_SPACE:
       // We don't record these events.
-      return absl::nullopt;
+      return std::nullopt;
     case ArcStopReason::GENERIC_BOOT_FAILURE:
       return ArcContainerLifetimeEvent::CONTAINER_FAILED_TO_START;
     case ArcStopReason::CRASH:
@@ -59,11 +59,11 @@ absl::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
   }
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns true if restart is needed for given conditions.
-bool IsRestartNeeded(absl::optional<ArcInstanceMode> target_mode,
+bool IsRestartNeeded(std::optional<ArcInstanceMode> target_mode,
                      ArcStopReason stop_reason,
                      bool was_running) {
   if (!target_mode.has_value()) {
@@ -98,7 +98,7 @@ bool IsRestartNeeded(absl::optional<ArcInstanceMode> target_mode,
 
 // Returns true if the request to start/upgrade ARC instance is allowed
 // operation.
-bool IsRequestAllowed(const absl::optional<ArcInstanceMode>& current_mode,
+bool IsRequestAllowed(const std::optional<ArcInstanceMode>& current_mode,
                       ArcInstanceMode request_mode) {
   if (!current_mode.has_value()) {
     // This is a request to start a new ARC instance (either mini instance
@@ -146,7 +146,7 @@ void ArcSessionRunner::ResumeRunner() {
   resumed_ = true;
   if (target_mode_) {
     ArcInstanceMode original_mode = *target_mode_;
-    target_mode_ = absl::nullopt;
+    target_mode_ = std::nullopt;
     RequestStart(original_mode);
   }
 }
@@ -208,7 +208,7 @@ void ArcSessionRunner::RequestStop() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   VLOG(1) << "Session stop requested";
-  target_mode_ = absl::nullopt;
+  target_mode_ = std::nullopt;
 
   if (arc_session_) {
     // If |arc_session_| is running, stop it.
@@ -229,7 +229,7 @@ void ArcSessionRunner::OnShutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   VLOG(1) << "OnShutdown";
-  target_mode_ = absl::nullopt;
+  target_mode_ = std::nullopt;
   restart_timer_.Stop();
   if (arc_session_)
     arc_session_->OnShutdown();
@@ -292,6 +292,7 @@ void ArcSessionRunner::StartArcSession() {
     arc_session_->SetDefaultDeviceScaleFactor(default_device_scale_factor_);
     arc_session_->SetDemoModeDelegate(demo_mode_delegate_.get());
     arc_session_->SetUseVirtioBlkData(use_virtio_blk_data_);
+    arc_session_->SetArcSignedIn(arc_signed_in_);
     arc_session_->AddObserver(this);
     arc_session_->StartMiniInstance();
     // Record the UMA only when |restart_after_crash_count_| is zero to avoid
@@ -327,7 +328,7 @@ void ArcSessionRunner::OnSessionStopped(ArcStopReason stop_reason,
   arc_session_->RemoveObserver(this);
   arc_session_.reset();
 
-  const absl::optional<ArcContainerLifetimeEvent> uma_to_record =
+  const std::optional<ArcContainerLifetimeEvent> uma_to_record =
       GetArcContainerLifetimeEvent(restart_after_crash_count_, stop_reason,
                                    was_running);
   if (uma_to_record.has_value())

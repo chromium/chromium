@@ -1,20 +1,4 @@
 {
-  "companion-linux": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "use_remoteexec": true
-    }
-  },
-  "companion-win64": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "use_remoteexec": true
-    }
-  },
   "optimization_guide-android-arm64": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
@@ -48,7 +32,17 @@
       "use_remoteexec": true
     }
   },
-  "optimization_guide-mac": {
+  "optimization_guide-mac-arm64": {
+    "gn_args": {
+      "build_with_internal_optimization_guide": true,
+      "dcheck_always_on": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
+  "optimization_guide-mac-x64": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
       "dcheck_always_on": false,

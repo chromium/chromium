@@ -9,15 +9,15 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/starscan/metadata_allocator.h"
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -31,7 +31,7 @@ namespace internal {
 // PCScan. An example would be strings or socket/IPC/file buffers. Use with
 // caution.
 template <bool quarantinable>
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) NonScannableAllocatorImpl final {
+class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) NonScannableAllocatorImpl final {
  public:
   static NonScannableAllocatorImpl& Instance();
 

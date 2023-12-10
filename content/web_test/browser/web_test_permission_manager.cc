@@ -4,6 +4,7 @@
 
 #include "content/web_test/browser/web_test_permission_manager.h"
 
+#include <functional>
 #include <list>
 #include <memory>
 #include <utility>
@@ -453,7 +454,7 @@ void WebTestPermissionManager::OnPermissionChanged(
                      permission_callback,
                  const std::vector<bool>& successes) {
                 std::move(permission_callback)
-                    .Run(base::ranges::all_of(successes, base::identity()));
+                    .Run(base::ranges::all_of(successes, std::identity()));
               },
               std::move(permission_callback)));
       SetPermission(blink::PermissionType::STORAGE_ACCESS_GRANT,

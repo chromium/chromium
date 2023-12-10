@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] document.execCommand("copy") should work but document.execCommand("cut") should not change the DOM or the clipboard
+  assert_true: 'copy' always returns true regardless of whether it did anything expected true got false
+Harness: the test ran to completion.

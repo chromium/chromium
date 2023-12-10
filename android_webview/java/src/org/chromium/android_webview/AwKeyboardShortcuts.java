@@ -26,13 +26,15 @@ public class AwKeyboardShortcuts {
     private AwKeyboardShortcuts() {}
 
     private static int getMetaState(KeyEvent event) {
-        return (event.isCtrlPressed() ? CTRL : 0) | (event.isAltPressed() ? ALT : 0)
+        return (event.isCtrlPressed() ? CTRL : 0)
+                | (event.isAltPressed() ? ALT : 0)
                 | (event.isShiftPressed() ? SHIFT : 0);
     }
 
     public static boolean onKeyDown(KeyEvent event, AwContents awContents) {
         int keyCode = event.getKeyCode();
-        if (event.getRepeatCount() != 0 || event.getAction() != KeyEvent.ACTION_DOWN
+        if (event.getRepeatCount() != 0
+                || event.getAction() != KeyEvent.ACTION_DOWN
                 || KeyEvent.isModifierKey(keyCode)) {
             return false;
         }

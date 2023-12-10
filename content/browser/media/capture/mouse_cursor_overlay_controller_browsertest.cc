@@ -5,6 +5,8 @@
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -12,7 +14,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -24,18 +28,22 @@
 #include "ui/wm/core/cursor_loader.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+using ::testing::Mock;
+
 namespace content {
 
 namespace {
 
-class FakeOverlay final : public MouseCursorOverlayController::Overlay {
+const base::TimeDelta kMinWaitInterval = base::Milliseconds(1000 / (30 - 1));
+
+class MockOverlay final : public MouseCursorOverlayController::Overlay {
  public:
-  FakeOverlay() = default;
+  MockOverlay() = default;
 
-  FakeOverlay(const FakeOverlay&) = delete;
-  FakeOverlay& operator=(const FakeOverlay&) = delete;
+  MockOverlay(const MockOverlay&) = delete;
+  MockOverlay& operator=(const MockOverlay&) = delete;
 
-  ~FakeOverlay() override = default;
+  ~MockOverlay() override = default;
 
   const SkBitmap& image() const { return image_; }
   const gfx::RectF& bounds() const { return bounds_; }
@@ -47,6 +55,7 @@ class FakeOverlay final : public MouseCursorOverlayController::Overlay {
   }
 
   void SetBounds(const gfx::RectF& bounds) final { bounds_ = bounds; }
+  MOCK_METHOD1(OnCapturedMouseEvent, void((const gfx::Point&)));
 
  private:
   SkBitmap image_;
@@ -66,6 +75,17 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
 
   ~MouseCursorOverlayControllerBrowserTest() override = default;
 
+  virtual void InitFeatures() {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {blink::features::kCapturedMouseEvents},
+        /* disabled_features */ {});
+  }
+
+  void SetUp() final {
+    InitFeatures();
+    ContentBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() final {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -81,11 +101,14 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  FakeOverlay* Start() {
-    auto overlay_ptr = std::make_unique<FakeOverlay>();
-    FakeOverlay* const overlay = overlay_ptr.get();
+  MockOverlay* Start(const base::TickClock* tick_clock = nullptr) {
+    auto overlay_ptr = std::make_unique<MockOverlay>();
+    MockOverlay* const overlay = overlay_ptr.get();
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     controller_.Start(std::move(overlay_ptr), GetUIThreadTaskRunner({}));
+    if (tick_clock) {
+      controller_.SetTickClockForTesting(tick_clock);
+    }
     return overlay;
   }
 
@@ -93,6 +116,34 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     const gfx::Size& view_size = GetAbsoluteViewSize();
     return gfx::PointF(1.0f - 1.0f / view_size.width(),
                        1.0f - 1.0f / view_size.height());
+  }
+
+  void Wait(base::TimeDelta timeout) {
+    base::RunLoop run_loop;
+    base::OneShotTimer timer;
+    timer.Start(FROM_HERE, timeout, run_loop.QuitClosure());
+    run_loop.Run();
+    timer.Stop();
+  }
+
+  void SimulateMouseCoordinatesUpdated(gfx::Point coordinates) {
+    if (controller_.ShouldSendMouseEvents()) {
+      controller_.OnMouseCoordinatesUpdated(coordinates);
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateMouseCoordinatesUpdatedAndWaitForCallback(
+      MockOverlay& overlay,
+      gfx::Point coordinates) {
+    base::RunLoop run_loop;
+    base::OnceClosure quit_closure = run_loop.QuitClosure();
+    EXPECT_CALL(overlay, OnCapturedMouseEvent(coordinates))
+        .WillOnce([&quit_closure](const gfx::Point&) {
+          std::move(quit_closure).Run();
+        });
+    SimulateMouseCoordinatesUpdated(coordinates);
+    run_loop.Run();
   }
 
   void SimulateMouseTravel(float from_x, float from_y, float to_x, float to_y) {
@@ -139,7 +190,7 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     DoSquareDance(x, y, distance_x, distance_y);
   }
 
-  void ExpectOverlayPositionedAt(const FakeOverlay& overlay,
+  void ExpectOverlayPositionedAt(const MockOverlay& overlay,
                                  float expected_x,
                                  float expected_y) {
     const gfx::SizeF& overlay_size = GetExpectedOverlaySize();
@@ -148,7 +199,7 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     EXPECT_NEAR(expected_y, overlay.bounds().y(), overlay_size.height() / 2.0f);
   }
 
-  void ExpectOverlaySizeMatchesCurrentCursor(const FakeOverlay& overlay) const {
+  void ExpectOverlaySizeMatchesCurrentCursor(const MockOverlay& overlay) const {
     const gfx::SizeF& expected_size = GetExpectedOverlaySize();
     EXPECT_FALSE(expected_size.IsEmpty());
     EXPECT_FALSE(overlay.image().drawsNothing());
@@ -160,7 +211,6 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     return controller_.IsUserInteractingWithView();
   }
 
- private:
   gfx::Size GetAbsoluteViewSize() const {
     const gfx::Size view_size =
         shell()->web_contents()->GetContainerBounds().size();
@@ -168,6 +218,10 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     return view_size;
   }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   gfx::PointF ToAbsoluteLocationInView(float relative_x, float relative_y) {
     const gfx::Size& view_size = GetAbsoluteViewSize();
     return gfx::PointF(relative_x * view_size.width(),
@@ -199,7 +253,7 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
                        PositionsOverlayOnMouseMoves) {
-  FakeOverlay* const overlay = Start();
+  MockOverlay* const overlay = Start();
 
   // Cursor not showing at start.
   EXPECT_TRUE(overlay->image().drawsNothing());
@@ -237,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
                        PositionsOverlayOnMouseClicks) {
-  FakeOverlay* const overlay = Start();
+  MockOverlay* const overlay = Start();
 
   // Cursor not showing at start.
   EXPECT_TRUE(overlay->bounds().IsEmpty());
@@ -252,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
                        CursorHidesWhenMouseStopsMoving) {
-  FakeOverlay* const overlay = Start();
+  MockOverlay* const overlay = Start();
 
   // Cursor not showing at start.
   EXPECT_TRUE(overlay->bounds().IsEmpty());
@@ -280,6 +334,194 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
   ExpectOverlayPositionedAt(*overlay, 0.5f, 0.5f);
   ExpectOverlaySizeMatchesCurrentCursor(*overlay);
   EXPECT_TRUE(IsUserInteractingWithView());
+}
+
+// This test verifies that MouseCoordinatesUpdated calls are forwarded to the
+// overlay.
+IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
+                       ForwardMouseEvents) {
+  MockOverlay* const overlay = Start();
+  Mock::AllowLeak(overlay);
+  const gfx::Rect rect(GetAbsoluteViewSize());
+
+  // Simulate a mouse coordinates update at the upper-left corner.
+  SimulateMouseCoordinatesUpdatedAndWaitForCallback(*overlay, rect.origin());
+
+  // Simulate a mouse coordinates update outside the view.
+  SimulateMouseCoordinatesUpdatedAndWaitForCallback(*overlay,
+                                                    gfx::Point(-1, -1));
+
+  // Simulate a mouse coordinates update at center.
+  SimulateMouseCoordinatesUpdatedAndWaitForCallback(*overlay,
+                                                    rect.CenterPoint());
+
+  // Simulate a mouse coordinates update at the lower-right corner.
+  SimulateMouseCoordinatesUpdatedAndWaitForCallback(*overlay,
+                                                    rect.bottom_right());
+
+  Mock::VerifyAndClearExpectations(overlay);
+}
+
+// This test verifies calls to MouseCoordinatesUpdated that don't change the
+// coordinates are not forwarded to the overlay.
+IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
+                       MouseEventsNotFiredIfNotMoved) {
+  MockOverlay* const overlay = Start();
+  Mock::AllowLeak(overlay);
+
+  const gfx::Point center = gfx::Rect(GetAbsoluteViewSize()).CenterPoint();
+
+  // Simulate a mouse coordinates update at center.
+  SimulateMouseCoordinatesUpdatedAndWaitForCallback(*overlay, center);
+
+  // Simulate another mouse coordinates update at center, it should be ignored.
+  {
+    EXPECT_CALL(*overlay, OnCapturedMouseEvent(center)).Times(0);
+    SimulateMouseCoordinatesUpdated(center);
+    Wait(base::Seconds(1));  // Wait a bit to make sure the event would arrive.
+  }
+
+  // Try again after the internal minimal wait interval.
+  {
+    Wait(kMinWaitInterval);
+    EXPECT_CALL(*overlay, OnCapturedMouseEvent(center)).Times(0);
+    SimulateMouseCoordinatesUpdated(center);
+    Wait(base::Seconds(1));  // Wait a bit to make sure the event would arrive.
+  }
+
+  Mock::VerifyAndClearExpectations(overlay);
+}
+
+// This test verifies the minimal wait interval used between two calls
+// to MouseCoordinatesUpdated.
+IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
+                       MouseEventsEnsureMinWaitInterval) {
+  base::SimpleTestTickClock test_clock;
+  MockOverlay* const overlay = Start(&test_clock);
+  Mock::AllowLeak(overlay);
+
+  const gfx::Rect rect(GetAbsoluteViewSize());
+  const gfx::Point p1 = rect.CenterPoint();
+  const gfx::Point p2 = rect.origin();
+  const gfx::Point p3 = rect.top_right();
+  const gfx::Point p4 = rect.bottom_right();
+  const gfx::Point p5 = rect.bottom_left();
+  const gfx::Point p6(1, -1);
+
+  EXPECT_CALL(*overlay, OnCapturedMouseEvent(p1)).Times(1);
+  EXPECT_CALL(*overlay, OnCapturedMouseEvent(p2)).Times(0);
+  EXPECT_CALL(*overlay, OnCapturedMouseEvent(p3)).Times(1);
+  EXPECT_CALL(*overlay, OnCapturedMouseEvent(p4)).Times(1);
+  EXPECT_CALL(*overlay, OnCapturedMouseEvent(p5)).Times(0);
+  EXPECT_CALL(*overlay, OnCapturedMouseEvent(p6)).Times(1);
+
+  // No previous event sent to OnCapturedMouseEvent, dispatch p1 immediately.
+  bool callback1_called = false;
+  ON_CALL(*overlay, OnCapturedMouseEvent(p1))
+      .WillByDefault(testing::Assign(&callback1_called, true));
+  SimulateMouseCoordinatesUpdated(p1);
+  EXPECT_TRUE(callback1_called);
+
+  // p1 dispatched less than kMinWaitInterval ago, so p2 is buffered.
+  test_clock.Advance(kMinWaitInterval / 2);
+  SimulateMouseCoordinatesUpdated(p2);
+  base::RunLoop().RunUntilIdle();
+
+  // p1 dispatched less than kMinWaitInterval ago, so p3 is buffered too,
+  // overriding p2.
+  bool callback3_called = false;
+  base::RunLoop run_loop_3;
+  base::OnceClosure quit_closure_3 = run_loop_3.QuitClosure();
+  ON_CALL(*overlay, OnCapturedMouseEvent(p3))
+      .WillByDefault([&callback3_called, &quit_closure_3](const gfx::Point&) {
+        callback3_called = true;
+        std::move(quit_closure_3).Run();
+      });
+  SimulateMouseCoordinatesUpdated(p3);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(callback3_called);
+
+  // No events dispatched less than kMinWaitInterval ago, so p3 is dispatched.
+  test_clock.Advance(kMinWaitInterval / 2);
+  run_loop_3.Run();
+  EXPECT_TRUE(callback3_called);
+
+  // No events dispatched less than kMinWaitInterval ago or buffered and none
+  // buffered, so dispatch p4 immediately.
+  test_clock.Advance(kMinWaitInterval);
+  bool callback4_called = false;
+  ON_CALL(*overlay, OnCapturedMouseEvent(p4))
+      .WillByDefault(testing::Assign(&callback4_called, true));
+  SimulateMouseCoordinatesUpdated(p4);
+  EXPECT_TRUE(callback4_called);
+
+  // p4 dispatched less than kMinWaitInterval ago, so p5 is buffered.
+  test_clock.Advance(kMinWaitInterval / 2);
+  SimulateMouseCoordinatesUpdated(p5);
+  base::RunLoop().RunUntilIdle();
+
+  // p4 dispatched less than kMinWaitInterval ago, so p6 is buffered too,
+  // overriding p5.
+  bool callback6_called = false;
+  base::RunLoop run_loop_6;
+  base::OnceClosure quit_closure_6 = run_loop_6.QuitClosure();
+  ON_CALL(*overlay, OnCapturedMouseEvent(p6))
+      .WillByDefault([&callback6_called, &quit_closure_6](const gfx::Point&) {
+        callback6_called = true;
+        std::move(quit_closure_6).Run();
+      });
+  SimulateMouseCoordinatesUpdated(p6);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(callback6_called);
+
+  // No events dispatched less than kMinWaitInterval ago, so p6 is dispatched.
+  test_clock.Advance(kMinWaitInterval / 2);
+  run_loop_6.Run();
+  EXPECT_TRUE(callback6_called);
+
+  // No more events should be dispatched later.
+  test_clock.Advance(base::Seconds(5));
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(overlay);
+}
+
+class MouseCursorOverlayControllerNoMouseEventsBrowserTest
+    : public MouseCursorOverlayControllerBrowserTest {
+ public:
+  MouseCursorOverlayControllerNoMouseEventsBrowserTest() = default;
+
+  MouseCursorOverlayControllerNoMouseEventsBrowserTest(
+      const MouseCursorOverlayControllerNoMouseEventsBrowserTest&) = delete;
+  MouseCursorOverlayControllerNoMouseEventsBrowserTest& operator=(
+      const MouseCursorOverlayControllerNoMouseEventsBrowserTest&) = delete;
+
+  ~MouseCursorOverlayControllerNoMouseEventsBrowserTest() override = default;
+
+  void InitFeatures() final {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {blink::features::kCapturedMouseEvents});
+  }
+};
+
+// This test verifies calls to MouseCoordinatesUpdated are not forwarded if the
+// CapturedMouseEvents preference is disabled.
+IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerNoMouseEventsBrowserTest,
+                       DoNotForwardMouseEvents) {
+  MockOverlay* const overlay = Start();
+  Mock::AllowLeak(overlay);
+
+  const gfx::Point center = gfx::Rect(GetAbsoluteViewSize()).CenterPoint();
+
+  // Simulate a mouse coordinates update at center, it should be ignored.
+  {
+    EXPECT_CALL(*overlay, OnCapturedMouseEvent(center)).Times(0);
+    SimulateMouseCoordinatesUpdated(center);
+    Wait(base::Seconds(1));  // Wait a bit to make sure the event would arrive.
+  }
+
+  Mock::VerifyAndClearExpectations(overlay);
 }
 
 }  // namespace content

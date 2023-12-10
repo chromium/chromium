@@ -6,18 +6,19 @@
 #include <iterator>
 
 namespace display::test {
-const MonitorMode MonitorMode::k1024x768 = MonitorMode(1024, 768);
-const MonitorMode MonitorMode::k1920x1080 = MonitorMode(1920, 1080);
+const MonitorConfig MonitorConfig::k1024x768 = MonitorConfig(1024, 768);
+const MonitorConfig MonitorConfig::k1920x1080 = MonitorConfig(1920, 1080);
 
-DriverProperties::DriverProperties(const std::vector<MonitorMode>& modes) {
-  requested_modes_size_ = std::min(modes.size(), kMaxMonitors);
-  std::copy_n(modes.begin(), requested_modes_size_, requested_modes_.begin());
+DriverProperties::DriverProperties(const std::vector<MonitorConfig>& modes) {
+  requested_configs_size_ = std::min(modes.size(), kMaxMonitors);
+  std::copy_n(modes.begin(), requested_configs_size_,
+              requested_configs_.begin());
 }
 
 // Return a vector of the requested monitor configurations.
-std::vector<MonitorMode> DriverProperties::requested_modes() const {
-  std::vector<MonitorMode> vector;
-  std::copy_n(requested_modes_.begin(), requested_modes_size_,
+std::vector<MonitorConfig> DriverProperties::requested_configs() const {
+  std::vector<MonitorConfig> vector;
+  std::copy_n(requested_configs_.begin(), requested_configs_size_,
               std::back_inserter(vector));
   return vector;
 }

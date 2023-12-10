@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,12 +29,10 @@ class HttpRequestHeaders;
 
 namespace safe_browsing {
 
-class UrlCheckerDelegate;
-class SafeBrowsingLookupMechanismExperimenter;
-
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
 class PingManager;
+class AsyncCheckTracker;
 
 // BrowserURLLoaderThrottle is used in the browser process to query
 // SafeBrowsing to determine whether a URL and also its redirect URLs are safe
@@ -46,116 +45,39 @@ class PingManager;
 // the load if any URLs turn out to be bad.
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  using GetDelegateCallback =
-      base::OnceCallback<scoped_refptr<UrlCheckerDelegate>()>;
-
-  using NativeUrlCheckNotifier = base::OnceCallback<void(
-      bool /* proceed */,
-      bool /* showed_interstitial */,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */,
-      bool /* did_check_url_real_time_allowlist */)>;
-
-  // CheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
-  // must be called on the IO thread. The results are synced back to the
-  // throttle.
-  // TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
-  // UI thread.
-  class CheckerOnSB
-      : public base::SupportsWeakPtr<BrowserURLLoaderThrottle::CheckerOnSB> {
+  // Helper class to perform whether the check can be skipped on the SB thread.
+  class SkipCheckCheckerOnSB
+      : public base::SupportsWeakPtr<
+            BrowserURLLoaderThrottle::SkipCheckCheckerOnSB> {
    public:
-    CheckerOnSB(
-        GetDelegateCallback delegate_getter,
-        int frame_tree_node_id,
-        base::RepeatingCallback<content::WebContents*()> web_contents_getter,
-        base::WeakPtr<BrowserURLLoaderThrottle> throttle,
-        bool url_real_time_lookup_enabled,
-        bool can_urt_check_subresource_url,
-        bool can_check_db,
-        bool can_check_high_confidence_allowlist,
-        std::string url_lookup_service_metric_suffix,
-        base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-        base::WeakPtr<HashRealTimeService> hash_realtime_service,
-        base::WeakPtr<PingManager> ping_manager,
-        bool is_mechanism_experiment_allowed,
-        hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
+    using OnCompleteCheckCallback =
+        base::OnceCallback<void(bool /* should_skip */)>;
 
-    ~CheckerOnSB();
+    SkipCheckCheckerOnSB(UrlCheckerOnSB::GetDelegateCallback delegate_getter,
+                         int frame_tree_node_id);
+    ~SkipCheckCheckerOnSB();
 
-    // Starts the initial safe browsing check. This check and future checks may
-    // be skipped after checking with the UrlCheckerDelegate.
-    void Start(const net::HttpRequestHeaders& headers,
-               int load_flags,
-               network::mojom::RequestDestination request_destination,
-               bool has_user_gesture,
-               bool originated_from_service_worker,
-               const GURL& url,
-               const std::string& method);
-
-    // Checks the specified |url| using |url_checker_|.
-    void CheckUrl(const GURL& url, const std::string& method);
-
-    void LogWillProcessResponseTime(base::TimeTicks reached_time);
-
-    void SetUrlCheckerForTesting(
-        std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker);
+    void CheckOriginalUrl(OnCompleteCheckCallback callback,
+                          const GURL& url,
+                          bool originated_from_service_worker);
+    void CheckRedirectUrl(OnCompleteCheckCallback callback);
 
    private:
-    // If |slow_check_notifier| is non-null, it indicates that a "slow check" is
-    // ongoing, i.e., the URL may be unsafe and a more time-consuming process is
-    // required to get the final result. In that case, the rest of the callback
-    // arguments should be ignored. This method sets the |slow_check_notifier|
-    // output parameter to a callback to receive the final result.
-    void OnCheckUrlResult(
-        NativeUrlCheckNotifier* slow_check_notifier,
-        bool proceed,
-        bool showed_interstitial,
-        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-        bool did_check_url_real_time_allowlist);
-
-    // |slow_check| indicates whether it reports the result of a slow check.
-    // (Please see comments of OnCheckUrlResult() for what slow check means).
-    void OnCompleteCheck(
-        bool slow_check,
-        bool proceed,
-        bool showed_interstitial,
-        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-        bool did_check_url_real_time_allowlist);
-
-    // The following member stays valid until |url_checker_| is created.
-    GetDelegateCallback delegate_getter_;
-
-    std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
-    std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_for_testing_;
+    UrlCheckerOnSB::GetDelegateCallback delegate_getter_;
     int frame_tree_node_id_;
-    scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-        mechanism_experimenter_;
-    base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
-    bool skip_checks_ = false;
-    base::WeakPtr<BrowserURLLoaderThrottle> throttle_;
-    bool url_real_time_lookup_enabled_ = false;
-    bool can_urt_check_subresource_url_ = false;
-    bool can_check_db_ = true;
-    bool can_check_high_confidence_allowlist_ = true;
-    std::string url_lookup_service_metric_suffix_;
-    GURL last_committed_url_;
-    base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
-    base::WeakPtr<HashRealTimeService> hash_realtime_service_;
-    base::WeakPtr<PingManager> ping_manager_;
-    bool is_mechanism_experiment_allowed_ = false;
-    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
-        hash_realtime_utils::HashRealTimeSelection::kNone;
-    base::TimeTicks creation_time_;
+    bool should_skip_checks_ = false;
   };
 
   static std::unique_ptr<BrowserURLLoaderThrottle> Create(
-      GetDelegateCallback delegate_getter,
+      UrlCheckerOnSB::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       base::WeakPtr<PingManager> ping_manager,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+      base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -177,50 +99,70 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override;
   const char* NameForLoggingWillProcessResponse() override;
 
-  CheckerOnSB* GetSBCheckerForTesting();
+  UrlCheckerOnSB* GetSyncSBCheckerForTesting();
+  UrlCheckerOnSB* GetAsyncSBCheckerForTesting();
 
  private:
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
   // necessary.
   BrowserURLLoaderThrottle(
-      GetDelegateCallback delegate_getter,
+      UrlCheckerOnSB::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       base::WeakPtr<PingManager> ping_manager,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+      base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
-  // |slow_check| indicates whether it reports the result of a slow check.
-  // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check
-  // means).
-  void OnCompleteCheck(
-      bool slow_check,
-      bool proceed,
-      bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist);
+  void OnSkipCheckCompleteOnOriginalUrl(
+      const net::HttpRequestHeaders& headers,
+      int load_flags,
+      network::mojom::RequestDestination request_destination,
+      bool has_user_gesture,
+      const GURL& url,
+      const std::string& method,
+      bool should_skip);
+  void OnSkipCheckCompleteOnRedirectUrl(const GURL& url,
+                                        const std::string& method,
+                                        bool should_skip);
 
-  // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
-  // which type of check was performed.
-  std::string GetUrlCheckTypeForLogging(
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+  void OnCompleteSyncCheck(UrlCheckerOnSB::OnCompleteCheckResult result);
+  void OnCompleteAsyncCheck(UrlCheckerOnSB::OnCompleteCheckResult result);
 
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
   void SkipChecks();
 
   // Called when a slow safe browsing check is ongoing.
-  void NotifySlowCheck();
+  void NotifySyncSlowCheck();
 
-  // Destroys |sb_checker_| on the IO thread, or UI thread if
+  // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
+  // which type of check was performed.
+  std::string GetUrlCheckTypeForLogging(
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+
+  // Called when the URL is identified as dangerous.
+  void BlockUrlLoader(bool showed_interstitial);
+
+  // Destroys all checkers on the IO thread, or UI thread if
   // kSafeBrowsingOnUIThread is enabled.
-  void DeleteCheckerOnSB();
+  void DeleteUrlCheckerOnSB();
 
-  size_t pending_checks_ = 0;
+  // If |sync_sb_checker_| has completed, but |async_sb_checker_| has not,
+  // transfer the ownership of |async_sb_checker_| to |async_check_tracker_|.
+  void MaybeTransferAsyncChecker();
+
+  size_t pending_sync_checks_ = 0;
+  size_t pending_async_checks_ = 0;
+
   // How many slow checks that haven't received results.
-  size_t pending_slow_checks_ = 0;
+  size_t pending_sync_slow_checks_ = 0;
+
+  // Whether future safe browsing checks should be skipped.
+  bool skip_checks_ = false;
+
   bool blocked_ = false;
 
   // The time when |WillStartRequest| is called.
@@ -236,10 +178,16 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
 
-  // Whether future safe browsing checks should be skipped.
-  bool skip_checks_ = false;
+  // Checkers used to perform Safe Browsing checks. |sync_sb_checker_| may defer
+  // the URL loader. |async_sb_checker_| doesn't defer the URL loader and may
+  // be transferred to |skip_check_checker_| if it is not completed.
+  // |async_sb_checker_| may be null when this loader is not eligible for async
+  // check.
+  std::unique_ptr<UrlCheckerOnSB> sync_sb_checker_;
+  std::unique_ptr<UrlCheckerOnSB> async_sb_checker_;
 
-  std::unique_ptr<CheckerOnSB> sb_checker_;
+  // Used to decide whether the check can be skipped on the SB thread.
+  std::unique_ptr<SkipCheckCheckerOnSB> skip_check_checker_;
 
   // Metric suffix for the URL lookup service.
   std::string url_lookup_service_metric_suffix_;
@@ -249,6 +197,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // Tracks how many times |WillProcessResponse| is called.
   int will_process_response_count_ = 0;
+
+  // In progress async SB checker will be transferred to this object.
+  base::WeakPtr<AsyncCheckTracker> async_check_tracker_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

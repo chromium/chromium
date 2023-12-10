@@ -5,6 +5,7 @@
 #include "services/webnn/dml/adapter.h"
 
 #include <d3d11.h>
+#include <string.h>
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
@@ -17,13 +18,15 @@
 namespace webnn::dml {
 
 // static
-scoped_refptr<Adapter> Adapter::GetInstance(
+base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetInstance(
     DML_FEATURE_LEVEL min_feature_level_required) {
   // If the `Adapter` instance is created, add a reference and return it.
   if (instance_) {
     if (!instance_->IsDMLFeatureLevelSupported(min_feature_level_required)) {
-      DLOG(ERROR) << "Feature level is not supported by the adapter.";
-      return nullptr;
+      return base::unexpected(
+          CreateError(mojom::Error::Code::kNotSupportedError,
+                      "The DirectML feature level on this platform is "
+                      "lower than the minimum required one."));
     }
     return base::WrapRefCounted(instance_);
   }
@@ -31,8 +34,9 @@ scoped_refptr<Adapter> Adapter::GetInstance(
   // Otherwise, create a new one with the adapter queried from ANGLE.
   ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
   if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to query ID3D11Device from ANGLE.";
-    return nullptr;
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to query D3D11 device from ANGLE."));
   }
   // A ID3D11Device is always QueryInteface-able to a IDXGIDevice.
   ComPtr<IDXGIDevice> dxgi_device;
@@ -44,18 +48,22 @@ scoped_refptr<Adapter> Adapter::GetInstance(
 }
 
 // static
-scoped_refptr<Adapter> Adapter::GetInstanceForTesting() {
+base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
+Adapter::GetInstanceForTesting() {
   CHECK_IS_TEST();
   return Adapter::GetInstance(/*min_feature_level=*/DML_FEATURE_LEVEL_1_0);
 }
 
 // static
-scoped_refptr<Adapter> Adapter::Create(
+base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
     ComPtr<IDXGIAdapter> dxgi_adapter,
     DML_FEATURE_LEVEL min_feature_level_required) {
   PlatformFunctions* platformFunctions = PlatformFunctions::GetInstance();
   if (!platformFunctions) {
-    return nullptr;
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to load all required libraries or functions "
+                    "on this platform."));
   }
 
   if (is_debug_layer_enabled_) {
@@ -75,9 +83,10 @@ scoped_refptr<Adapter> Adapter::Create(
   HRESULT hr = d3d12_create_device_proc(
       dxgi_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12_device));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create d3d12 device : "
-                << logging::SystemErrorCodeToString(hr);
-    return nullptr;
+    DLOG(ERROR) << "Failed to create D3D12 device: " +
+                       logging::SystemErrorCodeToString(hr);
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create D3D12 device."));
   };
 
   DML_CREATE_DEVICE_FLAGS flags = DML_CREATE_DEVICE_FLAG_NONE;
@@ -96,24 +105,27 @@ scoped_refptr<Adapter> Adapter::Create(
   hr = dml_create_device_proc(d3d12_device.Get(), flags,
                               IID_PPV_ARGS(&dml_device));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create dml device : "
-                << logging::SystemErrorCodeToString(hr);
-    return nullptr;
+    DLOG(ERROR) << "Failed to create DirectML device: " +
+                       logging::SystemErrorCodeToString(hr);
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create DirectML device."));
   };
 
   const DML_FEATURE_LEVEL max_feature_level_supported =
       GetMaxSupportedDMLFeatureLevel(dml_device.Get());
   if (min_feature_level_required > max_feature_level_supported) {
-    DLOG(ERROR) << "Feature level not supported by the adapter";
-    return nullptr;
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kNotSupportedError,
+                    "The DirectML feature level on this platform is lower "
+                    "than the minimum required one."));
   }
 
   // Create command queue.
   scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device.Get());
   if (!command_queue) {
-    DLOG(ERROR) << "Failed to create command queue.";
-    return nullptr;
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create command queue."));
   }
 
   return WrapRefCounted(new Adapter(

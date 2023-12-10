@@ -4,6 +4,8 @@
 
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -16,7 +18,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -43,7 +44,7 @@ void RemoveNotification(const std::string& notification_id) {
 }
 
 void OnFirmwareUpdateAvailableNotificationClicked(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowFirmwareUpdate();
@@ -61,7 +62,7 @@ void OnFirmwareUpdateAvailableNotificationClicked(
 }
 
 bool ShouldShowNotification() {
-  const absl::optional<user_manager::UserType> user_type =
+  const std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   if (!user_type) {
     return false;

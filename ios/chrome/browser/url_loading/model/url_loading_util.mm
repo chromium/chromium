@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/load_timing_tab_helper.h"
+#import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"

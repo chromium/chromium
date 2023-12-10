@@ -23,6 +23,11 @@ const char kTetherNetworkGuid[] = "tetherNetworkGuid";
 const char kWifiNetworkGuid[] = "wifiNetworkGuid";
 }  // namespace
 
+using ConnectionToHostResult =
+    HostConnectionMetricsLogger::ConnectionToHostResult;
+using ConnectionToHostInternalError =
+    HostConnectionMetricsLogger::ConnectionToHostInternalError;
+
 class HostConnectionMetricsLoggerTest : public testing::Test {
  public:
   HostConnectionMetricsLoggerTest(const HostConnectionMetricsLoggerTest&) =
@@ -65,6 +70,11 @@ class HostConnectionMetricsLoggerTest : public testing::Test {
           event_type) {
     histogram_tester_.ExpectUniqueSample(
         "InstantTethering.ConnectionToHostResult.Failure", event_type, 1);
+  }
+
+  void VerifyEndResult(ConnectionToHostResult result) {
+    histogram_tester_.ExpectUniqueSample(
+        "InstantTethering.ConnectionToHostResult.EndResult", result, 1);
   }
 
   void VerifyFailure_ClientConnection(
@@ -115,9 +125,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_PROVISIONING_FAILED,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::PROVISIONING_FAILURE,
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
@@ -129,15 +138,15 @@ TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultSuccess) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_SUCCESS,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::SUCCESS);
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::SUCCESS);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -145,24 +154,24 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_SUCCESS,
-      test_devices_[1].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
+      test_devices_[1].GetDeviceId(), std::nullopt);
 
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::SUCCESS);
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::SUCCESS);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultFailure) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_UNKNOWN_ERROR,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::UNKNOWN_ERROR);
 
   VerifyFailure(HostConnectionMetricsLogger::
                     ConnectionToHostResult_FailureEventType::UNKNOWN_ERROR);
@@ -172,6 +181,7 @@ TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultFailure) {
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -179,9 +189,9 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_UNKNOWN_ERROR,
-      test_devices_[1].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[1].GetDeviceId(),
+      ConnectionToHostInternalError::UNKNOWN_ERROR);
 
   VerifyFailure(HostConnectionMetricsLogger::
                     ConnectionToHostResult_FailureEventType::UNKNOWN_ERROR);
@@ -191,6 +201,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -198,9 +209,9 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_TIMEOUT,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::CLIENT_CONNECTION_TIMEOUT);
 
   VerifyFailure_ClientConnection(
       HostConnectionMetricsLogger::
@@ -213,6 +224,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -220,9 +232,9 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::INVALID_WIFI_AP_CONFIG);
 
   VerifyFailure(
       HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
@@ -232,6 +244,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -239,9 +252,9 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG);
 
   VerifyFailure(
       HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
@@ -251,6 +264,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -258,9 +272,9 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::INVALID_NEW_SOFT_AP_CONFIG);
 
   VerifyFailure(
       HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
@@ -270,6 +284,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -277,22 +292,15 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_CANCELED_BY_USER,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::USER_CANCELLATION,
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
-  VerifyFailure_ClientConnection(
-      HostConnectionMetricsLogger::
-          ConnectionToHostResult_FailureClientConnectionEventType::
-              CANCELED_BY_USER);
-  VerifyFailure(
-      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
-          CLIENT_CONNECTION_ERROR);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::USER_CANCELLATION);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -300,9 +308,9 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_INTERNAL_ERROR,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::CLIENT_CONNECTION_INTERNAL_ERROR);
 
   VerifyFailure_ClientConnection(
       HostConnectionMetricsLogger::
@@ -316,6 +324,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -323,9 +332,10 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_REQUIRED,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::
+          TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED);
 
   VerifyFailure_TetheringTimeout(
       HostConnectionMetricsLogger::
@@ -339,6 +349,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -346,9 +357,10 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_NOT_REQUIRED,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::
+          TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED);
 
   VerifyFailure_TetheringTimeout(
       HostConnectionMetricsLogger::
@@ -362,6 +374,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyProvisioningFailure(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -370,14 +383,12 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
   metrics_logger_->RecordConnectionToHostResult(
       HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_TETHERING_UNSUPPORTED,
-      test_devices_[0].GetDeviceId());
+          TETHERING_UNSUPPORTED,
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
-  VerifyFailure(
-      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
-          TETHERING_UNSUPPORTED);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyEndResult(ConnectionToHostResult::TETHERING_UNSUPPORTED);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -385,14 +396,12 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_NO_CELL_DATA,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::NO_CELLULAR_DATA,
+      test_devices_[0].GetDeviceId(), std::nullopt);
 
-  VerifyFailure(HostConnectionMetricsLogger::
-                    ConnectionToHostResult_FailureEventType::NO_CELL_DATA);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyEndResult(ConnectionToHostResult::NO_CELLULAR_DATA);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -400,15 +409,16 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_FAILED,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::ENABLING_HOTSPOT_FAILED);
 
   VerifyFailure(
       HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
           ENABLING_HOTSPOT_FAILED);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -416,15 +426,16 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_TIMEOUT,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::ENABLING_HOTSPOT_TIMEOUT);
 
   VerifyFailure(
       HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
           ENABLING_HOTSPOT_TIMEOUT);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest, RecordConnectToHostDuration) {
@@ -436,14 +447,15 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_NO_RESPONSE,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::NO_RESPONSE);
 
   VerifyFailure(HostConnectionMetricsLogger::
                     ConnectionToHostResult_FailureEventType::NO_RESPONSE);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
@@ -451,15 +463,16 @@ TEST_F(HostConnectionMetricsLoggerTest,
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
-      HostConnectionMetricsLogger::ConnectionToHostResult::
-          CONNECTION_RESULT_FAILURE_INVALID_HOTSPOT_CREDENTIALS,
-      test_devices_[0].GetDeviceId());
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::INVALID_HOTSPOT_CREDENTIALS);
 
   VerifyFailure(
       HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
           INVALID_HOTSPOT_CREDENTIALS);
   VerifySuccess(HostConnectionMetricsLogger::
                     ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
 }
 
 }  // namespace tether

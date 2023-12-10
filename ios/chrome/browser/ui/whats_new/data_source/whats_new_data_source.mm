@@ -26,7 +26,6 @@ const CGFloat kIconImageWhatsNew = 16;
 
 // The file name.
 NSString* const kfileName = @"whats_new_entries.plist";
-NSString* const kfileNameM116 = @"whats_new_entries_m116.plist";
 
 // Dictionary keys.
 NSString* const kDictionaryFeaturesKey = @"Features";
@@ -36,10 +35,9 @@ NSString* const kDictionaryTitleKey = @"Title";
 NSString* const kDictionarySubtitleKey = @"Subtitle";
 NSString* const kDictionaryIsSymbolKey = @"IsSymbol";
 NSString* const kDictionaryIsSystemSymbolKey = @"IsSystemSymbol";
-NSString* const kDictionaryBannerImageKey = @"BannerImageName";
+NSString* const kDictionaryIsMulticolorSymbolKey = @"IsMulticolorSymbol";
 NSString* const kDictionaryImageNameKey = @"ImageName";
 NSString* const kDictionaryImageTextKey = @"ImageTexts";
-NSString* const kDictionaryHeroBannerImageKey = @"HeroBannerImageName";
 NSString* const kDictionaryIconImageKey = @"IconImageName";
 NSString* const kDictionaryBackgroundColorKey = @"IconBackgroundColor";
 NSString* const kDictionaryInstructionsKey = @"InstructionSteps";
@@ -82,10 +80,16 @@ NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
 }
 
 // Returns a UIImage given an image name.
-UIImage* GenerateImage(BOOL is_symbol, NSString* image, BOOL is_system_symbol) {
+UIImage* GenerateImage(BOOL is_symbol,
+                       NSString* image,
+                       BOOL is_system_symbol,
+                       BOOL is_multicolor_symbol) {
   if (is_symbol) {
     if (is_system_symbol) {
       return DefaultSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
+    } else if (is_multicolor_symbol) {
+      return MakeSymbolMulticolor(
+          CustomSymbolWithPointSize(image, kIconImageWhatsNew));
     }
     return CustomSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
   }
@@ -217,27 +221,15 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
   }
   whats_new_item.subtitle = l10n_util::GetNSString([subtitle intValue]);
 
-  // What's New M116 does not support hero banner or banner image.
-  if (!IsWhatsNewM116Enabled()) {
-    // Load the entry hero banner image.
-    NSString* hero_banner_image = entry[kDictionaryHeroBannerImageKey];
-    whats_new_item.heroBannerImage =
-        [hero_banner_image length] == 0
-            ? nil
-            : GenerateImage(false, hero_banner_image, false);
-
-    // Load the entry banner image.
-    NSString* banner_image = entry[kDictionaryBannerImageKey];
-    whats_new_item.bannerImage =
-        [banner_image length] == 0 ? nil
-                                   : GenerateImage(false, banner_image, false);
-  }
-
   // Load the entry icon.
   BOOL is_symbol = [entry[kDictionaryIsSymbolKey] boolValue];
   BOOL is_system_symbol = [entry[kDictionaryIsSystemSymbolKey] boolValue];
-  whats_new_item.iconImage = GenerateImage(
-      is_symbol, entry[kDictionaryIconImageKey], is_system_symbol);
+  BOOL is_multicolor_symbol =
+      [entry[kDictionaryIsMulticolorSymbolKey] boolValue];
+
+  whats_new_item.iconImage =
+      GenerateImage(is_symbol, entry[kDictionaryIconImageKey], is_system_symbol,
+                    is_multicolor_symbol);
 
   // Load the entry icon background image.
   whats_new_item.backgroundColor =
@@ -286,31 +278,28 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     [whats_new_item setLearnMoreURL:GURL::EmptyGURL()];
   }
 
-  if (IsWhatsNewM116Enabled()) {
-    // Load screenshot image.
-    NSString* screenshot_image = entry[kDictionaryImageNameKey];
-    whats_new_item.screenshotName = screenshot_image;
+  // Load screenshot image.
+  NSString* screenshot_image = entry[kDictionaryImageNameKey];
+  whats_new_item.screenshotName = screenshot_image;
 
-    // Load screenshot text provider.
-    NSDictionary* screenshot_texts = entry[kDictionaryImageTextKey];
-    NSMutableDictionary* screenshot_text_provider =
-        [NSMutableDictionary dictionaryWithCapacity:screenshot_texts.count];
-    for (id key in screenshot_texts) {
-      NSNumber* val =
-          base::apple::ObjCCast<NSNumber>([screenshot_texts objectForKey:key]);
-      [screenshot_text_provider setValue:l10n_util::GetNSString([val intValue])
-                                  forKey:key];
-    }
-    whats_new_item.screenshotTextProvider = screenshot_text_provider;
+  // Load screenshot text provider.
+  NSDictionary* screenshot_texts = entry[kDictionaryImageTextKey];
+  NSMutableDictionary* screenshot_text_provider =
+      [NSMutableDictionary dictionaryWithCapacity:screenshot_texts.count];
+  for (id key in screenshot_texts) {
+    NSNumber* val =
+        base::apple::ObjCCast<NSNumber>([screenshot_texts objectForKey:key]);
+    [screenshot_text_provider setValue:l10n_util::GetNSString([val intValue])
+                                forKey:key];
   }
+  whats_new_item.screenshotTextProvider = screenshot_text_provider;
 
   return whats_new_item;
 }
 
 NSString* WhatsNewFilePath() {
   NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
-  NSString* entries_file_path = [bundle_path
-      stringByAppendingPathComponent:IsWhatsNewM116Enabled() ? kfileNameM116
-                                                             : kfileName];
+  NSString* entries_file_path =
+      [bundle_path stringByAppendingPathComponent:kfileName];
   return entries_file_path;
 }

@@ -25,9 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Base class for scripts that perform bytecode modifications on a jar file.
- */
+/** Base class for scripts that perform bytecode modifications on a jar file. */
 public abstract class ByteCodeRewriter {
     private static final String CLASS_FILE_SUFFIX = ".class";
 
@@ -53,9 +51,7 @@ public abstract class ByteCodeRewriter {
     /** Returns true if the class at the given path in the archive should be rewritten. */
     protected abstract boolean shouldRewriteClass(String classPath);
 
-    /**
-     * Returns true if the class at the given {@link ClassReader} should be rewritten.
-     */
+    /** Returns true if the class at the given {@link ClassReader} should be rewritten. */
     protected boolean shouldRewriteClass(ClassReader classReader) {
         return true;
     }

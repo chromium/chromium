@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
-/**
- *  A collection of helper functions for sharing in a non static context.
- */
+/** A collection of helper functions for sharing in a non static context. */
 public class ShareUtils {
     /*
      * Determines whether a tab is eligible to be shared.
@@ -26,8 +24,9 @@ public class ShareUtils {
         }
 
         GURL url = tab.getUrl();
-        boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+        boolean isChromeScheme =
+                url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                        || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         boolean isDataScheme = url.getScheme().equals(UrlConstants.DATA_SCHEME);
 
         return !isChromeScheme && !isDataScheme;

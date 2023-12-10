@@ -19,6 +19,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
+import {getTemplate} from './device_disabled.html.js';
+
 
 /**
  * @constructor
@@ -55,7 +57,7 @@ class DeviceDisabled extends DeviceDisabledElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

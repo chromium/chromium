@@ -28,9 +28,7 @@ GridNamedLineCollection::GridNamedLineCollection(
   // Line names from the container style are valid when the grid axis type is a
   // standalone grid or the axis is a subgrid and the parent is a grid. See:
   // https://www.w3.org/TR/css-grid-2/#subgrid-listing
-  bool are_named_lines_valid = true;
-  if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled())
-    are_named_lines_valid = is_subgridded_to_parent || is_standalone_grid_;
+  bool are_named_lines_valid = is_subgridded_to_parent || is_standalone_grid_;
 
   const NamedGridLinesMap& auto_repeat_grid_line_names =
       computed_grid_track_list.auto_repeat_named_grid_lines;

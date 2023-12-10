@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/layout.h"
@@ -205,6 +206,12 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
 
 void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   DCHECK(ax_platform_node_);
+  if (event_type == ax::mojom::Event::kAlert) {
+    CHECK(ui::IsAlert(GetRole()))
+        << "On some platforms, the alert event does not work correctly unless "
+           "it is fired on an object with an alert role. Role was "
+        << GetRole();
+  }
   if (GetOwnerView()) {
     const ViewAccessibility::AccessibilityEventsCallback& events_callback =
         GetOwnerView()->GetViewAccessibility().accessibility_events_callback();

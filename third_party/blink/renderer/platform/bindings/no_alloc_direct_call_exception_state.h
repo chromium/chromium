@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_EXCEPTION_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_EXCEPTION_STATE_H_
 
-#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -39,15 +38,16 @@ class PLATFORM_EXPORT NoAllocDirectCallExceptionState : public ExceptionState {
     }
   }
 
-  void ThrowDOMException(DOMExceptionCode, const String& message) override;
-  void ThrowTypeError(const String& message) override;
-  void ThrowSecurityError(const String& sanitized_message,
-                          const String& unsanitized_message) override;
-  void ThrowRangeError(const String& message) override;
-  void ThrowWasmCompileError(const String& message) override { NOTREACHED(); }
-  void RethrowV8Exception(v8::Local<v8::Value>) override { NOTREACHED(); }
-
   void ClearException() override;
+
+ protected:
+  void DoThrowDOMException(DOMExceptionCode, const String& message) override;
+  void DoThrowTypeError(const String& message) override;
+  void DoThrowSecurityError(const String& sanitized_message,
+                            const String& unsanitized_message) override;
+  void DoThrowRangeError(const String& message) override;
+  void DoThrowWasmCompileError(const String& message) override;
+  void DoRethrowV8Exception(v8::Local<v8::Value>) override;
 
  private:
   NoAllocDirectCallHost* host_;

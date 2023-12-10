@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-#include "base/containers/cxx20_erase.h"
+
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
@@ -783,7 +783,7 @@ std::string ChineseScriptClassifier::Classify(const std::string& input) const {
   base::TruncateUTF8ToByteSize(input, 500, &input_subset);
 
   // Remove whitespace since transliterators may not preserve it.
-  base::EraseIf(input_subset, base::IsAsciiWhitespace<char>);
+  std::erase_if(input_subset, base::IsAsciiWhitespace<char>);
 
   // Convert the input to icu::UnicodeString so we can iterate over codepoints.
   icu::UnicodeString input_codepoints =

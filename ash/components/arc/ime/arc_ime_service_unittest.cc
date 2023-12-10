@@ -234,7 +234,7 @@ class ArcImeServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(absl::nullopt);
+    ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(std::nullopt);
     arc_win_.reset();
     fake_window_delegate_ = nullptr;
     fake_arc_ime_bridge_ = nullptr;
@@ -679,7 +679,7 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
                      ui::DomKey::FromCharacter('A'),
                      ui::EventTimeForNow()};
   {
-    absl::optional<bool> handled;
+    std::optional<bool> handled;
     auto copy = std::make_unique<ui::KeyEvent>(event);
     instance_->SendKeyEvent(
         std::move(copy),
@@ -699,7 +699,7 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
       ui::ET_KEY_PRESSED,       ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
       ui::DomKey::UNIDENTIFIED, ui::EventTimeForNow()};
   {
-    absl::optional<bool> handled;
+    std::optional<bool> handled;
     auto copy = std::make_unique<ui::KeyEvent>(non_character_event);
     instance_->SendKeyEvent(
         std::move(copy),
@@ -722,7 +722,7 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
                                 ui::DomKey::FromCharacter('A'),
                                 ui::EventTimeForNow()};
   {
-    absl::optional<bool> handled;
+    std::optional<bool> handled;
     auto copy = std::make_unique<ui::KeyEvent>(fabricated_event);
     instance_->SendKeyEvent(
         std::move(copy),

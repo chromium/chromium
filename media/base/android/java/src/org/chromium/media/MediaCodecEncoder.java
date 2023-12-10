@@ -62,7 +62,10 @@ class MediaCodecEncoder extends MediaCodecBridge {
             if (indexOrStatus >= 0) {
                 boolean isConfigFrame = (info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0;
                 if (isConfigFrame) {
-                    Log.d(TAG, "Config frame generated. Offset: %d, size: %d", info.offset,
+                    Log.d(
+                            TAG,
+                            "Config frame generated. Offset: %d, size: %d",
+                            info.offset,
                             info.size);
                     codecOutputBuffer = getMediaCodecOutputBuffer(indexOrStatus);
                     codecOutputBuffer.position(info.offset);
@@ -96,8 +99,11 @@ class MediaCodecEncoder extends MediaCodecBridge {
                 }
                 final ByteBuffer frameBuffer;
                 if (isKeyFrame && mConfigData != null) {
-                    Log.d(TAG, "Appending config frame of size %d to output buffer with size %d",
-                            mConfigData.capacity(), info.size);
+                    Log.d(
+                            TAG,
+                            "Appending config frame of size %d to output buffer with size %d",
+                            mConfigData.capacity(),
+                            info.size);
                     // For encoded key frame append SPS and PPS NALs at the start.
                     frameBuffer = ByteBuffer.allocateDirect(mConfigData.capacity() + info.size);
                     mConfigData.rewind();

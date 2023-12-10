@@ -6,7 +6,9 @@
 #define CHROME_UPDATER_DEVICE_MANAGEMENT_DM_POLICY_BUILDER_FOR_TESTING_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 

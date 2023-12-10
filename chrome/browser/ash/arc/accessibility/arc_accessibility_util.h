@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_UTIL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace aura {

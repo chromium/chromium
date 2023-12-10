@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Permissions-Policy allow="screen-wake-lock" allows same-origin relocation
+  assert_true: navigator.wakeLock.request("screen") expected true got false
+Harness: the test ran to completion.

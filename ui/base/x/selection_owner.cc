@@ -11,8 +11,8 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -240,8 +240,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
           base::Milliseconds(kIncrementalTransferTimeoutMs);
       incremental_transfers_.emplace_back(
           requestor, target, property,
-          std::make_unique<x11::XScopedEventSelector>(
-              requestor, x11::EventMask::PropertyChange),
+          connection_->ScopedSelectEvent(requestor,
+                                         x11::EventMask::PropertyChange),
           it->second, 0, timeout);
 
       // Start a timer to abort the data transfer in case that the selection
@@ -320,7 +320,7 @@ SelectionOwner::IncrementalTransfer::IncrementalTransfer(
     x11::Window window,
     x11::Atom target,
     x11::Atom property,
-    std::unique_ptr<x11::XScopedEventSelector> event_selector,
+    x11::ScopedEventSelector event_selector,
     const scoped_refptr<base::RefCountedMemory>& data,
     int offset,
     base::TimeTicks timeout)

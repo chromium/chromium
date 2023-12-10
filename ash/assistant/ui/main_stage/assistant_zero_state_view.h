@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,6 +29,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
       public LauncherSearchIphView::Delegate {
+  METADATA_HEADER(AssistantZeroStateView, views::View)
+
  public:
   explicit AssistantZeroStateView(AssistantViewDelegate* delegate);
   AssistantZeroStateView(const AssistantZeroStateView&) = delete;
@@ -47,8 +50,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   // LauncherSearchIphView::Delegate:
   void RunLauncherSearchQuery(const std::u16string& query) override;

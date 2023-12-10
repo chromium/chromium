@@ -28,7 +28,6 @@ source_set("app_deduplication_service") {
   deps = [
     "//base",
     "//chrome/browser/apps/almanac_api_client",
-    "//chrome/browser/apps/app_provisioning_service",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -57,7 +56,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/apps/almanac_api_client",
-    "//chrome/browser/apps/app_provisioning_service",
     "//chrome/browser/apps/app_service",
     "//chrome/common:constants",
     "//chrome/test:test_support",

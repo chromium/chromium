@@ -12,7 +12,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -42,7 +41,7 @@ bool FakeCryptographer::Initialize(
   return true;
 }
 
-bool FakeCryptographer::AddKey(base::StringPiece key) {
+bool FakeCryptographer::AddKey(std::string_view key) {
   if (should_fail_add_key_) {
     return false;
   }
@@ -52,7 +51,7 @@ bool FakeCryptographer::AddKey(base::StringPiece key) {
 }
 
 absl::optional<std::string> FakeCryptographer::BeginIssuance(
-    base::StringPiece message) {
+    std::string_view message) {
   if (should_fail_begin_issuance_) {
     return absl::nullopt;
   }
@@ -72,7 +71,7 @@ std::string FakeCryptographer::UnblindMessage(
 
 absl::optional<std::string>
 FakeCryptographer::ConfirmIssuanceAndBeginRedemption(
-    base::StringPiece blind_token) {
+    std::string_view blind_token) {
   if (should_fail_confirm_issuance_) {
     return absl::nullopt;
   }
@@ -182,7 +181,7 @@ AttributionVerificationMediator CreateTestVerificationMediator(
 }
 
 std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
-    base::StringPiece header) {
+    std::string_view header) {
   absl::optional<net::structured_headers::List> parsed_list =
       net::structured_headers::ParseList(header);
   if (!parsed_list.has_value()) {

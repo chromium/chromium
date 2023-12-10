@@ -126,10 +126,8 @@ async function asyncGetBrowsingTopicsConfiguration() {
   // Enabled status fields
   ['browsing-topics-enabled-div',
    'privacy-sandbox-ads-apis-override-enabled-div',
-   'privacy-sandbox-settings3-enabled-div',
    'override-privacy-sandbox-settings-local-testing-enabled-div',
    'browsing-topics-bypass-ip-is-publicly-routable-check-enabled-div',
-   'browsing-topics-xhr-enabled-div',
    'browsing-topics-document-api-enabled-div',
    'browsing-topics-parameters-enabled-div']
       .forEach(id => {

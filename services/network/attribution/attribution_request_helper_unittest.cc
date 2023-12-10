@@ -501,5 +501,54 @@ TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
   }
 }
 
+class AttributionCrossAppWebRequestHelperTest
+    : public AttributionRequestHelperTest {
+ public:
+  AttributionCrossAppWebRequestHelperTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::
+                                  kAttributionReportingCrossAppWeb},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AttributionCrossAppWebRequestHelperTest,
+       SetAttributionReportingSupportHeaders) {
+  const struct {
+    mojom::AttributionSupport support;
+  } kTestCases[] = {
+      {mojom::AttributionSupport::kWeb},
+      {mojom::AttributionSupport::kWebAndOs},
+      {mojom::AttributionSupport::kOs},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    std::unique_ptr<net::URLRequest> request =
+        CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
+
+    ResourceRequest resource_request;
+    resource_request.attribution_reporting_eligibility =
+        AttributionReportingEligibility::kEventSource;
+    resource_request.attribution_reporting_support = test_case.support;
+    resource_request.attribution_reporting_runtime_features.Put(
+        AttributionReportingRuntimeFeature::kCrossAppWeb);
+    SetAttributionReportingHeaders(*request, resource_request);
+
+    std::string actual;
+    request->extra_request_headers().GetHeader(kAttributionReportingEligible,
+                                               &actual);
+
+    auto dict = net::structured_headers::ParseDictionary(actual);
+    EXPECT_TRUE(dict.has_value());
+
+    histograms_.ExpectBucketCount("Conversions.RequestSupportHeader",
+                                  test_case.support,
+                                  /*expected_bucket_count=*/1);
+  }
+}
+
 }  // namespace
 }  // namespace network

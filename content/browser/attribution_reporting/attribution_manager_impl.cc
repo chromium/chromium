@@ -26,7 +26,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -34,8 +33,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/aggregatable_dedup_key.h"
-#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -100,10 +97,6 @@ namespace {
 using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
 
-using ::attribution_reporting::AggregatableDedupKey;
-using ::attribution_reporting::FilterConfig;
-using ::attribution_reporting::FilterPair;
-using ::attribution_reporting::FilterValues;
 using ::attribution_reporting::mojom::OsRegistrationResult;
 using ::attribution_reporting::mojom::RegistrationType;
 
@@ -162,7 +155,10 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
         .WithArgs(now)
         .Then(std::move(callback));
   }
-  void OnReportingTimeReached(base::Time now) override { send_reports_.Run(); }
+  void OnReportingTimeReached(base::Time now,
+                              base::Time timer_desired_run_time) override {
+    send_reports_.Run();
+  }
   void AdjustOfflineReportTimes(
       base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb)
       override {
@@ -199,15 +195,15 @@ bool IsStorageKeySessionOnly(
   return false;
 }
 
-void RecordStoreSourceStatus(StoreSourceResult result) {
+void RecordStoreSourceStatus(const StoreSourceResult& result) {
   static_assert(StorableSource::Result::kMaxValue ==
                     StorableSource::Result::kExceedsMaxChannelCapacity,
-                "Bump version of Conversions.SourceStoredStatus7 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus7",
-                                result.status);
+                "Bump version of Conversions.SourceStoredStatus8 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
+                                result.status());
 }
 
-void RecordCreateReportStatus(CreateReportResult result) {
+void RecordCreateReportStatus(const CreateReportResult& result) {
   static_assert(
       AttributionTrigger::EventLevelResult::kMaxValue ==
           AttributionTrigger::EventLevelResult::kNoMatchingTriggerData,
@@ -404,10 +400,11 @@ bool IsOperationAllowed(
     content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
-    const url::Origin* reporting_origin) {
+    const url::Origin* reporting_origin,
+    bool* can_bypass = nullptr) {
   return GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
       storage_partition.browser_context(), operation, rfh, source_origin,
-      destination_origin, reporting_origin);
+      destination_origin, reporting_origin, can_bypass);
 }
 
 std::unique_ptr<AttributionOsLevelManager> CreateOsLevelManager() {
@@ -605,8 +602,6 @@ AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
 void AttributionManagerImpl::HandleSource(
     StorableSource source,
     GlobalRenderFrameHostId render_frame_id) {
-  RecordReservedKeysUsage(source, render_frame_id);
-
   MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(source),
                                        .rfh_id = render_frame_id});
 }
@@ -638,10 +633,14 @@ void AttributionManagerImpl::OnSourceStored(
 
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnSourceHandled(source, now, cleared_debug_key, result.status);
+    observer.OnSourceHandled(source, now, cleared_debug_key, result.status());
   }
 
-  scheduler_timer_->MaybeSet(result.min_fake_report_time);
+  if (const auto* success_noised =
+          absl::get_if<StoreSourceResult::SuccessNoised>(&result.result())) {
+    scheduler_timer_->MaybeSet(success_noised->min_fake_report_time);
+    NotifyReportsChanged();
+  }
 
   NotifySourcesChanged();
 
@@ -651,8 +650,6 @@ void AttributionManagerImpl::OnSourceStored(
 void AttributionManagerImpl::HandleTrigger(
     AttributionTrigger trigger,
     GlobalRenderFrameHostId render_frame_id) {
-  RecordReservedKeysUsage(trigger, render_frame_id);
-
   MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(trigger),
                                        .rfh_id = render_frame_id});
 }
@@ -670,57 +667,6 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr(), std::move(trigger),
                            cleared_debug_key, is_debug_cookie_set));
-}
-
-void AttributionManagerImpl::RecordReservedKeysUsage(
-    const SourceOrTrigger& event,
-    GlobalRenderFrameHostId render_frame_id) const {
-  const auto check_values = [](const FilterValues& filter_values) {
-    return base::ranges::any_of(filter_values, [](const auto& f) {
-      constexpr char kReservedKeyPrefix[] = "_";
-      return base::StartsWith(f.first, kReservedKeyPrefix);
-    });
-  };
-  bool event_uses_reserved_key = absl::visit(
-      base::Overloaded{
-          [&check_values](const StorableSource& source) {
-            bool source_uses_reserved_keys =
-                check_values(source.registration().filter_data.filter_values());
-            base::UmaHistogramBoolean("Conversions.Source.UsesReservedKeys",
-                                      source_uses_reserved_keys);
-            return source_uses_reserved_keys;
-          },
-          [&check_values](const AttributionTrigger& trigger) {
-            const auto check_config = [&check_values](const FilterConfig& c) {
-              return check_values(c.filter_values());
-            };
-            const auto check_pair = [&check_config](const FilterPair& pair) {
-              return base::ranges::any_of(pair.positive, check_config) ||
-                     base::ranges::any_of(pair.negative, check_config);
-            };
-            const auto check_key =
-                [&check_pair](const AggregatableDedupKey& key) {
-                  return check_pair(key.filters);
-                };
-
-            bool trigger_uses_reserved_keys =
-                check_pair(trigger.registration().filters) ||
-                base::ranges::any_of(
-                    trigger.registration().aggregatable_dedup_keys, check_key);
-            base::UmaHistogramBoolean("Conversions.Trigger.UsesReservedKeys",
-                                      trigger_uses_reserved_keys);
-            return trigger_uses_reserved_keys;
-          },
-      },
-      event);
-  if (!event_uses_reserved_key) {
-    return;
-  }
-  if (auto* rfh = RenderFrameHost::FromID(render_frame_id)) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::
-                 kAttributionReportingUnderscorePrefixedFilterKey);
-  }
 }
 
 void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
@@ -791,10 +737,13 @@ void AttributionManagerImpl::ProcessEvents() {
         RenderFrameHost::FromID(pending_events_.front().rfh_id), source_origin,
         destination_origin, &**reporting_origin);
 
+    // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+    // deprecation experiment.
+    bool can_bypass = false;
     if (registration_allowed && cookie_origin &&
         IsOperationAllowed(*storage_partition_, operation,
                            /*rfh=*/nullptr, source_origin, destination_origin,
-                           &**cookie_origin)) {
+                           &**cookie_origin, &can_bypass)) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
           base::BindOnce(
@@ -810,7 +759,7 @@ void AttributionManagerImpl::ProcessEvents() {
       return;
     }
 
-    ProcessNextEvent(registration_allowed, /*is_debug_cookie_set=*/false);
+    ProcessNextEvent(registration_allowed, /*is_debug_cookie_set=*/can_bypass);
   }
 }
 
@@ -824,12 +773,10 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
             if (registration_allowed) {
               StoreSource(std::move(source), is_debug_cookie_set);
             } else {
-              OnSourceStored(
-                  source,
-                  /*cleared_debug_key=*/absl::nullopt,
-                  /*is_debug_cookie_set=*/false,
-                  StoreSourceResult(
-                      StorableSource::Result::kProhibitedByBrowserPolicy));
+              OnSourceStored(source,
+                             /*cleared_debug_key=*/absl::nullopt,
+                             /*is_debug_cookie_set=*/false,
+                             StoreSourceResult::ProhibitedByBrowserPolicy());
             }
           },
           [&](AttributionTrigger& trigger) {
@@ -1503,11 +1450,12 @@ void AttributionManagerImpl::ProcessOsEvents() {
         *storage_partition_, registration_operation,
         RenderFrameHost::FromID(event.render_frame_id), source_origin,
         destination_origin, &reporting_origin);
+    bool can_bypass = false;
     if (registration_allowed &&
         IsOperationAllowed(*storage_partition_, operation,
                            RenderFrameHost::FromID(event.render_frame_id),
-                           source_origin, destination_origin,
-                           &reporting_origin)) {
+                           source_origin, destination_origin, &reporting_origin,
+                           &can_bypass)) {
       cookie_checker_->IsDebugCookieSet(
           reporting_origin,
           base::BindOnce(
@@ -1523,7 +1471,8 @@ void AttributionManagerImpl::ProcessOsEvents() {
       return;
     }
 
-    ProcessNextOsEvent(registration_allowed, /*is_debug_key_allowed=*/false);
+    ProcessNextOsEvent(registration_allowed,
+                       /*is_debug_key_allowed=*/can_bypass);
   }
 }
 

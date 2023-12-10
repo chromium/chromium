@@ -539,8 +539,8 @@ class MockDnsTransactionFactory::MockTransaction
     if (result->response) {
       // Copy response in case |result| is destroyed before the transaction
       // completes.
-      auto buffer_copy =
-          base::MakeRefCounted<IOBuffer>(result->response->io_buffer_size());
+      auto buffer_copy = base::MakeRefCounted<IOBufferWithSize>(
+          result->response->io_buffer_size());
       memcpy(buffer_copy->data(), result->response->io_buffer()->data(),
              result->response->io_buffer_size());
       result_.response = DnsResponse(std::move(buffer_copy),

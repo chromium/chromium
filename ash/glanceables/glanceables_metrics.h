@@ -31,6 +31,11 @@ void RecordTasksLaunchSource(TasksLaunchSource source);
 
 void RecordAddTaskButtonShown();
 
+// Records "Add new task" button impression vs. interaction for new Tasks users
+// (users with only one tasks list and zero tasks in it) and only for Trusted
+// Testers UI.
+void RecordAddTaskButtonUsageForNewTasksUsersTT(bool pressed);
+
 void RecordLoginToShowTime(base::TimeDelta login_to_show_time);
 
 void RecordTotalShowTime(base::TimeDelta total_show_time);

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATABLE_REPORT_REQUEST_STORAGE_ID_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATABLE_REPORT_REQUEST_STORAGE_ID_H_
 
+#include <stdint.h>
+
 #include "base/types/strong_alias.h"
 
 namespace content {

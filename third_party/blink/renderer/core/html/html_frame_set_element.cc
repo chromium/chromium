@@ -37,9 +37,9 @@
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
-#include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -248,12 +248,6 @@ void HTMLFrameSetElement::ParseAttribute(
   } else if (name == html_names::kOnlanguagechangeAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kLanguagechange,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
-  } else if (RuntimeEnabledFeatures::PortalsEnabled(GetExecutionContext()) &&
-             name == html_names::kOnportalactivateAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kPortalactivate,
         JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
                                                   value));
   } else if (RuntimeEnabledFeatures::TimeZoneChangeEventEnabled() &&

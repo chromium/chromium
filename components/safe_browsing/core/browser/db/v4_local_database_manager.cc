@@ -132,7 +132,7 @@ ListInfos GetListInfos() {
 base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
   static constexpr CommandLineSwitchAndThreatType
       kCommandLineSwitchAndThreatType[] = {
-          {"mark_as_allowlisted_for_phish_guard", CSD_WHITELIST},
+          {"mark_as_allowlisted_for_phish_guard", CSD_ALLOWLIST},
           {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
           {"mark_as_phishing", SOCIAL_ENGINEERING},
           {"mark_as_malware", MALWARE_THREAT},
@@ -154,14 +154,14 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
     case CLIENT_INCIDENT:
     case SUBRESOURCE_FILTER:
       return 2;
-    case CSD_WHITELIST:
+    case CSD_ALLOWLIST:
     case HIGH_CONFIDENCE_ALLOWLIST:
       return 3;
     case SUSPICIOUS:
       return 4;
     case BILLING:
       return 15;
-    case CSD_DOWNLOAD_WHITELIST:
+    case CSD_DOWNLOAD_ALLOWLIST:
     case POTENTIALLY_HARMFUL_APPLICATION:
     case SOCIAL_ENGINEERING_PUBLIC:
     case THREAT_TYPE_UNSPECIFIED:

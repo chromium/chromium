@@ -40,10 +40,6 @@ BASE_FEATURE(kBlockRepeatedNotificationPermissionPrompts,
              "BlockRepeatedNotificationPermissionPrompts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPermissionElement,
-             "PermissionElement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNotificationInteractionHistory,
              "NotificationInteractionHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -80,16 +76,6 @@ BASE_FEATURE(kPermissionPredictionsV2,
              "PermissionPredictionsV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-
-// When enabled, blocks notifications permission prompt when Chrome doesn't
-// have app level Notification permission.
-BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
-             "BlockNotificationPromptsIfDisabledOnAppLevel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#else
-
 // Controls whether to trigger showing a HaTS survey, with the given
 // `probability` and `trigger_id`. The `probability` parameter is defined and
 // handled by the HatsService itself. If the parameter
@@ -106,12 +92,22 @@ BASE_FEATURE(kPermissionsPromptSurvey,
              "PermissionsPromptSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, permissions grants with a durable session model will have
-// an expiration date set. The interpretation of the expiration date
-// is not handled by this component, but left to the embedding browser.
-BASE_FEATURE(kRecordPermissionExpirationTimestamps,
-             "RecordPermissionExpirationTimestamps",
+#if BUILDFLAG(IS_ANDROID)
+
+// When enabled, blocks notifications permission prompt when Chrome doesn't
+// have app level Notification permission.
+BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
+             "BlockNotificationPromptsIfDisabledOnAppLevel",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#else
+
+// When enabled, chooser permissions grants will have a last visited timestamp
+// date set. The timestamp will be later used to auto-revoke the permission,
+// if eligible.
+BASE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps,
+             "RecordChooserPermissionLastVisitedTimestamps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for the mitigation for https://crbug.com/1462709
 BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
@@ -144,11 +140,6 @@ BASE_FEATURE(kWindowPlacementPermissionAlias,
 // visible in the Embedded content settings page.
 BASE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants,
              "ShowRelatedWebsiteSetsPermissionGrants",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables disallowing MIDI permission by default.
-BASE_FEATURE(kBlockMidiByDefault,
-             "BlockMidiByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
@@ -186,7 +177,6 @@ const base::FeatureParam<double> kPermissionPredictionsV2HoldbackChance(
     "holdback_chance",
     0.3);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Specifies the `trigger_id` of the HaTS survey to trigger immediately after
 // the user has interacted with a permission prompt. Multiple values can be
 // configured by providing a comma separated list. If this is done, a
@@ -299,7 +289,6 @@ const base::FeatureParam<std::string>
     kPermissionPromptSurveyOneTimePromptsDecidedBucket{
         &permissions::features::kPermissionsPromptSurvey,
         "one_time_prompts_decided_bucket", ""};
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_params
 }  // namespace permissions

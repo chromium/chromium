@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_DIALOGS_H_
 #define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_DIALOGS_H_
 
+#include <optional>
 #include <string>
 
 #include "content/public/browser/bluetooth_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -31,7 +31,7 @@ void ShowBluetoothDeviceCredentialsDialog(
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    const absl::optional<std::u16string>& pin,
+    const std::optional<std::u16string>& pin,
     content::BluetoothDelegate::PairPromptCallback close_callback);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 

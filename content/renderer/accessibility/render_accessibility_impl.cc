@@ -23,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -183,12 +184,13 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
       accessibility_mode_.has_mode(ui::AXMode::kLabelImages)) {
     return;
   }
-  ax_image_annotator_->Destroy();
   ax_image_annotator_.reset();
   page_language_.clear();
-  serialization_in_flight_ = false;
+
+  // New document has started. Do not expect to receive the ACK for a
+  // serialization sent by the old document.
+  ax_context_->OnSerializationCancelled();
   weak_factory_for_pending_events_.InvalidateWeakPtrs();
-  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 }
 
 void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
@@ -212,9 +214,6 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
 
   SetAccessibilityCrashKey(mode);
 
-  // Initialize features based on the accessibility mode.
-  StartOrStopLabelingImages(old_mode, mode);
-
   if (ax_context_) {
     ax_context_->SetAXMode(mode);
   } else {
@@ -233,6 +232,9 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   if (was_on) {
     ax_context_->MarkDocumentDirty();
   }
+
+  // Initialize features based on the accessibility mode.
+  StartOrStopLabelingImages(old_mode, mode);
 
   // Fire a load complete event so that any ATs present can treat the page as
   // fresh and newly loaded.
@@ -266,25 +268,8 @@ void RenderAccessibilityImpl::HitTest(
   ax_context_->UpdateAXForAllDocuments();
 
   WebAXObject ax_object;
-  // 1. Now that layout has been updated for the entire document, try to run
-  // the hit test operation on the popup root element, if there's a popup
-  // opened. This is needed to allow hit testing within web content popups.
-  absl::optional<gfx::RectF> popup_bounds = GetPopupBounds();
-  if (popup_bounds.has_value()) {
-    auto popup_root_obj = WebAXObject::FromWebDocument(GetPopupDocument());
-    // WebAXObject::HitTest expects the point passed by parameter to be
-    // relative to the instance we call it from.
-    ax_object = popup_root_obj.HitTest(
-        point - ToRoundedVector2d(popup_bounds->OffsetFromOrigin()));
-  }
-
-  // 2. If running the hit test operation on the popup didn't returned any
-  // result (or if there was no popup), run the hit test operation from the
-  // main element.
-  if (ax_object.IsNull()) {
-    auto root_obj = WebAXObject::FromWebDocument(document);
-    ax_object = root_obj.HitTest(point);
-  }
+  auto root_obj = WebAXObject::FromWebDocument(document);
+  ax_object = root_obj.HitTest(point);
 
   // Return if no attached accessibility object was found for the main document.
   if (ax_object.IsDetached()) {
@@ -473,6 +458,8 @@ void RenderAccessibilityImpl::Reset(uint32_t reset_token) {
   FireLoadCompleteIfLoaded();
 }
 
+// TODO(accessibility): When legacy mode is deleted, calls to this function may
+// be replaced with obj.AddDirtyObjectToSerializationQueue
 void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     const WebAXObject& obj,
     bool subtree,
@@ -483,38 +470,59 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
   DCHECK(obj.AccessibilityIsIncludedInTree())
       << "Cannot serialize unincluded object: " << obj.ToString(true).Utf8();
 
-  obj.MarkAXObjectDirtyWithDetails(subtree, event_from, event_from_action,
-                                   event_intents);
+  obj.AddDirtyObjectToSerializationQueue(subtree, event_from, event_from_action,
+                                         event_intents);
 
-  NotifyWebAXObjectMarkedDirty(obj, event_type);
+  // The logic below here is handled now in AXObjectCache and thus only runs in
+  // legacy mode.
+  if (!serialize_post_lifecycle_) {
+    NotifyWebAXObjectMarkedDirty(obj, event_type);
+  }
 }
 
-// TODO(accessibility) Move this logic to AXObjectCacheImpl.
+// TODO(accessibility): Delete once legacy mode is removed.
 void RenderAccessibilityImpl::NotifyWebAXObjectMarkedDirty(
     const blink::WebAXObject& obj,
     ax::mojom::Event event_type) {
+  DCHECK(!serialize_post_lifecycle_);
+
   // The root is an exception because it often has focus while the page is
   // loading. In that case the event type is used as the signal (see
   // HandleAXEvent() and IsImmediateProcessingRequiredForEvent()).
-  if (serialize_post_lifecycle_) {
-    if (obj != ComputeRoot() && obj.IsFocused()) {
-      ScheduleImmediateAXUpdate();
-    }
-  } else {
-    if (legacy_event_schedule_mode_ ==
-        LegacyEventScheduleMode::kProcessEventsImmediately) {
-      return;
-    }
+  if (legacy_event_schedule_mode_ ==
+      LegacyEventScheduleMode::kProcessEventsImmediately) {
+    return;
+  }
     if (obj != ComputeRoot() && obj.IsFocused()) {
       legacy_event_schedule_mode_ =
           LegacyEventScheduleMode::kProcessEventsImmediately;
     }
     LegacyScheduleSendPendingAccessibilityEvents();
-  }
 }
 
+// TODO(accessibility): Replace all instances of HandleAXEvent with
+// ax_context_->AddEventToSerializationQueue(event, true);. But we'll need to
+// make sure to handle the loading_stage_ variable below.
 void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   DCHECK(ax_context_);
+
+  if (event.event_type == ax::mojom::Event::kLoadStart) {
+    loading_stage_ = LoadingStage::kPreload;
+  } else if (event.event_type == ax::mojom::Event::kLoadComplete) {
+    loading_stage_ = LoadingStage::kLoadCompleted;
+  }
+
+  if (serialize_post_lifecycle_) {
+    ax_context_->AddEventToSerializationQueue(
+        event, true);  // All events sent to AXObjectCache from RAI need
+                       // immediate serialization!
+    return;
+  }
+
+  // TODO(accessibility): Delete this code when legacy mode is removed.
+  // In lifecycle mode, the below logic is handled in ax_object_cache via
+  // AddEventToSerializationQueue.
+  DCHECK(!serialize_post_lifecycle_);
   const WebDocument& document = GetMainDocument();
   DCHECK(!document.IsNull());
 
@@ -531,40 +539,21 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
                        event.event_type);
 
   if (IsImmediateProcessingRequiredForEvent(event)) {
-    if (serialize_post_lifecycle_) {
-      ScheduleImmediateAXUpdate();
-    } else {
-      legacy_event_schedule_mode_ =
-          LegacyEventScheduleMode::kProcessEventsImmediately;
-    }
-    if (event.event_type == ax::mojom::Event::kLoadStart) {
-      loading_stage_ = LoadingStage::kPreload;
-    } else if (event.event_type == ax::mojom::Event::kLoadComplete) {
-      loading_stage_ = LoadingStage::kLoadCompleted;
-    }
+    legacy_event_schedule_mode_ =
+        LegacyEventScheduleMode::kProcessEventsImmediately;
   }
 
-  if (!serialize_post_lifecycle_) {
-    LegacyScheduleSendPendingAccessibilityEvents();
-  }
+  LegacyScheduleSendPendingAccessibilityEvents();
 }
 
-// TODO(accessibility) Move this and other serialization timing code to
-// AXObjectCacheImpl, scheduling immediate serialization there when necessary
-// (and enabling removal of WebDocument::IsLoaded()). When it's moved there, we
-// can restore the rule that if the focus is marked dirty but there is no event,
-// we should schedule an immediate serialization.
+// TODO(accessibility): When legacy mode is deleted, this function can go as
+// it's only used in RenderAccessibilityImpl::HandleAXEvent legacy mode.
 bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     const ui::AXEvent& event) const {
-  if (serialize_post_lifecycle_) {
-    if (last_serialization_timestamp_ == kSerializeAtNextOpportunity) {
-      return true;  // Already scheduled for immediate mode.
-    }
-  } else {
-    if (legacy_event_schedule_mode_ ==
-        LegacyEventScheduleMode::kProcessEventsImmediately) {
-      return true;  // Already scheduled for immediate mode.
-    }
+  DCHECK(!serialize_post_lifecycle_);
+  if (legacy_event_schedule_mode_ ==
+      LegacyEventScheduleMode::kProcessEventsImmediately) {
+    return true;  // Already scheduled for immediate mode.
   }
 
   if (event.event_from == ax::mojom::EventFrom::kAction) {
@@ -645,6 +634,8 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
   }
 }
 
+// TODO(accessibility): When legacy mode is deleted, this function can go. All
+// deferring is now done in ax_object_cache.
 int RenderAccessibilityImpl::GetDeferredEventsDelay() {
   // The amount of time, in milliseconds, to wait before sending non-interactive
   // events that are deferred before the initial page load.
@@ -663,21 +654,14 @@ int RenderAccessibilityImpl::GetDeferredEventsDelay() {
 }
 
 void RenderAccessibilityImpl::AXReadyCallback() {
-  if (!serialize_post_lifecycle_) {
-    return;
-  }
+  DCHECK(serialize_post_lifecycle_);
   DCHECK(ax_context_);
   DCHECK(ax_context_->HasDirtyObjects())
       << "Should not call AXReadyCallback() unless there is something to "
          "serialize.";
   DCHECK(render_frame_);
   DCHECK(render_frame_->in_frame_tree());
-
-  if (serialization_in_flight_) {
-    // Another serialization is in flight. When it's finished, a new
-    // serialization will be triggered if necessary.
-    return;
-  }
+  DCHECK(!ax_context_->IsSerializationInFlight());
 
   // Don't send accessibility events for frames that don't yet have an tree id
   // as doing so will cause the browser to discard that message and all
@@ -693,54 +677,15 @@ void RenderAccessibilityImpl::AXReadyCallback() {
     return;
   }
 
-  const auto& now = base::Time::Now();
-  const auto& delay_between_serializations =
-      base::Milliseconds(GetDeferredEventsDelay());
-  const auto& elapsed_since_last_serialization =
-      now - last_serialization_timestamp_;
-  const auto& delay_until_next_serialization =
-      delay_between_serializations - elapsed_since_last_serialization;
-  if (delay_until_next_serialization.is_positive()) {
-    // If not loaded yet, ensure that AXReadyCallback() will occur again,
-    // avoiding the possibility that the pipeline will stall with dirty
-    // objects still in it.
-    if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
-      render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)
-          ->PostDelayedTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &RenderAccessibilityImpl::ScheduleImmediateAXUpdate,
-                  weak_factory_for_serialization_pipeline_.GetWeakPtr()),
-              delay_until_next_serialization);
-    }
-    return;  // No serialization needed yet.
-  }
-
-  // There may be a delayed task queued up that was called to enable batching,
-  // and ensure that the pipeline doesn't stall. However, at this point we will
-  // serialize all current dirty objects, and the pipeline will be activated
-  // again via ProcessDeferredAccessibilityEvents() if there are any changes in
-  // the document.
-  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
-
-  last_serialization_timestamp_ = now;
-
   SendPendingAccessibilityEvents();
 }
 
+// TODO(accessibility): When legacy mode is deleted, calls to this function may
+// be replaced with ax_context_->ScheduleImmediateSerialization()
 void RenderAccessibilityImpl::ScheduleImmediateAXUpdate() {
   if (serialize_post_lifecycle_) {
-    // This makes sure that we'll serialize at the next available opportunity.
-    last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-    if (serialization_in_flight_) {
-      immediate_update_required_after_ack_ = true;
-      return;  // Wait until current serialization message has been received.
-    }
-
-    // Call ScheduleAXUpdate() to ensure lifecycle does not get stalled.
-    // Will call AXReadyCallback() at the next available opportunity.
     DCHECK(ax_context_);
-    ax_context_->ScheduleAXUpdate();
+    ax_context_->ScheduleImmediateSerialization();
   } else {
     // This method is currently only used for RenderAccessibilityImplLegacyTest
     // tests, which is expected to change in synchronous a11y implementation.
@@ -824,8 +769,8 @@ void RenderAccessibilityImpl::LegacyScheduleSendPendingAccessibilityEvents(
   // When no accessibility events are in-flight post a task to send
   // the events to the browser. We use PostTask so that we can queue
   // up additional events.
-  DCHECK(!serialization_in_flight_);
-  serialization_in_flight_ = true;
+  DCHECK(!ax_context_->IsSerializationInFlight());
+  ax_context_->OnSerializationStartSend();
   render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)
       ->PostDelayedTask(
           FROM_HERE,
@@ -1169,9 +1114,12 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
 
   if (had_end_of_test_event) {
     ui::AXEvent end_of_test(root.AxID(), ax::mojom::Event::kEndOfTest);
-    if (!WebAXObject::IsDirty(document)) {
+    if (!WebAXObject::IsDirty(document) && GetMainDocument().IsLoaded()) {
       events.emplace_back(end_of_test);
     } else {
+      DLOG(ERROR) << "Had end of test event, but document is still dirty. "
+                     "Serialize post lifecycle: "
+                  << serialize_post_lifecycle_;
       // Document is still dirty, queue up another end of test and process
       // immediately.
       if (!serialize_post_lifecycle_) {
@@ -1201,8 +1149,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // scheduling. If serialize_post_lifecycle_ is true, then this method is
   // called synchronously, but should never be called if there's a previous
   // serialization still in flight.
-  DCHECK(!serialize_post_lifecycle_ || !serialization_in_flight_);
-  serialization_in_flight_ = true;
+  DCHECK(!serialize_post_lifecycle_ || !ax_context_->IsSerializationInFlight());
 
   if (!serialize_post_lifecycle_) {
     // Clear status here in case we return early.
@@ -1211,7 +1158,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   WebDocument document = GetMainDocument();
   DCHECK(serialize_post_lifecycle_ || !document.IsNull());
   if (document.IsNull()) {
-    serialization_in_flight_ = false;
     return;
   }
 
@@ -1223,6 +1169,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   CHECK(document.GetFrame()->GetEmbeddingToken());
 
   DCHECK(ax_context_);
+  ax_context_->OnSerializationStartSend();
 
   if (!serialize_post_lifecycle_) {
     DCHECK(document.IsAccessibilityEnabled())
@@ -1268,7 +1215,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       // defer so that the batch of events is larger. If any interactive events
       // come in, the batch will be processed immediately.
       legacy_event_schedule_mode_ = LegacyEventScheduleMode::kDeferEvents;
-      serialization_in_flight_ = false;
+      ax_context_->OnSerializationCancelled();
       return;
     }
 
@@ -1324,7 +1271,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     DCHECK(updates_and_events->events.empty())
         << "If there are no updates, there also shouldn't be any events, "
            "because events always mark an object dirty.";
-    serialization_in_flight_ = false;
+    ax_context_->OnSerializationCancelled();
     return;
   }
 
@@ -1375,16 +1322,16 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   }
   // Also log the time taken in this function to track serialization
   // performance.
-  UMA_HISTOGRAM_TIMES(
-      "Accessibility.Performance.SendPendingAccessibilityEvents",
-      elapsed_time_ms);
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "Accessibility.Performance.SendPendingAccessibilityEvents2",
+      elapsed_time_ms, base::Microseconds(1), base::Seconds(1), 50);
 
   if (loading_stage_ == LoadingStage::kPostLoad) {
     // Track serialization after document load in order to measure the
     // contribution of serialization to interaction latency.
-    UMA_HISTOGRAM_TIMES(
-        "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad",
-        elapsed_time_ms);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2",
+        elapsed_time_ms, base::Microseconds(1), base::Seconds(1), 50);
   }
 
   if (loading_stage_ == LoadingStage::kLoadCompleted) {
@@ -1407,7 +1354,7 @@ void RenderAccessibilityImpl::LegacyOnAccessibilityEventsHandled() {
   DCHECK(!serialize_post_lifecycle_);
   DCHECK_EQ(legacy_event_schedule_status_,
             LegacyEventScheduleStatus::kWaitingForAck);
-  serialization_in_flight_ = false;
+  ax_context_->OnSerializationCancelled();
   legacy_event_schedule_status_ = LegacyEventScheduleStatus::kNotWaiting;
   switch (legacy_event_schedule_mode_) {
     case LegacyEventScheduleMode::kDeferEvents:
@@ -1420,17 +1367,9 @@ void RenderAccessibilityImpl::LegacyOnAccessibilityEventsHandled() {
 }
 
 void RenderAccessibilityImpl::OnSerializationReceived() {
-  // Another serialization may be needed, in the case where the AXObjectCache is
-  // dirty. In that case, make sure a visual update is scheduled so that
-  // AXReadyCallback() will be called. ScheduleAXUpdate() will only schedule a
-  // visual update if the AXObjectCache is dirty.
-  serialization_in_flight_ = false;
-  if (immediate_update_required_after_ack_) {
-    ScheduleImmediateAXUpdate();
-    immediate_update_required_after_ack_ = false;
-  } else {
-    ax_context_->ScheduleAXUpdate();
-  }
+  DCHECK(serialize_post_lifecycle_);
+  DCHECK(ax_context_);
+  ax_context_->OnSerializationReceived();
 }
 
 void RenderAccessibilityImpl::OnLoadInlineTextBoxes(
@@ -1478,7 +1417,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
 
 void RenderAccessibilityImpl::LegacyCancelScheduledEvents() {
   DCHECK(!serialize_post_lifecycle_);
-  serialization_in_flight_ = false;
+  ax_context_->OnSerializationCancelled();
   switch (legacy_event_schedule_status_) {
     case LegacyEventScheduleStatus::kScheduledDeferred:
     case LegacyEventScheduleStatus::kScheduledImmediate:  // Fallthrough
@@ -1546,7 +1485,6 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
     CreateAXImageAnnotator();
   } else if (old_mode.has_mode(ui::AXMode::kLabelImages) &&
              !new_mode.has_mode(ui::AXMode::kLabelImages)) {
-    ax_image_annotator_->Destroy();
     ax_image_annotator_.reset();
   }
 }
@@ -1630,25 +1568,6 @@ blink::WebDocument RenderAccessibilityImpl::GetPopupDocument() {
   return WebDocument();
 }
 
-absl::optional<gfx::RectF> RenderAccessibilityImpl::GetPopupBounds() {
-  const WebDocument& popup_document = GetPopupDocument();
-  if (popup_document.IsNull())
-    return absl::nullopt;
-
-  auto obj = WebAXObject::FromWebDocument(popup_document);
-
-  gfx::RectF popup_bounds;
-  WebAXObject popup_container;
-  gfx::Transform transform;
-  obj.GetRelativeBounds(popup_container, popup_bounds, transform);
-
-  // The |popup_container| will never be set for a popup element. See
-  // `AXObject::GetRelativeBounds`.
-  DCHECK(popup_container.IsNull());
-
-  return popup_bounds;
-}
-
 blink::WebAXObject RenderAccessibilityImpl::GetPluginRoot() {
   if (!ax_context_)
     return WebAXObject();
@@ -1668,7 +1587,7 @@ void RenderAccessibilityImpl::ConnectionClosed() {
   if (!serialize_post_lifecycle_) {
     legacy_event_schedule_status_ = LegacyEventScheduleStatus::kNotWaiting;
   }
-  serialization_in_flight_ = false;
+  ax_context_->OnSerializationCancelled();
 }
 
 void RenderAccessibilityImpl::RecordInaccessiblePdfUkm() {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
@@ -17,7 +19,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -98,13 +99,9 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
 void QuickAnswersUiController::CreateRichAnswersView() {
   CHECK(controller_->quick_answer());
 
-  // TODO(b/279061152): Build result type specific rich answers view with
-  // reading `controller_->structured_result()`. Note that each result type
-  // will be copyable, i.e. we can copy a struct to a view without worrying
-  // about object-life-time management.
   views::UniqueWidgetPtr widget = quick_answers::RichAnswersView::CreateWidget(
       quick_answers_view()->GetAnchorViewBounds(), weak_factory_.GetWeakPtr(),
-      *controller_->quick_answer());
+      *controller_->quick_answer(), *controller_->structured_result());
 
   if (!widget) {
     // If the rich card widget cannot be created, fall-back to open the query

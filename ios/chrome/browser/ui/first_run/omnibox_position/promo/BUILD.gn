@@ -1,0 +1,49 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("promo") {
+  sources = [
+    "omnibox_position_choice_display_handler.h",
+    "omnibox_position_choice_display_handler.mm",
+    "omnibox_position_choice_scene_agent.h",
+    "omnibox_position_choice_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:types",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/first_run/omnibox_position:omnibox_position_ui",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "omnibox_position_choice_scene_agent_unittest.mm" ]
+  deps = [
+    ":promo",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

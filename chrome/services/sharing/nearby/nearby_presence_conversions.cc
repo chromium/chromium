@@ -113,6 +113,7 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
   }
 }
+
 mojo_base::mojom::AbslStatusCode CovertStatusToMojomStatus(
     absl::Status status) {
   switch (status.code()) {

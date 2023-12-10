@@ -390,7 +390,7 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
     return nullptr;
   }
 
-  absl::optional<base::UnguessableToken> buffer_guid =
+  std::optional<base::UnguessableToken> buffer_guid =
       base::UnguessableToken::Deserialize(state->buffer_guid_high,
                                           state->buffer_guid_low);
   if (!buffer_guid.has_value()) {

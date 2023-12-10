@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ms">
+<translation id="1220509181886849806">Gunakan kata laluan yang disimpan?</translation>
+<translation id="1435940442311036198">Gunakan kunci laluan pada peranti lain</translation>
+<translation id="1717486229951421299">Senarai bukti kelayakan untuk diisi apabila disentuh, dibuka pada ketinggian separuh.</translation>
+<translation id="2359808026110333948">Teruskan</translation>
+<translation id="2364266287022099258">Gunakan kunci laluan yang disimpan?</translation>
+<translation id="3399357656427473483">Senarai bukti kelayakan untuk diisi apabila disentuh.</translation>
+<translation id="3653689374478248324">Anda akan log masuk ke <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Log masuk</translation>
+<translation id="4553044860350038560">Lagi kunci laluan</translation>
+<translation id="4598345735110653698">Urus kunci laluan</translation>
+<translation id="4722735765955348426">Kata laluan untuk <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Gunakan kunci skrin anda</translation>
+<translation id="5012523644916800014">Urus kata laluan dan kunci laluan</translation>
+<translation id="5441504010984421144">Senarai bukti kelayakan untuk diisi apabila disentuh, dibuka pada ketinggian penuh.</translation>
+<translation id="5591247451101092906">Gunakan kata laluan atau kunci laluan yang disimpan?</translation>
+<translation id="5624120631404540903">Urus kata laluan</translation>
+<translation id="6560306912274274630">Kunci laluan untuk <ph name="USERNAME" />, gunakan kunci skrin anda</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Kata laluan baharu untuk laman ini}other{Kata laluan baharu untuk laman ini}}</translation>
+<translation id="7286867818472074330">Pilih kunci laluan</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> daripada <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Anda telah menerima kata laluan untuk <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> telah berkongsi kata laluan dengan anda pada <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Senarai bukti kelayakan ditutup.</translation>
+</translationbundle>

@@ -314,7 +314,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
   // Allow the plugin to handle find requests.
   client_->UsePluginAsFindHandler();
 
-  absl::optional<ParsedParams> params = ParseWebPluginParams(initial_params_);
+  std::optional<ParsedParams> params = ParseWebPluginParams(initial_params_);
 
   // The contents of `initial_params_` are no longer needed.
   initial_params_ = {};
@@ -1342,7 +1342,7 @@ void PdfViewWebPlugin::HandleDisplayAnnotationsMessage(
 
 void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
     const base::Value::Dict& message) {
-  absl::optional<PDFEngine::NamedDestination> named_destination =
+  std::optional<PDFEngine::NamedDestination> named_destination =
       engine_->GetNamedDestination(*message.FindString("namedDestination"));
 
   const int page_number = named_destination.has_value()

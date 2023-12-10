@@ -129,7 +129,6 @@ class WebMediaPlayer {
     int height;
     base::TimeDelta media_time;
     media::VideoFrameMetadata metadata;
-    scoped_refptr<media::VideoFrame> frame;
     base::TimeDelta rendering_interval;
     base::TimeDelta average_frame_duration;
   };

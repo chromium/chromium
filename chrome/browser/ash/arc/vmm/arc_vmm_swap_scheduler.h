@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_ARC_VMM_ARC_VMM_SWAP_SCHEDULER_H_
 #define CHROME_BROWSER_ASH_ARC_VMM_ARC_VMM_SWAP_SCHEDULER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -28,8 +29,8 @@ class ArcVmmSwapScheduler : public ash::ConciergeClient::VmObserver {
   // If the `checking_period` is nullopt, the scheduler will not use the
   // `observation` and timer to check and control the swappable state.
   ArcVmmSwapScheduler(base::RepeatingCallback<void(bool)> swap_callback,
-                      absl::optional<base::TimeDelta> minimum_swapout_interval,
-                      absl::optional<base::TimeDelta> checking_period,
+                      std::optional<base::TimeDelta> minimum_swapout_interval,
+                      std::optional<base::TimeDelta> checking_period,
                       std::unique_ptr<PeaceDurationProvider> observation);
 
   ArcVmmSwapScheduler(const ArcVmmSwapScheduler&) = delete;

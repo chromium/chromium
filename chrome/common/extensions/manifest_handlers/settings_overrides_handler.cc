@@ -138,13 +138,14 @@ SettingsOverridesHandler::~SettingsOverridesHandler() {}
 
 bool SettingsOverridesHandler::Parse(Extension* extension,
                                      std::u16string* error) {
-  const base::Value* dict =
-      extension->manifest()->FindPath(manifest_keys::kSettingsOverride);
+  const base::Value::Dict* dict =
+      extension->manifest()->FindDictPath(manifest_keys::kSettingsOverride);
   CHECK(dict != nullptr);
-  std::unique_ptr<ChromeSettingsOverrides> settings(
-      ChromeSettingsOverrides::FromValueDeprecated(*dict, error));
-  if (!settings)
+  auto settings = ChromeSettingsOverrides::FromValue(*dict);
+  if (!settings.has_value()) {
+    *error = settings.error();
     return false;
+  }
 
   // TODO(crbug.com/1101130): Any of {homepage, search_engine, startup_pages}'s
   // parse failure should result in hard error. Currently, Parse fails only when
@@ -153,7 +154,8 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
   std::u16string homepage_error;
   info->homepage = ParseHomepage(*settings, &homepage_error);
   std::u16string search_engine_error;
-  info->search_engine = ParseSearchEngine(settings.get(), &search_engine_error);
+  info->search_engine =
+      ParseSearchEngine(&settings.value(), &search_engine_error);
   std::u16string startup_pages_error;
   info->startup_pages = ParseStartupPage(*settings, &startup_pages_error);
   if (!info->homepage && !info->search_engine && info->startup_pages.empty()) {

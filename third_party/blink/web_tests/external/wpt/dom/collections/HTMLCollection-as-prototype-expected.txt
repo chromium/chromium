@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] HTMLCollection as a prototype should not allow getting .length on the base object
 [FAIL] HTMLCollection as a prototype and setting own properties
   assert_equals: expected (string) "foo" but got (object) Element node <p id="named"></p>
 Harness: the test ran to completion.

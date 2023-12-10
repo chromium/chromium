@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -30,7 +31,6 @@
 #include "media/base/sample_format.h"
 #include "media/base/status.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {

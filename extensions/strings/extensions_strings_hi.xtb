@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ओह! यादृच्छिक RSA निजी कुंजी जनरेट करने में विफल.</translation>
 <translation id="1445572445564823378">इस एक्‍सटेंशन की वजह से <ph name="PRODUCT_NAME" /> धीरे काम कर रहा है. आपको इसे बंद कर देना चाहिए ताकि <ph name="PRODUCT_NAME" /> ठीक से काम करे.</translation>
 <translation id="1468038450257740950">WebGL समर्थित नहीं है.</translation>
+<translation id="1610570795592207282">स्क्रिप्ट के लिए css '<ph name="RELATIVE_PATH" />' को लोड नहीं किया जा सका.</translation>
 <translation id="1803557475693955505">पेजभूमि पेज '<ph name="BACKGROUND_PAGE" />' को लोड नहीं कर सका.</translation>
 <translation id="2159915644201199628">इमेज को डीकोड नहीं किया जा सका: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">स्थानीय भाषा में लिखा गया है, लेकिन default_locale मेनिफ़ेस्ट में तय नहीं की गई थी.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_ID" /> अज्ञात प्रॉडक्ट</translation>
 <translation id="3144135466825225871">crx फ़ाइल बदला नहीं जा सका. यह देखने के लिए जाँच करें कि क्या फ़ाइल उपयोग में है.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
-<translation id="3302709122321372472">सामग्री स्क्रिप्ट के लिए css '<ph name="RELATIVE_PATH" />' लोड नहीं कर सका.</translation>
 <translation id="3369521687965833290">एक्सटेंशन को 'अनपैक' नहीं कर सका.  किसी एक्सटेंशन को सुरक्षित रूप से 'अनपैक' करने के लिए आपकी प्रोफ़ाइल निर्देशिका में एक ऐसा पाथ होना ज़रूरी है, जिसमें कोई सिमलिंक न हो.  ऐसा कोई भी पाथ आपकी प्रोफ़ाइल के लिए मौजूद नहीं है.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुंजी के लिए इनपुट मान, एक मान्य पाथ होना चाहिए.</translation>
 <translation id="388442998277590542">विकल्‍प पेज '<ph name="OPTIONS_PAGE" />' लोड नहीं कर सका.</translation>
 <translation id="3984413272403535372">एक्सटेंशन हस्ताक्षरित करते समय गड़बड़ी आई.</translation>
-<translation id="39964277676607559">सामग्री स्क्रिप्ट के लिए javascript '<ph name="RELATIVE_PATH" />' लोड नहीं कर सका.</translation>
 <translation id="4115165561519362854">इस मशीन का नियंत्रक चाहता है कि <ph name="EXTENSION_NAME" /> के पास <ph name="EXTENSION_VERSION" /> का एक न्‍यूनतम वर्शन हो. इसे तब तक सक्षम नहीं किया जा सकता जब तक कि उसे उस वर्शन (या बाद वाले वर्शन) में अपडेट ना कर दिया गया हो.</translation>
 <translation id="4233778200880751280">संक्षिप्त विवरण पेज '<ph name="ABOUT_PAGE" />' लोड नहीं हो सका.</translation>
 <translation id="471800408830181311">निजी कुंजी आउटपुट करने में विफल.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">सार्वजनिक कुंजी निर्यात करने में विफल.</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">पैक करने के लिए निर्देशिका का पूरा पाथ नहीं ढूंढा जा सकता.</translation>
+<translation id="5160071981665899014">स्क्रिप्ट के लिए JavaScript '<ph name="RELATIVE_PATH" />' को लोड नहीं किया जा सका.</translation>
 <translation id="5356315618422219272">ऐप्‍स दृश्‍य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">आकार वाली विंडो समर्थित नहीं हैं.</translation>
 <translation id="5456409301717116725">एक्सटेंशन में कुंजी फ़ाइल '<ph name="KEY_PATH" />' शामिल है. संभवतः आप ऐसा नहीं करना चाहते हैं.</translation>

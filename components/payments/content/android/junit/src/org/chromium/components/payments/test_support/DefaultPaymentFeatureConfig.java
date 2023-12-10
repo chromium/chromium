@@ -12,9 +12,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 
 import java.util.Map;
 
-/**
- * Default flag configuration for payments features in unit tests.
- */
+/** Default flag configuration for payments features in unit tests. */
 public abstract class DefaultPaymentFeatureConfig {
     private static final Map<String, Boolean> DEFAULT_FEATURE_VALUES =
             ImmutableMap.<String, Boolean>builder()

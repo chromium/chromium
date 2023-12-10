@@ -545,15 +545,15 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetBatteryInfo) {
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
-                               device::BluetoothDevice::BatteryType::kDefault));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_EQ(std::nullopt, device->GetBatteryInfo(
+                              device::BluetoothDevice::BatteryType::kDefault));
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
@@ -584,15 +584,15 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetUnknownBatteryInfo) {
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
-                               device::BluetoothDevice::BatteryType::kDefault));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_EQ(std::nullopt, device->GetBatteryInfo(
+                              device::BluetoothDevice::BatteryType::kDefault));
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
@@ -623,15 +623,15 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetInvalidPercentBatteryInfo) {
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
-                               device::BluetoothDevice::BatteryType::kDefault));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_EQ(std::nullopt, device->GetBatteryInfo(
+                              device::BluetoothDevice::BatteryType::kDefault));
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
@@ -27,10 +29,8 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -74,6 +74,19 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     }
   )");
 
+apps::PromiseAppType GetPromiseAppType(apps::AppType promise_app_type,
+                                       apps::AppType installed_app_type) {
+  if (promise_app_type == apps::AppType::kArc &&
+      installed_app_type == apps::AppType::kArc) {
+    return apps::PromiseAppType::kArc;
+  }
+  if (promise_app_type == apps::AppType::kArc &&
+      installed_app_type == apps::AppType::kWeb) {
+    return apps::PromiseAppType::kTwa;
+  }
+  return apps::PromiseAppType::kUnknown;
+}
+
 }  // namespace
 
 namespace apps {
@@ -106,8 +119,8 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const PackageId package_id = delta->package_id;
-  bool is_existing_registration =
-      promise_app_registry_cache_->HasPromiseApp(package_id);
+  bool is_new_promise_app =
+      !promise_app_registry_cache_->HasPromiseApp(package_id);
 
   // If the app is in the AppRegistryCache, then it already has an item in the
   // Launcher/ Shelf and we don't need to create a new promise app item to
@@ -116,39 +129,25 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
   // Launcher/ Shelf but uses legacy ARC default apps implementation).
   // TODO(b/286981938): Remove this check after refactoring to allow the Promise
   // App Service to manage ARC default app icons.
-  if (!is_existing_registration && IsRegisteredInAppRegistryCache(package_id)) {
+  if (is_new_promise_app && IsRegisteredInAppRegistryCache(package_id)) {
     return;
-  }
-
-  // Clear out the icons of any promise app marked for deletion.
-  if (IsPromiseAppCompleted(delta->status)) {
-    promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
   }
 
   promise_app_registry_cache_->OnPromiseApp(std::move(delta));
 
-  if (is_existing_registration) {
-    return;
-  }
-
-  // Exit early to simplify unit tests that don't care about Almanac.
-  if (skip_almanac_for_testing_) {
-    return;
-  }
-
-  // Ensure that the build uses the Google-internal file containing the
-  // official API keys, which are required to make queries to the Almanac.
-  if (!google_apis::IsGoogleChromeAPIKeyUsed() &&
-      !skip_api_key_check_for_testing_) {
-    return;
+  // If the promise app is newly removed, clear out the icons.
+  if (!promise_app_registry_cache_->HasPromiseApp(package_id)) {
+    promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
   }
 
   // If this is a new promise app, send an Almanac request to fetch more
   // details.
-  promise_app_almanac_connector_->GetPromiseAppInfo(
-      package_id,
-      base::BindOnce(&PromiseAppService::OnGetPromiseAppInfoCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), package_id));
+  if (is_new_promise_app && !skip_almanac_for_testing_) {
+    promise_app_almanac_connector_->GetPromiseAppInfo(
+        package_id,
+        base::BindOnce(&PromiseAppService::OnGetPromiseAppInfoCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), package_id));
+  }
 }
 
 void PromiseAppService::LoadIcon(const PackageId& package_id,
@@ -167,7 +166,7 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  absl::optional<PackageId> package_id =
+  std::optional<PackageId> package_id =
       apps_util::GetPackageIdForApp(profile_.get(), update);
   if (!package_id.has_value()) {
     return;
@@ -177,6 +176,11 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
   if (!promise_app_registry_cache_->HasPromiseApp(package_id.value())) {
     return;
   }
+
+  // Record metrics for app type, noting that the app type may differ between
+  // the promise app and the installed app.
+  RecordPromiseAppType(
+      GetPromiseAppType(package_id->app_type(), update.AppType()));
 
   // Delete the promise app.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id.value());
@@ -196,12 +200,13 @@ void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
 }
 
 void PromiseAppService::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
-  skip_api_key_check_for_testing_ = skip_api_key_check;
+  promise_app_almanac_connector_->SetSkipApiKeyCheckForTesting(  // IN-TEST
+      skip_api_key_check);
 }
 
 void PromiseAppService::OnGetPromiseAppInfoCompleted(
     const PackageId& package_id,
-    absl::optional<PromiseAppWrapper> promise_app_info) {
+    std::optional<PromiseAppWrapper> promise_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the promise app doesn't exist in the registry, drop the update. The app

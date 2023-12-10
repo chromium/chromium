@@ -6,6 +6,9 @@
 
 #include <netinet/in.h>
 
+#include "ash/components/arc/mojom/net.mojom-shared.h"
+#include "ash/components/arc/mojom/net.mojom.h"
+#include "base/containers/map_util.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -219,10 +222,9 @@ patchpanel::SocketConnectionEvent::QosCategory TranslateQosCategory(
 
 namespace arc::net_utils {
 
-arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
-    const ash::NetworkState* network_state,
-    const base::Value::Dict* shill_dict) {
-  auto mojo = arc::mojom::NetworkConfiguration::New();
+void FillConfigurationsFromState(const ash::NetworkState* network_state,
+                                 const base::Value::Dict* shill_dict,
+                                 arc::mojom::NetworkConfiguration* mojo) {
   // Initialize optional array fields to avoid null guards both here and in ARC.
   mojo->host_ipv6_global_addresses = std::vector<std::string>();
   mojo->host_search_domains = std::vector<std::string>();
@@ -232,6 +234,9 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   mojo->connection_state =
       TranslateConnectionState(network_state->connection_state());
   mojo->guid = network_state->guid();
+  mojo->is_default_network =
+      network_state == GetStateHandler()->DefaultNetwork();
+  mojo->service_name = network_state->path();
   if (mojo->guid.empty()) {
     NET_LOG(ERROR) << "Missing GUID property for network "
                    << network_state->path();
@@ -261,7 +266,7 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
     mojo->network_interface = device->interface();
     for (const auto [key, value] : device->ip_configs()) {
       if (value.is_dict()) {
-        AddIpConfiguration(mojo.get(), &value.GetDict());
+        AddIpConfiguration(mojo, &value.GetDict());
       }
     }
   }
@@ -271,11 +276,10 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
          {shill::kStaticIPConfigProperty, shill::kSavedIPConfigProperty}) {
       const base::Value::Dict* config = shill_dict->FindDict(property);
       if (config) {
-        AddIpConfiguration(mojo.get(), config);
+        AddIpConfiguration(mojo, config);
       }
     }
   }
-
   if (mojo->type == arc::mojom::NetworkType::WIFI) {
     mojo->wifi = arc::mojom::WiFi::New();
     mojo->wifi->bssid = network_state->bssid();
@@ -296,8 +300,41 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
       }
     }
   }
+}
 
-  return mojo;
+void FillConfigurationsFromDevice(const patchpanel::NetworkDevice& device,
+                                  arc::mojom::NetworkConfiguration* mojo) {
+  mojo->network_interface = device.phys_ifname();
+  mojo->arc_network_interface = device.guest_ifname();
+  mojo->arc_ipv4_address = IPv4AddressToString(device.ipv4_addr());
+  mojo->arc_ipv4_gateway = IPv4AddressToString(device.host_ipv4_addr());
+  mojo->arc_ipv4_prefix_length = device.ipv4_subnet().prefix_len();
+  // Fill in DNS proxy addresses.
+  mojo->dns_proxy_addresses = std::vector<std::string>();
+  auto dns_proxy_ipv4_addr =
+      PackedIPAddressToString(AF_INET, device.dns_proxy_ipv4_addr());
+  if (!dns_proxy_ipv4_addr.empty()) {
+    mojo->dns_proxy_addresses->emplace_back(dns_proxy_ipv4_addr);
+  }
+  auto dns_proxy_ipv6_addr =
+      PackedIPAddressToString(AF_INET6, device.dns_proxy_ipv6_addr());
+  if (!dns_proxy_ipv6_addr.empty()) {
+    mojo->dns_proxy_addresses->emplace_back(dns_proxy_ipv6_addr);
+  }
+  // Assign the technology of the physical device the virtual device is tied to.
+  switch (device.technology_type()) {
+    case patchpanel::NetworkDevice::CELLULAR:
+      mojo->type = mojom::NetworkType::CELLULAR;
+      break;
+    case patchpanel::NetworkDevice::ETHERNET:
+      mojo->type = mojom::NetworkType::ETHERNET;
+      break;
+    case patchpanel::NetworkDevice::WIFI:
+      mojo->type = mojom::NetworkType::WIFI;
+      break;
+    default:
+      break;
+  }
 }
 
 std::string TranslateEapMethod(arc::mojom::EapMethod method) {
@@ -474,74 +511,107 @@ arc::mojom::NetworkType TranslateNetworkType(const std::string& type) {
   return arc::mojom::NetworkType::ETHERNET;
 }
 
+std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkDevices(
+    const std::vector<patchpanel::NetworkDevice>& devices,
+    const std::string& arc_vpn_path,
+    const ash::NetworkStateHandler::NetworkStateList& active_network_states,
+    const std::map<std::string, base::Value::Dict>& shill_network_properties) {
+  // Map of interface name to a unique active network state on it, if such state
+  // exists. Otherwise, report device without associated network states.
+  std::map<std::string, arc::mojom::NetworkConfigurationPtr> ifname_config_map;
+  std::vector<arc::mojom::NetworkConfigurationPtr> network_configs;
+
+  for (const patchpanel::NetworkDevice& device : devices) {
+    // Filter non-ARC devices.
+    if (device.guest_type() != patchpanel::NetworkDevice::ARC &&
+        device.guest_type() != patchpanel::NetworkDevice::ARCVM) {
+      continue;
+    }
+    auto config_it = ifname_config_map
+                         .try_emplace(device.phys_ifname(),
+                                      arc::mojom::NetworkConfiguration::New())
+                         .first;
+    FillConfigurationsFromDevice(device, config_it->second.get());
+    // Connection state default to NOT_CONNECTED unless there is active network
+    // state on interface device.phys_ifname().
+    config_it->second->connection_state =
+        arc::mojom::ConnectionStateType::NOT_CONNECTED;
+  }
+
+  for (const ash::NetworkState* const state : active_network_states) {
+    // Never tell Android about its own VPN.
+    if (state->path() == arc_vpn_path) {
+      continue;
+    }
+    // For networks established with instant tethering, the underlying WiFi
+    // networks are not part of active networks. Replace any such tethered
+    // network with its underlying backing network, because ARC cannot match its
+    // datapath with the tethered network configuration. For other cases, the
+    // underlying_state is identical to state.
+    const ash::NetworkState* const underlying_state =
+        GetShillBackedNetwork(state);
+    if (!underlying_state) {
+      continue;
+    }
+
+    std::string if_name;
+    if (const auto* device = GetStateHandler()->GetDeviceState(
+            underlying_state->device_path())) {
+      if_name = device->interface();
+    }
+    const base::Value::Dict* shill_dict =
+        base::FindOrNull(shill_network_properties, underlying_state->path());
+
+    if (if_name.empty()) {
+      // Add active network without network_interface (e.g.: host VPN).
+      auto network = arc::mojom::NetworkConfiguration::New();
+      FillConfigurationsFromState(underlying_state, shill_dict, network.get());
+      network_configs.push_back(std::move(network));
+    } else {
+      const auto itr = ifname_config_map.find(if_name);
+      if (itr != ifname_config_map.end()) {
+        FillConfigurationsFromState(underlying_state, shill_dict,
+                                    itr->second.get());
+      } else {
+        NET_LOG(ERROR) << "Interface " << if_name << " does not have a device.";
+      }
+    }
+  }
+
+  for (auto& network_config : ifname_config_map) {
+    if (network_config.second->arc_network_interface.has_value()) {
+      network_configs.push_back(std::move(network_config.second));
+    }
+  }
+  return network_configs;
+}
+
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties,
-    const std::vector<patchpanel::NetworkDevice>& devices) {
-  // Move the devices vector to a map keyed by its physical interface name in
-  // order to avoid multiple loops. The map also filters non-ARC devices.
-  std::map<std::string, patchpanel::NetworkDevice> arc_devices;
-  for (const auto& d : devices) {
-    if (d.guest_type() != patchpanel::NetworkDevice::ARC &&
-        d.guest_type() != patchpanel::NetworkDevice::ARCVM) {
-      continue;
-    }
-    arc_devices.emplace(d.phys_ifname(), d);
-  }
-
+    const std::map<std::string, base::Value::Dict>& shill_network_properties) {
   std::vector<arc::mojom::NetworkConfigurationPtr> networks;
-  for (const ash::NetworkState* state : network_states) {
-    const std::string& network_path = state->path();
+  for (const ash::NetworkState* const state : network_states) {
     // Never tell Android about its own VPN.
-    if (network_path == arc_vpn_path) {
+    if (state->path() == arc_vpn_path) {
+      continue;
+    }
+    // For networks established with instant tethering, the underlying WiFi
+    // networks are not part of active networks. Replace any such tethered
+    // network with its underlying backing network, because ARC cannot match its
+    // datapath with the tethered network configuration. For other cases, the
+    // underlying_state is identical to state.
+    const ash::NetworkState* const underlying_state =
+        GetShillBackedNetwork(state);
+    if (!underlying_state) {
       continue;
     }
 
-    // For tethered networks, the underlying WiFi networks are not part of
-    // active networks. Replace any such tethered network with its underlying
-    // backing network, because ARC cannot match its datapath with the tethered
-    // network configuration.
-    state = GetShillBackedNetwork(state);
-    if (!state) {
-      continue;
-    }
-
-    const auto it = shill_network_properties.find(network_path);
+    const auto it = shill_network_properties.find(underlying_state->path());
     const base::Value::Dict* shill_dict =
         (it != shill_network_properties.end()) ? &it->second : nullptr;
-    auto network = TranslateNetworkProperties(state, shill_dict);
-    network->is_default_network = state == GetStateHandler()->DefaultNetwork();
-    network->service_name = network_path;
-
-    // Fill in ARC properties.
-    auto arc_it =
-        arc_devices.find(network->network_interface.value_or(std::string()));
-    if (arc_it != arc_devices.end()) {
-      network->arc_network_interface = arc_it->second.guest_ifname();
-      network->arc_ipv4_address =
-          IPv4AddressToString(arc_it->second.ipv4_addr());
-      network->arc_ipv4_gateway =
-          IPv4AddressToString(arc_it->second.host_ipv4_addr());
-      network->arc_ipv4_prefix_length =
-          arc_it->second.ipv4_subnet().prefix_len();
-      // Fill in DNS proxy addresses.
-      network->dns_proxy_addresses = std::vector<std::string>();
-      if (arc_it->second.dns_proxy_ipv4_addr().length() > 0) {
-        auto dns_proxy_ipv4_addr = PackedIPAddressToString(
-            AF_INET, arc_it->second.dns_proxy_ipv4_addr());
-        if (!dns_proxy_ipv4_addr.empty()) {
-          network->dns_proxy_addresses->push_back(dns_proxy_ipv4_addr);
-        }
-      }
-      if (arc_it->second.dns_proxy_ipv6_addr().length() > 0) {
-        auto dns_proxy_ipv6_addr = PackedIPAddressToString(
-            AF_INET6, arc_it->second.dns_proxy_ipv6_addr());
-        if (!dns_proxy_ipv6_addr.empty()) {
-          network->dns_proxy_addresses->push_back(dns_proxy_ipv6_addr);
-        }
-      }
-    }
+    auto network = arc::mojom::NetworkConfiguration::New();
+    FillConfigurationsFromState(underlying_state, shill_dict, network.get());
     networks.push_back(std::move(network));
   }
   return networks;

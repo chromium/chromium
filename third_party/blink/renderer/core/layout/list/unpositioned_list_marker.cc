@@ -4,20 +4,20 @@
 
 #include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 
 namespace blink {
 
 UnpositionedListMarker::UnpositionedListMarker(LayoutOutsideListMarker* marker)
     : marker_layout_object_(marker) {}
 
-UnpositionedListMarker::UnpositionedListMarker(const NGBlockNode& node)
+UnpositionedListMarker::UnpositionedListMarker(const BlockNode& node)
     : UnpositionedListMarker(To<LayoutOutsideListMarker>(node.GetLayoutBox())) {
 }
 
@@ -36,26 +36,26 @@ LayoutUnit UnpositionedListMarker::InlineOffset(
   return margins.first;
 }
 
-const NGLayoutResult* UnpositionedListMarker::Layout(
-    const NGConstraintSpace& parent_space,
+const LayoutResult* UnpositionedListMarker::Layout(
+    const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     FontBaseline baseline_type) const {
   DCHECK(marker_layout_object_);
-  NGBlockNode marker_node(marker_layout_object_);
+  BlockNode marker_node(marker_layout_object_);
 
   // We need the first-line baseline from the list-marker, instead of the
   // typical atomic-inline baseline.
-  const NGLayoutResult* marker_layout_result = marker_node.LayoutAtomicInline(
+  const LayoutResult* marker_layout_result = marker_node.LayoutAtomicInline(
       parent_space, parent_style, parent_space.UseFirstLineStyle(),
-      NGBaselineAlgorithmType::kDefault);
+      BaselineAlgorithmType::kDefault);
   DCHECK(marker_layout_result);
   return marker_layout_result;
 }
 
 absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     FontBaseline baseline_type,
-    const NGPhysicalFragment& content) const {
+    const PhysicalFragment& content) const {
   // Compute the baseline of the child content.
   if (content.IsLineBox()) {
     const auto& line_box = To<PhysicalLineBoxFragment>(content);
@@ -63,8 +63,9 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     // If this child is an empty line-box, the list marker should be aligned
     // with the next non-empty line box produced. (This can occur with floats
     // producing empty line-boxes).
-    if (line_box.IsEmptyLineBox() && line_box.BreakToken())
+    if (line_box.IsEmptyLineBox() && line_box.GetBreakToken()) {
       return absl::nullopt;
+    }
 
     return line_box.Metrics().ascent;
   }
@@ -72,26 +73,26 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
   // If this child content does not have any line boxes, the list marker
   // should be aligned to the first line box of next child.
   // https://github.com/w3c/csswg-drafts/issues/2417
-  return NGBoxFragment(space.GetWritingDirection(),
-                       To<NGPhysicalBoxFragment>(content))
+  return LogicalBoxFragment(space.GetWritingDirection(),
+                            To<PhysicalBoxFragment>(content))
       .FirstBaseline();
 }
 
 void UnpositionedListMarker::AddToBox(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     FontBaseline baseline_type,
-    const NGPhysicalFragment& content,
+    const PhysicalFragment& content,
     const BoxStrut& border_scrollbar_padding,
-    const NGLayoutResult& marker_layout_result,
+    const LayoutResult& marker_layout_result,
     LayoutUnit content_baseline,
     LayoutUnit* block_offset,
-    NGBoxFragmentBuilder* container_builder) const {
-  const NGPhysicalBoxFragment& marker_physical_fragment =
-      To<NGPhysicalBoxFragment>(marker_layout_result.PhysicalFragment());
+    BoxFragmentBuilder* container_builder) const {
+  const auto& marker_physical_fragment =
+      To<PhysicalBoxFragment>(marker_layout_result.GetPhysicalFragment());
 
   // Compute the inline offset of the marker.
-  NGBoxFragment marker_fragment(space.GetWritingDirection(),
-                                marker_physical_fragment);
+  LogicalBoxFragment marker_fragment(space.GetWritingDirection(),
+                                     marker_physical_fragment);
   LogicalOffset marker_offset(InlineOffset(marker_fragment.Size().inline_size),
                               *block_offset);
 
@@ -122,13 +123,13 @@ void UnpositionedListMarker::AddToBox(
 }
 
 void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     FontBaseline baseline_type,
-    const NGLayoutResult& marker_layout_result,
-    NGBoxFragmentBuilder* container_builder,
+    const LayoutResult& marker_layout_result,
+    BoxFragmentBuilder* container_builder,
     LayoutUnit* intrinsic_block_size) const {
-  const NGPhysicalBoxFragment& marker_physical_fragment =
-      To<NGPhysicalBoxFragment>(marker_layout_result.PhysicalFragment());
+  const auto& marker_physical_fragment =
+      To<PhysicalBoxFragment>(marker_layout_result.GetPhysicalFragment());
 
   // When there are no line boxes, marker is top-aligned to the list item.
   // https://github.com/w3c/csswg-drafts/issues/2417
@@ -158,8 +159,8 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
 // Find the opportunity for marker, and compare it to ListItem, then compute the
 // diff as intruded offset.
 LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
-    const NGConstraintSpace& space,
-    const NGBoxFragmentBuilder* container_builder,
+    const ConstraintSpace& space,
+    const BoxFragmentBuilder* container_builder,
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit marker_block_offset) const {
   DCHECK(container_builder);
@@ -197,8 +198,8 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
 #if DCHECK_IS_ON()
 // TODO: Currently we haven't supported ::marker, so the margin-top of marker
 // should always be zero. And this make us could resolve LI's BFC block-offset
-// in NGBlockLayoutAlgorithm::PositionOrPropagateListMarker and
-// NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes without consider
+// in BlockLayoutAlgorithm::PositionOrPropagateListMarker and
+// BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes without consider
 // marker's margin-top.
 void UnpositionedListMarker::CheckMargin() const {
   DCHECK(marker_layout_object_);

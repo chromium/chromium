@@ -237,8 +237,8 @@ bool IsExtensionIdle(const std::string& extension_id,
   ids_to_check.push_back(extension_id);
 
   const Extension* extension =
-      ExtensionRegistry::Get(context)
-          ->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
   if (extension && extension->is_shared_module()) {
     // We have to check all the extensions that use this shared module for idle
     // to tell whether it is really 'idle'.

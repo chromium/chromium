@@ -33,8 +33,10 @@ public class CapturedSitesInstructions {
         mActions = new LinkedList<Action>();
         JSONObject json;
         try {
-            String text = new String(
-                    Files.readAllBytes(Paths.get(mPrefix + jsonUrl)), StandardCharsets.UTF_8);
+            String text =
+                    new String(
+                            Files.readAllBytes(Paths.get(mPrefix + jsonUrl)),
+                            StandardCharsets.UTF_8);
             json = new JSONObject(text);
         } catch (Exception e) {
             Log.e(TAG, "Cannot read test file into JSONObject", e);

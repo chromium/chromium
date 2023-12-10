@@ -192,7 +192,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                                       inTab:(NSString*)tabID
                                     timeout:(base::TimeDelta)timeout {
   __block BOOL webStateFound = NO;
-  __block absl::optional<base::Value> messageValue;
+  __block std::optional<base::Value> messageValue;
   DispatchSyncOnMainThread(^{
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)

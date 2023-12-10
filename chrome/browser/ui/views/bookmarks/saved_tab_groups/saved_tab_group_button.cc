@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx20_to_address.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "cc/paint/paint_flags.h"
@@ -35,7 +35,6 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/page_navigator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -111,7 +110,7 @@ SavedTabGroupButton::SavedTabGroupButton(
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
   SetAccessibilityProperties(
       ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),
-      /*description=*/absl::nullopt,
+      /*description=*/std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
   SetTextProperties(group);
@@ -309,7 +308,7 @@ void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
       local_group_id_.has_value()
           ? SavedTabGroupUtils::GetBrowserWithTabGroupId(
                 local_group_id_.value())
-          : base::to_address(browser_);
+          : std::to_address(browser_);
 
   if (!local_group_id_.has_value()) {
     // Open the group in the browser the button was pressed.

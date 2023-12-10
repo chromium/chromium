@@ -16,6 +16,10 @@ namespace blink {
 BLINK_COMMON_EXPORT std::string ConvertAdSizeUnitToString(
     const blink::AdSize::LengthUnit& unit);
 
+// Converts a valid ad size back to a string.
+BLINK_COMMON_EXPORT std::string ConvertAdSizeToString(
+    const blink::AdSize& ad_size);
+
 // Helper function that converts a size string into its corresponding value and
 // units. Accepts measurements in pixels (px), screen width (sw) and screen
 // height (sh). Examples of allowed inputs:

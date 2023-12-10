@@ -4,14 +4,15 @@
 
 #import "ios/web/content/navigation/content_navigation_context.h"
 
+#import <optional>
+
 #import "base/notreached.h"
 #import "content/public/browser/navigation_handle.h"
 #import "net/base/net_errors.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
-absl::optional<NSInteger> GetIOSErrorForNetError(int net_error_code) {
+std::optional<NSInteger> GetIOSErrorForNetError(int net_error_code) {
   switch (net_error_code) {
     case net::ERR_ACCESS_DENIED:
       // TODO(crbug.com/1419001): no analog for
@@ -87,7 +88,7 @@ absl::optional<NSInteger> GetIOSErrorForNetError(int net_error_code) {
     default:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 NavigationContext* ContentNavigationContext::GetOrCreate(

@@ -75,7 +75,7 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
   void RemoveObserver(ash::KeyboardControllerObserver* observer) override {
     observers_.RemoveObserver(observer);
   }
-  absl::optional<ash::KeyRepeatSettings> GetKeyRepeatSettings() override {
+  std::optional<ash::KeyRepeatSettings> GetKeyRepeatSettings() override {
     return ash::KeyRepeatSettings{true, base::Milliseconds(1000),
                                   base::Milliseconds(1000)};
   }

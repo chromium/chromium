@@ -31,8 +31,12 @@ patch -d node_modules/html-minifier/ -p1 < html_minifier.patch
 patch -p1 < typescript.patch
 
 echo 'Step 4: Filtering out unnecessary files...'
-rsync -c --delete -r -q --include-from="npm_include.txt" --exclude-from="npm_exclude.txt" \
-      --prune-empty-dirs "node_modules/" "node_modules_filtered/"
+rsync -c --delete -r -q --include-from="npm_include.txt" \
+    --exclude-from="npm_exclude.txt" \
+    --prune-empty-dirs "node_modules/" "node_modules_filtered/"
+
+rsync -c -r -q --files-from="lit_include.txt" "node_modules/" \
+    "node_modules_filtered/"
 
 # `npm install` leaves a bunch of local paths in _where and _args.
 # This is undesired. See: https://github.com/npm/npm/issues/10393

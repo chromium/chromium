@@ -16,12 +16,15 @@ namespace {
 void CollectFileDescriptorInfo(ProcessState& process_state,
                                const base::ProcessId process_id) {
   std::unique_ptr<base::ProcessMetrics> metrics =
+#if !BUILDFLAG(IS_MAC)
       base::ProcessMetrics::CreateProcessMetrics(process_id);
+#else
+      base::ProcessMetrics::CreateProcessMetrics(process_id, nullptr);
+#endif  // !BUILDFLAG(IS_MAC)
   ProcessState::FileSystemState::PosixFileSystemState* file_system_state =
       process_state.mutable_file_system_state()
           ->mutable_posix_file_system_state();
-  file_system_state->set_crashing_open_file_descriptors(
-      metrics->GetOpenFdCount());
+  file_system_state->set_open_file_descriptors(metrics->GetOpenFdCount());
 }
 
 }  // namespace

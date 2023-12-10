@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 #include <errno.h>
 #include <string.h>
@@ -34,7 +34,7 @@
 //        errno = 13 (Access denied)
 //      In most of the anticipated use cases, that's probably the preferred
 //      behavior.
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/check.h"
 #define DEBUG_CHECK PA_RAW_CHECK
 #else
 #define DEBUG_CHECK(x) \

@@ -430,6 +430,18 @@ TEST_F(TestFutureWithoutValuesTest, WaitShouldUnblockWhenCallbackIsInvoked) {
   EXPECT_TRUE(future.IsReady());
 }
 
+TEST_F(TestFutureWithoutValuesTest, WaitAndClearShouldAllowFutureReusing) {
+  TestFuture<void> future;
+
+  RunLater(future.GetCallback());
+  EXPECT_TRUE(future.WaitAndClear());
+
+  ASSERT_FALSE(future.IsReady());
+
+  RunLater(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
 TEST_F(TestFutureWithoutValuesTest, GetShouldUnblockWhenCallbackIsInvoked) {
   TestFuture<void> future;
 

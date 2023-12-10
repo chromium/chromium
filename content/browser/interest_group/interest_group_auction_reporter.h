@@ -22,6 +22,8 @@
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_response.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
@@ -46,9 +48,7 @@ struct AuctionConfig;
 namespace content {
 
 class AuctionWorkletManager;
-struct BiddingAndAuctionResponse;
 class BrowserContext;
-class HeaderDirectFromSellerSignals;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 
@@ -95,6 +95,27 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     kMaxValue = kNotStarted
   };
 
+  // Key used to group Private aggregation signals.
+  struct CONTENT_EXPORT PrivateAggregationKey {
+    PrivateAggregationKey(
+        url::Origin reporting_origin,
+        absl::optional<url::Origin> aggregation_coordinator_origin);
+    PrivateAggregationKey(const PrivateAggregationKey&);
+    PrivateAggregationKey& operator=(const PrivateAggregationKey&);
+    PrivateAggregationKey(PrivateAggregationKey&&);
+    PrivateAggregationKey& operator=(PrivateAggregationKey&&);
+    ~PrivateAggregationKey();
+
+    bool operator<(const PrivateAggregationKey& other) const {
+      return std::tie(reporting_origin, aggregation_coordinator_origin) <
+             std::tie(other.reporting_origin,
+                      other.aggregation_coordinator_origin);
+    }
+
+    url::Origin reporting_origin;
+    absl::optional<url::Origin> aggregation_coordinator_origin;
+  };
+
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -117,7 +138,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     raw_ptr<const blink::AuctionConfig> auction_config;
 
     std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder;
-    std::unique_ptr<HeaderDirectFromSellerSignals>
+    scoped_refptr<HeaderDirectFromSellerSignals::Result>
         direct_from_seller_signals_header_ad_slot;
 
     // Bid fed as input to the seller. If this is the top level seller and the
@@ -142,6 +163,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     absl::optional<uint32_t> scoring_signals_data_version;
 
     uint64_t trace_id;
+
+    // Saved response from the server if the actual auction ran on a B&A server.
+    absl::optional<BiddingAndAuctionResponse> saved_response;
 
     // If this is a component seller, information about how the component seller
     // modified the bid.
@@ -235,7 +259,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
       base::flat_set<std::string> k_anon_keys_to_join,
-      std::map<url::Origin, PrivateAggregationRequests>
+      std::map<PrivateAggregationKey, PrivateAggregationRequests>
           private_aggregation_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>
           private_aggregation_requests_non_reserved);
@@ -261,7 +285,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Initializes the reporter based on the provided server response. This skips
   // running reporting worklets and instead uses the results provided in the
   // `response`. `Start()` still needs to be invoked to start reporting.
-  void InitializeFromServerResponse(const BiddingAndAuctionResponse& response);
+  void InitializeFromServerResponse(
+      const BiddingAndAuctionResponse& response,
+      blink::FencedFrame::ReportingDestination seller_destination);
 
   // Returns a callback that should be invoked once a fenced frame has been
   // navigated to the winning ad. May be invoked multiple times, safe to invoke
@@ -300,7 +326,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
       std::map<
-          url::Origin,
+          PrivateAggregationKey,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests);
 
@@ -350,6 +376,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // function from OnSellerReportResultComplete since this is also called by
   // `InitializeFromServerResponse()`.
   bool AddReportResultResult(
+      const url::Origin& seller_origin,
       const absl::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
       blink::FencedFrame::ReportingDestination destination,
@@ -389,6 +416,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // `InitializeFromServerResponse()` since macro expanded reporting is not
   // supported from server auction.
   bool AddReportWinResult(
+      const url::Origin& bidder_origin,
       const absl::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
       const absl::optional<base::flat_map<std::string, std::string>>&
@@ -488,7 +516,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Stores all pending Private Aggregation API report requests until they have
   // been flushed. Keyed by the origin of the script that issued the request
   // (i.e. the reporting origin).
-  std::map<url::Origin, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;

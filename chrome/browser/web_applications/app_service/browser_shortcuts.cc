@@ -76,6 +76,7 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   }
 
   install_manager_observation_.Observe(&provider_->install_manager());
+  registrar_observation_.Observe(&provider_->registrar_unsafe());
 
   if (*GetInitializedCallbackForTesting()) {
     std::move(*GetInitializedCallbackForTesting()).Run();
@@ -96,9 +97,14 @@ void BrowserShortcuts::MaybePublishBrowserShortcut(const webapps::AppId& app_id,
   shortcut->name =
       provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
   shortcut->shortcut_source = apps::ShortcutSource::kUser;
-  // TODO(crbug.com/1412708): Add shortcut specific icon masking.
-  shortcut->icon_key =
-      apps::IconKey(raw_icon_updated, apps::IconEffects::kCrOsStandardMask);
+
+  apps::IconEffects icon_effects = apps::IconEffects::kRoundCorners;
+  icon_effects |= web_app->is_generated_icon()
+                      ? apps::IconEffects::kCrOsStandardMask
+                      : apps::IconEffects::kCrOsStandardIcon;
+  shortcut->icon_key = apps::IconKey(raw_icon_updated, icon_effects);
+  shortcut->allow_removal =
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id());
   apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
 }
 
@@ -175,6 +181,16 @@ void BrowserShortcuts::OnWebAppUninstalled(
   }
   apps::ShortcutPublisher::ShortcutRemoved(
       apps::GenerateShortcutId(app_constants::kChromeAppId, app_id));
+}
+
+void BrowserShortcuts::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
+void BrowserShortcuts::OnWebAppUserDisplayModeChanged(
+    const webapps::AppId& app_id,
+    mojom::UserDisplayMode user_display_mode) {
+  MaybePublishBrowserShortcut(app_id);
 }
 
 }  // namespace web_app

@@ -5,8 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GLOBAL_ROUTING_ID_H_
 #define CONTENT_PUBLIC_BROWSER_GLOBAL_ROUTING_ID_H_
 
+#include <compare>
 #include <ostream>
-#include <tuple>
 
 #include "base/hash/hash.h"
 #include "base/i18n/number_formatting.h"
@@ -40,21 +40,10 @@ struct CONTENT_EXPORT GlobalRoutingID {
   // The route ID.
   int route_id = -1;
 
-  friend bool operator<(const GlobalRoutingID& lhs,
-                        const GlobalRoutingID& rhs) {
-    return std::tie(lhs.child_id, lhs.route_id) <
-           std::tie(rhs.child_id, rhs.route_id);
-  }
-
-  friend bool operator==(const GlobalRoutingID& lhs,
-                         const GlobalRoutingID& rhs) {
-    return lhs.child_id == rhs.child_id && lhs.route_id == rhs.route_id;
-  }
-
-  friend bool operator!=(const GlobalRoutingID& lhs,
-                         const GlobalRoutingID& rhs) {
-    return !(lhs == rhs);
-  }
+  constexpr friend auto operator<=>(const GlobalRoutingID&,
+                                    const GlobalRoutingID&) = default;
+  constexpr friend bool operator==(const GlobalRoutingID&,
+                                   const GlobalRoutingID&) = default;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
@@ -86,22 +75,11 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   // RenderFrameHost::GetRoutingID().
   int frame_routing_id = MSG_ROUTING_NONE;
 
-  friend bool operator<(const GlobalRenderFrameHostId& lhs,
-                        const GlobalRenderFrameHostId& rhs) {
-    return std::tie(lhs.child_id, lhs.frame_routing_id) <
-           std::tie(rhs.child_id, rhs.frame_routing_id);
-  }
+  constexpr friend auto operator<=>(const GlobalRenderFrameHostId&,
+                                    const GlobalRenderFrameHostId&) = default;
+  constexpr friend bool operator==(const GlobalRenderFrameHostId&,
+                                   const GlobalRenderFrameHostId&) = default;
 
-  friend bool operator==(const GlobalRenderFrameHostId& lhs,
-                         const GlobalRenderFrameHostId& rhs) {
-    return lhs.child_id == rhs.child_id &&
-           lhs.frame_routing_id == rhs.frame_routing_id;
-  }
-
-  friend bool operator!=(const GlobalRenderFrameHostId& lhs,
-                         const GlobalRenderFrameHostId& rhs) {
-    return !(lhs == rhs);
-  }
   explicit operator bool() const {
     return frame_routing_id != MSG_ROUTING_NONE;
   }
@@ -136,21 +114,11 @@ struct GlobalRenderFrameHostToken {
   // RenderFrameHost::GetFrameToken().
   blink::LocalFrameToken frame_token;
 
-  friend bool operator<(const GlobalRenderFrameHostToken& lhs,
-                        const GlobalRenderFrameHostToken& rhs) {
-    return std::tie(lhs.child_id, lhs.frame_token) <
-           std::tie(rhs.child_id, rhs.frame_token);
-  }
-
-  friend bool operator==(const GlobalRenderFrameHostToken& lhs,
-                         const GlobalRenderFrameHostToken& rhs) {
-    return lhs.child_id == rhs.child_id && lhs.frame_token == rhs.frame_token;
-  }
-
-  friend bool operator!=(const GlobalRenderFrameHostToken& lhs,
-                         const GlobalRenderFrameHostToken& rhs) {
-    return !(lhs == rhs);
-  }
+  constexpr friend auto operator<=>(const GlobalRenderFrameHostToken&,
+                                    const GlobalRenderFrameHostToken&) =
+      default;
+  constexpr friend bool operator==(const GlobalRenderFrameHostToken&,
+                                   const GlobalRenderFrameHostToken&) = default;
 };
 
 inline std::ostream& operator<<(std::ostream& os,

@@ -2,7 +2,6 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """This script is used to fetch reclient cfgs.
 
 This is renamed to configure_reclient_cfgs.py, delete this file if there are no

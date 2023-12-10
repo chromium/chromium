@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_BACK_MIGRATOR_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_BACK_MIGRATOR_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -14,7 +16,6 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -95,7 +96,7 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
     TaskStatus status;
 
     // Value of `errno` set after a task has failed.
-    absl::optional<int> posix_errno;
+    std::optional<int> posix_errno;
   };
 
   explicit BrowserDataBackMigrator(const base::FilePath& ash_profile_dir,

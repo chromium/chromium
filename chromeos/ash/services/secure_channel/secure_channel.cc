@@ -124,20 +124,20 @@ void SecureChannel::RemoveObserver(Observer* observer) {
 }
 
 void SecureChannel::GetConnectionRssi(
-    base::OnceCallback<void(absl::optional<int32_t>)> callback) {
+    base::OnceCallback<void(std::optional<int32_t>)> callback) {
   if (!connection_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   connection_->GetConnectionRssi(std::move(callback));
 }
 
-absl::optional<std::string> SecureChannel::GetChannelBindingData() {
+std::optional<std::string> SecureChannel::GetChannelBindingData() {
   if (secure_context_)
     return secure_context_->GetChannelBindingData();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SecureChannel::OnConnectionStatusChanged(Connection* connection,

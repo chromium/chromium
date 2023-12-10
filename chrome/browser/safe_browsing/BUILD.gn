@@ -43,6 +43,7 @@ static_library("safe_browsing") {
     "//components/resources:components_resources_grit",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/content/browser:client_report_util",
     "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
@@ -415,7 +416,10 @@ static_library("safe_browsing") {
         ]
       }
       if (is_chromeos_ash) {
-        deps += [ "//ash/constants:constants" ]
+        deps += [
+          "//ash/constants:constants",
+          "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+        ]
       }
       if (is_chromeos_lacros) {
         deps += [ "//chromeos/lacros:lacros" ]

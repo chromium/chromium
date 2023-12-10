@@ -52,4 +52,4 @@ class FakeBulkLeakCheckService : public BulkLeakCheckServiceInterface {
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_BULK_LEAK_CHECK_SERVICE_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_IOS_FAKE_BULK_LEAK_CHECK_SERVICE_H_

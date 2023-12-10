@@ -53,7 +53,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
             return;
         }
         new TrustedWebActivityUmaRecorder(
-                ChromeBrowserInitializer.getInstance()::runNowOrAfterFullBrowserStarted)
+                        ChromeBrowserInitializer.getInstance()::runNowOrAfterFullBrowserStarted)
                 .recordOpenedSettingsViaManageSpace();
 
         if (isWebApk) {
@@ -71,8 +71,9 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
 
     private @Nullable String getClientPackageName(boolean isWebApk) {
         if (isWebApk) {
-            return sCallingPackageForTesting != null ? sCallingPackageForTesting
-                                                     : getCallingPackage();
+            return sCallingPackageForTesting != null
+                    ? sCallingPackageForTesting
+                    : getCallingPackage();
         }
 
         CustomTabsSessionToken session =
@@ -87,7 +88,9 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
     }
 
     private void logNoPackageName() {
-        Log.e(TAG, "Package name for incoming intent couldn't be resolved. "
-                + "Was a CustomTabSession created and added to the intent?");
+        Log.e(
+                TAG,
+                "Package name for incoming intent couldn't be resolved. "
+                        + "Was a CustomTabSession created and added to the intent?");
     }
 }

@@ -8,9 +8,7 @@ import android.content.Context;
 
 import org.chromium.android_webview.common.AwResource;
 
-/**
- * Registers resources for the Android webview shell.
- */
+/** Registers resources for the Android webview shell. */
 public class AwShellResourceProvider {
     private static boolean sInitialized;
 

@@ -633,6 +633,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     if (this.pairingDelegateReceiver_) {
       this.pairingDelegateReceiver_.$.close();
       this.finishPendingCallbacksForTest_();
+      this.pairingDelegateReceiver_ = null;
       return;
     }
 

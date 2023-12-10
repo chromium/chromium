@@ -14,6 +14,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace webnn {
@@ -73,28 +74,27 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
                                       const Size2d<uint32_t>& strides,
                                       const Size2d<uint32_t>& dilations,
                                       const AutoPad auto_pad) {
+  if (strides.height == 0 || strides.width == 0) {
+    return base::unexpected("All strides should be greater than 0.");
+  }
+  if (dilations.height == 0 || dilations.width == 0) {
+    return base::unexpected("All dilations should be greater than 0.");
+  }
+  const uint32_t stride_height = strides.height;
+  const uint32_t stride_width = strides.width;
+  const uint32_t dilation_height = dilations.height;
+  const uint32_t dilation_width = dilations.width;
+
   uint32_t padding_beginning_height = padding.beginning.height;
   uint32_t padding_ending_height = padding.ending.height;
   uint32_t padding_beginning_width = padding.beginning.width;
   uint32_t padding_ending_width = padding.ending.width;
 
-  if (strides.height == 0 || strides.width == 0) {
-    return base::unexpected("All strides should be greater than 0.");
-  }
-  const uint32_t stride_height = strides.height;
-  const uint32_t stride_width = strides.width;
-
-  if (dilations.height == 0 || dilations.width == 0) {
-    return base::unexpected("All dilations should be greater than 0.");
-  }
-  const uint32_t dilation_height = dilations.height;
-  const uint32_t dilation_width = dilations.width;
-
   // When the autoPad is other than "explicit", the values in the
   // options.padding array are ignored and the explicit padding values need to
   // be calculated.
   if (auto_pad != AutoPad::kExplicit) {
-    auto padding_sizes_height = CalculateConv2dPadding(
+    const auto padding_sizes_height = CalculateConv2dPadding(
         auto_pad, input_height, filter_height, stride_height, dilation_height);
     if (!padding_sizes_height) {
       return base::unexpected(
@@ -103,7 +103,7 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
     }
     padding_beginning_height = padding_sizes_height->begin;
     padding_ending_height = padding_sizes_height->end;
-    auto padding_sizes_width = CalculateConv2dPadding(
+    const auto padding_sizes_width = CalculateConv2dPadding(
         auto_pad, input_width, filter_width, stride_width, dilation_width);
     if (!padding_sizes_width) {
       return base::unexpected(
@@ -114,7 +114,7 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
     padding_ending_width = padding_sizes_width->end;
   }
 
-  auto float_output_height = CalculateConv2dOutputSize(
+  const auto float_output_height = CalculateConv2dOutputSize(
       input_height, filter_height, padding_beginning_height,
       padding_ending_height, stride_height, dilation_height);
   if (!float_output_height.has_value()) {
@@ -122,7 +122,7 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
                             float_output_height.error());
   }
 
-  auto float_output_width = CalculateConv2dOutputSize(
+  const auto float_output_width = CalculateConv2dOutputSize(
       input_width, filter_width, padding_beginning_width, padding_ending_width,
       stride_width, dilation_width);
   if (!float_output_width.has_value()) {
@@ -132,6 +132,200 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
 
   return Size2d<double>{.height = float_output_height.value(),
                         .width = float_output_width.value()};
+}
+
+// Validate and calculate the output spatial dimensions of convTranspose2d given
+// input sizes, filter sizes, padding, strides, dilations and output padding.
+base::expected<Size2d<uint32_t>, std::string>
+ValidateAndCalculateConvTranspose2dOutputSizes(
+    const uint32_t input_height,
+    const uint32_t input_width,
+    const uint32_t filter_height,
+    const uint32_t filter_width,
+    const Padding2d& padding,
+    const Size2d<uint32_t>& strides,
+    const Size2d<uint32_t>& dilations,
+    const Size2d<uint32_t>& output_padding,
+    const AutoPad auto_pad) {
+  if (strides.height == 0 || strides.width == 0) {
+    return base::unexpected("All strides should be greater than 0.");
+  }
+  if (dilations.height == 0 || dilations.width == 0) {
+    return base::unexpected("All dilations should be greater than 0.");
+  }
+  const uint32_t stride_height = strides.height;
+  const uint32_t stride_width = strides.width;
+  const uint32_t dilation_height = dilations.height;
+  const uint32_t dilation_width = dilations.width;
+
+  const uint32_t output_padding_height = output_padding.height;
+  const uint32_t output_padding_width = output_padding.width;
+  if (output_padding_height >= stride_height ||
+      output_padding_width >= stride_width) {
+    return base::unexpected(
+        "The output padding must be smaller than the stride along the same "
+        "dimension.");
+  }
+
+  uint32_t padding_beginning_height = padding.beginning.height;
+  uint32_t padding_ending_height = padding.ending.height;
+  uint32_t padding_beginning_width = padding.beginning.width;
+  uint32_t padding_ending_width = padding.ending.width;
+
+  // When the autoPad is other than "explicit", the values in the
+  // options.padding array are ignored and the padding values need to be
+  // calculated.
+  if (auto_pad != AutoPad::kExplicit) {
+    const auto padding_sizes_height = CalculateConvTranspose2dPadding(
+        auto_pad, input_height, filter_height, stride_height, dilation_height,
+        output_padding_height);
+    if (!padding_sizes_height) {
+      return base::unexpected(
+          "Overflow occurred when calculating the padding along the height "
+          "dimension.");
+    }
+    padding_beginning_height = padding_sizes_height->begin;
+    padding_ending_height = padding_sizes_height->end;
+    const auto padding_sizes_width = CalculateConvTranspose2dPadding(
+        auto_pad, input_width, filter_width, stride_width, dilation_width,
+        output_padding_width);
+    if (!padding_sizes_width) {
+      return base::unexpected(
+          "Overflow occurred when calculating the padding along the width "
+          "dimension.");
+    }
+    padding_beginning_width = padding_sizes_width->begin;
+    padding_ending_width = padding_sizes_width->end;
+  }
+
+  const auto output_height = CalculateConvTranspose2dOutputSize(
+      input_height, filter_height, padding_beginning_height,
+      padding_ending_height, stride_height, dilation_height,
+      output_padding_height);
+  if (!output_height.has_value()) {
+    return base::unexpected("Failed to calculate the output height: " +
+                            output_height.error());
+  }
+
+  const auto output_width = CalculateConvTranspose2dOutputSize(
+      input_width, filter_width, padding_beginning_width, padding_ending_width,
+      stride_width, dilation_width, output_padding_width);
+  if (!output_width.has_value()) {
+    return base::unexpected("Failed to calculate the output width: " +
+                            output_width.error());
+  }
+
+  return Size2d<uint32_t>{.height = output_height.value(),
+                          .width = output_width.value()};
+}
+
+struct Conv2dInputOutputInfo {
+  uint32_t batches;
+  uint32_t channels;
+  uint32_t height;
+  uint32_t width;
+};
+
+// Validate and get the input info of 2-D direct and transposed convolution
+// operation given input operand and attributes.
+base::expected<Conv2dInputOutputInfo, std::string>
+ValidateAndGetConv2dInputInfo(const Operand& input,
+                              const Conv2dAttributesBase& attributes) {
+  // Validate input operand.
+  const auto& input_shape = input.dimensions;
+  if (input_shape.size() != 4) {
+    return base::unexpected("The input should be a 4-D tensor.");
+  }
+  // The input layout option specifies the layout format of the input tensor.
+  uint32_t batches, channels, height, width;
+  switch (attributes.input_layout) {
+    case InputOperandLayout::kNchw:
+      // "nchw": [batches, input_channels, height, width]
+      batches = input_shape[0];
+      channels = input_shape[1];
+      height = input_shape[2];
+      width = input_shape[3];
+      break;
+    case InputOperandLayout::kNhwc:
+      // "nhwc": [batches, height, width, input_channels]
+      batches = input_shape[0];
+      height = input_shape[1];
+      width = input_shape[2];
+      channels = input_shape[3];
+      break;
+  }
+
+  return Conv2dInputOutputInfo{.batches = batches,
+                               .channels = channels,
+                               .height = height,
+                               .width = width};
+}
+
+// Validate the bias of 2-D direct and transposed convolution operation and
+// create output operand given input operand, attributes and output info.
+base::expected<Operand, std::string> ValidateConv2dBiasAndCreateOutputOperand(
+    const Operand& input,
+    const Conv2dAttributesBase& attributes,
+    const Conv2dInputOutputInfo& output_info) {
+  // Validate bias operand if it is present.
+  if (attributes.bias_operand) {
+    const auto& bias_shape = attributes.bias_operand->dimensions;
+    if (bias_shape.size() != 1) {
+      return base::unexpected("The bias should be a 1-D tensor.");
+    }
+    if (bias_shape[0] != output_info.channels) {
+      return base::unexpected(base::StringPrintf(
+          "The bias shape should be [%u].", output_info.channels));
+    }
+    if (attributes.bias_operand->data_type != input.data_type) {
+      return base::unexpected(
+          "The bias data type doesn't match input data type.");
+    }
+  }
+
+  // The input layout option specifies the layout format of the output tensor.
+  std::vector<uint32_t> output_shape;
+  switch (attributes.input_layout) {
+    case InputOperandLayout::kNchw:
+      // "nchw": [batches, output_channels, height, width]
+      output_shape = {output_info.batches, output_info.channels,
+                      output_info.height, output_info.width};
+      break;
+    case InputOperandLayout::kNhwc:
+      // "nhwc": [batches, height, width, output_channels]
+      output_shape = {output_info.batches, output_info.height,
+                      output_info.width, output_info.channels};
+      break;
+  }
+
+  return Operand(input.data_type, std::move(output_shape));
+}
+
+// Validate the axes and infer output for reduce operations.
+base::expected<std::vector<uint32_t>, std::string>
+ValidateReduceAxesAndInferOutput(base::span<const uint32_t> input_dimensions,
+                                 base::span<const uint32_t> axes,
+                                 bool keep_dimensions) {
+  auto input_rank = input_dimensions.size();
+  auto validation_result = ValidateAxes(axes, input_rank);
+  if (!validation_result.has_value()) {
+    return base::unexpected(validation_result.error());
+  }
+
+  std::vector<uint32_t> output_shape;
+  if (keep_dimensions) {
+    output_shape.assign(input_dimensions.begin(), input_dimensions.end());
+    for (auto axis : axes) {
+      output_shape[axis] = 1;
+    }
+  } else {
+    for (size_t i = 0; i < input_rank; i++) {
+      if (!base::Contains(axes, i)) {
+        output_shape.push_back(input_dimensions[i]);
+      }
+    }
+  }
+  return output_shape;
 }
 
 }  // namespace
@@ -159,6 +353,38 @@ bool Operand::operator!=(const Operand& other) const {
   return !(*this == other);
 }
 
+std::string DataTypeToString(Operand::DataType data_type) {
+  switch (data_type) {
+    case Operand::DataType::kFloat32:
+      return "float32";
+    case Operand::DataType::kFloat16:
+      return "float16";
+    case Operand::DataType::kInt32:
+      return "int32";
+    case Operand::DataType::kUint32:
+      return "uint32";
+    case Operand::DataType::kInt64:
+      return "int64";
+    case Operand::DataType::kUint64:
+      return "uint64";
+    case Operand::DataType::kInt8:
+      return "int8";
+    case Operand::DataType::kUint8:
+      return "uint8";
+  }
+  NOTREACHED_NORETURN();
+}
+
+std::string DataTypeConstraintToString(
+    const DataTypeConstraintSet& constraint_set) {
+  std::vector<std::string> data_types;
+  data_types.reserve(constraint_set.Size());
+  for (auto data_type : constraint_set) {
+    data_types.push_back(DataTypeToString(data_type));
+  }
+  return base::JoinString(data_types, /* saperator */ ",");
+}
+
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
     Operand input) {
   // According to WebNN spec:
@@ -167,13 +393,27 @@ base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
   if (input.dimensions.size() != 2) {
     return base::unexpected("The input must be a 2-D tensor.");
   }
-  // The input type must be one of the floating point types.
+  // The input data type must be one of the floating point types.
   if (!IsFloatingPointType(input.data_type)) {
     return base::unexpected(
-        "The input type must be one of the floating point types.");
+        "The input data type must be one of the floating point types.");
   }
   // The output tensor of softmax is the same shape as the input tensor.
   return Operand(input.data_type, std::move(input.dimensions));
+}
+
+base::expected<Operand, std::string> ValidateArgMinMaxAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> axes,
+    bool keep_dimensions) {
+  auto validated_output_shape =
+      ValidateReduceAxesAndInferOutput(input.dimensions, axes, keep_dimensions);
+  if (!validated_output_shape.has_value()) {
+    return base::unexpected(validated_output_shape.error());
+  }
+
+  return Operand(Operand::DataType::kInt64,
+                 std::move(validated_output_shape.value()));
 }
 
 base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
@@ -240,6 +480,106 @@ base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
   return outputs;
 }
 
+// This helper method is intended to validate mean, variance, scale and bias
+// operands of batchNormalization and instanceNormalization against the input
+// operand. These operands share the same constraint.
+base::expected<void, std::string>
+ValidateNormalizationOperandIsCompatibleWithInput(
+    const Operand& operand,
+    const Operand::DataType input_data_type,
+    size_t input_size_on_axis) {
+  if (operand.data_type != input_data_type) {
+    return base::unexpected("the data type doesn't match the input data type.");
+  }
+  if (operand.dimensions.size() != 1) {
+    return base::unexpected("the operand should be a 1-D tensor.");
+  }
+
+  if (operand.dimensions[0] != input_size_on_axis) {
+    return base::unexpected(
+        "the size of operand must be equal to the size of the feature "
+        "dimension of the input.");
+  }
+
+  return base::ok();
+}
+
+BatchNormalizationAttributes::BatchNormalizationAttributes() = default;
+BatchNormalizationAttributes::~BatchNormalizationAttributes() = default;
+
+BatchNormalizationAttributes::BatchNormalizationAttributes(
+    BatchNormalizationAttributes&& other) = default;
+BatchNormalizationAttributes& BatchNormalizationAttributes::operator=(
+    BatchNormalizationAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateBatchNormalizationAndInferOutput(
+    const Operand& input,
+    const Operand& mean,
+    const Operand& variance,
+    const BatchNormalizationAttributes& attributes) {
+  // Validate input type.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+  if (base::MakeStrictNum(attributes.axis) >= input.dimensions.size()) {
+    return base::unexpected(
+        "The value of axis must be in the range [0, N-1] where N is the rank "
+        "of the input tensor.");
+  }
+
+  auto input_size_on_axis = input.dimensions[attributes.axis];
+  auto input_data_type = input.data_type;
+  // Validate mean operand.
+  const auto validation_mean =
+      ValidateNormalizationOperandIsCompatibleWithInput(mean, input_data_type,
+                                                        input_size_on_axis);
+  if (!validation_mean.has_value()) {
+    return base::unexpected("For mean operand: " + validation_mean.error());
+  }
+
+  // Validate variance operand.
+  const auto validation_variance =
+      ValidateNormalizationOperandIsCompatibleWithInput(
+          variance, input_data_type, input_size_on_axis);
+  if (!validation_variance.has_value()) {
+    return base::unexpected("For variance operand: " +
+                            validation_variance.error());
+  }
+
+  // Validate scale operand.
+  if (attributes.scale) {
+    const auto validation_scale =
+        ValidateNormalizationOperandIsCompatibleWithInput(
+            attributes.scale.value(), input_data_type, input_size_on_axis);
+    if (!validation_scale.has_value()) {
+      return base::unexpected("For scale operand: " + validation_scale.error());
+    }
+  }
+
+  // Validate bias operand.
+  if (attributes.bias) {
+    const auto validation_bias =
+        ValidateNormalizationOperandIsCompatibleWithInput(
+            attributes.bias.value(), input_data_type, input_size_on_axis);
+    if (!validation_bias.has_value()) {
+      return base::unexpected("For bias operand: " + validation_bias.error());
+    }
+  }
+
+  // The output tensor of batchNormalization is the same shape as the input
+  // tensor.
+  return Operand(input_data_type, std::move(input.dimensions));
+}
+
+Conv2dAttributesBase::Conv2dAttributesBase() = default;
+Conv2dAttributesBase::~Conv2dAttributesBase() = default;
+
+Conv2dAttributesBase::Conv2dAttributesBase(Conv2dAttributesBase&& other) =
+    default;
+Conv2dAttributesBase& Conv2dAttributesBase::operator=(
+    Conv2dAttributesBase&& other) = default;
+
 Conv2dAttributes::Conv2dAttributes() = default;
 Conv2dAttributes::~Conv2dAttributes() = default;
 
@@ -251,40 +591,23 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
     const Operand& input,
     const Operand& filter,
     const Conv2dAttributes& attributes) {
-  // Validate input operand and set its sizes.
-  const auto input_shape = input.dimensions;
-  if (input_shape.size() != 4) {
-    return base::unexpected("The input should be a 4-D tensor.");
+  // Validate input operand.
+  const auto input_info = ValidateAndGetConv2dInputInfo(input, attributes);
+  if (!input_info.has_value()) {
+    return base::unexpected(input_info.error());
   }
-  // The input layout option specifies the layout format of the input tensor.
-  uint32_t input_batches, input_channels, input_height, input_width;
-  switch (attributes.input_layout) {
-    case InputOperandLayout::kNchw:
-      // "nchw": [batches, input_channels, height, width]
-      input_batches = input_shape[0];
-      input_channels = input_shape[1];
-      input_height = input_shape[2];
-      input_width = input_shape[3];
-      break;
-    case InputOperandLayout::kNhwc:
-      // "nhwc": [batches, height, width, input_channels]
-      input_batches = input_shape[0];
-      input_height = input_shape[1];
-      input_width = input_shape[2];
-      input_channels = input_shape[3];
-      break;
-  }
-
-  // Validate filter operand and set its sizes.
+  // Validate filter operand.
   if (filter.data_type != input.data_type) {
-    return base::unexpected("The filter type doesn't match the input type.");
+    return base::unexpected(
+        "The filter data type doesn't match the input data type.");
   }
   const auto filter_shape = filter.dimensions;
   if (filter_shape.size() != 4) {
     return base::unexpected("The filter should be a 4-D tensor.");
   }
-  // The filter layout specifies the filter layout format.
+
   uint32_t filter_height, filter_width, output_channels, filter_input_channels;
+  // The conv2d filter layout specifies the filter layout format.
   switch (attributes.filter_layout) {
     case Conv2dFilterOperandLayout::kHwio:
       // "hwio": [height, width, input_channels/groups, output_channels]
@@ -315,57 +638,166 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
       filter_width = filter_shape[3];
       break;
   }
-  // Validate bias operand if it is present.
-  if (attributes.bias_operand) {
-    const auto bias_shape = attributes.bias_operand->dimensions;
-    if (bias_shape.size() != 1) {
-      return base::unexpected("The bias should be a 1-D tensor.");
-    }
-    if (bias_shape[0] != output_channels) {
-      return base::unexpected(base::StringPrintf(
-          "The bias shape should be [%u].", output_channels));
-    }
-    if (attributes.bias_operand->data_type != input.data_type) {
-      return base::unexpected("The bias type doesn't match input type.");
-    }
-  }
-  // Validate groups.
+
+  // Validate groups and input channels.
   if (attributes.groups == 0) {
     return base::unexpected("The groups should be greater than 0.");
   }
-  if (input_channels % attributes.groups != 0 ||
-      filter_input_channels != input_channels / attributes.groups) {
+  if (input_info->channels % attributes.groups != 0 ||
+      filter_input_channels != input_info->channels / attributes.groups) {
     return base::unexpected(
         "The groups must evenly divide the input channels to filter input "
         "channels.");
   }
 
+  // Validate and calculate output sizes.
   const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
-      input_height, input_width, filter_height, filter_width,
+      input_info->height, input_info->width, filter_height, filter_width,
       attributes.padding, attributes.strides, attributes.dilations,
       attributes.auto_pad);
   if (!output_sizes.has_value()) {
     return base::unexpected(output_sizes.error());
   }
-  const uint32_t output_height =
-      base::ClampFloor<uint32_t>(output_sizes->height);
-  const uint32_t output_width = base::ClampFloor<uint32_t>(output_sizes->width);
-  // The input layout option specifies the layout format of the output tensor.
-  std::vector<uint32_t> output_shape;
-  switch (attributes.input_layout) {
-    case InputOperandLayout::kNchw:
-      // "nchw": [batches, output_channels, height, width]
-      output_shape = {input_batches, output_channels, output_height,
-                      output_width};
-      break;
-    case InputOperandLayout::kNhwc:
-      // "nhwc": [batches, height, width, output_channels]
-      output_shape = {input_batches, output_height, output_width,
-                      output_channels};
-      break;
+  uint32_t output_height = base::ClampFloor<uint32_t>(output_sizes->height);
+  uint32_t output_width = base::ClampFloor<uint32_t>(output_sizes->width);
+
+  Conv2dInputOutputInfo output_info{.batches = input_info->batches,
+                                    .channels = output_channels,
+                                    .height = output_height,
+                                    .width = output_width};
+  return ValidateConv2dBiasAndCreateOutputOperand(input, attributes,
+                                                  output_info);
+}
+
+ConvTranspose2dAttributes::ConvTranspose2dAttributes() = default;
+ConvTranspose2dAttributes::~ConvTranspose2dAttributes() = default;
+
+ConvTranspose2dAttributes::ConvTranspose2dAttributes(
+    ConvTranspose2dAttributes&& other) = default;
+ConvTranspose2dAttributes& ConvTranspose2dAttributes::operator=(
+    ConvTranspose2dAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateConvTranspose2dAndInferOutput(
+    const Operand& input,
+    const Operand& filter,
+    const ConvTranspose2dAttributes& attributes) {
+  // Validate input operand.
+  const auto input_info = ValidateAndGetConv2dInputInfo(input, attributes);
+  if (!input_info.has_value()) {
+    return base::unexpected(input_info.error());
+  }
+  // Validate filter operand.
+  if (filter.data_type != input.data_type) {
+    return base::unexpected(
+        "The filter data type doesn't match the input data type.");
+  }
+  const auto filter_shape = filter.dimensions;
+  if (filter_shape.size() != 4) {
+    return base::unexpected("The filter should be a 4-D tensor.");
   }
 
-  return Operand(input.data_type, std::move(output_shape));
+  uint32_t input_channels, filter_height, filter_width, filter_output_channels;
+  // The conv2d filter layout specifies the filter layout format.
+  switch (attributes.filter_layout) {
+    case ConvTranspose2dFilterOperandLayout::kIohw:
+      // "iohw": [input_channels, output_channels/groups, height, width]
+      input_channels = filter_shape[0];
+      filter_output_channels = filter_shape[1];
+      filter_height = filter_shape[2];
+      filter_width = filter_shape[3];
+      break;
+    case ConvTranspose2dFilterOperandLayout::kHwoi:
+      // "hwoi": [height, width, output_channels/groups, input_channels]
+      filter_height = filter_shape[0];
+      filter_width = filter_shape[1];
+      filter_output_channels = filter_shape[2];
+      input_channels = filter_shape[3];
+      break;
+    case ConvTranspose2dFilterOperandLayout::kOhwi:
+      // "ohwi": [output_channels/groups, height, width, input_channels]
+      filter_output_channels = filter_shape[0];
+      filter_height = filter_shape[1];
+      filter_width = filter_shape[2];
+      input_channels = filter_shape[3];
+      break;
+  }
+  // Validate groups, input channels and calculate output channels.
+  if (attributes.groups == 0) {
+    return base::unexpected("The groups should be greater than 0.");
+  }
+  if (input_info->channels != input_channels) {
+    return base::unexpected(
+        "The input channels should equal to filter input channels.");
+  }
+  const auto checked_output_channels =
+      base::MakeCheckedNum<uint32_t>(filter_output_channels) *
+      attributes.groups;
+  if (!checked_output_channels.IsValid()) {
+    return base::unexpected("The output channels is too large.");
+  }
+  const uint32_t output_channels = checked_output_channels.ValueOrDie();
+
+  // Validate and calculate output sizes.
+  uint32_t output_height, output_width;
+  if (attributes.output_sizes) {
+    const auto& output_sizes = attributes.output_sizes;
+    output_height = output_sizes->height;
+    output_width = output_sizes->width;
+    if (output_height <= 0 || output_width <= 0) {
+      return base::unexpected("All output sizes should be greater than 0.");
+    }
+    const auto strides = attributes.strides;
+    const auto calculated_output_sizes =
+        ValidateAndCalculateConvTranspose2dOutputSizes(
+            input_info->height, input_info->width, filter_height, filter_width,
+            attributes.padding, strides, attributes.dilations,
+            // According to WebNN spec:
+            // https://webmachinelearning.github.io/webnn/#dom-mlconvtranspose2doptions-outputsizes
+            // When the output sizes are explicitly specified, the output
+            // padding values in outputPadding are ignored.
+            {0, 0}, attributes.auto_pad);
+    if (!calculated_output_sizes.has_value()) {
+      return base::unexpected(calculated_output_sizes.error());
+    }
+    const auto calculated_output_height = calculated_output_sizes->height;
+    const auto max_output_height =
+        base::MakeCheckedNum<uint32_t>(calculated_output_height) +
+        strides.height;
+    if (!max_output_height.IsValid()) {
+      return base::unexpected("The checked maximum output height is too large");
+    }
+    if (output_height < calculated_output_height ||
+        output_height >= max_output_height.ValueOrDie()) {
+      return base::unexpected("The height of output sizes is invalid.");
+    }
+    const auto calculated_output_width = calculated_output_sizes->width;
+    const auto max_output_width =
+        base::MakeCheckedNum<uint32_t>(calculated_output_width) + strides.width;
+    if (!max_output_width.IsValid()) {
+      return base::unexpected("The checked maximum output width is too large");
+    }
+    if (output_width < calculated_output_width ||
+        output_width >= max_output_width.ValueOrDie()) {
+      return base::unexpected("The width of output sizes is invalid.");
+    }
+  } else {
+    const auto output_sizes = ValidateAndCalculateConvTranspose2dOutputSizes(
+        input_info->height, input_info->width, filter_height, filter_width,
+        attributes.padding, attributes.strides, attributes.dilations,
+        attributes.output_padding, attributes.auto_pad);
+    if (!output_sizes.has_value()) {
+      return base::unexpected(output_sizes.error());
+    }
+    output_height = output_sizes->height;
+    output_width = output_sizes->width;
+  }
+
+  Conv2dInputOutputInfo output_info{.batches = input_info->batches,
+                                    .channels = output_channels,
+                                    .height = output_height,
+                                    .width = output_width};
+  return ValidateConv2dBiasAndCreateOutputOperand(input, attributes,
+                                                  output_info);
 }
 
 base::expected<Operand, std::string> ValidatePadAndInferOutput(
@@ -375,6 +807,9 @@ base::expected<Operand, std::string> ValidatePadAndInferOutput(
   // Validate the beginning_padding and ending_padding.
   const auto input_shape = input.dimensions;
   auto input_rank = input_shape.size();
+  if (input_rank == 0) {
+    return base::unexpected("The input should not be a scalar.");
+  }
   if (beginning_padding.size() != input_rank) {
     return base::unexpected(
         "The length of beginningPadding must be "
@@ -407,7 +842,7 @@ base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
     const Operand& a,
     const Operand& b) {
   if (a.data_type != b.data_type) {
-    return base::unexpected("The types of first two inputs don't match.");
+    return base::unexpected("The data types of first two inputs don't match.");
   }
 
   std::vector<uint32_t> a_dimensions = a.dimensions;
@@ -673,6 +1108,51 @@ base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidateGatherAndInferOutput(
+    const Operand& input,
+    const Operand& indices,
+    const uint32_t axis) {
+  const auto& input_dimensions = input.dimensions;
+  const auto input_rank = input_dimensions.size();
+  if (input_rank == 0) {
+    return base::unexpected("The input should not be a scalar.");
+  }
+
+  if (base::MakeStrictNum(input_rank) <= axis) {
+    return base::unexpected(
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor.");
+  }
+
+  if (!DataTypeConstraint::kGatherOperatorIndexDataTypes.Has(
+          indices.data_type)) {
+    return base::unexpected(base::StringPrintf(
+        "The indices type must be one of the %s types.",
+        DataTypeConstraintToString(
+            DataTypeConstraint::kGatherOperatorIndexDataTypes)
+            .c_str()));
+  }
+
+  const auto& indices_dimensions = indices.dimensions;
+  auto checked_output_rank =
+      base::MakeCheckedNum<size_t>(input_rank) - 1 + indices_dimensions.size();
+  if (!checked_output_rank.IsValid()) {
+    return base::unexpected("The output rank is too large.");
+  }
+
+  std::vector<uint32_t> output_shape;
+  output_shape.reserve(checked_output_rank.ValueOrDie());
+  for (size_t i = 0; i < input_rank; ++i) {
+    if (i == axis) {
+      base::ranges::copy(indices_dimensions, std::back_inserter(output_shape));
+    } else {
+      output_shape.push_back(input_dimensions[i]);
+    }
+  }
+
+  return Operand(input.data_type, std::move(output_shape));
+}
+
 GemmAttributes::GemmAttributes() = default;
 GemmAttributes::~GemmAttributes() = default;
 
@@ -684,7 +1164,7 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& b,
     const GemmAttributes& attributes) {
   if (a.data_type != b.data_type) {
-    return base::unexpected("The types of first two inputs don't match.");
+    return base::unexpected("The data types of first two inputs don't match.");
   }
   // According to WebNN spec:
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm, the first input 2-D
@@ -722,7 +1202,7 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
   if (attributes.c_operand) {
     if (attributes.c_operand->data_type != a.data_type) {
       return base::unexpected(
-          "The third input type doesn't match other inputs' type.");
+          "The third input data type doesn't match other inputs' data type.");
     }
     const auto shape_c = attributes.c_operand->dimensions;
     if (shape_c.size() > 2) {
@@ -736,6 +1216,130 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     }
   }
   return Operand(a.data_type, std::move(output_shape));
+}
+
+InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
+InstanceNormalizationAttributes::~InstanceNormalizationAttributes() = default;
+
+InstanceNormalizationAttributes::InstanceNormalizationAttributes(
+    InstanceNormalizationAttributes&& other) = default;
+InstanceNormalizationAttributes& InstanceNormalizationAttributes::operator=(
+    InstanceNormalizationAttributes&& other) = default;
+
+base::expected<Operand, std::string>
+ValidateInstanceNormalizationAndInferOutput(
+    const Operand& input,
+    const InstanceNormalizationAttributes& attributes) {
+  auto input_data_type = input.data_type;
+  // Validate the input operand.
+  if (!IsFloatingPointType(input_data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+
+  const auto& input_dimensions = input.dimensions;
+  if (input_dimensions.size() != 4) {
+    return base::unexpected("The input should be a 4-D tensor.");
+  }
+
+  uint32_t axis;
+  switch (attributes.layout) {
+    case InputOperandLayout::kNchw:
+      axis = 1;
+      break;
+    case InputOperandLayout::kNhwc:
+      axis = 3;
+      break;
+  }
+
+  // Validate scale operand.
+  if (attributes.scale.has_value()) {
+    const auto validation_scale =
+        ValidateNormalizationOperandIsCompatibleWithInput(
+            attributes.scale.value(), input_data_type, input_dimensions[axis]);
+    if (!validation_scale.has_value()) {
+      return base::unexpected("For scale operand: " + validation_scale.error());
+    }
+  }
+
+  // Validate the bias operand.
+  if (attributes.bias.has_value()) {
+    const auto validation_bias =
+        ValidateNormalizationOperandIsCompatibleWithInput(
+            attributes.bias.value(), input_data_type, input_dimensions[axis]);
+    if (!validation_bias.has_value()) {
+      return base::unexpected("For bias operand: " + validation_bias.error());
+    }
+  }
+
+  return Operand(input_data_type, std::move(input_dimensions));
+}
+
+LayerNormalizationAttributes::LayerNormalizationAttributes() = default;
+LayerNormalizationAttributes::~LayerNormalizationAttributes() = default;
+
+LayerNormalizationAttributes::LayerNormalizationAttributes(
+    LayerNormalizationAttributes&& other) = default;
+LayerNormalizationAttributes& LayerNormalizationAttributes::operator=(
+    LayerNormalizationAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> axes,
+    const LayerNormalizationAttributes& attributes) {
+  // Validate the input operand.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+
+  const auto& input_dimensions = input.dimensions;
+  const size_t input_rank = input_dimensions.size();
+
+  // Ensure that the axes are all less than the input rank and have no
+  // duplication.
+  const auto axes_validation_result = ValidateAxes(axes, input_rank);
+  if (!axes_validation_result.has_value()) {
+    return base::unexpected(axes_validation_result.error());
+  }
+
+  // The dimensions for layerNormalization to reduce along.
+  std::vector<uint32_t> reduction_dimensions;
+  reduction_dimensions.reserve(axes.size());
+  base::ranges::transform(
+      axes, std::back_inserter(reduction_dimensions),
+      [input_dimensions](uint32_t axis) { return input_dimensions[axis]; });
+
+  // Validate the scale operand.
+  if (attributes.scale.has_value()) {
+    const auto& scale = attributes.scale.value();
+    if (scale.data_type != input.data_type) {
+      return base::unexpected(
+          "For scale operand: the data type doesn't match the input data "
+          "type.");
+    }
+    if (scale.dimensions != reduction_dimensions) {
+      return base::unexpected(
+          "For scale operand: the shape doesn't match the axis dimensions of "
+          "the input.");
+    }
+  }
+
+  // Validate the bias operand.
+  if (attributes.bias.has_value()) {
+    const auto& bias = attributes.bias.value();
+    if (bias.data_type != input.data_type) {
+      return base::unexpected(
+          "For bias operand: the data type doesn't match the input data type.");
+    }
+    if (bias.dimensions != reduction_dimensions) {
+      return base::unexpected(
+          "For bias operand: the shape doesn't match the axis dimensions of "
+          "the input.");
+    }
+  }
+
+  return Operand(input.data_type, std::move(input.dimensions));
 }
 
 base::expected<Operand, std::string> ValidateConcatAndInferOutput(
@@ -761,7 +1365,7 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
   // The loop skips the first input to avoid repeated checks.
   for (size_t i = 1; i < inputs.size(); ++i) {
     if (inputs[i].data_type != output_type) {
-      return base::unexpected("The input types don't match.");
+      return base::unexpected("The input data types don't match.");
     }
     // According to WebNN spec:
     // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
@@ -805,11 +1409,12 @@ base::expected<Operand, std::string> ValidatePreluAndInferOutput(
     const Operand& slope) {
   if (input.data_type != slope.data_type) {
     return base::unexpected(
-        "The type of slope doesn't match the type of input.");
+        "The data type of slope doesn't match the data type of input.");
   }
   if (!IsFloatingPointType(input.data_type)) {
     return base::unexpected(
-        "The type of input and slope must be one of the floating point types.");
+        "The data type of input and slope must be one of the floating point "
+        "types.");
   }
   // BroadcastShape unidirectionally broadcasts slope.dimensions to
   // input.dimensions.
@@ -852,11 +1457,11 @@ SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
 base::expected<Operand, std::string> ValidateSliceAndInferOutput(
     const Operand& input,
     const SliceAttributes& attributes) {
-  if (!attributes.sizes.size()) {
-    return base::unexpected("The length of sizes must be not be zero.");
+  const auto input_rank = input.dimensions.size();
+  if (input_rank == 0) {
+    return base::unexpected("The input should not be a scalar.");
   }
 
-  const auto input_rank = input.dimensions.size();
   if (attributes.starts.size() != input_rank) {
     return base::unexpected(
         "The length of starts must be equal to the rank of the input tensor.");
@@ -911,49 +1516,56 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> axes,
     bool keep_dimensions) {
-  auto input_dimensions = input.dimensions;
-  auto input_rank = input_dimensions.size();
-  auto validation_result = ValidateAxes(axes, input_rank);
-  if (!validation_result.has_value()) {
-    return base::unexpected(validation_result.error());
-  }
-
   if (kind == ReduceKind::kL2 || kind == ReduceKind::kMean ||
       kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
     if (!IsFloatingPointType(input.data_type)) {
       return base::unexpected(
-          "The input type must be one of the floating point types.");
+          "The input data type must be one of the floating point types.");
     }
   }
 
-  std::vector<uint32_t> output_shape;
-  if (keep_dimensions) {
-    output_shape = input_dimensions;
-    for (auto axis : axes) {
-      output_shape[axis] = 1;
-    }
-  } else {
-    for (size_t i = 0; i < input_rank; i++) {
-      if (!base::Contains(axes, i)) {
-        output_shape.push_back(input_dimensions[i]);
-      }
-    }
+  auto validated_output_shape =
+      ValidateReduceAxesAndInferOutput(input.dimensions, axes, keep_dimensions);
+  if (!validated_output_shape.has_value()) {
+    return base::unexpected(validated_output_shape.error());
   }
-  // Currently, WebNN doesn't support using empty dimensions to represent a
-  // scalar. An issue has been filed to track it -
-  // https://github.com/webmachinelearning/webnn/issues/390. As a workaround, we
-  // set output_shape to {1} to represent a scalar output.
-  if (output_shape.size() == 0) {
-    output_shape.push_back(1);
+
+  return Operand(input.data_type, std::move(validated_output_shape.value()));
+}
+
+base::expected<Operand, std::string> ValidateWhereAndInferOutput(
+    const Operand& condition,
+    const Operand& true_value,
+    const Operand& false_value) {
+  if (condition.data_type != Operand::DataType::kUint8) {
+    return base::unexpected("The condition data type must be uint8.");
   }
-  return Operand(input.data_type, std::move(output_shape));
+
+  if (true_value.data_type != false_value.data_type) {
+    return base::unexpected(
+        "The data types of true_value and false_value don't match.");
+  }
+
+  const auto value_shape =
+      BroadcastShapes(true_value.dimensions, false_value.dimensions, true);
+  if (!value_shape) {
+    return base::unexpected(
+        "The shapes of true_value and false_value are not broadcastable.");
+  }
+
+  const auto output_shape =
+      BroadcastShapes(condition.dimensions, value_shape.value(), true);
+  if (!output_shape) {
+    return base::unexpected(
+        "The condition shape is not broadcastable to the shape broadcasted "
+        "from true_value and false_value.");
+  }
+  return Operand(true_value.data_type, std::move(output_shape.value()));
 }
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {
-  if (dimensions.empty()) {
-    return base::unexpected("The dimensions is empty.");
-  }
+  // Empty dimensions represents a scalar whose number of elements is 1.
   base::CheckedNumeric<size_t> checked_number_of_elements = 1;
   for (auto& d : dimensions) {
     if (d == 0) {
@@ -983,13 +1595,12 @@ base::expected<size_t, std::string> ValidateAndCalculateByteLength(
 }
 
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
-                                               uint32_t rank) {
+                                               const size_t rank) {
   if (base::ranges::any_of(axes, [rank](uint32_t axis) {
         return base::MakeStrictNum(axis) >= rank;
       })) {
     return base::unexpected(base::StringPrintf(
-        "The values in axes must be within the range from 0 to (%u).",
-        rank - 1));
+        "The values in axes must be in the range [0, %zu).", rank));
   }
 
   if (axes.size() != std::set<uint32_t>(axes.begin(), axes.end()).size()) {
@@ -1074,18 +1685,71 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
   return PaddingSizes({.begin = padding_begin, .end = padding_end});
 }
 
-bool IsFloatingPointType(Operand::DataType data_type) {
-  switch (data_type) {
-    case Operand::DataType::kFloat32:
-    case Operand::DataType::kFloat16:
-      return true;
-    case Operand::DataType::kInt32:
-    case Operand::DataType::kUint32:
-    case Operand::DataType::kInt8:
-    case Operand::DataType::kUint8:
-      return false;
+absl::optional<PaddingSizes> CalculateConvTranspose2dPadding(
+    AutoPad auto_pad,
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t stride,
+    const uint32_t dilation,
+    const uint32_t output_padding) {
+  auto checked_output_size =
+      base::MakeCheckedNum<uint32_t>(input_size) * stride;
+  auto checked_effective_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  auto checked_total_padding =
+      stride * (base::MakeCheckedNum<uint32_t>(input_size) - 1) +
+      checked_effective_filter_size + output_padding - checked_output_size;
+  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
+  switch (auto_pad) {
+    case AutoPad::kSameUpper:
+      checked_padding_begin = checked_total_padding / 2;
+      checked_padding_end = (checked_total_padding + 1) / 2;
+      break;
+    case AutoPad::kSameLower:
+      checked_padding_begin = (checked_total_padding + 1) / 2;
+      checked_padding_end = checked_total_padding / 2;
+      break;
+    case AutoPad::kExplicit:
+      // The case has been ruled out before the function be called.
+      NOTREACHED_NORETURN()
+          << "Invalid auto pad value when calculating convTranspose2d padding.";
   }
-  NOTREACHED_NORETURN();
+  uint32_t padding_begin, padding_end;
+  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
+      !checked_padding_end.AssignIfValid(&padding_end)) {
+    return absl::nullopt;
+  }
+  return webnn::PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t beginning_padding,
+    const uint32_t ending_padding,
+    const uint32_t stride,
+    const uint32_t dilation,
+    const uint32_t output_padding) {
+  // Calculate the dilated filter sizes.
+  auto checked_effective_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  if (!checked_effective_filter_size.IsValid()) {
+    return base::unexpected("The effective filter size is too large.");
+  }
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) - 1) * stride +
+      checked_effective_filter_size - beginning_padding - ending_padding +
+      output_padding;
+  if (!checked_output_size.IsValid()) {
+    return base::unexpected(
+        "The stride is too large or the input size is too small for padding.");
+  }
+
+  return checked_output_size.ValueOrDie();
+}
+
+bool IsFloatingPointType(Operand::DataType data_type) {
+  return DataTypeConstraint::kFloat.Has(data_type);
 }
 
 }  // namespace webnn

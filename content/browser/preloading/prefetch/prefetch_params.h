@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,9 +18,6 @@ namespace content {
 
 // The url of the tunnel proxy.
 CONTENT_EXPORT GURL PrefetchProxyHost(const GURL& default_proxy_url);
-
-// The header name used to connect to the tunnel proxy.
-std::string PrefetchProxyHeaderKey();
 
 // This value is included in the |PrefetchProxyHeaderKey| request header.
 // The tunnel proxy will use this to determine what, if any, experimental
@@ -68,9 +67,9 @@ bool PrefetchStartsSpareRenderer();
 // forever.
 base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
 
-// Retrieves a host for which the prefetch proxy should be bypassed for testing
-// purposes.
-CONTENT_EXPORT absl::optional<std::string> PrefetchBypassProxyForHost();
+// Returns if the specified host should have the prefetch proxy bypassed for
+// testing purposes. Currently this is only used for WPT test servers.
+CONTENT_EXPORT bool ShouldPrefetchBypassProxyForTestHost(std::string_view host);
 
 // Whether only prefetched resources with a text/html MIME type should be used.
 // If this is false, there is no MIME type restriction.
@@ -120,13 +119,6 @@ CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
 CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(
     blink::mojom::SpeculationEagerness eagerness);
 
-// Returns whether the client is involved in the Holdback Finch
-// experiment group.
-bool IsContentPrefetchHoldback();
-
-// The maximum retry-after header value that will be persisted.
-base::TimeDelta PrefetchMaximumRetryAfterDelta();
-
 // Returns true if |kPrefetchNewLimits| is enabled.
 bool PrefetchNewLimitsEnabled();
 // Returns the max number of eager prefetches allowed (only used when
@@ -135,6 +127,13 @@ size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
 // Returns the max number of non-eager prefetches allowed (only used when
 // PrefetchNewLimits is enabled).
 size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+
+// Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
+bool PrefetchNIKScopeEnabled();
+
+// Returns true if the early cookie copy in `PrefetchDocumentManager` is
+// skipped. See crbug.com/1503003 for details.
+bool PrefetchDocumentManagerEarlyCookieCopySkipped();
 
 }  // namespace content
 

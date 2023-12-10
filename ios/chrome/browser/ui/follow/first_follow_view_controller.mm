@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

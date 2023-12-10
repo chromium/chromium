@@ -4,6 +4,7 @@
 
 #include "remoting/host/remoting_register_support_host_request.h"
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -17,7 +18,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -153,7 +153,7 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterFtl) {
       .Times(1);
 
   register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, absl::nullopt,
+                                       authorized_helper_, std::nullopt,
                                        register_callback.Get());
   signal_strategy_->Connect();
 }
@@ -211,7 +211,7 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithAuthorizedHelper) {
   authorized_helper_ = kTestAuthorizedHelper;
 
   register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, absl::nullopt,
+                                       authorized_helper_, std::nullopt,
                                        register_callback.Get());
   signal_strategy_->Connect();
 }
@@ -236,7 +236,7 @@ TEST_F(RemotingRegisterSupportHostTest, FailedWithDeadlineExceeded) {
       .Times(1);
 
   register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, absl::nullopt,
+                                       authorized_helper_, std::nullopt,
                                        register_callback.Get());
   signal_strategy_->Connect();
 }
@@ -260,7 +260,7 @@ TEST_F(RemotingRegisterSupportHostTest,
       .Times(1);
 
   register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, absl::nullopt,
+                                       authorized_helper_, std::nullopt,
                                        register_callback.Get());
   signal_strategy_->Connect();
   signal_strategy_->Disconnect();

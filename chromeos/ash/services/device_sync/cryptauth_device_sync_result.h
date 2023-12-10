@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNC_RESULT_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNC_RESULT_H_
 
+#include <optional>
 #include <ostream>
 
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -88,14 +88,14 @@ class CryptAuthDeviceSyncResult {
   CryptAuthDeviceSyncResult(
       ResultCode result_code,
       bool did_device_registry_change,
-      const absl::optional<cryptauthv2::ClientDirective>& client_directive);
+      const std::optional<cryptauthv2::ClientDirective>& client_directive);
   CryptAuthDeviceSyncResult(const CryptAuthDeviceSyncResult& other);
 
   ~CryptAuthDeviceSyncResult();
 
   ResultCode result_code() const { return result_code_; }
 
-  const absl::optional<cryptauthv2::ClientDirective>& client_directive() const {
+  const std::optional<cryptauthv2::ClientDirective>& client_directive() const {
     return client_directive_;
   }
 
@@ -112,7 +112,7 @@ class CryptAuthDeviceSyncResult {
  private:
   ResultCode result_code_;
   bool did_device_registry_change_;
-  absl::optional<cryptauthv2::ClientDirective> client_directive_;
+  std::optional<cryptauthv2::ClientDirective> client_directive_;
 };
 
 std::ostream& operator<<(

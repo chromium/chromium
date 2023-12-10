@@ -1257,7 +1257,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
     ASSERT_FALSE(agent_foo->NeedsAttachment());
 
     // Text is still offscreen.
-    ASSERT_LT(p->getBoundingClientRect()->bottom(), 0);
+    ASSERT_LT(p->GetBoundingClientRect()->bottom(), 0);
 
     EXPECT_FALSE(agent_foo->IsAttached());
   }
@@ -1274,7 +1274,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
     ASSERT_FALSE(agent_foo->NeedsAttachment());
 
     // Text is now within the viewport.
-    ASSERT_GT(p->getBoundingClientRect()->bottom(), 0);
+    ASSERT_GT(p->GetBoundingClientRect()->bottom(), 0);
 
     EXPECT_TRUE(agent_foo->IsAttached());
   }

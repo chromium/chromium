@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -83,12 +82,6 @@ base::FilePath CreateCustomFolderInUserDownloadsPath(
 // Creates and returns the custom folder path on driveFS. The custom folder is
 // created in the root folder with given `custom_folder_name`.
 base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name);
-
-// Sends a press release key combo `count` times.
-void SendKey(ui::KeyboardCode key_code,
-             ui::test::EventGenerator* event_generator,
-             int flags = ui::EF_NONE,
-             int count = 1);
 
 // Wait for a specific `seconds`.
 void WaitForSeconds(int seconds);
@@ -158,7 +151,7 @@ IconButton* GetCloseButton();
 const message_center::Notification* GetPreviewNotification();
 
 // Clicks on the area in the notification specified by the `button_index`.
-void ClickOnNotification(absl::optional<int> button_index);
+void ClickOnNotification(std::optional<int> button_index);
 
 // Test util APIs to simulate the camera adding and removing operations.
 void AddFakeCamera(

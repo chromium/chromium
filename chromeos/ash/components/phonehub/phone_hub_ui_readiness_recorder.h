@@ -13,7 +13,8 @@
 
 namespace ash::phonehub {
 
-// Keep in sync with PhoneHubUiResult in tools/metrics/histograms/enums.xml
+// Keep in sync with the PhoneHubUiResult enum defined in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class ConnectionFlowState {
   kSecureChannelNotConnected = 0,
   kSecureChannelConnected = 1,

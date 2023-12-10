@@ -136,8 +136,7 @@ class DownloadBubbleUIControllerDelegate
   // |profile| is required to outlive DownloadBubbleUIControllerDelegate.
   explicit DownloadBubbleUIControllerDelegate(Profile* profile)
       : profile_(profile) {
-    if (download::IsDownloadBubbleV2Enabled(profile_) &&
-        profile_->IsOffTheRecord()) {
+    if (profile_->IsOffTheRecord()) {
       profile_->GetPrefs()->SetBoolean(prefs::kPromptForDownload, true);
     }
   }
@@ -194,7 +193,7 @@ class CrOSUIControllerDelegate : public DownloadUIController::Delegate {
   explicit CrOSUIControllerDelegate(content::DownloadManager* manager) {
     // Conditionally add the `DownloadBubbleUIControllerDelegate`.
     auto* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
-    if (download::IsDownloadBubbleEnabled(profile)) {
+    if (download::IsDownloadBubbleEnabled()) {
       delegates_.emplace_back(
           std::make_unique<DownloadBubbleUIControllerDelegate>(profile));
       InitializeDownloadBubbleUpdateService(profile, manager);
@@ -265,7 +264,7 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
   if (!delegate_) {
     Profile* profile =
         Profile::FromBrowserContext(manager->GetBrowserContext());
-    if (download::IsDownloadBubbleEnabled(profile)) {
+    if (download::IsDownloadBubbleEnabled()) {
       delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
       InitializeDownloadBubbleUpdateService(profile, manager);
     } else {

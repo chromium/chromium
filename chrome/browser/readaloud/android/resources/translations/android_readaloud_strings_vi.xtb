@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1178581264944972037">Tạm dừng</translation>
-<translation id="2558806128245168542">Quay lại</translation>
-<translation id="3523426587027570423">Nhấn để đóng "Đọc trang này".</translation>
+<translation id="1921351128855867012">Tua nhanh <ph name="NUMBER_OF_SECONDS" /> giây</translation>
+<translation id="1984328900355667246">Không thể phát</translation>
+<translation id="3023502830214299618">Rất tiếc, hiện không thể phát trang này. Vui lòng thử lại sau.</translation>
+<translation id="3807208219231826020">Tua bằng thanh điều chỉnh</translation>
+<translation id="385051799172605136">Quay lại</translation>
 <translation id="4431240646217225907">Làm nổi bật văn bản và tự động cuộn</translation>
 <translation id="4654641641922242357">Trình phát "Đọc trang này".</translation>
-<translation id="4731877163452936634">Tốc độ phát: <ph name="PLAYBACK_SPEED" />. Nhấp để thay đổi.</translation>
+<translation id="4872475766448853257">Tua lại <ph name="NUMBER_OF_SECONDS" /> giây</translation>
 <translation id="5234971936051226002">Trình phát "Đọc trang này" đã thu nhỏ.</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
 <translation id="6315170314923504164">Thoại</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6846298663435243399">Đang tải…</translation>
 <translation id="7587250070160020374">Chrome đang phát</translation>
-<translation id="7945822420239537236">Tua đi <ph name="NUMBER_OF_SECONDS" /> giây</translation>
-<translation id="7972866381678406344">Tua lại <ph name="NUMBER_OF_SECONDS" /> giây</translation>
 <translation id="8136852699834914183">Không thể phát trang này.</translation>
+<translation id="8264989794233974275">Tăng/giảm tốc độ <ph name="PLAYBACK_SPEED" /> lần.</translation>
+<translation id="8407011429883244666">Đóng trình phát.</translation>
 <translation id="8953618380150219653">Trình phát "Đọc trang này" đã mở trên toàn màn hình.</translation>
 </translationbundle>

@@ -25,7 +25,10 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   // MediaNotificationProvider:
   MOCK_METHOD((std::unique_ptr<views::View>),
               GetMediaNotificationListView,
-              (int, bool, const std::string&, const std::string&));
+              (int,
+               bool,
+               global_media_controls::GlobalMediaControlsEntryPoint,
+               const std::string&));
   MOCK_METHOD(void, OnBubbleClosing, ());
   MOCK_METHOD(global_media_controls::MediaItemManager*,
               GetMediaItemManager,

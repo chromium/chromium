@@ -13,14 +13,13 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Records metrics to better understand and enhance our price drops feature
- */
+/** Records metrics to better understand and enhance our price drops feature */
 public class PriceDropMetricsLogger {
     private static final long NINETY_DAYS_MS = TimeUnit.DAYS.toMillis(90);
     private static final long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
 
     private ShoppingPersistedTabData mShoppingPersistedTabData;
+
     @VisibleForTesting
     protected enum TabUsageStatus {
         ABANDONED("AbandonedTab"),
@@ -63,16 +62,25 @@ public class PriceDropMetricsLogger {
         }
         MetricsResult metrics = deriveMetrics();
         RecordHistogram.recordBooleanHistogram(
-                String.format(Locale.US, "Commerce.PriceDrops.%s%s.IsProductDetailPage",
-                        tabUsageStatus, locationIdentifier),
+                String.format(
+                        Locale.US,
+                        "Commerce.PriceDrops.%s%s.IsProductDetailPage",
+                        tabUsageStatus,
+                        locationIdentifier),
                 metrics.isProductDetailPage);
         RecordHistogram.recordBooleanHistogram(
-                String.format(Locale.US, "Commerce.PriceDrops.%s%s.ContainsPrice", tabUsageStatus,
+                String.format(
+                        Locale.US,
+                        "Commerce.PriceDrops.%s%s.ContainsPrice",
+                        tabUsageStatus,
                         locationIdentifier),
                 metrics.containsPrice);
         RecordHistogram.recordBooleanHistogram(
-                String.format(Locale.US, "Commerce.PriceDrops.%s%s.ContainsPriceDrop",
-                        tabUsageStatus, locationIdentifier),
+                String.format(
+                        Locale.US,
+                        "Commerce.PriceDrops.%s%s.ContainsPriceDrop",
+                        tabUsageStatus,
+                        locationIdentifier),
                 metrics.containsPriceDrop);
     }
 
@@ -81,7 +89,8 @@ public class PriceDropMetricsLogger {
     }
 
     private MetricsResult deriveMetrics() {
-        return new MetricsResult(!TextUtils.isEmpty(mShoppingPersistedTabData.getMainOfferId()),
+        return new MetricsResult(
+                !TextUtils.isEmpty(mShoppingPersistedTabData.getMainOfferId()),
                 mShoppingPersistedTabData.hasPriceMicros(),
                 mShoppingPersistedTabData.hasPriceMicros()
                         && mShoppingPersistedTabData.hasPreviousPriceMicros());

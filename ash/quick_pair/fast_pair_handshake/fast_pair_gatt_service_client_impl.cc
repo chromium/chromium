@@ -26,6 +26,9 @@ namespace {
 
 // We have two UUID possibilities for each characteristic because they changed
 // across different Fast Pair versions.
+const device::BluetoothUUID kModelIDCharacteristicUuidV1("1233");
+const device::BluetoothUUID kModelIDCharacteristicUuidV2(
+    "FE2C1233-8366-4814-8EB0-01DE32100BEA");
 const device::BluetoothUUID kKeyBasedCharacteristicUuidV1("1234");
 const device::BluetoothUUID kKeyBasedCharacteristicUuidV2(
     "FE2C1234-8366-4814-8EB0-01DE32100BEA");
@@ -152,10 +155,10 @@ constexpr const char* ErrorCodeToString(
 const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
     const uint8_t flags,
     const std::string& provider_address,
-    absl::optional<const uint8_t> message_group,
-    absl::optional<const uint8_t> message_code,
-    absl::optional<const uint8_t> data_id_or_size,
-    absl::optional<const std::vector<uint8_t>> additional_data) {
+    std::optional<const uint8_t> message_group,
+    std::optional<const uint8_t> message_code,
+    std::optional<const uint8_t> data_id_or_size,
+    std::optional<const std::vector<uint8_t>> additional_data) {
   std::array<uint8_t, kBlockByteSize> request;
 
   request[kMessageTypeIndex] = kActionMessage;
@@ -224,8 +227,8 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
 const std::array<uint8_t, kBlockByteSize>
 CreateActionRequestBeforeAdditionalData(const std::string& provider_address) {
   return CreateActionRequest(kActionRequestAdditionalDataFlags,
-                             provider_address, absl::nullopt, absl::nullopt,
-                             kPersonalizedNameDataId, absl::nullopt);
+                             provider_address, std::nullopt, std::nullopt,
+                             kPersonalizedNameDataId, std::nullopt);
 }
 
 }  // namespace
@@ -242,7 +245,7 @@ std::unique_ptr<FastPairGattServiceClient>
 FastPairGattServiceClientImpl::Factory::Create(
     device::BluetoothDevice* device,
     scoped_refptr<device::BluetoothAdapter> adapter,
-    base::OnceCallback<void(absl::optional<PairFailure>)>
+    base::OnceCallback<void(std::optional<PairFailure>)>
         on_initialized_callback) {
   if (g_test_factory_) {
     return g_test_factory_->CreateInstance(device, adapter,
@@ -269,7 +272,7 @@ FastPairGattServiceClientImpl::Factory::~Factory() = default;
 FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
     device::BluetoothDevice* device,
     scoped_refptr<device::BluetoothAdapter> adapter,
-    base::OnceCallback<void(absl::optional<PairFailure>)>
+    base::OnceCallback<void(std::optional<PairFailure>)>
         on_initialized_callback)
     : on_initialized_callback_(std::move(on_initialized_callback)),
       device_address_(device->GetAddress()),
@@ -409,7 +412,7 @@ void FastPairGattServiceClientImpl::OnGattServiceDiscoveryTimeout() {
 void FastPairGattServiceClientImpl::OnGattConnection(
     base::TimeTicks gatt_connection_start_time,
     std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
     CD_LOG(WARNING, Feature::FP) << "Error creating GATT connection to device: "
                                  << ErrorCodeToString(error_code.value());
@@ -528,7 +531,7 @@ void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
       is_initialized_ = true;
       RecordGattInitializationStep(
           FastPairGattConnectionSteps::kConnectionEstablished);
-      std::move(on_initialized_callback_).Run(/*failure=*/absl::nullopt);
+      std::move(on_initialized_callback_).Run(/*failure=*/std::nullopt);
     }
   }
 }
@@ -550,7 +553,7 @@ FastPairGattServiceClientImpl::GetCharacteristicsByUUIDs(
   return characteristics;
 }
 
-absl::optional<PairFailure>
+std::optional<PairFailure>
 FastPairGattServiceClientImpl::SetGattCharacteristics() {
   auto key_based_characteristics = GetCharacteristicsByUUIDs(
       kKeyBasedCharacteristicUuidV1, kKeyBasedCharacteristicUuidV2);
@@ -580,6 +583,17 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
   // session for it later.
   account_key_characteristic_ = account_key_characteristics[0];
 
+  // The model ID characteristic is required for retroactive pairing for BLE HID
+  // devices
+  auto model_id_characteristics = GetCharacteristicsByUUIDs(
+      kModelIDCharacteristicUuidV1, kModelIDCharacteristicUuidV2);
+  if (model_id_characteristics.empty()) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to discover Model ID characteristic.";
+  } else {
+    model_id_characteristic_ = model_id_characteristics[0];
+  }
+
   auto additional_data_characteristics = GetCharacteristicsByUUIDs(
       kAdditionalDataCharacteristicUuidV1, kAdditionalDataCharacteristicUuidV2);
 
@@ -589,12 +603,12 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
   if (additional_data_characteristics.empty()) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Failed to discover Additional Data Characteristic.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   additional_data_characteristic_ = additional_data_characteristics[0];
 
   // No failure.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FastPairGattServiceClientImpl::OnKeyBasedRequestNotifySession(
@@ -723,13 +737,29 @@ bool FastPairGattServiceClientImpl::IsConnected() {
   return gatt_connection_ && gatt_connection_->IsConnected();
 }
 
+void FastPairGattServiceClientImpl::ReadModelIdAsync(
+    base::OnceCallback<void(
+        std::optional<device::BluetoothGattService::GattErrorCode> error_code,
+        const std::vector<uint8_t>& value)> callback) {
+  DCHECK(is_initialized_);
+
+  if (!model_id_characteristic_) {
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::kNotSupported,
+        std::vector<uint8_t>{});
+    return;
+  }
+
+  model_id_characteristic_->ReadRemoteCharacteristic(std::move(callback));
+}
+
 void FastPairGattServiceClientImpl::WriteRequestAsync(
     uint8_t message_type,
     uint8_t flags,
     const std::string& provider_address,
     const std::string& seekers_address,
     FastPairDataEncryptor* fast_pair_data_encryptor,
-    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+    base::OnceCallback<void(std::vector<uint8_t>, std::optional<PairFailure>)>
         write_response_callback) {
   DCHECK(is_initialized_);
   DCHECK(!key_based_write_response_callback_);
@@ -749,7 +779,7 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
 
   // Append the public version of the private key to the message so the device
   // can generate the shared secret to decrypt the message.
-  const absl::optional<std::array<uint8_t, 64>> public_key =
+  const std::optional<std::array<uint8_t, 64>> public_key =
       fast_pair_data_encryptor->GetPublicKey();
 
   if (public_key) {
@@ -780,7 +810,7 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
     uint8_t message_type,
     uint32_t passkey,
     FastPairDataEncryptor* fast_pair_data_encryptor,
-    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+    base::OnceCallback<void(std::vector<uint8_t>, std::optional<PairFailure>)>
         write_response_callback) {
   DCHECK(is_initialized_);
   DCHECK(message_type == kSeekerPasskey);
@@ -815,7 +845,7 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
 void FastPairGattServiceClientImpl::WriteAccountKey(
     std::array<uint8_t, 16> account_key,
     FastPairDataEncryptor* fast_pair_data_encryptor,
-    base::OnceCallback<void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
+    base::OnceCallback<void(std::optional<ash::quick_pair::AccountKeyFailure>)>
         write_account_key_callback) {
   DCHECK(account_key[0] == kAccountKeyStartByte);
   DCHECK(is_initialized_);
@@ -855,7 +885,7 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
                                    key_based_write_request_start_time_);
     StopWriteRequestTimer(key_based_characteristic_);
     std::move(key_based_write_response_callback_)
-        .Run(value, /*failure=*/absl::nullopt);
+        .Run(value, /*failure=*/std::nullopt);
     RecordNotifyKeyBasedCharacteristicTime(base::TimeTicks::Now() -
                                            notify_keybased_start_time_);
   } else if (characteristic == passkey_characteristic_ &&
@@ -866,7 +896,7 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
     RecordNotifyPasskeyCharacteristicTime(base::TimeTicks::Now() -
                                           notify_passkey_start_time_);
     std::move(passkey_write_response_callback_)
-        .Run(value, /*failure=*/absl::nullopt);
+        .Run(value, /*failure=*/std::nullopt);
   }
 }
 
@@ -898,7 +928,7 @@ void FastPairGattServiceClientImpl::OnWriteAccountKey(
   CD_LOG(INFO, Feature::FP) << __func__;
   RecordWriteAccountKeyTime(base::TimeTicks::Now() -
                             write_account_key_start_time);
-  std::move(write_account_key_callback_).Run(/*failure=*/absl::nullopt);
+  std::move(write_account_key_callback_).Run(/*failure=*/std::nullopt);
 }
 
 void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
@@ -916,7 +946,7 @@ void FastPairGattServiceClientImpl::WritePersonalizedName(
     const std::string& name,
     const std::string& provider_address,
     FastPairDataEncryptor* fast_pair_data_encryptor,
-    base::OnceCallback<void(absl::optional<PairFailure>)>
+    base::OnceCallback<void(std::optional<PairFailure>)>
         write_additional_data_callback) {
   DCHECK(write_additional_data_callback_.is_null());
   write_additional_data_callback_ = std::move(write_additional_data_callback);
@@ -1007,7 +1037,7 @@ void FastPairGattServiceClientImpl::StopWriteRequestTimer(
 
 void FastPairGattServiceClientImpl::OnWriteAdditionalData() {
   CD_LOG(VERBOSE, Feature::FP) << __func__;
-  std::move(write_additional_data_callback_).Run(/*error=*/absl::nullopt);
+  std::move(write_additional_data_callback_).Run(/*error=*/std::nullopt);
 }
 
 void FastPairGattServiceClientImpl::OnWriteAdditionalDataError(

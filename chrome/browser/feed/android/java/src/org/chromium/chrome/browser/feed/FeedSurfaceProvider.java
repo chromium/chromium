@@ -12,13 +12,9 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
-/**
- * Provides a surface that displays a list of interest feeds.
- */
+/** Provides a surface that displays a list of interest feeds. */
 public interface FeedSurfaceProvider {
-    /**
-     * Destroys the provider.
-     */
+    /** Destroys the provider. */
     void destroy();
 
     /**
@@ -46,9 +42,7 @@ public interface FeedSurfaceProvider {
      */
     boolean shouldCaptureThumbnail();
 
-    /**
-     * Captures the contents of this provider into the specified output.
-     */
+    /** Captures the contents of this provider into the specified output. */
     void captureThumbnail(Canvas canvas);
 
     /**
@@ -57,8 +51,6 @@ public interface FeedSurfaceProvider {
     @Nullable
     FeedReliabilityLogger getReliabilityLogger();
 
-    /**
-     * Reloads the contents.
-     */
+    /** Reloads the contents. */
     void reload();
 }

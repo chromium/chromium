@@ -11,9 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.ui.accessibility.AccessibilityState;
 
-/**
- * Helper methods for accessibility.
- */
+/** Helper methods for accessibility. */
 @JNINamespace("autofill")
 public class AutofillAccessibilityUtils {
     // Avoid instantiation by accident.

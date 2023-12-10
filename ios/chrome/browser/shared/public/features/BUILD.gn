@@ -7,7 +7,14 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [ "//ui/base" ]
+  deps = [
+    "//components/country_codes",
+    "//components/version_info:channel",
+    "//ios/chrome/app:background_mode_buildflags",
+    "//ios/chrome/browser/ui/ntp/feed_top_section:constants",
+    "//ios/chrome/common",
+    "//ui/base",
+  ]
   public_deps = [ "//base" ]
 }
 
@@ -16,7 +23,6 @@ source_set("system_flags") {
     "system_flags.h",
     "system_flags.mm",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
     "//base",
     "//build:branding_buildflags",

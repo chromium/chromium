@@ -77,7 +77,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
       v8::Isolate*,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper) final;
-  bool HasPendingActivity() const override;
 
   // ExecutionContext
   bool IsWorkerOrWorkletGlobalScope() const final { return true; }
@@ -94,7 +93,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // BackForwardCacheLoaderHelperImpl::Delegate
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override {}
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override {}
 
   // Returns true when the WorkerOrWorkletGlobalScope is closing (e.g. via
   // WorkerGlobalScope#close() method). If this returns true, the worker is
@@ -285,7 +285,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // TODO(crbug/903579): Consider putting WebWorkerFetchContext-originated
   // things at a single place. Currently they are placed here and subclasses of
   // WebWorkerFetchContext.
-  scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context_;
+  const scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context_;
   Member<SubresourceFilter> subresource_filter_;
 
   Member<WorkerOrWorkletScriptController> script_controller_;

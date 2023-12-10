@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 
+#include <optional>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -21,7 +22,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -35,7 +36,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/model_type_state_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -473,7 +473,7 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     }
   }
 
-  if (absl::optional<syncer::ModelError> error =
+  if (std::optional<syncer::ModelError> error =
           metadata_change_list.TakeError()) {
     change_processor()->ReportError(*error);
   }
@@ -484,7 +484,7 @@ PasswordSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This method merges the local and remote passwords based on their client
@@ -520,7 +520,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
                                 "Failed to load entries from password store. "
                                 "Encryption service failure.");
     }
-    absl::optional<syncer::ModelError> cleanup_result_error =
+    std::optional<syncer::ModelError> cleanup_result_error =
         CleanupPasswordStore();
     if (cleanup_result_error) {
       return cleanup_result_error;
@@ -714,7 +714,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
         ->TransferChangesTo(&sync_metadata_store_change_list);
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         sync_metadata_store_change_list.TakeError();
     if (error) {
       metrics_util::LogPasswordSyncState(
@@ -756,10 +756,10 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
   }
 
   sync_enabled_or_disabled_cb_.Run();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 PasswordSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -901,7 +901,7 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
         ->TransferChangesTo(&sync_metadata_store_change_list);
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         sync_metadata_store_change_list.TakeError();
     if (error) {
       metrics_util::LogApplySyncChangesState(
@@ -919,7 +919,7 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
   }
   metrics_util::LogApplySyncChangesState(
       metrics_util::ApplySyncChangesState::kApplyOK);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PasswordSyncBridge::GetData(StorageKeyList storage_keys,
@@ -1155,7 +1155,7 @@ std::string PasswordSyncBridge::ComputeClientTagForTesting(
   return ComputeClientTag(password_data);
 }
 
-absl::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
+std::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
   DatabaseCleanupResult cleanup_result =
       password_store_sync_->DeleteUndecryptableCredentials();
   switch (cleanup_result) {
@@ -1172,7 +1172,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
           metrics_util::PasswordSyncState::kNotSyncingFailedCleanup);
       return syncer::ModelError(FROM_HERE, "Failed to cleanup database.");
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace password_manager

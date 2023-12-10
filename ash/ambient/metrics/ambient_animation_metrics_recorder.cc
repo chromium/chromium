@@ -41,12 +41,12 @@ void AmbientAnimationMetricsRecorder::AnimationFramePainted(
   // The below does it brute force in N^2 time because it's simplest and N
   // (the number of screens present) is realistically going to be very small.
   // It's not worth optimizing.
-  absl::optional<base::TimeDelta> largest_timestamp_offset;
+  std::optional<base::TimeDelta> largest_timestamp_offset;
   for (auto animation_l = registered_animations_.begin();
        animation_l != registered_animations_.end(); ++animation_l) {
     for (auto animation_r = animation_l + 1;
          animation_r != registered_animations_.end(); ++animation_r) {
-      absl::optional<base::TimeDelta> offset =
+      std::optional<base::TimeDelta> offset =
           GetOffsetBetweenAnimations(**animation_l, **animation_r);
       if (!offset) {
         DVLOG(4)
@@ -98,16 +98,16 @@ void AmbientAnimationMetricsRecorder::AnimationIsDeleting(
   registered_animations_.erase(animation);
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 AmbientAnimationMetricsRecorder::GetOffsetBetweenAnimations(
     const lottie::Animation& animation_l,
     const lottie::Animation& animation_r) const {
-  absl::optional<float> current_progress_l = animation_l.GetCurrentProgress();
-  absl::optional<float> current_progress_r = animation_r.GetCurrentProgress();
+  std::optional<float> current_progress_l = animation_l.GetCurrentProgress();
+  std::optional<float> current_progress_r = animation_r.GetCurrentProgress();
   if (!current_progress_l || !current_progress_r) {
     DVLOG(4) << "Both animations must be active (playing and painted at least "
                 "1 frame) to compute an offset";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const lottie::Animation* animation_with_smaller_t = nullptr;
@@ -135,9 +135,9 @@ AmbientAnimationMetricsRecorder::GetOffsetBetweenAnimations(
   base::TimeDelta incremental_progress = larger_timestamp - smaller_timestamp;
   CHECK(IsPlaybackConfigValid(animation_with_larger_t->GetPlaybackConfig()));
   CHECK(IsPlaybackConfigValid(animation_with_smaller_t->GetPlaybackConfig()));
-  absl::optional<lottie::Animation::CycleBoundaries> larger_t_cycle =
+  std::optional<lottie::Animation::CycleBoundaries> larger_t_cycle =
       animation_with_larger_t->GetCurrentCycleBoundaries();
-  absl::optional<lottie::Animation::CycleBoundaries> smaller_t_cycle =
+  std::optional<lottie::Animation::CycleBoundaries> smaller_t_cycle =
       animation_with_smaller_t->GetCurrentCycleBoundaries();
   CHECK(larger_t_cycle);
   CHECK(smaller_t_cycle);
@@ -154,7 +154,7 @@ AmbientAnimationMetricsRecorder::GetOffsetBetweenAnimations(
 
 // static
 bool AmbientAnimationMetricsRecorder::IsPlaybackConfigValid(
-    const absl::optional<lottie::Animation::PlaybackConfig>& playback_config) {
+    const std::optional<lottie::Animation::PlaybackConfig>& playback_config) {
   return playback_config &&
          // The logic in GetOffsetBetweenAnimations() assumes animation time
          // always ticks forward.

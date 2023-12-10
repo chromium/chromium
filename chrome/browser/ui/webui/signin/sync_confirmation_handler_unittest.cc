@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 const int kExpectedProfileImageSize = 128;
 
@@ -189,7 +189,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
     const std::string* src = dict.FindString("src");
     EXPECT_NE(src, nullptr);
     EXPECT_EQ(expected_picture_url, *src);
-    const absl::optional<bool> show_enterprise_badge =
+    const std::optional<bool> show_enterprise_badge =
         dict.FindBool("showEnterpriseBadge");
     EXPECT_TRUE(show_enterprise_badge.has_value());
     EXPECT_EQ(primary_account.IsManaged(), show_enterprise_badge.value());

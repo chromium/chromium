@@ -36,6 +36,7 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
@@ -590,8 +591,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     {
       VkSemaphore vk_semaphore = scoped_write.begin_semaphore();
       DCHECK(vk_semaphore != VK_NULL_HANDLE);
-      GrBackendSemaphore begin_semaphore;
-      begin_semaphore.initVulkan(vk_semaphore);
+      GrBackendSemaphore begin_semaphore =
+          GrBackendSemaphores::MakeVk(vk_semaphore);
       bool result = sk_surface->wait(1, &begin_semaphore,
                                      /*deleteSemaphoresAfterWait=*/false);
       CHECK(result);
@@ -621,8 +622,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     }
 
     {
-      GrBackendSemaphore end_semaphore;
-      end_semaphore.initVulkan(scoped_write.end_semaphore());
+      GrBackendSemaphore end_semaphore =
+          GrBackendSemaphores::MakeVk(scoped_write.end_semaphore());
       GrFlushInfo flush_info = {
           .fNumSemaphores = 1,
           .fSignalSemaphores = &end_semaphore,

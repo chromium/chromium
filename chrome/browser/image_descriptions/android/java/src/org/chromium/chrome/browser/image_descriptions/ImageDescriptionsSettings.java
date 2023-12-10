@@ -61,8 +61,8 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         mGetImageDescriptionsSwitch.setChecked(mIsEnabled);
 
         mRadioButtonGroupAccessibilityPreference =
-                (RadioButtonGroupAccessibilityPreference) findPreference(
-                        IMAGE_DESCRIPTIONS_DATA_POLICY);
+                (RadioButtonGroupAccessibilityPreference)
+                        findPreference(IMAGE_DESCRIPTIONS_DATA_POLICY);
         mRadioButtonGroupAccessibilityPreference.setOnPreferenceChangeListener(this);
         mRadioButtonGroupAccessibilityPreference.setEnabled(mIsEnabled);
         mRadioButtonGroupAccessibilityPreference.initialize(mOnlyOnWifi);

@@ -12,7 +12,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -26,9 +25,10 @@
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -51,9 +51,9 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/common/chrome_features.h"
 #include "components/crash/core/common/crash_key.h"
-#include "content/public/browser/network_service_instance.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -165,7 +165,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           network_delegate);
     case KioskAppType::kWebApp:
       return std::make_unique<WebKioskAppServiceLauncher>(
-          profile, kiosk_app_id.account_id.value(), network_delegate);
+          profile, kiosk_app_id.account_id, network_delegate);
   }
 }
 
@@ -317,14 +317,14 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   }
 
   if (auto_launch && kiosk_app_id.type == KioskAppType::kChromeApp) {
-    CHECK(KioskAppManager::IsInitialized());
-    KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
+    CHECK(KioskChromeAppManager::IsInitialized());
+    KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
         *kiosk_app_id.app_id);
   }
 
   network_ui_controller_->Start();
 
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 
   splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
@@ -334,12 +334,9 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     return;
   }
 
-  // TODO(b/304981820) remove checks once account_id is no longer optional.
-  CHECK(kiosk_app_id.account_id.has_value());
-  CHECK(kiosk_app_id.account_id.value().is_valid());
-
+  CHECK(kiosk_app_id.account_id.is_valid());
   kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
-      kiosk_app_id_.account_id.value(), kiosk_app_id_.type, /*delegate=*/this);
+      kiosk_app_id_.account_id, kiosk_app_id_.type, /*delegate=*/this);
   kiosk_profile_loader_->Start();
 }
 
@@ -449,7 +446,8 @@ void KioskLaunchController::OnCancelAppLaunch() {
   }
 
   // Only auto-launched apps should be cancelable.
-  if (KioskAppManager::Get()->GetDisableBailoutShortcut() && auto_launch_) {
+  if (KioskChromeAppManager::Get()->GetDisableBailoutShortcut() &&
+      auto_launch_) {
     return;
   }
 
@@ -460,39 +458,19 @@ void KioskLaunchController::OnCancelAppLaunch() {
   chrome::AttemptUserExit();
 }
 
-KioskAppManagerBase::App KioskLaunchController::GetAppData() {
-  DCHECK(kiosk_app_id_.account_id.has_value());
-  switch (kiosk_app_id_.type) {
-    case KioskAppType::kChromeApp: {
-      KioskAppManagerBase::App app;
-      if (KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app)) {
-        return app;
-      }
-      break;
-    }
-    case KioskAppType::kArcApp: {
-      const ArcKioskAppData* arc_app =
-          ArcKioskAppManager::Get()->GetAppByAccountId(
-              *kiosk_app_id_.account_id);
-      if (arc_app) {
-        return KioskAppManagerBase::App(*arc_app);
-      }
-      break;
-    }
-    case KioskAppType::kWebApp: {
-      const WebKioskAppData* web_app =
-          WebKioskAppManager::Get()->GetAppByAccountId(
-              *kiosk_app_id_.account_id);
-      if (web_app) {
-        return WebKioskAppManager::CreateAppByData(*web_app);
-      }
-      break;
-    }
-  }
+AppLaunchSplashScreenView::Data
+KioskLaunchController::GetSplashScreenAppData() {
+  std::optional<KioskApp> app =
+      KioskController::Get().GetAppById(kiosk_app_id_);
+  // TODO(b/306117645) upgrade to CHECK.
+  DUMP_WILL_BE_CHECK(app.has_value());
 
-  LOG(WARNING) << "Cannot get a valid kiosk app. App type: "
-               << (int)kiosk_app_id_.type;
-  return KioskAppManagerBase::App();
+  if (!app.has_value()) {
+    return AppLaunchSplashScreenView::Data(
+        /*name=*/std::string(), /*icon=*/gfx::ImageSkia(), /*url=*/GURL());
+  }
+  return AppLaunchSplashScreenView::Data(app->name(), app->icon(),
+                                         /*url=*/app->url().value_or(GURL()));
 }
 
 void KioskLaunchController::CleanUp() {
@@ -549,7 +527,7 @@ void KioskLaunchController::OnAppInstalling() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
 
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 }
 
 void KioskLaunchController::OnAppPrepared() {
@@ -563,7 +541,7 @@ void KioskLaunchController::OnAppPrepared() {
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 
   force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
       profile_,
@@ -580,18 +558,6 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
 
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
-
-  // App Service launcher requires the web app to be installed. Temporary issues
-  // like URL redirection should not stop the app from being installed as
-  // placeholder. Force launching the app is not possible in case installation
-  // fails.
-  if (kiosk_app_id_.type == KioskAppType::kWebApp &&
-      error == KioskAppLaunchError::Error::kUnableToInstall &&
-      (!base::FeatureList::IsEnabled(features::kKioskEnableAppService) ||
-       crosapi::browser_util::IsLacrosEnabled())) {
-    HandleWebAppInstallFailed();
-    return;
-  }
 
   // Reboot on the recoverable cryptohome errors.
   if (error == KioskAppLaunchError::Error::kCryptohomedNotRunning ||
@@ -613,29 +579,6 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   KioskAppLaunchError::Save(error);
   CleanUp();
   chrome::AttemptUserExit();
-}
-
-void KioskLaunchController::HandleWebAppInstallFailed() {
-  // We end up here when WebKioskAppLauncher was not able to obtain metadata
-  // for the app.
-  // This can happen in some temporary states -- we are under captive portal, or
-  // there is a third-party authorization which causes redirect to url that
-  // differs from the install url. We should proceed with launch in such cases,
-  // expecting this situation to not happen upon next launch.
-  app_state_ = AppState::kInstalled;
-
-  SYSLOG(WARNING) << "Failed to obtain app data, trying to launch anyway..";
-
-  if (!splash_screen_view_) {
-    return;
-  }
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::
-          kWaitingAppWindowInstallFailed);
-  splash_screen_view_->Show(GetAppData());
-  if (launch_on_install_ || g_skip_splash_wait_for_testing) {
-    LaunchApp();
-  }
 }
 
 void KioskLaunchController::FinishForcedExtensionsInstall(
@@ -661,7 +604,7 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 
   if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
@@ -674,13 +617,13 @@ void KioskLaunchController::OnAppLaunched() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-    splash_screen_view_->Show(GetAppData());
+    splash_screen_view_->Show(GetSplashScreenAppData());
   }
   session_manager::SessionManager::Get()->SessionStarted();
 }
 
 void KioskLaunchController::OnAppWindowCreated(
-    const absl::optional<std::string>& app_name) {
+    const std::optional<std::string>& app_name) {
   SYSLOG(INFO) << "App window created, closing splash screen.";
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
@@ -697,7 +640,7 @@ void KioskLaunchController::OnAppWindowCreated(
 void KioskLaunchController::OnAppDataUpdated() {
   // Invokes Show() to update the app title and icon.
   if (splash_screen_view_) {
-    splash_screen_view_->Show(GetAppData());
+    splash_screen_view_->Show(GetSplashScreenAppData());
   }
 }
 
@@ -749,7 +692,7 @@ void KioskLaunchController::OnNetworkConfigureUiFinished() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
-    splash_screen_view_->Show(GetAppData());
+    splash_screen_view_->Show(GetSplashScreenAppData());
   }
 
   InitializeLauncher();

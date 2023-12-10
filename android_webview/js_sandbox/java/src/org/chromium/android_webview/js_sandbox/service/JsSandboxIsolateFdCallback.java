@@ -16,9 +16,7 @@ import org.chromium.base.Log;
 
 import java.io.IOException;
 
-/**
- * Callback for the native code to report a JavaScript evaluation outcome using FDs.
- */
+/** Callback for the native code to report a JavaScript evaluation outcome using FDs. */
 @JNINamespace("android_webview")
 public class JsSandboxIsolateFdCallback {
     private static final String TAG = "JsSandboxIsolateFdCallback";

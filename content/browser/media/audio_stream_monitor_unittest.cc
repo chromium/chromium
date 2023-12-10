@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -51,9 +50,11 @@ class MockWebContentsDelegate : public WebContentsDelegate {
 
 class AudioStreamMonitorTest : public RenderViewHostTestHarness {
  public:
-  AudioStreamMonitorTest() {
-    // Start |clock_| at non-zero.
-    clock_.Advance(base::Seconds(1000000));
+  AudioStreamMonitorTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Start time at non-zero.
+    task_environment()->FastForwardBy(base::Seconds(1000000));
   }
 
   AudioStreamMonitorTest(const AudioStreamMonitorTest&) = delete;
@@ -67,7 +68,6 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     web_contents->SetDelegate(&mock_web_contents_delegate_);
 
     monitor_ = web_contents->audio_stream_monitor();
-    const_cast<const base::TickClock*&>(monitor_->clock_) = &clock_;
   }
 
   void TearDown() override {
@@ -75,11 +75,9 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::TearDown();
   }
 
-  base::TimeTicks GetTestClockTime() { return clock_.NowTicks(); }
-
-  void AdvanceClock(const base::TimeDelta& delta) { clock_.Advance(delta); }
-
-  void SimulateOffTimerFired() { monitor_->MaybeToggle(); }
+  void FastForwardBy(const base::TimeDelta& delta) {
+    task_environment()->FastForwardBy(delta);
+  }
 
   void ExpectIsMonitoring(int render_process_id,
                           int render_frame_id,
@@ -98,7 +96,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     EXPECT_EQ(last_became_silent_time, monitor_->last_became_silent_time_);
     EXPECT_EQ(monitor_->off_timer_.IsRunning(),
               monitor_->indicator_is_on_ && !monitor_->IsCurrentlyAudible() &&
-                  clock_.NowTicks() <
+                  base::TimeTicks::Now() <
                       monitor_->last_became_silent_time_ + holding_period());
   }
 
@@ -185,7 +183,6 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
 #endif
 
   MockWebContentsDelegate mock_web_contents_delegate_;
-  base::SimpleTestTickClock clock_;
 };
 
 TEST_F(AudioStreamMonitorTest, MonitorsWhenProvidedAStream) {
@@ -224,33 +221,36 @@ TEST_F(AudioStreamMonitorTest, IndicatorIsOnUntilHoldingPeriodHasPassed) {
 
     UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
     ExpectTabWasRecentlyAudible(true, last_became_silent_time);
-    AdvanceClock(one_time_step());
+    FastForwardBy(one_time_step());
 
     ExpectCurrentlyAudibleChangeNotification(false);
 
     // Notify that the stream has become silent and advance time repeatedly,
     // ensuring that the indicator is being held on during the holding period.
     UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
-    last_became_silent_time = GetTestClockTime();
+    last_became_silent_time = base::TimeTicks::Now();
     ExpectTabWasRecentlyAudible(true, last_became_silent_time);
     for (int i = 0; i < num_silence_steps; ++i) {
-      // Note: Redundant off timer firings should not have any effect.
-      SimulateOffTimerFired();
+      // If the next time step will cause the holding period to expire, then a
+      // notification will be sent.
+      if (base::TimeTicks::Now() + one_time_step() >=
+          last_became_silent_time + holding_period()) {
+        ExpectRecentlyAudibleChangeNotification(false);
+      }
+
       ExpectTabWasRecentlyAudible(true, last_became_silent_time);
-      AdvanceClock(one_time_step());
+      FastForwardBy(one_time_step());
     }
 
     ++num_silence_steps;
-  } while (GetTestClockTime() < last_became_silent_time + holding_period());
+  } while (base::TimeTicks::Now() < last_became_silent_time + holding_period());
 
-  // At this point, the clock has just advanced to beyond the holding period, so
-  // the next firing of the off timer should turn off the tab indicator.  Also,
-  // make sure it stays off for several cycles thereafter.
-  ExpectRecentlyAudibleChangeNotification(false);
+  // At this point, the time has just advanced to beyond the holding period and
+  // the tab indicator has been turned off. Also, make sure it stays off for
+  // several cycles thereafter.
   for (int i = 0; i < 10; ++i) {
-    SimulateOffTimerFired();
     ExpectTabWasRecentlyAudible(false, last_became_silent_time);
-    AdvanceClock(one_time_step());
+    FastForwardBy(one_time_step());
   }
 }
 
@@ -277,8 +277,7 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
 
   // Halfway through the holding period, the second stream joins in.  The
   // indicator stays on.
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() / 2);
   UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
                      true);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
@@ -290,13 +289,12 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
   UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
   UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
                      false);
-  last_became_silent_time = GetTestClockTime();
+  last_became_silent_time = base::TimeTicks::Now();
   ExpectNotCurrentlyAudible();
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
 
   // Advance half a holding period and the indicator should still be on.
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() / 2);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
@@ -309,8 +307,7 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
 
   // Advance a holding period. The original holding period has expired but the
   // indicator should stay on because a stream became audible in the meantime.
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() / 2);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectIsCurrentlyAudible();
 
@@ -318,14 +315,13 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
   // indicator is still on.
   ExpectCurrentlyAudibleChangeNotification(false);
   UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
-  last_became_silent_time = GetTestClockTime();
+  last_became_silent_time = base::TimeTicks::Now();
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // After a holding period passes, the indicator turns off.
   ExpectRecentlyAudibleChangeNotification(false);
-  AdvanceClock(holding_period());
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period());
   ExpectTabWasRecentlyAudible(false, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
@@ -343,25 +339,23 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
   ExpectCurrentlyAudibleChangeNotification(false);
   UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
                      false);
-  last_became_silent_time = GetTestClockTime();
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  last_became_silent_time = base::TimeTicks::Now();
+  FastForwardBy(holding_period() / 2);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // Just past the holding period, the tab is no longer marked as recently
   // audible.
   ExpectRecentlyAudibleChangeNotification(false);
-  AdvanceClock(holding_period() -
-               (GetTestClockTime() - last_became_silent_time));
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() -
+                (base::TimeTicks::Now() - last_became_silent_time));
   ExpectTabWasRecentlyAudible(false, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // The passage of time should not turn the indicator back while both streams
   // are remaining silent.
   for (int i = 0; i < 100; ++i) {
-    AdvanceClock(one_time_step());
+    FastForwardBy(one_time_step());
     ExpectTabWasRecentlyAudible(false, last_became_silent_time);
     ExpectNotCurrentlyAudible();
   }

@@ -21,23 +21,26 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewMan
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * A factory to create an {@link IncognitoReauthCoordinator} instance.
- */
+/** A factory to create an {@link IncognitoReauthCoordinator} instance. */
 public class IncognitoReauthCoordinatorFactory {
     /** The context to use in order to inflate the re-auth view and fetch the resources. */
     private final @NonNull Context mContext;
+
     /**
      * The {@link TabModelSelector} instance used for providing functionality to toggle between tab
      * models and to close Incognito tabs.
      */
     private final @NonNull TabModelSelector mTabModelSelector;
+
     /** The manager responsible for showing the full screen Incognito re-auth dialog. */
     private final @NonNull ModalDialogManager mModalDialogManager;
+
     /** The manager responsible for invoking the underlying native re-authentication. */
     private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
+
     /** The launcher to show the SettingsActivity. */
     private final @NonNull SettingsLauncher mSettingsLauncher;
+
     /**
      * A boolean to distinguish between tabbedActivity or CCT, during coordinator creation.
      *
@@ -57,19 +60,18 @@ public class IncognitoReauthCoordinatorFactory {
      * Non-null for {@link TabSwitcherIncognitoReauthCoordinator}.
      */
     private @Nullable TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
+
     /**
      * This allows to show the regular overview mode.
      * Non-null for {@link FullScreenIncognitoReauthCoordinator}.
      */
     private @Nullable LayoutManager mLayoutManager;
+
     /** An {@link Intent} which allows to opens regular overview mode from a non-tabbed Activity. */
     private @Nullable Intent mShowRegularOverviewIntent;
 
-    /**
-     * A test-only variable used to mock the menu delegate instead of creating one.
-     */
-    @VisibleForTesting
-    IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateForTesting;
+    /** A test-only variable used to mock the menu delegate instead of creating one. */
+    @VisibleForTesting IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateForTesting;
 
     /**
      * @param context The {@link Context} to use for fetching the re-auth resources.
@@ -87,13 +89,15 @@ public class IncognitoReauthCoordinatorFactory {
      * @param showRegularOverviewIntent An {@link Intent} to show the regular overview mode.
      * @param isTabbedActivity A boolean to indicate if the re-auth screen being fired from
      */
-    public IncognitoReauthCoordinatorFactory(@NonNull Context context,
+    public IncognitoReauthCoordinatorFactory(
+            @NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull SettingsLauncher settingsLauncher,
             @Nullable IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate,
-            @Nullable LayoutManager layoutManager, @Nullable Intent showRegularOverviewIntent,
+            @Nullable LayoutManager layoutManager,
+            @Nullable Intent showRegularOverviewIntent,
             boolean isTabbedActivity) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
@@ -105,10 +109,9 @@ public class IncognitoReauthCoordinatorFactory {
         mShowRegularOverviewIntent = showRegularOverviewIntent;
         mIsTabbedActivity = isTabbedActivity;
 
-        assert isTabbedActivity
-                || mShowRegularOverviewIntent
-                        != null : "A valid intent is required to be able to"
-                                  + " open regular overview mode from inside non-tabbed Activity.";
+        assert isTabbedActivity || mShowRegularOverviewIntent != null
+                : "A valid intent is required to be able to"
+                        + " open regular overview mode from inside non-tabbed Activity.";
     }
 
     /**
@@ -150,8 +153,8 @@ public class IncognitoReauthCoordinatorFactory {
     Runnable getSeeOtherTabsRunnable() {
         if (mIsTabbedActivity) {
             return () -> {
-                mTabModelSelector.selectModel(/*incognito=*/false);
-                mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
+                mTabModelSelector.selectModel(/* incognito= */ false);
+                mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
             };
         } else {
             return () -> mContext.startActivity(mShowRegularOverviewIntent);
@@ -194,14 +197,25 @@ public class IncognitoReauthCoordinatorFactory {
      * tabbedActivity/CCT.
      */
     IncognitoReauthCoordinator createIncognitoReauthCoordinator(
-            @NonNull IncognitoReauthCallback incognitoReauthCallback, boolean showFullScreen,
+            @NonNull IncognitoReauthCallback incognitoReauthCallback,
+            boolean showFullScreen,
             @NonNull OnBackPressedCallback backPressedCallback) {
         return (showFullScreen)
-                ? new FullScreenIncognitoReauthCoordinator(mContext, mIncognitoReauthManager,
-                        incognitoReauthCallback, getSeeOtherTabsRunnable(), mModalDialogManager,
-                        getIncognitoReauthMenuDelegate(), backPressedCallback)
-                : new TabSwitcherIncognitoReauthCoordinator(mContext, mIncognitoReauthManager,
-                        incognitoReauthCallback, getSeeOtherTabsRunnable(), getBackPressRunnable(),
-                        mTabSwitcherCustomViewManager, mIncognitoReauthTopToolbarDelegate);
+                ? new FullScreenIncognitoReauthCoordinator(
+                        mContext,
+                        mIncognitoReauthManager,
+                        incognitoReauthCallback,
+                        getSeeOtherTabsRunnable(),
+                        mModalDialogManager,
+                        getIncognitoReauthMenuDelegate(),
+                        backPressedCallback)
+                : new TabSwitcherIncognitoReauthCoordinator(
+                        mContext,
+                        mIncognitoReauthManager,
+                        incognitoReauthCallback,
+                        getSeeOtherTabsRunnable(),
+                        getBackPressRunnable(),
+                        mTabSwitcherCustomViewManager,
+                        mIncognitoReauthTopToolbarDelegate);
     }
 }

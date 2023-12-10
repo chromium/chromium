@@ -10,6 +10,7 @@
 
 #include <ios>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -93,7 +93,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
       HRESULT hr = update_state->get_state(&val_state);
       if (SUCCEEDED(hr)) {
         using State = UpdateService::UpdateState::State;
-        absl::optional<State> state = CheckedCastToEnum<State>(val_state);
+        std::optional<State> state = CheckedCastToEnum<State>(val_state);
         if (state)
           update_service_state.state = *state;
       }
@@ -135,7 +135,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
       HRESULT hr = update_state->get_errorCategory(&val_error_category);
       if (SUCCEEDED(hr)) {
         using ErrorCategory = UpdateService::ErrorCategory;
-        absl::optional<ErrorCategory> error_category =
+        std::optional<ErrorCategory> error_category =
             CheckedCastToEnum<ErrorCategory>(val_error_category);
         if (error_category)
           update_service_state.error_category = *error_category;
@@ -262,7 +262,7 @@ class UpdaterAppStatesCallback
     // The safearray is owned by the caller of `Run`, so ownership is released
     // here after acquiring the `LockScope`.
     base::win::ScopedSafearray safearray(V_ARRAY(&updater_app_states));
-    absl::optional<base::win::ScopedSafearray::LockScope<VT_DISPATCH>>
+    std::optional<base::win::ScopedSafearray::LockScope<VT_DISPATCH>>
         lock_scope = safearray.CreateLockScope<VT_DISPATCH>();
     safearray.Release();
 
@@ -543,7 +543,7 @@ class UpdateServiceProxyImplImpl
     std::wstring ap_w;
     std::wstring version_w;
     std::wstring existence_checker_path_w;
-    if (![&]() {
+    if (![&] {
           if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
                                 &app_id_w)) {
             return false;
@@ -664,7 +664,7 @@ class UpdateServiceProxyImplImpl
     }
     std::wstring app_id_w;
     std::wstring install_data_index_w;
-    if (![&]() {
+    if (![&] {
           if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
             return false;
           }
@@ -733,7 +733,7 @@ class UpdateServiceProxyImplImpl
     std::wstring existence_checker_path_w;
     std::wstring client_install_data_w;
     std::wstring install_data_index_w;
-    if (![&]() {
+    if (![&] {
           if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
                                 &app_id_w)) {
             return false;
@@ -812,7 +812,7 @@ class UpdateServiceProxyImplImpl
     std::wstring install_args_w;
     std::wstring install_data_w;
     std::wstring install_settings_w;
-    if (![&]() {
+    if (![&] {
           if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
             return false;
           }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/base64.h"
@@ -40,7 +41,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -231,7 +231,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     const std::string& key_name,
     Profile* profile,
     TpmChallengeKeyCallback callback,
-    const absl::optional<std::string>& signals) {
+    const std::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
 
@@ -605,7 +605,7 @@ void TpmChallengeKeySubtleImpl::AskForUserConsentCallback(bool result) {
       /*account_id=*/GetAccountIdForAttestationFlow(),
       /*request_origin=*/std::string(),  // Not used.
       /*force_new_key=*/true, /*key_crypto_type=*/key_crypto_type_,
-      /*key_name=*/key_name_, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/key_name_, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(&TpmChallengeKeySubtleImpl::GetCertificateCallback,
                      weak_factory_.GetWeakPtr()));

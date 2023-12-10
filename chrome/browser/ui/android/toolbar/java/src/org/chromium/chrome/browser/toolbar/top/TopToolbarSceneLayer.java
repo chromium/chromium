@@ -57,20 +57,26 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
         DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
         if (progressInfo == null) return;
 
-        TopToolbarSceneLayerJni.get().updateProgressBar(mNativePtr, TopToolbarSceneLayer.this,
-                progressInfo.progressBarRect.left, progressInfo.progressBarRect.top,
-                progressInfo.progressBarRect.width(), progressInfo.progressBarRect.height(),
-                progressInfo.progressBarColor, progressInfo.progressBarBackgroundRect.left,
-                progressInfo.progressBarBackgroundRect.top,
-                progressInfo.progressBarBackgroundRect.width(),
-                progressInfo.progressBarBackgroundRect.height(),
-                progressInfo.progressBarBackgroundColor);
+        TopToolbarSceneLayerJni.get()
+                .updateProgressBar(
+                        mNativePtr,
+                        TopToolbarSceneLayer.this,
+                        progressInfo.progressBarRect.left,
+                        progressInfo.progressBarRect.top,
+                        progressInfo.progressBarRect.width(),
+                        progressInfo.progressBarRect.height(),
+                        progressInfo.progressBarColor,
+                        progressInfo.progressBarBackgroundRect.left,
+                        progressInfo.progressBarBackgroundRect.top,
+                        progressInfo.progressBarBackgroundRect.width(),
+                        progressInfo.progressBarBackgroundRect.height(),
+                        progressInfo.progressBarBackgroundColor);
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        TopToolbarSceneLayerJni.get().setContentTree(
-                mNativePtr, TopToolbarSceneLayer.this, contentTree);
+        TopToolbarSceneLayerJni.get()
+                .setContentTree(mNativePtr, TopToolbarSceneLayer.this, contentTree);
     }
 
     @Override
@@ -90,16 +96,38 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
     @NativeMethods
     interface Natives {
         long init(TopToolbarSceneLayer caller);
-        void setContentTree(long nativeTopToolbarSceneLayer, TopToolbarSceneLayer caller,
+
+        void setContentTree(
+                long nativeTopToolbarSceneLayer,
+                TopToolbarSceneLayer caller,
                 SceneLayer contentTree);
-        void updateToolbarLayer(long nativeTopToolbarSceneLayer, TopToolbarSceneLayer caller,
-                ResourceManager resourceManager, int resourceId, int toolbarBackgroundColor,
-                int urlBarResourceId, int urlBarColor, float xOffset, float contentOffset,
-                boolean showShadow, boolean visible, boolean anonymize);
-        void updateProgressBar(long nativeTopToolbarSceneLayer, TopToolbarSceneLayer caller,
-                int progressBarX, int progressBarY, int progressBarWidth, int progressBarHeight,
-                int progressBarColor, int progressBarBackgroundX, int progressBarBackgroundY,
-                int progressBarBackgroundWidth, int progressBarBackgroundHeight,
+
+        void updateToolbarLayer(
+                long nativeTopToolbarSceneLayer,
+                TopToolbarSceneLayer caller,
+                ResourceManager resourceManager,
+                int resourceId,
+                int toolbarBackgroundColor,
+                int urlBarResourceId,
+                int urlBarColor,
+                float xOffset,
+                float contentOffset,
+                boolean showShadow,
+                boolean visible,
+                boolean anonymize);
+
+        void updateProgressBar(
+                long nativeTopToolbarSceneLayer,
+                TopToolbarSceneLayer caller,
+                int progressBarX,
+                int progressBarY,
+                int progressBarWidth,
+                int progressBarHeight,
+                int progressBarColor,
+                int progressBarBackgroundX,
+                int progressBarBackgroundY,
+                int progressBarBackgroundWidth,
+                int progressBarBackgroundHeight,
                 int progressBarBackgroundColor);
     }
 }

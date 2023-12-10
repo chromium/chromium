@@ -276,7 +276,7 @@ chrome.accessibilityPrivate.AcceleratorAction = {
 chrome.accessibilityPrivate.AccessibilityFeature = {
   GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
-  GAME_FACE_INTEGRATION: 'gameFaceIntegration',
+  FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
 };
 
@@ -376,6 +376,7 @@ chrome.accessibilityPrivate.DlcType = {
   TTS_NL_NL: 'ttsNlNl',
   TTS_PL_PL: 'ttsPlPl',
   TTS_PT_BR: 'ttsPtBr',
+  TTS_PT_PT: 'ttsPtPt',
   TTS_SI_LK: 'ttsSiLk',
   TTS_SK_SK: 'ttsSkSk',
   TTS_SV_SE: 'ttsSvSe',
@@ -384,6 +385,14 @@ chrome.accessibilityPrivate.DlcType = {
   TTS_UK_UA: 'ttsUkUa',
   TTS_VI_VN: 'ttsViVn',
   TTS_YUE_HK: 'ttsYueHk',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.TtsVariant = {
+  LITE: 'lite',
+  STANDARD: 'standard',
 };
 
 /**
@@ -531,6 +540,13 @@ chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewrit
 chrome.accessibilityPrivate.enableMouseEvents = function(enabled) {};
 
 /**
+ * Sets the cursor position on the screen in absolute screen coordinates.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} point The screen point at
+ *     which to put the cursor.
+ */
+chrome.accessibilityPrivate.setCursorPosition = function(point) {};
+
+/**
  * Sends a fabricated mouse event.
  * @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} mouseEvent The
  *     event to send.
@@ -664,6 +680,24 @@ chrome.accessibilityPrivate.silenceSpokenFeedback = function() {};
  *     contents are returned.
  */
 chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
+
+/**
+ * Returns the contents of a TTS DLC.
+ * @param {!chrome.accessibilityPrivate.DlcType} dlc The DLC of interest.
+ * @param {!chrome.accessibilityPrivate.TtsVariant} variant The TTS voice
+ *     variant.
+ * @param {function(ArrayBuffer): void} callback A callback that is run when the
+ *     contents are returned.
+ */
+chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback) {};
+
+/**
+ * Returns the bounds of the displays in density-independent pixels in screen
+ * coordinates.
+ * @param {function(!Array<!chrome.accessibilityPrivate.ScreenRect>): void}
+ *     callback A callback that is run when the result is returned.
+ */
+chrome.accessibilityPrivate.getDisplayBounds = function(callback) {};
 
 /**
  * Gets whether new browser windows and tabs should be in Lacros browser.

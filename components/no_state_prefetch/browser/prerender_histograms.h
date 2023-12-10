@@ -59,12 +59,8 @@ class PrerenderHistograms {
   // To be called when a new prerender is started.
   void RecordPrerenderStarted(Origin origin) const;
 
-  // Record the histogram for number of bytes consumed by the prerender, and the
-  // total number of bytes fetched for this profile since the last call to
-  // RecordBytes.
-  void RecordNetworkBytesConsumed(Origin origin,
-                                  int64_t prerender_bytes,
-                                  int64_t profile_bytes) const;
+  // Record the histogram for number of bytes consumed by the prerender.
+  void RecordNetworkBytesConsumed(Origin origin, int64_t prerender_bytes) const;
 
   // Records the time to first contentful paint with respect to a possible
   // prefetch of the page. The time to first contentful paint with respect to

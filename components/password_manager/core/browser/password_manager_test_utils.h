@@ -9,14 +9,14 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -151,7 +151,7 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
               OnReuseCheckDone,
               (bool,
                size_t,
-               absl::optional<PasswordHashData>,
+               std::optional<PasswordHashData>,
                const std::vector<MatchingReusedCredential>&,
                int,
                const std::string&,
@@ -161,9 +161,9 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
 
 // Matcher class used to compare PasswordHashData in tests.
 class PasswordHashDataMatcher
-    : public ::testing::MatcherInterface<absl::optional<PasswordHashData>> {
+    : public ::testing::MatcherInterface<std::optional<PasswordHashData>> {
  public:
-  explicit PasswordHashDataMatcher(absl::optional<PasswordHashData> expected);
+  explicit PasswordHashDataMatcher(std::optional<PasswordHashData> expected);
 
   PasswordHashDataMatcher(const PasswordHashDataMatcher&) = delete;
   PasswordHashDataMatcher& operator=(const PasswordHashDataMatcher&) = delete;
@@ -171,17 +171,17 @@ class PasswordHashDataMatcher
   ~PasswordHashDataMatcher() override;
 
   // ::testing::MatcherInterface overrides
-  bool MatchAndExplain(absl::optional<PasswordHashData> hash_data,
+  bool MatchAndExplain(std::optional<PasswordHashData> hash_data,
                        ::testing::MatchResultListener* listener) const override;
   void DescribeTo(::std::ostream* os) const override;
   void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
-  const absl::optional<PasswordHashData> expected_;
+  const std::optional<PasswordHashData> expected_;
 };
 
-::testing::Matcher<absl::optional<PasswordHashData>> Matches(
-    absl::optional<PasswordHashData> expected);
+::testing::Matcher<std::optional<PasswordHashData>> Matches(
+    std::optional<PasswordHashData> expected);
 
 }  // namespace password_manager
 

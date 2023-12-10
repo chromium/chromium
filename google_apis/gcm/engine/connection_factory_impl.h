@@ -96,8 +96,8 @@ class GCM_EXPORT ConnectionFactoryImpl
 
   // Callback for Socket connection completion. This is public for testing.
   void OnConnectDone(int result,
-                     const absl::optional<net::IPEndPoint>& local_addr,
-                     const absl::optional<net::IPEndPoint>& peer_addr,
+                     const std::optional<net::IPEndPoint>& local_addr,
+                     const std::optional<net::IPEndPoint>& peer_addr,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream);
 

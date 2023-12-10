@@ -108,4 +108,7 @@ extern const char kSafetyCheckMetricsSafeBrowsing[];
 // Name of the histogram used for recording safety check interactions.
 extern const char kSafetyCheckInteractions[];
 
+// Accessibility identifier for the Check Now button in the Safety Check module.
+extern NSString* const kSafetyCheckCheckNowButtonAccessibilityID;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_CONSTANTS_H_

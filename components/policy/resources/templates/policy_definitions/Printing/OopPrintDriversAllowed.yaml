@@ -1,0 +1,30 @@
+caption: Out-of-process print drivers allowed
+default: true
+desc: |-
+  Controls if <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> interacts with printer drivers from a separate service process. Platform printing calls to query available printers, get print driver settings, and submit documents for printing to local printers are made from a service process. Moving such calls out of the browser process helps improve stability and reduce frozen UI behavior in Print Preview.
+
+  When this policy is set to Enabled or not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use a separate service process for platform printing tasks.
+
+  When this policy is set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use the browser process for platform printing tasks.
+
+  This policy will be removed in the future, after the out-of-process print drivers feature has fully rolled out.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+future_on:
+- chrome_os
+items:
+- caption: Platform printing uses service process.
+  value: true
+- caption: Platform printing from browser process.
+  value: false
+owners:
+- awscreen@chromium.org
+- file://printing/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:120-
+tags: []
+type: main

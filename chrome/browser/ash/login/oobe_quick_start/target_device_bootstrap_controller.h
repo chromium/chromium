@@ -55,19 +55,26 @@ class TargetDeviceBootstrapController
     USER_VERIFICATION_FAILED,
     GAIA_ASSERTION_NOT_RECEIVED,
     FETCHING_CHALLENGE_BYTES_FAILED,
+    FETCHING_ATTESTATION_CERTIFICATE_FAILED,
+    FETCHING_REFRESH_TOKEN_FAILED,
   };
 
-  using Payload = absl::
-      variant<absl::monostate, ErrorCode, QRCode::PixelData, FidoAssertionInfo>;
+  using ConnectionClosedReason =
+      TargetDeviceConnectionBroker::ConnectionClosedReason;
+  using Pin = std::string;
 
-  // TODO(b/288054370) - Consolidate fields.
+  using Payload = absl::variant<absl::monostate,
+                                ErrorCode,
+                                QRCode::PixelData,
+                                Pin,
+                                mojom::WifiCredentials,
+                                FidoAssertionInfo>;
+
   struct Status {
     Status();
     ~Status();
     Step step = Step::NONE;
     Payload payload;
-    mojom::WifiCredentials wifi_credentials;
-    std::string pin;
   };
 
   class AccessibilityManagerWrapper {
@@ -124,7 +131,7 @@ class TargetDeviceBootstrapController
   void StartAdvertisingAndMaybeGetQRCode();
 
   void StopAdvertising();
-  void CloseOpenConnections();
+  void CloseOpenConnections(ConnectionClosedReason reason);
 
   // A user may initiate Quick Start then have to download an update and reboot.
   // This function persists necessary data and notifies the source device so
@@ -158,12 +165,13 @@ class TargetDeviceBootstrapController
  private:
   friend class TargetDeviceBootstrapControllerTest;
 
+  void UpdateStatus(Step step, Payload payload);
   void NotifyObservers();
   void OnStartAdvertisingResult(bool success);
   void OnStopAdvertising();
 
   void WaitForUserVerification();
-  void OnUserVerificationResult(absl::optional<mojom::UserVerificationResponse>
+  void OnUserVerificationResult(std::optional<mojom::UserVerificationResponse>
                                     user_verification_response);
 
   // If the target device successfully receives an ack message, it prepares to
@@ -173,15 +181,21 @@ class TargetDeviceBootstrapController
   void OnNotifySourceOfUpdateResponse(bool ack_successful);
 
   void OnWifiCredentialsReceived(
-      absl::optional<mojom::WifiCredentials> credentials);
-  void OnGoogleAccountInfoReceived();
-  void OnFidoAssertionReceived(absl::optional<FidoAssertionInfo> assertion);
+      std::optional<mojom::WifiCredentials> credentials);
+  void OnGoogleAccountInfoReceived(std::string account_email);
+  void OnFidoAssertionReceived(std::optional<FidoAssertionInfo> assertion);
 
   void OnChallengeBytesReceived(
       quick_start::SecondDeviceAuthBroker::ChallengeBytesOrError);
 
   // If we're not advertising, connecting, or connected, perform cleanup.
   void CleanupIfNeeded();
+
+  void OnAttestationCertificateReceived(
+      quick_start::SecondDeviceAuthBroker::AttestationCertificateOrError);
+
+  void OnAuthCodeReceived(
+      const quick_start::SecondDeviceAuthBroker::AuthCodeResponse&);
 
   void set_connection_broker_for_testing(
       std::unique_ptr<TargetDeviceConnectionBroker> connection_broker) {
@@ -190,7 +204,6 @@ class TargetDeviceBootstrapController
 
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
-  std::string pin_;
   // TODO: Should we enforce one observer at a time here too?
   base::ObserverList<Observer> observers_;
 
@@ -201,6 +214,7 @@ class TargetDeviceBootstrapController
 
   // Challenge bytes to be sent to the Android device for the FIDO assertion.
   Base64UrlString challenge_bytes_;
+  FidoAssertionInfo fido_assertion_;
 
   std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
   // During this instantiation of SessionContext, if resuming Quick Start after

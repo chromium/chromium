@@ -28,13 +28,14 @@ const CGFloat kIconContainerCornerRadius = 12.0f;
 // Icon container size.
 const CGFloat kIconContainerWidth = 72.0f;
 
-// Margin between icon and its container.
-const CGFloat kIconContainerMargin = 8.0f;
+// Margin between icon and its container when using the default image.
+const CGFloat kIconContainerMargin = 18.0f;
 
-#if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+// Margin between icon and its container when using the carrier's logo.
+const CGFloat kIconContainerMarginForCarrierLogo = 8.0f;
+
 // Size of the icon.
 const CGFloat kIconSize = 53.0f;
-#endif
 
 // Spacing between text StackView subviews.
 const CGFloat kTextStackViewSpacing = 5.0f;
@@ -46,6 +47,7 @@ const CGFloat kStatusBarViewSpacing = 6.0f;
 const CGFloat kStatusBarWidth = 61.0f;
 const CGFloat kStatusBarHeight = 6.0f;
 const CGFloat kStatusBarCornerRadius = 3.0f;
+const CGFloat kStatusBarMarginFromBottom = 5.0f;
 
 }  // namespace
 
@@ -102,6 +104,7 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   UILabel* _titleLabel;
   UILabel* _subtitleLabel;
   UITapGestureRecognizer* _tapGestureRecognizer;
+  BOOL _useCarrierLogo;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -116,6 +119,7 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
 - (void)configureView:(ParcelTrackingItem*)config {
   _parcelTrackingURL = config.trackingURL;
   _iconImageView.image = [self iconImageForParcelType:config.parcelType];
+  _imageContainer.layer.borderWidth = [self iconBorderWidth];
 
   NSString* carrierName;
   switch (config.parcelType) {
@@ -151,11 +155,12 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       self.traitCollection.userInterfaceStyle) {
     _imageContainer.layer.borderColor =
         [UIColor colorNamed:kGrey200Color].CGColor;
+    _imageContainer.layer.borderWidth = [self iconBorderWidth];
   }
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     _titleLabel.font =
-        CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
   }
 }
 
@@ -163,9 +168,9 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.isAccessibilityElement = NO;
   _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.numberOfLines = 2;
+  _titleLabel.numberOfLines = 0;
   _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _titleLabel.textColor = [UIColor colorNamed:kGreen600Color];
   [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultLow
@@ -213,14 +218,15 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   _imageContainer = [[UIView alloc] init];
   _imageContainer.layer.cornerRadius = kIconContainerCornerRadius;
   _imageContainer.layer.masksToBounds = YES;
-  _imageContainer.layer.borderWidth = 1;
   _imageContainer.layer.borderColor =
       [UIColor colorNamed:kGrey200Color].CGColor;
   [_imageContainer addSubview:_iconImageView];
+  CGFloat containerMargin = _useCarrierLogo ? kIconContainerMarginForCarrierLogo
+                                            : kIconContainerMargin;
   AddSameConstraintsWithInsets(
       _iconImageView, _imageContainer,
-      NSDirectionalEdgeInsetsMake(kIconContainerMargin, kIconContainerMargin,
-                                  kIconContainerMargin, kIconContainerMargin));
+      NSDirectionalEdgeInsetsMake(containerMargin, containerMargin,
+                                  containerMargin, containerMargin));
 
   UIStackView* horizontalStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ _imageContainer, rightVerticalStackView ]];
@@ -234,8 +240,11 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
     [_imageContainer.widthAnchor constraintEqualToConstant:kIconContainerWidth],
     [_imageContainer.heightAnchor
         constraintEqualToAnchor:_imageContainer.widthAnchor],
-    [rightVerticalStackView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kIconContainerWidth],
+    [rightVerticalStackView.bottomAnchor
+        constraintEqualToAnchor:_imageContainer.bottomAnchor
+                       constant:-kStatusBarMarginFromBottom],
+    [rightVerticalStackView.topAnchor
+        constraintLessThanOrEqualToAnchor:_imageContainer.topAnchor],
     [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
     [horizontalStackView.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor],
@@ -255,6 +264,7 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
 // Returns the appropriate icon image for a `parcelType`.
 - (UIImage*)iconImageForParcelType:(ParcelType)parcelType {
 #if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  _useCarrierLogo = NO;
   if (@available(iOS 16.0, *)) {
     return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
   } else {
@@ -262,14 +272,19 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   }
 #else
   switch (parcelType) {
-    case ParcelType::kUSPS:
-      return [UIImage imageNamed:kUSPSCarrierImage];
     case ParcelType::kUPS:
+      _useCarrierLogo = YES;
       return [UIImage imageNamed:kUPSCarrierImage];
     case ParcelType::kFedex:
+      _useCarrierLogo = YES;
       return [UIImage imageNamed:kFedexCarrierImage];
     default:
-      return nil;
+      _useCarrierLogo = NO;
+      if (@available(iOS 16.0, *)) {
+        return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
+      } else {
+        return DefaultSymbolWithPointSize(kShippingBoxFillSymbol, kIconSize);
+      }
   }
 #endif
 }
@@ -281,6 +296,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   NSString* dateString =
       base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
           estimatedDeliveryTime, "EEEE MMMM d"));
+  NSString* imageColorName;
+  NSString* imageContainerColorName;
 
   // Configure the status bars (and title text color if needed) depending on
   // status.
@@ -291,6 +308,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:YES];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      imageColorName = kGreen300Color;
+      imageContainerColorName = kGreen50Color;
       break;
     case ParcelState::kLabelCreated:
       _titleLabel.text = l10n_util::GetNSString(
@@ -298,6 +317,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:YES];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      imageColorName = kGreen300Color;
+      imageContainerColorName = kGreen50Color;
       break;
     case ParcelState::kFinished: {
       // Use Today date descriptor if the delivery day matches the current day
@@ -315,6 +336,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:NO];
+      imageColorName = kGreen300Color;
+      imageContainerColorName = kGreen50Color;
       break;
     }
     case ParcelState::kAtPickupLocation:
@@ -323,6 +346,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:NO];
+      imageColorName = kGreen300Color;
+      imageContainerColorName = kGreen50Color;
       break;
     case ParcelState::kPickedUp:
     case ParcelState::kHandedOff:
@@ -333,6 +358,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      imageColorName = kGreen300Color;
+      imageContainerColorName = kGreen50Color;
       break;
     case ParcelState::kOutForDelivery:
       _titleLabel.text = l10n_util::GetNSStringF(
@@ -342,6 +369,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
+      imageColorName = kGreen300Color;
+      imageContainerColorName = kGreen50Color;
       break;
     case ParcelState::kDeliveryFailed:
       _titleLabel.text = l10n_util::GetNSString(
@@ -350,6 +379,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:YES lighterTone:NO];
       [_secondStatusBar configureAsError:YES lighterTone:NO];
       [_thirdStatusBar configureAsError:YES lighterTone:YES];
+      imageColorName = kRed300Color;
+      imageContainerColorName = kRed50Color;
       break;
     case ParcelState::kError:
       _titleLabel.text = l10n_util::GetNSString(
@@ -358,6 +389,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar configureAsError:YES lighterTone:NO];
       [_secondStatusBar configureAsError:YES lighterTone:NO];
       [_thirdStatusBar configureAsError:YES lighterTone:YES];
+      imageColorName = kRed300Color;
+      imageContainerColorName = kRed50Color;
       break;
     case ParcelState::kCancelled:
       _titleLabel.text = l10n_util::GetNSString(
@@ -367,6 +400,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar removeFromSuperview];
       [_secondStatusBar removeFromSuperview];
       [_thirdStatusBar removeFromSuperview];
+      imageColorName = kGrey400Color;
+      imageContainerColorName = kGrey100Color;
       break;
     case ParcelState::kUndeliverable:
       _titleLabel.text = l10n_util::GetNSString(
@@ -376,6 +411,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar removeFromSuperview];
       [_secondStatusBar removeFromSuperview];
       [_thirdStatusBar removeFromSuperview];
+      imageColorName = kGrey400Color;
+      imageContainerColorName = kGrey100Color;
       break;
     case ParcelState::kReturnToSender:
     case ParcelState::kReturnCompleted:
@@ -386,9 +423,17 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       [_firstStatusBar removeFromSuperview];
       [_secondStatusBar removeFromSuperview];
       [_thirdStatusBar removeFromSuperview];
+      imageColorName = kGrey400Color;
+      imageContainerColorName = kGrey100Color;
       break;
     default:
       break;
+  }
+
+  if (!_useCarrierLogo) {
+    _imageContainer.backgroundColor =
+        [UIColor colorNamed:imageContainerColorName];
+    _iconImageView.tintColor = [UIColor colorNamed:imageColorName];
   }
 }
 
@@ -396,6 +441,15 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   if (sender.state == UIGestureRecognizerStateEnded) {
     [self.delegate loadParcelTrackingPage:_parcelTrackingURL];
   }
+}
+
+// Returns the icon container's border width.
+- (CGFloat)iconBorderWidth {
+  if (!_useCarrierLogo &&
+      self.traitCollection.userInterfaceStyle != UIUserInterfaceStyleDark) {
+    return 0;
+  }
+  return 1;
 }
 
 @end

@@ -87,4 +87,4 @@ void RecordConfigParsingEvent(ConfigParsingEvent event);
 
 }  // namespace feature_engagement::stats
 
-#endif  // COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_STATS_H_
+#endif  // COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_STATS_H_

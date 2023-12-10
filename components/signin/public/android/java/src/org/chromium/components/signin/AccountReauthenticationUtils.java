@@ -17,15 +17,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * ReauthenticationUtils contains static util methods for account reauthentication.
- */
+/** ReauthenticationUtils contains static util methods for account reauthentication. */
 public class AccountReauthenticationUtils {
     public AccountReauthenticationUtils() {}
 
-    @IntDef({RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION,
-            RecentAuthenticationResult.NO_RECENT_AUTHENTICATION,
-            RecentAuthenticationResult.RECENT_AUTHENTICATION_ERROR})
+    @IntDef({
+        RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION,
+        RecentAuthenticationResult.NO_RECENT_AUTHENTICATION,
+        RecentAuthenticationResult.RECENT_AUTHENTICATION_ERROR
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RecentAuthenticationResult {
         int HAS_RECENT_AUTHENTICATION = 0;
@@ -80,25 +80,30 @@ public class AccountReauthenticationUtils {
      * @param recentTimeWindowMillis The time window in milliseconds for which a previous
      *         successful authentication can be considered recent.
      */
-    public void confirmRecentAuthentication(AccountManagerFacade accountManagerFacade,
-            Account account, @RecentAuthenticationResult Callback<Integer> callback,
+    public void confirmRecentAuthentication(
+            AccountManagerFacade accountManagerFacade,
+            Account account,
+            @RecentAuthenticationResult Callback<Integer> callback,
             long recentTimeWindowMillis) {
-        accountManagerFacade.confirmCredentials(account, null, (response) -> {
-            if (response == null) {
-                callback.onResult(RecentAuthenticationResult.RECENT_AUTHENTICATION_ERROR);
-                return;
-            }
-            if (response.containsKey(AccountManager.KEY_LAST_AUTHENTICATED_TIME)) {
-                Long latestCredentialAuthentication =
-                        response.getLong(AccountManager.KEY_LAST_AUTHENTICATED_TIME);
-                if (TimeUtils.currentTimeMillis()
-                        <= latestCredentialAuthentication + recentTimeWindowMillis) {
-                    callback.onResult(RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION);
-                    return;
-                }
-            }
-            callback.onResult(RecentAuthenticationResult.NO_RECENT_AUTHENTICATION);
-        });
+        accountManagerFacade.confirmCredentials(
+                account,
+                null,
+                (response) -> {
+                    if (response == null) {
+                        callback.onResult(RecentAuthenticationResult.RECENT_AUTHENTICATION_ERROR);
+                        return;
+                    }
+                    if (response.containsKey(AccountManager.KEY_LAST_AUTHENTICATED_TIME)) {
+                        Long latestCredentialAuthentication =
+                                response.getLong(AccountManager.KEY_LAST_AUTHENTICATED_TIME);
+                        if (TimeUtils.currentTimeMillis()
+                                <= latestCredentialAuthentication + recentTimeWindowMillis) {
+                            callback.onResult(RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION);
+                            return;
+                        }
+                    }
+                    callback.onResult(RecentAuthenticationResult.NO_RECENT_AUTHENTICATION);
+                });
     }
 
     /**
@@ -115,8 +120,11 @@ public class AccountReauthenticationUtils {
      * @param recentTimeWindowMillis The time window in milliseconds for which a previous
      *         successful authentication can be considered recent.
      */
-    public void confirmCredentialsOrRecentAuthentication(AccountManagerFacade accountManagerFacade,
-            Account account, Activity activity, @ConfirmationResult Callback<Integer> callback,
+    public void confirmCredentialsOrRecentAuthentication(
+            AccountManagerFacade accountManagerFacade,
+            Account account,
+            Activity activity,
+            @ConfirmationResult Callback<Integer> callback,
             long recentTimeWindowMillis) {
         logAccountReauthenticationEvent(AccountReauthenticationEvent.STARTED);
         confirmRecentAuthentication(

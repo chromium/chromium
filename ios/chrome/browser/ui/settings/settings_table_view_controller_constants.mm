@@ -63,8 +63,11 @@ NSString* const kSettingsIncognitoInterstitialId =
 NSString* const kSettingsIncognitoInterstitialDisabledId =
     @"kSettingsIncognitoInterstitialDisabledId";
 NSString* const kSettingsNotificationsId = @"kSettingsNotificationsId";
+NSString* const kSettingsWaitButtonId = @"kSettingsWaitButtonId";
 NSString* const kSettingsTabsCellId = @"kSettingsTabsCellId";
 NSString* const kSettingsMoveInactiveTabsCellId =
     @"kSettingsMoveInactiveTabsCellId";
 NSString* const kSettingsTabPickupCellId = @"kSettingsTabPickupCellId";
 NSString* const kSettingsPrivacyGuideCellId = @"kSettingsPrivacyGuideCellId";
+NSString* const kSettingsDetectUnitsCellId = @"kSettingsDetectUnitsCellId";
+NSString* const kSettingsSafetyCheckCellId = @"SettingsSafetyCheckCellId";

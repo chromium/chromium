@@ -6,9 +6,7 @@ package org.chromium.components.content_capture;
 
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
-/**
- * The task to remove the captured content from the platform.
- */
+/** The task to remove the captured content from the platform. */
 class ContentRemovedTask extends NotificationTask {
     private final long[] mRemovedIds;
 
@@ -27,8 +25,10 @@ class ContentRemovedTask extends NotificationTask {
         log("ContentRemovedTask.removeContent");
         PlatformSessionData platformSessionData = buildCurrentSession();
         if (platformSessionData == null) return;
-        PlatformAPIWrapper.getInstance().notifyViewsDisappeared(
-                platformSessionData.contentCaptureSession,
-                mPlatformSession.getRootPlatformSessionData().autofillId, mRemovedIds);
+        PlatformAPIWrapper.getInstance()
+                .notifyViewsDisappeared(
+                        platformSessionData.contentCaptureSession,
+                        mPlatformSession.getRootPlatformSessionData().autofillId,
+                        mRemovedIds);
     }
 }

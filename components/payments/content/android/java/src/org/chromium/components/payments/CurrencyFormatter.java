@@ -17,9 +17,7 @@ import java.util.Locale;
  */
 @JNINamespace("payments")
 public class CurrencyFormatter {
-    /**
-     * Pointer to the native implementation.
-     */
+    /** Pointer to the native implementation. */
     private long mCurrencyFormatterAndroid;
 
     /**
@@ -36,8 +34,10 @@ public class CurrencyFormatter {
 
         // Note that this pointer could leak the native object. The called must call destroy() to
         // ensure that the native object is destroyed.
-        mCurrencyFormatterAndroid = CurrencyFormatterJni.get().initCurrencyFormatterAndroid(
-                CurrencyFormatter.this, currencyCode, userLocale.toString());
+        mCurrencyFormatterAndroid =
+                CurrencyFormatterJni.get()
+                        .initCurrencyFormatterAndroid(
+                                CurrencyFormatter.this, currencyCode, userLocale.toString());
     }
 
     /** Will destroy the native object. This class shouldn't be used afterwards. */
@@ -53,14 +53,14 @@ public class CurrencyFormatter {
      * @param maxFractionalDigits maximum number of fractional digits
      */
     public void setMaximumFractionalDigits(int maxFractionalDigits) {
-        CurrencyFormatterJni.get().setMaxFractionalDigits(
-                mCurrencyFormatterAndroid, maxFractionalDigits);
+        CurrencyFormatterJni.get()
+                .setMaxFractionalDigits(mCurrencyFormatterAndroid, maxFractionalDigits);
     }
 
     /** @return The currency code formatted for display. */
     public String getFormattedCurrencyCode() {
-        return CurrencyFormatterJni.get().getFormattedCurrencyCode(
-                mCurrencyFormatterAndroid, CurrencyFormatter.this);
+        return CurrencyFormatterJni.get()
+                .getFormattedCurrencyCode(mCurrencyFormatterAndroid, CurrencyFormatter.this);
     }
 
     /**
@@ -76,8 +76,8 @@ public class CurrencyFormatter {
     public String format(String amountValue) {
         assert amountValue != null : "amountValue should not be null";
 
-        return CurrencyFormatterJni.get().format(
-                mCurrencyFormatterAndroid, CurrencyFormatter.this, amountValue);
+        return CurrencyFormatterJni.get()
+                .format(mCurrencyFormatterAndroid, CurrencyFormatter.this, amountValue);
     }
 
     @NativeMethods
@@ -85,10 +85,14 @@ public class CurrencyFormatter {
     public interface Natives {
         long initCurrencyFormatterAndroid(
                 CurrencyFormatter caller, String currencyCode, String localeName);
+
         void destroy(long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);
+
         String format(
                 long nativeCurrencyFormatterAndroid, CurrencyFormatter caller, String amountValue);
+
         void setMaxFractionalDigits(long nativeCurrencyFormatterAndroid, int maxFractionalDigits);
+
         String getFormattedCurrencyCode(
                 long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);
     }

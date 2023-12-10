@@ -63,9 +63,9 @@ bool HTMLOutputElement::MatchesEnabledPseudoClass() const {
   return false;
 }
 
-bool HTMLOutputElement::SupportsFocus() const {
+bool HTMLOutputElement::SupportsFocus(UpdateBehavior update_behavior) const {
   // Skip over HTMLFormControl element, which always supports focus.
-  return HTMLElement::SupportsFocus();
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 void HTMLOutputElement::ParseAttribute(

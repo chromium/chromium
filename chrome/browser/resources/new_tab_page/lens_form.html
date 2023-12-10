@@ -26,4 +26,8 @@
     <input name="re" value="[[renderingEnvironment_]]"></input>
     <input name="s" value="[[chromiumSurface_]]"></input>
   </form>
+  <!-- Hit a simple gen204 on Lens' servers to prewarm DNS lookup and thus
+       decrease latency. -->
+  <iframe src="https://lens.google.com/gen204" style="display:none;" alt="">
+  </iframe>
 </div>

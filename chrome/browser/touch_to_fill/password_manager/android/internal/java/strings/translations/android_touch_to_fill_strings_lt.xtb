@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lt">
+<translation id="1220509181886849806">Naudoti išsaugotą slaptažodį?</translation>
+<translation id="1435940442311036198">Naudoti slaptažodį kitame įrenginyje</translation>
+<translation id="1717486229951421299">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas atidarytas per pusę ekrano aukščio.</translation>
+<translation id="2359808026110333948">Tęskite</translation>
+<translation id="2364266287022099258">Naudoti išsaugotą „passkey"?</translation>
+<translation id="3399357656427473483">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas.</translation>
+<translation id="3653689374478248324">Prisijungsite prie svetainės <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Prisijungti</translation>
+<translation id="4553044860350038560">Daugiau prieigos raktų</translation>
+<translation id="4598345735110653698">Tvarkyti slaptažodžius</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> slaptažodis</translation>
+<translation id="4907224763885298217">Naudokite ekrano užraktą</translation>
+<translation id="5012523644916800014">Tvarkyti slaptažodžius ir „passkey“</translation>
+<translation id="5441504010984421144">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas atidarytas per visą ekrano aukštį.</translation>
+<translation id="5591247451101092906">Naudoti išsaugotą slaptažodį arba „passkey“?</translation>
+<translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> prieigos raktas, naudokite ekrano užraktą.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Naujas šios svetainės slaptažodis}one{Nauji šios svetainės slaptažodžiai}few{Nauji šios svetainės slaptažodžiai}many{Nauji šios svetainės slaptažodžiai}other{Nauji šios svetainės slaptažodžiai}}</translation>
+<translation id="7286867818472074330">Pasirinkti prieigos raktą</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> iš <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Gavote <ph name="SITE_NAME" /> slaptažodžius</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> bendrino su jumis <ph name="SITE_NAME" /> slaptažodį</translation>
+<translation id="8891372124884726271">Prisijungimo duomenų sąrašas uždarytas.</translation>
+</translationbundle>

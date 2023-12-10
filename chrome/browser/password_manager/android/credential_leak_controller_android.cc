@@ -24,14 +24,16 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     const std::u16string& username,
     ui::WindowAndroid* window_android,
     std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher,
-    std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder)
+    std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder,
+    std::string account_email)
     : leak_type_(leak_type),
       origin_(origin),
       username_(username),
       window_android_(window_android),
       leak_dialog_traits_(CreateDialogTraits(leak_type)),
       checkup_launcher_(std::move(checkup_launcher)),
-      metrics_recorder_(std::move(metrics_recorder)) {}
+      metrics_recorder_(std::move(metrics_recorder)),
+      account_email_(account_email) {}
 
 CredentialLeakControllerAndroid::~CredentialLeakControllerAndroid() = default;
 
@@ -70,8 +72,9 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       break;
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
-      checkup_launcher_->LaunchLocalCheckup(
-          env, window_android_, PasswordCheckReferrerAndroid::kLeakDialog);
+      checkup_launcher_->LaunchCheckupOnDevice(
+          env, window_android_, PasswordCheckReferrerAndroid::kLeakDialog,
+          account_email_);
       break;
   }
 

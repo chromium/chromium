@@ -783,9 +783,6 @@ class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {
     CHECK(profile());
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the capture mode folder selection dialog window gets parented
@@ -915,13 +912,25 @@ IN_PROC_BROWSER_TEST_F(CaptureModeProjectorBrowserTests,
 }
 
 class CaptureModeVideoConferenceBrowserTests
-    : public CaptureModeCameraBrowserTests {
+    : public testing::WithParamInterface<bool>,
+      public CaptureModeCameraBrowserTests {
  public:
-  CaptureModeVideoConferenceBrowserTests() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kVideoConference,
-                              ash::features::kCameraEffectsSupportedByHardware},
-        /*disabled_features=*/{});
+  CaptureModeVideoConferenceBrowserTests()
+      : is_share_screen_icon_enabled_(GetParam()) {
+    if (is_share_screen_icon_enabled_) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kVideoConference,
+                                ash::features::kVcStopAllScreenShare,
+                                ash::features::
+                                    kCameraEffectsSupportedByHardware},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kVideoConference,
+                                ash::features::
+                                    kCameraEffectsSupportedByHardware},
+          /*disabled_features=*/{});
+    }
   }
   CaptureModeVideoConferenceBrowserTests(
       const CaptureModeVideoConferenceBrowserTests&) = delete;
@@ -960,11 +969,18 @@ class CaptureModeVideoConferenceBrowserTests
         ->GetAggregatedState();
   }
 
+ protected:
+  const bool is_share_screen_icon_enabled_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CaptureModeVideoConferenceBrowserTests,
+INSTANTIATE_TEST_SUITE_P(,  // Empty to simplify gtest output
+                         CaptureModeVideoConferenceBrowserTests,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CaptureModeVideoConferenceBrowserTests,
                        ManagerGetsUpdated) {
   // Test the initial state.
   ash::VideoConferenceMediaState state =
@@ -995,7 +1011,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeVideoConferenceBrowserTests,
   EXPECT_TRUE(video_conference_tray()->GetVisible());
   EXPECT_TRUE(vc_tray_audio_icon()->GetVisible());
   EXPECT_TRUE(vc_tray_camera_icon()->GetVisible());
-  EXPECT_FALSE(vc_tray_screen_share_icon()->GetVisible());
+  EXPECT_TRUE(!is_share_screen_icon_enabled_ ||
+              !vc_tray_screen_share_icon()->GetVisible());
 
   // Stop recording and expect the state to return back to the initial state,
   // and the VC tray buttons should be hidden.
@@ -1015,5 +1032,6 @@ IN_PROC_BROWSER_TEST_F(CaptureModeVideoConferenceBrowserTests,
   EXPECT_FALSE(video_conference_tray()->GetVisible());
   EXPECT_FALSE(vc_tray_audio_icon()->GetVisible());
   EXPECT_FALSE(vc_tray_camera_icon()->GetVisible());
-  EXPECT_FALSE(vc_tray_screen_share_icon()->GetVisible());
+  EXPECT_TRUE(!is_share_screen_icon_enabled_ ||
+              !vc_tray_screen_share_icon()->GetVisible());
 }

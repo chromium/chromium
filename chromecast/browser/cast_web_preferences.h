@@ -5,8 +5,8 @@
 #ifndef CHROMECAST_BROWSER_CAST_WEB_PREFERENCES_H_
 #define CHROMECAST_BROWSER_CAST_WEB_PREFERENCES_H_
 
+#include <optional>
 #include "base/supports_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
 namespace chromecast {
@@ -18,10 +18,10 @@ class CastWebPreferences : public base::SupportsUserData::Data {
   struct Preferences {
     Preferences();
 
-    absl::optional<blink::mojom::AutoplayPolicy> autoplay_policy;
-    absl::optional<bool> hide_scrollbars;
-    absl::optional<bool> javascript_enabled;
-    absl::optional<bool> supports_multiple_windows;
+    std::optional<blink::mojom::AutoplayPolicy> autoplay_policy;
+    std::optional<bool> hide_scrollbars;
+    std::optional<bool> javascript_enabled;
+    std::optional<bool> supports_multiple_windows;
   };
 
   // Unique key used to identify CastWebPreferences in WebContents' user data.

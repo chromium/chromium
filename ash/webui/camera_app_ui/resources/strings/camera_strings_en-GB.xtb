@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Delete page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Grid off</translation>
-<translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> deleted</translation>
 <translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
 <translation id="1417314334557041815">Edit page <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Processing video...</translation>
 <translation id="3789724198583203151">Rotate 90 degrees anti-clockwise</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Copy text</translation>
 <translation id="4060608699153044055">You can't record because of low device storage space. To start recording, you need to free up space on your device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pause recording</translation>
 <translation id="4121305183798804752">Document detected</translation>
 <translation id="414641094616694804">This camera cannot change resolution</translation>
 <translation id="4176463684765177261">Disabled</translation>
-<translation id="4269820728363426813">Copy link address</translation>
 <translation id="428234092390943511">Page thumbnail</translation>
 <translation id="4349714250734879769">Scale frames by Chrome</translation>
 <translation id="4383571725254449280">Print performance logs</translation>
@@ -144,7 +141,6 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="7726641833034062494">Record normal video</translation>
 <translation id="7748344063862150053">Document top-right corner</translation>
 <translation id="7933675232020478311">Moving in bottom-right direction</translation>
-<translation id="7983668134180549431">Text detected.</translation>
 <translation id="8079255378695216066">Can’t start recording</translation>
 <translation id="8120146556401698679">Pan tilt zoom</translation>
 <translation id="8131740175452115882">Confirm</translation>
@@ -163,6 +159,7 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="8870695351537079478">Unable to start recording</translation>
 <translation id="8880167521484863515">4 to 3</translation>
 <translation id="8903921497873541725">Zoom in</translation>
+<translation id="8926890870105777777">Join '<ph name="WIFINAME" />' network</translation>
 <translation id="9045010116236796332">Place all edges of the document within the frame</translation>
 <translation id="9045155556724273246">10 seconds</translation>
 <translation id="906331135292332864">Processing image…</translation>

@@ -35,6 +35,8 @@ struct VirtualAuthenticatorOptions {
   bool has_cred_blob;
   bool has_min_pin_length;
   bool has_prf;
+  bool default_backup_eligibility;
+  bool default_backup_state;
 };
 
 // Encapsulates both public (key handle) and private information associated

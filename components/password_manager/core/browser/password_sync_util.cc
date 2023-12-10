@@ -32,20 +32,14 @@ namespace password_manager {
 namespace sync_util {
 
 std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-    const syncer::SyncService* sync_service,
-    const signin::IdentityManager* identity_manager) {
-  if (!identity_manager) {
-    return std::string();
-  }
-
+    const syncer::SyncService* sync_service) {
   // Return early if sync-the-feature isn't turned on or if the user explicitly
   // disabled password sync.
   if (!IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
     return std::string();
   }
 
-  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-      .email;
+  return sync_service->GetAccountInfo().email;
 }
 
 bool IsSyncAccountEmail(const std::string& username,
@@ -100,25 +94,16 @@ bool IsSyncFeatureActiveIncludingPasswords(
          sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
-absl::optional<std::string> GetSyncingAccount(
-    const syncer::SyncService* sync_service) {
-  if (!sync_service || !IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
-    return absl::nullopt;
-  }
-  return sync_service->GetAccountInfo().email;
-}
-
-absl::optional<std::string> GetAccountForSaving(
-    const PrefService* pref_service,
+std::optional<std::string> GetAccountForSaving(
     const syncer::SyncService* sync_service) {
   if (!sync_service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (IsSyncFeatureEnabledIncludingPasswords(sync_service) ||
-      features_util::IsOptedInForAccountStorage(pref_service, sync_service)) {
+      features_util::IsOptedInForAccountStorage(sync_service)) {
     return sync_service->GetAccountInfo().email;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 password_manager::SyncState GetPasswordSyncState(

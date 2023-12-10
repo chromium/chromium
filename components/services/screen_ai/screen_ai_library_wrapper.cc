@@ -99,12 +99,10 @@ bool ScreenAILibraryWrapper::Load(const base::FilePath& library_path) {
     }
   }
 
-#if !BUILDFLAG(IS_WIN)
-  if (!LoadFunction(init_ocr_, "InitOCR") ||
+  if (!LoadFunction(init_ocr_, "InitOCRUsingCallback") ||
       !LoadFunction(perform_ocr_, "PerformOCR")) {
     return false;
   }
-#endif
 
   // Main Content Extraction functions.
   if (!LoadFunction(init_main_content_extraction_,
@@ -154,9 +152,9 @@ bool ScreenAILibraryWrapper::InitLayoutExtraction() {
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::InitOCR(const base::FilePath& models_folder) {
+bool ScreenAILibraryWrapper::InitOCR() {
   CHECK(init_ocr_);
-  return init_ocr_(models_folder.MaybeAsASCII().c_str());
+  return init_ocr_();
 }
 
 NO_SANITIZE("cfi-icall")
@@ -174,9 +172,11 @@ ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;
-  std::unique_ptr<char, decltype(free_library_allocated_char_array_)>
-      library_buffer(perform_ocr_(image, annotation_proto_length),
-                     free_library_allocated_char_array_);
+  // Memory allocated in `library_buffer` should be release only using
+  // `free_library_allocated_char_array_` function. Using unique_ptr custom
+  // deleter results in crash on Linux official build.
+  std::unique_ptr<char> library_buffer(
+      perform_ocr_(image, annotation_proto_length));
 
   if (!library_buffer) {
     return annotation_proto;
@@ -188,12 +188,7 @@ ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
     annotation_proto.reset();
   }
 
-  // TODO(crbug.com/1443341): Remove this after fixing the crash issue on Linux
-  // official.
-#if BUILDFLAG(IS_LINUX)
   free_library_allocated_char_array_(library_buffer.release());
-#endif
-
   return annotation_proto;
 }
 
@@ -206,9 +201,10 @@ ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;
-  std::unique_ptr<char, decltype(free_library_allocated_char_array_)>
-      library_buffer(extract_layout_(image, annotation_proto_length),
-                     free_library_allocated_char_array_);
+  // Memory allocated in `library_buffer` should be release only using
+  // `free_library_allocated_char_array_` function.
+  std::unique_ptr<char> library_buffer(
+      extract_layout_(image, annotation_proto_length));
 
   if (!library_buffer) {
     return annotation_proto;
@@ -220,12 +216,7 @@ ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
     annotation_proto.reset();
   }
 
-  // TODO(crbug.com/1443341): Remove this after fixing the crash issue on Linux
-  // official.
-#if BUILDFLAG(IS_LINUX)
   free_library_allocated_char_array_(library_buffer.release());
-#endif
-
   return annotation_proto;
 }
 
@@ -238,11 +229,11 @@ absl::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
   absl::optional<std::vector<int32_t>> node_ids;
 
   uint32_t nodes_count = 0;
-  std::unique_ptr<int32_t, decltype(free_library_allocated_int32_array_)>
-      library_buffer(extract_main_content_(serialized_view_hierarchy.data(),
-                                           serialized_view_hierarchy.length(),
-                                           nodes_count),
-                     free_library_allocated_int32_array_);
+  // Memory allocated in `library_buffer` should be release only using
+  // `free_library_allocated_int32_array_` function.
+  std::unique_ptr<int32_t> library_buffer(
+      extract_main_content_(serialized_view_hierarchy.data(),
+                            serialized_view_hierarchy.length(), nodes_count));
 
   if (!library_buffer) {
     return node_ids;
@@ -254,12 +245,7 @@ absl::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
            nodes_count * sizeof(int32_t));
   }
 
-  // TODO(crbug.com/1443341): Remove this after fixing the crash issue on Linux
-  // official.
-#if BUILDFLAG(IS_LINUX)
   free_library_allocated_int32_array_(library_buffer.release());
-#endif
-
   return node_ids;
 }
 

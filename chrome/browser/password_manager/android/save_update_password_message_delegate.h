@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_UPDATE_PASSWORD_MESSAGE_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -20,7 +21,6 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -61,7 +61,6 @@ class SaveUpdatePasswordMessageDelegate {
       base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
           content::WebContents*,
           PasswordEditDialog::DialogAcceptedCallback,
-          PasswordEditDialog::LegacyDialogAcceptedCallback,
           PasswordEditDialog::DialogDismissedCallback)>;
 
   SaveUpdatePasswordMessageDelegate();
@@ -108,15 +107,12 @@ class SaveUpdatePasswordMessageDelegate {
   void DisplaySaveUpdatePasswordPromptInternal(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      absl::optional<AccountInfo> account_info,
+      std::optional<AccountInfo> account_info,
       bool update_password,
       password_manager::PasswordManagerClient* password_manager_client);
   void CreateMessage(bool update_password);
   void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message,
                     bool update_password);
-  void SetupCogMenuForDialogWithDetails(
-      std::unique_ptr<messages::MessageWrapper>& message,
-      bool update_password);
   void HandleSaveMessageMenuItemClick(int item_id);
 
   // Returns the message description depending on whether the password is being
@@ -148,7 +144,6 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleDialogDismissed(bool dialogAccepted);
   void HandleSavePasswordFromDialog(const std::u16string& username,
                                     const std::u16string& password);
-  void HandleSavePasswordFromLegacyDialog(int username_index);
 
   void ClearState();
 

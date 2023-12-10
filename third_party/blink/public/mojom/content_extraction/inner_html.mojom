@@ -1,0 +1,12 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Used to obtain the inner-html of a frame. This may prune some content that
+// is generally not useful.
+interface InnerHtmlAgent {
+  // Returns the inner-html of the frame.
+  GetInnerHtml() => (string inner_html);
+};

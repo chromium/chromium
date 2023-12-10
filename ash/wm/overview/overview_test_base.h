@@ -44,9 +44,9 @@ class OverviewTestBase : public AshTestBase {
   // which are tablet mode only.
   void EnterTabletMode();
 
-  bool InOverviewSession();
+  bool InOverviewSession() const;
 
-  bool WindowsOverlapping(aura::Window* window1, aura::Window* window2);
+  bool WindowsOverlapping(aura::Window* window1, aura::Window* window2) const;
 
   // Creates a window which cannot be snapped by splitview.
   std::unique_ptr<aura::Window> CreateUnsnappableWindow(
@@ -59,13 +59,13 @@ class OverviewTestBase : public AshTestBase {
 
   SplitViewController* GetSplitViewController();
 
-  gfx::Rect GetTransformedBounds(aura::Window* window);
+  gfx::Rect GetTransformedBounds(aura::Window* window) const;
 
-  gfx::Rect GetTransformedTargetBounds(aura::Window* window);
+  gfx::Rect GetTransformedTargetBounds(aura::Window* window) const;
 
-  gfx::Rect GetTransformedBoundsInRootWindow(aura::Window* window);
+  gfx::Rect GetTransformedBoundsInRootWindow(aura::Window* window) const;
 
-  OverviewItemBase* GetDropTarget(int grid_index);
+  const OverviewItemBase* GetDropTarget(int grid_index) const;
 
   CloseButton* GetCloseButton(OverviewItemBase* item);
 
@@ -75,7 +75,7 @@ class OverviewTestBase : public AshTestBase {
 
   WindowPreviewView* GetPreviewView(OverviewItemBase* item);
 
-  gfx::Rect GetShadowBounds(OverviewItemBase* item) const;
+  gfx::Rect GetShadowBounds(const OverviewItemBase* item) const;
 
   views::Widget* GetCannotSnapWidget(OverviewItemBase* item);
 

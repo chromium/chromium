@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -12,6 +13,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -21,6 +23,7 @@
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/i18n/string_compare.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -50,6 +53,9 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -65,8 +71,8 @@
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/constants.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -77,21 +83,30 @@ namespace {
 
 // The splash screen should be removed either when this timeout passes or the
 // screensaver app is shown, whichever comes first.
-constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
+inline constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
 
 // Global DemoSession instance.
 DemoSession* g_demo_session = nullptr;
 
 // Type of demo config forced on for tests.
-absl::optional<DemoSession::DemoModeConfig> g_force_demo_config;
+std::optional<DemoSession::DemoModeConfig> g_force_demo_config;
 
 // Path relative to the path at which offline demo resources are loaded that
 // contains sample photos.
-constexpr char kPhotosPath[] = "media/photos";
+inline constexpr char kPhotosPath[] = "media/photos";
 
 // Path relative to the path at which offline demo resources are loaded that
 // contains splash screen images.
-constexpr char kSplashScreensPath[] = "media/splash_screens";
+inline constexpr char kSplashScreensPath[] = "media/splash_screens";
+
+// Demo Mode app base URL. Used for launching the demo mode app (potentially
+// with URL param).
+inline constexpr char kDemoModeAppUrl[] =
+    "chrome-untrusted://demo-mode-app/index.html";
+
+// Demo Mode app customization model URL param key. Used for passing a
+// serialized JSON model to demo mode app for customization.
+inline constexpr char kDemoModeAppModelParam[] = "model";
 
 // Returns the list of apps normally pinned by Demo Mode policy that shouldn't
 // be pinned if the device is offline.
@@ -206,6 +221,61 @@ void RecordDemoModeDimensions() {
   SYSLOG(INFO) << "Demo mode store: " << demo_mode::StoreNumber();
 }
 
+GURL GetDemoDemoAppUrl(const growth::Payload* model) {
+  GURL url(kDemoModeAppUrl);
+
+  if (!model || model->empty()) {
+    return url;
+  }
+
+  std::string payload_string;
+  if (!JSONStringValueSerializer(&payload_string).Serialize(*model) ||
+      payload_string.empty()) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kSerializingDemoModePayloadFail);
+    LOG(ERROR) << "Failed to serialize demo mode payload.";
+    return url;
+  }
+
+  return net::AppendQueryParameter(url, kDemoModeAppModelParam, payload_string);
+}
+
+void LaunchDemoSystemWebApp(const growth::Payload* model) {
+  // SystemWebAppManager won't run this callback if the profile is destroyed,
+  // so we don't need to worry about there being no active user profile
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  ash::SystemAppLaunchParams params;
+  params.url = GetDemoDemoAppUrl(model);
+  LaunchSystemWebAppAsync(profile, SystemWebAppType::DEMO_MODE, params);
+}
+
+const growth::Payload* GetDemoModeAppPayload() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto* campaign =
+      campaigns_manager->GetCampaignBySlot(growth::Slot::kDemoModeApp);
+  if (!campaign) {
+    // No campaign selected. Return early.
+    return nullptr;
+  }
+
+  auto* payload = GetPayloadBySlot(campaign, growth::Slot::kDemoModeApp);
+  return payload;
+}
+
+void TriggerLaunchDemoModeApp() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (auto* swa_manager = SystemWebAppManager::Get(profile)) {
+    auto* model = (features::IsGrowthCampaignsInDemoModeEnabled()
+                       ? GetDemoModeAppPayload()
+                       : nullptr);
+    swa_manager->on_apps_synchronized().Post(
+        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp, model));
+  }
+}
+
 }  // namespace
 
 // static
@@ -283,7 +353,7 @@ void DemoSession::SetDemoConfigForTesting(DemoModeConfig demo_config) {
 
 // static
 void DemoSession::ResetDemoConfigForTesting() {
-  g_force_demo_config = absl::nullopt;
+  g_force_demo_config = std::nullopt;
 }
 
 // static
@@ -332,7 +402,7 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
 
 // Static function to default region from VPD.
 static std::string GetDefaultRegion() {
-  const absl::optional<base::StringPiece> region_code =
+  const std::optional<base::StringPiece> region_code =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kRegionKey);
   if (region_code) {
@@ -509,7 +579,7 @@ void DemoSession::InstallDemoResources() {
 }
 
 void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
-    absl::optional<double> keyboard_brightness_percentage) {
+    std::optional<double> keyboard_brightness_percentage) {
   // Map of current keyboard brightness percentage to times needed to call
   // IncreaseKeyboardBrightness to reach max brightness level.
   const base::flat_map<int, int> kTimesToIncreaseKeyboardBrightnessToMax = {
@@ -596,9 +666,26 @@ void DemoSession::OnSessionStateChanged() {
       if (!components_) {
         components_ = std::make_unique<DemoComponents>(GetDemoConfig());
       }
-      components_->LoadAppComponent(
-          base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
-                         weak_ptr_factory_.GetWeakPtr()));
+      if (features::IsGrowthCampaignsInDemoModeEnabled()) {
+        auto* campaigns_manager = growth::CampaignsManager::Get();
+        CHECK(campaigns_manager);
+
+        // `CampaignsManager` is available for loading Growth Campaigns
+        // component. Loads both Demo Mode app component and Growth Campaigns
+        // component before launching the Demo Mode app.
+        base::OnceClosure load_callback =
+            base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
+                           weak_ptr_factory_.GetWeakPtr());
+
+        base::RepeatingClosure barrier_closure =
+            base::BarrierClosure(2, std::move(load_callback));
+        components_->LoadAppComponent(barrier_closure);
+        campaigns_manager->LoadCampaigns(barrier_closure);
+      } else {
+        components_->LoadAppComponent(
+            base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
 
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -627,13 +714,6 @@ base::FilePath DemoSession::GetDemoAppComponentPath() {
                          components_->default_app_component_path().value()));
 }
 
-void LaunchDemoSystemWebApp() {
-  // SystemWebAppManager won't run this callback if the profile is destroyed,
-  // so we don't need to worry about there being no active user profile
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  LaunchSystemWebAppAsync(profile, SystemWebAppType::DEMO_MODE);
-}
-
 void DemoSession::OnDemoAppComponentLoaded() {
   const auto& app_component_version = components_->app_component_version();
   SYSLOG(INFO) << "Demo mode app component version: "
@@ -648,11 +728,8 @@ void DemoSession::OnDemoAppComponentLoaded() {
                  << static_cast<int>(error);
     return;
   }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (auto* swa_manager = SystemWebAppManager::Get(profile)) {
-    swa_manager->on_apps_synchronized().Post(
-        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
-  }
+
+  TriggerLaunchDemoModeApp();
 }
 
 base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,

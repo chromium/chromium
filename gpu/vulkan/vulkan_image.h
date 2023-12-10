@@ -10,6 +10,7 @@
 #include <array>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vulkan_memory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkImageTiling image_tiling,
       VkDeviceSize device_size,
       uint32_t memory_type_index,
-      absl::optional<VulkanYCbCrInfo>& ycbcr_info,
+      std::optional<VulkanYCbCrInfo>& ycbcr_info,
       VkImageUsageFlags usage,
       VkImageCreateFlags flags);
 
@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkImageTiling image_tiling() const { return create_info_.tiling; }
   uint32_t queue_family_index() const { return queue_family_index_; }
   void set_queue_family_index(uint32_t index) { queue_family_index_ = index; }
-  const absl::optional<VulkanYCbCrInfo>& ycbcr_info() const {
+  const std::optional<VulkanYCbCrInfo>& ycbcr_info() const {
     return ycbcr_info_;
   }
   VkImage image() const { return image_; }
@@ -213,7 +213,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   // Image has multi planes and planes are not joint.
   bool disjoint_planes_ = false;
   uint32_t queue_family_index_ = VK_QUEUE_FAMILY_IGNORED;
-  absl::optional<VulkanYCbCrInfo> ycbcr_info_;
+  std::optional<VulkanYCbCrInfo> ycbcr_info_;
   VkImage image_ = VK_NULL_HANDLE;
   // Device memory for each plane.
   std::array<std::unique_ptr<VulkanMemory>, 4> memories_;

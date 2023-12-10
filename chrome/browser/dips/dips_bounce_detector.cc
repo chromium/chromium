@@ -171,7 +171,7 @@ void DIPSRedirectContext::AppendClientRedirect(
     update_offset_ = redirects_.size();
   }
   if (client_redirect->access_type > SiteDataAccessType::kRead) {
-    redirectors_.insert(GetSiteForDIPS(client_redirect->url));
+    redirectors_.insert(client_redirect->site);
   }
   client_redirect->chain_index = GetRedirectChainLength();
   redirects_.push_back(std::move(client_redirect));
@@ -186,7 +186,7 @@ void DIPSRedirectContext::AppendServerRedirects(
       update_offset_ = redirects_.size();
     }
     if (redirect->access_type > SiteDataAccessType::kRead) {
-      redirectors_.insert(GetSiteForDIPS(redirect->url));
+      redirectors_.insert(redirect->site);
     }
     redirect->chain_index = GetRedirectChainLength();
     redirects_.push_back(std::move(redirect));
@@ -225,7 +225,7 @@ absl::optional<std::pair<size_t, DIPSRedirectInfo*>>
 DIPSRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
   // Iterate in reverse order to obtain the most recent occurrence of the site.
   for (int ind = redirects_.size() - 1; ind >= 0; ind--) {
-    if (GetSiteForDIPS(redirects_.at(ind)->url) == site) {
+    if (redirects_.at(ind)->site == site) {
       return std::make_pair(static_cast<size_t>(ind), redirects_.at(ind).get());
     }
   }
@@ -239,8 +239,7 @@ bool DIPSRedirectContext::SiteHadUserActivation(const std::string& site) const {
   }
 
   for (const auto& redirect : redirects_) {
-    if (redirect->has_sticky_activation &&
-        GetSiteForDIPS(redirect->url) == site) {
+    if (redirect->has_sticky_activation && redirect->site == site) {
       return true;
     }
   }
@@ -257,7 +256,7 @@ std::set<std::string> DIPSRedirectContext::AllSitesWithUserActivation() const {
 
   for (const auto& redirect : redirects_) {
     if (redirect->has_sticky_activation) {
-      sites.insert(GetSiteForDIPS(redirect->url));
+      sites.insert(redirect->site);
     }
   }
 
@@ -277,7 +276,7 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
   const std::string& first_party_site = GetSiteForDIPS(first_party_url);
   for (const auto& redirect : redirects_) {
     const GURL& url = redirect->url;
-    const std::string site = GetSiteForDIPS(url);
+    const std::string& site = redirect->site;
 
     // The redirect heuristic does not apply for first-party cookie access.
     if (site == first_party_site) {
@@ -989,9 +988,15 @@ void DIPSWebContentsObserver::OnClientAdded(
 void DIPSWebContentsObserver::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
+  const content::GlobalRenderFrameHostId* const render_frame_host_id =
+      absl::get_if<content::GlobalRenderFrameHostId>(&creator);
+  if (!render_frame_host_id) {
+    return;
+  }
+
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(ancestor_render_frame_host_id);
+      content::RenderFrameHost::FromID(*render_frame_host_id);
 
   if (!IsInPrimaryPage(render_frame_host)) {
     return;

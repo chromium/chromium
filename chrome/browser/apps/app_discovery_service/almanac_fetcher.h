@@ -63,14 +63,14 @@ class AlmanacFetcher : public AppFetcher {
 
   // Writes the response to disk if the call to the server succeeded or reads
   // the cached data otherwise.
-  void OnServerResponse(absl::optional<proto::LauncherAppResponse> response);
+  void OnServerResponse(std::optional<proto::LauncherAppResponse> response);
 
   // Updates the app caches and relevant profile preferences on a successful
   // response.
   void OnFileWritten(proto::LauncherAppResponse response, bool write_complete);
 
   // Parses all app data on update and notifies all subscribers with it.
-  void OnAppsUpdate(absl::optional<proto::LauncherAppResponse> response);
+  void OnAppsUpdate(std::optional<proto::LauncherAppResponse> response);
 
   raw_ptr<Profile> profile_;
 

@@ -49,9 +49,9 @@ AutofillManager* ToMainFrameAutofillManager(
 
 }  // namespace
 
-static void JNI_AutofillProviderTestHelper_DisableDownloadServerForTesting(
+static void JNI_AutofillProviderTestHelper_DisableCrowdsourcingForTesting(
     JNIEnv* env_md_ctx_st) {
-  AutofillProvider::set_is_download_manager_disabled_for_testing();
+  AutofillProvider::set_is_crowdsourcing_manager_disabled_for_testing();
 }
 
 static jboolean
@@ -176,10 +176,10 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillQueryFailedForTesting(
       form_structures = autofill_manager->form_structures();
   CHECK(!form_structures.empty());
   const FormStructure& arbitary_form = *form_structures.begin()->second;
-  AutofillDownloadManager::Observer* observer = autofill_manager;
+  AutofillCrowdsourcingManager::Observer* observer = autofill_manager;
   observer->OnServerRequestError(
       arbitary_form.form_signature(),
-      AutofillDownloadManager::RequestType::REQUEST_QUERY, 400);
+      AutofillCrowdsourcingManager::RequestType::REQUEST_QUERY, 400);
 }
 
 }  // namespace autofill

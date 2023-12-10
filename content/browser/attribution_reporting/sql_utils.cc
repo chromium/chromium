@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/features.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -59,7 +60,7 @@ void SerializeCommonAggregatableData(
     msg.set_verification_token(*verification_token);
   }
 
-  switch (data.source_registration_time_config) {
+  switch (data.aggregatable_trigger_config.source_registration_time_config()) {
     case SourceRegistrationTimeConfig::kInclude:
       msg.set_source_registration_time_config(
           proto::AttributionCommonAggregatableMetadata::INCLUDE);
@@ -68,6 +69,12 @@ void SerializeCommonAggregatableData(
       msg.set_source_registration_time_config(
           proto::AttributionCommonAggregatableMetadata::EXCLUDE);
       break;
+  }
+
+  if (const auto& trigger_context_id =
+          data.aggregatable_trigger_config.trigger_context_id();
+      trigger_context_id.has_value()) {
+    msg.set_trigger_context_id(*trigger_context_id);
   }
 }
 
@@ -91,14 +98,14 @@ void SerializeCommonAggregatableData(
         std::move(aggregation_coordinator_origin);
   }
 
+  SourceRegistrationTimeConfig source_registration_time_config;
+
   switch (msg.source_registration_time_config()) {
     case proto::AttributionCommonAggregatableMetadata::INCLUDE:
-      data.source_registration_time_config =
-          SourceRegistrationTimeConfig::kInclude;
+      source_registration_time_config = SourceRegistrationTimeConfig::kInclude;
       break;
     case proto::AttributionCommonAggregatableMetadata::EXCLUDE:
-      data.source_registration_time_config =
-          SourceRegistrationTimeConfig::kExclude;
+      source_registration_time_config = SourceRegistrationTimeConfig::kExclude;
       break;
     default:
       return false;
@@ -107,6 +114,20 @@ void SerializeCommonAggregatableData(
   if (msg.has_verification_token()) {
     data.verification_token = msg.verification_token();
   }
+
+  absl::optional<std::string> trigger_context_id;
+  if (msg.has_trigger_context_id()) {
+    trigger_context_id = msg.trigger_context_id();
+  }
+
+  auto aggregatable_trigger_config =
+      attribution_reporting::AggregatableTriggerConfig::Create(
+          source_registration_time_config, trigger_context_id);
+  if (!aggregatable_trigger_config.has_value()) {
+    return false;
+  }
+
+  data.aggregatable_trigger_config = std::move(*aggregatable_trigger_config);
 
   return true;
 }
@@ -145,7 +166,7 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
-    const attribution_reporting::TriggerConfig& trigger_config,
+    TriggerDataMatching trigger_data_matching,
     bool debug_cookie_set) {
   DCHECK_GE(randomized_response_rate, 0);
   DCHECK_LE(randomized_response_rate, 1);
@@ -156,7 +177,7 @@ std::string SerializeReadOnlySourceData(
 
   msg.set_randomized_response_rate(randomized_response_rate);
 
-  switch (trigger_config.trigger_data_matching()) {
+  switch (trigger_data_matching) {
     case TriggerDataMatching::kExact:
       msg.set_trigger_data_matching(
           proto::AttributionReadOnlySourceData::EXACT);
@@ -220,8 +241,8 @@ absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
     // corruption or deliberate modification.
     if (entry.first ==
             attribution_reporting::FilterData::kSourceTypeFilterKey ||
-        entry.first ==
-            attribution_reporting::FilterConfig::kLookbackWindowKey) {
+        entry.first.starts_with(
+            attribution_reporting::FilterConfig::kReservedKeyPrefix)) {
       continue;
     }
 
@@ -285,7 +306,7 @@ std::string SerializeReportMetadata(
 }
 
 bool DeserializeReportMetadata(const std::string& str,
-                               uint64_t& trigger_data,
+                               uint32_t& trigger_data,
                                int64_t& priority) {
   proto::AttributionEventLevelMetadata msg;
   if (!msg.ParseFromString(str) || !msg.has_trigger_data() ||

@@ -33,11 +33,12 @@ std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
   if (result != sandbox::SBOX_ALL_OK)
     return nullptr;
 
-  result = config->AllowNamedPipes(L"\\\\.\\pipe\\chrome.unused.*");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\\\.\\pipe\\chrome.unused.*");
   if (result != sandbox::SBOX_ALL_OK)
     return nullptr;
 
-  result = config->AllowNamedPipes(L"\\\\.\\pipe\\chrome.sync.*");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowAny, L"*.log");
   if (result != sandbox::SBOX_ALL_OK)
     return nullptr;
 

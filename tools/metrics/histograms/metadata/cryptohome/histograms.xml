@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2024-04-28">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="2024-04-28">
+    enum="CryptohomeDiskCleanupResult" expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>Records the result of triggering disk cleanup.</summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreedCacheVaultDiskSpaceInMb" units="MB"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb" units="MiB"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime2" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.HomedirEncryptionType" enum="HomedirEncryptionType"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
@@ -267,7 +267,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 fully migrated pinweaver_manager to libhwsec (target: M120)-->
 
 <histogram name="Cryptohome.LECredential.{Operation}{Action}"
-    enum="CryptohomeLECredError" expires_after="2024-03-17">
+    enum="CryptohomeLECredError" expires_after="2024-05-19">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupAvailableSpace" units="MiB"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -328,7 +328,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupProgress"
-    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2024-04-28">
+    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -343,7 +343,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="2024-04-28">
+    enum="CryptohomeDiskCleanupResult" expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -354,7 +354,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -483,7 +483,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -544,7 +544,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.TimeToInitPkcs11" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -735,7 +735,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.{AuthBlockType}.CredentialRevocationResult"
-    enum="CryptohomeLECredError" expires_after="2024-03-03">
+    enum="CryptohomeLECredError" expires_after="2024-05-05">
   <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -747,7 +747,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.{AuthBlockType}.PrepareForRemovalResult"
-    enum="CryptohomeCryptoError" expires_after="2024-03-03">
+    enum="CryptohomeCryptoError" expires_after="2024-05-05">
   <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -962,7 +962,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
   <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2023-07-24">
+<histogram name="CryptohomeClient" units="ms" expires_after="2024-07-24">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>

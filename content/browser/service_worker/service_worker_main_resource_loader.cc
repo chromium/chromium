@@ -21,6 +21,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -39,6 +40,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
@@ -269,17 +271,26 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   RaceNetworkRequestMode race_network_request_mode =
       RaceNetworkRequestMode::kDefault;
-  // Check if registered static route rules match the request.
+  // Check if registered static router rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
-    auto sources = active_worker->router_evaluator()->Evaluate(
+    auto eval_result = active_worker->router_evaluator()->Evaluate(
         resource_request_, active_worker->running_status());
     // TODO(crbug.com/1371756) In some cases the router is evaluated only in the
     // renderer side. The same mechanism is needed in the subresource loader
     // as well.
     active_worker->CountFeature(
         blink::mojom::WebFeature::kServiceWorkerStaticRouter_Evaluate);
-    if (!sources.empty()) {  // matched the rule.
+    if (eval_result) {  // matched the rule.
+      // Set router information of matched rule for DevTools.
+      // TODO(crbug.com/1502443): Prepare the router info in ResponseHead even
+      // when the response is not set by `DidDispatchFetchEvent()`.
+      network::mojom::ServiceWorkerRouterInfoPtr router_info =
+          network::mojom::ServiceWorkerRouterInfo::New();
+      router_info->rule_id_matched = eval_result->id;
+      response_head_->service_worker_router_info = std::move(router_info);
+
+      const auto& sources = eval_result->sources;
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
       switch (sources[0].type) {
@@ -291,7 +302,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           // ready until ServiceWorkerMainResourceLoader::StartRequest()
           // finishes, so calling the fallback at this point doesn't correctly
           // handle the fallback process. Use PostTask to run the callback after
-          // finishing StartRequset().
+          // finishing StartRequest().
           //
           // If the kServiceWorkerStaticRouterStartServiceWorker feature is
           // enabled, it starts the ServiceWorker manually since we don't
@@ -302,10 +313,13 @@ void ServiceWorkerMainResourceLoader::StartRequest(
               base::BindOnce(
                   [](NavigationLoaderInterceptor::FallbackCallback
                          fallback_callback,
-                     scoped_refptr<ServiceWorkerVersion> active_worker) {
+                     scoped_refptr<ServiceWorkerVersion> active_worker,
+                     network::mojom::ServiceWorkerRouterInfoPtr router_info) {
+                    ResponseHeadUpdateParams head_update_params;
+                    head_update_params.router_info = std::move(router_info);
                     std::move(fallback_callback)
                         .Run(false /* reset_subresource_loader_params */,
-                             net::LoadTimingInfo());
+                             head_update_params);
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -316,7 +330,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                           base::DoNothing());
                     }
                   },
-                  std::move(fallback_callback_), active_worker));
+                  std::move(fallback_callback_), active_worker,
+                  std::move(response_head_->service_worker_router_info)));
           return;
         case blink::ServiceWorkerRouterSource::Type::kRace:
           race_network_request_mode = RaceNetworkRequestMode::kForced;
@@ -448,6 +463,18 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
+  // If |enable_only_when_service_worker_not_running| is true, preload requests
+  // are dispatched only when the ServiceWorker is not running. When it's
+  // running, preload requests for both main resource and subresources are not
+  // dispatched.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload,
+          "enable_only_when_service_worker_not_running",
+          /*default_value=*/false) &&
+      version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
+    return false;
+  }
+
   bool result = StartRaceNetworkRequest(context, version);
   if (result) {
     SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
@@ -457,9 +484,17 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     // handler result is fallback. The fallback case is handled after
     // receiving the fetch handler result.
     SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-    version->set_fetch_handler_bypass_option(
-        blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload);
   }
+
+  // If |enable_subresource_preload| feature param is true, preload requests
+  // are dispatched on any subresources, otherwise preload requests won't be
+  // dispatched for subresources.
+  version->set_fetch_handler_bypass_option(
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload, "enable_subresource_preload",
+          /*default_value=*/true)
+          ? blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload
+          : blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
 
   return result;
 }
@@ -799,7 +834,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     if (fallback_callback_) {
       std::move(fallback_callback_)
           .Run(true /* reset_subresource_loader_params */,
-               net::LoadTimingInfo());
+               ResponseHeadUpdateParams());
     }
     return;
   }
@@ -827,9 +862,10 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
     if (fallback_callback_) {
+      ResponseHeadUpdateParams head_update_params;
+      head_update_params.load_timing_info = response_head_->load_timing;
       std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */,
-               response_head_->load_timing);
+          .Run(false /* reset_subresource_loader_params */, head_update_params);
     }
     return;
   }

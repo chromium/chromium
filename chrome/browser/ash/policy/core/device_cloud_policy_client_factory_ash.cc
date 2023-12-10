@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -21,10 +21,10 @@ constexpr int kDottedMacAddressSize = 17;
 
 // Parses MAC address string frommated as AA:AA:AA:AA:AA:AA. Returns nullopt if
 // `mac_address_string` is empty or ill-formated.
-absl::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
+std::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
     base::StringPiece mac_address_string) {
   if (mac_address_string.size() != kDottedMacAddressSize)
-    return absl::nullopt;
+    return std::nullopt;
 
   policy::CloudPolicyClient::MacAddress parsed_mac_address;
   base::span<policy::CloudPolicyClient::MacAddress::value_type>
@@ -39,19 +39,19 @@ absl::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
     const size_t separator_idx = string_idx + 2;
     if (separator_idx < mac_address_string.size() &&
         mac_address_string[separator_idx] != ':') {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!base::HexStringToSpan(mac_address_string.substr(string_idx, 2),
                                parsed_mac_address_span.subspan(span_idx, 1))) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   return parsed_mac_address;
 }
 
-base::StringPiece EmptyIfAbsent(absl::optional<base::StringPiece> opt) {
+base::StringPiece EmptyIfAbsent(std::optional<base::StringPiece> opt) {
   return opt.value_or(base::StringPiece());
 }
 

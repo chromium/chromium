@@ -80,11 +80,11 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
                     boolean hasDeviceOwnerApp = false;
                     PackageManager packageManager = context.getPackageManager();
                     DevicePolicyManager devicePolicyManager =
-                            (DevicePolicyManager) context.getSystemService(
-                                    Context.DEVICE_POLICY_SERVICE);
+                            (DevicePolicyManager)
+                                    context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 
-                    if (CommandLine.getInstance().hasSwitch(
-                                ChromeSwitches.FORCE_DEVICE_OWNERSHIP)) {
+                    if (CommandLine.getInstance()
+                            .hasSwitch(ChromeSwitches.FORCE_DEVICE_OWNERSHIP)) {
                         hasDeviceOwnerApp = true;
                     }
 
@@ -131,9 +131,12 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
         ThreadUtils.assertOnUiThread();
         assert result != null;
         mOwnedState = result;
-        Log.i(TAG,
-                "#setCacheResult() deviceOwned:" + result.mDeviceOwned
-                        + " profileOwned:" + result.mProfileOwned);
+        Log.i(
+                TAG,
+                "#setCacheResult() deviceOwned:"
+                        + result.mDeviceOwned
+                        + " profileOwned:"
+                        + result.mProfileOwned);
     }
 
     @VisibleForTesting
@@ -147,9 +150,10 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
     @Override
     public void logDeviceEnterpriseInfo() {
-        Callback<OwnedState> callback = (result) -> {
-            recordManagementHistograms(result);
-        };
+        Callback<OwnedState> callback =
+                (result) -> {
+                    recordManagementHistograms(result);
+                };
         getDeviceEnterpriseInfo(callback);
     }
 

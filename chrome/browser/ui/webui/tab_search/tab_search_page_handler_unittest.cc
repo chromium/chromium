@@ -840,7 +840,7 @@ TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {
   std::unique_ptr<TabOrganization> organization =
       std::make_unique<TabOrganization>(
           std::vector<std::unique_ptr<TabData>>{},
-          std::vector<std::u16string>{u"default_name"}, 0, absl::nullopt);
+          std::vector<std::u16string>{u"default_name"}, 0u, std::nullopt);
   tab_search::mojom::TabOrganizationPtr mojo_tab_org_ptr =
       handler()->GetMojoForTabOrganization(organization.get());
 
@@ -850,12 +850,40 @@ TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {
 
 TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionToMojo) {
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(
-          nullptr, std::make_unique<TabOrganizationRequest>());
+      std::make_unique<TabOrganizationSession>();
   tab_search::mojom::TabOrganizationSessionPtr mojo_session_ptr =
-      handler()->GetMojoForTabOrganizationSession(*session.get());
+      handler()->GetMojoForTabOrganizationSession(session.get());
 
   EXPECT_EQ(mojo_session_ptr->session_id, session->session_id());
+}
+
+TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionObservation) {
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>();
+  EXPECT_CALL(page_, TabOrganizationSessionUpdated(_)).Times(3);
+  // Register it with the page handler under the same profile
+  handler()->OnSessionCreated(browser1(), session.get());
+
+  // Updating should notify the page.
+  handler()->OnTabOrganizationSessionUpdated(session.get());
+
+  // Destroying should notify the page.
+  session.reset();
+}
+
+TEST_F(TabSearchPageHandlerTest,
+       TabOrganizationSessionObservationWrongProfile) {
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>();
+  EXPECT_CALL(page_, TabOrganizationSessionUpdated(_)).Times(0);
+  // Registering with the page handler in the wrong profile should not notify.
+  handler()->OnSessionCreated(browser4(), session.get());
+
+  // Updating should not notify the page.
+  handler()->OnTabOrganizationSessionUpdated(session.get());
+
+  // Destroying should not notify the page.
+  session.reset();
 }
 
 }  // namespace

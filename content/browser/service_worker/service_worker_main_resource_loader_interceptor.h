@@ -51,7 +51,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // Creates a ServiceWorkerMainResourceLoaderInterceptor for a worker.
   // Returns nullptr if the interceptor could not be created for the URL of the
   // worker.
-  static std::unique_ptr<NavigationLoaderInterceptor> CreateForWorker(
+  static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+  CreateForWorker(
       const network::ResourceRequest& resource_request,
       const net::IsolationInfo& isolation_info,
       int process_id,
@@ -79,6 +80,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // to MaybeCreateLoader(). Otherwise this returns absl::nullopt.
   absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
+
+  // MaybeCreateLoaderForResponse() should NOT overridden here, because
+  // `WorkerScriptLoader` assumes so.
 
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;
@@ -121,6 +125,16 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // service worker code don't match, however in cases where these wouldn't
   // match the load will be aborted later anyway.
   absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+      const url::Origin& origin);
+
+  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+      content::StoragePartition* storage_partition,
+      blink::DedicatedWorkerToken dedicated_worker_token,
+      const url::Origin& origin);
+
+  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+      content::StoragePartition* storage_partition,
+      blink::SharedWorkerToken shared_worker_token,
       const url::Origin& origin);
 
   // For navigations, |handle_| outlives |this|. It's owned by

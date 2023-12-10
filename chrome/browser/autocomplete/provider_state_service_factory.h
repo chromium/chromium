@@ -36,4 +36,4 @@ class ProviderStateServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_AUTOCOMPLETE_PROVIDER_STATE_FACTORY_H_
+#endif  // CHROME_BROWSER_AUTOCOMPLETE_PROVIDER_STATE_SERVICE_FACTORY_H_

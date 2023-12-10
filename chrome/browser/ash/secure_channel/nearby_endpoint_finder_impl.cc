@@ -33,17 +33,12 @@ void OnStopDiscoveryDestructorResult(Status status) {
     PA_LOG(WARNING) << "Failed to stop discovery as part of destructor";
 }
 
-std::vector<uint8_t> GenerateRandomByteArray(size_t length) {
-  std::string endpoint_info = base::RandBytesAsString(length);
-  return std::vector<uint8_t>(endpoint_info.begin(), endpoint_info.end());
-}
-
 std::string GenerateEndpointId() {
   // Generate a random array of bytes; as long as it is of size of at least
   // 3/4 kEndpointInfoLength, the final substring of the Base64-encoded array
   // will be of size kEndpointInfoLength.
   std::vector<uint8_t> raw_endpoint_info =
-      GenerateRandomByteArray(kEndpointIdLength);
+      base::RandBytesAsVector(kEndpointIdLength);
 
   // Return the first kEndpointIdLength characters of the Base64-encoded string.
   return base::Base64Encode(raw_endpoint_info).substr(0, kEndpointIdLength);
@@ -51,7 +46,7 @@ std::string GenerateEndpointId() {
 
 std::vector<uint8_t> GenerateEndpointInfo(const std::vector<uint8_t>& eid) {
   if (eid.size() < 2) {
-    return GenerateRandomByteArray(kEndpointInfoLength);
+    return base::RandBytesAsVector(kEndpointInfoLength);
   }
 
   std::vector<uint8_t> endpoint_info = {

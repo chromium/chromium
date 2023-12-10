@@ -14,11 +14,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/test/test_feature_promo_storage_service.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -360,6 +363,34 @@ TEST_P(FeaturePromoLifecycleWriteDataTest, DataWrittenAndTrackerDismissed) {
   }
 }
 
+TEST_P(FeaturePromoLifecycleWriteDataTest, FirstAndLastShowTimeUpdated) {
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+
+  EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
+  lifecycle->OnPromoEnded(FeaturePromoClosedReason::kAbortPromo);
+  EXPECT_CALL(tracker_, Dismissed).Times(0);
+
+  const auto old_data = storage_service_.ReadPromoData(kTestIPHFeature);
+  EXPECT_EQ(1, old_data->show_count);
+  EXPECT_EQ(old_data->first_show_time, old_data->last_show_time);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  lifecycle = CreateLifecycle(kTestIPHFeature);
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+
+  EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
+  lifecycle->OnPromoEnded(GetParamT<CloseReason>());
+  EXPECT_CALL(tracker_, Dismissed).Times(0);
+
+  const auto new_data = storage_service_.ReadPromoData(kTestIPHFeature);
+
+  EXPECT_EQ(2, new_data->show_count);
+  EXPECT_EQ(new_data->first_show_time, old_data->first_show_time);
+  EXPECT_GT(new_data->last_show_time, old_data->last_show_time);
+}
+
 using FeaturePromoLifecycleTypesTest = FeaturePromoLifecycleParamTest<>;
 
 INSTANTIATE_TEST_SUITE_P(
@@ -416,8 +447,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, ReleaseSnoozedIPH) {
   lifecycle->OnPromoEnded(CloseReason::kSnooze);
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
-  task_environment_.FastForwardBy(
-      FeaturePromoLifecycle::kDefaultSnoozeDuration);
+  task_environment_.FastForwardBy(features::GetSnoozeDuration());
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());
 }
@@ -441,8 +471,8 @@ TEST_P(FeaturePromoLifecycleTypesTest, MultipleIPH) {
   lifecycle = CreateLifecycle(kTestIPHFeature2);
   EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
-  task_environment_.FastForwardBy(
-      FeaturePromoLifecycle::kDefaultSnoozeDuration - base::Hours(1));
+  task_environment_.FastForwardBy(features::GetSnoozeDuration() -
+                                  base::Hours(1));
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());
@@ -465,8 +495,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, SnoozeNonInteractedIPH) {
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_EQ(GetSnoozedResult(), lifecycle->CanShow());
 
-  task_environment_.FastForwardBy(
-      FeaturePromoLifecycle::kDefaultSnoozeDuration);
+  task_environment_.FastForwardBy(features::GetSnoozeDuration());
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());

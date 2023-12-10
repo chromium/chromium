@@ -261,7 +261,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_AccessibleName) {
 
   // Update accessible name. Note that accessible name field is no longer being
   // overridden from its computed value.
-  model().UpdateItem(item_ptr->id())->SetAccessibleName(absl::nullopt);
+  model().UpdateItem(item_ptr->id())->SetAccessibleName(std::nullopt);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kAccessibleName);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
@@ -425,12 +425,12 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   // Perform another no-op update. No observers should be notified.
   model()
       .UpdateItem(item_ptr->id())
-      ->SetAccessibleName(absl::nullopt)
+      ->SetAccessibleName(std::nullopt)
       .SetBackingFile(item_ptr->file())
       .SetInProgressCommands({})
-      .SetText(absl::nullopt)
-      .SetSecondaryText(absl::nullopt)
-      .SetSecondaryTextColorId(absl::nullopt)
+      .SetText(std::nullopt)
+      .SetSecondaryText(std::nullopt)
+      .SetSecondaryTextColorId(std::nullopt)
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);
 }
@@ -526,7 +526,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
       HoldingSpaceFile(base::FilePath("file_path"),
                        HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
+      HoldingSpaceProgress(/*current_bytes=*/std::nullopt,
                            /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -560,7 +560,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
   // Update progress to indeterminate.
   model()
       .UpdateItem(item_ptr->id())
-      ->SetProgress(HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
+      ->SetProgress(HoldingSpaceProgress(/*current_bytes=*/std::nullopt,
                                          /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kProgress);

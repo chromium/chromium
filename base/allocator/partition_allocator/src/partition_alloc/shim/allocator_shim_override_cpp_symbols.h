@@ -9,15 +9,18 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_CPP_SYMBOLS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_CPP_SYMBOLS_H_
 
+#include "partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 // Preempt the default new/delete C++ symbols so they call the shim entry
 // points. This file is strongly inspired by tcmalloc's
 // libc_override_redefine.h.
 
 #include <new>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/shim/allocator_shim_internals.h"
 
 #if !BUILDFLAG(IS_APPLE)
 #define SHIM_CPP_SYMBOLS_EXPORT SHIM_ALWAYS_EXPORT
@@ -130,5 +133,7 @@ SHIM_CPP_SYMBOLS_EXPORT void operator delete[](void* p,
                                                const std::nothrow_t&) __THROW {
   ShimCppDelete(p);
 }
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_CPP_SYMBOLS_H_

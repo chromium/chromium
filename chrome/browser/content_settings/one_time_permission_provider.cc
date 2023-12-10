@@ -45,9 +45,12 @@ OneTimePermissionProvider::~OneTimePermissionProvider() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
+// TODO(b/307193732): handle the PartitionKey in all relevant methods.
 std::unique_ptr<content_settings::RuleIterator>
-OneTimePermissionProvider::GetRuleIterator(ContentSettingsType content_type,
-                                           bool incognito) const {
+OneTimePermissionProvider::GetRuleIterator(
+    ContentSettingsType content_type,
+    bool incognito,
+    const content_settings::PartitionKey& partition_key) const {
   if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
     return nullptr;
   }
@@ -59,7 +62,8 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_settings_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints) {
+    const content_settings::ContentSettingConstraints& constraints,
+    const content_settings::PartitionKey& partition_key) {
   // The current implementation of this method doesn't handle website settings
   // because this method doesn't know how to read the state in value for them.
   // Additionally the transitions as well as responsibility sharing between this
@@ -175,7 +179,8 @@ absl::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
 }
 
 void OneTimePermissionProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
     return;
   }

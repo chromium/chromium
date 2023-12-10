@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
@@ -85,6 +86,20 @@ void WebContentsHandler::RunFileChooser(
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   listener->FileSelectionCanceled();
+}
+
+std::string_view ConsoleMessageLevelToString(
+    blink::mojom::ConsoleMessageLevel level) {
+  switch (level) {
+    case blink::mojom::ConsoleMessageLevel::kVerbose:
+      return "VERBOSE";
+    case blink::mojom::ConsoleMessageLevel::kInfo:
+      return "INFO";
+    case blink::mojom::ConsoleMessageLevel::kWarning:
+      return "WARNING";
+    case blink::mojom::ConsoleMessageLevel::kError:
+      return "ERROR";
+  }
 }
 
 }  // namespace
@@ -174,7 +189,12 @@ void ExternalAppDialog::OnDidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const absl::optional<std::u16string>& untrusted_stack_trace) {
+    const std::optional<std::u16string>& untrusted_stack_trace) {
+  if (ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled()) {
+    LOG(WARNING) << "[CONSOLE " << ConsoleMessageLevelToString(log_level)
+                 << "] \"" << message << "\", source: " << source_id << " ("
+                 << line_no << ")";
+  }
   if (on_console_log_) {
     on_console_log_.Run(content::ConsoleMessageLevelToLogSeverity(log_level),
                         message, line_no, source_id);

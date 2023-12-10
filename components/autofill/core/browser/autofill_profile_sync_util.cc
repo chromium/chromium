@@ -177,14 +177,34 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_country(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    specifics->set_address_home_overflow(
+        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
+  }
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark(
         TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
   }
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    specifics->set_address_home_between_streets_or_landmark(
+        TruncateUTF8(UTF16ToUTF8(
+            entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK))));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    specifics->set_address_home_overflow_and_landmark(TruncateUTF8(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW_AND_LANDMARK))));
+  }
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     specifics->set_address_home_between_streets(TruncateUTF8(
         UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS))));
+    specifics->set_address_home_between_streets_1(TruncateUTF8(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_1))));
+    specifics->set_address_home_between_streets_2(TruncateUTF8(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_2))));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
@@ -205,8 +225,15 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_LOCATION)));
   specifics->set_address_home_subpremise_name(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SUBPREMISE)));
-  specifics->set_address_home_apt_num(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_NUM)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    specifics->set_address_home_apt(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT)));
+    specifics->set_address_home_apt_num(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_NUM)));
+    specifics->set_address_home_apt_type(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_TYPE)));
+  }
   specifics->set_address_home_floor(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_FLOOR)));
 
@@ -230,6 +257,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    specifics->set_address_home_overflow_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW)));
+  }
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark_status(
         ConvertProfileToSpecificsVerificationStatus(
@@ -240,6 +273,24 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_address_home_between_streets_status(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS)));
+    specifics->set_address_home_between_streets_1_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS_1)));
+    specifics->set_address_home_between_streets_2_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS_2)));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    specifics->set_address_home_between_streets_or_landmark_status(
+        ConvertProfileToSpecificsVerificationStatus(entry.GetVerificationStatus(
+            ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK)));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    specifics->set_address_home_overflow_and_landmark_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK)));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
@@ -262,9 +313,18 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_subpremise_name_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_SUBPREMISE)));
-  specifics->set_address_home_apt_num_status(
-      ConvertProfileToSpecificsVerificationStatus(
-          entry.GetVerificationStatus(ADDRESS_HOME_APT_NUM)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    specifics->set_address_home_apt_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_APT)));
+    specifics->set_address_home_apt_num_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_APT_NUM)));
+    specifics->set_address_home_apt_type_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_APT_TYPE)));
+  }
   specifics->set_address_home_floor_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_FLOOR)));
@@ -447,6 +507,32 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           specifics.address_home_country_status()));
 
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_OVERFLOW, UTF8ToUTF16(specifics.address_home_overflow()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_overflow_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+        UTF8ToUTF16(specifics.address_home_between_streets_or_landmark()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_between_streets_or_landmark_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+        UTF8ToUTF16(specifics.address_home_overflow_and_landmark()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_overflow_and_landmark_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_LANDMARK, UTF8ToUTF16(specifics.address_home_landmark()),
@@ -461,6 +547,16 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
         UTF8ToUTF16(specifics.address_home_between_streets()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_status()));
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_BETWEEN_STREETS_1,
+        UTF8ToUTF16(specifics.address_home_between_streets_1()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_between_streets_1_status()));
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_BETWEEN_STREETS_2,
+        UTF8ToUTF16(specifics.address_home_between_streets_2()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_between_streets_2_status()));
   }
 
   if (base::FeatureList::IsEnabled(
@@ -512,15 +608,36 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_subpremise_name_status()));
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_APT, UTF8ToUTF16(specifics.address_home_apt()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_apt_status()));
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_APT_NUM, UTF8ToUTF16(specifics.address_home_apt_num()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_apt_num_status()));
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_APT_TYPE, UTF8ToUTF16(specifics.address_home_apt_type()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_apt_type_status()));
+  }
+
   profile->SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_APT_NUM, UTF8ToUTF16(specifics.address_home_apt_num()),
+      ADDRESS_HOME_FLOOR, UTF8ToUTF16(specifics.address_home_floor()),
       ConvertSpecificsToProfileVerificationStatus(
-          specifics.address_home_apt_num_status()));
+          specifics.address_home_floor_status()));
 
   // Set birthdate-related fields.
   profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
   profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
   profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, specifics.birthdate_year());
+
+  // When adding field types, ensure that they don't need to be added here and
+  // update the last checked value.
+  static_assert(ServerFieldType::MAX_VALID_FIELD_TYPE == 161,
+                "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|
   // * The profile is migrated if the name structure is in legacy state.

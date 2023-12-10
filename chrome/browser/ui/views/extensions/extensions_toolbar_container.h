@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,9 +20,9 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -117,12 +118,16 @@ class ExtensionsToolbarContainer
   views::Widget* GetAnchoredWidgetForExtensionForTesting(
       const std::string& extension_id);
 
-  absl::optional<extensions::ExtensionId>
+  std::optional<extensions::ExtensionId>
   GetExtensionWithOpenContextMenuForTesting() {
     return extension_with_open_context_menu_id_;
   }
 
   int GetNumberOfActionsForTesting() { return actions_.size(); }
+
+  ToolbarButton* GetCloseSidePanelButtonForTesting() {
+    return close_side_panel_button_;
+  }
 
   // Updates the flex layout rules for the extension toolbar container to have
   // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
@@ -130,6 +135,10 @@ class ExtensionsToolbarContainer
   // it is not considered for during the calculation of the preferred size of
   // it's parent (in the case of WCO PWAs, WebAppFrameToolbarView).
   void WindowControlsOverlayEnabledChanged(bool enabled);
+
+  // Called when the side panel state has changed for an extensions side panel
+  // to pop out button reflecting the side panel being open.
+  void UpdateSidePanelState(bool is_active);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
@@ -148,9 +157,9 @@ class ExtensionsToolbarContainer
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
-  absl::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
-  void OnContextMenuShown(const std::string& action_id) override;
-  void OnContextMenuClosed() override;
+  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
+  void OnContextMenuShownFromToolbar(const std::string& action_id) override;
+  void OnContextMenuClosedFromToolbar() override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
   void UndoPopOut() override;
   void SetPopupOwner(ToolbarActionViewController* popup_owner) override;
@@ -260,6 +269,9 @@ class ExtensionsToolbarContainer
   // Maybe displays the In-Product-Help with a specific priority order.
   void MaybeShowIPH();
 
+  // Triggers the side panel to close.
+  void CloseSidePanelButtonPressed();
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -305,6 +317,12 @@ class ExtensionsToolbarContainer
   void DragDropCleanup(
       const ToolbarActionsModel::ActionId& dragged_extension_id);
 
+  // Updates the vector icon used when the PrefChangeRegistrar listens to a
+  // change. When the side panel should open to the right side of the browser
+  // the default vector icon is used. When the side panel should open to the
+  // left side of the browser the flipped vector icon is used.
+  void UpdateCloseSidePanelButtonIcon();
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;
 
@@ -339,11 +357,16 @@ class ExtensionsToolbarContainer
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
   // Popped-out extension, if any.
-  absl::optional<extensions::ExtensionId> popped_out_action_;
+  std::optional<extensions::ExtensionId> popped_out_action_;
   // The action that triggered the current popup, if any.
   raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
   // Extension with an open context menu, if any.
-  absl::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
+  std::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
+  // View for closing the extension side panel.
+  raw_ptr<ToolbarButton> close_side_panel_button_ = nullptr;
+  // Used to ensure the button remains highlighted while active.
+  std::optional<views::Button::ScopedAnchorHighlight>
+      close_side_panel_button_anchor_higlight_;
 
   // The widgets currently popped out and, for each, the extension it is
   // associated with. See AnchoredWidget.
@@ -352,6 +375,9 @@ class ExtensionsToolbarContainer
   // The DropInfo for the current drag-and-drop operation, or a null pointer if
   // there is none.
   std::unique_ptr<DropInfo> drop_info_;
+
+  // Observes and listens to side panel alignment changes.
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<ExtensionsToolbarContainer> weak_ptr_factory_{this};
 

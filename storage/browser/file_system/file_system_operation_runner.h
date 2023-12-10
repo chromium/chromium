@@ -49,6 +49,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
       FileSystemOperation::CopyFileProgressCallback;
   using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
   using GetMetadataField = FileSystemOperation::GetMetadataField;
+  using GetMetadataFieldSet = FileSystemOperation::GetMetadataFieldSet;
 
   using OperationID = uint64_t;
 
@@ -115,7 +116,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
 
   // Gets the metadata of a file or directory at |url|.
   OperationID GetMetadata(const FileSystemURL& url,
-                          int fields,
+                          GetMetadataFieldSet fields,
                           GetMetadataCallback callback);
 
   // Reads contents of a directory at |url|.

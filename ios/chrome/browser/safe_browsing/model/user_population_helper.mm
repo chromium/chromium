@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
@@ -31,7 +31,7 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
       is_history_sync_active, is_signed_in,
       /*is_under_advanced_protection=*/false,
       GetApplicationContext()->GetBrowserPolicyConnector(),
-      /*num_profiles=*/absl::nullopt,
-      /*num_loaded_profiles=*/absl::nullopt,
-      /*num_open_profiles=*/absl::nullopt);
+      /*num_profiles=*/std::nullopt,
+      /*num_loaded_profiles=*/std::nullopt,
+      /*num_open_profiles=*/std::nullopt);
 }

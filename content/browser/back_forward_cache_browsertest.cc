@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1923,7 +1923,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TextInputStateUpdated) {
   }
 }
 
-#if (BUILDFLAG(IS_MAC))
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID))
 #define MAYBE_SubframeTextInputStateUpdated DISABLED_SubframeTextInputStateUpdated
 #else
 #define MAYBE_SubframeTextInputStateUpdated SubframeTextInputStateUpdated
@@ -2829,8 +2829,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  // Pages with unload handlers are eligible for bfcache only on Android.
-  if (BackForwardCacheImpl::IsUnloadAllowed()) {
+  // Pages with unload handlers are eligible for bfcache only on Android, or
+  // when unload handlers are deprecated.
+  if (BackForwardCacheImpl::IsUnloadAllowed() ||
+      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
     ExpectRestored(FROM_HERE);
     EXPECT_EQ("0", GetUnloadRunCount());
   } else {

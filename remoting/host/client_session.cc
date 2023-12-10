@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
@@ -54,11 +55,10 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/video_frame_pump.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 #if defined(WEBRTC_USE_GIO)
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 #endif
 
 namespace {
@@ -129,16 +129,18 @@ ClientSession::~ClientSession() {
 void ClientSession::NotifyClientResolution(
     const protocol::ClientResolution& resolution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(resolution.dips_width() >= 0 && resolution.dips_height() >= 0);
-  VLOG(1) << "Received ClientResolution (dips_width=" << resolution.dips_width()
-          << ", dips_height=" << resolution.dips_height() << ")";
+  DCHECK(resolution.width_pixels() >= 0 && resolution.height_pixels() >= 0);
+  VLOG(1) << "Received ClientResolution (width=" << resolution.width_pixels()
+          << ", height=" << resolution.height_pixels()
+          << ", x_dpi=" << resolution.x_dpi()
+          << ", y_dpi=" << resolution.y_dpi() << ")";
 
   if (!screen_controls_) {
     return;
   }
 
-  webrtc::DesktopSize client_size(resolution.dips_width(),
-                                  resolution.dips_height());
+  webrtc::DesktopSize client_size(resolution.width_pixels(),
+                                  resolution.height_pixels());
   if (connection_->session()->config().protocol() ==
       protocol::SessionConfig::Protocol::WEBRTC) {
     // When using WebRTC round down the dimensions to multiple of 2. Otherwise
@@ -163,7 +165,7 @@ void ClientSession::NotifyClientResolution(
 
   // Try to match the client's resolution.
   ScreenResolution screen_resolution(client_size, dpi_vector);
-  absl::optional<webrtc::ScreenId> screen_id;
+  std::optional<webrtc::ScreenId> screen_id;
   if (resolution.has_screen_id()) {
     screen_id = resolution.screen_id();
   }
@@ -451,6 +453,7 @@ void ClientSession::SelectDesktopDisplay(
   if (oldGeo != nullptr && newGeo != nullptr) {
     if (oldGeo->width == newGeo->width && oldGeo->height == newGeo->height) {
       UpdateMouseClampingFilterOffset();
+      UpdateFractionalFilterFallback();
     }
   }
 }
@@ -460,8 +463,8 @@ void ClientSession::ControlPeerConnection(
   if (!connection_->peer_connection_controls()) {
     return;
   }
-  absl::optional<int> min_bitrate_bps;
-  absl::optional<int> max_bitrate_bps;
+  std::optional<int> min_bitrate_bps;
+  std::optional<int> max_bitrate_bps;
   bool set_preferred_bitrates = false;
   if (parameters.has_preferred_min_bitrate_bps()) {
     min_bitrate_bps = parameters.preferred_min_bitrate_bps();
@@ -547,6 +550,8 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(protocol::kRtcLogTransferCapability);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
+  host_capabilities_.append(" ");
+  host_capabilities_.append(protocol::kFractionalCoordinatesCapability);
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
@@ -606,6 +611,10 @@ void ClientSession::CreateMediaStreams() {
 }
 
 void ClientSession::CreatePerMonitorVideoStreams() {
+  // Undo any previously-set fallback. When there are multiple streams, all
+  // fractional coordinates must specify a screen_id.
+  fractional_input_filter_.set_fallback_geometry({});
+
   // Create new streams for any monitors that don't already have streams.
   for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
     auto id = desktop_display_info_.GetDisplayInfo(i)->id;
@@ -991,6 +1000,7 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   webrtc_capture_size_ = size;
 
   SetMouseClampingFilter(size);
+  UpdateFractionalFilterFallback();
 
   // Record default DPI in case a display reports 0 for DPI.
   default_x_dpi_ = dpi.x();
@@ -1173,6 +1183,7 @@ void ClientSession::OnDesktopDisplayChanged(
 
   // We need to update the input filters whenever the displays change.
   fractional_input_filter_.set_video_layout(*displays);
+  UpdateFractionalFilterFallback();
   DisplaySize display_size =
       DisplaySize::FromPixels(size.width(), size.height(), default_x_dpi_);
   SetMouseClampingFilter(display_size);
@@ -1321,6 +1332,60 @@ void ClientSession::OnActiveDisplayChanged(webrtc::ScreenId display) {
   protocol::ActiveDisplay active_display;
   active_display.set_screen_id(display);
   connection_->client_stub()->SetActiveDisplay(active_display);
+}
+
+void ClientSession::UpdateFractionalFilterFallback() {
+  if (!IsValidDisplayIndex(selected_display_index_)) {
+    return;
+  }
+
+  webrtc::DesktopSize new_size;
+  if (selected_display_index_ == webrtc::kFullDesktopScreenId) {
+#if BUILDFLAG(IS_APPLE)
+    // On macOS, for full-desktop capture, the capturer's current frame size
+    // should be used. This is because the capturer may revert to capturing from
+    // the default display instead of the full desktop. This could happen if all
+    // monitors had matching DPIs and full-desktop-capture was previously
+    // supported, but a monitor mode was changed such that the DPIs no longer
+    // match.
+    new_size = {webrtc_capture_size_.WidthAsDips(),
+                webrtc_capture_size_.HeightAsDips()};
+#else
+    // For other platforms, use the video-layout, as the rectangles are already
+    // in the correct units (pixels/DIPs) for input-injection.
+    webrtc::DesktopRect rect;
+    for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
+      const DisplayGeometry* geo = desktop_display_info_.GetDisplayInfo(i);
+      rect.UnionWith(webrtc::DesktopRect::MakeXYWH(geo->x, geo->y, geo->width,
+                                                   geo->height));
+    }
+    new_size = rect.size();
+#endif  // BUILDFLAG(IS_APPLE)
+  } else {
+    const DisplayGeometry* geo =
+        desktop_display_info_.GetDisplayInfo(selected_display_index_);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // The input-injector on ChromeOS currently uses DIPs, but the video-layout
+    // sizes are reported in pixels on this platform. Although the offset
+    // calculation below gives correct results, the fallback geometry needs to
+    // account for the DIPs/pixels scaling - see crbug.com/1507189 and also the
+    // ChromeOS-specific behavior in SetMouseClampingFilter().
+    DisplaySize size_converter =
+        DisplaySize::FromPixels(geo->width, geo->height, geo->dpi);
+    new_size = webrtc::DesktopSize(size_converter.WidthAsDips(),
+                                   size_converter.HeightAsDips());
+#else
+    new_size = webrtc::DesktopSize(geo->width, geo->height);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  // The logic for input-injection offsets is dependent on the OS, and is
+  // implemented in DesktopDisplayInfo::CalcDisplayOffset().
+  webrtc::DesktopVector offset =
+      desktop_display_info_.CalcDisplayOffset(selected_display_index_);
+  fractional_input_filter_.set_fallback_geometry(
+      webrtc::DesktopRect::MakeOriginSize(offset, new_size));
 }
 
 }  // namespace remoting

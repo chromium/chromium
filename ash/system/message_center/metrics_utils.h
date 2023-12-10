@@ -5,8 +5,9 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_popup_view.h"
 
@@ -112,7 +113,7 @@ NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification);
 
 // Returns the detailed notification type enum for a notification id.
-absl::optional<NotificationTypeDetailed> GetNotificationType(
+std::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id);
 
 // Logs a Hover event on a notification.
@@ -122,7 +123,9 @@ void LogHover(const std::string& notification_id, bool is_popup);
 void LogClickedBody(const std::string& notification_id, bool is_popup);
 
 // Logs a ClickedActionButton event.
-void LogClickedActionButton(const std::string& notification_id, bool is_popup);
+void LogClickedActionButton(const std::string& notification_id,
+                            bool is_popup,
+                            int button_index);
 
 // Logs an InlineReplySent event.
 ASH_EXPORT void LogInlineReplySent(const std::string& notification_id,

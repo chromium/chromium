@@ -325,8 +325,6 @@ void MockRTCPeerConnectionHandlerPlatform::AddIceCandidate(
 
 void MockRTCPeerConnectionHandlerPlatform::RestartIce() {}
 
-void MockRTCPeerConnectionHandlerPlatform::GetStats(RTCStatsRequest*) {}
-
 void MockRTCPeerConnectionHandlerPlatform::GetStats(RTCStatsReportCallback) {}
 
 webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>

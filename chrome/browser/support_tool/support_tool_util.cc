@@ -47,6 +47,7 @@
 #include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/user_manager/user_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
@@ -127,8 +128,12 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
             std::make_unique<system_logs::MemoryDetailsLogSource>()));
         break;
       case support_tool::POLICIES:
-        handler->AddDataCollector(
-            std::make_unique<PolicyDataCollector>(profile));
+        // TODO: b/252962974 - Collect device policies even when `profile` is
+        // nullptr.
+        if (profile) {
+          handler->AddDataCollector(
+              std::make_unique<PolicyDataCollector>(profile));
+        }
         break;
       case support_tool::CHROMEOS_DEVICE_EVENT:
         handler->AddDataCollector(std::make_unique<
@@ -145,8 +150,15 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 std::make_unique<system_logs::PerformanceLogSource>()));
         break;
       case support_tool::SIGN_IN_STATE:
-        handler->AddDataCollector(
-            std::make_unique<SigninDataCollector>(profile));
+        // Sign-in data is not available when there's no signed-in user.
+        if (profile
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            && user_manager::UserManager::Get()->IsUserLoggedIn()
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        ) {
+          handler->AddDataCollector(
+              std::make_unique<SigninDataCollector>(profile));
+        }
         break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case support_tool::CHROMEOS_UI_HIERARCHY:
@@ -222,7 +234,6 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
             /*requested_logs=*/std::set<base::FilePath>()));
         break;
       case support_tool::CHROMEOS_CHROME_USER_LOGS:
-        // TODO(b:294844737): Add testing for this check.
         // User session must be active to read user data from Cryptohome.
         if (ash::IsUserBrowserContext(profile)) {
           handler->AddDataCollector(

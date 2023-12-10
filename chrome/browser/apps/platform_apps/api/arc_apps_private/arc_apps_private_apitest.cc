@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   app_instance()->SendRefreshAppList(one_app);
   static_cast<arc::mojom::AppHost*>(prefs)->OnTaskCreated(
       0 /* task_id */, "Package_1", "Dummy_activity_1", "App_1",
-      absl::nullopt /* intent */, 0 /* session_id */);
+      std::nullopt /* intent */, 0 /* session_id */);
 
   // Stopping the service makes the app non-ready.
   arc::ArcServiceManager::Get()->arc_bridge_service()->app()->CloseInstance(
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
   app_instance()->SendRefreshAppList(launchable_apps);
   static_cast<arc::mojom::AppHost*>(prefs)->OnTaskCreated(
       0 /* task_id */, "Package_1", "Dummy_activity_1", "App_1",
-      absl::nullopt /* intent */, 0 /* session_id */);
+      std::nullopt /* intent */, 0 /* session_id */);
   // Verify the JS test receives the onInstalled event for the launchable app
   // only, and the app is launched successfully.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();

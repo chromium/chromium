@@ -9,13 +9,13 @@ import(
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
+tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
   deps = [
@@ -24,159 +24,74 @@ group("build") {
   ]
 }
 
+# Add typescript files to compile here.
+ts_modules = [
+  "array_util.ts",
+  "chrome_event_handler.ts",
+  "flags.ts",
+  "instance_checker.ts",
+  "paragraph_utils.ts",
+  "word_utils.ts",
+  "string_util.ts",
+]
+
+ts_library("ts_build") {
+  in_files = ts_modules
+  out_dir = tsc_out_dir
+  definitions = [
+    "../definitions/tts.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/command_line_private.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
+
+  tsconfig_base = "../tsconfig.base.json"
+}
+
 run_jsbundler("accessibility_common_copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
+  deps = [ ":ts_build" ]
   sources = [
-    "array_util.js",
     "async_util.js",
     "automation_predicate.js",
     "automation_util.js",
     "browser_util.js",
-    "chrome_event_handler.js",
-    "closure_shim.js",
     "constants.js",
     "cursors/cursor.js",
     "cursors/range.js",
     "cursors/recovery_strategy.js",
     "event_generator.js",
     "event_handler.js",
-    "flags.js",
     "gdocs_script.js",
-    "instance_checker.js",
     "key_code.js",
     "local_storage.js",
     "node_navigation_utils.js",
     "node_utils.js",
-    "paragraph_utils.js",
     "rect_util.js",
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
     "sentence_utils.js",
     "settings.js",
-    "string_util.js",
     "testing/accessibility_test_base.js",
     "testing/test_node_generator.js",
     "tree_walker.js",
-    "word_utils.js",
   ]
-  rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
-}
 
-js_library("tree_walker") {
-  sources = [ "tree_walker.js" ]
-  deps = [
-    ":automation_predicate",
-    ":constants",
+  foreach(_ts_file, ts_modules) {
+    sources += [ "$tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
   ]
-  externs_list = [
-    "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
-  ]
-}
-
-js_library("array_util") {
-  sources = [ "array_util.js" ]
-}
-
-js_library("automation_predicate") {
-  sources = [ "automation_predicate.js" ]
-  deps = [ ":constants" ]
-  externs_list = [
-    "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
-  ]
-}
-
-js_library("constants") {
-  sources = [ "constants.js" ]
-}
-
-js_library("closure_shim") {
-}
-
-js_library("automation_util") {
-  deps = [
-    ":automation_predicate",
-    ":constants",
-    ":tree_walker",
-  ]
-  externs_list = [
-    "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
-  ]
-}
-
-js_library("chrome_event_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("event_generator") {
-  deps = [ ":key_code" ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("event_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("flags") {
-  externs_list = [ "$externs_path/command_line_private.js" ]
-}
-
-js_library("key_code") {
-}
-
-js_library("instance_checker") {
-  deps = [ ":closure_shim" ]
-}
-
-js_library("node_navigation_utils") {
-  deps = [
-    ":node_utils",
-    ":paragraph_utils",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("node_utils") {
-  deps = [
-    ":paragraph_utils",
-    ":rect_util",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("paragraph_utils") {
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
-  ]
-}
-
-js_library("rect_util") {
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("repeated_event_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("repeated_tree_change_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("sentence_utils") {
-  deps = [ ":paragraph_utils" ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("string_util") {
-}
-
-js_library("word_utils") {
-  deps = [ ":paragraph_utils" ]
-  externs_list = [ "$externs_path/automation.js" ]
 }
 
 source_set("browser_tests") {

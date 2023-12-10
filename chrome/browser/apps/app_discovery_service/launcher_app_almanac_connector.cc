@@ -75,7 +75,7 @@ void LauncherAppAlmanacConnector::GetApps(
       GetAlmanacUrlLoader(kTrafficAnnotation, BuildRequestBody(device_info),
                           kAlmanacLauncherAppEndpoint);
   if (!url_loader_factory.get()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   // Retain a pointer while keeping the loader alive by std::moving it into the
@@ -101,14 +101,14 @@ void LauncherAppAlmanacConnector::OnGetAppsResponse(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
   if (!error.ok()) {
     LOG(ERROR) << error.message();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   proto::LauncherAppResponse response;
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

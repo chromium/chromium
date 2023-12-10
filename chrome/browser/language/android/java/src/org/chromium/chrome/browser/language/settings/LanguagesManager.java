@@ -35,29 +35,30 @@ public class LanguagesManager {
      * updated in native side.
      */
     interface AcceptLanguageObserver {
-        /**
-         * Called when the accept languages for the current user are updated.
-         */
+        /** Called when the accept languages for the current user are updated. */
         void onDataUpdated();
     }
 
     // Constants used to log UMA enum histogram, must stay in sync with
     // LanguageSettingsActionType. Further actions can only be appended, existing
     // entries must not be overwritten.
-    @IntDef({LanguageSettingsActionType.LANGUAGE_ADDED, LanguageSettingsActionType.LANGUAGE_REMOVED,
-            LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY,
-            LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY,
-            LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
-            LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
-            LanguageSettingsActionType.LANGUAGE_LIST_REORDERED,
-            LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE,
-            LanguageSettingsActionType.CHANGE_TARGET_LANGUAGE,
-            LanguageSettingsActionType.REMOVE_FROM_NEVER_TRANSLATE,
-            LanguageSettingsActionType.ADD_TO_NEVER_TRANSLATE,
-            LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE,
-            LanguageSettingsActionType.ADD_TO_ALWAYS_TRANSLATE,
-            LanguageSettingsActionType.REMOVE_SITE_FROM_NEVER_TRANSLATE,
-            LanguageSettingsActionType.RESTART_CHROME})
+    @IntDef({
+        LanguageSettingsActionType.LANGUAGE_ADDED,
+        LanguageSettingsActionType.LANGUAGE_REMOVED,
+        LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY,
+        LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY,
+        LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
+        LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED,
+        LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE,
+        LanguageSettingsActionType.CHANGE_TARGET_LANGUAGE,
+        LanguageSettingsActionType.REMOVE_FROM_NEVER_TRANSLATE,
+        LanguageSettingsActionType.ADD_TO_NEVER_TRANSLATE,
+        LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE,
+        LanguageSettingsActionType.ADD_TO_ALWAYS_TRANSLATE,
+        LanguageSettingsActionType.REMOVE_SITE_FROM_NEVER_TRANSLATE,
+        LanguageSettingsActionType.RESTART_CHROME
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LanguageSettingsActionType {
         // int CLICK_ON_ADD_LANGUAGE = 1; // Removed M89
@@ -82,17 +83,19 @@ public class LanguagesManager {
     // Constants used to log UMA enum histogram, must stay in sync with
     // LanguageSettingsPageType. Further actions can only be appended, existing
     // entries must not be overwritten.
-    @IntDef({LanguageSettingsPageType.PAGE_MAIN,
-            LanguageSettingsPageType.CONTENT_LANGUAGE_ADD_LANGUAGE,
-            LanguageSettingsPageType.CHANGE_CHROME_LANGUAGE,
-            LanguageSettingsPageType.ADVANCED_LANGUAGE_SETTINGS,
-            LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE,
-            LanguageSettingsPageType.LANGUAGE_OVERFLOW_MENU_OPENED,
-            LanguageSettingsPageType.VIEW_NEVER_TRANSLATE_LANGUAGES,
-            LanguageSettingsPageType.NEVER_TRANSLATE_ADD_LANGUAGE,
-            LanguageSettingsPageType.VIEW_ALWAYS_TRANSLATE_LANGUAGES,
-            LanguageSettingsPageType.ALWAYS_TRANSLATE_ADD_LANGUAGE,
-            LanguageSettingsPageType.VIEW_NEVER_TRANSLATE_SITES})
+    @IntDef({
+        LanguageSettingsPageType.PAGE_MAIN,
+        LanguageSettingsPageType.CONTENT_LANGUAGE_ADD_LANGUAGE,
+        LanguageSettingsPageType.CHANGE_CHROME_LANGUAGE,
+        LanguageSettingsPageType.ADVANCED_LANGUAGE_SETTINGS,
+        LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE,
+        LanguageSettingsPageType.LANGUAGE_OVERFLOW_MENU_OPENED,
+        LanguageSettingsPageType.VIEW_NEVER_TRANSLATE_LANGUAGES,
+        LanguageSettingsPageType.NEVER_TRANSLATE_ADD_LANGUAGE,
+        LanguageSettingsPageType.VIEW_ALWAYS_TRANSLATE_LANGUAGES,
+        LanguageSettingsPageType.ALWAYS_TRANSLATE_ADD_LANGUAGE,
+        LanguageSettingsPageType.VIEW_NEVER_TRANSLATE_SITES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LanguageSettingsPageType {
         int PAGE_MAIN = 0;
@@ -111,9 +114,13 @@ public class LanguagesManager {
     }
 
     // Int keys to determine the list of potential languages for different language preferences.
-    @IntDef({LanguageListType.ACCEPT_LANGUAGES, LanguageListType.UI_LANGUAGES,
-            LanguageListType.TARGET_LANGUAGES, LanguageListType.NEVER_LANGUAGES,
-            LanguageListType.ALWAYS_LANGUAGES})
+    @IntDef({
+        LanguageListType.ACCEPT_LANGUAGES,
+        LanguageListType.UI_LANGUAGES,
+        LanguageListType.TARGET_LANGUAGES,
+        LanguageListType.NEVER_LANGUAGES,
+        LanguageListType.ALWAYS_LANGUAGES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LanguageListType {
         int ACCEPT_LANGUAGES = 0; // Default
@@ -141,9 +148,7 @@ public class LanguagesManager {
         if (mObserver != null) mObserver.onDataUpdated();
     }
 
-    /**
-     * Sets the observer tracking the user accept languages changes.
-     */
+    /** Sets the observer tracking the user accept languages changes. */
     public void setAcceptLanguageObserver(AcceptLanguageObserver observer) {
         mObserver = observer;
     }
@@ -201,10 +206,11 @@ public class LanguagesManager {
         HashSet<String> codesToSkipSet = new HashSet<String>(codesToSkip);
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         // Filter for translatable languages not in |codesToSkipSet|.
-        Predicate<LanguageItem> filter = (item) -> {
-            return item.isSupportedBaseTranslateLanguage()
-                    && !codesToSkipSet.contains(item.getCode());
-        };
+        Predicate<LanguageItem> filter =
+                (item) -> {
+                    return item.isSupportedBaseTranslateLanguage()
+                            && !codesToSkipSet.contains(item.getCode());
+                };
         addItemsToResult(results, getUserAcceptLanguageItems(), filter);
         addItemsToResult(results, mLanguagesMap.values(), filter);
         return new ArrayList<>(results);
@@ -225,9 +231,10 @@ public class LanguagesManager {
         }
 
         // Filter for UI languages that are not the current UI language.
-        Predicate<LanguageItem> filter = (item) -> {
-            return item.isUISupported() && !item.equals(currentUiLanguage);
-        };
+        Predicate<LanguageItem> filter =
+                (item) -> {
+                    return item.isUISupported() && !item.equals(currentUiLanguage);
+                };
         addItemsToResult(results, getUserAcceptLanguageItems(), filter);
         addItemsToResult(results, mLanguagesMap.values(), filter);
         return new ArrayList<>(results);
@@ -239,9 +246,10 @@ public class LanguagesManager {
      */
     public List<LanguageItem> getAllPossibleUiLanguages() {
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
-        Predicate<LanguageItem> filter = (item) -> {
-            return item.isUISupported();
-        };
+        Predicate<LanguageItem> filter =
+                (item) -> {
+                    return item.isUISupported();
+                };
         addItemsToResult(results, mLanguagesMap.values(), filter);
         return new ArrayList<>(results);
     }
@@ -266,8 +274,10 @@ public class LanguagesManager {
      * @param items Collection of LanguageItems to potentially add to results.
      * @param filter Predicate to return true for items that should be added to results.
      */
-    private void addItemsToResult(LinkedHashSet<LanguageItem> results,
-            Collection<LanguageItem> items, Predicate<LanguageItem> filter) {
+    private void addItemsToResult(
+            LinkedHashSet<LanguageItem> results,
+            Collection<LanguageItem> items,
+            Predicate<LanguageItem> filter) {
         for (LanguageItem item : items) {
             if (filter.test(item)) {
                 results.add(item);
@@ -326,7 +336,7 @@ public class LanguagesManager {
      * @param code The language code to remove.
      */
     public void addToAcceptLanguages(String code) {
-        TranslateBridge.updateUserAcceptLanguages(code, true /* is_add */);
+        TranslateBridge.updateUserAcceptLanguages(code, /* add= */ true);
         notifyAcceptLanguageObserver();
     }
 
@@ -335,7 +345,7 @@ public class LanguagesManager {
      * @param code The language code to remove.
      */
     public void removeFromAcceptLanguages(String code) {
-        TranslateBridge.updateUserAcceptLanguages(code, false /* is_add */);
+        TranslateBridge.updateUserAcceptLanguages(code, /* add= */ false);
         notifyAcceptLanguageObserver();
     }
 
@@ -383,24 +393,18 @@ public class LanguagesManager {
         return sManager;
     }
 
-    /**
-     * Called to release unused resources.
-     */
+    /** Called to release unused resources. */
     public static void recycle() {
         sManager = null;
     }
 
-    /**
-     * Record language settings page impression.
-     */
+    /** Record language settings page impression. */
     public static void recordImpression(@LanguageSettingsPageType int pageType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "LanguageSettings.PageImpression", pageType, LanguageSettingsPageType.NUM_ENTRIES);
     }
 
-    /**
-     * Record actions taken on language settings page.
-     */
+    /** Record actions taken on language settings page. */
     public static void recordAction(@LanguageSettingsActionType int actionType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "LanguageSettings.Actions", actionType, LanguageSettingsActionType.NUM_ENTRIES);

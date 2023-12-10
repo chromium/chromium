@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_prefs.h"
+#include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -54,6 +55,9 @@ class ShortcutCustomizationAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
           receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<common::mojom::ShortcutInputProvider> receiver);
 
   void BindInterface(
       mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>

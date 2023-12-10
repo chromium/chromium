@@ -50,6 +50,7 @@ namespace {
 constexpr int kFinalStatusActivated = 0;
 constexpr int kFinalStatusInvalidSchemeNavigation = 6;
 constexpr int kFinalStatusTriggerDestroyed = 16;
+constexpr int kFinalStatusTabClosedWithoutUserGesture = 55;
 constexpr int kFinalStatusCrossSiteNavigationInMainFrameNavigation = 64;
 
 }  // namespace
@@ -156,12 +157,10 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  content::TestNavigationObserver nav_observer(prerender_url);
-  nav_observer.StartWatchingNewWebContents();
-  prerender_helper().AddPrerendersAsync({prerender_url},
-                                        /*eagerness=*/absl::nullopt, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), prerender_url);
+  int host_id =
+      prerender_helper().AddPrerender(prerender_url,
+                                      /*eagerness=*/absl::nullopt, "_blank");
+  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Activate.
   EXPECT_TRUE(ExecJs(GetActiveWebContents(), link_click_script));
@@ -185,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 // Prerendering in a new tab should not be activate for a new window with an
 // opener.
 // The test is flaky on android-12l-x64-dbg-tests: https://crbug.com/1490582.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrerenderAndActivate_InNewTab_Opener \
   DISABLED_PrerenderAndActivate_InNewTab_Opener
 #else
@@ -215,13 +214,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameNavigation_InNewTab) {
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  content::TestNavigationObserver nav_observer(prerender_url);
-  nav_observer.StartWatchingNewWebContents();
-  prerender_helper().AddPrerendersAsync({prerender_url},
-                                        /*eagerness=*/absl::nullopt, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  int host_id = prerender_helper().AddPrerender(
+      prerender_url, /*eagerness=*/absl::nullopt, "_blank");
   EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Navigate a prerendered page to another page.
@@ -258,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -297,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ChromeUrl) {
   // Start embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -491,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -541,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -594,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -618,6 +612,43 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       kFinalStatusCrossSiteNavigationInMainFrameNavigation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderWebContentsDelegate_CloseContents) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/prerender/simple_links.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
+  int host_id = prerender_helper().AddPrerender(
+      prerender_url, /*eagerness=*/absl::nullopt, "_blank");
+
+  // Navigate a prerendered page to another page.
+  GURL navigation_url =
+      embedded_test_server()->GetURL("/prerender/empty.html?navigated");
+  prerender_helper().NavigatePrerenderedPage(host_id, navigation_url);
+
+  // WebContents::Close() should eventually call
+  // PrerenderWebContentsDelegate::CloseContents() that cancels prerendering.
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+  ASSERT_TRUE(prerender_web_contents);
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      prerender_web_contents);
+  prerender_web_contents->Close();
+
+  // WebContents created for the new-tab host will eventually be destroyed after
+  // host cancellation.
+  destroyed_watcher.Wait();
+  EXPECT_FALSE(prerender_helper().HasNewTabHandle(host_id));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      kFinalStatusTabClosedWithoutUserGesture, 1);
 }
 
 class PrerenderNewTabPageBrowserTest

@@ -6,11 +6,13 @@
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/containers/lru_cache.h"
@@ -19,7 +21,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -224,6 +225,23 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                       WallpaperLayout layout,
                                       const gfx::ImageSkia& image) = 0;
 
+  // Sets `sea_pen_image` received from the Manta API as system wallpaper for
+  // user with `account_id`.
+  // @see //components/manta
+  // Calls `callback` with boolean success. Can fail if `account_id` is not
+  // allowed to set wallpaper, or the image failed to decode.
+  virtual void SetSeaPenWallpaper(const AccountId& account_id,
+                                  const SeaPenImage& sea_pen_image,
+                                  SetWallpaperCallback callback) = 0;
+
+  // Sets the recently used Sea Pen wallpaper as system wallpaper for
+  // user with `account_id`.
+  // Calls `callback` with boolean success. Can fail if `account_id` is not
+  // allowed to set wallpaper, or the image failed to decode.
+  virtual void SetSeaPenWallpaperFromFile(const AccountId& account_id,
+                                          const base::FilePath& file_path,
+                                          SetWallpaperCallback callback) = 0;
+
   // Confirms the wallpaper being previewed to be set as the actual user
   // wallpaper. Must be called in preview mode.
   virtual void ConfirmPreviewWallpaper() = 0;
@@ -335,7 +353,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Returns a struct with info about the active user's wallpaper if there is an
   // active user.
-  virtual absl::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
+  virtual std::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
 
   // Returns true if the wallpaper setting (used to open the wallpaper picker)
   // should be visible.

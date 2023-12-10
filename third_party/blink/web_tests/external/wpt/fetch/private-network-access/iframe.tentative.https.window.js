@@ -11,8 +11,9 @@
 //
 // Spec: https://wicg.github.io/private-network-access/#integration-fetch
 //
-// These tests verify that contexts can navigate iframes to less-public address
-// spaces iff the target server responds affirmatively to preflight requests.
+// These tests verify that secure contexts can navigate iframes to less-public
+// address spaces iff the target server responds affirmatively to preflight
+// requests.
 //
 // This file covers only those tests that must execute in a secure context.
 // Other tests are defined in: iframe.tentative.window.js

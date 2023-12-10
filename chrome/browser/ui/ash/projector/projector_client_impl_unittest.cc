@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
@@ -32,7 +33,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -193,7 +193,7 @@ class ProjectorClientImplUnitTest
   // recognition fallback reason. If `expected_reason` is null, there will be no
   // metric recorded because there is no fallback to server based recognition.
   void MaybeReportToServerBasedFallbackReasonMetricAndVerify(
-      absl::optional<ash::OnDeviceToServerSpeechRecognitionFallbackReason>
+      std::optional<ash::OnDeviceToServerSpeechRecognitionFallbackReason>
           expected_reason,
       int expected_count) {
     ProjectorClientImpl* client =
@@ -388,7 +388,7 @@ TEST_P(ProjectorClientImplUnitTest, FallbackReasonMetric) {
       SetLocale(kEnglishUS);
 
       // No metric reports if SODA is available:
-      MaybeReportToServerBasedFallbackReasonMetricAndVerify(absl::nullopt, 0);
+      MaybeReportToServerBasedFallbackReasonMetricAndVerify(std::nullopt, 0);
     }
   }
 

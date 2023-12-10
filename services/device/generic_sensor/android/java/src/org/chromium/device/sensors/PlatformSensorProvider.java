@@ -21,9 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Lifetime is controlled by device::PlatformSensorProviderAndroid.
- */
+/** Lifetime is controlled by device::PlatformSensorProviderAndroid. */
 @JNINamespace("device")
 class PlatformSensorProvider {
     /**
@@ -33,9 +31,7 @@ class PlatformSensorProvider {
      */
     private SensorManager mSensorManager;
 
-    /**
-     * Thread that is handling all sensor events.
-     */
+    /** Thread that is handling all sensor events. */
     private HandlerThread mSensorsThread;
 
     /**
@@ -44,9 +40,7 @@ class PlatformSensorProvider {
      */
     private Handler mHandler;
 
-    /**
-     * Set of currently active PlatformSensor objects.
-     */
+    /** Set of currently active PlatformSensor objects. */
     private final Set<PlatformSensor> mActiveSensors = new HashSet<PlatformSensor>();
 
     /**
@@ -89,9 +83,7 @@ class PlatformSensorProvider {
         }
     }
 
-    /**
-     * Starts sensor handler thread.
-     */
+    /** Starts sensor handler thread. */
     protected void startSensorThread() {
         if (mSensorsThread == null) {
             mSensorsThread = new HandlerThread("SensorsHandlerThread");
@@ -100,9 +92,7 @@ class PlatformSensorProvider {
         }
     }
 
-    /**
-     * Stops sensor handler thread.
-     */
+    /** Stops sensor handler thread. */
     protected void stopSensorThread() {
         if (mSensorsThread != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -115,9 +105,7 @@ class PlatformSensorProvider {
         }
     }
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     protected PlatformSensorProvider(Context context) {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
@@ -141,9 +129,7 @@ class PlatformSensorProvider {
         return new PlatformSensorProvider(ContextUtils.getApplicationContext());
     }
 
-    /**
-     * Sets |mSensorManager| to null for testing purposes.
-     */
+    /** Sets |mSensorManager| to null for testing purposes. */
     @CalledByNative
     protected void setSensorManagerToNullForTesting() {
         mSensorManager = null;

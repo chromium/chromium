@@ -5,18 +5,18 @@
 #include "third_party/blink/renderer/core/layout/mathml/math_padded_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 
 namespace blink {
 
 MathPaddedLayoutAlgorithm::MathPaddedLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {}
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {}
 
 LayoutUnit MathPaddedLayoutAlgorithm::RequestedLSpace() const {
   return std::max(LayoutUnit(),
@@ -44,34 +44,34 @@ absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedDescent(
 }
 
 void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
-    NGBlockNode* content) const {
-  // Node() is a LayoutNGMathMLBlockWithAnonymousMrow node, which is either
+    BlockNode* content) const {
+  // Node() is a LayoutMathMLBlockWithAnonymousMrow node, which is either
   // empty or contains a single anonymous mrow child.
-  if (NGLayoutInputNode child = Node().FirstChild()) {
+  if (LayoutInputNode child = Node().FirstChild()) {
     DCHECK(!child.NextSibling());
     DCHECK(!child.IsOutOfFlowPositioned());
-    *content = To<NGBlockNode>(child);
+    *content = To<BlockNode>(child);
   }
 }
 
-const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+const LayoutResult* MathPaddedLayoutAlgorithm::Layout() {
+  DCHECK(!GetBreakToken());
 
-  NGBlockNode content = nullptr;
+  BlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);
   LayoutUnit content_ascent, content_descent;
   BoxStrut content_margins;
-  const NGLayoutResult* content_layout_result = nullptr;
+  const LayoutResult* content_layout_result = nullptr;
   if (content) {
-    NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), content);
+    ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
+        Node(), ChildAvailableSize(), GetConstraintSpace(), content);
     content_layout_result = content.Layout(constraint_space);
     const auto& content_fragment =
-        To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());
-    content_margins =
-        ComputeMarginsFor(constraint_space, content.Style(), ConstraintSpace());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           content_fragment);
+        To<PhysicalBoxFragment>(content_layout_result->GetPhysicalFragment());
+    content_margins = ComputeMarginsFor(constraint_space, content.Style(),
+                                        GetConstraintSpace());
+    LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
+                                content_fragment);
     content_ascent = content_margins.block_start +
                      fragment.FirstBaseline().value_or(fragment.BlockSize());
     content_descent =
@@ -95,13 +95,13 @@ const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -112,12 +112,11 @@ MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-
-  NGBlockNode content = nullptr;
+  BlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);
 
   const auto content_result = ComputeMinAndMaxContentContributionForMathChild(
-      Style(), ConstraintSpace(), content, ChildAvailableSize().block_size);
+      Style(), GetConstraintSpace(), content, ChildAvailableSize().block_size);
 
   bool depends_on_block_constraints =
       content_result.depends_on_block_constraints;

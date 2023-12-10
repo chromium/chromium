@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 
 #import <memory>
+#import <optional>
 
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/json/json_string_value_serializer.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -38,7 +40,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -55,35 +56,27 @@ const base::FilePath::CharType kPolicyDir[] = FILE_PATH_LITERAL("Policy");
 // `value` is nullptr, returns a string representing a `base::Value` of type
 // NONE.
 NSString* SerializeValue(const base::Value* value) {
-  base::Value none_value(base::Value::Type::NONE);
-
   if (!value) {
-    value = &none_value;
+    // The representation for base::Value::Type::NONE, according to the
+    // JSON spec at https://www.json.org/json-en.html
+    return @"null";
   }
-  DCHECK(value);
 
-  std::string serialized_value;
-  JSONStringValueSerializer serializer(&serialized_value);
-  serializer.Serialize(*value);
-  return base::SysUTF8ToNSString(serialized_value);
+  const std::optional<std::string> json_string = base::WriteJson(*value);
+  return base::SysUTF8ToNSString(json_string.value_or(std::string()));
 }
 
 // Takes a JSON-encoded string representing a `base::Value`, and deserializes
 // into a `base::Value` pointer. If nullptr is given, returns a pointer to a
 // `base::Value` of type NONE.
-absl::optional<base::Value> DeserializeValue(NSString* json_value) {
-  if (!json_value) {
-    return base::Value(base::Value::Type::NONE);
+std::optional<base::Value> DeserializeValue(NSString* json_value) {
+  if (!json_value.length) {
+    return base::Value();
   }
 
-  std::string json = base::SysNSStringToUTF8(json_value);
-  JSONStringValueDeserializer deserializer(json);
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr,
-                               /*error_message=*/nullptr);
-  return value ? absl::make_optional<base::Value>(std::move(*value))
-               : absl::nullopt;
+  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value));
 }
+
 }  // namespace
 
 @implementation PolicyAppInterface
@@ -111,7 +104,7 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
 }
 
 + (void)setPolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey {
-  absl::optional<base::Value> value = DeserializeValue(jsonValue);
+  std::optional<base::Value> value = DeserializeValue(jsonValue);
   policy::PolicyMap values;
   values.Set(base::SysNSStringToUTF8(policyKey), policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,

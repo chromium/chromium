@@ -177,9 +177,6 @@ class DownloadUIModel {
     // Icon for the secondary text in the subpage
     raw_ptr<const gfx::VectorIcon> warning_secondary_icon = nullptr;
 
-    // Label for the checkbox, empty if no checkbox is needed
-    std::u16string checkbox_label;
-
     // The command for the primary button
     absl::optional<DownloadCommands::Command> primary_button_command;
 
@@ -211,10 +208,8 @@ class DownloadUIModel {
                                   ui::ColorId color_id);
     BubbleUIInfo& AddSecondaryTextColor(ui::ColorId color_id);
     BubbleUIInfo& AddPrimaryButton(DownloadCommands::Command command);
-    BubbleUIInfo& AddCheckbox(const std::u16string& label);
     // Add button to the subpage. Only two buttons are supported.
     // The first one added is the primary, and the second one the secondary.
-    // The checkbox, if present, controls the secondary.
     BubbleUIInfo& AddPrimarySubpageButton(const std::u16string& label,
                                           DownloadCommands::Command command);
     BubbleUIInfo& AddSecondarySubpageButton(
@@ -247,7 +242,6 @@ class DownloadUIModel {
 
     ui::ColorId GetColorForSecondaryText() const;
     bool HasSubpage() const;
-    bool HasCheckbox() const;
   };
 #endif
 
@@ -575,15 +569,16 @@ class DownloadUIModel {
                               DownloadCommands::Command command);
 
   // Gets the information about the download bubbles subpage.
-  BubbleUIInfo GetBubbleUIInfo(bool is_download_bubble_v2) const;
+  BubbleUIInfo GetBubbleUIInfo() const;
   BubbleUIInfo GetBubbleUIInfoForInterrupted(
       offline_items_collection::FailState fail_state) const;
-  BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete(
-      bool is_download_bubble_v2) const;
+  BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete() const;
   virtual BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const;
   BubbleUIInfo GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing() const;
 
   // Returns |true| if this download should be displayed in the download bubble.
+  // Note that this may return true even if the download bubble is not enabled
+  // on the platform.
   virtual bool ShouldShowInBubble() const;
 
   // Should this download trigger a tailored warning?
@@ -632,11 +627,6 @@ class DownloadUIModel {
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns whether the DownloadBubbleV2 functionality is enabled.
-  bool IsBubbleV2Enabled() const;
-#endif
-
  private:
   friend class DownloadItemModelTest;
 
@@ -644,19 +634,8 @@ class DownloadUIModel {
 
   void set_status_text_builder_for_testing(bool for_bubble);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // The following two methods exist for simpler unit testing.
-  // Setting an override for whether the DownloadBubbleV2 functionality is
-  // enabled.
-  void set_is_bubble_v2_enabled_for_testing(bool is_enabled);
-#endif
-
   // Unowned Clock to override the time of "Now".
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
-
-#if !BUILDFLAG(IS_ANDROID)
-  absl::optional<bool> is_bubble_V2_enabled_for_testing_;
-#endif
 
   std::unique_ptr<StatusTextBuilderBase> status_text_builder_;
 

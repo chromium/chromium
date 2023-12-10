@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This is a util class for creating the property model of the PriceMessageCard.
- */
+/** This is a util class for creating the property model of the PriceMessageCard. */
 public class PriceMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for PriceMessageCardView.
@@ -29,7 +27,8 @@ public class PriceMessageCardViewModel {
      * @param data The {@link PriceMessageService.PriceMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
-    public static PropertyModel create(Context context,
+    public static PropertyModel create(
+            Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             PriceMessageService.PriceMessageData data) {
         boolean isIconVisible = data.getType() != PriceMessageType.PRICE_WELCOME;

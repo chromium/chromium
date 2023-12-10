@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] separate x/x text/javascript
+  assert_unreached: onerror Reached unreachable code
+[FAIL] combined x/x text/javascript
+  assert_unreached: onerror Reached unreachable code
+[FAIL] separate x/x;charset=windows-1252 text/javascript
+  assert_unreached: onerror Reached unreachable code
+[FAIL] combined x/x;charset=windows-1252 text/javascript
+  assert_unreached: onerror Reached unreachable code
+[FAIL] separate text/javascript x/x
+  assert_unreached: onload Reached unreachable code
+[FAIL] combined text/javascript x/x
+  assert_unreached: onload Reached unreachable code
+[FAIL] separate text/javascript;charset=windows-1252;" \" x/x
+  assert_equals: expected "â‚¬" but got "€"
+[FAIL] separate x/x;" x/y;\" text/javascript;charset=windows-1252;" text/javascript
+  assert_unreached: onerror Reached unreachable code
+[FAIL] combined x/x;" x/y;\" text/javascript;charset=windows-1252;" text/javascript
+  assert_unreached: onerror Reached unreachable code
+Harness: the test ran to completion.
+

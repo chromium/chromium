@@ -1,0 +1,45 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary WebPrintingRange {
+  unsigned long from;
+  unsigned long to;
+};
+
+dictionary WebPrintingResolution {
+  unsigned long crossFeedDirectionResolution;
+  unsigned long feedDirectionResolution;
+  WebPrintingResolutionUnits units;
+};
+
+dictionary WebPrintDocumentDescription {
+  required Blob data;
+};
+
+dictionary WebPrintJobTemplateAttributes {
+  unsigned long copies;
+
+  WebPrintingMultipleDocumentHandling multipleDocumentHandling;
+  WebPrintQuality printQuality;
+  WebPrintingSides sides;
+};
+
+dictionary WebPrinterAttributes {
+  DOMString printerName;
+
+  unsigned long copiesDefault;
+  WebPrintingRange copiesSupported;
+
+  WebPrintingMimeMediaType documentFormatDefault;
+  sequence<WebPrintingMimeMediaType> documentFormatSupported;
+
+  WebPrintingMultipleDocumentHandling multipleDocumentHandlingDefault;
+  sequence<WebPrintingMultipleDocumentHandling> multipleDocumentHandlingSupported;
+
+  WebPrintQuality printQualityDefault;
+  sequence<WebPrintQuality> printQualitySupported;
+
+  WebPrintingSides sidesDefault;
+  sequence<WebPrintingSides> sidesSupported;
+};

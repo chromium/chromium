@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
+<translation id="1155815720264022949">जुने टॅब बंद करायचे आहेत का?</translation>
 <translation id="1215127405478249895">टॅबचे पुनरावलोकन करा</translation>
 <translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
 <translation id="5076161749301278626">स्टोअरशी संबंधित पुनरावलोकने पहायची आहेत का?</translation>
 <translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{तुमच्याकडे तुम्ही अलीकडे न वापरलेला <ph name="TABS_COUNT_ONE" /> टॅब आहे}other{तुमच्याकडे तुम्ही अलीकडे न वापरलेले <ph name="TABS_COUNT_MANY" /> टॅब आहेत}}</translation>
 <translation id="5339733443032484186">तुमचा शेवटचा टॅब</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
+<translation id="5545379293264651575">पुनरावलोकन न करता बंद करा</translation>
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> टॅब असलेला टॅब गट बंद करा</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> टॅबची गटामध्ये विभागणी केली आहे</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">टॅब उजवीकडे हलवा</translation>
 <translation id="7966321538264951561">सूचना डिसमिस करा.</translation>
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
-<translation id="814503310257431685">सर्व पहा</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बंद करा}}</translation>
 <translation id="8398929769197326728">नवीन फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

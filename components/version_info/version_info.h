@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/notreached.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_piece.h"
 #include "build/branding_buildflags.h"
@@ -94,24 +93,6 @@ constexpr base::StringPiece GetOSType() {
 #else
   return "Unknown";
 #endif
-}
-
-// Returns a string equivalent of |channel|, independent of whether the build
-// is branded or not and without any additional modifiers.
-constexpr base::StringPiece GetChannelString(Channel channel) {
-  switch (channel) {
-    case Channel::STABLE:
-      return "stable";
-    case Channel::BETA:
-      return "beta";
-    case Channel::DEV:
-      return "dev";
-    case Channel::CANARY:
-      return "canary";
-    case Channel::UNKNOWN:
-      return "unknown";
-  }
-  NOTREACHED_NORETURN();
 }
 
 // Returns a list of sanitizers enabled in this build.

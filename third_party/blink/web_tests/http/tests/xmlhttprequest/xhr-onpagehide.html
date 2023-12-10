@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<body onpagehide="test('xhr-onpagehide.html')">
+<p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=10852">bug 10852</a>:
+REGRESSION: Reproducible crash in XMLHttpRequest::abort().
+<p>Press Cmd+R to reload (should not crash).</p>
+<!-- When running as an automated test, crashes when loading the next test case. -->
+<script>
+
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    function test(url)
+    {
+        req = new XMLHttpRequest();
+        req.open('GET', url, true);
+        req.send(null);
+    }
+
+</script>
+</body>
+</html>

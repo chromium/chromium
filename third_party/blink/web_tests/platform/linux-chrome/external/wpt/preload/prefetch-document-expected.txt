@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] different-site document prefetch without 'as' should not be consumed
+  assert_equals: expected 2 but got 1
+[FAIL] different-site document prefetch with 'as=document' should not be consumed
+  assert_equals: expected 2 but got 1
+Harness: the test ran to completion.

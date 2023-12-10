@@ -53,7 +53,9 @@ VideoLayout BuildLayout(base::span<const Screen> screens) {
 
 FractionalCoordinate BuildFractionalCoordinates(int id, float x, float y) {
   FractionalCoordinate result;
-  result.set_screen_id(id);
+  if (id != 0) {
+    result.set_screen_id(id);
+  }
   result.set_x(x);
   result.set_y(y);
   return result;
@@ -157,6 +159,23 @@ TEST_F(FractionalInputFilterTest, TouchEventInvalidScreenIsDropped) {
 
   EXPECT_CALL(mock_stub_, InjectTouchEvent(_)).Times(0);
   filter_.InjectTouchEvent(event);
+}
+
+TEST_F(FractionalInputFilterTest, FallbackUsedIfNoScreenId) {
+  filter_.set_video_layout(BuildLayout(kSimpleLayout));
+  filter_.set_fallback_geometry(
+      webrtc::DesktopRect::MakeXYWH(200, 100, 300, 200));
+
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(350, 200)));
+  filter_.InjectMouseEvent(MouseMoveEvent(0, 0.5, 0.5));
+}
+
+TEST_F(FractionalInputFilterTest, EventWithNoScreenIdAndNoFallbackIsDropped) {
+  filter_.set_video_layout(BuildLayout(kSimpleLayout));
+  filter_.set_fallback_geometry({});
+
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  filter_.InjectMouseEvent(MouseMoveEvent(0, 0.5, 0.5));
 }
 
 }  // namespace remoting::protocol

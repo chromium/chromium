@@ -4,18 +4,18 @@
 
 #include "ash/system/toast/system_nudge_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
-#include "ash/style/ash_color_id.h"
+#include "ash/style/keyboard_shortcut_view.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -55,6 +55,11 @@ views::Label* GetBodyLabel(views::View* nudge_view) {
       nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_BODY_LABEL));
 }
 
+KeyboardShortcutView* GetShortcutView(views::View* nudge_view) {
+  return views::AsViewClass<KeyboardShortcutView>(
+      nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_SHORTCUT_VIEW));
+}
+
 views::LabelButton* GetPrimaryButton(views::View* nudge_view) {
   return views::AsViewClass<views::LabelButton>(
       nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_PRIMARY_BUTTON));
@@ -67,15 +72,7 @@ views::LabelButton* GetSecondaryButton(views::View* nudge_view) {
 
 }  // namespace
 
-class SystemNudgeViewTest : public AshTestBase {
- public:
-  SystemNudgeViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSystemNudgeV2);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SystemNudgeViewTest = AshTestBase;
 
 TEST_F(SystemNudgeViewTest, TextOnly) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
@@ -136,7 +133,8 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   const std::u16string title_text = u"Title text";
   const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodIcon, kColorAshIconColorPrimary, /*icon_size=*/60);
+      vector_icons::kDogfoodIcon, cros_tokens::kCrosSysOnSurface,
+      /*icon_size=*/60);
 
   // Set up base nudge data and add a title and an image model.
   auto nudge_data = CreateBaseNudgeData();
@@ -191,6 +189,30 @@ TEST_F(SystemNudgeViewTest, CloseButton) {
   nudge_data.SetAnchorView(anchor_view.get());
   widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
   EXPECT_FALSE(GetCloseButton(widget->GetContentsView()));
+}
+
+// Test that the keyboard shortcut view is properly created in different
+// circumstances.
+TEST_F(SystemNudgeViewTest, ShortcutView) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Test that passing an empty vector of keyboard codes does not create a
+  // shortcut view, and should not have a close button.
+  auto nudge_data = CreateBaseNudgeData();
+  nudge_data.keyboard_codes = {};
+  widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
+  EXPECT_FALSE(GetShortcutView(widget->GetContentsView()));
+  EXPECT_FALSE(GetCloseButton(widget->GetContentsView()));
+
+  // Test that passing a non-empty vector of keyboard codes will create a
+  // shortcut view, and will have a close button.
+  nudge_data = CreateBaseNudgeData();
+  nudge_data.keyboard_codes = {ui::VKEY_CONTROL, ui::VKEY_SHIFT,
+                               ui::VKEY_MEDIA_LAUNCH_APP1};
+  widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
+  EXPECT_TRUE(GetShortcutView(widget->GetContentsView()));
+  ASSERT_TRUE(GetCloseButton(widget->GetContentsView()));
+  EXPECT_FALSE(GetCloseButton(widget->GetContentsView())->GetVisible());
 }
 
 }  // namespace ash

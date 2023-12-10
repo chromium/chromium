@@ -46,7 +46,7 @@ TEST_F(BorealisSurveyHandlerTest, GetSurveyDataReturnsCorrectData) {
   CreateFakeApp(profile_.get(), "some_app", "steam://rungameid/646570");
   base::flat_map<std::string, std::string> data = handler.GetSurveyData(
       ash::ProfileHelper::GetUserIdHashFromProfile(profile_.get()),
-      FakeAppId("some_app"), "Some Game", absl::optional<int>(646570));
+      FakeAppId("some_app"), "Some Game", std::optional<int>(646570));
   base::flat_map<std::string, std::string> expected_data = {
       {"appName", "Some Game"},
       {"board", ""},

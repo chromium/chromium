@@ -41,6 +41,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/os_crypt_mocker.h"
+#endif
+
 namespace {
 
 enum ReturnCodes {  // Possible results of the JavaScript code.
@@ -60,6 +64,10 @@ class PasswordGenerationInteractiveTest
     // the tests to hang on Mac.
     autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    OSCryptMocker::SetUp();
+#endif
+
     // Set observer for popup.
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -72,6 +80,7 @@ class PasswordGenerationInteractiveTest
   }
 
   void TearDownOnMainThread() override {
+    base::RunLoop().RunUntilIdle();
     PasswordManagerBrowserTestBase::TearDownOnMainThread();
 
     autofill::test::ReenableSystemServices();

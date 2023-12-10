@@ -17,6 +17,7 @@ include_rules = [
   "+components/policy",
   "+components/resources",
   "+components/security_state",
+  "+components/security_interstitials/core/insecure_form_util.h",
   "+components/security_interstitials/core/pref_names.h",
   "+components/signin/public",
   "+components/strings",
@@ -36,6 +37,7 @@ include_rules = [
   "+services/network/public",
   "+services/network/test",
   "+sql",
+  "+third_party/icu/fuzzers/fuzzer_utils.h", # For fuzz-tests.
   "+third_party/libaddressinput", # For address i18n.
   "+third_party/libphonenumber",  # For phone number i18n.
   "+third_party/re2",
@@ -50,9 +52,6 @@ specific_include_rules = {
   ".*test.(cc|h)": [
     "+components/device_reauth",
     "+content/public/test",
-  ],
-  "autofill_download_manager_unittest\.cc": [
-    "+services/network/test",
   ],
   "autofill_manager_unittest\.cc": [
     "+components/ukm",

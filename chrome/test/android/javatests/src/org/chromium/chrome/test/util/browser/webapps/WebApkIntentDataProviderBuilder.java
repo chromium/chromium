@@ -75,9 +75,7 @@ public class WebApkIntentDataProviderBuilder {
         return mManifestId;
     }
 
-    /**
-     * Builds {@link BrowserServicesIntentDataProvider} object using options that have been set.
-     */
+    /** Builds {@link BrowserServicesIntentDataProvider} object using options that have been set. */
     public BrowserServicesIntentDataProvider build() {
         return WebApkIntentDataProviderFactory.create(
                 new Intent(),
@@ -95,21 +93,21 @@ public class WebApkIntentDataProviderBuilder {
                 ColorUtils.INVALID_COLOR,
                 ColorUtils.INVALID_COLOR,
                 Color.WHITE,
-                false /* isPrimaryIconMaskable */,
-                false /* isSplashIconMaskable */,
-                mWebApkPackageName, /* shellApkVersion */
-                1,
+                /* isPrimaryIconMaskable= */ false,
+                /* isSplashIconMaskable= */ false,
+                mWebApkPackageName,
+                /* shellApkVersion= */ 1,
                 mManifestUrl,
                 mUrl,
                 manifestId(),
-                null /*appKey*/,
+                /* appKey= */ null,
                 WebApkDistributor.BROWSER,
-                new HashMap<String, String>() /* iconUrlToMurmur2HashMap */,
+                /* iconUrlToMurmur2HashMap= */ new HashMap<String, String>(),
                 null,
-                false /* forceNavigation */,
-                false /* isSplashProvidedByWebApk */,
+                /* forceNavigation= */ false,
+                /* isSplashProvidedByWebApk= */ false,
                 null,
-                new ArrayList<>() /* shortcutItems */,
+                /* shortcutItems= */ new ArrayList<>(),
                 mWebApkVersionCode);
     }
 }

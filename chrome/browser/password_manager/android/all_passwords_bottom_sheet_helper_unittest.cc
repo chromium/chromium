@@ -4,7 +4,7 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"

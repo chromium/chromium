@@ -519,6 +519,8 @@ class TestRebaseline(BaseTestCase):
                               'blink_web_tests (with patch)')
         self.command.rebaseline(self.options(), test_baseline_set)
 
+        self._mock_copier.find_baselines_to_copy.assert_called_once_with(
+            'reftest.html', 'txt', test_baseline_set)
         self._assert_baseline_downloaded(
             'https://results.api.cr.dev/reftest-actual.txt',
             'platform/test-win-win7/reftest-expected.txt')

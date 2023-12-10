@@ -1,0 +1,33 @@
+caption: Allow wallpaper search
+
+desc: |-
+  Allow wallpaper search
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow wallpaper search
+  name: Allowed
+  value: 0
+- caption: Allow wallpaper search, without logging
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Disable wallpaper search
+  name: Disabled
+  value: 2
+owners:
+- file://components/search/OWNERS
+- file://components/optimization_guide/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:121-
+- chrome_os:121-
+tags: []
+type: int-enum

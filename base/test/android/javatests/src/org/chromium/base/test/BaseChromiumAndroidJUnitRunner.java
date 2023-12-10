@@ -83,6 +83,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest";
     private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
+
     /**
      * This flag is supported by AndroidJUnitRunner.
      *
@@ -101,6 +102,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
      * https://developer.android.com/reference/android/support/test/runner/AndroidJUnitRunner.html
      */
     private static final String ARGUMENT_ANNOTATION = "annotation";
+
     private static final String ARGUMENT_NOT_ANNOTATION = "notAnnotation";
     private static final String ARGUMENT_LOG_ONLY = "log";
 
@@ -174,15 +176,19 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
 
         if (shouldListTests()) {
-            Log.w(TAG,
-                    String.format("Runner will list out tests info in JSON without running tests. "
+            Log.w(
+                    TAG,
+                    String.format(
+                            "Runner will list out tests info in JSON without running tests. "
                                     + "Arguments: %s",
                             arguments.toString()));
             listTests(); // Intentionally not calling super.onStart() to avoid additional work.
         } else {
             if (arguments != null && arguments.getString(ARGUMENT_LOG_ONLY) != null) {
-                Log.e(TAG,
-                        String.format("Runner will log the tests without running tests."
+                Log.e(
+                        TAG,
+                        String.format(
+                                "Runner will log the tests without running tests."
                                         + " If this cause a test run to fail, please report to"
                                         + " crbug.com/754015. Arguments: %s",
                                 arguments.toString()));
@@ -192,11 +198,11 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
             InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
-            // //third_party/mockito is looking for
-            // android.support.test.InstrumentationRegistry. Manually set target
-            // to override. We can remove this once we roll mockito to support
+            // //third_party/mockito is looking for android.support.test.InstrumentationRegistry.
+            // Manually set target to override. We can remove this once we roll mockito to support
             // androidx.test.
-            System.setProperty("org.mockito.android.target",
+            System.setProperty(
+                    "org.mockito.android.target",
                     InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
             setClangCoverageEnvIfEnabled();
             super.onStart();
@@ -211,12 +217,15 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void waitForIdleSync() {
         final CallbackHelper idleCallback = new CallbackHelper();
-        runOnMainSync(() -> {
-            Looper.myQueue().addIdleHandler(() -> {
-                idleCallback.notifyCalled();
-                return false;
-            });
-        });
+        runOnMainSync(
+                () -> {
+                    Looper.myQueue()
+                            .addIdleHandler(
+                                    () -> {
+                                        idleCallback.notifyCalled();
+                                        return false;
+                                    });
+                });
 
         try {
             idleCallback.waitForFirst((int) WAIT_FOR_IDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -273,7 +282,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             String msg = "Fatal exception when running tests";
             Log.e(TAG, msg, e);
             // report the exception to instrumentation out
-            results.putString(Instrumentation.REPORT_KEY_STREAMRESULT,
+            results.putString(
+                    Instrumentation.REPORT_KEY_STREAMRESULT,
                     msg + "\n" + Log.getStackTraceString(e));
         }
         finish(Activity.RESULT_OK, results);
@@ -439,6 +449,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
      */
     private static class ForgivingClassLoader extends ClassLoader {
         private final ClassLoader mDelegateLoader = getClass().getClassLoader();
+
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             try {
@@ -478,7 +489,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static boolean isTestClass(Class<?> loadedClass) {
         try {
             if (Modifier.isAbstract(loadedClass.getModifiers())) {
-                Log.d(TAG,
+                Log.d(
+                        TAG,
                         String.format(
                                 "Skipping abstract class %s: not a test", loadedClass.getName()));
                 return false;
@@ -529,7 +541,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
     // copied from junit.framework.TestSuite
     private static boolean isTestMethod(Method m) {
-        return m.getParameterTypes().length == 0 && m.getName().startsWith("test")
+        return m.getParameterTypes().length == 0
+                && m.getName().startsWith("test")
                 && m.getReturnType().equals(Void.TYPE);
     }
 
@@ -608,8 +621,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
             task.finishAndRemoveTask();
         }
-        long endTime = SystemClock.uptimeMillis()
-                + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
+        long endTime =
+                SystemClock.uptimeMillis()
+                        + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
         while (activityManager.getAppTasks().size() != 0 && SystemClock.uptimeMillis() < endTime) {
             try {
                 Thread.sleep(FINISH_APP_TASKS_POLL_INTERVAL_MS);
@@ -640,7 +654,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                                 if (ApplicationStatus.isEveryActivityDestroyed()) {
                                     // Allow onDestroy to finish running before we notify.
                                     mainHandler.post(
-                                            () -> { allDestroyedCalledback.notifyCalled(); });
+                                            () -> {
+                                                allDestroyedCalledback.notifyCalled();
+                                            });
                                     ApplicationStatus.unregisterActivityStateListener(this);
                                 }
                                 break;
@@ -655,16 +671,18 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                     }
                 };
 
-        mainHandler.post(() -> {
-            if (ApplicationStatus.isEveryActivityDestroyed()) {
-                allDestroyedCalledback.notifyCalled();
-            } else {
-                ApplicationStatus.registerStateListenerForAllActivities(activityStateListener);
-            }
-            for (Activity a : ApplicationStatus.getRunningActivities()) {
-                if (!a.isFinishing()) a.finishAndRemoveTask();
-            }
-        });
+        mainHandler.post(
+                () -> {
+                    if (ApplicationStatus.isEveryActivityDestroyed()) {
+                        allDestroyedCalledback.notifyCalled();
+                    } else {
+                        ApplicationStatus.registerStateListenerForAllActivities(
+                                activityStateListener);
+                    }
+                    for (Activity a : ApplicationStatus.getRunningActivities()) {
+                        if (!a.isFinishing()) a.finishAndRemoveTask();
+                    }
+                });
         try {
             allDestroyedCalledback.waitForFirst();
         } catch (TimeoutException e) {
@@ -672,10 +690,11 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             // called for a handful of tests. We ignore these exceptions.
             Log.w(TAG, "Activity failed to be destroyed after a test");
 
-            runOnMainSync(() -> {
-                // Make sure subsequent tests don't have these notifications firing.
-                ApplicationStatus.unregisterActivityStateListener(activityStateListener);
-            });
+            runOnMainSync(
+                    () -> {
+                        // Make sure subsequent tests don't have these notifications firing.
+                        ApplicationStatus.unregisterActivityStateListener(activityStateListener);
+                    });
         }
     }
 
@@ -720,14 +739,15 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static boolean isSharedPrefFileAllowed(File f) {
         // WebView prefs need to stay because webview tests have no (good) way of hooking
         // SharedPreferences for instantiated WebViews.
-        String[] allowlist = new String[] {
-                "WebViewChromiumPrefs.xml",
-                "org.chromium.android_webview.devui.MainActivity.xml",
-                "AwComponentUpdateServicePreferences.xml",
-                "ComponentsProviderServicePreferences.xml",
-                "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
-                "AwOriginVisitLoggerPrefs.xml",
-        };
+        String[] allowlist =
+                new String[] {
+                    "WebViewChromiumPrefs.xml",
+                    "org.chromium.android_webview.devui.MainActivity.xml",
+                    "AwComponentUpdateServicePreferences.xml",
+                    "ComponentsProviderServicePreferences.xml",
+                    "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
+                    "AwOriginVisitLoggerPrefs.xml",
+                };
         for (String name : allowlist) {
             // SharedPreferences may also access a ".bak" backup file from a previous run. See
             // https://crbug.com/1462105#c4 and
@@ -761,21 +781,25 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             }
         }
         if (!badFiles.isEmpty()) {
-            String errorMsg = "Found unexpected shared preferences file(s) after test ran.\n"
-                    + "All code should use ContextUtils.getApplicationContext() when accessing "
-                    + "SharedPreferences so that tests are hooked to use InMemorySharedPreferences."
-                    + " This could also mean needing to override getSharedPreferences() on custom "
-                    + "Context subclasses (e.g. ChromeBaseAppCompatActivity does this to make "
-                    + "Preferences screens work).\n\n";
+            String errorMsg =
+                    "Found unexpected shared preferences file(s) after test ran.\n"
+                        + "All code should use ContextUtils.getApplicationContext() when accessing"
+                        + " SharedPreferences so that tests are hooked to use"
+                        + " InMemorySharedPreferences. This could also mean needing to override"
+                        + " getSharedPreferences() on custom Context subclasses (e.g."
+                        + " ChromeBaseAppCompatActivity does this to make Preferences screens"
+                        + " work).\n\n";
 
-            SharedPreferences testPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                    "test", Context.MODE_PRIVATE);
+            SharedPreferences testPrefs =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences("test", Context.MODE_PRIVATE);
             if (!(testPrefs instanceof InMemorySharedPreferences)) {
-                errorMsg += String.format(
-                        "ContextUtils.getApplicationContext() was set to type \"%s\", which does "
-                                + "not delegate to InMemorySharedPreferencesContext (this is "
-                                + "likely the issues).\n\n",
-                        ContextUtils.getApplicationContext().getClass().getName());
+                errorMsg +=
+                        String.format(
+                                "ContextUtils.getApplicationContext() was set to type \"%s\", which"
+                                    + " does not delegate to InMemorySharedPreferencesContext (this"
+                                    + " is likely the issues).\n\n",
+                                ContextUtils.getApplicationContext().getClass().getName());
             }
 
             errorMsg += "Files:\n * " + TextUtils.join("\n * ", badFiles);
@@ -783,15 +807,13 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    /**
-     * Configure the required environment variable if Clang coverage argument exists.
-     */
+    /** Configure the required environment variable if Clang coverage argument exists. */
     private void setClangCoverageEnvIfEnabled() {
         String clangProfileFile =
                 InstrumentationRegistry.getArguments().getString(EXTRA_CLANG_COVERAGE_DEVICE_FILE);
         if (clangProfileFile != null) {
             try {
-                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /*override*/ true);
+                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /* override= */ true);
             } catch (Exception e) {
                 Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
             }

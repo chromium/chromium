@@ -4,6 +4,15 @@
 
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,14 +24,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
 import android.app.Activity;
@@ -93,7 +94,7 @@ public class PartialCustomTabDisplayManagerTest {
         when(intentData.getSideSheetSlideInBehavior())
                 .thenReturn(ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
         when(intentData.getActivitySideSheetRoundedCornersPosition())
-                .thenReturn(ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                .thenReturn(ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         PartialCustomTabDisplayManager displayManager =
                 new PartialCustomTabDisplayManager(
                         mPCCTTestRule.mActivity,
@@ -108,9 +109,7 @@ public class PartialCustomTabDisplayManagerTest {
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
                 (type, intentData0, maximized) -> {
-                    var strategy =
-                            sizeStrategyCreator.createForType(
-                                    type, intentData0, maximized);
+                    var strategy = sizeStrategyCreator.createForType(type, intentData0, maximized);
                     strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
                     strategy.setMockViewForTesting(
                             mPCCTTestRule.mCoordinatorLayout,

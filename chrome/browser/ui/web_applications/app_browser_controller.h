@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_APP_BROWSER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -17,7 +18,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/color/color_provider.h"
@@ -123,10 +123,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   virtual ui::ImageModel GetWindowIcon() const = 0;
 
   // Returns the color of the title bar.
-  virtual absl::optional<SkColor> GetThemeColor() const;
+  virtual std::optional<SkColor> GetThemeColor() const;
 
   // Returns the background color of the page.
-  virtual absl::optional<SkColor> GetBackgroundColor() const;
+  virtual std::optional<SkColor> GetBackgroundColor() const;
 
   // Returns the title to be displayed in the window title bar.
   virtual std::u16string GetTitle() const;
@@ -264,7 +264,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
                       const ui::ColorProviderKey& key) const override;
 
   void UpdateDraggableRegion(const SkRegion& region);
-  const absl::optional<SkRegion>& draggable_region() const {
+  const std::optional<SkRegion>& draggable_region() const {
     return draggable_region_;
   }
 
@@ -306,10 +306,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   scoped_refptr<BrowserThemePack> theme_pack_;
   std::unique_ptr<ui::ThemeProvider> theme_provider_;
-  absl::optional<SkColor> last_theme_color_;
-  absl::optional<SkColor> last_background_color_;
+  std::optional<SkColor> last_theme_color_;
+  std::optional<SkColor> last_background_color_;
 
-  absl::optional<SkRegion> draggable_region_ = absl::nullopt;
+  std::optional<SkRegion> draggable_region_ = std::nullopt;
 
   base::OnceClosure on_draggable_region_set_for_testing_;
 };

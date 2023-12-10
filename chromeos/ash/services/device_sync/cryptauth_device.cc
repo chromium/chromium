@@ -29,11 +29,11 @@ const char kBetterTogetherDeviceMetadataDictKey[] =
     "better_together_device_metadata";
 const char kFeatureStatesDictKey[] = "feature_states";
 
-absl::optional<
+std::optional<
     std::map<multidevice::SoftwareFeature, multidevice::SoftwareFeatureState>>
 FeatureStatesFromDictionary(const base::Value::Dict* dict) {
   if (!dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::map<multidevice::SoftwareFeature, multidevice::SoftwareFeatureState>
@@ -42,7 +42,7 @@ FeatureStatesFromDictionary(const base::Value::Dict* dict) {
     int feature;
     if (!base::StringToInt(feature_state_pair.first, &feature) ||
         !feature_state_pair.second.is_int()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     feature_states[static_cast<multidevice::SoftwareFeature>(feature)] =
@@ -83,32 +83,32 @@ base::Value::Dict FeatureStatesToReadableDictionary(
 }  // namespace
 
 // static
-absl::optional<CryptAuthDevice> CryptAuthDevice::FromDictionary(
+std::optional<CryptAuthDevice> CryptAuthDevice::FromDictionary(
     const base::Value::Dict& dict) {
-  absl::optional<std::string> instance_id =
+  std::optional<std::string> instance_id =
       util::DecodeFromValueString(dict.Find(kInstanceIdDictKey));
   if (!instance_id || instance_id->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<std::string> device_name =
+  std::optional<std::string> device_name =
       util::DecodeFromValueString(dict.Find(kDeviceNameDictKey));
   if (!device_name || device_name->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<std::string> device_better_together_public_key =
+  std::optional<std::string> device_better_together_public_key =
       util::DecodeFromValueString(
           dict.Find(kDeviceBetterTogetherPublicKeyDictKey));
   if (!device_better_together_public_key ||
       device_better_together_public_key->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Time> last_update_time =
+  std::optional<base::Time> last_update_time =
       ::base::ValueToTime(dict.Find(kLastUpdateTimeDictKey));
   if (!last_update_time)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>
+  std::optional<cryptauthv2::BetterTogetherDeviceMetadata>
       better_together_device_metadata;
   const base::Value* metadata_value =
       dict.Find(kBetterTogetherDeviceMetadataDictKey);
@@ -116,15 +116,15 @@ absl::optional<CryptAuthDevice> CryptAuthDevice::FromDictionary(
     better_together_device_metadata = util::DecodeProtoMessageFromValueString<
         cryptauthv2::BetterTogetherDeviceMetadata>(metadata_value);
     if (!better_together_device_metadata)
-      return absl::nullopt;
+      return std::nullopt;
   }
 
-  absl::optional<
+  std::optional<
       std::map<multidevice::SoftwareFeature, multidevice::SoftwareFeatureState>>
       feature_states =
           FeatureStatesFromDictionary(dict.FindDict(kFeatureStatesDictKey));
   if (!feature_states)
-    return absl::nullopt;
+    return std::nullopt;
 
   return CryptAuthDevice(*instance_id, *device_name,
                          *device_better_together_public_key, *last_update_time,
@@ -141,7 +141,7 @@ CryptAuthDevice::CryptAuthDevice(
     const std::string& device_name,
     const std::string& device_better_together_public_key,
     const base::Time& last_update_time,
-    const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+    const std::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
         better_together_device_metadata,
     const std::map<multidevice::SoftwareFeature,
                    multidevice::SoftwareFeatureState>& feature_states)

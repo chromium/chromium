@@ -976,37 +976,6 @@ bool VideoCaptureDeviceMFWin::CreateMFCameraControlMonitor() {
   return true;
 }
 
-bool VideoCaptureDeviceMFWin::CreateMFSensorActivityMonitor() {
-  DCHECK(video_callback_);
-
-  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
-  // Just get a DLL module handle here, once.
-  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
-  if (!module) {
-    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
-    return false;
-  }
-
-  using MFCreateSensorActivityMonitorType =
-      decltype(&MFCreateSensorActivityMonitor);
-  static const MFCreateSensorActivityMonitorType create_function =
-      reinterpret_cast<MFCreateSensorActivityMonitorType>(
-          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
-  if (!create_function) {
-    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
-    return false;
-  }
-
-  HRESULT hr =
-      create_function(activities_report_callback_.get(), &activity_monitor_);
-  if (!activity_monitor_) {
-    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
-               << logging::SystemErrorCodeToString(hr);
-    return false;
-  }
-  return true;
-}
-
 HRESULT VideoCaptureDeviceMFWin::ExecuteHresultCallbackWithRetries(
     base::RepeatingCallback<HRESULT()> callback,
     MediaFoundationFunctionRequiringRetry which_function) {
@@ -1772,6 +1741,24 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
               ? mojom::BackgroundBlurMode::BLUR
               : mojom::BackgroundBlurMode::OFF;
     }
+
+    hr = extended_camera_controller_->GetExtendedCameraControl(
+        MF_CAPTURE_ENGINE_MEDIASOURCE,
+        KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW,
+        &extended_camera_control);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraControl for digital window", hr);
+    if (SUCCEEDED(hr) &&
+        (extended_camera_control->GetCapabilities() &
+         KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING)) {
+      photo_capabilities->supported_face_framing_modes = {
+          mojom::MeteringMode::NONE, mojom::MeteringMode::CONTINUOUS};
+      photo_capabilities->current_face_framing_mode =
+          (extended_camera_control->GetFlags() &
+           KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING)
+              ? mojom::MeteringMode::CONTINUOUS
+              : mojom::MeteringMode::NONE;
+    }
   }
 
   std::move(callback).Run(std::move(photo_capabilities));
@@ -1959,6 +1946,18 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
       hr = SetAndCommitExtendedCameraControlFlags(
           KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION, flag);
       DLOG_IF_FAILED_WITH_HRESULT("Background blur mode config failed", hr);
+      if (FAILED(hr)) {
+        return;
+      }
+    }
+    if (settings->has_face_framing_mode) {
+      const ULONGLONG flags =
+          settings->face_framing_mode == mojom::MeteringMode::CONTINUOUS
+              ? KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING
+              : KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
+      hr = SetAndCommitExtendedCameraControlFlags(
+          KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW, flags);
+      DLOG_IF_FAILED_WITH_HRESULT("Auto face framing config failed", hr);
       if (FAILED(hr)) {
         return;
       }
@@ -2427,7 +2426,8 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
           device_descriptor_.device_id);
     }
     if (!activity_monitor_) {
-      bool created = CreateMFSensorActivityMonitor();
+      bool created = CreateMFSensorActivityMonitor(
+          activities_report_callback_.get(), &activity_monitor_);
       if (!created) {
         // Can't rely on activity monitor to check if the camera is in use.
         // Just report the error.
@@ -2627,6 +2627,36 @@ void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
   if (activity_monitor_) {
     activity_monitor_->Stop();
   }
+}
+
+bool CreateMFSensorActivityMonitor(
+    IMFSensorActivitiesReportCallback* report_callback,
+    IMFSensorActivityMonitor** monitor) {
+  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
+  // Just get a DLL module handle here, once.
+  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
+  if (!module) {
+    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
+    return false;
+  }
+
+  using MFCreateSensorActivityMonitorType =
+      decltype(&MFCreateSensorActivityMonitor);
+  static const MFCreateSensorActivityMonitorType create_function =
+      reinterpret_cast<MFCreateSensorActivityMonitorType>(
+          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
+  if (!create_function) {
+    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
+    return false;
+  }
+
+  HRESULT hr = create_function(report_callback, monitor);
+  if (!*monitor) {
+    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return true;
 }
 
 }  // namespace media

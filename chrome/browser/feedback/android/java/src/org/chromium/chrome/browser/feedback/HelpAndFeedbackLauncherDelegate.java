@@ -12,9 +12,7 @@ import android.provider.Browser;
 
 import androidx.annotation.NonNull;
 
-/**
- * Delegate that handles the display of the HelpAndFeedback flows.
- */
+/** Delegate that handles the display of the HelpAndFeedback flows. */
 public interface HelpAndFeedbackLauncherDelegate {
     static final String FALLBACK_SUPPORT_URL = "https://support.google.com/chrome/topic/6069782";
 

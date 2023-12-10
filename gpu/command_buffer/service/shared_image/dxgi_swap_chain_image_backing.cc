@@ -14,7 +14,6 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
@@ -24,7 +23,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -35,9 +33,16 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
+#endif
+
+#if BUILDFLAG(USE_DAWN)
 using dawn::native::d3d::ExternalImageDXGI;
 using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
 using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
+#endif
 
 namespace gpu {
 namespace {
@@ -197,7 +202,7 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
 
   gfx::Rect pending_swap_rect = swap_rect;
 
-  absl::optional<SkColor4f> initialize_color;
+  std::optional<SkColor4f> initialize_color;
 
   // SharedImage allows an incomplete first draw so long as we only read from
   // the part that we've previously drawn to. However, IDXGISwapChain requires a
@@ -335,9 +340,11 @@ DXGISwapChainImageBacking::ProduceSkiaGanesh(
       return nullptr;
     }
 
+    auto gl_format_desc = context_state->GetGLFormatCaps().ToGLFormatDesc(
+        format(), /*plane_index=*/0);
     gl_texture_holder_ = D3DImageBacking::CreateGLTexture(
-        format(), size(), color_space(), backbuffer_texture, GL_TEXTURE_2D, 0,
-        0, dxgi_swap_chain_);
+        gl_format_desc, size(), color_space(), backbuffer_texture,
+        GL_TEXTURE_2D, /*array_slice=*/0, /*plane_index=*/0, dxgi_swap_chain_);
     if (!gl_texture_holder_) {
       LOG(ERROR) << "Failed to create GL texture.";
       return nullptr;
@@ -355,6 +362,9 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  DCHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteDawn);
+
   auto device = context_state->dawn_context_provider()->GetDevice();
   if (!external_image_) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer_texture;
@@ -382,10 +392,13 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
 
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
-      context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      /*plane_index=*/0, /*is_yuv_plane=*/false);
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+#else
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
+#if BUILDFLAG(USE_DAWN)
 wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
@@ -411,5 +424,6 @@ void DXGISwapChainImageBacking::EndAccessDawn(const wgpu::Device& device,
   external_image_->EndAccess(texture.Get(), &descriptor);
   texture.Destroy();
 }
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

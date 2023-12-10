@@ -6,7 +6,7 @@ include_rules = [
     "+mojo/public/cpp/system/simple_watcher.h",
     "+net/base/net_errors.h",
     "+net/base/request_priority.h",
-    "+net/http/http_response_info.h",
+    "+net/http/http_connection_info.h",
     "+services/network/public/cpp",
     "+services/network/public/mojom",
     "+storage/common/quota/padding_key.h",

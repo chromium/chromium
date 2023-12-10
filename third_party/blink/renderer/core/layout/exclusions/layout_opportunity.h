@@ -12,9 +12,9 @@
 
 namespace blink {
 
-class NGConstraintSpace;
+class ConstraintSpace;
 
-// This struct represents an 2D-area where a NGFragment can fit within the
+// This struct represents an 2D-area where a LogicalFragment can fit within the
 // exclusion space. A layout opportunity is produced by the exclusion space by
 // calling FindLayoutOpportunity, or AllLayoutOpportunities.
 //
@@ -51,7 +51,7 @@ struct CORE_EXPORT LayoutOpportunity final {
   // Calculates a line layout opportunity which takes into account any shapes
   // which may affect the available inline size for the line breaker.
   LineLayoutOpportunity ComputeLineLayoutOpportunity(
-      const NGConstraintSpace& space,
+      const ConstraintSpace& space,
       LayoutUnit line_block_size,
       LayoutUnit block_delta) const {
     return LineLayoutOpportunity(
@@ -67,10 +67,10 @@ struct CORE_EXPORT LayoutOpportunity final {
   }
 
  private:
-  LayoutUnit ComputeLineLeftOffset(const NGConstraintSpace&,
+  LayoutUnit ComputeLineLeftOffset(const ConstraintSpace&,
                                    LayoutUnit line_block_size,
                                    LayoutUnit block_delta) const;
-  LayoutUnit ComputeLineRightOffset(const NGConstraintSpace&,
+  LayoutUnit ComputeLineRightOffset(const ConstraintSpace&,
                                     LayoutUnit line_block_size,
                                     LayoutUnit block_delta) const;
 };

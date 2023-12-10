@@ -47,7 +47,7 @@ class TransferCacheTest : public testing::Test {
         gpu::SharedMemoryLimits(), nullptr, nullptr);
 
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
-    ASSERT_TRUE(context_->GetCapabilities().supports_oop_raster);
+    ASSERT_TRUE(context_->GetCapabilities().gpu_rasterization);
   }
 
   void TearDown() override { context_.reset(); }

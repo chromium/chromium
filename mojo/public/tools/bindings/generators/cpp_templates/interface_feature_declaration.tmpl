@@ -1,0 +1,15 @@
+{#--- Included in module.h.tmpl - namespace mojo::internal -#}
+{#--- See runtime_feature.h for generic templates. -#}
+{%- set iface_name=interface|get_qualified_name_for_kind %}
+{%- set feature_name=interface.runtime_feature|get_qualified_name_for_feature %}
+template <>
+inline bool GetRuntimeFeature_IsEnabled<{{iface_name}}>() {
+  return {{iface_name}}::RuntimeFeature_IsEnabled_(false);
+}
+template <>
+inline bool GetRuntimeFeature_ExpectEnabled<{{iface_name}}>() {
+  return {{iface_name}}::RuntimeFeature_IsEnabled_(true);
+}
+{#--- Trait informs restrict statements in (remote|receiver)_set.h  ---#}
+template <>
+inline constexpr bool kIsRuntimeFeatureGuarded<{{iface_name}}> = true;

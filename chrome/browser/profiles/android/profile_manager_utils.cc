@@ -22,10 +22,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-void FlushStoragePartition(content::StoragePartition* partition) {
-  partition->Flush();
-}
-
 void CommitPendingWritesForProfile(Profile* profile) {
   // These calls are asynchronous. They may not finish (and may not even
   // start!) before the Android OS kills our process. But we can't wait for them
@@ -35,8 +31,7 @@ void CommitPendingWritesForProfile(Profile* profile) {
       ->GetCookieManagerForBrowserProcess()
       ->FlushCookieStore(
           network::mojom::CookieManager::FlushCookieStoreCallback());
-  profile->ForEachLoadedStoragePartition(
-      base::BindRepeating(FlushStoragePartition));
+  profile->ForEachLoadedStoragePartition(&content::StoragePartition::Flush);
 }
 
 void RemoveSessionCookiesForProfile(Profile* profile) {

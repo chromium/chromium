@@ -18,16 +18,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.variations.VariationsSwitches;
 
-/**
- * Tests that the variations headers are correctly set.
- */
+/** Tests that the variations headers are correctly set. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
-        VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"})
+@CommandLineFlags.Add({
+    VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
+    VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"
+})
 public class VariationsHeadersTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public VariationsHeadersTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

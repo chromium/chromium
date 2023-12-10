@@ -60,7 +60,7 @@ void GooglePhotosWallpaperManager::OnGooglePhotosAuthenticationTokenFetched(
     ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
     const AccountId& account_id,
     LoadGooglePhotosWallpaperCallback callback,
-    const absl::optional<std::string>& access_token) {
+    const std::optional<std::string>& access_token) {
   wallpaper_image_downloader_->DownloadGooglePhotosImage(
       photo->url, account_id, access_token, std::move(callback));
 }

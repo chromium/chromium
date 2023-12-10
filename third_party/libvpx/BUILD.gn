@@ -98,7 +98,10 @@ config("libvpx_config") {
 
 # This config is applied to targets that depend on libvpx.
 config("libvpx_external_config") {
-  include_dirs = [ "source/libvpx" ]
+  include_dirs = [
+    "source/libvpx",
+    platform_include_dir,
+  ]
 }
 
 if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {

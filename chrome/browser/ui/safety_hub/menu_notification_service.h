@@ -8,16 +8,17 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct MenuNotificationEntry {
   int command = 0;
@@ -68,6 +69,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
       UnusedSitePermissionsService* unused_site_permissions_service,
       NotificationPermissionsReviewService* notification_permissions_service,
       extensions::CWSInfoService* extension_info_service,
+      PasswordStatusCheckService* password_check_service,
       Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
@@ -77,9 +79,19 @@ class SafetyHubMenuNotificationService : public KeyedService {
   ~SafetyHubMenuNotificationService() override;
 
   // Returns the CommandID and notification string that should be shown in the
-  // three-dot menu. When no notification should be shown, absl::nullopt will be
+  // three-dot menu. When no notification should be shown, std::nullopt will be
   // returned.
-  absl::optional<MenuNotificationEntry> GetNotificationToShow();
+  std::optional<MenuNotificationEntry> GetNotificationToShow();
+
+  // Dismisses all the active menu notifications.
+  void DismissActiveNotification();
+
+  // Dismisses the active menu notification of the password module.
+  void DismissPasswordNotification();
+
+  // Returns the module of the notification that is currently active.
+  std::optional<safety_hub::SafetyHubModuleType> GetModuleOfActiveNotification()
+      const;
 
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(
@@ -87,8 +99,8 @@ class SafetyHubMenuNotificationService : public KeyedService {
 
  private:
   // Gets the latest result from each Safety Hub service. Will return
-  // absl::nullopt when there is no result from one of the services.
-  absl::optional<ResultMap> GetResultsFromAllModules();
+  // std::nullopt when there is no result from one of the services.
+  std::optional<ResultMap> GetResultsFromAllModules();
 
   // Stores the notifications (which should have their results updated) as a
   // dict in the prefs.
@@ -124,6 +136,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
            "notification-permissions"},
           {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
           {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
+          {safety_hub::SafetyHubModuleType::PASSWORDS, "passwords"},
       };
 
   // Preference service that persists the notifications.

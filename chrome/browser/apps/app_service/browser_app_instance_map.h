@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/functional/identity.h"
 #include "base/ranges/algorithm.h"
 
 namespace apps {

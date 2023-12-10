@@ -53,12 +53,13 @@ public class ChromeTransitionDrawable extends LayerDrawable {
          */
         public TransitionHandle withEndAction(@NonNull Runnable endAction) {
             mAnimator.removeAllListeners();
-            mAnimator.addListener(new CancelAwareAnimatorListener() {
-                @Override
-                public void onEnd(Animator animator) {
-                    endAction.run();
-                }
-            });
+            mAnimator.addListener(
+                    new CancelAwareAnimatorListener() {
+                        @Override
+                        public void onEnd(Animator animator) {
+                            endAction.run();
+                        }
+                    });
             return this;
         }
     }
@@ -76,12 +77,9 @@ public class ChromeTransitionDrawable extends LayerDrawable {
                 }
             };
 
-    @NonNull
-    private final Drawable mInitialDrawable;
-    @NonNull
-    private final Drawable mFinalDrawable;
-    @NonNull
-    private ObjectAnimator mAnimator;
+    @NonNull private final Drawable mInitialDrawable;
+    @NonNull private final Drawable mFinalDrawable;
+    @NonNull private ObjectAnimator mAnimator;
 
     private boolean mCrossFade;
     private int mProgress;

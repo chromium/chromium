@@ -26,10 +26,6 @@ class ProcessNode;
 
 using execution_context_priority::PriorityAndReason;
 
-namespace execution_context_priority {
-class InheritClientPriorityVoter;
-}
-
 // Represents a running instance of a WorkerGlobalScope.
 // See https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope.
 //
@@ -95,6 +91,10 @@ class WorkerNode : public Node {
   // takes into account redirections.
   virtual const GURL& GetURL() const = 0;
 
+  // Returns the current priority of the worker, and the reason for the worker
+  // having that particular priority.
+  virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
+
   // Returns the frames that are clients of this worker.
   virtual const base::flat_set<const FrameNode*> GetClientFrames() const = 0;
 
@@ -146,14 +146,6 @@ class WorkerNode : public Node {
   // kilobytes. This is an estimate because PMF is computed by process, and a
   // process can host multiple workers.
   virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
-
- private:
-  friend class execution_context_priority::InheritClientPriorityVoter;
-
-  // Returns the current priority of the worker, and the reason for the worker
-  // having that particular priority.
-  // Note: Do not use, not ready for prime time.
-  virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to

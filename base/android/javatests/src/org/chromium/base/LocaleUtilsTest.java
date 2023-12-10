@@ -21,9 +21,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.Locale;
 
-/**
- * Tests for the LocaleUtils class.
- */
+/** Tests for the LocaleUtils class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class LocaleUtilsTest {

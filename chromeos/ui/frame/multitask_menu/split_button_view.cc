@@ -8,8 +8,10 @@
 
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -79,6 +81,8 @@ std::u16string GetA11yName(SplitButtonView::SplitButtonType type,
 // SplitButton:
 // A button used for SplitButtonView to trigger snapping.
 class SplitButtonView::SplitButton : public views::Button {
+  METADATA_HEADER(SplitButton, views::Button)
+
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
@@ -100,6 +104,19 @@ class SplitButtonView::SplitButton : public views::Button {
   void set_button_color(SkColor color) { button_color_ = color; }
 
   // views::Button:
+  void StateChanged(views::Button::ButtonState old_state) override {
+    if (GetState() == views::Button::STATE_HOVERED) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kSnap,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
+
+    if (IsHoveredOrPressedState(old_state) ||
+        IsHoveredOrPressedState(GetState())) {
+      hovered_pressed_callback_.Run();
+    }
+  }
+
   void OnPaintBackground(gfx::Canvas* canvas) override {
     cc::PaintFlags pattern_flags;
     pattern_flags.setAntiAlias(true);
@@ -114,13 +131,6 @@ class SplitButtonView::SplitButton : public views::Button {
     canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
   }
 
-  void StateChanged(ButtonState old_state) override {
-    if (IsHoveredOrPressedState(old_state) ||
-        IsHoveredOrPressedState(GetState())) {
-      hovered_pressed_callback_.Run();
-    }
-  }
-
  private:
   SkColor button_color_ = SK_ColorTRANSPARENT;
   // The inset between the button window pattern and the border.
@@ -130,6 +140,9 @@ class SplitButtonView::SplitButton : public views::Button {
   // color.
   base::RepeatingClosure hovered_pressed_callback_;
 };
+
+BEGIN_METADATA(SplitButtonView, SplitButton, views::Button)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // SplitButtonView:

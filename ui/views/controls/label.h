@@ -17,6 +17,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/metadata/view_factory.h"
@@ -40,9 +41,9 @@ class VIEWS_EXPORT Label : public View,
                            public WordLookupClient,
                            public SelectionControllerDelegate,
                            public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(Label);
+  METADATA_HEADER(Label, View)
 
+ public:
   enum MenuCommands {
     kCopy = 1,
     kSelectAll,
@@ -267,14 +268,6 @@ class VIEWS_EXPORT Label : public View,
   int GetMaximumWidth() const;
   void SetMaximumWidth(int max_width);
 
-  // Defaults to false, meaning that `CalculatePreferredSize` is independent of
-  // the current size.
-  // Set this to true and file a bug if you encounter layout issue, in which
-  // case `CalculatePreferredSize(available_size)` will depend on `width()` and
-  // might ignore `available_size`.
-  // TODO(crbug.com/1346889): remove this.
-  void SetUseLegacyPreferredSize(bool use_legacy);
-
   // Gets/Sets whether the preferred size is empty when the label is not
   // visible.
   bool GetCollapseWhenHidden() const;
@@ -335,6 +328,7 @@ class VIEWS_EXPORT Label : public View,
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -381,6 +375,10 @@ class VIEWS_EXPORT Label : public View,
   FRIEND_TEST_ALL_PREFIXES(LabelTest, MultiLineSizingWithElide);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, IsDisplayTextTruncated);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, ChecksSubpixelRenderingOntoOpaqueSurface);
+  FRIEND_TEST_ALL_PREFIXES(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
+                           Label_LTR);
+  FRIEND_TEST_ALL_PREFIXES(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
+                           Label_RTL);
   friend class LabelSelectionTest;
 
   // ContextMenuController overrides:
@@ -391,10 +389,10 @@ class VIEWS_EXPORT Label : public View,
   // WordLookupClient overrides:
   bool GetWordLookupDataAtPoint(const gfx::Point& point,
                                 gfx::DecoratedText* decorated_word,
-                                gfx::Point* baseline_point) override;
+                                gfx::Rect* rect) override;
 
   bool GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
-                                      gfx::Point* baseline_point) override;
+                                      gfx::Rect* rect) override;
 
   // SelectionControllerDelegate overrides:
   gfx::RenderText* GetRenderTextForSelectionController() override;
@@ -465,6 +463,16 @@ class VIEWS_EXPORT Label : public View,
   // Updates the elide behavior used by |full_text_|.
   void UpdateFullTextElideBehavior();
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // Calculate widths for each grapheme and word starts and ends. Used for
+  // accessibility. Currently only on Windows when UIA is enabled.
+  bool RefreshAccessibleTextOffsets();
+
+  // The string used to compute the text offsets for accessibility. This is used
+  // to determine if the offsets need to be recomputed.
+  std::u16string ax_name_used_to_compute_offsets_;
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   int text_context_;
   int text_style_;
   absl::optional<int> line_height_;
@@ -503,8 +511,6 @@ class VIEWS_EXPORT Label : public View,
   bool auto_color_readability_enabled_ = true;
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
-  // TODO(crbug.com/1346889): Remove this.
-  bool use_legacy_preferred_size_;
   size_t max_lines_ = 0;
   std::u16string tooltip_text_;
   bool handles_tooltips_ = true;

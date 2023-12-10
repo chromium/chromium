@@ -31,6 +31,7 @@ include_rules = [
     "+ui/base/pointer/pointer_device.h",
     "+ui/base/page_transition_types.h",
     "+ui/base/ui_base_types.h",
+    "+ui/color",
     "+ui/display",
     "+ui/events/event_constants.h",
     "+ui/events/types",

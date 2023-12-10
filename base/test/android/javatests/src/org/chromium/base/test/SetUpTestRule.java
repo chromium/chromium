@@ -28,8 +28,6 @@ public interface SetUpTestRule<T extends TestRule> {
      */
     T shouldSetUp(boolean runSetUp);
 
-    /**
-     * Specify setUp action in this method
-     */
+    /** Specify setUp action in this method */
     void setUp();
 }

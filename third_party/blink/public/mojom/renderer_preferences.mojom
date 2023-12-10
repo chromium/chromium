@@ -94,10 +94,6 @@ struct RendererPreferences {
 
   array<string> webrtc_local_ips_allowed_urls;
 
-  // Whether WebRTC peer connections are allowed to use legacy versions of the
-  // TLS/DTLS protocols.
-  bool webrtc_allow_legacy_tls_protocols = false;
-
   // The user agent given to WebKit when it requests one and the user agent is
   // being overridden for the current navigation.
   UserAgentOverride user_agent_override;

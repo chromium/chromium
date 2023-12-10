@@ -2,13 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("cpp") {
+source_set("cpp") {
   output_name = "on_device_model_cpp"
-  sources = [
-    "features.cc",
-    "features.h",
-    "on_device_model.h",
-  ]
+  sources = [ "on_device_model.h" ]
   public_deps = [
     ":model_assets",
     "//base",

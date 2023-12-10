@@ -85,7 +85,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
-    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/common/ui/reauthentication",

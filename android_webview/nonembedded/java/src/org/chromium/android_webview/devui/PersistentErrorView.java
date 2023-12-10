@@ -14,9 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 
-/**
- * Shows a text message at the top of a Layout to show error messages.
- */
+/** Shows a text message at the top of a Layout to show error messages. */
 public class PersistentErrorView {
     private ViewGroup mViewGroup;
 
@@ -82,16 +80,12 @@ public class PersistentErrorView {
         return this;
     }
 
-    /**
-     * Show the view by setting its visibility.
-     */
+    /** Show the view by setting its visibility. */
     public void show() {
         mViewGroup.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Hide the view by setting its visibility.
-     */
+    /** Hide the view by setting its visibility. */
     public void hide() {
         mViewGroup.setVisibility(View.GONE);
     }

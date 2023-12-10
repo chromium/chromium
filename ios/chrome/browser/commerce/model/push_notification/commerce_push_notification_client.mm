@@ -13,9 +13,8 @@
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -118,12 +117,8 @@ CommercePushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
       BrowserListFactory::GetForBrowserState(GetLastUsedBrowserState());
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
     if (!browser->IsInactive()) {
-      SceneStateBrowserAgent* scene_state_browser_agent =
-          SceneStateBrowserAgent::FromBrowser(browser);
-      if (scene_state_browser_agent &&
-          scene_state_browser_agent->GetSceneState() &&
-          scene_state_browser_agent->GetSceneState().activationLevel ==
-              SceneActivationLevelForegroundActive) {
+      if (browser->GetSceneState().activationLevel ==
+          SceneActivationLevelForegroundActive) {
         return browser;
       }
     }

@@ -72,11 +72,11 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
                                  ScriptWrappable* object,
                                  v8::Local<v8::Object> holder,
                                  const ScriptWrappable* wrappable) {
-    if (CanUseMainWorldWrapper()
-        // The second fastest way to check if we're in the main world is to
-        // check if the wrappable's wrapper is the same as the holder.
-        || HolderContainsWrapper(holder, wrappable))
+    if (HolderContainsWrapperForMainWorld(holder, wrappable)) {
+      // Verify our assumptions about the main world.
+      DCHECK(Current(return_value.GetIsolate()).is_main_world_);
       return object->SetReturnValue(return_value);
+    }
     return Current(return_value.GetIsolate())
         .SetReturnValueFrom(return_value, object);
   }
@@ -164,7 +164,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->SetReturnValue(return_value);
     auto it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
-      return_value.Set(it->value);
+      return_value.SetNonEmpty(it->value);
       return true;
     }
     return false;
@@ -189,12 +189,17 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
            !DOMWrapperWorld::NonMainWorldsExistInMainThread();
   }
 
-  static bool HolderContainsWrapper(v8::Local<v8::Object> holder,
-                                    const ScriptWrappable* wrappable) {
-    // Verify our assumptions about the main world.
+  static bool HolderContainsWrapperForMainWorld(
+      v8::Local<v8::Object> holder,
+      const ScriptWrappable* wrappable) {
+    // The first fastest way is to check that there is only the main world
+    // on the main thread.
+    if (CanUseMainWorldWrapper()) {
+      return true;
+    }
+    // The second fastest way to check if we're in the main world is to
+    // check if the wrappable's wrapper is the same as the holder.
     DCHECK(wrappable);
-    DCHECK(!wrappable->ContainsWrapper() || !wrappable->IsEqualTo(holder) ||
-           Current(v8::Isolate::GetCurrent()).is_main_world_);
     return wrappable->IsEqualTo(holder);
   }
 

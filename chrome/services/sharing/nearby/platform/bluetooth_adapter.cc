@@ -90,5 +90,16 @@ std::string BluetoothAdapter::GetMacAddress() const {
   return success ? info->address : std::string();
 }
 
+std::string BluetoothAdapter::GetAddress() const {
+  return GetMacAddress();
+}
+
+BluetoothAdapter::UniqueId BluetoothAdapter::GetUniqueId() const {
+  // The unique id is not used by ChromeOS and this remains unimplemented. If
+  // functionality is needed later on, this can be implemented.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
 }  // namespace chrome
 }  // namespace nearby

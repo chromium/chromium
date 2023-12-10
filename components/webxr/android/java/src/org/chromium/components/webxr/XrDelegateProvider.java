@@ -6,9 +6,7 @@ package org.chromium.components.webxr;
 
 import org.chromium.base.Log;
 
-/**
- * Class used to create XrDelegate instances.
- */
+/** Class used to create XrDelegate instances. */
 public class XrDelegateProvider {
     private static final String TAG = "XrDelegateProvider";
     private static final boolean DEBUG_LOGS = false;
@@ -19,26 +17,27 @@ public class XrDelegateProvider {
      */
     private static XrDelegate sDelegate;
 
-    /**
-     * True if sDelegate already contains cached result, false otherwise.
-     */
+    /** True if sDelegate already contains cached result, false otherwise. */
     private static boolean sDelegateInitialized;
 
-    /**
-     * Provides an instance of XrDelegate.
-     */
+    /** Provides an instance of XrDelegate. */
     public static XrDelegate getDelegate() {
         if (DEBUG_LOGS) {
-            Log.i(TAG,
-                    "XrDelegate.getDelegate(): sDelegateInitialized=" + sDelegateInitialized
-                            + ", is sDelegate null? " + (sDelegate == null));
+            Log.i(
+                    TAG,
+                    "XrDelegate.getDelegate(): sDelegateInitialized="
+                            + sDelegateInitialized
+                            + ", is sDelegate null? "
+                            + (sDelegate == null));
         }
 
         if (sDelegateInitialized) return sDelegate;
 
         try {
-            sDelegate = (XrDelegate) Class.forName("org.chromium.components.webxr.XrDelegateImpl")
-                                .newInstance();
+            sDelegate =
+                    (XrDelegate)
+                            Class.forName("org.chromium.components.webxr.XrDelegateImpl")
+                                    .newInstance();
         } catch (ClassNotFoundException e) {
         } catch (InstantiationException e) {
         } catch (IllegalAccessException e) {

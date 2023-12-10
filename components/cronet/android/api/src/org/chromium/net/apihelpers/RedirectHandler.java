@@ -6,9 +6,7 @@ package org.chromium.net.apihelpers;
 
 import org.chromium.net.UrlResponseInfo;
 
-/**
- * An interface for classes specifying how Cronet should behave on redirects.
- */
+/** An interface for classes specifying how Cronet should behave on redirects. */
 public interface RedirectHandler {
     /**
      * Returns whether the redirect should be followed.

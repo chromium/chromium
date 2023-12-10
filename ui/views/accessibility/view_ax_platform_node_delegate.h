@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -61,7 +62,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 #if BUILDFLAG(IS_MAC)
-  void AnnounceText(const std::u16string& text) override;
+  void AnnounceTextAs(const std::u16string& text,
+                      ui::AXPlatformNode::AnnouncementType announcement_type);
 #endif
 
   // ui::AXPlatformNodeDelegate.
@@ -72,6 +74,10 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   std::wstring ComputeListItemNameFromContent() const override;
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;
+  ui::AXNodePosition::AXPositionInstance CreatePositionAt(
+      int offset,
+      ax::mojom::TextAffinity affinity =
+          ax::mojom::TextAffinity::kDownstream) const override;
   ui::AXNodePosition::AXPositionInstance CreateTextPositionAt(
       int offset,
       ax::mojom::TextAffinity affinity) const override;
@@ -86,6 +92,12 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   bool IsFocused() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::Rect GetBoundsRect(
+      const ui::AXCoordinateSystem coordinate_system,
+      const ui::AXClippingBehavior clipping_behavior,
+      ui::AXOffscreenResult* offscreen_result) const override;
+  gfx::Rect GetInnerTextRangeBoundsRect(
+      const int start_offset,
+      const int end_offset,
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
       ui::AXOffscreenResult* offscreen_result) const override;
@@ -116,6 +128,10 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   absl::optional<int> GetSetSize() const override;
 
   bool TableHasColumnOrRowHeaderNodeForTesting() const;
+
+  // Return the bounds of inline text in this node's coordinate system.
+  gfx::RectF GetInlineTextRect(const int start_offset,
+                               const int end_offset) const;
 
   AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting()
       const override;

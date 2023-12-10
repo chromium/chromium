@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1000498691615767391">Selecteer een map om te openen</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> kan niet worden gekopieerd omdat het is versleuteld.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> items verwijderen...</translation>
 <translation id="1049926623896334335">Word-document</translation>
 <translation id="1056775291175587022">Geen netwerken</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Map delen met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met bloemen</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> verwijderen</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> bestanden kunnen niet worden gekopieerd omdat ze zijn versleuteld.</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1482884275703521657">Fins</translation>
 <translation id="148466539719134488">Zwitsers</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Niet beschikbaar</translation>
 <translation id="3254434849914415189">Kies de standaardapp voor <ph name="FILE_TYPE" />-bestanden:</translation>
 <translation id="3255159654094949700">Arabisch</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> bestanden kunnen niet worden verplaatst omdat ze zijn versleuteld.</translation>
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089">Kan '<ph name="PATH" />' niet openen</translation>
 <translation id="3280431534455935878">Voorbereiden</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 map gedeeld met <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Map</translation>
+<translation id="3529424493985988200">Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="3548125359243647069">Je hebt te vaak een verkeerde pincode opgegeven.</translation>
 <translation id="3549797760399244642">Ga naar drive.google.com...</translation>
 <translation id="3553048479571901246">Als je bestanden wilt openen met <ph name="APP_NAME" />, kopieer je ze eerst naar de bestandsmap van Windows.</translation>
@@ -702,6 +706,7 @@
 <translation id="637062427944097960">Dit bestand is op een ander bureaublad geopend. Verplaats het naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om het te bekijken.</translation>
 <translation id="6394388407447716302">Alleen lezen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> kan niet worden verplaatst omdat het is versleuteld.</translation>
 <translation id="642282551015776456">Deze naam mag niet worden gebruikt als de naam van een bestand of map.</translation>
 <translation id="6423031066725912715">Vietnamees met TCVN-toetsenbord</translation>
 <translation id="6430271654280079150">Je hebt nog 1 poging.</translation>

@@ -5,6 +5,7 @@
 #include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/version/version_loader.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace ash {
@@ -347,7 +347,7 @@ void ShimlessRmaService::GetCurrentOsVersion(
     GetCurrentOsVersionCallback callback) {
   DCHECK(features::IsShimlessRMAOsUpdateEnabled());
   // TODO(gavindodd): Decide whether to use full or short Chrome version.
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   std::move(callback).Run(version);
 }
@@ -878,8 +878,8 @@ void ShimlessRmaService::RunCalibrationStep(
   }
 
   // Clear the previous calibration progress.
-  last_calibration_progress_ = absl::nullopt;
-  last_calibration_overall_progress_ = absl::nullopt;
+  last_calibration_progress_ = std::nullopt;
+  last_calibration_overall_progress_ = std::nullopt;
 
   TransitionNextStateGeneric(std::move(callback));
 }
@@ -1002,7 +1002,7 @@ void ShimlessRmaService::OnDiagnosticsLogReady(
 }
 
 void ShimlessRmaService::OnGetLog(GetLogCallback callback,
-                                  absl::optional<rmad::GetLogReply> response) {
+                                  std::optional<rmad::GetLogReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmad::GetLog";
     std::move(callback).Run("",
@@ -1013,9 +1013,8 @@ void ShimlessRmaService::OnGetLog(GetLogCallback callback,
   std::move(callback).Run(response->log(), response->error());
 }
 
-void ShimlessRmaService::OnSaveLog(
-    SaveLogCallback callback,
-    absl::optional<rmad::SaveLogReply> response) {
+void ShimlessRmaService::OnSaveLog(SaveLogCallback callback,
+                                   std::optional<rmad::SaveLogReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmad::SaveLog";
     std::move(callback).Run(base::FilePath(""),
@@ -1097,7 +1096,7 @@ void ShimlessRmaService::SendMetricOnUpdateOs() {
 }
 
 void ShimlessRmaService::OnMetricsReply(
-    absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+    std::optional<rmad::RecordBrowserActionMetricReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmad::RecordBrowserActionMetric";
     return;
@@ -1335,7 +1334,7 @@ template <class Callback>
 void ShimlessRmaService::OnGetStateResponse(
     Callback callback,
     StateResponseCalledFrom called_from,
-    absl::optional<rmad::GetStateReply> response) {
+    std::optional<rmad::GetStateReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmadClient";
     critical_error_occurred_ = true;
@@ -1392,7 +1391,7 @@ void ShimlessRmaService::OnGetStateResponse(
 void ShimlessRmaService::OnAbortRmaResponse(
     AbortRmaCallback callback,
     bool reboot,
-    absl::optional<rmad::AbortRmaReply> response) {
+    std::optional<rmad::AbortRmaReply> response) {
   const rmad::RmadErrorCode error_code =
       response ? response->error()
                : rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID;
@@ -1414,7 +1413,7 @@ void ShimlessRmaService::OnAbortRmaResponse(
 void ShimlessRmaService::AbortRmaForgetNetworkResponse(
     AbortRmaCallback callback,
     bool reboot,
-    absl::optional<rmad::AbortRmaReply> response) {
+    std::optional<rmad::AbortRmaReply> response) {
   // Send status before shutting down or restarting Chrome session.
   std::move(callback).Run(rmad::RMAD_ERROR_OK);
 
@@ -1512,7 +1511,7 @@ void ShimlessRmaService::OnGetSystemInfoFor3pDiag(
       !telemetry_info->system_result->is_system_info() ||
       !telemetry_info->system_result->get_system_info()->os_info->oem_name) {
     LOG(ERROR) << "Failed to get oem name from cros_healthd";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -1523,7 +1522,7 @@ void ShimlessRmaService::OnGetSystemInfoFor3pDiag(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void ShimlessRmaService::GetInstallable3pDiagnosticsAppPath(
@@ -1535,7 +1534,7 @@ void ShimlessRmaService::GetInstallable3pDiagnosticsAppPath(
 
 void ShimlessRmaService::OnExtractExternalDiagnosticsApp(
     GetInstallable3pDiagnosticsAppPathCallback callback,
-    absl::optional<rmad::ExtractExternalDiagnosticsAppReply> response) {
+    std::optional<rmad::ExtractExternalDiagnosticsAppReply> response) {
   if (!response || response->error() != rmad::RmadErrorCode::RMAD_ERROR_OK) {
     LOG_IF(ERROR, !response)
         << "Failed to call rmad::ExtractExternalDiagnosticsApp";
@@ -1547,7 +1546,7 @@ void ShimlessRmaService::OnExtractExternalDiagnosticsApp(
         << response->error();
     extracted_3p_diag_swbn_path_ = base::FilePath{};
     extracted_3p_diag_crx_path_ = base::FilePath{};
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -1602,7 +1601,7 @@ void ShimlessRmaService::CompleteLast3pDiagnosticsInstallation(
     // Clean the cached app so it will be reloaded next time calling
     // `Show3pDiagnosticsApp`.
     shimless_app_browser_context_ = nullptr;
-    shimless_3p_diag_iwa_id_ = absl::nullopt;
+    shimless_3p_diag_iwa_id_ = std::nullopt;
     shimless_3p_diag_app_name_ = "";
     std::move(callback).Run();
     return;
@@ -1610,7 +1609,7 @@ void ShimlessRmaService::CompleteLast3pDiagnosticsInstallation(
 
   RmadClient::Get()->InstallExtractedDiagnosticsApp(base::BindOnce(
       [](CompleteLast3pDiagnosticsInstallationCallback callback,
-         absl::optional<rmad::InstallExtractedDiagnosticsAppReply> response) {
+         std::optional<rmad::InstallExtractedDiagnosticsAppReply> response) {
         LOG_IF(ERROR, !response)
             << "Failed to call rmad::InstallExtractedDiagnosticsApp";
         LOG_IF(ERROR, response->error() != rmad::RmadErrorCode::RMAD_ERROR_OK)
@@ -1641,7 +1640,7 @@ void ShimlessRmaService::Show3pDiagnosticsApp(
 
 void ShimlessRmaService::GetInstalledDiagnosticsApp(
     Show3pDiagnosticsAppCallback callback,
-    absl::optional<rmad::GetInstalledDiagnosticsAppReply> response) {
+    std::optional<rmad::GetInstalledDiagnosticsAppReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmad::GetInstalledDiagnosticsApp";
     std::move(callback).Run(

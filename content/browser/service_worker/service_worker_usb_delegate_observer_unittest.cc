@@ -486,7 +486,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
     EXPECT_CALL(usb_delegate(), GetDeviceInfo)
         .WillOnce(Return(device_info.get()));
     EXPECT_CALL(usb_delegate(),
-                HasDevicePermission(_, origin, Ref(*device_info)))
+                HasDevicePermission(_, nullptr, origin, Ref(*device_info)))
         .WillOnce(Return(false));
     EXPECT_CALL(mock_device, Close)
         .WillOnce(RunClosure(run_loop.QuitClosure()));

@@ -138,11 +138,11 @@ TEST_F(AppSearchProviderTest, Basic) {
   EXPECT_EQ("Hosted App", RunQuery("host"));
 
   result = RunQuery("fake");
-  EXPECT_TRUE(result == "Fake App 0,Fake App 1" ||
-              result == "Fake App 1,Fake App 0");
-  result = RunQuery("app1");
-  EXPECT_TRUE(result == "Packaged App 1,Fake App 1" ||
-              result == "Fake App 1,Packaged App 1");
+  EXPECT_TRUE(result == "Fake App 1,Fake App 2" ||
+              result == "Fake App 2,Fake App 1");
+  result = RunQuery("app2");
+  EXPECT_TRUE(result == "Packaged App 2,Fake App 2" ||
+              result == "Fake App 2,Packaged App 2");
   arc_test().TearDown();
 }
 
@@ -241,7 +241,7 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   InitializeSearchProvider();
 
   EXPECT_EQ("", GetSortedResultsString());
-  EXPECT_EQ("", RunQuery("fake0"));
+  EXPECT_EQ("", RunQuery("fake1"));
 
   arc_apps.emplace_back(arc_test().fake_apps()[0]->Clone());
   arc_test().app_instance()->SendRefreshAppList(arc_apps);
@@ -249,7 +249,7 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ("Fake App 0", RunQuery("fake0"));
+  EXPECT_EQ("Fake App 1", RunQuery("fake1"));
 
   arc_apps.clear();
   arc_test().app_instance()->SendRefreshAppList(arc_apps);
@@ -258,7 +258,7 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("", GetSortedResultsString());
-  EXPECT_EQ("", RunQuery("fake0"));
+  EXPECT_EQ("", RunQuery("fake1"));
 
   // Let uninstall code to clean up.
   base::RunLoop().RunUntilIdle();

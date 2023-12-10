@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1178581264944972037">Jeda</translation>
-<translation id="2558806128245168542">Kembali</translation>
-<translation id="3523426587027570423">Ketuk untuk menutup “Dengarkan halaman ini”.</translation>
+<translation id="1921351128855867012">Maju cepat <ph name="NUMBER_OF_SECONDS" /> detik</translation>
+<translation id="1984328900355667246">Pemutaran tidak tersedia</translation>
+<translation id="3023502830214299618">Sayangnya, pemutaran tidak tersedia untuk halaman ini saat ini. Coba lagi nanti.</translation>
+<translation id="3807208219231826020">Gesek Pemutaran</translation>
+<translation id="385051799172605136">Kembali</translation>
 <translation id="4431240646217225907">Tandai teks &amp; scroll otomatis</translation>
 <translation id="4654641641922242357">Pemutar “Dengarkan halaman ini”.</translation>
-<translation id="4731877163452936634">Kecepatan pemutaran: <ph name="PLAYBACK_SPEED" />. Klik untuk mengubah.</translation>
+<translation id="4872475766448853257">Mundur <ph name="NUMBER_OF_SECONDS" /> detik</translation>
 <translation id="5234971936051226002">Pemutar “Dengarkan halaman ini” diperkecil.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="6315170314923504164">Suara</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6846298663435243399">Memuat...</translation>
 <translation id="7587250070160020374">Chrome sedang memutar audio</translation>
-<translation id="7945822420239537236">Maju <ph name="NUMBER_OF_SECONDS" /> detik</translation>
-<translation id="7972866381678406344">Mundur <ph name="NUMBER_OF_SECONDS" /> detik</translation>
 <translation id="8136852699834914183">Pemutaran tidak tersedia untuk halaman ini.</translation>
+<translation id="8264989794233974275">Tingkatkan/kurangi kecepatan <ph name="PLAYBACK_SPEED" />x lipat.</translation>
+<translation id="8407011429883244666">Tutup pemutar.</translation>
 <translation id="8953618380150219653">Pemutar “Dengarkan halaman ini” dibuka sepenuhnya.</translation>
 </translationbundle>

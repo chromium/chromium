@@ -30,12 +30,12 @@ std::string SystemExtension::IdToString(const SystemExtensionId& id) {
   return base::HexEncode(id);
 }
 
-absl::optional<SystemExtensionId> SystemExtension::StringToId(
+std::optional<SystemExtensionId> SystemExtension::StringToId(
     base::StringPiece id_str) {
   SystemExtensionId id;
   if (base::HexStringToSpan(id_str, id))
     return id;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash

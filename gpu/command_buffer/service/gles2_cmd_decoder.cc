@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
@@ -85,7 +86,6 @@
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
@@ -3479,10 +3479,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     InitializeGLDebugLogging(true, GLDebugMessageCallback, &logger_);
   }
 
-  if (feature_info_->feature_flags().chromium_texture_filtering_hint) {
-    api()->glHintFn(GL_TEXTURE_FILTERING_HINT_CHROMIUM, GL_NICEST);
-  }
-
   if (CheckResetStatus()) {
     // If the context was lost at any point before or during initialization, the
     // values queried from the driver could be bogus, and potentially
@@ -3560,15 +3556,11 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       workarounds().max_copy_texture_chromium_size;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
-  caps.gpu_rasterization =
-      group_->gpu_feature_info()
-          .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
-      kGpuFeatureStatusEnabled;
+  caps.gpu_rasterization = false;
   if (workarounds().broken_egl_image_ref_counting &&
       group_->gpu_preferences().enable_threaded_texture_mailboxes) {
     caps.disable_2d_canvas_copy_on_write = true;
   }
-  caps.supports_oop_raster = false;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
@@ -3903,8 +3895,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   ShCompileOptions driver_bug_workarounds{};
   if (workarounds().init_gl_position_in_vertex_shader)
     driver_bug_workarounds.initGLPosition = true;
-  if (workarounds().unfold_short_circuit_as_ternary_operation)
-    driver_bug_workarounds.unfoldShortCircuit = true;
   if (workarounds().scalarize_vec_and_mat_constructor_args)
     driver_bug_workarounds.scalarizeVecAndMatConstructorArgs = true;
   if (workarounds().add_and_true_to_loop_condition)
@@ -3915,8 +3905,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     driver_bug_workarounds.removeDynamicIndexingOfSwizzledVector = true;
 
   // Initialize uninitialized locals by default
-  if (!workarounds().dont_initialize_uninitialized_locals)
-    driver_bug_workarounds.initializeUninitializedLocals = true;
+  driver_bug_workarounds.initializeUninitializedLocals = true;
 
   ShShaderOutput shader_output_language =
       ShaderTranslator::GetShaderOutputLanguageForContext(gl_version_info());
@@ -6211,21 +6200,7 @@ void GLES2DecoderImpl::DoGenerateMipmap(GLenum target) {
   if (workarounds().clamp_texture_base_level_and_max_level) {
     tex->ApplyClampedBaseLevelAndMaxLevelToDriver();
   }
-  if (enable_srgb && workarounds().decode_encode_srgb_for_generatemipmap) {
-    if (target == GL_TEXTURE_2D) {
-      if (!InitializeSRGBConverter("generateMipmap")) {
-        return;
-      }
-      srgb_converter_->GenerateMipmap(this, tex, target);
-    } else {
-      // TODO(yizhou): If the target is GL_TEXTURE_3D ,GL_TEXTURE_2D_ARRAY,
-      // GL_TEXTURE_CUBE_MAP,
-      // this change can not generate correct mipmap.
-      api()->glGenerateMipmapEXTFn(target);
-    }
-  } else {
-    api()->glGenerateMipmapEXTFn(target);
-  }
+  api()->glGenerateMipmapEXTFn(target);
 
   GLenum error = LOCAL_PEEK_GL_ERROR("glGenerateMipmap");
   if (error == GL_NO_ERROR) {
@@ -8865,9 +8840,6 @@ void GLES2DecoderImpl::DoLinkProgram(GLuint program_id) {
 
   LogClientServiceForInfo(program, program_id, "glLinkProgram");
   if (program->Link(shader_manager(),
-                    workarounds().count_all_in_varyings_packing
-                        ? Program::kCountAll
-                        : Program::kCountOnlyStaticallyUsed,
                     client())) {
     if (features().webgl_multi_draw)
       program_manager()->UpdateDrawIDUniformLocation(program);
@@ -11512,11 +11484,6 @@ void GLES2DecoderImpl::GetTexParameterImpl(
   }
   Texture* texture = texture_ref->texture();
   switch (pname) {
-    case GL_TEXTURE_MAX_ANISOTROPY_EXT:
-      if (workarounds().init_texture_max_anisotropy) {
-        texture->InitTextureMaxAnisotropyIfNeeded(target);
-      }
-      break;
     case GL_TEXTURE_IMMUTABLE_LEVELS:
       if (gl_version_info().IsLowerThanGL(4, 2)) {
         GLint levels = texture->GetImmutableLevels();

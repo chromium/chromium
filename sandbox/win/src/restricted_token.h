@@ -7,12 +7,12 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -38,7 +38,7 @@ class RestrictedToken {
 
   // Creates a restricted token. This creates a primary token for process
   // creation. If the function fails an empty value is returned.
-  absl::optional<base::win::AccessToken> GetRestrictedToken() const;
+  std::optional<base::win::AccessToken> GetRestrictedToken() const;
 
   // Lists all sids in the token and mark them as Deny Only except for those
   // present in the exceptions parameter. If there is no exception needed,
@@ -129,7 +129,7 @@ class RestrictedToken {
 
   // Creates a restricted token. This is only used for testing to change the
   // token used to build the restricted token.
-  absl::optional<base::win::AccessToken> GetRestrictedTokenForTesting(
+  std::optional<base::win::AccessToken> GetRestrictedTokenForTesting(
       base::win::AccessToken& token);
 
  private:
@@ -137,7 +137,7 @@ class RestrictedToken {
       const base::win::AccessToken& token) const;
   std::vector<base::win::Sid> BuildRestrictedSids(
       const base::win::AccessToken& token) const;
-  absl::optional<base::win::AccessToken> CreateRestricted(
+  std::optional<base::win::AccessToken> CreateRestricted(
       const base::win::AccessToken& token) const;
 
   // The list of restricting sids in the restricted token.
@@ -147,9 +147,9 @@ class RestrictedToken {
   // The list of sids to add to the default DACL of the restricted token.
   std::vector<base::win::ExplicitAccessEntry> sids_for_default_dacl_;
   // The token to restrict, this is only used for testing.
-  absl::optional<base::win::AccessToken> effective_token_;
+  std::optional<base::win::AccessToken> effective_token_;
   // The token integrity level RID.
-  absl::optional<DWORD> integrity_rid_;
+  std::optional<DWORD> integrity_rid_;
   // Lockdown the default DACL when creating new tokens.
   bool lockdown_default_dacl_ = false;
   // Delete all privileges except for SeChangeNotifyPrivilege.

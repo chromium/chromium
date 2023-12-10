@@ -1,0 +1,8 @@
+CONSOLE ERROR: Unsafe attempt to load URL http://localhost:8000/workers/resources/worker-redirect-target.js from frame with URL http://127.0.0.1:8000/workers/worker-redirect.html. Domains, protocols and ports must match.
+
+Test that loading the worker's script does not allow a cross origin redirect (bug 26146)
+
+SUCCESS: threw exception (SecurityError: Failed to construct 'Worker': Script at 'http://localhost:8000/workers/resources/worker-target.js' cannot be accessed from origin 'http://127.0.0.1:8000'.) when attempting to cross origin while loading the worker script.
+SUCCESS: threw error when attempting to redirected cross origin while loading the worker script.
+DONE
+

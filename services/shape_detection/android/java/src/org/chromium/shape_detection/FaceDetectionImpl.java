@@ -46,7 +46,8 @@ public class FaceDetectionImpl implements FaceDetection {
         }
 
         // FaceDetector requires an even width, so pad the image if the width is odd.
-        // https://developer.android.com/reference/android/media/FaceDetector.html#FaceDetector(int, int, int)
+        // https://developer.android.com/reference/android/media/FaceDetector.html#FaceDetector(int,
+        // int, int)
         final int width = bitmapData.imageInfo.width + (bitmapData.imageInfo.width % 2);
         final int height = bitmapData.imageInfo.height;
         if (width != bitmapData.imageInfo.width) {
@@ -72,34 +73,37 @@ public class FaceDetectionImpl implements FaceDetection {
 
         // FaceDetector creation and findFaces() might take a long time and trigger a
         // "StrictMode policy violation": they should happen in a background thread.
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            final FaceDetector detector = new FaceDetector(width, height, mMaxFaces);
-            Face[] detectedFaces = new Face[mMaxFaces];
-            // findFaces() will stop at |mMaxFaces|.
-            final int numberOfFaces = detector.findFaces(unPremultipliedBitmap, detectedFaces);
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    final FaceDetector detector = new FaceDetector(width, height, mMaxFaces);
+                    Face[] detectedFaces = new Face[mMaxFaces];
+                    // findFaces() will stop at |mMaxFaces|.
+                    final int numberOfFaces =
+                            detector.findFaces(unPremultipliedBitmap, detectedFaces);
 
-            FaceDetectionResult[] faceArray = new FaceDetectionResult[numberOfFaces];
+                    FaceDetectionResult[] faceArray = new FaceDetectionResult[numberOfFaces];
 
-            for (int i = 0; i < numberOfFaces; i++) {
-                faceArray[i] = new FaceDetectionResult();
+                    for (int i = 0; i < numberOfFaces; i++) {
+                        faceArray[i] = new FaceDetectionResult();
 
-                final Face face = detectedFaces[i];
-                final PointF midPoint = new PointF();
-                face.getMidPoint(midPoint);
-                final float eyesDistance = face.eyesDistance();
+                        final Face face = detectedFaces[i];
+                        final PointF midPoint = new PointF();
+                        face.getMidPoint(midPoint);
+                        final float eyesDistance = face.eyesDistance();
 
-                faceArray[i].boundingBox = new RectF();
-                faceArray[i].boundingBox.x = midPoint.x - eyesDistance;
-                faceArray[i].boundingBox.y = midPoint.y - eyesDistance;
-                faceArray[i].boundingBox.width = 2 * eyesDistance;
-                faceArray[i].boundingBox.height = 2 * eyesDistance;
-                // TODO(xianglu): Consider adding Face.confidence and Face.pose.
+                        faceArray[i].boundingBox = new RectF();
+                        faceArray[i].boundingBox.x = midPoint.x - eyesDistance;
+                        faceArray[i].boundingBox.y = midPoint.y - eyesDistance;
+                        faceArray[i].boundingBox.width = 2 * eyesDistance;
+                        faceArray[i].boundingBox.height = 2 * eyesDistance;
+                        // TODO(xianglu): Consider adding Face.confidence and Face.pose.
 
-                faceArray[i].landmarks = new Landmark[0];
-            }
+                        faceArray[i].landmarks = new Landmark[0];
+                    }
 
-            callback.call(faceArray);
-        });
+                    callback.call(faceArray);
+                });
     }
 
     @Override

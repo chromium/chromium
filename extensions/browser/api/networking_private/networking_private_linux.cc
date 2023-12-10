@@ -146,10 +146,10 @@ void GetCachedNetworkPropertiesResultCallback(
     NetworkingPrivateDelegate::PropertiesCallback callback) {
   if (!error->empty()) {
     LOG(ERROR) << "GetCachedNetworkProperties failed: " << *error;
-    std::move(callback).Run(absl::nullopt, *error);
+    std::move(callback).Run(std::nullopt, *error);
     return;
   }
-  std::move(callback).Run(std::move(properties), absl::nullopt);
+  std::move(callback).Run(std::move(properties), std::nullopt);
 }
 
 }  // namespace
@@ -207,7 +207,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
                                            PropertiesCallback callback) {
   if (!network_manager_proxy_) {
     LOG(WARNING) << "NetworkManager over DBus is not supported";
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             extensions::networking_private::kErrorNotSupported);
     return;
   }
@@ -231,7 +231,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
 void NetworkingPrivateLinux::GetManagedProperties(const std::string& guid,
                                                   PropertiesCallback callback) {
   LOG(WARNING) << "GetManagedProperties is not supported";
-  std::move(callback).Run(absl::nullopt,
+  std::move(callback).Run(std::nullopt,
                           extensions::networking_private::kErrorNotSupported);
 }
 
@@ -615,12 +615,11 @@ void NetworkingPrivateLinux::GetEnabledNetworkTypes(
 
 void NetworkingPrivateLinux::GetDeviceStateList(
     DeviceStateListCallback callback) {
-  std::unique_ptr<DeviceStateList> device_state_list(new DeviceStateList);
-  std::unique_ptr<api::networking_private::DeviceStateProperties> properties(
-      new api::networking_private::DeviceStateProperties);
-  properties->type = api::networking_private::NetworkType::kWiFi;
-  properties->state = api::networking_private::DeviceStateType::kEnabled;
-  device_state_list->push_back(std::move(properties));
+  DeviceStateList device_state_list;
+  api::networking_private::DeviceStateProperties& properties =
+      device_state_list.emplace_back();
+  properties.type = api::networking_private::NetworkType::kWiFi;
+  properties.state = api::networking_private::DeviceStateType::kEnabled;
   std::move(callback).Run(std::move(device_state_list));
 }
 

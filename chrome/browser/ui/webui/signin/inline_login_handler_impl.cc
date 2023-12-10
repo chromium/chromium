@@ -180,11 +180,6 @@ credential_provider::UiExitCodes ValidateSigninEmail(
 
 #endif
 
-void LogHistogramValue(signin_metrics::AccessPointAction action) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.AllAccessPointActions", action,
-                            signin_metrics::HISTOGRAM_MAX);
-}
-
 void SetProfileLocked(const base::FilePath profile_path, bool locked) {
   if (profile_path.empty())
     return;
@@ -583,8 +578,6 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
     } break;
   }
   params.Set("flow", flow);
-
-  LogHistogramValue(signin_metrics::HISTOGRAM_SHOWN);
 }
 
 void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
@@ -626,7 +619,7 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
       FinishCompleteLoginParams(
           this, partition, current_url, path, confirm_untrusted_signin_,
           params.email, params.gaia_id, params.password, params.auth_code,
-          params.choose_what_to_sync, force_sign_in_with_usermanager),
+          force_sign_in_with_usermanager),
       profile);
 }
 
@@ -640,7 +633,6 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
     const std::string& gaia_id,
     const std::string& password,
     const std::string& auth_code,
-    bool choose_what_to_sync,
     bool is_force_sign_in_with_usermanager)
     : handler(handler),
       partition(partition),
@@ -651,7 +643,6 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
       gaia_id(gaia_id),
       password(password),
       auth_code(auth_code),
-      choose_what_to_sync(choose_what_to_sync),
       is_force_sign_in_with_usermanager(is_force_sign_in_with_usermanager) {}
 
 InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
@@ -709,16 +700,6 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
       return;
     }
   }
-
-  signin_metrics::AccessPoint access_point =
-      signin::GetAccessPointForEmbeddedPromoURL(params.url);
-  LogHistogramValue(signin_metrics::HISTOGRAM_ACCEPTED);
-  bool switch_to_advanced =
-      params.choose_what_to_sync &&
-      (access_point != signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-  LogHistogramValue(switch_to_advanced
-                        ? signin_metrics::HISTOGRAM_WITH_ADVANCED
-                        : signin_metrics::HISTOGRAM_WITH_DEFAULTS);
 
   SigninUIError can_offer_error = SigninUIError::Ok();
   switch (reason) {

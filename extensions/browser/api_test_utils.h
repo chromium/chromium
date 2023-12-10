@@ -6,13 +6,12 @@
 #define EXTENSIONS_BROWSER_API_TEST_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -69,9 +68,9 @@ base::Value::List GetList(const base::Value::Dict& val, const std::string& key);
 base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
 
 // If |val| is a dictionary, return it as one, otherwise create an empty one.
-base::Value::Dict ToDict(absl::optional<base::ValueView> val);
+base::Value::Dict ToDict(std::optional<base::ValueView> val);
 // If |val| is a list, return it as one, otherwise create an empty one.
-base::Value::List ToList(absl::optional<base::ValueView> val);
+base::Value::List ToList(std::optional<base::ValueView> val);
 
 // Currently, we allow either a string for the args, which is parsed to a list,
 // or an already-constructed list.
@@ -80,7 +79,7 @@ using ArgsType = absl::variant<std::string, base::Value::List>;
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
-absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
+std::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
@@ -88,7 +87,7 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 
 // RunFunctionWithDelegateAndReturnSingleResult, except with a NULL
 // implementation of the Delegate.
-absl::optional<base::Value> RunFunctionAndReturnSingleResult(
+std::optional<base::Value> RunFunctionAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
     content::BrowserContext* context,

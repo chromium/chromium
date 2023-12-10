@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
 <translation id="1178581264944972037">විරාමය</translation>
-<translation id="2558806128245168542">ආපසු සංචාලනය කරන්න</translation>
-<translation id="3523426587027570423">“මෙම පිටුවට සවන් දෙන්න” වැසීමට තට්ටු කරන්න.</translation>
+<translation id="1921351128855867012">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් වේගයෙන් ඉදිරියට</translation>
+<translation id="1984328900355667246">පසුධාවනය නොලැබේ</translation>
+<translation id="3023502830214299618">අවාසනාවන්ත ලෙස, මෙම පිටුව සඳහා මේ අවස්ථාවේ පසුධාවනය නොලැබේ. පසුව නැවත උත්සාහ කරන්න.</translation>
+<translation id="3807208219231826020">ස්ක්‍රබ් පසුධාවනය</translation>
+<translation id="385051799172605136">ආපසු</translation>
 <translation id="4431240646217225907">පෙළ ඉස්මතු කර ස්වයං අනුචලනය කරන්න</translation>
 <translation id="4654641641922242357">“මෙම පිටුවට සවන් දෙන්න” වාදකය.</translation>
-<translation id="4731877163452936634">පසුධාවන වේගය: <ph name="PLAYBACK_SPEED" />. වෙනස් කිරීමට ක්ලික් කරන්න.</translation>
+<translation id="4872475766448853257">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් ආපසු යන්න</translation>
 <translation id="5234971936051226002">“මෙම පිටුවට සවන් දෙන්න” වාදකය අවම කෙරිණි.</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="6315170314923504164">හඬ</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6846298663435243399">පූර්ණය වෙමින්...</translation>
 <translation id="7587250070160020374">Chrome දැන් වාදනය කරයි</translation>
-<translation id="7945822420239537236">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් ඉදිරියට</translation>
-<translation id="7972866381678406344">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් ආපස්සට</translation>
 <translation id="8136852699834914183">මෙම පිටුව සඳහා පසුධාවනය නොමැත.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x වේගය වැඩි කිරීම/අඩු කිරීම.</translation>
+<translation id="8407011429883244666">වාදකය වසන්න.</translation>
 <translation id="8953618380150219653">“මෙම පිටුවට සවන් දෙන්න” වාදකය සම්පූර්ණ උසින් විවෘත විය.</translation>
 </translationbundle>

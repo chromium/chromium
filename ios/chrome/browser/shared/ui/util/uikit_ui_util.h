@@ -188,4 +188,8 @@ UIActivityIndicatorView* GetMediumUIActivityIndicatorView();
 // version.
 UIActivityIndicatorView* GetLargeUIActivityIndicatorView();
 
+// Whether the given scroll view is considered scrolled to its top/bottom.
+bool IsScrollViewScrolledToTop(UIScrollView* scroll_view);
+bool IsScrollViewScrolledToBottom(UIScrollView* scroll_view);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

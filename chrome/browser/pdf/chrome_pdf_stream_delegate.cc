@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/pdf_resources.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
@@ -101,14 +102,32 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
   GURL original_url;
   StreamInfo info;
 
-  const GURL& stream_url = navigation_handle.GetURL();
   content::WebContents* contents = navigation_handle.GetWebContents();
-  extensions::MimeHandlerViewGuest* guest =
-      extensions::MimeHandlerViewGuest::FromWebContents(contents);
-  if (guest) {
-    base::WeakPtr<extensions::StreamContainer> stream =
-        guest->GetStreamWeakPtr();
-    if (!stream || stream->extension_id() != extension_misc::kPdfExtensionId ||
+  base::WeakPtr<extensions::StreamContainer> stream;
+  content::RenderFrameHost* embedder_parent_frame = embedder_frame->GetParent();
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    if (embedder_parent_frame) {
+      // For the PDF viewer, the `embedder_frame` is the PDF extension frame.
+      // The `StreamContainer` is stored using the PDF viewer's embedder frame,
+      // which is the parent of the extension frame.
+      auto* pdf_viewer_stream_manager =
+          pdf::PdfViewerStreamManager::FromWebContents(contents);
+      if (pdf_viewer_stream_manager) {
+        stream = pdf_viewer_stream_manager->GetStreamContainer(
+            embedder_parent_frame);
+      }
+    }
+  } else {
+    extensions::MimeHandlerViewGuest* guest =
+        extensions::MimeHandlerViewGuest::FromWebContents(contents);
+    if (guest) {
+      stream = guest->GetStreamWeakPtr();
+    }
+  }
+
+  const GURL& stream_url = navigation_handle.GetURL();
+  if (stream) {
+    if (stream->extension_id() != extension_misc::kPdfExtensionId ||
         stream->stream_url() != stream_url ||
         !stream->pdf_plugin_attributes()) {
       return absl::nullopt;

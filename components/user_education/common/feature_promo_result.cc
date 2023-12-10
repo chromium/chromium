@@ -8,13 +8,16 @@ namespace user_education {
 
 FeaturePromoResult::FeaturePromoResult(const FeaturePromoResult& other) =
     default;
-FeaturePromoResult::~FeaturePromoResult() = default;
+
 FeaturePromoResult& FeaturePromoResult::operator=(
     const FeaturePromoResult& other) = default;
+
 FeaturePromoResult& FeaturePromoResult::operator=(Failure failure) {
   failure_ = failure;
   return *this;
 }
+
+FeaturePromoResult::~FeaturePromoResult() = default;
 
 // static
 FeaturePromoResult FeaturePromoResult::Success() {
@@ -51,6 +54,15 @@ std::ostream& operator<<(std::ostream& os,
       break;
     case FeaturePromoResult::kError:
       os << "kError";
+      break;
+    case FeaturePromoResult::kBlockedByGracePeriod:
+      os << "kBlockedByGracePeriod";
+      break;
+    case FeaturePromoResult::kBlockedByCooldown:
+      os << "kBlockedByCooldown";
+      break;
+    case FeaturePromoResult::kRecentlyAborted:
+      os << "kRecentlyAborted";
       break;
   }
   return os;

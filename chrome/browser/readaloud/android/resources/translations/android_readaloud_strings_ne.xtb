@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
-<translation id="2558806128245168542">पछाडि नेभिगेट गर्नुहोस्</translation>
-<translation id="3523426587027570423">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर बन्द गर्न ट्याप गर्नुहोस्।</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड फास्ट फर्वार्ड गर्नुहोस्</translation>
+<translation id="1984328900355667246">प्लेब्याक उपलब्ध छैन</translation>
+<translation id="3023502830214299618">दुर्भाग्यवश, अहिले यो पेजमा प्लेब्याक उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3807208219231826020">प्लेब्याक स्क्रब गर्नुहोस्</translation>
+<translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="4431240646217225907">टेक्स्ट हाइलाइट गर्ने तथा स्वतः स्क्रोल गर्ने सुविधा</translation>
 <translation id="4654641641922242357">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर।</translation>
-<translation id="4731877163452936634">प्लेब्याकको गति: <ph name="PLAYBACK_SPEED" />। प्लेब्याकको गति बदल्न क्लिक गर्नुहोस्।</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड रिवाइन्ड गर्नुहोस्</translation>
 <translation id="5234971936051226002">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर मिनिमाइज गरिएको छ।</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6846298663435243399">लोड हुँदै...</translation>
 <translation id="7587250070160020374">Chrome अहिले चलिरहेको छ</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड फर्वार्ड गर्नुहोस्</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड पछाडि जानुहोस्</translation>
 <translation id="8136852699834914183">यो पेजमा प्लेब्याक सुविधा उपलब्ध छैन।</translation>
+<translation id="8264989794233974275">गति <ph name="PLAYBACK_SPEED" /> गुणाले बढाउनुहोस् वा घटाउनुहोस्।</translation>
+<translation id="8407011429883244666">प्लेयर बन्द गर्नुहोस्।</translation>
 <translation id="8953618380150219653">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर पूरै स्क्रिनमा खोलिएको छ।</translation>
 </translationbundle>

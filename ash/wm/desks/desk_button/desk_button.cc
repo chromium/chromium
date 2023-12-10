@@ -5,12 +5,15 @@
 #include "ash/wm/desks/desk_button/desk_button.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/desk_button_widget.h"
+#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -28,6 +31,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -38,22 +42,14 @@
 
 namespace ash {
 
-namespace {
-
-constexpr int kDeskSwitchButtonWidth = 20;
-constexpr int kDeskSwitchButtonHeight = 36;
-constexpr int kButtonCornerRadius = 12;
-constexpr int kFocusRingHaloInset = -3;
-
-}  // namespace
-
 ////////////////////////////////////////////////////////////////////////////////
 // DeskSwitchButton:
 DeskSwitchButton::DeskSwitchButton(PressedCallback callback)
-    : ImageButton(callback) {
+    : ImageButton(std::move(callback)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetSize(gfx::Size(kDeskSwitchButtonWidth, kDeskSwitchButtonHeight));
+  SetSize(
+      gfx::Size(kDeskButtonSwitchButtonWidth, kDeskButtonSwitchButtonHeight));
   SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   SetImageVerticalAlignment(
@@ -133,7 +129,7 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   SetNotifyEnterExitOnChild(true);
   layer()->SetFillsBoundsOpaquely(false);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, kButtonCornerRadius));
+      cros_tokens::kCrosSysSystemOnBaseOpaque, kDeskButtonCornerRadius));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -158,7 +154,8 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   prev_desk_button_->SetAccessibleName(u"Previous desk:");
   prev_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHoverOnSubtle,
-      gfx::RoundedCornersF{kButtonCornerRadius, 0, 0, kButtonCornerRadius},
+      gfx::RoundedCornersF{kDeskButtonCornerRadius, 0, 0,
+                           kDeskButtonCornerRadius},
       /*for_border_thickness=*/0));
   SetupFocus(prev_desk_button_);
 
@@ -168,7 +165,8 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   next_desk_button_->SetAccessibleName(u"Next desk:");
   next_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHoverOnSubtle,
-      gfx::RoundedCornersF{0, kButtonCornerRadius, kButtonCornerRadius, 0},
+      gfx::RoundedCornersF{0, kDeskButtonCornerRadius, kDeskButtonCornerRadius,
+                           0},
       /*for_border_thickness=*/0));
   SetupFocus(next_desk_button_);
 
@@ -195,10 +193,17 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *desk_name_label_);
 
+  // Use shelf view as the context menu controller so that right click on the
+  // desk button shows the same context menu.
+  set_context_menu_controller(
+      desk_button_widget_->shelf()->hotseat_widget()->GetShelfView());
+
   DesksController::Get()->AddObserver(this);
+  Shell::Get()->AddShellObserver(this);
 }
 
 DeskButton::~DeskButton() {
+  Shell::Get()->RemoveShellObserver(this);
   DesksController::Get()->RemoveObserver(this);
 }
 
@@ -217,6 +222,10 @@ void DeskButton::OnExpandedStateUpdate(bool expanded) {
   Layout();
 }
 
+bool DeskButton::GetHovered() const {
+  return GetState() == ButtonState::STATE_HOVERED;
+}
+
 void DeskButton::SetActivation(bool is_activated) {
   if (is_activated_ == is_activated) {
     return;
@@ -228,7 +237,7 @@ void DeskButton::SetActivation(bool is_activated) {
                               !is_activated_);
 
   if (!force_expanded_state_) {
-    if (!is_activated_ && (is_hovered_ || is_focused_)) {
+    if (!is_activated_ && (GetHovered() || is_focused_)) {
       desk_button_widget_->SetExpanded(true);
     } else {
       desk_button_widget_->SetExpanded(false);
@@ -238,7 +247,7 @@ void DeskButton::SetActivation(bool is_activated) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                     : cros_tokens::kCrosSysSystemOnBaseOpaque,
-      kButtonCornerRadius));
+      kDeskButtonCornerRadius));
   desk_name_label_->SetEnabledColorId(
       is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                     : cros_tokens::kCrosSysOnSurface);
@@ -296,46 +305,44 @@ void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   GetViewAccessibility().OverrideNextFocus(shelf_widget);
 }
 
-void DeskButton::OnMouseEntered(const ui::MouseEvent& event) {
-  if (is_hovered_) {
+void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSE_PRESSED &&
+      event->IsOnlyRightMouseButton()) {
+    MaybeShowContextMenuForEvent(event);
     return;
   }
 
-  is_hovered_ = true;
-
-  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !is_hovered_);
-
-  if (is_activated_) {
-    return;
-  }
-
-  if (!is_expanded_ && !force_expanded_state_) {
-    // TODO(b/272383056): Would be better to have the widget register a
-    // callback like "preferred_expanded_state_changed".
-    desk_button_widget_->SetExpanded(true);
-  }
-
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
+  views::Button::OnMouseEvent(event);
 }
 
-void DeskButton::OnMouseExited(const ui::MouseEvent& event) {
-  if (!is_hovered_) {
+void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->type() == ui::ET_GESTURE_LONG_PRESS ||
+      event->type() == ui::ET_GESTURE_LONG_TAP) {
+    MaybeShowContextMenuForEvent(event);
     return;
   }
 
-  is_hovered_ = false;
+  views::Button::OnGestureEvent(event);
+}
 
-  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !is_hovered_);
+void DeskButton::StateChanged(ButtonState old_state) {
+  // When shell is destroying, child views under desk button will be removed
+  // first, then it triggers `Button::ViewHierarchyChanged()`, as a result,
+  // button state will be set to normal. In such case, it should *not* do
+  // anything to the desk button widget or the chevron buttons.
+  if (is_shell_destroying_ || (GetState() != ButtonState::STATE_NORMAL &&
+                               GetState() != ButtonState::STATE_HOVERED)) {
+    return;
+  }
+
+  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !GetHovered());
 
   if (is_activated_) {
     return;
   }
 
-  if (is_expanded_ && !force_expanded_state_ && !is_focused_) {
-    // TODO(b/272383056): Would be better to have the widget register a
-    // callback like "preferred_expanded_state_changed".
-    desk_button_widget_->SetExpanded(false);
+  if (!force_expanded_state_ && !is_focused_) {
+    desk_button_widget_->SetExpanded(GetHovered());
   }
 
   MaybeUpdateDeskSwitchButtonVisibility(
@@ -391,6 +398,10 @@ void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
 
 void DeskButton::OnViewBlurred(views::View* observed_view) {
   MaybeContract();
+}
+
+void DeskButton::OnShellDestroying() {
+  is_shell_destroying_ = true;
 }
 
 void DeskButton::OnButtonPressed() {
@@ -471,7 +482,7 @@ void DeskButton::MaybeUpdateDeskSwitchButtonVisibility(
   const int prev_desk_index = target_desk_index - 1;
   const int next_desk_index = target_desk_index + 1;
   const bool show_desk_switch_buttons =
-      (is_hovered_ || is_focused_) && !is_activated_ && is_expanded_;
+      (GetHovered() || is_focused_) && !is_activated_ && is_expanded_;
   auto is_valid_desk_index = [desk_controller](int index) {
     return 0 <= index && index < desk_controller->GetNumberOfDesks();
   };
@@ -510,8 +521,28 @@ void DeskButton::MaybeUpdateDeskSwitchButtonVisibility(
   }
 }
 
+void DeskButton::MaybeShowContextMenuForEvent(ui::LocatedEvent* event) {
+  if (!is_activated_) {
+    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+    if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
+      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
+    } else if (event->type() == ui::ET_GESTURE_LONG_TAP) {
+      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
+    }
+    gfx::Point location_in_screen(event->location());
+    View::ConvertPointToScreen(this, &location_in_screen);
+    ShowContextMenu(location_in_screen, source_type);
+    MaybeUpdateDeskSwitchButtonVisibility(
+        SwitchButtonUpdateSource::kDeskButtonUpdate);
+    MaybeContract();
+  }
+
+  event->SetHandled();
+  event->StopPropagation();
+}
+
 void DeskButton::UpdateShelfAutoHideDisabler(
-    absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
+    std::optional<Shelf::ScopedDisableAutoHide>& disabler,
     bool should_enable_shelf_auto_hide) {
   if (should_enable_shelf_auto_hide) {
     disabler.reset();
@@ -526,7 +557,8 @@ void DeskButton::SetupFocus(views::Button* view) {
   views::FocusRing::Get(view)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(view)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
-      view, gfx::Insets(kFocusRingHaloInset), kButtonCornerRadius);
+      view, gfx::Insets(kDeskButtonFocusRingHaloInset),
+      kDeskButtonCornerRadius);
   view->SetFlipCanvasOnPaintForRTLUI(false);
 }
 

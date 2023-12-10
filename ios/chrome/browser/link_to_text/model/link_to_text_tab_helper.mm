@@ -13,7 +13,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 // Interface encapsulating the properties needed to check the contents of the

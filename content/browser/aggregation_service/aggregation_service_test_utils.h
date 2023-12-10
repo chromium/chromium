@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -25,7 +26,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
@@ -90,14 +90,14 @@ AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode =
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
-    absl::optional<url::Origin> aggregation_coordinator_origin = absl::nullopt);
+    std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     blink::mojom::AggregationServiceMode aggregation_mode =
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
-    absl::optional<url::Origin> aggregation_coordinator_origin = absl::nullopt);
+    std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
@@ -213,8 +213,8 @@ class MockAggregationService : public AggregationService {
   // `report_handled_time` indicates when the report has been handled.
   void NotifyReportHandled(
       const AggregatableReportRequest& request,
-      absl::optional<AggregationServiceStorage::RequestId> id,
-      absl::optional<AggregatableReport> report,
+      std::optional<AggregationServiceStorage::RequestId> id,
+      std::optional<AggregatableReport> report,
       base::Time report_handled_time,
       AggregationServiceObserver::ReportStatus status);
 

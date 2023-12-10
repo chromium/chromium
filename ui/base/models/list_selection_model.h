@@ -7,8 +7,11 @@
 
 #include <stddef.h>
 
+#include <map>
+
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
@@ -73,6 +76,9 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   // Returns true if |index| is selected.
   bool IsSelected(size_t index) const;
 
+  // Returns the last time |index| was accessed.
+  absl::optional<base::Time> GetLastAccessed(size_t index) const;
+
   // Adds |index| to the selection. This does not change the active or anchor
   // indices.
   void AddIndexToSelection(size_t index);
@@ -116,6 +122,7 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
 
  private:
   SelectedIndices selected_indices_;
+  std::map<size_t, base::Time> last_accessed_map_;
   absl::optional<size_t> active_ = absl::nullopt;
   absl::optional<size_t> anchor_ = absl::nullopt;
 };

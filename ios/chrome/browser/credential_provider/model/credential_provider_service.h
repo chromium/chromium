@@ -9,9 +9,9 @@
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_backend_error.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -72,24 +72,19 @@ class CredentialProviderService
 
   // Replaces all data with credentials created from the passed forms and then
   // syncs to disk. Errors are treated as an empty list of credentials.
-  void SyncAllCredentials(
-      password_manager::PasswordStoreInterface* store,
-      absl::variant<
-          std::vector<std::unique_ptr<password_manager::PasswordForm>>,
-          password_manager::PasswordStoreBackendError> forms_or_error);
+  void SyncAllCredentials(password_manager::PasswordStoreInterface* store,
+                          password_manager::LoginsResultOrError forms_or_error);
 
   // Syncs the credential store to disk.
   void SyncStore();
 
   // Add credentials from `forms`.
-  void AddCredentials(
-      MemoryCredentialStore* store,
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
+  void AddCredentials(MemoryCredentialStore* store,
+                      std::vector<password_manager::PasswordForm> forms);
 
   // Removes credentials from `forms`.
-  void RemoveCredentials(
-      MemoryCredentialStore* store,
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
+  void RemoveCredentials(MemoryCredentialStore* store,
+                         std::vector<password_manager::PasswordForm> forms);
 
   // Syncs account id for validation.
   void UpdateAccountId();
@@ -99,13 +94,9 @@ class CredentialProviderService
   void UpdateUserEmail();
 
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResultsFrom(
+  void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
+      password_manager::LoginsResultOrError results_or_error) override;
 
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
@@ -120,9 +111,7 @@ class CredentialProviderService
   // treated as an empty list of credentials.
   void OnInjectedAffiliationAfterLoginsChanged(
       password_manager::PasswordStoreInterface* store,
-      absl::variant<
-          std::vector<std::unique_ptr<password_manager::PasswordForm>>,
-          password_manager::PasswordStoreBackendError> forms_or_error);
+      password_manager::LoginsResultOrError results_or_error);
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -135,9 +124,6 @@ class CredentialProviderService
   // comment in {profile,account}_credential_store_ declaration.
   MemoryCredentialStore* GetCredentialStore(
       password_manager::PasswordStoreInterface* store) const;
-
-  // The pref service.
-  const raw_ptr<PrefService> prefs_;
 
   // The interfaces for getting and manipulating a user's saved passwords.
   const scoped_refptr<password_manager::PasswordStoreInterface>

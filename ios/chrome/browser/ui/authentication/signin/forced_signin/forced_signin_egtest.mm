@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/test_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -65,8 +65,10 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
   NSString* buttonTitle = l10n_util::GetNSStringF(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
-  id<GREYMatcher> matcher = grey_allOf(grey_accessibilityLabel(buttonTitle),
-                                       grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> matcher =
+      grey_allOf(grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityTrait(UIAccessibilityTraitStaticText),
+                 grey_sufficientlyVisible(), nil);
 
   return matcher;
 }
@@ -99,6 +101,7 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(elementMatcher,
+                                          grey_kindOfClassName(@"UILabel"),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
       onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
@@ -302,7 +305,11 @@ void CompleteSigninFlow() {
   config.additional_args.push_back(
       "<dict><key>BrowserSignin</key><integer>2</integer></dict>");
   if ([self isRunningTest:@selector
-            (testSignOutFromAccountsOnThisDeviceSyncDisabled)]) {
+            (testSignOutFromAccountsOnThisDeviceSyncDisabled)] ||
+      [self
+          isRunningTest:@selector(testSignInScreenDuringRegularSigninPrompt)] ||
+      [self isRunningTest:@selector
+            (testHandlingIntentWhenSigninAfterSkippingRegularPrompt)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }

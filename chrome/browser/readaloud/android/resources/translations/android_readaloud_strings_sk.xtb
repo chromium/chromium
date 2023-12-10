@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1178581264944972037">Pozastaviť</translation>
-<translation id="2558806128245168542">Prejsť späť</translation>
-<translation id="3523426587027570423">Klepnutím zavrite „Vypočuť obsah tejto stránky“.</translation>
+<translation id="1921351128855867012">Pretočiť dopredu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
+<translation id="1984328900355667246">Prehrávanie nie je k dispozícii</translation>
+<translation id="3023502830214299618">Ľutujeme, ale prehrávanie nie je momentálne k dispozícii pre túto stránku. Skúste to znova neskôr.</translation>
+<translation id="3807208219231826020">Prehľadávanie prehrávania</translation>
+<translation id="385051799172605136">Späť</translation>
 <translation id="4431240646217225907">Zvýrazňovať text a automaticky posúvať</translation>
 <translation id="4654641641922242357">Prehrávač „Vypočuť obsah tejto stránky“.</translation>
-<translation id="4731877163452936634">Rýchlosť prehrávania: <ph name="PLAYBACK_SPEED" />. Zmeňte kliknutím.</translation>
+<translation id="4872475766448853257">Pretočiť späť o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="5234971936051226002">Prehrávač „Vypočuť obsah tejto stránky“ bol minimalizovaný.</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="6315170314923504164">Hlas</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6846298663435243399">Načítava sa…</translation>
 <translation id="7587250070160020374">V Chrome teraz hrá</translation>
-<translation id="7945822420239537236">O <ph name="NUMBER_OF_SECONDS" /> s. dopredu</translation>
-<translation id="7972866381678406344">O <ph name="NUMBER_OF_SECONDS" /> s. dozadu</translation>
 <translation id="8136852699834914183">Prehrávanie nie je pre túto stránku k dispozícii.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />‑násobné zvýšenie alebo zníženie rýchlosti.</translation>
+<translation id="8407011429883244666">Zavrieť prehrávač</translation>
 <translation id="8953618380150219653">Prehrávač „Vypočuť obsah tejto stránky“ bol otvorený na plnú výšku.</translation>
 </translationbundle>

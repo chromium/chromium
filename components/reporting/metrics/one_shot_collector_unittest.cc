@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -43,6 +44,7 @@ class OneShotCollectorTest : public ::testing::Test {
   std::unique_ptr<test::FakeReportingSettings> settings_;
   std::unique_ptr<test::FakeSampler> sampler_;
   std::unique_ptr<test::FakeMetricReportQueue> metric_report_queue_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(OneShotCollectorTest, InitiallyEnabled) {
@@ -96,6 +98,8 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled) {
   EXPECT_TRUE(metric_data_reported.has_telemetry_data());
   EXPECT_TRUE(metric_data_reported.telemetry_data().is_event_driven());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
@@ -149,6 +153,8 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_telemetry_data());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(OneShotCollectorTest, NoMetricData) {
@@ -166,6 +172,11 @@ TEST_F(OneShotCollectorTest, NoMetricData) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectBucketCount(
+      OneShotCollector::kNoMetricDataMetricsName,
+      metric_report_queue_->GetDestination(), /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(OneShotCollectorTest, InitiallyDisabled) {
@@ -200,6 +211,8 @@ TEST_F(OneShotCollectorTest, InitiallyDisabled) {
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_info_data());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(OneShotCollectorTest, InitiallyDisabled_Delayed) {
@@ -238,6 +251,8 @@ TEST_F(OneShotCollectorTest, InitiallyDisabled_Delayed) {
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_info_data());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(OneShotCollectorTest, DefaultEnabled) {
@@ -261,6 +276,8 @@ TEST_F(OneShotCollectorTest, DefaultEnabled) {
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_info_data());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 
 TEST_F(OneShotCollectorTest, DefaultDisabled) {
@@ -276,6 +293,8 @@ TEST_F(OneShotCollectorTest, DefaultDisabled) {
   // Setting is disabled by default, no data is collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(OneShotCollector::kNoMetricDataMetricsName,
+                                     /*expected_count=*/0);
 }
 }  // namespace
 }  // namespace reporting

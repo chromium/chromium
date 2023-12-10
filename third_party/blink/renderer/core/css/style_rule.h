@@ -70,7 +70,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kPositionFallback,
     kTry,
     kStartingStyle,
-    kViewTransitions,
+    kViewTransition,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -107,7 +107,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
   bool IsStartingStyleRule() const { return GetType() == kStartingStyle; }
-  bool IsViewTransitionsRule() const { return GetType() == kViewTransitions; }
+  bool IsViewTransitionRule() const { return GetType() == kViewTransition; }
   bool IsConditionRule() const {
     return GetType() == kContainer || GetType() == kMedia ||
            GetType() == kSupports || GetType() == kStartingStyle;
@@ -550,18 +550,17 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
-class StyleRuleStartingStyle : public StyleRuleCondition {
+class StyleRuleStartingStyle : public StyleRuleGroup {
  public:
   explicit StyleRuleStartingStyle(HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleStartingStyle(const StyleRuleStartingStyle&) = default;
 
-  bool ConditionIsSupported() const { return true; }
   StyleRuleStartingStyle* Copy() const {
     return MakeGarbageCollected<StyleRuleStartingStyle>(*this);
   }
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
-    StyleRuleCondition::TraceAfterDispatch(visitor);
+    StyleRuleGroup::TraceAfterDispatch(visitor);
   }
 };
 
@@ -614,7 +613,8 @@ struct DowncastTraits<StyleRuleGroup> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
-           rule.IsScopeRule() || rule.IsPositionFallbackRule();
+           rule.IsScopeRule() || rule.IsPositionFallbackRule() ||
+           rule.IsStartingStyleRule();
   }
 };
 

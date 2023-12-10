@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -54,8 +55,15 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     const std::string& install_parameter) {
   std::unique_ptr<TemplateURLData> data;
   if (search_provider.prepopulated_id) {
-    data = TemplateURLPrepopulateData::GetPrepopulatedEngine(
-        prefs, *search_provider.prepopulated_id);
+    if (base::FeatureList::IsEnabled(
+            kPrepopulatedSearchEngineOverrideRollout)) {
+      data = TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          prefs, *search_provider.prepopulated_id);
+    } else {
+      data = TemplateURLPrepopulateData::GetPrepopulatedEngine(
+          prefs, *search_provider.prepopulated_id);
+    }
+
     if (data) {
       // We need to override the prepopulate_id and Sync GUID of the generated
       // engine; otherwise, we will collide the original and also clone the
@@ -124,6 +132,13 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
 }
 
 }  // namespace
+
+// Kill-switch for the updated logic to fetch the prepopulated search engine
+// for settings override.
+// Exposed for tests. To be removed in M122.
+BASE_FEATURE(kPrepopulatedSearchEngineOverrideRollout,
+             "PrepopulatedSearchEngineOverrideRollout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 SettingsOverridesAPI::SettingsOverridesAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),

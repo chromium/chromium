@@ -4,34 +4,14 @@
 
 import("//build/config/android/rules.gni")
 
-java_prebuilt("byte_buddy_java") {
+android_library("byte_buddy_android_java") {
   testonly = true
-  supports_android = true
-  enable_bytecode_checks = false
-  jar_path = "lib/byte-buddy.jar"
-}
-
-java_prebuilt("byte_buddy_agent_java") {
-  testonly = true
-  supports_android = true
-  enable_bytecode_checks = false
-  jar_path = "lib/byte-buddy-agent.jar"
-}
-
-# The current version of //third_party/byte_buddy relies on an older
-# version of dx.
-java_prebuilt("dx_25_0_2_java") {
-  testonly = true
-  supports_android = true
-  requires_android = true
-  no_build_hooks = true
-  jar_path = "android_sdk_build_tools_25_0_2/build-tools/25.0.2/lib/dx.jar"
-}
-
-android_java_prebuilt("byte_buddy_android_java") {
-  testonly = true
-  enable_bytecode_checks = false
-  deps = [ ":dx_25_0_2_java" ]
+  sources = [ "java/net/bytebuddy/android/AndroidClassLoadingStrategy.java" ]
+  deps = [
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:net_bytebuddy_byte_buddy_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/aosp_dalvik:aosp_dalvik_dx_java",
+  ]
   proguard_configs = [ "//third_party/byte_buddy/proguard.flags" ]
-  jar_path = "lib/byte-buddy-android.jar"
 }

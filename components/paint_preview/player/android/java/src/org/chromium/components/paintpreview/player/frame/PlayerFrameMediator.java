@@ -39,37 +39,39 @@ import java.util.List;
 class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediatorDelegate {
     /** The GUID associated with the frame that this class is representing. */
     private final UnguessableToken mGuid;
+
     /** The size of the content inside this frame, at a scale factor of 1. */
     private final Size mContentSize;
-    /**
-     * Contains all {@link View}s corresponding to this frame's sub-frames.
-     */
+
+    /** Contains all {@link View}s corresponding to this frame's sub-frames. */
     private final List<View> mSubFrameViews = new ArrayList<>();
-    /**
-     * Contains all clip rects corresponding to this frame's sub-frames.
-     */
+
+    /** Contains all clip rects corresponding to this frame's sub-frames. */
     private final List<Rect> mSubFrameRects = new ArrayList<>();
-    /**
-     * Contains all mediators corresponding to this frame's sub-frames.
-     */
+
+    /** Contains all mediators corresponding to this frame's sub-frames. */
     private final List<PlayerFrameMediator> mSubFrameMediators = new ArrayList<>();
-    /**
-     * Contains scaled clip rects corresponding to this frame's sub-frames.
-     */
+
+    /** Contains scaled clip rects corresponding to this frame's sub-frames. */
     private final List<Rect> mSubFrameScaledRects = new ArrayList<>();
 
     private final PropertyModel mModel;
     private final PlayerCompositorDelegate mCompositorDelegate;
+
     /** The viewport of this frame. */
     private final PlayerFrameViewport mViewport;
 
     private boolean mIsSubframe;
+
     /** Transient object to avoid allocation. */
     private Rect mScaledRectIntersection = new Rect();
+
     private float mInitialScaleFactor;
     private float mMinScaleFactor;
+
     /** Handles scaling of bitmaps. */
     private final Matrix mBitmapScaleMatrix;
+
     private final Point mOffsetForScaling;
 
     private final PlayerFrameBitmapStateController mBitmapStateController;
@@ -77,9 +79,15 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     private PlayerGestureListener mGestureListener;
     private Runnable mInitialViewportSizeAvailable;
 
-    PlayerFrameMediator(PropertyModel model, PlayerCompositorDelegate compositorDelegate,
-            PlayerGestureListener gestureListener, UnguessableToken frameGuid, Size contentSize,
-            int initialScrollX, int initialScrollY, float initialScaleFactor,
+    PlayerFrameMediator(
+            PropertyModel model,
+            PlayerCompositorDelegate compositorDelegate,
+            PlayerGestureListener gestureListener,
+            UnguessableToken frameGuid,
+            Size contentSize,
+            int initialScrollX,
+            int initialScrollY,
+            float initialScaleFactor,
             Runnable initialViewportSizeAvailable) {
         mBitmapScaleMatrix = new Matrix();
         mOffsetForScaling = new Point();
@@ -93,8 +101,9 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mInitialScaleFactor = initialScaleFactor;
         mGuid = frameGuid;
         mContentSize = contentSize;
-        mBitmapStateController = new PlayerFrameBitmapStateController(
-                mGuid, mViewport, mContentSize, mCompositorDelegate, this);
+        mBitmapStateController =
+                new PlayerFrameBitmapStateController(
+                        mGuid, mViewport, mContentSize, mCompositorDelegate, this);
         mViewport.offset(initialScrollX, initialScrollY);
         mViewport.setScale(mInitialScaleFactor);
         mInitialViewportSizeAvailable = initialViewportSizeAvailable;
@@ -112,12 +121,18 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         if (width <= 0 || height <= 0) return;
 
         // Ensure the viewport is within the bounds of the content.
-        final int left = Math.max(0,
-                Math.min(Math.round(mViewport.getTransX()),
-                        Math.round(mContentSize.getWidth() * scaleFactor) - width));
-        final int top = Math.max(0,
-                Math.min(Math.round(mViewport.getTransY()),
-                        Math.round(mContentSize.getHeight() * scaleFactor) - height));
+        final int left =
+                Math.max(
+                        0,
+                        Math.min(
+                                Math.round(mViewport.getTransX()),
+                                Math.round(mContentSize.getWidth() * scaleFactor) - width));
+        final int top =
+                Math.max(
+                        0,
+                        Math.min(
+                                Math.round(mViewport.getTransY()),
+                                Math.round(mContentSize.getHeight() * scaleFactor) - height));
 
         mViewport.setTrans(left, top);
         mViewport.setSize(width, height);
@@ -147,8 +162,10 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         // Don't update the subframes if the matrix is identity as it will be forcibly recalculated.
         if (!matrix.isIdentity()) {
             float relativeScale = scaleFactor / mViewport.getScale();
-            mModel.set(PlayerFrameProperties.OFFSET,
-                    new Point(Math.round(mOffsetForScaling.x / relativeScale),
+            mModel.set(
+                    PlayerFrameProperties.OFFSET,
+                    new Point(
+                            Math.round(mOffsetForScaling.x / relativeScale),
                             Math.round(mOffsetForScaling.y / relativeScale)));
             updateSubframes(mViewport.getVisibleViewport(mIsSubframe), scaleFactor);
         }
@@ -197,8 +214,11 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         final float scaleFactor = mViewport.getScale();
         float translationX = isAbsolute ? 0f : mViewport.getTransX();
         float translationY = isAbsolute ? 0f : mViewport.getTransY();
-        GURL url = mCompositorDelegate.onClick(mGuid, Math.round((translationX + x) / scaleFactor),
-                Math.round((translationY + y) / scaleFactor));
+        GURL url =
+                mCompositorDelegate.onClick(
+                        mGuid,
+                        Math.round((translationX + x) / scaleFactor),
+                        Math.round((translationY + y) / scaleFactor));
         mGestureListener.onTap(url);
     }
 
@@ -332,13 +352,19 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
             }
             int visibleLeft = mScaledRectIntersection.left - subFrameScaledRect.left;
             int visibleTop = mScaledRectIntersection.top - subFrameScaledRect.top;
-            mSubFrameMediators.get(i).setVisibleRegion(visibleLeft, visibleTop,
-                    visibleLeft + mScaledRectIntersection.width(),
-                    visibleTop + mScaledRectIntersection.height());
+            mSubFrameMediators
+                    .get(i)
+                    .setVisibleRegion(
+                            visibleLeft,
+                            visibleTop,
+                            visibleLeft + mScaledRectIntersection.width(),
+                            visibleTop + mScaledRectIntersection.height());
 
             int transformedLeft = offset.x + subFrameScaledRect.left - viewport.left;
             int transformedTop = offset.y + subFrameScaledRect.top - viewport.top;
-            subFrameScaledRect.set(transformedLeft, transformedTop,
+            subFrameScaledRect.set(
+                    transformedLeft,
+                    transformedTop,
                     transformedLeft + subFrameScaledRect.width(),
                     transformedTop + subFrameScaledRect.height());
             mSubFrameViews.get(i).setVisibility(View.VISIBLE);
@@ -358,8 +384,9 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         for (int i = 0; i < mSubFrameViews.size(); i++) {
             if (mSubFrameViews.get(i).getVisibility() != View.VISIBLE) continue;
 
-            mSubFrameMediators.get(i).setBitmapScaleMatrixOfSubframe(
-                    childBitmapScaleMatrix, scaleFactor);
+            mSubFrameMediators
+                    .get(i)
+                    .setBitmapScaleMatrixOfSubframe(childBitmapScaleMatrix, scaleFactor);
         }
         mModel.set(PlayerFrameProperties.SCALE_MATRIX, mBitmapScaleMatrix);
     }
@@ -411,7 +438,8 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     private void scaleRect(Rect inRect, Rect outRect, float scaleFactor) {
-        outRect.set((int) (((float) inRect.left) * scaleFactor),
+        outRect.set(
+                (int) (((float) inRect.left) * scaleFactor),
                 (int) (((float) inRect.top) * scaleFactor),
                 (int) (((float) inRect.right) * scaleFactor),
                 (int) (((float) inRect.bottom) * scaleFactor));

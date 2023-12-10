@@ -7,7 +7,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 

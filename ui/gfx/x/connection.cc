@@ -19,14 +19,28 @@
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/bigreq.h"
+#include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/keyboard_state.h"
+#include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/randr.h"
+#include "ui/gfx/x/render.h"
+#include "ui/gfx/x/screensaver.h"
+#include "ui/gfx/x/shape.h"
+#include "ui/gfx/x/shm.h"
+#include "ui/gfx/x/sync.h"
+#include "ui/gfx/x/visual_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
+#include "ui/gfx/x/xfixes.h"
+#include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
+#include "ui/gfx/x/xtest.h"
 
 namespace x11 {
 
@@ -72,6 +86,13 @@ class UnknownError : public Error {
   RawError error_bytes_;
 };
 
+Window GetWindowPropertyAsWindow(const GetPropertyResponse& value) {
+  if (const Window* wm_window = PropertyCache::GetAs<Window>(value)) {
+    return *wm_window;
+  }
+  return Window::None;
+}
+
 }  // namespace
 
 // static
@@ -105,7 +126,8 @@ Connection::Connection(const std::string& address)
                                                       : display_string_.c_str(),
                               &default_screen_id_),
                   xcb_disconnect),
-      io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
+      io_error_handler_(base::BindOnce(DefaultIOErrorHandler)),
+      window_event_manager_(this) {
   DUMP_WILL_BE_CHECK(connection_);
   if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
@@ -125,20 +147,7 @@ Connection::Connection(const std::string& address)
   }
 
   ExtensionManager::Init(this);
-  auto enable_bigreq = bigreq().Enable();
-  // Xlib enables XKB on display creation, so we do that here to maintain
-  // compatibility.
-  xkb()
-      .UseExtension({Xkb::major_version, Xkb::minor_version})
-      .OnResponse(base::BindOnce([](Xkb::UseExtensionResponse response) {
-        if (!response || !response->supported) {
-          DVLOG(1) << "Xkb extension not available.";
-        }
-      }));
-  Flush();
-  if (auto response = enable_bigreq.Sync()) {
-    extended_max_request_length_ = response->maximum_request_length;
-  }
+  InitializeExtensions();
 
   const Format* formats[256];
   memset(formats, 0, sizeof(formats));
@@ -160,6 +169,15 @@ Connection::Connection(const std::string& address)
   keyboard_state_ = CreateKeyboardState(this);
 
   InitErrorParsers();
+
+  atom_cache_ = std::make_unique<AtomCache>(this);
+
+  root_props_ = std::make_unique<PropertyCache>(
+      this, default_root(),
+      std::vector<Atom>{GetAtom("_NET_SUPPORTING_WM_CHECK"),
+                        GetAtom("_NET_SUPPORTED")},
+      base::BindRepeating(&Connection::OnRootPropertyChanged,
+                          base::Unretained(this)));
 }
 
 Connection::~Connection() {
@@ -181,9 +199,9 @@ XlibDisplay& Connection::GetXlibDisplay() {
   return *xlib_display_;
 }
 
-void Connection::DeleteProperty(x11::Window window, x11::Atom name) {
+void Connection::DeleteProperty(Window window, Atom name) {
   XProto::DeleteProperty({
-      .window = static_cast<x11::Window>(window),
+      .window = static_cast<Window>(window),
       .property = name,
   });
 }
@@ -212,6 +230,107 @@ Window Connection::CreateDummyWindow(const std::string& name) {
     SetStringProperty(window, Atom::WM_NAME, Atom::STRING, name);
   }
   return window;
+}
+
+VisualManager& Connection::GetOrCreateVisualManager() {
+  if (!visual_manager_) {
+    visual_manager_ = std::make_unique<VisualManager>(this);
+  }
+  return *visual_manager_;
+}
+
+bool Connection::GetWmNormalHints(Window window, SizeHints* hints) {
+  std::vector<uint32_t> hints32;
+  if (!GetArrayProperty(window, Atom::WM_NORMAL_HINTS, &hints32)) {
+    return false;
+  }
+  if (hints32.size() != sizeof(SizeHints) / 4) {
+    return false;
+  }
+  memcpy(hints, hints32.data(), sizeof(*hints));
+  return true;
+}
+
+void Connection::SetWmNormalHints(Window window, const SizeHints& hints) {
+  std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
+  memcpy(hints32.data(), &hints, sizeof(SizeHints));
+  SetArrayProperty(window, Atom::WM_NORMAL_HINTS, Atom::WM_SIZE_HINTS, hints32);
+}
+
+bool Connection::GetWmHints(Window window, WmHints* hints) {
+  std::vector<uint32_t> hints32;
+  if (!GetArrayProperty(window, Atom::WM_HINTS, &hints32)) {
+    return false;
+  }
+  if (hints32.size() != sizeof(WmHints) / 4) {
+    return false;
+  }
+  memcpy(hints, hints32.data(), sizeof(*hints));
+  return true;
+}
+
+void Connection::SetWmHints(Window window, const WmHints& hints) {
+  std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
+  memcpy(hints32.data(), &hints, sizeof(WmHints));
+  SetArrayProperty(window, Atom::WM_HINTS, Atom::WM_HINTS, hints32);
+}
+
+void Connection::WithdrawWindow(Window window) {
+  UnmapWindow({window});
+
+  auto root = default_root();
+  UnmapNotifyEvent event{.event = root, .window = window};
+  auto mask = EventMask::SubstructureNotify | EventMask::SubstructureRedirect;
+  SendEvent(event, root, mask);
+}
+
+void Connection::RaiseWindow(Window window) {
+  ConfigureWindow(
+      ConfigureWindowRequest{.window = window, .stack_mode = StackMode::Above});
+}
+
+void Connection::LowerWindow(Window window) {
+  ConfigureWindow(
+      ConfigureWindowRequest{.window = window, .stack_mode = StackMode::Below});
+}
+
+void Connection::DefineCursor(Window window, Cursor cursor) {
+  ChangeWindowAttributes(
+      ChangeWindowAttributesRequest{.window = window, .cursor = cursor});
+}
+
+ScopedEventSelector Connection::ScopedSelectEvent(Window window,
+                                                  EventMask event_mask) {
+  return ScopedEventSelector(this, window, event_mask);
+}
+
+Atom Connection::GetAtom(const char* name) const {
+  return atom_cache_->GetAtom(name);
+}
+
+std::string Connection::GetWmName() const {
+  if (WmSupportsEwmh()) {
+    size_t size;
+    if (const char* name =
+            wm_props_->GetAs<char>(GetAtom("_NET_WM_NAME"), &size)) {
+      std::string wm_name;
+      wm_name.assign(name, size);
+      return wm_name;
+    }
+  }
+  return std::string();
+}
+
+bool Connection::WmSupportsHint(Atom atom) const {
+  if (WmSupportsEwmh()) {
+    size_t size;
+    if (const Atom* supported =
+            root_props_->GetAs<Atom>(GetAtom("_NET_SUPPORTED"), &size)) {
+      const Atom* end = supported + size;
+      return std::find(supported, end, atom) != end;
+    }
+  }
+  return false;
 }
 
 Connection::Request::Request(ResponseCallback callback)
@@ -457,6 +576,48 @@ void Connection::InitRootDepthAndVisual() {
     }
   }
   NOTREACHED();
+}
+
+void Connection::InitializeExtensions() {
+  auto bigreq_future = bigreq().Enable();
+  dri3().QueryVersion(Dri3::major_version, Dri3::minor_version);
+  glx().QueryVersion(Glx::major_version, Glx::minor_version);
+  auto randr_future =
+      randr().QueryVersion(RandR::major_version, RandR::minor_version);
+  auto render_future =
+      render().QueryVersion(Render::major_version, Render::minor_version);
+  auto screensaver_future = screensaver().QueryVersion(
+      ScreenSaver::major_version, ScreenSaver::minor_version);
+  shape().QueryVersion();
+  auto shm_future = shm().QueryVersion();
+  sync().Initialize(Sync::major_version, Sync::minor_version);
+  xfixes().QueryVersion(XFixes::major_version, XFixes::minor_version);
+  auto xinput_future =
+      xinput().XIQueryVersion(Input::major_version, Input::minor_version);
+  xkb().UseExtension({Xkb::major_version, Xkb::minor_version});
+  xtest().GetVersion(Test::major_version, Test::minor_version);
+
+  Flush();
+
+  if (auto response = bigreq_future.Sync()) {
+    extended_max_request_length_ = response->maximum_request_length;
+  }
+  if (auto response = randr_future.Sync()) {
+    randr_version_ = {response->major_version, response->minor_version};
+  }
+  if (auto response = render_future.Sync()) {
+    render_version_ = {response->major_version, response->minor_version};
+  }
+  if (auto response = screensaver_future.Sync()) {
+    screensaver_version_ = {response->server_major_version,
+                            response->server_minor_version};
+  }
+  if (auto response = shm_future.Sync()) {
+    shm_version_ = {response->major_version, response->minor_version};
+  }
+  if (auto response = xinput_future.Sync()) {
+    xinput_version_ = {response->major_version, response->minor_version};
+  }
 }
 
 void Connection::ProcessNextEvent() {
@@ -728,6 +889,33 @@ std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
 
 uint32_t Connection::GenerateIdImpl() {
   return xcb_generate_id(connection_.get());
+}
+
+void Connection::OnRootPropertyChanged(Atom property,
+                                       const GetPropertyResponse& value) {
+  Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
+  if (property == check_atom) {
+    wm_props_.reset();
+    Window wm_window = GetWindowPropertyAsWindow(value);
+    if (wm_window != Window::None) {
+      wm_props_ = std::make_unique<PropertyCache>(
+          this, wm_window,
+          std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
+    }
+  }
+}
+
+bool Connection::WmSupportsEwmh() const {
+  Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
+  Window wm_window = GetWindowPropertyAsWindow(root_props_->Get(check_atom));
+
+  if (!wm_props_) {
+    return false;
+  }
+  if (const x11::Window* wm_check = wm_props_->GetAs<Window>(check_atom)) {
+    return *wm_check == wm_window;
+  }
+  return false;
 }
 
 }  // namespace x11

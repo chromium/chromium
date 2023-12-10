@@ -2213,7 +2213,7 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_Success) {
   service()->EnableExtension(extension_id);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
   const Extension* extension =
-      registry()->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+      registry()->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   VerifyPublicRulesetIDs(*extension,
                          {kId1, kId2, kId3, dnr_api::DYNAMIC_RULESET_ID,
@@ -2590,7 +2590,7 @@ TEST_P(MultipleRulesetsTest,
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   const Extension* extension =
-      registry()->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+      registry()->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   VerifyPublicRulesetIDs(*extension, {kId2, kId3});
   VerifyGetEnabledRulesetsFunction(*extension, {kId2, kId3});

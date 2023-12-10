@@ -26,9 +26,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
-/**
- * Manages ClickToCall related notifications for Android.
- */
+/** Manages ClickToCall related notifications for Android. */
 public class ClickToCallMessageHandler {
     private static final String EXTRA_PHONE_NUMBER = "ClickToCallMessageHandler.EXTRA_PHONE_NUMBER";
 
@@ -58,14 +56,19 @@ public class ClickToCallMessageHandler {
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.CLICK_TO_CALL,
                 NotificationConstants.GROUP_CLICK_TO_CALL,
-                NotificationConstants.NOTIFICATION_ID_CLICK_TO_CALL_ERROR, /*contentIntent=*/null,
-                /*deleteIntent=*/null, /*confirmIntent=*/null, /*cancelIntent=*/null,
-                context.getResources().getString(
-                        R.string.click_to_call_dialer_absent_notification_title),
-                context.getResources().getString(
-                        R.string.click_to_call_dialer_absent_notification_text),
-                R.drawable.ic_error_outline_red_24dp, R.drawable.ic_dialer_not_found_red_40dp,
-                R.color.google_red_600, /*startsActivity=*/false);
+                NotificationConstants.NOTIFICATION_ID_CLICK_TO_CALL_ERROR,
+                /* contentIntent= */ null,
+                /* deleteIntent= */ null,
+                /* confirmIntent= */ null,
+                /* cancelIntent= */ null,
+                context.getResources()
+                        .getString(R.string.click_to_call_dialer_absent_notification_title),
+                context.getResources()
+                        .getString(R.string.click_to_call_dialer_absent_notification_text),
+                R.drawable.ic_error_outline_red_24dp,
+                R.drawable.ic_dialer_not_found_red_40dp,
+                R.color.google_red_600,
+                /* startsActivity= */ false);
     }
 
     /**
@@ -79,14 +82,13 @@ public class ClickToCallMessageHandler {
         }
     }
 
-    /**
-     * Handles the device unlock event to remove notification and just show dialer.
-     */
+    /** Handles the device unlock event to remove notification and just show dialer. */
     public static final class PhoneUnlockedReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             // We only try to remove the notifications if we have opened the dialer.
-            if (intent != null && Intent.ACTION_USER_PRESENT.equals(intent.getAction())
+            if (intent != null
+                    && Intent.ACTION_USER_PRESENT.equals(intent.getAction())
                     && shouldOpenDialer()) {
                 SharingNotificationUtil.dismissNotification(
                         NotificationConstants.GROUP_CLICK_TO_CALL,
@@ -108,17 +110,23 @@ public class ClickToCallMessageHandler {
                 NotificationUmaTracker.SystemNotificationType.CLICK_TO_CALL,
                 NotificationConstants.GROUP_CLICK_TO_CALL,
                 NotificationConstants.NOTIFICATION_ID_CLICK_TO_CALL,
-                getContentIntentProvider(phoneNumber), /*deleteIntent=*/null,
-                /*confirmIntent=*/null, /*cancelIntent=*/null, contentTitle,
+                getContentIntentProvider(phoneNumber),
+                /* deleteIntent= */ null,
+                /* confirmIntent= */ null,
+                /* cancelIntent= */ null,
+                contentTitle,
                 context.getResources().getString(R.string.click_to_call_notification_text),
-                R.drawable.ic_devices_16dp, R.drawable.ic_dialer_icon_blue_40dp,
-                R.color.default_icon_color_accent1_baseline, /*startsActivity=*/true);
+                R.drawable.ic_devices_16dp,
+                R.drawable.ic_dialer_icon_blue_40dp,
+                R.color.default_icon_color_accent1_baseline,
+                /* startsActivity= */ true);
     }
 
     private static Intent getDialIntent(String phoneNumber) {
-        Intent dialIntent = TextUtils.isEmpty(phoneNumber)
-                ? new Intent(Intent.ACTION_DIAL)
-                : new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
+        Intent dialIntent =
+                TextUtils.isEmpty(phoneNumber)
+                        ? new Intent(Intent.ACTION_DIAL)
+                        : new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
         dialIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return dialIntent;
     }
@@ -129,19 +137,21 @@ public class ClickToCallMessageHandler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // We can't use the TapReceiver broadcast to start the dialer Activity starting in
             // Android S. Use the dial intent directly instead.
-            return PendingIntentProvider.getActivity(context, /*requestCode=*/0,
-                    getDialIntent(phoneNumber), PendingIntent.FLAG_UPDATE_CURRENT);
+            return PendingIntentProvider.getActivity(
+                    context,
+                    /* requestCode= */ 0,
+                    getDialIntent(phoneNumber),
+                    PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
-        return PendingIntentProvider.getBroadcast(context,
-                /*requestCode=*/0,
+        return PendingIntentProvider.getBroadcast(
+                context,
+                /* requestCode= */ 0,
                 new Intent(context, TapReceiver.class).putExtra(EXTRA_PHONE_NUMBER, phoneNumber),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /**
-     * Returns true if we should open the dialer straight away.
-     */
+    /** Returns true if we should open the dialer straight away. */
     private static boolean shouldOpenDialer() {
         // On Android Q and above, we never open the dialer directly.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -161,9 +171,7 @@ public class ClickToCallMessageHandler {
                 ContextUtils.getApplicationContext());
     }
 
-    /**
-     * Returns true if we should show notification to the user.
-     */
+    /** Returns true if we should show notification to the user. */
     private static boolean shouldShowNotification() {
         // Always show the notification for Android Q and above. For pre-Q, only show notification
         // if device is locked.

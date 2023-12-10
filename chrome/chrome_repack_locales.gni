@@ -93,6 +93,10 @@ template("chrome_repack_locales") {
           [ "${root_gen_dir}/chromeos/strings/chromeos_strings_" ]
       deps += [ "//chromeos/strings" ]
     }
+    if (!is_android) {
+      source_patterns += [ "${root_gen_dir}/components/strings/search_engine_descriptions_strings_" ]
+      deps += [ "//components/strings:search_engine_descriptions_strings" ]
+    }
     if (enable_extensions) {
       source_patterns +=
           [ "${root_gen_dir}/extensions/strings/extensions_strings_" ]

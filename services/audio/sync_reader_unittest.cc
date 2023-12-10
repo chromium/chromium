@@ -163,6 +163,7 @@ class SyncReaderTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    mock_output_glitch_counter_ = nullptr;
     reader_.reset();
     mock_audio_glitch_counter_ptr_.reset();
     socket_.reset();
@@ -178,11 +179,10 @@ class SyncReaderTest : public ::testing::Test {
   std::unique_ptr<MockOutputGlitchCounter> mock_audio_glitch_counter_ptr_;
 
  protected:
-  raw_ptr<MockOutputGlitchCounter, DanglingUntriaged>
-      mock_output_glitch_counter_;
+  raw_ptr<MockOutputGlitchCounter> mock_output_glitch_counter_ = nullptr;
   std::unique_ptr<SyncReader> reader_;
   base::WritableSharedMemoryMapping shmem_;
-  raw_ptr<media::AudioOutputBuffer> buffer_;
+  raw_ptr<media::AudioOutputBuffer> buffer_ = nullptr;
 };
 
 TEST_F(SyncReaderTest, CallsGlitchCounter) {

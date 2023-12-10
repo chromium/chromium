@@ -9,8 +9,11 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -22,6 +25,92 @@
 
 namespace viz {
 
+namespace {
+
+void CustomUmaHistogramMemoryKB(const char* name, int sample) {
+  // Based on UmaHistogramMemoryKB, but with a starting bucket for under 1 MB.
+  // This gives granularity for smaller resources that are held around. Vs 0 KB
+  // representing an estimation error.
+  base::UmaHistogramCustomCounts(name, sample, 0, 500000, 50);
+}
+
+void ReportResourceSourceUsage(TransferableResource::ResourceSource source,
+                               size_t usage) {
+  const size_t usage_in_kb = usage / 1024u;
+  switch (source) {
+    case TransferableResource::ResourceSource::kUnknown:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.Unknown", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kAR:
+      CustomUmaHistogramMemoryKB("Memory.Renderer.EvictedLockedResources.AR",
+                                 usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kCanvas:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.Canvas", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kDrawingBuffer:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.DrawingBuffer", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kExoBuffer:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.ExoBuffer", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kHeadsUpDisplay:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.HeadsUpDisplay", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kImageLayerBridge:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.ImageLayerBridge",
+          usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kPPBGraphics3D:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.PPBGraphics3D", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kPepperGraphics2D:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.PepperGraphics2D",
+          usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kSharedElementTransition:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.SharedElementTransition",
+          usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kStaleContent:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.StaleContent", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kTest:
+      CustomUmaHistogramMemoryKB("Memory.Renderer.EvictedLockedResources.Test",
+                                 usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kTileRasterTask:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.TileRasterTask", usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kUI:
+      CustomUmaHistogramMemoryKB("Memory.Renderer.EvictedLockedResources.UI",
+                                 usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kVideo:
+      CustomUmaHistogramMemoryKB("Memory.Renderer.EvictedLockedResources.Video",
+                                 usage_in_kb);
+      break;
+    case TransferableResource::ResourceSource::kWebGPUSwapBuffer:
+      CustomUmaHistogramMemoryKB(
+          "Memory.Renderer.EvictedLockedResources.WebGPUSwapBuffer",
+          usage_in_kb);
+      break;
+  }
+}
+
+}  // namespace
+
 struct ClientResourceProvider::ImportedResource {
   TransferableResource resource;
   ReleaseCallback release_callback;
@@ -31,19 +120,23 @@ struct ClientResourceProvider::ImportedResource {
   gpu::SyncToken returned_sync_token;
   bool returned_lost = false;
 
+  ResourceEvictedCallback evicted_callback;
+
 #if DCHECK_IS_ON()
   base::debug::StackTrace stack_trace;
 #endif
 
   ImportedResource(ResourceId id,
                    const TransferableResource& resource,
-                   ReleaseCallback release_callback)
+                   ReleaseCallback release_callback,
+                   ResourceEvictedCallback evicted_callback)
       : resource(resource),
         release_callback(std::move(release_callback)),
         // If the resource is immediately deleted, it returns the same SyncToken
         // it came with. The client may need to wait on that before deleting the
         // backing or reusing it.
-        returned_sync_token(resource.mailbox_holder.sync_token) {
+        returned_sync_token(resource.mailbox_holder.sync_token),
+        evicted_callback(std::move(evicted_callback)) {
     // Replace the |resource| id with the local id from this
     // ClientResourceProvider.
     this->resource.id = id;
@@ -279,11 +372,13 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
 
 ResourceId ClientResourceProvider::ImportResource(
     const TransferableResource& resource,
-    ReleaseCallback release_callback) {
+    ReleaseCallback release_callback,
+    ResourceEvictedCallback evicted_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ResourceId id = id_generator_.GenerateNextId();
   auto result = imported_resources_.emplace(
-      id, ImportedResource(id, resource, std::move(release_callback)));
+      id, ImportedResource(id, resource, std::move(release_callback),
+                           std::move(evicted_callback)));
   DCHECK(result.second);  // If false, the id was already in the map.
   return id;
 }
@@ -294,6 +389,9 @@ void ClientResourceProvider::RemoveImportedResource(ResourceId id) {
   DCHECK(it != imported_resources_.end());
   ImportedResource& imported = it->second;
   imported.marked_for_deletion = true;
+  // We clear the callback here, as we will hold onto `imported` until it has
+  // been returned. Which could occur after the lifetime of the importer.
+  imported.evicted_callback = ResourceEvictedCallback();
   if (imported.exported_count == 0) {
     std::move(imported.release_callback)
         .Run(imported.returned_sync_token, imported.returned_lost);
@@ -361,6 +459,76 @@ bool ClientResourceProvider::InUseByConsumer(ResourceId id) {
   DCHECK(it != imported_resources_.end());
   ImportedResource& imported = it->second;
   return imported.exported_count > 0 || imported.returned_lost;
+}
+
+void ClientResourceProvider::SetEvicted(bool evicted) {
+  if (evicted_ == evicted) {
+    return;
+  }
+  evicted_ = evicted;
+  HandleEviction();
+}
+
+void ClientResourceProvider::SetVisible(bool visible) {
+  if (visible_ == visible) {
+    return;
+  }
+  visible_ = visible;
+  HandleEviction();
+}
+
+void ClientResourceProvider::HandleEviction() {
+  // The eviction and visibility change messages are racy. The Renderer
+  // Main-thread can be slow enough that we are still considered visible when
+  // the eviction signal is received. We do not count the locked resources
+  // solely when evicted. Instead we await the visibility change, as the Main
+  // thread may be in the process of unlocking resources, and the visibility
+  // change itself will attempt to free more resources.
+  if (!evicted_ || visible_) {
+    return;
+  }
+  int locked = 0;
+  size_t total_mem = 0u;
+  base::flat_map<TransferableResource::ResourceSource, size_t> mem_per_source;
+  std::vector<ResourceId> ids_to_unlock;
+  for (auto& [id, imported] : imported_resources_) {
+    if (!imported.marked_for_deletion) {
+      ++locked;
+      auto resource_source = imported.resource.resource_source;
+      size_t resource_mem =
+          imported.resource.format.EstimatedSizeInBytes(imported.resource.size);
+      total_mem += resource_mem;
+      mem_per_source[resource_source] += resource_mem;
+
+      if (!base::FeatureList::IsEnabled(features::kEvictionUnlocksResources) ||
+          !imported.evicted_callback) {
+        continue;
+      }
+      ids_to_unlock.push_back(id);
+    }
+  }
+
+  for (const auto id : ids_to_unlock) {
+    auto imported = imported_resources_.find(id);
+    if (imported == imported_resources_.end()) {
+      continue;
+    }
+    std::move(imported->second.evicted_callback).Run();
+  }
+
+  // Only report when there are locked resources. Evictions where all resources
+  // can be released are not interesting
+  if (!locked) {
+    return;
+  }
+  size_t total_mem_in_kb = total_mem / 1024u;
+  CustomUmaHistogramMemoryKB("Memory.Renderer.EvictedLockedResources.Total",
+                             total_mem_in_kb);
+  for (auto& [source, size] : mem_per_source) {
+    if (size) {
+      ReportResourceSourceUsage(source, size);
+    }
+  }
 }
 
 size_t ClientResourceProvider::num_resources_for_testing() const {

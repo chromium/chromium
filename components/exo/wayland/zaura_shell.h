@@ -34,7 +34,7 @@ namespace wayland {
 class SerialTracker;
 
 constexpr uint32_t kZAuraShellVersion =
-    ZAURA_TOPLEVEL_OVERVIEW_CHANGE_SINCE_VERSION;
+    ZAURA_TOPLEVEL_SET_SHADOW_CORNER_RADII_SINCE_VERSION;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -80,7 +80,6 @@ class AuraSurface : public SurfaceObserver,
   void Pin(bool trusted);
   void Unpin();
   void SetOrientationLock(uint32_t orientation_lock);
-  void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
   void ShowTooltip(const char* text,
                    const gfx::Point& position,
                    uint32_t trigger,
@@ -141,7 +140,7 @@ class AuraToplevel {
   virtual ~AuraToplevel();
 
   void SetOrientationLock(uint32_t lock_type);
-  void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
+  void SetWindowCornersRadii(const gfx::RoundedCornersF& radii);
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
   void SetClientUsesScreenCoordinates();
   void SetWindowBounds(int32_t x,
@@ -166,7 +165,8 @@ class AuraToplevel {
                    chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated,
-                   float raster_scale);
+                   float raster_scale,
+                   std::optional<chromeos::WindowStateType> restore_state_type);
   virtual void OnOriginChange(const gfx::Point& origin);
   void OnOverviewChange(bool in_overview);
   void SetDecoration(SurfaceFrameType type);
@@ -183,6 +183,7 @@ class AuraToplevel {
                          bool restart);
   void SetCanMaximize(bool can_maximize);
   void SetCanFullscreen(bool can_fullscreen);
+  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii);
 
   raw_ptr<ShellSurface, DanglingUntriaged | ExperimentalAsh> shell_surface_;
   const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
@@ -197,7 +198,7 @@ class AuraToplevel {
 
 class AuraPopup {
  public:
-  AuraPopup(ShellSurfaceBase* shell_surface);
+  explicit AuraPopup(ShellSurfaceBase* shell_surface);
   AuraPopup(const AuraPopup&) = delete;
   AuraPopup& operator=(const AuraPopup&) = delete;
   ~AuraPopup();

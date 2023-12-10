@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -126,7 +126,7 @@ void AggregatableReportAssembler::AssembleReport(
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
     RecordAssemblyStatus(AssemblyStatus::kTooManySimultaneousRequests);
 
-    std::move(callback).Run(std::move(report_request), absl::nullopt,
+    std::move(callback).Run(std::move(report_request), std::nullopt,
                             AssemblyStatus::kTooManySimultaneousRequests);
     return;
   }
@@ -153,7 +153,7 @@ void AggregatableReportAssembler::AssembleReport(
 void AggregatableReportAssembler::OnPublicKeyFetched(
     int64_t report_id,
     size_t processing_url_index,
-    absl::optional<PublicKey> key,
+    std::optional<PublicKey> key,
     AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
   DCHECK_EQ(key.has_value(),
             status == AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
@@ -177,12 +177,12 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
     int64_t report_id,
     PendingRequest& pending_request) {
   std::vector<PublicKey> public_keys;
-  for (absl::optional<PublicKey> elem : pending_request.processing_url_keys) {
+  for (std::optional<PublicKey> elem : pending_request.processing_url_keys) {
     if (!elem.has_value()) {
       RecordAssemblyStatus(AssemblyStatus::kPublicKeyFetchFailed);
 
       std::move(pending_request.callback)
-          .Run(std::move(pending_request.report_request), absl::nullopt,
+          .Run(std::move(pending_request.report_request), std::nullopt,
                AssemblyStatus::kPublicKeyFetchFailed);
       pending_requests_.erase(report_id);
       return;
@@ -191,7 +191,7 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
     public_keys.push_back(std::move(elem.value()));
   }
 
-  absl::optional<AggregatableReport> assembled_report =
+  std::optional<AggregatableReport> assembled_report =
       report_provider_->CreateFromRequestAndPublicKeys(
           pending_request.report_request, std::move(public_keys));
   AssemblyStatus assembly_status =

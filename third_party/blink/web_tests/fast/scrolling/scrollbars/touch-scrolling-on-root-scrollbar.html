@@ -5,97 +5,87 @@
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
 <script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <body style="height: 2000px; width: 2000px">
 <script>
 window.onload = () => {
-  const TRACK_WIDTH = calculateScrollbarThickness();
-  const BUTTON_WIDTH = TRACK_WIDTH;
-  const SCROLL_CORNER = TRACK_WIDTH;
-  const SCROLL_AMOUNT = getScrollbarButtonScrollDelta(document.scrollingElement);
-
   promise_test (async (test) => {
     // Scrollbars on Mac don't have arrows. This test is irrelevant.
     if(navigator.userAgent.includes("Mac OS X"))
       return;
 
-    resetScrollOffset(document.scrollingElement);
+    await waitForCompositorCommit();
+    await waitForScrollReset();
+
+    const SCROLL_AMOUNT =
+        getScrollbarButtonScrollDelta(document.scrollingElement);
 
     // Tap on the Down arrow of the viewport.
-    let x = window.innerWidth - BUTTON_WIDTH / 2;
-    let y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH / 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, SCROLL_AMOUNT.y, "Pressing the down arrow didn't scroll.");
+    let position = downArrow();
+    await touchTapScroll(position.x, position.y, document);
+    assert_equals(window.scrollY, SCROLL_AMOUNT.y,
+                  "Pressing the down arrow didn't scroll.");
 
     // Tap on the Up arrow of the viewport.
-    x = window.innerWidth - BUTTON_WIDTH / 2;
-    y = BUTTON_WIDTH / 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, 0, "Pressing the up arrow didn't scroll.");
+    position = upArrow();
+    await touchTapScroll(position.x, position.y, document);
+    assert_equals(window.scrollY, 0,
+                  "Pressing the up arrow didn't scroll.");
 
     // Tap on the Right arrow of the viewport.
-    x = window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH / 2;
-    y = window.innerHeight - BUTTON_WIDTH / 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
-    assert_equals(window.scrollX, SCROLL_AMOUNT.x, "Pressing the right arrow didn't scroll.");
+    position = rightArrow();
+    await touchTapScroll(position.x, position.y, document);
+    assert_equals(window.scrollX, SCROLL_AMOUNT.x,
+                  "Pressing the right arrow didn't scroll.");
 
     // Tap on the Left arrow of the viewport.
-    x = BUTTON_WIDTH / 2;
-    y = window.innerHeight - BUTTON_WIDTH / 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
-    assert_equals(window.scrollX, 0, "Pressing the left arrow didn't scroll.");
+    position = leftArrow();
+    await touchTapScroll(position.x, position.y, document);
+    assert_equals(window.scrollX, 0,
+                  "Pressing the left arrow didn't scroll.");
   }, "Test tap on non-custom composited root scrollbar arrows.");
 
   promise_test (async () => {
-    // Macs don't have touchscreens
+    // Tap positions are based on having scrollbar buttons. Macs don't render
+    // scrollbar buttons let alone have touch screens so skip the test.
     if(navigator.userAgent.includes("Mac OS X"))
       return;
 
     await waitForCompositorCommit();
-    resetScrollOffset(document.scrollingElement);
+    await waitForScrollReset();
 
     // Tap on the track part just above the down arrow.
-    let x = window.innerWidth - BUTTON_WIDTH / 2;
-    let y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH - 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
+    let position = downArrow();
+    // Position is in center of the arrow button. Adjust to be just above.
+    const trackOffset = calculateScrollbarThickness() / 2 + 2;
+    position.y -= trackOffset;
+    await touchTapScroll(position.x, position.y, document);
 
-    // Scrollbar Controller uses ScrollNode::ContainerBounds to calculate the delta
-    // whereas the main thread uses Snapport rect. Therefore scrollbar_controller
-    // is expected to compute a delta that is 14px less than the main thread.
-    // http://crbug.com/1098383
-    assert_true(Math.abs(window.scrollY - 526) < 1 || Math.abs(window.scrollY - 512) < 1,
-      "Pressing the down trackpart didn't scroll.");
+    assert_true(Math.abs(window.scrollY - 512) < 1,
+                "Pressing the down trackpart didn't scroll.");
 
     // Tap on the track part just below the up arrow.
-    x = window.innerWidth - BUTTON_WIDTH / 2;
-    y = BUTTON_WIDTH + 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, 0, "Pressing the up trackpart didn't scroll.");
+    position = upArrow();
+    position.y += trackOffset;
+    await touchTapScroll(position.x, position.y, document);
+    assert_equals(window.scrollY, 0,
+                  "Pressing the up trackpart didn't scroll.");
 
     // Tap on the track part just to the left of the right arrow.
-    x = window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH - 2;
-    y = window.innerHeight - BUTTON_WIDTH / 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
-
-    // Scrollbar Controller uses ScrollNode::ContainerBounds to calculate the delta
-    // whereas the main thread uses Snapport rect. Therefore scrollbar_controller
-    // is expected to compute a delta that is 14px less than the main thread.
-    // http://crbug.com/1098383
-    assert_true(Math.abs(window.scrollX - 701) < 1 || Math.abs(window.scrollX - 687) < 1,
-      "Pressing the right trackpart didn't scroll.");
+    position = rightArrow();
+    position.x -= trackOffset;
+    await touchTapScroll(position.x, position.y, document);
+    assert_true(Math.abs(window.scrollX - 687) < 1,
+                "Pressing the right trackpart didn't scroll.");
 
     // Tap on the track part just to the right of the left arrow.
-    x = BUTTON_WIDTH + 2;
-    y = window.innerHeight - BUTTON_WIDTH / 2;
-    await touchTapOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
-    assert_equals(window.scrollX, 0, "Pressing the left trackpart didn't scroll.");
+    position = leftArrow();
+    position.x += trackOffset;
+    await touchTapScroll(position.x, position.y, document);
+    assert_equals(window.scrollX, 0,
+                  "Pressing the left trackpart didn't scroll.");
   }, "Test tap on non-custom composited root scrollbar empty trackparts.");
 }
 </script>

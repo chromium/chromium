@@ -24,6 +24,8 @@ class ServiceWorkerRouterCondition;
 
 // TODO(crbug.com/1490445): set this value by discussing in spec proposal.
 static constexpr int kServiceWorkerRouterConditionMaxRecursionDepth = 10;
+// TODO(crbug.com/1503017): set this value by discussing in spec proposal.
+static constexpr size_t kServiceWorkerMaxRouterSize = 256;
 
 struct ServiceWorkerRouterRequestCondition {
   // https://fetch.spec.whatwg.org/#concept-request-method
@@ -212,8 +214,8 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
 // This represents a ServiceWorker static routing API's router rule.
 // It represents each route.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterRule {
-  // A rule can have one condition object. A condition object may have several
-  // different conditions.
+  // A rule can have one condition object. A condition object should not be
+  // empty.
   ServiceWorkerRouterCondition condition;
   // There can be a list of sources, and expected to be routed from
   // front to back.

@@ -10,9 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
-/**
- * The class is Java's representative of components/content_capture/common/content_capture_data.h
- */
+/** The class is Java's representative of components/content_capture/common/content_capture_data.h */
 public class ContentCaptureData extends ContentCaptureDataBase {
     private String mValue;
 

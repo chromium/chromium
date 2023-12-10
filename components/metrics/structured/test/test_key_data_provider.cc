@@ -29,7 +29,7 @@ TestKeyDataProvider::~TestKeyDataProvider() {
   }
 }
 
-absl::optional<uint64_t> TestKeyDataProvider::GetId(
+std::optional<uint64_t> TestKeyDataProvider::GetId(
     const std::string& project_name) {
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
@@ -48,7 +48,7 @@ absl::optional<uint64_t> TestKeyDataProvider::GetId(
       if (project_validator->event_type() ==
           StructuredEventProto_EventType_SEQUENCE) {
         if (!profile_key_data_) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         return profile_key_data_->GetId(project_name);
       } else if (device_key_data_) {
@@ -60,15 +60,15 @@ absl::optional<uint64_t> TestKeyDataProvider::GetId(
       NOTREACHED();
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
+std::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
     const std::string& project_name) {
   auto maybe_project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
   if (!maybe_project_validator.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto* project_validator = maybe_project_validator.value();
@@ -76,7 +76,7 @@ absl::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
   // Only SEQUENCE types have secondary ids.
   if (project_validator->event_type() !=
       StructuredEventProto_EventType_SEQUENCE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(device_key_data_);

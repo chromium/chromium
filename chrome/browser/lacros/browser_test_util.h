@@ -22,7 +22,7 @@ namespace browser_test_util {
 
 // Waits for an element to be created.
 // Returns false if Ash is unavailable or lacks the required TestController
-// functionality.
+// functionality, or if the operation times out.
 [[nodiscard]] bool WaitForElementCreation(const std::string& element_name);
 
 // Some crosapi methods rely on the assumption that ash/exo are aware of the
@@ -32,24 +32,31 @@ namespace browser_test_util {
 //
 // Waits for the Window to be created. |id| comes from |GetWindowId|.
 // Returns false if Ash is unavailable or lacks the required TestController
-// functionality.
+// functionality, or if the operation times out.
 [[nodiscard]] bool WaitForWindowCreation(const std::string& id);
 
 // Waits for the window to be destroyed. |id| comes from |GetWindowId|.
+// WaitForWindowDestruction requires the window to be already completely closed,
+// or visible/minimized on the Ash side (but about to close) for it to work.
+// This means that you need to ensure that the information about the window
+// existence and its state has reached the Ash side, for example by calling
+// WaitForWindowCreation first. Without this, WaitForWindowDestruction may
+// return immediately if e.g. the information about the window's existence
+// hasn't reached Ash yet.
 // Returns false if Ash is unavailable or lacks the required TestController
-// functionality.
+// functionality, or if the operation times out.
 [[nodiscard]] bool WaitForWindowDestruction(const std::string& id);
 
 // Waits for the shelf item to either be created or destroyed, matching
 // |exists|.
 // Returns false if Ash is unavailable or lacks the required TestController
-// functionality.
+// functionality, or if the operation times out.
 [[nodiscard]] bool WaitForShelfItem(const std::string& id, bool exists);
 
 // Waits for the app to be closed, running or active, matching |state|,
 // a bitmask of |crosapi::mojom::ShelfItemState| values.
 // Returns false if Ash is unavailable or lacks the required TestController
-// functionality.
+// functionality, or if the operation times out.
 [[nodiscard]] bool WaitForShelfItemState(
     const std::string& id,
     uint32_t state,
@@ -65,7 +72,7 @@ namespace browser_test_util {
 //
 // |window| must be a root window.
 // Returns false if Ash is unavailable or lacks the required TestController
-// functionality.
+// functionality, or if the operation times out.
 [[nodiscard]] bool SendAndWaitForMouseClick(aura::Window* window);
 
 }  // namespace browser_test_util

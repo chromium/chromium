@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] beforeInput(insertText) should be cancelable
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+[FAIL] EditContext should not receive events after being detached from element
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+Harness: the test ran to completion.

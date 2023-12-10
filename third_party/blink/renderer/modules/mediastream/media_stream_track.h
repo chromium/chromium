@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -135,6 +136,29 @@ class MODULES_EXPORT MediaStreamTrack
 
   // ScriptWrappable
   bool HasPendingActivity() const override = 0;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // When called on a "live" video track associated with tab-capture,
+  // asks to deliver a wheel event on the captured tab's viewport.
+  // This is subject to a permission policy on the capturing origin.
+  //
+  // If successful, |callback| is invoked with `true` and an empty string.
+  // If unsuccessful, it is invoked with `false` and an error message.
+  virtual void SendWheel(
+      CapturedWheelAction* action,
+      base::OnceCallback<void(bool, const String&)> callback) = 0;
+
+  // When called on a "live" video track associated with tab-capture,
+  // returns the zoom level of the capture tab's viewport.
+  // This is subject to a permission policy on the capturing origin.
+  //
+  // If successful, |callback| is invoked with the zoom level in percentage
+  // points and an empty string.
+  // If unsuccessful, it is invoked with `absl::nullopt` and an error message.
+  virtual void GetZoomLevel(
+      base::OnceCallback<void(absl::optional<int>, const String&)>
+          callback) = 0;
+#endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate) = 0;

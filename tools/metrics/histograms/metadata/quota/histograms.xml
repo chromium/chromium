@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2024-03-24">
+<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AgeOfOriginInDays" units="days"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.DatabaseSpecificError.{Statement}"
-    enum="SqliteLoggedResultCode" expires_after="2024-03-03">
+    enum="SqliteLoggedResultCode" expires_after="2024-05-05">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.GlobalTemporaryPoolSize" units="MB"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfTemporaryStorage" units="MB"
-    expires_after="2023-12-24">
+    expires_after="2024-12-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Global usage of temporary storage.</summary>
@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable2" units="%"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentUsedByOrigin" units="%"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentUsedForTemporaryStorage2" units="%"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseDisabled"
-    enum="QuotaDatabaseDisabledReason" expires_after="2024-03-17">
+    enum="QuotaDatabaseDisabledReason" expires_after="2024-05-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -246,35 +246,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseError" enum="SqliteLoggedResultCode"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Errors reported by SQLite while using the quota database.</summary>
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseReset" enum="QuotaDatabaseResetReason"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Records the reason the QuotaDatabase was reset to understand how frequently
     and why this happens. This will inform us on how we should implement data
     recovery for storage data when the QuotaDatabase is reset.
-  </summary>
-</histogram>
-
-<histogram name="Quota.QuotaDatabaseResultSuccess" enum="BooleanSuccess"
-    expires_after="2023-10-22">
-  <obsolete>
-    Code for recording this histogram was removed in May 2023 after a refactor.
-    The error rate at the time was less than 0.005%.
-  </obsolete>
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records whether the query to QuotaDatabase was successful. Recorded in
-    QuotaManager after a result is returned from every request to QuotaDatabase.
-    Added to ensure that the failure rate is within bounds of what we expect.
   </summary>
 </histogram>
 
@@ -292,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.SkippedEvictionRoundsPerHour" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -315,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.StorageKeyNonceCount" units="buckets"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -326,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TimeDeltaOfEvictionRounds" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -336,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -346,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalBucketCount" units="buckets"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -364,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

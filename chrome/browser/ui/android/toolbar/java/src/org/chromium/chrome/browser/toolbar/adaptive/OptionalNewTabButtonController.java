@@ -35,8 +35,8 @@ import org.chromium.ui.base.DeviceFormFactor;
  * Optional toolbar button which opens a new tab. May be used by {@link
  * AdaptiveToolbarButtonController}.
  */
-public class OptionalNewTabButtonController
-        extends BaseButtonDataProvider implements ConfigurationChangedObserver {
+public class OptionalNewTabButtonController extends BaseButtonDataProvider
+        implements ConfigurationChangedObserver {
     /**
      * Set of methods used to interact with dependencies which may require native libraries to
      * function. Robolectric tests can use shadows to inject dependencies in tests.
@@ -46,7 +46,8 @@ public class OptionalNewTabButtonController
         private final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
         private final Supplier<Tab> mActiveTabSupplier;
 
-        public Delegate(Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+        public Delegate(
+                Supplier<TabCreatorManager> tabCreatorManagerSupplier,
                 Supplier<Tab> activeTabSupplier) {
             mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
             mActiveTabSupplier = activeTabSupplier;
@@ -75,6 +76,7 @@ public class OptionalNewTabButtonController
 
     /** Context used for fetching resources and window size. */
     private final Context mContext;
+
     private final Delegate mDelegate;
     private final Supplier<Tracker> mTrackerSupplier;
 
@@ -92,16 +94,24 @@ public class OptionalNewTabButtonController
      * @param activeTabSupplier Used to access the current tab.
      * @param trackerSupplier  Supplier for the current profile tracker.
      */
-    public OptionalNewTabButtonController(Context context, Drawable buttonDrawable,
+    public OptionalNewTabButtonController(
+            Context context,
+            Drawable buttonDrawable,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Supplier<TabCreatorManager> tabCreatorManagerSupplier, Supplier<Tab> activeTabSupplier,
+            Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            Supplier<Tab> activeTabSupplier,
             Supplier<Tracker> trackerSupplier) {
-        super(activeTabSupplier, /* modalDialogManager= */ null, buttonDrawable,
+        super(
+                activeTabSupplier,
+                /* modalDialogManager= */ null,
+                buttonDrawable,
                 context.getString(R.string.button_new_tab),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
-                /*supportsTinting= */ true, /* iphCommandBuilder= */ null,
+                /* supportsTinting= */ true,
+                /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.NEW_TAB,
-                /* tooltipTextResId= */ R.string.new_tab_title, /* showHoverHighlight= */ true);
+                /* tooltipTextResId= */ R.string.new_tab_title,
+                /* showHoverHighlight= */ true);
         setShouldShowOnIncognitoTabs(true);
 
         mContext = context;
@@ -123,11 +133,12 @@ public class OptionalNewTabButtonController
 
         boolean isIncognito = activeTabSupplier.get().isIncognito();
         RecordUserAction.record("MobileTopToolbarOptionalButtonNewTab");
-        tabCreatorManager.getTabCreator(isIncognito).launchNTP();
+        tabCreatorManager.getTabCreator(isIncognito).launchNtp();
 
         if (mTrackerSupplier.hasValue()) {
-            mTrackerSupplier.get().notifyEvent(
-                    EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED);
+            mTrackerSupplier
+                    .get()
+                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED);
         }
     }
 
@@ -146,7 +157,7 @@ public class OptionalNewTabButtonController
     protected boolean shouldShowButton(Tab tab) {
         if (!super.shouldShowButton(tab) || mIsTablet) return false;
 
-        if (UrlUtilities.isNTPUrl(tab.getUrl())) return false;
+        if (UrlUtilities.isNtpUrl(tab.getUrl())) return false;
 
         return true;
     }
@@ -160,11 +171,15 @@ public class OptionalNewTabButtonController
     protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
-                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,
-                /* stringId = */ R.string.adaptive_toolbar_button_new_tab_iph,
-                /* accessibilityStringId = */ R.string.adaptive_toolbar_button_new_tab_iph)
-                                                      .setHighlightParams(params);
+        IPHCommandBuilder iphCommandBuilder =
+                new IPHCommandBuilder(
+                                tab.getContext().getResources(),
+                                FeatureConstants
+                                        .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,
+                                /* stringId= */ R.string.adaptive_toolbar_button_new_tab_iph,
+                                /* accessibilityStringId= */ R.string
+                                        .adaptive_toolbar_button_new_tab_iph)
+                        .setHighlightParams(params);
         return iphCommandBuilder;
     }
 }

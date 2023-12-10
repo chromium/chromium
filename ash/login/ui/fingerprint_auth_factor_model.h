@@ -62,7 +62,7 @@ class ASH_EXPORT FingerprintAuthFactorModel : public AuthFactorModel {
   void UpdateIcon(AuthIconView* icon) override;
 
   FingerprintState state_;
-  absl::optional<bool> auth_result_;
+  std::optional<bool> auth_result_;
 
   // TODO(b/216691052): Change the name of this to be more clear that this is
   // an override on top of |state_|.

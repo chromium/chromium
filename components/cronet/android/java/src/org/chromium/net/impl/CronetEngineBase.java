@@ -66,12 +66,22 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      * @param network network to be used to send this request. Set to {@code null} if not specified.
      * @return new request.
      */
-    protected abstract UrlRequestBase createRequest(String url, UrlRequest.Callback callback,
-            Executor executor, @RequestPriority int priority, Collection<Object> requestAnnotations,
-            boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
-            boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, @Nullable RequestFinishedInfo.Listener requestFinishedListener,
-            @Idempotency int idempotency, long networkHandle);
+    protected abstract UrlRequestBase createRequest(
+            String url,
+            UrlRequest.Callback callback,
+            Executor executor,
+            @RequestPriority int priority,
+            Collection<Object> requestAnnotations,
+            boolean disableCache,
+            boolean disableConnectionMigration,
+            boolean allowDirectExecutor,
+            boolean trafficStatsTagSet,
+            int trafficStatsTag,
+            boolean trafficStatsUidSet,
+            int trafficStatsUid,
+            @Nullable RequestFinishedInfo.Listener requestFinishedListener,
+            @Idempotency int idempotency,
+            long networkHandle);
 
     /**
      * Creates a {@link BidirectionalStream} object. {@code callback} methods will
@@ -101,12 +111,20 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      * @param network network to be used to send this request. Set to {@code null} if not specified.
      * @return a new stream.
      */
-    protected abstract ExperimentalBidirectionalStream createBidirectionalStream(String url,
-            BidirectionalStream.Callback callback, Executor executor, String httpMethod,
-            List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
-            boolean delayRequestHeadersUntilFirstFlush, Collection<Object> requestAnnotations,
-            boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, long networkHandle);
+    protected abstract ExperimentalBidirectionalStream createBidirectionalStream(
+            String url,
+            BidirectionalStream.Callback callback,
+            Executor executor,
+            String httpMethod,
+            List<Map.Entry<String, String>> requestHeaders,
+            @StreamPriority int priority,
+            boolean delayRequestHeadersUntilFirstFlush,
+            Collection<Object> requestAnnotations,
+            boolean trafficStatsTagSet,
+            int trafficStatsTag,
+            boolean trafficStatsUidSet,
+            int trafficStatsUid,
+            long networkHandle);
 
     @Override
     public ExperimentalUrlRequest.Builder newUrlRequestBuilder(
@@ -114,25 +132,31 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
         return new UrlRequestBuilderImpl(url, callback, executor, this);
     }
 
-    @IntDef({UrlRequest.Builder.REQUEST_PRIORITY_IDLE, UrlRequest.Builder.REQUEST_PRIORITY_LOWEST,
-            UrlRequest.Builder.REQUEST_PRIORITY_LOW, UrlRequest.Builder.REQUEST_PRIORITY_MEDIUM,
-            UrlRequest.Builder.REQUEST_PRIORITY_HIGHEST})
+    @IntDef({
+        UrlRequest.Builder.REQUEST_PRIORITY_IDLE,
+        UrlRequest.Builder.REQUEST_PRIORITY_LOWEST,
+        UrlRequest.Builder.REQUEST_PRIORITY_LOW,
+        UrlRequest.Builder.REQUEST_PRIORITY_MEDIUM,
+        UrlRequest.Builder.REQUEST_PRIORITY_HIGHEST
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RequestPriority {}
 
     @IntDef({
-            BidirectionalStream.Builder.STREAM_PRIORITY_IDLE,
-            BidirectionalStream.Builder.STREAM_PRIORITY_LOWEST,
-            BidirectionalStream.Builder.STREAM_PRIORITY_LOW,
-            BidirectionalStream.Builder.STREAM_PRIORITY_MEDIUM,
-            BidirectionalStream.Builder.STREAM_PRIORITY_HIGHEST,
+        BidirectionalStream.Builder.STREAM_PRIORITY_IDLE,
+        BidirectionalStream.Builder.STREAM_PRIORITY_LOWEST,
+        BidirectionalStream.Builder.STREAM_PRIORITY_LOW,
+        BidirectionalStream.Builder.STREAM_PRIORITY_MEDIUM,
+        BidirectionalStream.Builder.STREAM_PRIORITY_HIGHEST,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface StreamPriority {}
 
-    @IntDef({ExperimentalUrlRequest.Builder.DEFAULT_IDEMPOTENCY,
-            ExperimentalUrlRequest.Builder.IDEMPOTENT,
-            ExperimentalUrlRequest.Builder.NOT_IDEMPOTENT})
+    @IntDef({
+        ExperimentalUrlRequest.Builder.DEFAULT_IDEMPOTENCY,
+        ExperimentalUrlRequest.Builder.IDEMPOTENT,
+        ExperimentalUrlRequest.Builder.NOT_IDEMPOTENT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Idempotency {}
 }

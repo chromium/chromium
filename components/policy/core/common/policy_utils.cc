@@ -28,6 +28,12 @@ bool IsPolicyTestingEnabled(PrefService* pref_service,
     return true;
   }
 
+#if BUILDFLAG(IS_LINUX)
+  if (channel == version_info::Channel::DEV) {
+    return true;
+  }
+#endif
+
 #if BUILDFLAG(IS_IOS)
   if (channel == version_info::Channel::BETA) {
     return true;
@@ -56,6 +62,9 @@ base::Value::Dict GetPolicyNameToTypeMapping(
         break;
       case base::Value::Type::INTEGER:
         result.Set(policy_name.GetString(), "integer");
+        break;
+      case base::Value::Type::DOUBLE:
+        result.Set(policy_name.GetString(), "number");
         break;
       case base::Value::Type::LIST:
         result.Set(policy_name.GetString(), "list");

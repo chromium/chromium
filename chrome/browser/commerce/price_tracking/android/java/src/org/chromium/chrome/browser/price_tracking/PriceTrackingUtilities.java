@@ -17,15 +17,19 @@ import org.chromium.chrome.browser.profiles.Profile;
 public class PriceTrackingUtilities {
     public static final String TRACK_PRICES_ON_TABS =
             ChromePreferenceKeys.PRICE_TRACKING_TRACK_PRICES_ON_TABS;
+
     @VisibleForTesting
     public static final String PRICE_WELCOME_MESSAGE_CARD =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD;
+
     @VisibleForTesting
     public static final String PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT;
+
     @VisibleForTesting
     public static final String PRICE_ALERTS_MESSAGE_CARD =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD;
+
     @VisibleForTesting
     public static final String PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT;
@@ -39,9 +43,7 @@ public class PriceTrackingUtilities {
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
             ChromeSharedPreferences.getInstance();
 
-    /**
-     * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.
-     */
+    /** Update SharedPreferences when users turn on/off the feature tracking prices on tabs. */
     public static void setTrackPricesOnTabsEnabled(boolean enabled) {
         SHARED_PREFERENCES_MANAGER.writeBoolean(TRACK_PRICES_ON_TABS, enabled);
     }
@@ -56,9 +58,7 @@ public class PriceTrackingUtilities {
                         PriceTrackingFeatures.isPriceTrackingEnabled(profile));
     }
 
-    /**
-     * Forbid showing the PriceWelcomeMessageCard any more.
-     */
+    /** Forbid showing the PriceWelcomeMessageCard any more. */
     public static void disablePriceWelcomeMessageCard() {
         SHARED_PREFERENCES_MANAGER.writeBoolean(PRICE_WELCOME_MESSAGE_CARD, false);
     }
@@ -88,9 +88,7 @@ public class PriceTrackingUtilities {
         return SHARED_PREFERENCES_MANAGER.readInt(PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, 0);
     }
 
-    /**
-     * Forbid showing the PriceAlertsMessageCard any more.
-     */
+    /** Forbid showing the PriceAlertsMessageCard any more. */
     public static void disablePriceAlertsMessageCard() {
         SHARED_PREFERENCES_MANAGER.writeBoolean(PRICE_ALERTS_MESSAGE_CARD, false);
     }
@@ -135,7 +133,8 @@ public class PriceTrackingUtilities {
     private static boolean isImplicitSubscriptionsEnabled() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
                     false);
         }
         return false;

@@ -12,11 +12,13 @@
 const video = document.getElementById('video');
 
 function playVideo() {
+  navigator.mediaSession.playbackState = "playing";
   video.play();
 }
 
 function pauseVideo() {
   video.pause();
+  navigator.mediaSession.playbackState = "paused";
 }
 
 function openPip(details) {

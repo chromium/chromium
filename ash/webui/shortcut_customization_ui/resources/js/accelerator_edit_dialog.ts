@@ -257,6 +257,11 @@ export class AcceleratorEditDialogElement extends
         this.defaultAcceleratorsWithConflict.size === 0;
   }
 
+  protected isEmptyState(): boolean {
+    return this.pendingNewAcceleratorState === ViewState.VIEW &&
+        this.getSortedFilteredAccelerators(this.acceleratorInfos).length === 0;
+  }
+
   protected acceleratorLimitNotReached(): boolean {
     let originalAcceleratorsCount = 0;
     for (const acceleratorInfo of this.acceleratorInfos) {

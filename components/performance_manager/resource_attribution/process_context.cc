@@ -135,16 +135,16 @@ ProcessContext ProcessContext::FromProcessNode(const ProcessNode* node) {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
   auto* node_impl = ProcessNodeImpl::FromNode(node);
   AnyProcessHostId id;
-  switch (node_impl->process_type()) {
+  switch (node_impl->GetProcessType()) {
     case content::PROCESS_TYPE_BROWSER:
       id = BrowserProcessTag{};
       break;
     case content::PROCESS_TYPE_RENDERER:
-      id = node_impl->render_process_host_proxy().render_process_host_id();
+      id = node_impl->GetRenderProcessHostId();
       CHECK(!absl::get<RenderProcessHostId>(id).is_null());
       break;
     default:
-      id = node_impl->browser_child_process_host_proxy()
+      id = node_impl->GetBrowserChildProcessHostProxy()
                .browser_child_process_host_id();
       CHECK(!absl::get<BrowserChildProcessHostId>(id).is_null());
       break;

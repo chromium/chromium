@@ -1314,13 +1314,13 @@ void* DelayedPersistentAllocation::Get() const {
       SCOPED_CRASH_KEY_NUMBER(
           "PersistentMemoryAllocator", "ref_after",
           (reference_ + 1)->load(std::memory_order_relaxed));
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return nullptr;
     }
 #endif  // !BUILDFLAG(IS_NACL)
     // This should never happen but be tolerant if it does as corruption from
     // the outside is something to guard against.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return nullptr;
   }
   return mem + offset_;

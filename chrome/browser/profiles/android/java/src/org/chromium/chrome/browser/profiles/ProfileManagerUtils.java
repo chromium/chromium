@@ -13,9 +13,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * A utility class for applying operations on all loaded profiles.
- */
+/** A utility class for applying operations on all loaded profiles. */
 public class ProfileManagerUtils {
     private static final long BOOT_TIMESTAMP_MARGIN_MS = 1000;
 
@@ -57,6 +55,7 @@ public class ProfileManagerUtils {
     @NativeMethods
     interface Natives {
         void flushPersistentDataForAllProfiles();
+
         void removeSessionCookiesForAllProfiles();
     }
 }

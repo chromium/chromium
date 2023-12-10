@@ -13,10 +13,6 @@ BASE_FEATURE(kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
              "SyncTrustedVaultDegradedRecoverabilityHandler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration,
-             "SyncTrustedVaultVerifyDeviceRegistration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrustedVaultFrequentDegradedRecoverabilityPolling,
              "TrustedVaultFrequentDegradedRecoverabilityPolling",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -30,11 +26,11 @@ BASE_FEATURE(kSetClientEncryptionKeysJsApi,
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kChromeOSTrustedVaultUseWebUIDialog,
              "ChromeOSTrustedVaultUseWebUIDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeOSTrustedVaultClientShared,
              "ChromeOSTrustedVaultClientShared",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace trusted_vault

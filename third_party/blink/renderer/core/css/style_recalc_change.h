@@ -110,6 +110,9 @@ class CORE_EXPORT StyleRecalcChange {
   StyleRecalcChange ForceRecalcDescendants() const {
     return {kRecalcDescendants, flags_};
   }
+  StyleRecalcChange ForceRecalcChildren() const {
+    return {kRecalcChildren, flags_};
+  }
   StyleRecalcChange ForceReattachLayoutTree() const {
     return {propagate_, static_cast<Flags>(flags_ | kReattach)};
   }

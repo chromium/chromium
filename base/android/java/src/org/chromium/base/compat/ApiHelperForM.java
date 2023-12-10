@@ -35,17 +35,13 @@ import androidx.annotation.RequiresApi;
 public final class ApiHelperForM {
     private ApiHelperForM() {}
 
-    /**
-     * See {@link WebViewClient#onPageCommitVisible(WebView, String)}, which was added in M.
-     */
+    /** See {@link WebViewClient#onPageCommitVisible(WebView, String)}, which was added in M. */
     public static void onPageCommitVisible(
             WebViewClient webViewClient, WebView webView, String url) {
         webViewClient.onPageCommitVisible(webView, url);
     }
 
-    /**
-     * See {@link Process#is64Bit()}.
-     */
+    /** See {@link Process#is64Bit()}. */
     public static boolean isProcess64Bit() {
         return Process.is64Bit();
     }
@@ -85,8 +81,8 @@ public final class ApiHelperForM {
 
     /** See {@link PackageManager#isPermissionRevokedByPolicy(String, String)}. */
     public static boolean isPermissionRevokedByPolicy(Activity activity, String permission) {
-        return activity.getPackageManager().isPermissionRevokedByPolicy(
-                permission, activity.getPackageName());
+        return activity.getPackageManager()
+                .isPermissionRevokedByPolicy(permission, activity.getPackageName());
     }
 
     /** See {@link NetworkSecurityPolicy#isCleartextTrafficPermitted()}. */

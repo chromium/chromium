@@ -31,47 +31,6 @@ namespace segmentation_platform::processing {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-
-// Returns a list of all tabs from tab model.
-std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
-  std::vector<TabFetcher::TabEntry> tabs;
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() != profile) {
-      continue;
-    }
-    for (int i = 0; i < model->GetTabCount(); ++i) {
-      auto* web_contents = model->GetWebContentsAt(i);
-      auto* tab_android = model->GetTabAt(i);
-      auto tab_id = tab_android->GetSyncedTabDelegate()->GetSessionId();
-      tabs.emplace_back(tab_id, web_contents, tab_android);
-    }
-  }
-  return tabs;
-}
-
-#else  // BUILDFLAG(IS_ANDROID)
-
-// Returns a list of all tabs from tab strip model.
-std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  std::vector<TabFetcher::TabEntry> tabs;
-  for (const Browser* browser : *browser_list) {
-    if (browser->profile() != profile) {
-      continue;
-    }
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); ++i) {
-      auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(i);
-      auto* tab_delegate =
-          BrowserSyncedTabDelegate::FromWebContents(web_contents);
-      tabs.emplace_back(tab_delegate->GetSessionId(), web_contents, nullptr);
-    }
-  }
-  return tabs;
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
 GURL GetLocalTabURL(const TabFetcher::Tab& tab) {
   if (tab.webcontents) {
     return tab.webcontents->GetURL();
@@ -101,6 +60,74 @@ base::TimeDelta GetLocalTimeSinceModified(const TabFetcher::Tab& tab) {
   return base::Time::Now() - last_modified_timestamp;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+// Returns a list of all tabs from tab model.
+std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
+  std::vector<TabFetcher::TabEntry> tabs;
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() != profile) {
+      continue;
+    }
+    // Store count in local variable since it makes expensive JNI call.
+    int count = model->GetTabCount();
+    for (int i = 0; i < count; ++i) {
+      auto* web_contents = model->GetWebContentsAt(i);
+      auto* tab_android = model->GetTabAt(i);
+      auto tab_id = tab_android->GetSyncedTabDelegate()->GetSessionId();
+      tabs.emplace_back(tab_id, web_contents, tab_android);
+    }
+  }
+  return tabs;
+}
+
+TabFetcher::Tab FindLocalTabAndroid(const Profile* profile,
+                                    const TabFetcher::TabEntry& entry) {
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() != profile) {
+      continue;
+    }
+    // Store count in local variable since it makes expensive JNI call.
+    int count = model->GetTabCount();
+    for (int i = 0; i < count; ++i) {
+      auto* tab_android = model->GetTabAt(i);
+      SessionID id = tab_android->GetSyncedTabDelegate()->GetSessionId();
+      if (id != entry.tab_id) {
+        continue;
+      }
+      TabFetcher::Tab result;
+      result.webcontents = model->GetWebContentsAt(i);
+      result.tab_android = tab_android;
+      result.time_since_modified = GetLocalTimeSinceModified(result);
+      result.tab_url = GetLocalTabURL(result);
+      return result;
+    }
+  }
+  return TabFetcher::Tab();
+}
+
+#else  // BUILDFLAG(IS_ANDROID)
+
+// Returns a list of all tabs from tab strip model.
+std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  std::vector<TabFetcher::TabEntry> tabs;
+  for (const Browser* browser : *browser_list) {
+    if (browser->profile() != profile) {
+      continue;
+    }
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); ++i) {
+      auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(i);
+      auto* tab_delegate =
+          BrowserSyncedTabDelegate::FromWebContents(web_contents);
+      tabs.emplace_back(tab_delegate->GetSessionId(), web_contents, nullptr);
+    }
+  }
+  return tabs;
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 LocalTabHandler::LocalTabHandler(
@@ -117,6 +144,9 @@ bool LocalTabHandler::FillAllLocalTabsFromTabModel(
 }
 
 TabFetcher::Tab LocalTabHandler::FindLocalTab(const TabEntry& entry) {
+#if BUILDFLAG(IS_ANDROID)
+  return FindLocalTabAndroid(profile_, entry);
+#else
   TabFetcher::Tab result;
   // Fetch all tabs and verify if the `entry` is still valid.
   auto all_local_tabs = FetchTabs(profile_);
@@ -132,6 +162,7 @@ TabFetcher::Tab LocalTabHandler::FindLocalTab(const TabEntry& entry) {
     }
   }
   return result;
+#endif
 }
 
 LocalTabSource::LocalTabSource(
@@ -143,7 +174,7 @@ LocalTabSource::~LocalTabSource() = default;
 
 void LocalTabSource::AddLocalTabInfo(
     const TabFetcher::Tab& tab,
-    const FeatureProcessorState& feature_processor_state,
+    FeatureProcessorState& feature_processor_state,
     Tensor& inputs) {
   inputs[TabSessionSource::kInputLocalTabTimeSinceModified] =
       ProcessedValue::FromFloat(

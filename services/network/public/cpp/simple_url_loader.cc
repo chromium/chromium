@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,6 +57,18 @@ namespace {
 
 // Used by tests to override the tick clock for the timeout timer.
 const base::TickClock* timeout_tick_clock_ = nullptr;
+
+// A temporary util adapter to wrap the download callback with the response
+// body, and to hop the string content from a unique_ptr<string> into a
+// optional<string>.
+void GetFromUniquePtrToOptional(
+    SimpleURLLoader::BodyAsStringCallback body_as_string_callback,
+    std::unique_ptr<std::string> response_body) {
+  std::move(body_as_string_callback)
+      .Run(response_body
+               ? std::make_optional<std::string>(std::move(*response_body))
+               : std::nullopt);
+}
 
 // This file contains SimpleURLLoaderImpl, several BodyHandler implementations,
 // BodyReader, and StringUploadDataPipeGetter.
@@ -211,8 +223,14 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
   // SimpleURLLoader implementation.
   void DownloadToString(mojom::URLLoaderFactory* url_loader_factory,
+                        BodyAsStringCallbackDeprecated body_as_string_callback,
+                        size_t max_body_size) override;
+  void DownloadToString(mojom::URLLoaderFactory* url_loader_factory,
                         BodyAsStringCallback body_as_string_callback,
                         size_t max_body_size) override;
+  void DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      mojom::URLLoaderFactory* url_loader_factory,
+      BodyAsStringCallbackDeprecated body_as_string_callback) override;
   void DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       mojom::URLLoaderFactory* url_loader_factory,
       BodyAsStringCallback body_as_string_callback) override;
@@ -681,7 +699,7 @@ class SaveToStringBodyHandler : public BodyHandler,
   SaveToStringBodyHandler(
       SimpleURLLoaderImpl* simple_url_loader,
       bool want_download_progress,
-      SimpleURLLoader::BodyAsStringCallback body_as_string_callback,
+      SimpleURLLoader::BodyAsStringCallbackDeprecated body_as_string_callback,
       int64_t max_body_size)
       : BodyHandler(simple_url_loader, want_download_progress),
         max_body_size_(max_body_size),
@@ -742,7 +760,7 @@ class SaveToStringBodyHandler : public BodyHandler,
   const int64_t max_body_size_;
 
   std::unique_ptr<std::string> body_;
-  SimpleURLLoader::BodyAsStringCallback body_as_string_callback_;
+  SimpleURLLoader::BodyAsStringCallbackDeprecated body_as_string_callback_;
 
   const base::Location url_loader_created_from_;
 
@@ -1184,7 +1202,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     base::WeakPtr<DownloadAsStreamBodyHandler> weak_this(
         weak_ptr_factory_.GetWeakPtr());
     stream_consumer_->OnDataReceived(
-        base::StringPiece(data, length),
+        std::string_view(data, length),
         base::BindOnce(&DownloadAsStreamBodyHandler::Resume,
                        weak_ptr_factory_.GetWeakPtr()));
     // Protect against deletion.
@@ -1260,7 +1278,7 @@ SimpleURLLoaderImpl::~SimpleURLLoaderImpl() {}
 
 void SimpleURLLoaderImpl::DownloadToString(
     mojom::URLLoaderFactory* url_loader_factory,
-    BodyAsStringCallback body_as_string_callback,
+    BodyAsStringCallbackDeprecated body_as_string_callback,
     size_t max_body_size) {
   DCHECK_LE(max_body_size, kMaxBoundedStringDownloadSize);
   body_handler_ = std::make_unique<SaveToStringBodyHandler>(
@@ -1269,9 +1287,19 @@ void SimpleURLLoaderImpl::DownloadToString(
   Start(url_loader_factory);
 }
 
+void SimpleURLLoaderImpl::DownloadToString(
+    mojom::URLLoaderFactory* url_loader_factory,
+    BodyAsStringCallback body_as_string_callback,
+    size_t max_body_size) {
+  DownloadToString(url_loader_factory,
+                   base::BindOnce(GetFromUniquePtrToOptional,
+                                  std::move(body_as_string_callback)),
+                   max_body_size);
+}
+
 void SimpleURLLoaderImpl::DownloadToStringOfUnboundedSizeUntilCrashAndDie(
     mojom::URLLoaderFactory* url_loader_factory,
-    BodyAsStringCallback body_as_string_callback) {
+    BodyAsStringCallbackDeprecated body_as_string_callback) {
   body_handler_ = std::make_unique<SaveToStringBodyHandler>(
       this, !on_download_progress_callback_.is_null(),
       std::move(body_as_string_callback),
@@ -1279,6 +1307,14 @@ void SimpleURLLoaderImpl::DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       // is an int64_t, not a size_t.
       std::numeric_limits<int64_t>::max());
   Start(url_loader_factory);
+}
+
+void SimpleURLLoaderImpl::DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+    mojom::URLLoaderFactory* url_loader_factory,
+    BodyAsStringCallback body_as_string_callback) {
+  DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory, base::BindOnce(GetFromUniquePtrToOptional,
+                                         std::move(body_as_string_callback)));
 }
 
 void SimpleURLLoaderImpl::DownloadHeadersOnly(

@@ -44,7 +44,7 @@ CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state) {
   DCHECK(webState);
 
   const std::string* selectedText = dict.FindString("selectedText");
-  absl::optional<CGRect> sourceRect =
+  std::optional<CGRect> sourceRect =
       shared_highlighting::ParseRect(dict.FindDict("selectionRect"));
 
   // All values must be present to have a valid payload.

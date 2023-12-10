@@ -172,7 +172,7 @@ NavigationController& RenderViewHostTestHarness::controller() {
   return web_contents()->GetController();
 }
 
-WebContents* RenderViewHostTestHarness::web_contents() {
+WebContents* RenderViewHostTestHarness::web_contents() const {
   return contents_.get();
 }
 

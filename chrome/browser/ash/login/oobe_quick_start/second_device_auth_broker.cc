@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,8 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
@@ -26,6 +26,8 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -36,7 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::quick_start {
@@ -88,26 +89,23 @@ constexpr char kGetChallengeDataRequest[] = R"({
 
 constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     base::StringPiece,
-    SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason>({
-    {"invalid_oauth_token",
-     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
-         kInvalidOAuthToken},
+    SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason>({
+    {"invalid_oauth_token", SecondDeviceAuthBroker::AuthCodeRejectionResponse::
+                                Reason::kInvalidOAuthToken},
     {"account_not_supported",
-     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kAccountNotSupported},
-    {"less_secure_device",
-     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
-         kLessSecureDevice},
+    {"less_secure_device", SecondDeviceAuthBroker::AuthCodeRejectionResponse::
+                               Reason::kLessSecureDevice},
     {"already_authenticated",
-     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kAlreadyAuthenticated},
-    {"session_expired", SecondDeviceAuthBroker::RefreshTokenRejectionResponse::
+    {"session_expired", SecondDeviceAuthBroker::AuthCodeRejectionResponse::
                             Reason::kSessionExpired},
-    {"challenge_expired",
-     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
-         kChallengeExpired},
+    {"challenge_expired", SecondDeviceAuthBroker::AuthCodeRejectionResponse::
+                              Reason::kChallengeExpired},
     {"credential_id_mismatch",
-     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kCredentialIdMismatch},
 });
 
@@ -197,7 +195,7 @@ Base64UrlString GetChallengeBytesFromParsedResponse(
   // We need to convert the Base64 encoded challenge bytes from Gaia to
   // Base64Url encoded challenge bytes to send to Android. Android doesn't
   // handle the standard Base64 encoding.
-  absl::optional<Base64UrlString> challenge =
+  std::optional<Base64UrlString> challenge =
       Base64UrlTranscode(Base64String(*challenge_base64));
 
   return challenge ? *challenge : Base64UrlString();
@@ -220,8 +218,8 @@ void RunChallengeBytesCallback(
 void HandleFetchChallengeBytesErrorResponse(
     SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
     std::unique_ptr<EndpointResponse> response) {
-  LOG(ERROR) << "Could not fetch challenge bytes. HTTP status code: "
-             << response->http_status_code;
+  QS_LOG(ERROR) << "Could not fetch challenge bytes. HTTP status code: "
+                << response->http_status_code;
   if (!response->error_type.has_value()) {
     std::move(challenge_callback)
         .Run(base::unexpected(
@@ -259,31 +257,23 @@ void HandleFetchChallengeBytesErrorResponse(
   }
 }
 
-void RunAttestationCertificateCallback(
+void HandleAttestationNotAvailableError(
+    QuickStartMetrics& metrics,
+    SecondDeviceAuthBroker::AttestationCertificateCallback callback) {
+  metrics.RecordAttestationCertificateRequestEnded(
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::
+          kAttestationNotSupportedOnDevice);
+  std::move(callback).Run(base::unexpected(
+      SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+}
+
+void HandleAttestationUnknownError(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AttestationCertificateCallback callback,
-    attestation::AttestationStatus status,
-    const std::string& pem_certificate_chain) {
-  switch (status) {
-    case attestation::ATTESTATION_SUCCESS:
-      if (pem_certificate_chain.empty()) {
-        LOG(ERROR) << "Got an empty certificate chain with a success response "
-                      "from attestation server";
-        std::move(callback).Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
-        return;
-      }
-      std::move(callback).Run(PEMCertChain(pem_certificate_chain));
-      return;
-    case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
-      std::move(callback).Run(base::unexpected(
-          SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
-      return;
-    case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
-    case attestation::ATTESTATION_NOT_AVAILABLE:
-      std::move(callback).Run(base::unexpected(
-          SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
-      return;
-  }
+    const SecondDeviceAuthBroker::AttestationErrorType& error_type) {
+  metrics.RecordAttestationCertificateRequestEnded(
+      QuickStartMetrics::AttestationCertificateRequestErrorCode::kUnknownError);
+  std::move(callback).Run(base::unexpected(error_type));
 }
 
 std::string CreateStartSessionRequestData(
@@ -321,7 +311,7 @@ std::string CreateStartSessionRequestData(
 
   base::Value::Dict assertion_info;
   assertion_info.Set(kEmailKey, fido_assertion_info.email);
-  assertion_info.Set(kCredentialIdKey, fido_assertion_info.credential_id);
+  assertion_info.Set(kCredentialIdKey, *fido_assertion_info.credential_id);
   // The following fields are binary data that will be represented as a protobuf
   // `bytes` field on Google's side. Protobuf guarantees a stable translation
   // between byte arrays and Base64 encoded JSON fields.
@@ -372,40 +362,42 @@ std::string CreateStartSessionRequestData(
   return request_string;
 }
 
-void RunRefreshTokenCallbackWithRejectionResponse(
-    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
+void RunAuthCodeCallbackWithRejectionResponse(
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
-  SecondDeviceAuthBroker::RefreshTokenRejectionResponse rejection_response;
+  SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
 
   // Note that email may be empty.
   rejection_response.email = *response->FindString(kEmailKey);
-  rejection_response.reason = SecondDeviceAuthBroker::
-      RefreshTokenRejectionResponse::Reason::kUnknownReason;
+  rejection_response.reason =
+      SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::kUnknownReason;
   std::string* rejection_reason = response->FindString(kRejectionReasonKey);
   if (!rejection_reason) {
-    LOG(ERROR) << "Could not fetch OAuth authorization code. Request rejected "
-                  "without providing a reason";
-    std::move(refresh_token_callback).Run(rejection_response);
+    QS_LOG(ERROR)
+        << "Could not fetch OAuth authorization code. Request rejected "
+           "without providing a reason";
+    std::move(auth_code_callback).Run(rejection_response);
     return;
   }
 
   std::string rejection_reason_lowercase =
       base::ToLowerASCII(*rejection_reason);
   if (!kRejectionReasonErrorMap.contains(rejection_reason_lowercase)) {
-    LOG(ERROR) << "Could not fetch OAuth authorization code. Request rejected "
-                  "with unknown reason";
-    std::move(refresh_token_callback).Run(rejection_response);
+    QS_LOG(ERROR)
+        << "Could not fetch OAuth authorization code. Request rejected "
+           "with unknown reason";
+    std::move(auth_code_callback).Run(rejection_response);
     return;
   }
   rejection_response.reason =
       kRejectionReasonErrorMap.at(rejection_reason_lowercase);
-  std::move(refresh_token_callback).Run(rejection_response);
+  std::move(auth_code_callback).Run(rejection_response);
 }
 
-void RunRefreshTokenCallbackWithAdditionalChallengesOnTargetResponse(
-    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
+void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
-  SecondDeviceAuthBroker::RefreshTokenAdditionalChallengesOnTargetResponse
+  SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnTargetResponse
       additional_challenges_response;
 
   // Note that email may be empty.
@@ -413,21 +405,22 @@ void RunRefreshTokenCallbackWithAdditionalChallengesOnTargetResponse(
   std::string* target_fallback_url =
       response->FindString(kTargetFallbackUrlKey);
   if (!target_fallback_url) {
-    LOG(ERROR) << "Could not fetch OAuth authorization code. Request required "
-                  "additional target challenges on unknown URL";
-    std::move(refresh_token_callback)
-        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    QS_LOG(ERROR)
+        << "Could not fetch OAuth authorization code. Request required "
+           "additional target challenges on unknown URL";
+    std::move(auth_code_callback)
+        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
   additional_challenges_response.fallback_url = *target_fallback_url;
 
-  std::move(refresh_token_callback).Run(additional_challenges_response);
+  std::move(auth_code_callback).Run(additional_challenges_response);
 }
 
-void RunRefreshTokenCallbackWithAdditionalChallengesOnSourceResponse(
-    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
+void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
-  SecondDeviceAuthBroker::RefreshTokenAdditionalChallengesOnSourceResponse
+  SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnSourceResponse
       additional_challenges_response;
 
   // Note that email may be empty.
@@ -438,78 +431,57 @@ void RunRefreshTokenCallbackWithAdditionalChallengesOnSourceResponse(
   std::string* source_device_fallback_url =
       response->FindString(kSourceDeviceFallbackUrlKey);
   if (!source_device_fallback_url) {
-    LOG(ERROR) << "Could not fetch OAuth authorization code. Request required "
-                  "additional source challenges on unknown URL";
-    std::move(refresh_token_callback)
-        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    QS_LOG(ERROR)
+        << "Could not fetch OAuth authorization code. Request required "
+           "additional source challenges on unknown URL";
+    std::move(auth_code_callback)
+        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
   additional_challenges_response.fallback_url = *source_device_fallback_url;
 
-  std::move(refresh_token_callback).Run(additional_challenges_response);
+  std::move(auth_code_callback).Run(additional_challenges_response);
 }
 
-// Runs `refresh_token_callback` with the `result` of refresh token fetch.
-void RunRefreshTokenCallback(
+// Runs `auth_code_callback` with the `auth_code` as success response.
+void RunAuthCodeCallback(
     const std::string& email,
-    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
-    const base::expected<std::string, GoogleServiceAuthError>& result) {
-  if (!result.has_value()) {
-    SecondDeviceAuthBroker::RefreshTokenRejectionResponse response;
-    response.email = email;
-    response.reason = SecondDeviceAuthBroker::RefreshTokenRejectionResponse::
-        Reason::kInvalidAuthorizationCode;
-    std::move(refresh_token_callback).Run(response);
-    return;
-  }
-
-  SecondDeviceAuthBroker::RefreshTokenSuccessResponse response;
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
+    const std::string& auth_code) {
+  SecondDeviceAuthBroker::AuthCodeSuccessResponse response;
   response.email = email;
-  response.refresh_token = result.value();
-  std::move(refresh_token_callback).Run(response);
+  response.auth_code = auth_code;
+  std::move(auth_code_callback).Run(response);
 }
 
-void FetchRefreshTokenAndRunCallback(
-    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
-    base::OnceCallback<
-        void(const std::string&,
-             SecondDeviceAuthBroker::RefreshTokenOrErrorCallback)>
-        refresh_token_fetcher,
+void ParseAuthCodeAndRunCallback(
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   base::Value::Dict* credential_data = response->FindDict(kCredentialDataKey);
   if (!credential_data) {
-    LOG(ERROR) << "Could not fetch OAuth refresh token. Could not find "
-                  "credential_data";
-    std::move(refresh_token_callback)
-        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    QS_LOG(ERROR) << "Could not fetch OAuth auth code. Could not find "
+                     "credential_data";
+    std::move(auth_code_callback)
+        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
 
   std::string* auth_code = credential_data->FindString(kOauthTokenKey);
   if (!auth_code) {
-    LOG(ERROR)
-        << "Could not fetch OAuth refresh token. Could not find oauth_token";
-    std::move(refresh_token_callback)
-        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    QS_LOG(ERROR)
+        << "Could not fetch OAuth auth code. Could not find oauth_token";
+    std::move(auth_code_callback)
+        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
 
-  SecondDeviceAuthBroker::RefreshTokenOrErrorCallback callback =
-      base::BindOnce(&RunRefreshTokenCallback,
-                     /*email=*/*response->FindString(kEmailKey),
-                     std::move(refresh_token_callback));
-  // Fetch refresh token with `auth_code` and respond to `callback` - which in
-  // turn will respond to `refresh_token_callback`.
-  std::move(refresh_token_fetcher).Run(*auth_code, std::move(callback));
+  RunAuthCodeCallback(/*email=*/*response->FindString(kEmailKey),
+                      std::move(auth_code_callback), *auth_code);
 }
 
-void RunRefreshTokenCallbackFromParsedResponse(
-    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
+void RunAuthCodeCallbackFromParsedResponse(
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     std::unique_ptr<EndpointResponse> unparsed_response,
-    base::OnceCallback<
-        void(const std::string&,
-             SecondDeviceAuthBroker::RefreshTokenOrErrorCallback)>
-        refresh_token_fetcher,
     data_decoder::DataDecoder::ValueOrError response) {
   if (!response.has_value() || !response->is_dict()) {
     // When we can't even parse the response, it most probably is an error from
@@ -517,55 +489,54 @@ void RunRefreshTokenCallbackFromParsedResponse(
     // if it's an auth error from GFE.
     if (unparsed_response->error_type &&
         unparsed_response->error_type.value() == FetchErrorType::kAuthError) {
-      SecondDeviceAuthBroker::RefreshTokenRejectionResponse rejection_response;
+      SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
       rejection_response.reason = SecondDeviceAuthBroker::
-          RefreshTokenRejectionResponse::Reason::kUnknownReason;
-      LOG(ERROR) << "Could not fetch OAuth authorization code. Received an "
-                    "auth error from server";
-      std::move(refresh_token_callback).Run(rejection_response);
+          AuthCodeRejectionResponse::Reason::kUnknownReason;
+      QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Received an "
+                       "auth error from server";
+      std::move(auth_code_callback).Run(rejection_response);
       return;
     }
 
     // We could not parse the response and it is not an auth error.
-    LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
-                  "response from server";
-    std::move(refresh_token_callback)
-        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
+                     "response from server";
+    std::move(auth_code_callback)
+        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
 
   std::string* session_status =
       response->GetDict().FindString(kSessionStatusKey);
   if (!session_status) {
-    LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
-                  "session status";
-    std::move(refresh_token_callback)
-        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
+                     "session status";
+    std::move(auth_code_callback)
+        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
 
   if (base::ToLowerASCII(*session_status) == "rejected") {
-    RunRefreshTokenCallbackWithRejectionResponse(
-        std::move(refresh_token_callback), &response->GetDict());
+    RunAuthCodeCallbackWithRejectionResponse(std::move(auth_code_callback),
+                                             &response->GetDict());
     return;
   } else if (base::ToLowerASCII(*session_status) == "continue_on_target") {
-    RunRefreshTokenCallbackWithAdditionalChallengesOnTargetResponse(
-        std::move(refresh_token_callback), &response->GetDict());
+    RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
+        std::move(auth_code_callback), &response->GetDict());
     return;
   } else if (base::ToLowerASCII(*session_status) == "pending") {
-    RunRefreshTokenCallbackWithAdditionalChallengesOnSourceResponse(
-        std::move(refresh_token_callback), &response->GetDict());
+    RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
+        std::move(auth_code_callback), &response->GetDict());
     return;
   } else if (base::ToLowerASCII(*session_status) == "authenticated") {
-    FetchRefreshTokenAndRunCallback(std::move(refresh_token_callback),
-                                    std::move(refresh_token_fetcher),
-                                    &response->GetDict());
+    ParseAuthCodeAndRunCallback(std::move(auth_code_callback),
+                                &response->GetDict());
     return;
   }
 
   // Unknown session status.
-  std::move(refresh_token_callback)
-      .Run(SecondDeviceAuthBroker::RefreshTokenUnknownErrorResponse());
+  std::move(auth_code_callback)
+      .Run(SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse());
 }
 
 }  // namespace
@@ -588,9 +559,6 @@ SecondDeviceAuthBroker::SecondDeviceAuthBroker(
   // device id into 64 characters.
   DCHECK(!device_id_.empty());
   DCHECK_LE(device_id_.size(), 64UL);
-
-  gaia_auth_fetcher_ = std::make_unique<GaiaAuthFetcher>(
-      this, gaia::GaiaSource::kChromeOS, url_loader_factory_);
 }
 
 SecondDeviceAuthBroker::~SecondDeviceAuthBroker() = default;
@@ -641,18 +609,19 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificate(
-    const std::string& fido_credential_id,
+    const Base64UrlString& fido_credential_id,
     AttestationCertificateCallback certificate_callback) {
+  metrics_.RecordAttestationCertificateRequested();
   attestation::AttestationFeatures::GetFeatures(base::BindOnce(
       &SecondDeviceAuthBroker::FetchAttestationCertificateInternal,
       weak_ptr_factory_.GetWeakPtr(), fido_credential_id,
       std::move(certificate_callback)));
 }
 
-void SecondDeviceAuthBroker::FetchRefreshToken(
+void SecondDeviceAuthBroker::FetchAuthCode(
     const FidoAssertionInfo& fido_assertion_info,
     const PEMCertChain& certificate,
-    RefreshTokenCallback refresh_token_callback) {
+    AuthCodeCallback auth_code_callback) {
   DCHECK(!endpoint_fetcher_)
       << "This class can handle only one request at a time";
 
@@ -672,12 +641,12 @@ void SecondDeviceAuthBroker::FetchRefreshToken(
   endpoint_fetcher_->PerformRequest(
       base::BindOnce(&SecondDeviceAuthBroker::OnAuthorizationCodeFetched,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(refresh_token_callback)),
+                     std::move(auth_code_callback)),
       google_apis::GetAPIKey().c_str());
 }
 
 void SecondDeviceAuthBroker::OnAuthorizationCodeFetched(
-    RefreshTokenCallback refresh_token_callback,
+    AuthCodeCallback auth_code_callback,
     std::unique_ptr<EndpointResponse> response) {
   DCHECK(endpoint_fetcher_)
       << "Received a callback for authorization code without a pending request";
@@ -685,74 +654,43 @@ void SecondDeviceAuthBroker::OnAuthorizationCodeFetched(
   endpoint_fetcher_.reset();
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    LOG(ERROR) << "Could not fetch OAuth authorization code. HTTP status code: "
-               << response->http_status_code;
+    QS_LOG(ERROR)
+        << "Could not fetch OAuth authorization code. HTTP status code: "
+        << response->http_status_code;
   }
 
-  base::OnceCallback<void(const std::string&, RefreshTokenOrErrorCallback)>
-      refresh_token_fetcher = base::BindOnce(
-          &SecondDeviceAuthBroker::FetchRefreshTokenFromAuthorizationCode,
-          weak_ptr_factory_.GetWeakPtr());
   // Creating a copy here because we are going to move `response` soon.
   std::string unparsed_response = response->response;
   data_decoder::DataDecoder::ParseJsonIsolated(
       unparsed_response,
-      base::BindOnce(&RunRefreshTokenCallbackFromParsedResponse,
-                     std::move(refresh_token_callback), std::move(response),
-                     std::move(refresh_token_fetcher)));
-}
-
-void SecondDeviceAuthBroker::FetchRefreshTokenFromAuthorizationCode(
-    const std::string& authorization_code,
-    RefreshTokenOrErrorCallback callback) {
-  DCHECK(!refresh_token_internal_callback_)
-      << "This class can handle only one request at a time";
-  refresh_token_internal_callback_ = std::move(callback);
-  gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
-      authorization_code, device_id_);
-}
-
-void SecondDeviceAuthBroker::OnClientOAuthSuccess(
-    const ClientOAuthResult& result) {
-  DCHECK(refresh_token_internal_callback_)
-      << "Received an unexpected callback for refresh token";
-  std::move(refresh_token_internal_callback_).Run(result.refresh_token);
-}
-
-void SecondDeviceAuthBroker::OnClientOAuthFailure(
-    const GoogleServiceAuthError& error) {
-  DCHECK(refresh_token_internal_callback_)
-      << "Received an unexpected callback for refresh token";
-  LOG(ERROR) << "Could not fetch refresh token. Error: " << error.ToString();
-  std::move(refresh_token_internal_callback_).Run(base::unexpected(error));
+      base::BindOnce(&RunAuthCodeCallbackFromParsedResponse,
+                     std::move(auth_code_callback), std::move(response)));
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
-    const std::string& fido_credential_id,
+    const Base64UrlString& fido_credential_id,
     AttestationCertificateCallback certificate_callback,
     const attestation::AttestationFeatures* attestation_features) {
   if (!attestation_features) {
-    LOG(ERROR) << "Failed to get AttestationFeatures";
-    std::move(certificate_callback)
-        .Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    QS_LOG(ERROR) << "Failed to get AttestationFeatures";
+    HandleAttestationUnknownError(
+        metrics_, std::move(certificate_callback),
+        SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
     return;
   }
 
   if (!attestation_features->IsAttestationAvailable()) {
-    LOG(ERROR) << "Attestation is not available";
-    std::move(certificate_callback)
-        .Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    QS_LOG(ERROR) << "Attestation is not available";
+    HandleAttestationNotAvailableError(metrics_,
+                                       std::move(certificate_callback));
     return;
   }
 
   if (!attestation_features->IsEccSupported() &&
       !attestation_features->IsRsaSupported()) {
-    LOG(ERROR) << "Could not find any supported attestation key type";
-    std::move(certificate_callback)
-        .Run(base::unexpected(
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    QS_LOG(ERROR) << "Could not find any supported attestation key type";
+    HandleAttestationNotAvailableError(metrics_,
+                                       std::move(certificate_callback));
     return;
   }
 
@@ -761,7 +699,7 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
                                              : ::attestation::KEY_TYPE_RSA;
   ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
   profile_specific_data.set_id(device_id_);
-  profile_specific_data.set_content_binding(fido_credential_id);
+  profile_specific_data.set_content_binding(*fido_credential_id);
   attestation_->GetCertificate(
       /*certificate_profile=*/attestation::AttestationCertificateProfile::
           PROFILE_DEVICE_SETUP_CERTIFICATE,
@@ -769,11 +707,98 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
       /*force_new_key=*/true, /*key_crypto_type=*/attestation_key_type,
       /*key_name=*/attestation::kDeviceSetupKey,
       /*profile_specific_data=*/
-      absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
+      std::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
           profile_specific_data)),
       /*callback=*/
-      base::BindOnce(&RunAttestationCertificateCallback,
+      base::BindOnce(&SecondDeviceAuthBroker::RunAttestationCertificateCallback,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(certificate_callback)));
+}
+
+void SecondDeviceAuthBroker::RunAttestationCertificateCallback(
+    SecondDeviceAuthBroker::AttestationCertificateCallback callback,
+    attestation::AttestationStatus status,
+    const std::string& pem_certificate_chain) {
+  switch (status) {
+    case attestation::ATTESTATION_SUCCESS:
+      if (pem_certificate_chain.empty()) {
+        QS_LOG(ERROR)
+            << "Got an empty certificate chain with a success response "
+               "from attestation server";
+        HandleAttestationUnknownError(
+            metrics_, std::move(callback),
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
+        return;
+      }
+      metrics_.RecordAttestationCertificateRequestEnded(
+          /*error_code=*/std::nullopt);
+      std::move(callback).Run(PEMCertChain(pem_certificate_chain));
+      return;
+    case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
+      HandleAttestationUnknownError(
+          metrics_, std::move(callback),
+          SecondDeviceAuthBroker::AttestationErrorType::kTransientError);
+      return;
+    case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+      metrics_.RecordAttestationCertificateRequestEnded(
+          QuickStartMetrics::AttestationCertificateRequestErrorCode::
+              kBadRequest);
+      std::move(callback).Run(base::unexpected(
+          SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+      return;
+    case attestation::ATTESTATION_NOT_AVAILABLE:
+      HandleAttestationNotAvailableError(metrics_, std::move(callback));
+      return;
+  }
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason& reason) {
+  using Reason = SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason;
+  switch (reason) {
+    case Reason::kInvalidOAuthToken:
+      stream << "[Invalid OAuth Token]";
+      break;
+    case Reason::kAccountNotSupported:
+      stream << "[Account not supported]";
+      break;
+    case Reason::kAlreadyAuthenticated:
+      stream << "[Already authenticated]";
+      break;
+    case Reason::kChallengeExpired:
+      stream << "[Challenge expired]";
+      break;
+    case Reason::kCredentialIdMismatch:
+      stream << "[Credential ID mismatch]";
+      break;
+    case Reason::kSessionExpired:
+      stream << "[Session expired]";
+      break;
+    case Reason::kLessSecureDevice:
+      stream << "[Less secure device]";
+      break;
+    case Reason::kUnknownReason:
+      stream << "[Unknown reason]";
+      break;
+    default:
+      stream << "[Unknown Enum Value]";
+  }
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const SecondDeviceAuthBroker::AttestationErrorType& attestation_error) {
+  switch (attestation_error) {
+    case SecondDeviceAuthBroker::AttestationErrorType::kPermanentError:
+      stream << "[Permanent error]";
+      break;
+    case SecondDeviceAuthBroker::AttestationErrorType::kTransientError:
+      stream << "[Transient error]";
+      break;
+  }
+  return stream;
 }
 
 }  //  namespace ash::quick_start

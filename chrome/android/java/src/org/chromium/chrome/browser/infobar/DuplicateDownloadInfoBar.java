@@ -32,10 +32,19 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
     private final boolean mDuplicateRequestExists;
 
     @CalledByNative
-    private static InfoBar createInfoBar(String filePath, boolean isOfflinePage, String pageUrl,
-            OTRProfileID otrProfileID, boolean duplicateRequestExists) {
-        return new DuplicateDownloadInfoBar(ContextUtils.getApplicationContext(), filePath,
-                isOfflinePage, pageUrl, otrProfileID, duplicateRequestExists);
+    private static InfoBar createInfoBar(
+            String filePath,
+            boolean isOfflinePage,
+            String pageUrl,
+            OTRProfileID otrProfileID,
+            boolean duplicateRequestExists) {
+        return new DuplicateDownloadInfoBar(
+                ContextUtils.getApplicationContext(),
+                filePath,
+                isOfflinePage,
+                pageUrl,
+                otrProfileID,
+                duplicateRequestExists);
     }
 
     /**
@@ -47,9 +56,19 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
      * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param duplicateRequestExists Whether the duplicate is a download in progress.
      */
-    private DuplicateDownloadInfoBar(Context context, String filePath, boolean isOfflinePage,
-            String pageUrl, OTRProfileID otrProfileID, boolean duplicateRequestExists) {
-        super(R.drawable.infobar_downloading, R.color.infobar_icon_drawable_color, null, null, null,
+    private DuplicateDownloadInfoBar(
+            Context context,
+            String filePath,
+            boolean isOfflinePage,
+            String pageUrl,
+            OTRProfileID otrProfileID,
+            boolean duplicateRequestExists) {
+        super(
+                R.drawable.infobar_downloading,
+                R.color.infobar_icon_drawable_color,
+                null,
+                null,
+                null,
                 context.getString(R.string.duplicate_download_infobar_download_button),
                 context.getString(R.string.cancel));
         mFilePath = filePath;
@@ -64,19 +83,33 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
         super.createContent(layout);
         Context context = layout.getContext();
         if (mIsOfflinePage) {
-            layout.setMessage(DownloadUtils.getOfflinePageMessageText(
-                    context, mFilePath, mDuplicateRequestExists, new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                            DownloadUtils.openPageUrl(context, mPageUrl);
-                        }
-                    }));
+            layout.setMessage(
+                    DownloadUtils.getOfflinePageMessageText(
+                            context,
+                            mFilePath,
+                            mDuplicateRequestExists,
+                            new ClickableSpan() {
+                                @Override
+                                public void onClick(View view) {
+                                    DownloadUtils.openPageUrl(context, mPageUrl);
+                                }
+                            }));
         } else {
-            DuplicateDownloadClickableSpan span = new DuplicateDownloadClickableSpan(
-                    context, mFilePath, () -> {}, mOTRProfileID, DownloadOpenSource.INFO_BAR);
-            layout.setMessage(DownloadUtils.getDownloadMessageText(context,
-                    context.getString(R.string.duplicate_download_infobar_text), mFilePath,
-                    false /*addSizeStringIfAvailable*/, 0 /*totalBytes*/, span));
+            DuplicateDownloadClickableSpan span =
+                    new DuplicateDownloadClickableSpan(
+                            context,
+                            mFilePath,
+                            () -> {},
+                            mOTRProfileID,
+                            DownloadOpenSource.INFO_BAR);
+            layout.setMessage(
+                    DownloadUtils.getDownloadMessageText(
+                            context,
+                            context.getString(R.string.duplicate_download_infobar_text),
+                            mFilePath,
+                            /* addSizeStringIfAvailable= */ false,
+                            /* totalBytes= */ 0,
+                            span));
         }
     }
 }

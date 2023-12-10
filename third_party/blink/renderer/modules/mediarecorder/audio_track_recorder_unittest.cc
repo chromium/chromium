@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/opus/src/include/opus.h"
@@ -398,7 +400,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     // hold onto a reference to the task runner. This allows us to post tasks to
     // the sequence and apply the necessary overrides, without friending the
     // class.
-    encoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+    encoder_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner({});
     audio_track_recorder_ = std::make_unique<AudioTrackRecorder>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), codec_,
         media_stream_component_, mock_callback_interface_,
@@ -702,6 +704,8 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
           << "(Sample " << first_source_cache_pos_ << ")";
     }
   }
+
+  test::TaskEnvironment task_environment_;
 
 #if HAS_AAC_DECODER
   void ValidateAacData(std::string& encoded_data) {

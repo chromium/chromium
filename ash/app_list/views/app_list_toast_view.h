@@ -37,6 +37,8 @@ class AppListViewDelegate;
 // last column and the title and subtitle will share the middle column, with the
 // title over the subtitle.
 class ASH_EXPORT AppListToastView : public views::View {
+  METADATA_HEADER(AppListToastView, views::View)
+
  public:
   class Builder {
    public:
@@ -62,11 +64,11 @@ class ASH_EXPORT AppListToastView : public views::View {
 
    private:
     std::u16string title_;
-    absl::optional<std::u16string> subtitle_;
+    std::optional<std::u16string> subtitle_;
     bool is_subtitle_multiline_ = false;
-    absl::optional<std::u16string> button_text_;
-    absl::optional<ui::ImageModel> icon_;
-    absl::optional<int> icon_size_;
+    std::optional<std::u16string> button_text_;
+    std::optional<ui::ImageModel> icon_;
+    std::optional<int> icon_size_;
     views::Button::PressedCallback button_callback_;
     views::Button::PressedCallback close_button_callback_;
     bool style_for_tablet_mode_ = false;
@@ -144,9 +146,9 @@ class ASH_EXPORT AppListToastView : public views::View {
   int GetExpandedTitleLabelWidth();
 
   // The icon for the toast.
-  absl::optional<ui::ImageModel> default_icon_;
+  std::optional<ui::ImageModel> default_icon_;
 
-  absl::optional<int> icon_size_;
+  std::optional<int> icon_size_;
 
   // Whether the toast icon should be styled with a background.
   bool has_icon_background_ = false;

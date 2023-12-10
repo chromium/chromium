@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Uses of var() in CSS keyframes are responsive to changes in custom properties."
-[PASS] Uses of var() in CSS keyframes are responsive to changes in custom properties.
-[PASS] Uses of var() in CSS keyframes are responsive to changes in custom properties.
 Harness: the test ran to completion.
 

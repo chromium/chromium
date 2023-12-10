@@ -18,9 +18,7 @@ class DisplayItemClient;
 class GraphicsContext;
 class ImageResourceObserver;
 class LayoutObject;
-class SVGResource;
-class SVGResourceClient;
-class StyleSVGMaskReferenceImage;
+class StyleMaskSourceImage;
 
 class SVGMaskPainter {
   STATIC_ONLY(SVGMaskPainter);
@@ -30,7 +28,7 @@ class SVGMaskPainter {
                     const LayoutObject& layout_object,
                     const DisplayItemClient& display_item_client);
   static void PaintSVGMaskLayer(GraphicsContext&,
-                                const StyleSVGMaskReferenceImage&,
+                                const StyleMaskSourceImage&,
                                 const ImageResourceObserver&,
                                 const gfx::RectF& reference_box,
                                 const float zoom,
@@ -38,8 +36,8 @@ class SVGMaskPainter {
                                 const bool apply_mask_type);
   static gfx::RectF ResourceBoundsForSVGChild(
       const LayoutObject& layout_object);
-  static bool MaskIsValid(SVGResource* mask_resource,
-                          SVGResourceClient* client);
+  static bool MaskIsValid(const StyleMaskSourceImage&,
+                          const ImageResourceObserver&);
 };
 
 }  // namespace blink

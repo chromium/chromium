@@ -15,6 +15,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,8 +33,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Locale;
 
 /** Unit tests for {@link ExpandedPlayerSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,6 +47,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Mock private InteractionHandler mInteractionHandler;
     @Mock private PropertyModel mModel;
     @Mock private OptionsMenuSheetContent mOptionsMenu;
+    @Mock private SpeedMenuSheetContent mSpeedMenu;
     @Mock private View.OnClickListener mOnClickListener;
 
     private Context mContext;
@@ -54,8 +60,11 @@ public class ExpandedPlayerSheetContentUnitTest {
     private ImageView mBackButton;
     private ImageView mForwardButton;
     private ImageView mPlayPauseButton;
+    private SeekBar mSeekbar;
     private View mContentView;
     private Activity mActivity;
+    private LinearLayout mNormalLayout;
+    private LinearLayout mErrorLayout;
 
     @Before
     public void setUp() {
@@ -74,21 +83,28 @@ public class ExpandedPlayerSheetContentUnitTest {
         mTitleView = (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title);
         mPublisherView =
                 (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher);
+        mSpeedView = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
         mPlayPauseButton = (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
+        mSeekbar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+        mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
+        mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mContent =
                 new ExpandedPlayerSheetContent(
                         mContext, mBottomSheetController, mContentView, mModel);
-        mContent.setOptionsMenu(mOptionsMenu);
+        mContent.setOptionsMenuSheetContent(mOptionsMenu);
+        mContent.setSpeedMenuSheetContent(mSpeedMenu);
+        // PlayerMediator is responsible for setting initial speed.
+        mContent.setSpeed(1f);
     }
 
     @Test
     public void verifyInitialA11yStrings() {
-        assertEquals("1.0x", mSpeedView.getText());
-        assertEquals("Playback speed: 1.0. Click to change.", mSpeedView.getContentDescription());
-        assertEquals("Back 10 seconds", mBackButton.getContentDescription());
-        assertEquals("Forward 30 seconds", mForwardButton.getContentDescription());
+        assertEquals("1x", mSpeedView.getText());
+        assertEquals("1x increase/decrease speed.", mSpeedView.getContentDescription());
+        assertEquals("Go back 10 seconds", mBackButton.getContentDescription());
+        assertEquals("Fast forward 30 seconds", mForwardButton.getContentDescription());
     }
 
     @Test
@@ -118,14 +134,54 @@ public class ExpandedPlayerSheetContentUnitTest {
     }
 
     @Test
+    public void testSetElapsed() {
+        mContent.setElapsed(1_000_000_000L * 20);
+        assertEquals(
+                "00:20",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).getText());
+        mContent.setElapsed(1_000_000_000L * 123);
+        assertEquals(
+                "02:03",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).getText());
+
+        mContent.setElapsed(1_000_000_000L * -30);
+        assertEquals(
+                "00:00",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).getText());
+    }
+
+    @Test
+    public void testSetDuration() {
+        mContent.setDuration(1_000_000_000L * 20);
+        assertEquals(
+                "00:20",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).getText());
+        mContent.setDuration(1_000_000_000L * 12345);
+        assertEquals(
+                "3:25:45",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).getText());
+        mContent.setDuration(1_000_000_000L * -100);
+        assertEquals(
+                "00:00",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).getText());
+    }
+
+    @Test
     public void testSetSpeed() {
         mContent.setSpeed(0.5f);
-        assertEquals("0.5x", mSpeedView.getText());
-        assertEquals("Playback speed: 0.5. Click to change.", mSpeedView.getContentDescription());
+        assertEquals("0.5x", mSpeedView.getText().toString());
+        assertEquals("0.5x increase/decrease speed.", mSpeedView.getContentDescription());
 
         mContent.setSpeed(2f);
-        assertEquals("2.0x", mSpeedView.getText());
-        assertEquals("Playback speed: 2.0. Click to change.", mSpeedView.getContentDescription());
+        assertEquals("2x", mSpeedView.getText());
+        assertEquals("2x increase/decrease speed.", mSpeedView.getContentDescription());
+    }
+
+    @Test
+    public void testSetSpeed_languages() {
+        Locale.setDefault(new Locale("es", "ES"));
+        mContent.setSpeed(0.5f);
+        assertEquals("0,5x", mSpeedView.getText().toString());
     }
 
     @Test
@@ -135,6 +191,32 @@ public class ExpandedPlayerSheetContentUnitTest {
 
         mContent.setPlaying(false);
         assertEquals("Play", mPlayPauseButton.getContentDescription());
+    }
+
+    @Test
+    public void testSetProgress() {
+        mContent.setProgress(0.5f);
+        assertEquals(mSeekbar.getProgress(), (int) (mSeekbar.getMax() * 0.5f));
+
+        mContent.setProgress(0.75f);
+        assertEquals(mSeekbar.getProgress(), (int) (mSeekbar.getMax() * 0.75f));
+    }
+
+    @Test
+    public void testOnPlaybackStateChanged() {
+        mContent.onPlaybackStateChanged(PlaybackListener.State.ERROR);
+        assertTrue(mErrorLayout.getVisibility() == View.VISIBLE);
+        assertTrue(mNormalLayout.getVisibility() == View.GONE);
+
+        mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
+        assertTrue(mErrorLayout.getVisibility() == View.GONE);
+        assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
+        assertEquals(mPlayPauseButton.getContentDescription(), "Pause");
+
+        mContent.onPlaybackStateChanged(PlaybackListener.State.PAUSED);
+        assertTrue(mErrorLayout.getVisibility() == View.GONE);
+        assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
+        assertEquals(mPlayPauseButton.getContentDescription(), "Play");
     }
 
     @Test
@@ -158,12 +240,20 @@ public class ExpandedPlayerSheetContentUnitTest {
     public void testShowOptionsMenu() {
         mContent.showOptionsMenu();
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mContent.getOptionsMenu(), true);
+        verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
+    }
+
+    @Test
+    public void testShowSpeedMenu() {
+        mContent.showSpeedMenu();
+        verify(mBottomSheetController).hideContent(mContent, false);
+        verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
     }
 
     @Test
     public void testNotifySheetClosed() {
-        mContent.notifySheetClosed();
-        verify(mOptionsMenu).notifySheetClosed();
+        mContent.notifySheetClosed(mContent);
+        verify(mOptionsMenu).notifySheetClosed(eq(mContent));
+        verify(mSpeedMenu).notifySheetClosed(eq(mContent));
     }
 }

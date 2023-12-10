@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 
 namespace blink {
@@ -12,7 +13,8 @@ namespace blink {
 namespace {
 
 void ExpectToSucceed(const String& source) {
-  ScriptRegexp* email_regexp = EmailInputType::CreateEmailRegexp();
+  ScriptRegexp* email_regexp =
+      EmailInputType::CreateEmailRegexp(MainThreadIsolate());
   String result =
       EmailInputType::ConvertEmailAddressToASCII(*email_regexp, source);
   EXPECT_NE(source, result);
@@ -20,7 +22,8 @@ void ExpectToSucceed(const String& source) {
 }
 
 void ExpectToFail(const String& source) {
-  ScriptRegexp* email_regexp = EmailInputType::CreateEmailRegexp();
+  ScriptRegexp* email_regexp =
+      EmailInputType::CreateEmailRegexp(MainThreadIsolate());
   // Conversion failed.  The resultant value might contains non-ASCII
   // characters, and not a valid email address.
   EXPECT_FALSE(EmailInputType::IsValidEmailAddress(

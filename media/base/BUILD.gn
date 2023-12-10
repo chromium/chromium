@@ -450,6 +450,8 @@ source_set("base") {
       "//media/base/win:overlay_state_observer_subscription",
     ]
     sources += [
+      "win/media_foundation_package_locator_helper.cc",
+      "win/media_foundation_package_locator_helper.h",
       "win/mf_feature_checks.cc",
       "win/mf_feature_checks.h",
     ]
@@ -657,7 +659,10 @@ source_set("unit_tests") {
   }
 
   if (is_win) {
-    sources += [ "win/dxgi_device_scope_handle_unittest.cc" ]
+    sources += [
+      "win/dxgi_device_scope_handle_unittest.cc",
+      "win/media_foundation_package_locator_unittest.cc",
+    ]
     deps += [
       "//media",
       "//ui/events:test_support",

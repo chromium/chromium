@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("../../login.gni")
 
 assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 
@@ -35,20 +35,17 @@ js_type_check("closure_compile_local") {
     ":autolaunch",
     ":choobe",
     ":consolidated_consent",
-    ":cryptohome_recovery_setup",
     ":device_disabled",
     ":display_size",
     ":drive_pinning",
     ":enable_kiosk",
     ":error_message",
     ":family_link_notice",
-    ":fingerprint_setup",
     ":gaia_info",
     ":gaia_signin",
     ":gesture_navigation",
     ":guest_tos",
     ":hw_data_collection",
-    ":local_password_setup",
     ":local_state_error",
     ":managed_terms_of_service",
     ":marketing_opt_in",
@@ -57,8 +54,6 @@ js_type_check("closure_compile_local") {
     ":os_install",
     ":os_trial",
     ":parental_handoff",
-    ":password_selection",
-    ":pin_setup",
     ":placeholder",
     ":recommend_apps",
     ":remote_activity_notification",
@@ -70,7 +65,6 @@ js_type_check("closure_compile_local") {
     ":touchpad_scroll",
     ":tpm_error",
     ":user_creation",
-    ":wrong_hwid",
   ]
 }
 
@@ -196,18 +190,6 @@ js_library("consolidated_consent") {
   ]
 }
 
-js_library("cryptohome_recovery_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/cryptohome_recovery_setup.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("device_disabled") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/device_disabled.js" ]
   deps = [
@@ -272,26 +254,6 @@ js_library("family_link_notice") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("fingerprint_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/fingerprint_setup.js" ]
-  deps = [
-    "../../components:display_manager_types",
-    "../../components:oobe_cr_lottie",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/quick_unlock/fingerprint_progress_externs.js",
-  ]
-
   extra_deps = [ ":web_components" ]
 }
 
@@ -362,21 +324,6 @@ js_library("hw_data_collection") {
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("local_password_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/local_password_setup.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -539,46 +486,6 @@ js_library("os_trial") {
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("pin_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/pin_setup.js" ]
-  deps = [
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:cr.m",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    "$externs_path/quick_unlock_private.js",
-
-    # setup_pin_keyboard_externs.js is a temporary band-aid to let this
-    # closure-compiled JS library depend on the typescript file
-    # setup_pin_keyboard.ts. If you remove this dependency, consider deleting
-    # the externs file if it's not used elsewhere.
-    "//ash/webui/common/resources/quick_unlock/setup_pin_keyboard_externs.js",
-  ]
-  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
-}
-
-js_library("password_selection") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/password_selection.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -750,18 +657,6 @@ js_library("user_creation") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("wrong_hwid") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/wrong_hwid.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("error_message") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/error_message.js" ]
   deps = [
@@ -779,54 +674,19 @@ js_library("error_message") {
   extra_deps = [ ":web_components" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "adb_sideloading.js",
-    "add_child.js",
-    "password_selection.js",
-    "cryptohome_recovery_setup.js",
-    "app_downloading.js",
-    "app_launch_splash.js",
-    "assistant_optin.js",
-    "autolaunch.js",
-    "choobe.js",
-    "consolidated_consent.js",
-    "device_disabled.js",
-    "display_size.js",
-    "drive_pinning.js",
-    "enable_kiosk.js",
-    "error_message.js",
-    "family_link_notice.js",
-    "fingerprint_setup.js",
-    "gaia_info.js",
-    "gaia_signin.js",
-    "gesture_navigation.js",
-    "guest_tos.js",
-    "hw_data_collection.js",
-    "local_password_setup.js",
-    "local_state_error.js",
-    "managed_terms_of_service.js",
-    "marketing_opt_in.js",
-    "multidevice_setup.js",
-    "offline_ad_login.js",
-    "online_authentication_screen.js",
-    "oobe_reset.js",
-    "os_install.js",
-    "os_trial.js",
-    "parental_handoff.js",
-    "pin_setup.js",
-    "placeholder.js",
-    "recommend_apps.js",
-    "remote_activity_notification.js",
-    "saml_confirm_password.js",
-    "signin_fatal_error.js",
-    "smart_privacy_protection.js",
-    "sync_consent.js",
-    "theme_selection.js",
-    "touchpad_scroll.js",
-    "tpm_error.js",
-    "user_allowlist_check_screen.js",
-    "user_creation.js",
-    "wrong_hwid.js",
+group("web_components") {
+  public_deps = [
+    ":copy_js",
+    ":generate_web_component_html_wrapper_files",
   ]
+}
+
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(common_screens_html_files, "./screens/common", ".")
+  use_js = true
+}
+
+copy("copy_js") {
+  sources = rebase_path(common_screens_js_files, "./screens/common", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

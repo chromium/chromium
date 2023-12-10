@@ -14,9 +14,7 @@ import java.util.Set;
 public class ContextualSearchHeuristics {
     protected Set<ContextualSearchHeuristic> mHeuristics;
 
-    /**
-     * Manages a set of heuristics.
-     */
+    /** Manages a set of heuristics. */
     ContextualSearchHeuristics() {
         mHeuristics = new HashSet<ContextualSearchHeuristic>();
     }
@@ -32,9 +30,7 @@ public class ContextualSearchHeuristics {
         }
     }
 
-    /**
-     * Logs the condition state for all the Tap suppression heuristics.
-     */
+    /** Logs the condition state for all the Tap suppression heuristics. */
     public void logContitionState() {
         for (ContextualSearchHeuristic heuristic : mHeuristics) {
             heuristic.logConditionState();

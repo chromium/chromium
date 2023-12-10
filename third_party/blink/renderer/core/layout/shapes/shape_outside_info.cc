@@ -173,7 +173,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   RespectImageOrientationEnum respect_orientation =
       style_image->ForceOrientationIfNecessary(
-          LayoutObject::ShouldRespectImageOrientation(layout_box_));
+          layout_box_->StyleRef().ImageOrientation());
 
   const DeprecatedLayoutSize& image_size =
       RoundedLayoutSize(style_image->ImageSize(

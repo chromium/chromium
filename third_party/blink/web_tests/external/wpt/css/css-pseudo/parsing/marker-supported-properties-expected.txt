@@ -1,67 +1,6 @@
 This is a testharness.js-based test.
-Found 62 tests; 61 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
-[PASS] Property font-family value 'Ahem' in ::marker
-[PASS] Property font-feature-settings value '"smcp"' in ::marker
-[PASS] Property font-kerning value 'none' in ::marker
-[PASS] Property font-size value '25px' in ::marker
-[PASS] Property font-size-adjust value '1' in ::marker
-[PASS] Property font-stretch value 'expanded' in ::marker
-[PASS] Property font-style value 'italic' in ::marker
-[PASS] Property font-synthesis value 'none' in ::marker
-[PASS] Property font-synthesis-small-caps value 'none' in ::marker
-[PASS] Property font-synthesis-style value 'none' in ::marker
-[PASS] Property font-synthesis-weight value 'none' in ::marker
-[PASS] Property font-variant value 'small-caps' in ::marker
-[PASS] Property font-variant-caps value 'small-caps' in ::marker
-[PASS] Property font-variant-east-asian value 'full-width' in ::marker
-[PASS] Property font-variant-ligatures value 'historical-ligatures' in ::marker
-[PASS] Property font-variant-numeric value 'slashed-zero' in ::marker
-[PASS] Property font-variant-position value 'sub' in ::marker
-[PASS] Property font-weight value '900' in ::marker
-[PASS] Property line-height value '50px' in ::marker
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property white-space value 'nowrap' in ::marker
   assert_equals: expected "nowrap" but got "pre"
-[PASS] Property color value 'rgb(0, 100, 200)' in ::marker
-[PASS] Property text-combine-upright value 'all' in ::marker
-[PASS] Property unicode-bidi value 'plaintext' in ::marker
-[PASS] Property direction value 'rtl' in ::marker
-[PASS] Property content value '"foo"' in ::marker
-[PASS] Property animation value '1s linear 2s infinite alternate forwards paused anim' in ::marker
-[PASS] Property animation-delay value '1s' in ::marker
-[PASS] Property animation-direction value 'alternate' in ::marker
-[PASS] Property animation-duration value '2s' in ::marker
-[PASS] Property animation-fill-mode value 'forwards' in ::marker
-[PASS] Property animation-iteration-count value 'infinite' in ::marker
-[PASS] Property animation-name value 'anim' in ::marker
-[PASS] Property animation-play-state value 'paused' in ::marker
-[PASS] Property animation-timing-function value 'linear' in ::marker
-[PASS] Property animation-composition value 'add' in ::marker
-[PASS] Property transition value 'display 1s linear 2s' in ::marker
-[PASS] Property transition-delay value '1s' in ::marker
-[PASS] Property transition-duration value '2s' in ::marker
-[PASS] Property transition-property value 'display' in ::marker
-[PASS] Property transition-timing-function value 'linear' in ::marker
-[PASS] Property hyphens value 'none' in ::marker
-[PASS] Property letter-spacing value '10px' in ::marker
-[PASS] Property line-break value 'anywhere' in ::marker
-[PASS] Property overflow-wrap value 'anywhere' in ::marker
-[PASS] Property tab-size value '10px' in ::marker
-[PASS] Property text-transform value 'uppercase' in ::marker
-[PASS] Property word-break value 'break-word' in ::marker
-[PASS] Property word-spacing value '10px' in ::marker
-[PASS] Property text-decoration-skip-ink value 'none' in ::marker
-[PASS] Property text-emphasis value 'dot rgb(0, 255, 0)' in ::marker
-[PASS] Property text-emphasis-color value 'rgb(0, 255, 0)' in ::marker
-[PASS] Property text-emphasis-position value 'under left' in ::marker
-[PASS] Property text-emphasis-style value 'dot' in ::marker
-[PASS] Property text-shadow value 'rgb(0, 255, 0) 1px 2px 3px' in ::marker
-[PASS] Property display value 'none' in ::marker
-[PASS] Property position value 'absolute' in ::marker
-[PASS] Property float value 'right' in ::marker
-[PASS] Property list-style value 'inside url('foo') decimal' in ::marker
-[PASS] Property list-style-image value 'url('foo')' in ::marker
-[PASS] Property list-style-position value 'inside' in ::marker
-[PASS] Property list-style-type value 'decimal' in ::marker
 Harness: the test ran to completion.
 

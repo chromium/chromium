@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/signin/model",
+]

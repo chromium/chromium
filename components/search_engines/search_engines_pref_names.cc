@@ -24,15 +24,37 @@ const char kDefaultSearchProviderGUID[] = "default_search_provider.guid";
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// Whether this profile should potentially show the search engine choice
+// dialog before the user can proceed. Actual eligiblity is still determined
+// by the `SearchEngineChoiceService`.
+// Note that this has effect only if the `kSearchEngineChoiceTrigger` feature
+// is enabled and if its `kSearchEngineChoiceTriggerForTaggedProfilesOnly`
+// param is set to `true`.
+const char kDefaultSearchProviderChoicePending[] =
+    "default_search_provider.choice_pending";
+
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
+// The timestamp and the version indicate that the user has already made a
+// search engine choice in the choice screen or in settings.
 const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
     "default_search_provider.choice_screen_completion_timestamp";
+
+// Version of Chrome when the user chose a search engine, in the format
+// "6.0.490.1".
+// The timestamp and the version indicate that the user has already made a
+// search engine choice in the choice screen or in settings.
+const char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
+    "default_search_provider.choice_screen_completion_version";
 
 // Random number to use as a profile-constant seed for the random shuffling of
 // the choice screen elements.
 const char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[] =
     "default_search_provider.choice_screen_random_shuffle_seed";
+
+// The Chrome milestone number at which the random seed was last set.
+const char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
+    "default_search_provider.choice_screen_shuffle_milestone";
 
 // Whether a search context menu item is allowed.
 const char kDefaultSearchProviderContextMenuAccessAllowed[] =
@@ -63,5 +85,13 @@ const char kSearchProviderOverridesVersion[] =
 // NOTE: Unlike most of the other preferences here, this one is stored in the
 // local state, not the profile prefs.
 const char kSearchEnginesChoiceProfile[] = "search_engines.choice_profile";
+
+// String that refers to the study group in which this install was enrolled.
+// Used to implement the first run experiment tracking.
+// NOTE: Unlike most of the other preferences here, this one is stored in the
+// local state, not the profile prefs.
+// TODO(b/313067383): Clean up experiment setup.
+const char kSearchEnginesStudyGroup[] =
+    "search_engines.client_side_study_group";
 
 }  // namespace prefs

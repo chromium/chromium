@@ -106,22 +106,21 @@
         </div>
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container">
-          <div class="barcode-chip-url">
+          <button id="barcode-chip-url" tabindex="0">
             <svg-wrapper name="barcode_url.svg"></svg-wrapper>
-            <a href="#barcode-chip-url-container"></a>
-          </div>
+            <span id="barcode-chip-url-content"></span>
+          </button>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              i18n-label="barcode_copy_link_button"
               data-svg="barcode_copy.svg"></button>
           </div>
         </div>
         <div id="barcode-chip-text-container"
              class="invisible barcode-chip-container"
-             role="dialog" i18n-label="barcode_text_detected"
-             aria-live="polite" aria-describedby="barcode-chip-text-content">
+             role="dialog"
+             aria-describedby="barcode-chip-text-content">
           <div class="barcode-chip-text">
-            <div id="barcode-chip-text-content"></div>
+            <span id="barcode-chip-text-content"></span>
             <button id="barcode-chip-text-expand"
                     aria-expanded="false">
               <svg-wrapper name="barcode_chevron_up.svg" class="up-icon">
@@ -132,8 +131,15 @@
           </div>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              i18n-label="barcode_copy_text_button"
               data-svg="barcode_copy.svg"></button>
+          </div>
+        </div>
+        <div id="barcode-chip-wifi-container"
+            class="invisible barcode-chip-container">
+          <div id="barcode-chip-wifi" tabindex="0"
+              role="button">
+            <svg-wrapper name="wifi.svg"></svg-wrapper>
+            <span id="barcode-chip-wifi-content"></span>
           </div>
         </div>
       </div>
@@ -261,44 +267,9 @@
           <div class="two-bars" data-svg="camera_shutter_video_pause.svg"></div>
         </button>
       </div>
-      <div class="bottom-stripe left-stripe buttons circle">
-        <button id="switch-device" tabindex="0"
-                i18n-label="switch_camera_button"
-                data-svg="camera_button_switch_device.svg"></button>
-      </div>
-      <div id="mode-selector" class="bottom-stripe">
-        <div id="modes-group" class="buttons" role="radiogroup"
-             i18n-aria="aria_camera_mode_group">
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="video" tabindex="0"
-                 i18n-aria="switch_record_video_button">
-            <span i18n-text="label_switch_record_video_button"
-                  aria-hidden="true"></span>
-          </div>
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="photo" tabindex="0"
-                 i18n-aria="switch_take_photo_button">
-            <span i18n-text="label_switch_take_photo_button"
-                  aria-hidden="true"></span>
-          </div>
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="scan" tabindex="0"
-                 i18n-aria="switch_scan_mode_button">
-            <span i18n-text="label_switch_scan_mode_button"
-                  aria-hidden="true"></span>
-          </div>
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="portrait" tabindex="0"
-                 i18n-aria="switch_take_portrait_bokeh_photo_button">
-            <span i18n-text="label_switch_take_portrait_bokeh_photo_button"
-                  aria-hidden="true"></span>
-          </div>
-        </div>
-      </div>
+      <switch-device-button tabindex="0" class="bottom-stripe left-stripe">
+      </switch-device-button>
+      <mode-selector class="bottom-stripe" tabindex="0"></mode-selector>
       <div id="document-page-count" class="bottom-stripe"></div>
       <div class="bottom-stripe right-stripe buttons circle">
         <button id="gallery-enter" tabindex="0"
@@ -507,17 +478,21 @@
         </div>
         <div id="ptz-panel-container" class="panel">
           <button id="tilt-up" class="inkdrop" i18n-label="tilt_up_button"
-            tabindex="0" data-svg="ptz_tilt_up.svg"></button>
+            tabindex="0" data-svg="ptz_tilt_up.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <button id="pan-left" class="inkdrop" i18n-label="pan_left_button"
-            tabindex="0" data-svg="ptz_pan_left.svg"></button>
+            tabindex="0" data-svg="ptz_pan_left.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <button id="zoom-out" class="inkdrop" i18n-label="zoom_out_button"
             tabindex="0" data-svg="ptz_zoom_out.svg"></button>
           <button id="zoom-in" class="inkdrop" i18n-label="zoom_in_button"
             tabindex="0" data-svg="ptz_zoom_in.svg"></button>
           <button id="pan-right" class="inkdrop" i18n-label="pan_right_button"
-            tabindex="0" data-svg="ptz_pan_right.svg"></button>
+            tabindex="0" data-svg="ptz_pan_right.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <button id="tilt-down" class="inkdrop" i18n-label="tilt_down_button"
-            tabindex="0" data-svg="ptz_tilt_down.svg"></button>
+            tabindex="0" data-svg="ptz_tilt_down.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <div id="ptz-divider1" class="ptz-divider"></div>
           <div id="ptz-divider2" class="ptz-divider"></div>
           <div id="ptz-divider3" class="ptz-divider"></div>
@@ -529,7 +504,7 @@
     <div id="view-review" class="review-views">
       <div class="review-frame">
         <img class="review-image" hidden alt="">
-        <video class="review-video" hidden controls autoplay></video>
+        <video class="review-video" hidden autoplay></video>
       </div>
     </div>
     <div id="view-document-review" class="review-views">
@@ -572,7 +547,7 @@
     </div>
     <div id="toast" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
-    <div id="tooltip" aria-hidden="true"></div>
+    <text-tooltip></text-tooltip>
     <template id="preview-video-template">
       <video id="preview-video" class="preview-content" aria-hidden="true"
         muted></video>

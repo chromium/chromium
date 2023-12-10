@@ -80,7 +80,7 @@ class SecureChannelClient {
   // the current Chrome session.
   virtual void GetLastSeenTimestamp(
       const std::string& remote_device_id,
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) = 0;
 
  protected:
   SecureChannelClient() = default;

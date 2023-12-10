@@ -35,31 +35,38 @@ class DirectWritingServiceBinder {
     private IDirectWritingService mRemoteDwService;
     private String mPackageName;
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "onServiceConnected for " + mPackageName + ", ComponentName=" + name);
-            mRemoteDwService = IDirectWritingService.Stub.asInterface(service);
-            registerCallback();
-            updateConfiguration();
-        }
+    private final ServiceConnection mConnection =
+            new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    Log.d(
+                            TAG,
+                            "onServiceConnected for " + mPackageName + ", ComponentName=" + name);
+                    mRemoteDwService = IDirectWritingService.Stub.asInterface(service);
+                    registerCallback();
+                    updateConfiguration();
+                }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "onServiceDisconnected for " + mPackageName + ", ComponentName=" + name);
-            // When service is disconnected for any reason, it is needed to unbind the service so
-            // that we can reconnect and start writing again. This also ensures service callback is
-            // registered again which would have been reset at service when this happened.
-            unbindService(mContext);
-        }
-    };
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    Log.d(
+                            TAG,
+                            "onServiceDisconnected for "
+                                    + mPackageName
+                                    + ", ComponentName="
+                                    + name);
+                    // When service is disconnected for any reason, it is needed to unbind the
+                    // service so that we can reconnect and start writing again. This also ensures
+                    // service callback is registered again which would have been reset at service
+                    // when this happened.
+                    unbindService(mContext);
+                }
+            };
 
     private DirectWritingTriggerCallback mTriggerCallback;
     private Context mContext;
 
-    /**
-     * Callback interface for DirectWritingTrigger class.
-     */
+    /** Callback interface for DirectWritingTrigger class. */
     public interface DirectWritingTriggerCallback {
         /**
          * notify to update DW configuration.
@@ -68,9 +75,7 @@ class DirectWritingServiceBinder {
          */
         void updateConfiguration(Bundle bundle);
 
-        /**
-         * @return the object that implements DW service callback interface.
-         */
+        /** @return the object that implements DW service callback interface. */
         DirectWritingServiceCallback getServiceCallback();
     }
 
@@ -88,20 +93,30 @@ class DirectWritingServiceBinder {
         // Verify that connecting service package fingerprint matches with expected fingerprint of
         // Direct Writing service package. This is to prevent any attacker from spoofing the package
         // name and tricking Chrome into connecting to it.
-        List<String> fingerprints = PackageUtils.getCertificateSHA256FingerprintForPackage(
-                DirectWritingConstants.SERVICE_PKG_NAME);
-        if (fingerprints == null || fingerprints.size() > 1
-                || !(fingerprints.get(0).equals(
-                             DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT_RELEASE)
-                        || fingerprints.get(0).equals(
-                                DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT_DEBUG))) {
+        List<String> fingerprints =
+                PackageUtils.getCertificateSHA256FingerprintForPackage(
+                        DirectWritingConstants.SERVICE_PKG_NAME);
+        if (fingerprints == null
+                || fingerprints.size() > 1
+                || !(fingerprints
+                                .get(0)
+                                .equals(
+                                        DirectWritingConstants
+                                                .SERVICE_PKG_SHA_256_FINGERPRINT_RELEASE)
+                        || fingerprints
+                                .get(0)
+                                .equals(
+                                        DirectWritingConstants
+                                                .SERVICE_PKG_SHA_256_FINGERPRINT_DEBUG))) {
             Log.e(TAG, "Don't connect to service due to package fingerprint mismatch");
             return;
         }
         try {
             Intent intent = new Intent();
-            intent.setComponent(new ComponentName(DirectWritingConstants.SERVICE_PKG_NAME,
-                    DirectWritingConstants.SERVICE_CLS_NAME));
+            intent.setComponent(
+                    new ComponentName(
+                            DirectWritingConstants.SERVICE_PKG_NAME,
+                            DirectWritingConstants.SERVICE_CLS_NAME));
             context.bindService(intent, mConnection, BIND_AUTO_CREATE);
 
             mPackageName = context.getPackageName();
@@ -260,11 +275,12 @@ class DirectWritingServiceBinder {
         }
     }
 
-    void updateEditableBounds(Rect editableBounds, View rootView) {
+    void updateEditableBounds(Rect editableBounds, View rootView, boolean isOnlyRectChanged) {
         if (!isServiceConnected()) return;
         try {
             mRemoteDwService.onBoundedEditTextChanged(
-                    DirectWritingBundleUtil.buildBundle(editableBounds, rootView));
+                    DirectWritingBundleUtil.buildBundle(
+                            editableBounds, rootView, isOnlyRectChanged));
         } catch (DeadObjectException e) {
             Log.e(TAG, "updateEditableBounds failed due to DeadObjectException.", e);
             resetDwServiceConnection();

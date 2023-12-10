@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/mime_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
-#include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -120,6 +120,44 @@ FileHandlerLaunchTypeFromString(const std::string& launch_type) {
   return absl::nullopt;
 }
 
+static const char kUMAIdParseResult[] = "Manifest.ParseIdResult";
+
+// Record that the Manifest was successfully parsed. If it is an empty
+// Manifest, it will recorded as so and nothing will happen. Otherwise, the
+// presence of each properties will be recorded.
+void ParseSucceeded(const mojom::blink::ManifestPtr& manifest) {
+  auto empty_manifest = mojom::blink::Manifest::New();
+  if (manifest == empty_manifest) {
+    return;
+  }
+
+  base::UmaHistogramBoolean("Manifest.HasProperty.name",
+                            !manifest->name.empty());
+  base::UmaHistogramBoolean("Manifest.HasProperty.short_name",
+                            !manifest->short_name.empty());
+  base::UmaHistogramBoolean("Manifest.HasProperty.description",
+                            !manifest->description.empty());
+  base::UmaHistogramBoolean("Manifest.HasProperty.start_url",
+                            !manifest->start_url.IsEmpty());
+  base::UmaHistogramBoolean(
+      "Manifest.HasProperty.display",
+      manifest->display != blink::mojom::DisplayMode::kUndefined);
+  base::UmaHistogramBoolean(
+      "Manifest.HasProperty.orientation",
+      manifest->orientation !=
+          device::mojom::blink::ScreenOrientationLockType::DEFAULT);
+  base::UmaHistogramBoolean("Manifest.HasProperty.icons",
+                            !manifest->icons.empty());
+  base::UmaHistogramBoolean("Manifest.HasProperty.screenshots",
+                            !manifest->screenshots.empty());
+  base::UmaHistogramBoolean("Manifest.HasProperty.share_target",
+                            manifest->share_target.get());
+  base::UmaHistogramBoolean("Manifest.HasProperty.protocol_handlers",
+                            !manifest->protocol_handlers.empty());
+  base::UmaHistogramBoolean("Manifest.HasProperty.gcm_sender_id",
+                            !manifest->gcm_sender_id.empty());
+}
+
 }  // anonymous namespace
 
 ManifestParser::ManifestParser(const String& data,
@@ -165,7 +203,12 @@ bool ManifestParser::Parse() {
   manifest_->short_name = ParseShortName(root_object.get());
   manifest_->description = ParseDescription(root_object.get());
   manifest_->start_url = ParseStartURL(root_object.get());
-  manifest_->id = ParseId(root_object.get(), manifest_->start_url);
+
+  const auto& [id, id_parse_result] =
+      ParseId(root_object.get(), manifest_->start_url);
+  manifest_->id = id;
+  manifest_->has_custom_id = id_parse_result == ParseIdResultType::kSucceed;
+
   manifest_->scope = ParseScope(root_object.get(), manifest_->start_url);
   manifest_->display = ParseDisplay(root_object.get());
   manifest_->display_override = ParseDisplayOverride(root_object.get());
@@ -227,15 +270,14 @@ bool ManifestParser::Parse() {
   }
 
   if (RuntimeEnabledFeatures::WebAppTabStripCustomizationsEnabled(
-          execution_context_) &&
-      manifest_->display_override.Contains(
-          mojom::blink::DisplayMode::kTabbed)) {
+          execution_context_)) {
     manifest_->tab_strip = ParseTabStrip(root_object.get());
   }
 
   manifest_->version = ParseVersion(root_object.get());
 
-  ManifestUmaUtil::ParseSucceeded(manifest_);
+  ParseSucceeded(manifest_);
+  base::UmaHistogramEnumeration(kUMAIdParseResult, id_parse_result);
 
   return has_comments;
 }
@@ -454,28 +496,27 @@ String ManifestParser::ParseDescription(const JSONObject* object) {
   return description.has_value() ? *description : String();
 }
 
-KURL ManifestParser::ParseId(const JSONObject* object, const KURL& start_url) {
+std::pair<KURL, ManifestParser::ParseIdResultType> ManifestParser::ParseId(
+    const JSONObject* object,
+    const KURL& start_url) {
   if (!start_url.IsValid()) {
-    ManifestUmaUtil::ParseIdResult(
-        ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);
-    return KURL();
+    return {KURL(), ParseIdResultType::kInvalidStartUrl};
   }
   KURL start_url_origin = KURL(SecurityOrigin::Create(start_url)->ToString());
 
   KURL id = ParseURL(object, "id", start_url_origin,
                      ParseURLRestrictions::kSameOriginOnly,
                      /*ignore_empty_string=*/true);
+  ParseIdResultType parse_result;
   if (id.IsValid()) {
-    ManifestUmaUtil::ParseIdResult(
-        ManifestUmaUtil::ParseIdResultType::kSucceed);
+    parse_result = ParseIdResultType::kSucceed;
   } else {
     // If id is not specified, sets to start_url
-    ManifestUmaUtil::ParseIdResult(
-        ManifestUmaUtil::ParseIdResultType::kDefaultToStartUrl);
+    parse_result = ParseIdResultType::kDefaultToStartUrl;
     id = start_url;
   }
   id.RemoveFragmentIdentifier();
-  return id;
+  return {id, parse_result};
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {

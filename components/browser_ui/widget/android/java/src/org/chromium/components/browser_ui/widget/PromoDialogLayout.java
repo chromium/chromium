@@ -88,8 +88,11 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
         if (mParams.drawableInstance != null) {
             mIllustrationView.setImageDrawable(mParams.drawableInstance);
         } else if (mParams.vectorDrawableResource != 0) {
-            mIllustrationView.setImageDrawable(TraceEventVectorDrawableCompat.create(
-                    getResources(), mParams.vectorDrawableResource, getContext().getTheme()));
+            mIllustrationView.setImageDrawable(
+                    TraceEventVectorDrawableCompat.create(
+                            getResources(),
+                            mParams.vectorDrawableResource,
+                            getContext().getTheme()));
         } else if (mParams.drawableResource != 0) {
             mIllustrationView.setImageResource(mParams.drawableResource);
         } else {
@@ -128,17 +131,19 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
 
         // Create the buttons.
         DualControlLayout buttonBar = (DualControlLayout) findViewById(R.id.button_bar);
-        String primaryString = mParams.primaryButtonCharSequence != null
-                ? mParams.primaryButtonCharSequence.toString()
-                : getResources().getString(mParams.primaryButtonStringResource);
+        String primaryString =
+                mParams.primaryButtonCharSequence != null
+                        ? mParams.primaryButtonCharSequence.toString()
+                        : getResources().getString(mParams.primaryButtonStringResource);
         buttonBar.addView(
                 DualControlLayout.createButtonForLayout(getContext(), true, primaryString, null));
 
         if (mParams.secondaryButtonStringResource != 0) {
             String secondaryString =
                     getResources().getString(mParams.secondaryButtonStringResource);
-            buttonBar.addView(DualControlLayout.createButtonForLayout(
-                    getContext(), false, secondaryString, null));
+            buttonBar.addView(
+                    DualControlLayout.createButtonForLayout(
+                            getContext(), false, secondaryString, null));
         }
     }
 
@@ -149,7 +154,8 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
      * @return Whether the layout needed to be adjusted.
      */
     private boolean fixupHeader() {
-        if (mParams.drawableResource != 0 || mParams.vectorDrawableResource != 0
+        if (mParams.drawableResource != 0
+                || mParams.vectorDrawableResource != 0
                 || mParams.drawableInstance != null) {
             return false;
         }
@@ -170,9 +176,10 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
         ((ViewGroup) mHeaderView.getParent()).removeView(mHeaderView);
         desiredParent.addView(mHeaderView, 0);
 
-        int startEndPadding = applyHeaderPadding
-                ? getResources().getDimensionPixelSize(R.dimen.promo_dialog_padding)
-                : 0;
+        int startEndPadding =
+                applyHeaderPadding
+                        ? getResources().getDimensionPixelSize(R.dimen.promo_dialog_padding)
+                        : 0;
         ViewCompat.setPaddingRelative(mHeaderView, startEndPadding, 0, startEndPadding, 0);
         return true;
     }

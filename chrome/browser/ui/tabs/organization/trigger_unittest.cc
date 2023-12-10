@@ -32,10 +32,12 @@ class TriggerTest : public testing::Test {
                                                              nullptr);
   }
 
-  content::WebContents* AddTab() {
+  content::WebContents* AddTab(GURL url) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
     content::WebContents* content_ptr = contents_unique_ptr.get();
+    content::WebContentsTester::For(contents_unique_ptr.get())
+        ->NavigateAndCommit(url);
     tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
 
     return content_ptr;
@@ -60,7 +62,7 @@ TEST_F(TriggerTest, MVPTriggerHappyPath) {
 
   // Should trigger the first time over the score threshold.
   for (int i = 0; i < 10; i++) {
-    AddTab();
+    AddTab(GURL("https://www.example.com"));
   }
   EXPECT_TRUE(trigger->ShouldTrigger(tab_strip_model()));
 

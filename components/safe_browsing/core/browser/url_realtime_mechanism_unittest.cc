@@ -8,11 +8,13 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/platform_test.h"
@@ -78,6 +80,10 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
         threat_type = RTLookupResponse::ThreatInfo::MANAGED_POLICY;
         verdict_type = RTLookupResponse::ThreatInfo::WARN;
+        break;
+      case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+        threat_type = RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED;
+        verdict_type = RTLookupResponse::ThreatInfo::SUSPICIOUS;
         break;
       default:
         NOTREACHED();
@@ -156,7 +162,9 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   }
   std::string GetMetricSuffix() const override { return ""; }
   bool ShouldIncludeCredentials() const override { return false; }
-  double GetMinAllowedTimestampForReferrerChains() const override { return 0; }
+  base::Time GetMinAllowedTimestampForReferrerChains() const override {
+    return base::Time();
+  }
 
   base::flat_map<std::string, UrlDetail> url_details_;
   bool is_cached_response_ = false;
@@ -291,6 +299,53 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   bool called_cancel_check_ = false;
 };
 
+class MockUrlCheckerDelegate : public UrlCheckerDelegate {
+ public:
+  explicit MockUrlCheckerDelegate(
+      SafeBrowsingDatabaseManager* database_manager) {}
+
+  MOCK_METHOD1(MaybeDestroyNoStatePrefetchContents,
+               void(base::OnceCallback<content::WebContents*()>));
+  MOCK_METHOD5(StartDisplayingBlockingPageHelper,
+               void(const security_interstitials::UnsafeResource&,
+                    const std::string&,
+                    const net::HttpRequestHeaders&,
+                    bool,
+                    bool));
+  MOCK_METHOD2(StartObservingInteractionsForDelayedBlockingPageHelper,
+               void(const security_interstitials::UnsafeResource&, bool));
+  MOCK_METHOD5(ShouldSkipRequestCheck,
+               bool(const GURL&,
+                    int,
+                    int,
+                    base::optional_ref<const base::UnguessableToken>,
+                    bool));
+  MOCK_METHOD1(NotifySuspiciousSiteDetected,
+               void(const base::RepeatingCallback<content::WebContents*()>&));
+  MOCK_METHOD0(GetUIManager, BaseUIManager*());
+  MOCK_METHOD1(IsUrlAllowlisted, bool(const GURL& url));
+  MOCK_METHOD1(SetPolicyAllowlistDomains,
+               void(const std::vector<std::string>&));
+  MOCK_METHOD0(GetThreatTypes, const SBThreatTypeSet&());
+  MOCK_METHOD0(GetDatabaseManager, SafeBrowsingDatabaseManager*());
+  MOCK_METHOD3(CheckLookupMechanismExperimentEligibility,
+               void(const security_interstitials::UnsafeResource&,
+                    base::OnceCallback<void(bool)>,
+                    scoped_refptr<base::SequencedTaskRunner>));
+  MOCK_METHOD0(GetNumCheckExperimentEligibilityCalls, int());
+  MOCK_METHOD3(CheckExperimentEligibilityAndStartBlockingPage,
+               void(const security_interstitials::UnsafeResource&,
+                    base::OnceCallback<void(bool)>,
+                    scoped_refptr<base::SequencedTaskRunner>));
+  MOCK_METHOD0(GetNumCheckExperimentEligibilityAndStartBlockingPageCalls,
+               int());
+  MOCK_METHOD2(SetLookupMechanismExperimentEligibility,
+               void(const GURL&, bool));
+
+ protected:
+  ~MockUrlCheckerDelegate() override = default;
+};
+
 }  // namespace
 
 class UrlRealTimeMechanismTest : public PlatformTest {
@@ -299,6 +354,7 @@ class UrlRealTimeMechanismTest : public PlatformTest {
     PlatformTest::SetUp();
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     url_lookup_service_ = std::make_unique<MockRealTimeUrlLookupService>();
+    url_checker_delegate_ = new MockUrlCheckerDelegate(database_manager_.get());
   }
 
   std::unique_ptr<UrlRealTimeMechanism> CreateUrlRealTimeMechanism(
@@ -316,13 +372,15 @@ class UrlRealTimeMechanismTest : public PlatformTest {
         base::SequencedTaskRunner::GetCurrentDefault(),
         url_lookup_service_->GetWeakPtr(),
         /*webui_delegate_=*/nullptr,
-        MechanismExperimentHashDatabaseCache::kNoExperiment);
+        MechanismExperimentHashDatabaseCache::kNoExperiment,
+        url_checker_delegate_, mock_web_contents_getter.Get());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_;
+  scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
 };
 
 MATCHER_P3(Matches,
@@ -500,6 +558,33 @@ TEST_F(UrlRealTimeMechanismTest, CheckUrl_UrlRealTime_UnsuccessfulLookup) {
                           /*locally_cached_results_threat_type=*/absl::nullopt,
                           /*real_time_request_failed=*/true)))
       .Times(1);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(UrlRealTimeMechanismTest, CheckUrl_UrlRealTime_SuspiciousSiteDetection) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSuspiciousSiteDetectionRTLookups);
+  GURL url("https://example.test/");
+  auto mechanism = CreateUrlRealTimeMechanism(url, /*can_check_db=*/true);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SUSPICIOUS_SITE,
+                                           /*should_complete_lookup=*/true);
+  database_manager_->SetAllowlistResultForUrl(url, false);
+  base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
+      callback;
+  mechanism->StartCheck(callback.Get());
+
+  // Suspicious site detection should happen for URL real time lookups.
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(testing::_))
+      .Times(1);
+
+  EXPECT_CALL(callback,
+              Run(Matches(
+                  /*matched_high_confidence_allowlist=*/false,
+                  /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+                  /*real_time_request_failed=*/false)))
+      .Times(1);
+
   task_environment_.RunUntilIdle();
 }
 

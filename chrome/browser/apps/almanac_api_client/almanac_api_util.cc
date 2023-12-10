@@ -5,10 +5,12 @@
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "google_apis/google_api_keys.h"
@@ -16,7 +18,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -40,6 +41,11 @@ std::unique_ptr<network::ResourceRequest> GetAlmanacResourceRequest(
   return resource_request;
 }
 
+std::optional<std::string>& GetAlmanacEndpointUrlOverride() {
+  static base::NoDestructor<std::optional<std::string>> url_override;
+  return *url_override;
+}
+
 }  // namespace
 
 std::string GetAlmanacApiUrl() {
@@ -48,11 +54,16 @@ std::string GetAlmanacApiUrl() {
     return command_line->GetSwitchValueASCII(ash::switches::kAlmanacApiUrl);
   }
 
-  return "https://chromeosalmanac-pa.googleapis.com/";
+  return GetAlmanacEndpointUrlOverride().value_or(
+      "https://chromeosalmanac-pa.googleapis.com/");
 }
 
 GURL GetAlmanacEndpointUrl(std::string_view endpoint_suffix) {
   return GURL(base::StrCat({GetAlmanacApiUrl(), endpoint_suffix}));
+}
+
+void SetAlmanacEndpointUrlForTesting(std::optional<std::string> url_override) {
+  GetAlmanacEndpointUrlOverride() = std::move(url_override);
 }
 
 std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
@@ -76,7 +87,7 @@ absl::Status GetDownloadError(
     int net_error,
     const network::mojom::URLResponseHead* response_info,
     const std::string* response_body,
-    const absl::optional<std::string>& histogram_name) {
+    const std::optional<std::string>& histogram_name) {
   int response_code = 0;
   if (response_info && response_info->headers) {
     response_code = response_info->headers->response_code();

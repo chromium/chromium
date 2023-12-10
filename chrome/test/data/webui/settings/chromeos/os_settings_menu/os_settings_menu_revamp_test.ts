@@ -12,10 +12,15 @@ import 'chrome://os-settings/os_settings.js';
 import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createPageAvailabilityForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDevicePageContentData, MultiDeviceSettingsMode, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -277,6 +282,18 @@ suite('<os-settings-menu>', () => {
     });
   });
 
+  suite('A11y menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const a11yMenuItem =
+          queryMenuItemByPath(`/${routesMojom.ACCESSIBILITY_SECTION_PATH}`);
+      assertTrue(!!a11yMenuItem);
+
+      assertEquals('Screen reader, magnification', a11yMenuItem.sublabel);
+    });
+  });
+
   suite('Bluetooth menu item', () => {
     let bluetoothConfig: FakeBluetoothConfig;
     const bluetoothMouse = createDefaultBluetoothDevice(
@@ -303,15 +320,26 @@ suite('<os-settings-menu>', () => {
 
     setup(() => {
       bluetoothConfig = new FakeBluetoothConfig();
+      bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
       setBluetoothConfigForTesting(bluetoothConfig);
     });
 
-    test('Description is not shown when no devices are connected', async () => {
+    test('Description shows "Off" when bluetooth is off', async () => {
+      bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ false);
       await createMenu();
 
       const bluetoothMenuItem = getBluetoothMenuItem();
-      assertEquals('', bluetoothMenuItem.sublabel);
+      assertEquals('Off', bluetoothMenuItem.sublabel);
     });
+
+    test(
+        'Description shows "On" when bluetooth is on and no devices are connected',
+        async () => {
+          await createMenu();
+
+          const bluetoothMenuItem = getBluetoothMenuItem();
+          assertEquals('On', bluetoothMenuItem.sublabel);
+        });
 
     test(
         'Description shows device name for a single connected device',
@@ -336,7 +364,7 @@ suite('<os-settings-menu>', () => {
       await createMenu();
 
       const bluetoothMenuItem = getBluetoothMenuItem();
-      assertEquals('', bluetoothMenuItem.sublabel);
+      assertEquals('On', bluetoothMenuItem.sublabel);
 
       // Connect a bluetooth mouse.
       bluetoothConfig.appendToPairedDeviceList([bluetoothMouse]);
@@ -356,7 +384,11 @@ suite('<os-settings-menu>', () => {
       // Disconnect the bluetooth headphones.
       bluetoothConfig.removePairedDevice(bluetoothHeadphones);
       await flushTasks();
-      assertEquals('', bluetoothMenuItem.sublabel);
+      assertEquals('On', bluetoothMenuItem.sublabel);
+
+      bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ false);
+      await flushTasks();
+      assertEquals('Off', bluetoothMenuItem.sublabel);
     });
   });
 
@@ -537,6 +569,200 @@ suite('<os-settings-menu>', () => {
     });
   });
 
+  suite('Internet menu item', () => {
+    let networkConfigRemote: FakeNetworkConfig;
+    const ethernetNetwork =
+        OncMojo.getDefaultNetworkState(NetworkType.kEthernet, 'ethernet');
+    const wifiNetwork =
+        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
+    const tetherNetwork =
+        OncMojo.getDefaultNetworkState(NetworkType.kTether, 'tether');
+    const vpnNetwork = OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn');
+
+    function getInternetMenuItem(): OsSettingsMenuItemElement {
+      const internetMenuItem =
+          queryMenuItemByPath(`/${routesMojom.NETWORK_SECTION_PATH}`);
+      assertTrue(!!internetMenuItem);
+      return internetMenuItem;
+    }
+
+    async function addConnectedNetworks(networkTypes: NetworkType[]):
+        Promise<void> {
+      const networkStates: OncMojo.NetworkStateProperties[] = [];
+      for (const type of networkTypes) {
+        switch (type) {
+          case NetworkType.kEthernet:
+            networkStates.push({
+              ...ethernetNetwork,
+              connectionState: ConnectionStateType.kConnected,
+            });
+            break;
+          case NetworkType.kWiFi:
+            networkStates.push({
+              ...wifiNetwork,
+              connectionState: ConnectionStateType.kConnected,
+            });
+            break;
+          case NetworkType.kTether:
+            networkStates.push({
+              ...tetherNetwork,
+              connectionState: ConnectionStateType.kConnected,
+            });
+            break;
+          case NetworkType.kVPN:
+            networkStates.push({
+              ...vpnNetwork,
+              connectionState: ConnectionStateType.kConnected,
+            });
+            break;
+          default:
+            break;
+        }
+      }
+      networkConfigRemote.addNetworksForTest(networkStates);
+      await flushTasks();
+    }
+
+    function getCellularDeviceStateProps(): OncMojo.DeviceStateProperties {
+      return {
+        ipv4Address: undefined,
+        ipv6Address: undefined,
+        imei: undefined,
+        macAddress: undefined,
+        scanning: false,
+        simLockStatus: undefined,
+        simInfos: undefined,
+        inhibitReason: InhibitReason.kNotInhibited,
+        simAbsent: false,
+        deviceState: DeviceStateType.kDisabled,
+        type: NetworkType.kCellular,
+        managedNetworkAvailable: false,
+        serial: undefined,
+        isCarrierLocked: false,
+      };
+    }
+
+    setup(() => {
+      networkConfigRemote = new FakeNetworkConfig();
+      MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+          networkConfigRemote);
+    });
+
+    test('Ethernet takes priority when it is connected', async () => {
+      await createMenu();
+
+      await addConnectedNetworks([
+        NetworkType.kEthernet,
+        NetworkType.kWiFi,
+        NetworkType.kTether,
+        NetworkType.kVPN,
+      ]);
+
+      const internetMenuItem = getInternetMenuItem();
+      assertEquals(ethernetNetwork.name, internetMenuItem.sublabel);
+    });
+
+    test(
+        'Wifi takes priority when ethernet network is not connected',
+        async () => {
+          await createMenu();
+
+          await addConnectedNetworks(
+              [NetworkType.kWiFi, NetworkType.kTether, NetworkType.kVPN]);
+
+          const internetMenuItem = getInternetMenuItem();
+          assertEquals(wifiNetwork.name, internetMenuItem.sublabel);
+        });
+
+    test(
+        'Tether takes priority when neither ethernet nor wifi network is connected',
+        async () => {
+          await createMenu();
+
+          await addConnectedNetworks([NetworkType.kTether, NetworkType.kVPN]);
+
+          const internetMenuItem = getInternetMenuItem();
+          assertEquals(tetherNetwork.name, internetMenuItem.sublabel);
+        });
+
+    test('VPN shows when it is the only network connected', async () => {
+      await createMenu();
+
+      await addConnectedNetworks([NetworkType.kVPN]);
+
+      const internetMenuItem = getInternetMenuItem();
+      assertEquals(vpnNetwork.name, internetMenuItem.sublabel);
+    });
+
+    test(
+        'Wifi internet description shows when no network connected and the device does not support mobile data',
+        async () => {
+          await createMenu();
+
+          const internetMenuItem = getInternetMenuItem();
+          assertEquals('Wi-Fi', internetMenuItem.sublabel);
+        });
+
+    test(
+        'Wifi and mobile data internet description shows when no network connected but the device supports mobile data',
+        async () => {
+          networkConfigRemote.setDeviceStateForTest({
+            ...getCellularDeviceStateProps(),
+          });
+
+          await createMenu();
+
+          const internetMenuItem = getInternetMenuItem();
+          assertEquals('Wi-Fi, mobile data', internetMenuItem.sublabel);
+        });
+
+    test(
+        'Internet description updates dynamically on networks connection updates',
+        async () => {
+          networkConfigRemote.setDeviceStateForTest({
+            ...getCellularDeviceStateProps(),
+          });
+
+          await createMenu();
+          const internetMenuItem = getInternetMenuItem();
+
+          await addConnectedNetworks([NetworkType.kTether]);
+
+          // Tether network is the only connected network, internet description
+          // is the name of the Tether network.
+          assertEquals(tetherNetwork.name, internetMenuItem.sublabel);
+
+          // Connect the Wi-Fi network, now Wi-Fi network takes priority.
+          await addConnectedNetworks([NetworkType.kWiFi]);
+          assertEquals(wifiNetwork.name, internetMenuItem.sublabel);
+
+          // Connect the Ethernet network and remove Wi-Fi network. The Ethernet
+          // network should take priority.
+          await addConnectedNetworks([NetworkType.kEthernet]);
+          networkConfigRemote.removeNetworkForTest(wifiNetwork);
+          await flushTasks();
+          assertEquals(ethernetNetwork.name, internetMenuItem.sublabel);
+
+          // Remove the Ethernet network and connect the VPN network. The Tether
+          // network should take priority now.
+          await addConnectedNetworks([NetworkType.kVPN]);
+          networkConfigRemote.removeNetworkForTest(ethernetNetwork);
+          await flushTasks();
+          assertEquals(tetherNetwork.name, internetMenuItem.sublabel);
+
+          // Remove the Tether network. VPN network is the only connected
+          // network now.
+          networkConfigRemote.removeNetworkForTest(tetherNetwork);
+          await flushTasks();
+          assertEquals(vpnNetwork.name, internetMenuItem.sublabel);
+
+          // Remove the VPN network, the default description "Wi-Fi, mobile
+          // data" should be shown.
+          networkConfigRemote.removeNetworkForTest(vpnNetwork);
+          await flushTasks();
+          assertEquals('Wi-Fi, mobile data', internetMenuItem.sublabel);
+        });
+  });
 
   suite('Multidevice menu item', () => {
     let multideviceBrowserProxy: TestMultideviceBrowserProxy;

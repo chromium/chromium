@@ -37,15 +37,7 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
                                      ElementId id)
     : layer_tree_impl_(layer_tree_impl),
       id_(id),
-      effect_tree_index_(kInvalidPropertyNodeId),
-      num_contributors_(0),
-      has_contributing_layer_that_escapes_clip_(false),
-      surface_property_changed_(false),
-      ancestor_property_changed_(false),
-      contributes_to_drawn_surface_(false),
-      is_render_surface_list_member_(false),
-      intersects_damage_under_(true),
-      nearest_occlusion_immune_ancestor_(nullptr) {
+      effect_tree_index_(kInvalidPropertyNodeId) {
   DCHECK(id);
   damage_tracker_ = DamageTracker::Create();
 }
@@ -72,10 +64,7 @@ const RenderSurfaceImpl* RenderSurfaceImpl::render_target() const {
     return this;
 }
 
-RenderSurfaceImpl::DrawProperties::DrawProperties() {
-  draw_opacity = 1.f;
-  is_clipped = false;
-}
+RenderSurfaceImpl::DrawProperties::DrawProperties() = default;
 
 RenderSurfaceImpl::DrawProperties::~DrawProperties() = default;
 
@@ -146,7 +135,7 @@ const FilterOperations& RenderSurfaceImpl::BackdropFilters() const {
   return OwningEffectNode()->backdrop_filters;
 }
 
-absl::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
+std::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
@@ -454,7 +443,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  absl::optional<gfx::Rect> clip_rect;
+  std::optional<gfx::Rect> clip_rect;
   if (draw_properties_.is_clipped) {
     clip_rect = draw_properties_.clip_rect;
   }

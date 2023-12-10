@@ -1,0 +1,2955 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AcceptChEntries">
+  <int value="0" label="no entries"/>
+  <int value="1" label="only valid entries"/>
+  <int value="2" label="only invalid entries"/>
+  <int value="3" label="both valid and invalid entries"/>
+</enum>
+
+<enum name="AddressFamily">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+</enum>
+
+<enum name="AlpsDecoderError">
+  <int value="0" label="NoError"/>
+  <int value="1" label="FramingError"/>
+  <int value="2" label="ForbiddenFrame"/>
+  <int value="3" label="NotOnFrameBoundary"/>
+  <int value="4" label="SettingsWithAck"/>
+  <int value="5" label="AcceptChInvalidStream"/>
+  <int value="6" label="AcceptChWithFlags"/>
+  <int value="7" label="AcceptChMalformed"/>
+</enum>
+
+<enum name="AlternateProtocolUsage">
+  <int value="0" label="ALTERNATE_PROTOCOL_USAGE_NO_RACE"/>
+  <int value="1" label="ALTERNATE_PROTOCOL_USAGE_WON_RACE"/>
+  <int value="2" label="ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE"/>
+  <int value="3" label="ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING"/>
+  <int value="4" label="ALTERNATE_PROTOCOL_USAGE_BROKEN"/>
+  <int value="5"
+      label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE"/>
+  <int value="6" label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE"/>
+  <int value="7" label="ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON"/>
+</enum>
+
+<enum name="AlternativeServiceType">
+  <int value="0" label="No alternative service"/>
+  <int value="1" label="QUIC, destination same as origin"/>
+  <int value="2" label="QUIC, destination different from origin"/>
+  <int value="3" label="Not QUIC, destination same as origin"/>
+  <int value="4" label="Not QUIC, destination different from origin"/>
+</enum>
+
+<enum name="BodyConsumerBaseFetchCheckPoint">
+  <int value="0" label="BodyConsumerBase Constructor"/>
+  <int value="1" label="BodyConsumerBase::DidFetchDataLoadFailed"/>
+</enum>
+
+<enum name="BooleanBroken">
+  <int value="0" label="Not Broken"/>
+  <int value="1" label="Broken"/>
+</enum>
+
+<enum name="BooleanCoalesced">
+  <int value="0" label="not coalesced"/>
+  <int value="1" label="coalesced"/>
+</enum>
+
+<enum name="BooleanConfirmed">
+  <int value="0" label="Not Confirmed"/>
+  <int value="1" label="Confirmed"/>
+</enum>
+
+<enum name="BooleanExceeded">
+  <int value="0" label="Not exceeded"/>
+  <int value="1" label="Exceeded"/>
+</enum>
+
+<enum name="BooleanOutOfDate">
+  <int value="0" label="Up-to-date"/>
+  <int value="1" label="Out-of-date"/>
+</enum>
+
+<enum name="BooleanPathIsInformative">
+  <int value="0" label="Path contains nothing except possibly a slash"/>
+  <int value="1" label="Path contains text beyond just an opening slash"/>
+</enum>
+
+<enum name="BooleanPreferred">
+  <int value="0" label="Not Preferred"/>
+  <int value="1" label="Preferred"/>
+</enum>
+
+<enum name="BooleanTooMany">
+  <int value="0" label="Correct"/>
+  <int value="1" label="Too many"/>
+</enum>
+
+<enum name="BrokenAlternateProtocolLocation">
+  <int value="0" label="HTTP_STREAM_FACTORY_JOB"/>
+  <int value="1" label="QUIC_STREAM_FACTORY"/>
+  <int value="2" label="HTTP_STREAM_FACTORY_JOB_ALT"/>
+  <int value="3" label="HTTP_STREAM_FACTORY_JOB_MAIN"/>
+  <int value="4" label="QUIC_HTTP_STREAM"/>
+  <int value="5" label="HTTP_NETWORK_TRANSACTION"/>
+</enum>
+
+<enum name="CertificateChangeNotificationType">
+  <int value="0" label="Trust"/>
+  <int value="1" label="Client Cert"/>
+</enum>
+
+<enum name="ConnectionInfo">
+  <summary>
+    Application protocol used for HTTP response as defined in
+    net::HttpConnectionInfo.
+  </summary>
+  <int value="0" label="unknown"/>
+  <int value="1" label="HTTP/1.1"/>
+  <int value="2" label="SPDY/2 (deprecated)"/>
+  <int value="3" label="SPDY/3 (deprecated)"/>
+  <int value="4" label="HTTP/2"/>
+  <int value="5" label="QUIC (unknown version)"/>
+  <int value="6" label="HTTP/2 draft-14 (deprecated)"/>
+  <int value="7" label="HTTP/2 draft-15 (deprecated)"/>
+  <int value="8" label="HTTP/0.9"/>
+  <int value="9" label="HTTP/1.0"/>
+  <int value="10" label="QUIC/32"/>
+  <int value="11" label="QUIC/33"/>
+  <int value="12" label="QUIC/34"/>
+  <int value="13" label="QUIC/35"/>
+  <int value="14" label="QUIC/36"/>
+  <int value="15" label="QUIC/37"/>
+  <int value="16" label="QUIC/38"/>
+  <int value="17" label="QUIC/39"/>
+  <int value="18" label="QUIC/40"/>
+  <int value="19" label="QUIC/41"/>
+  <int value="20" label="QUIC/42"/>
+  <int value="21" label="QUIC/43"/>
+  <int value="22" label="HTTP/3 (Q099)"/>
+  <int value="23" label="QUIC/44"/>
+  <int value="24" label="QUIC/45"/>
+  <int value="25" label="QUIC/46"/>
+  <int value="26" label="QUIC/47"/>
+  <int value="27" label="QUIC/999"/>
+  <int value="28" label="HTTP/3 (Q048)"/>
+  <int value="29" label="HTTP/3 (Q049)"/>
+  <int value="30" label="HTTP/3 (Q050)"/>
+  <int value="31" label="HTTP/3 (T048)"/>
+  <int value="32" label="HTTP/3 (T049)"/>
+  <int value="33" label="HTTP/3 (T050)"/>
+  <int value="34" label="HTTP/3 (T099)"/>
+  <int value="35" label="HTTP/3 (draft-25)"/>
+  <int value="36" label="HTTP/3 (draft-27)"/>
+  <int value="37" label="HTTP/3 (draft-28)"/>
+  <int value="38" label="HTTP/3 (draft-29)"/>
+  <int value="39" label="HTTP/3 (T051)"/>
+  <int value="40" label="QUIC (RFC)"/>
+  <int value="41" label="QUICv2 draft-01 (deprecated)"/>
+  <int value="42" label="QUICv2 draft-08"/>
+</enum>
+
+<enum name="ContentEncodingType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Brotli"/>
+  <int value="2" label="GZip"/>
+  <int value="3" label="Deflate"/>
+  <int value="4" label="Zstd"/>
+</enum>
+
+<enum name="CorsAccessCheckError">
+  <summary>
+    The detailed error type for CORS check failures. See
+    services/network/public/mojom/cors.mojom for detailed information.
+  </summary>
+  <int value="0" label="kDisallowedByMode"/>
+  <int value="1" label="kInvalidResponse"/>
+  <int value="2" label="kWildcardOriginNotAllowed"/>
+  <int value="3" label="kMissingAllowOriginHeader"/>
+  <int value="4" label="kMultipleAllowOriginValues"/>
+  <int value="5" label="kInvalidAllowOriginValue"/>
+  <int value="6" label="kAllowOriginMismatch"/>
+  <int value="7" label="kInvalidAllowCredentials"/>
+  <int value="8" label="kCorsDisabledScheme"/>
+  <int value="9" label="kPreflightInvalidStatus"/>
+  <int value="10" label="kPreflightDisallowedRedirect"/>
+  <int value="11" label="kPreflightWildcardOriginNotAllowed"/>
+  <int value="12" label="kPreflightMissingAllowOriginHeader"/>
+  <int value="13" label="kPreflightMultipleAllowOriginValues"/>
+  <int value="14" label="kPreflightInvalidAllowOriginValue"/>
+  <int value="15" label="kPreflightAllowOriginMismatch"/>
+  <int value="16" label="kPreflightInvalidAllowCredentials"/>
+  <int value="17" label="kPreflightMissingAllowPrivateNetwork"/>
+  <int value="18" label="kPreflightInvalidAllowPrivateNetwork"/>
+  <int value="19" label="kInvalidAllowMethodsPreflightResponse"/>
+  <int value="20" label="kInvalidAllowHeadersPreflightResponse"/>
+  <int value="21" label="kMethodDisallowedByPreflightResponse"/>
+  <int value="22" label="kHeaderDisallowedByPreflightResponse"/>
+  <int value="23" label="kRedirectContainsCredentials"/>
+  <int value="24" label="kInsecurePrivateNetwork"/>
+  <int value="25" label="kInvalidPrivateNetworkAccess"/>
+  <int value="26" label="kUnexpectedPrivateNetworkAccess"/>
+  <int value="27" label="kPreflightMissingPrivateNetworkAccessId"/>
+  <int value="28" label="kPreflightMissingPrivateNetworkAccessName"/>
+  <int value="29" label="kPrivateNetworkAccessPermissionUnavailable"/>
+  <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
+</enum>
+
+<enum name="DNS.AttemptType">
+  <int value="0" label="DnsUDPAttempt"/>
+  <int value="1" label="DnsTCPAttempt due to low UDP entropy"/>
+  <int value="2" label="DnsTCPAttempt due to retry due to UDP trucation"/>
+  <int value="3" label="DnsHTTPAttempt"/>
+</enum>
+
+<enum name="DNS.SvcbHttpsTransactionError">
+  <int value="0" label="No transaction error"/>
+  <int value="1" label="Insecure DNS transaction error (never task-fatal)"/>
+  <int value="2" label="Non-task-fatal Secure DNS transaction error"/>
+  <int value="3"
+      label="Would be task-fatal transaction error but finch param disabled"/>
+  <int value="4" label="Task-fatal transaction error"/>
+</enum>
+
+<enum name="DNS.TaskTypeMetadataAvailability">
+  <int value="0" label="SYSTEM, no metadata"/>
+  <int value="1" label="SYSTEM, with metadata"/>
+  <int value="2" label="DNS, no metadata"/>
+  <int value="3" label="DNS, with metadata"/>
+  <int value="4" label="SECURE_DNS, no metadata"/>
+  <int value="5" label="SECURE_DNS, with metadata"/>
+  <int value="6" label="MDNS, no metadata"/>
+  <int value="7" label="MDNS, with metadata"/>
+  <int value="8" label="CACHE_LOOKUP, no metadata"/>
+  <int value="9" label="CACHE_LOOKUP, with metadata"/>
+  <int value="10" label="INSECURE_CACHE_LOOKUP, no metadata"/>
+  <int value="11" label="INSECURE_CACHE_LOOKUP, with metadata"/>
+  <int value="12" label="SECURE_CACHE_LOOKUP, no metadata"/>
+  <int value="13" label="SECURE_CACHE_LOOKUP, with metadata"/>
+  <int value="14" label="CONFIG_PRESET, no metadata"/>
+  <int value="15" label="CONFIG_PRESET, with metadata"/>
+  <int value="16" label="NAT64, no metadata"/>
+  <int value="17" label="NAT64, with metadata"/>
+  <int value="18" label="HOSTS, no metadata"/>
+  <int value="19" label="HOSTS, with metadata"/>
+</enum>
+
+<enum name="DNS.UdpLowEntropyReason">
+  <int value="0" label="Multiple recent reassignments of the same UDP port"/>
+  <int value="1"
+      label="DNS query/response ID mismatches, where response ID is
+             recognized from a recent query"/>
+  <int value="2"
+      label="DNS query/response ID mismatches, where response ID is
+             unrecognized"/>
+  <int value="3" label="Exhaustion of process-wide UDP socket limit"/>
+</enum>
+
+<enum name="DNS.WindowsCompatibility">
+  <int value="0" label="Compatible"/>
+  <int value="1" label="Incompatible resolution policy"/>
+  <int value="2" label="Incompatible proxy"/>
+  <int value="3" label="Incompatible resolution policy and proxy"/>
+  <int value="4" label="Incompatible VPN"/>
+  <int value="5" label="Incompatible resolution policy and VPN"/>
+  <int value="6" label="Incompatible proxy and VPN"/>
+  <int value="7" label="Incompatible resolution policy, proxy and VPN"/>
+  <int value="8" label="Incompatible adapter specific nameserver"/>
+  <int value="9"
+      label="Incompatible resolution policy and adapter specific nameserver"/>
+  <int value="10" label="Incompatible proxy and adapter specific nameserver"/>
+  <int value="11"
+      label="Incompatible resolution policy, proxy and adapter specific
+             nameserver"/>
+  <int value="12" label="Incompatible VPN and adapter specific nameserver"/>
+  <int value="13"
+      label="Incompatible resolution policy, VPN and adapter specific
+             nameserver"/>
+  <int value="14"
+      label="Incompatible proxy, VPN and adapter specific nameserver"/>
+  <int value="15"
+      label="Incompatible resolution policy, proxy, VPN and adapter specific
+             nameserver"/>
+</enum>
+
+<enum name="DohServerAutoupgradeStatus">
+  <int value="0" label="SuccessWithNoPriorFailures"/>
+  <int value="1" label="SuccessWithSomePriorFailures"/>
+  <int value="2" label="FailureWithSomePriorSuccesses"/>
+  <int value="3" label="FailureWithNoPriorSuccesses"/>
+</enum>
+
+<enum name="DomainReliabilityBeaconOutcome">
+  <int value="0" label="Unknown (should not be recorded)"/>
+  <int value="1" label="Uploaded successfully"/>
+  <int value="2" label="Expired"/>
+  <int value="3" label="Evicted"/>
+  <int value="4" label="Browsing data cleared"/>
+  <int value="5" label="Deleted at shutdown"/>
+</enum>
+
+<enum name="ECDHECurves">
+  <int value="21" label="P-224"/>
+  <int value="23" label="P-256"/>
+  <int value="24" label="P-384"/>
+  <int value="25" label="P-521"/>
+  <int value="29" label="X25519"/>
+  <int value="16696" label="CECPQ2"/>
+  <int value="25497" label="Kyber+X25519"/>
+</enum>
+
+<enum name="FetchManagerLoaderCheckPoint">
+  <int value="0" label="FetchManager::Loader Constructor"/>
+  <int value="1" label="FetchManager::Loader::Failed"/>
+</enum>
+
+<enum name="Http2WireErrorCodes">
+  <summary>
+    Error codes defined at
+    https://www.iana.org/assignments/http2-parameters/http2-parameters.xhtml#error-code
+  </summary>
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="PROTOCOL_ERROR"/>
+  <int value="2" label="INTERNAL_ERROR"/>
+  <int value="3" label="FLOW_CONTROL_ERROR"/>
+  <int value="4" label="SETTINGS_TIMEOUT"/>
+  <int value="5" label="STREAM_CLOSED"/>
+  <int value="6" label="FRAME_SIZE_ERROR"/>
+  <int value="7" label="REFUSED_STREAM"/>
+  <int value="8" label="CANCEL"/>
+  <int value="9" label="COMPRESSION_ERROR"/>
+  <int value="10" label="CONNECT_ERROR"/>
+  <int value="11" label="ENHANCE_YOUR_CALM"/>
+  <int value="12" label="INADEQUATE_SECURITY"/>
+  <int value="13" label="HTTP_1_1_REQUIRED"/>
+</enum>
+
+<enum name="HttpAuthCount">
+  <int value="0" label="Basic Start"/>
+  <int value="1" label="Basic Reject"/>
+  <int value="2" label="Digest Start"/>
+  <int value="3" label="Digest Reject"/>
+  <int value="4" label="NTLM Start"/>
+  <int value="5" label="NTLM Reject"/>
+  <int value="6" label="Negotiate Start"/>
+  <int value="7" label="Negotiate Reject"/>
+  <int value="8" label="SpdyProxy Start (Deprecated)"/>
+  <int value="9" label="SpdyProxy Reject (Deprecated)"/>
+</enum>
+
+<enum name="HttpAuthNtlmV2Usage">
+  <int value="0" label="Disabled over unsecured connection"/>
+  <int value="1" label="Disabled over secure connection"/>
+  <int value="2" label="Enabled over unsecured connection"/>
+  <int value="3" label="Enabled over secure connection"/>
+</enum>
+
+<enum name="HttpAuthPromptType">
+  <int value="0" label="Main frame with interstitial">
+    Auth prompt displayed over a blank interstitial
+  </int>
+  <int value="1" label="Main frame without interstitial">
+    Auth prompt displayed for the main frame, without a blank interstitial
+  </int>
+  <int value="2" label="Same origin subresource">
+    Auth prompt displayed for a subresource from the same origin
+  </int>
+  <int value="3" label="Cross origin subresource">
+    Auth prompt displayed for a subresource from a different origin
+  </int>
+</enum>
+
+<enum name="HttpAuthTarget">
+  <int value="0" label="Basic Proxy"/>
+  <int value="1" label="Basic Secure Proxy"/>
+  <int value="2" label="Basic Server"/>
+  <int value="3" label="Basic Secure Server"/>
+  <int value="4" label="Digest Proxy"/>
+  <int value="5" label="Digest Secure Proxy"/>
+  <int value="6" label="Digest Server"/>
+  <int value="7" label="Digest Secure Server"/>
+  <int value="8" label="NTLM Proxy"/>
+  <int value="9" label="NTLM Secure Proxy"/>
+  <int value="10" label="NTLM Server"/>
+  <int value="11" label="NTLM Secure Server"/>
+  <int value="12" label="Negotiate Proxy"/>
+  <int value="13" label="Negotiate Secure Proxy"/>
+  <int value="14" label="Negotiate Server"/>
+  <int value="15" label="Negotiate Secure Server"/>
+  <int value="16" label="SpdyProxy (Deprecated)"/>
+  <int value="17" label="SpdyProxy Secure (Deprecated)"/>
+  <int value="18" label="SpdyProxy Server (Invalid)"/>
+  <int value="19" label="SpdyProxy Secure Server (Invalid)"/>
+</enum>
+
+<enum name="HttpCachePattern">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Not Covered"/>
+  <int value="2" label="Not Cached"/>
+  <int value="3" label="Used"/>
+  <int value="4" label="Validated"/>
+  <int value="5" label="Updated"/>
+  <int value="6" label="CantConditionalize"/>
+</enum>
+
+<enum name="HttpNetworkTransactionRetryReason">
+  <int value="0" label="HttpRequestTimeout"/>
+  <int value="1" label="HttpMisdirectedRequest"/>
+  <int value="2" label="Http11Required"/>
+  <int value="3" label="SslClientAuthSignatureFailed"/>
+  <int value="4" label="ConnectionReset"/>
+  <int value="5" label="ConnectionClosed"/>
+  <int value="6" label="ConnectionAborted"/>
+  <int value="7" label="SocketNotConnected"/>
+  <int value="8" label="EmptyResponse"/>
+  <int value="9" label="EarlyDataRejected"/>
+  <int value="10" label="WrongVersionOnEarlyData"/>
+  <int value="11" label="Http2PingFailed"/>
+  <int value="12" label="Http2ServerRefusedStream"/>
+  <int value="13" label="Http2PushedStreamNotAvailable"/>
+  <int value="14" label="Http2ClaimedPushedStreamResetByServer"/>
+  <int value="15" label="Http2PushedResponseDoesNotMatch"/>
+  <int value="16" label="QuicHandshakeFailed"/>
+  <int value="17" label="QuicGoawayRequestCanBeRetried"/>
+  <int value="18" label="QuicProtocolError"/>
+</enum>
+
+<enum name="HttpRequestStsState">
+  <summary>
+    Tracks whether main frame requests are protected by HSTS, which maps closely
+    to whether they're vulnerable to a downgrade attack.
+  </summary>
+  <int value="0" label="kUnknown">Unknown state</int>
+  <int value="1" label="kUnprotectedHttps">
+    The request used HTTPS, but was not protected by HSTS.
+  </int>
+  <int value="2" label="kProtectedHttps">
+    The request used HTTPS and was protected by HSTS.
+  </int>
+  <int value="3" label="kUnprotectedHttp">
+    The request used HTTP and was unprotected by HSTS.
+  </int>
+  <int value="4" label="kProtectedHttp">
+    The request used HTTP and was redirected due to HSTS.
+  </int>
+</enum>
+
+<enum name="HttpssvcDnsRcode">
+  <summary>
+    Tracks the result of querying for an INTEGRITY or HTTPSSVC record. This enum
+    can represent each of Chrome's supported RCODE values as well as any
+    unrecognized RCODE values. It also has the TimedOut value to represent
+    queries that timed out.
+
+    IANA registry:
+    https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
+  </summary>
+  <int value="0" label="TimedOut"/>
+  <int value="1" label="UnrecognizedRcode"/>
+  <int value="2" label="MissingDnsResponse (network error)"/>
+  <int value="3" label="NOERROR"/>
+  <int value="4" label="FORMERR"/>
+  <int value="5" label="SERVFAIL"/>
+  <int value="6" label="NXDOMAIN"/>
+  <int value="7" label="NOTIMP"/>
+  <int value="8" label="REFUSED"/>
+</enum>
+
+<enum name="InitialRttEstimateSource">
+  <int value="0" label="Default"/>
+  <int value="1" label="Cached"/>
+  <int value="2" label="2G"/>
+  <int value="3" label="3G"/>
+</enum>
+
+<enum name="JobProtocolErrorLocation">
+  <int value="0" label="kSessionStartReadingFailedAsync"/>
+  <int value="1" label="kSessionStartReadingFailedSync"/>
+  <int value="2" label="kCreateSessionFailedAsync"/>
+  <int value="3" label="kCreateSessionFailedSync"/>
+  <int value="4" label="CryptoConnectFailedSync"/>
+  <int value="5" label="CryptoConnectFailedAsync"/>
+</enum>
+
+<enum name="MediaResponseCacheType">
+  <int value="0" label="Transaction Cache Enabled"/>
+  <int value="1" label="Transaction Cache Disabled"/>
+</enum>
+
+<enum name="MultiPortStatusOnMigration">
+  <int value="0" label="Not validated"/>
+  <int value="1" label="Pending refresh validation"/>
+  <int value="2" label="Waiting for refresh validation"/>
+</enum>
+
+<enum name="NegotiatedHttpDatagramVersion">
+  <int value="0" label="Not supported"/>
+  <int value="1" label="draft-04"/>
+  <int value="2" label="rfc"/>
+</enum>
+
+<enum name="NegotiatedWebTransportVersion">
+  <int value="0" label="draft-02"/>
+  <int value="1" label="draft-07"/>
+</enum>
+
+<enum name="NetCertificateNameNormalization">
+  <int value="0" label="Error parsing certificate chain"/>
+  <int value="1" label="Byte equal Names"/>
+  <int value="2" label="Normalized Names"/>
+  <int value="3" label="Chain contained only one certificate"/>
+</enum>
+
+<enum name="NetErrorOfflineSuggestionType">
+  <int value="0" label="Prefetched Page">
+    A Prefetched article that has been offlined.
+  </int>
+  <int value="1" label="Video">
+    A video file previously downloaded by the user.
+  </int>
+  <int value="2" label="Audio">
+    An audio file previously downloaded by the user.
+  </int>
+  <int value="3" label="Other Page">
+    An offline page previously downloaded by the user.
+  </int>
+</enum>
+
+<enum name="NetErrorPageEvents">
+  <int value="0" label="Error Page Shown">
+    An error page was shown. This bucket encompasses all others and works as a
+    total count for error pages (instead of the histogram's total sample count
+    which doesn't reflect that information).
+  </int>
+  <int value="1" label="Reload Button Shown">
+    An error page was shown with at least a &quot;Reload&quot; button on it.
+  </int>
+  <int value="2" label="Reload Button Clicked">
+    An error page was shown with at least a &quot;Reload&quot; button on it and
+    the user pressed that button.
+  </int>
+  <int value="3" label="Reload Button Click Load Error">
+    An error page was previously loaded with a &quot;Reload&quot; button and
+    another load error happened as a result of the user pressing that button.
+  </int>
+  <int value="4" label="Show Saved Copy Button Shown">
+    An error page was shown with at least a &quot;Show Saved Copy&quot; button
+    on it.
+  </int>
+  <int value="5" label="Show Saved Copy Button Clicked">
+    An error page was shown with at least a &quot;Show Saved Copy&quot; button
+    on it and the user pressed that button.
+  </int>
+  <int value="6" label="Show Saved Copy Button Click Load Error">
+    An error page was previously loaded with a &quot;Show Saved Copy&quot;
+    button and another load error happened as a result of the user pressing that
+    button.
+  </int>
+  <int value="7" label="More Button Clicked">
+    An error page was shown with at least a &quot;More&quot; (aka
+    &quot;Details&quot;) button on it and the user pressed that button.
+  </int>
+  <int value="8" label="Browser Initiated Reload">
+    An error page was previously loaded and the user started a reload by
+    pressing the browser's reload button.
+  </int>
+  <int value="9" label="Both Reload And Show Saved Copy Buttons Shown">
+    An error page was shown with at least a &quot;Reload&quot; and a &quot;Show
+    Saved Copy&quot; buttons on it. Note that this is not exclusive with the
+    respective individual button buckets.
+  </int>
+  <int value="10"
+      label="Both Reload And Show Saved Copy Buttons Shown, Reload Clicked">
+    An error page was shown with at least a &quot;Reload&quot; and a &quot;Show
+    Saved Copy&quot; buttons on it and the user pressed the &quot;Reload&quot;
+    button. Note that this is not exclusive with the respective individual
+    button buckets.
+  </int>
+  <int value="11"
+      label="Both Reload And Show Saved Copy Buttons Shown, Show Saved Copy
+             Clicked">
+    An error page was shown with at least a &quot;Reload&quot; and a &quot;Show
+    Saved Copy&quot; buttons on it and the user pressed the &quot;Show Saved
+    Copy&quot; button. Note that this is not exclusive with the respective
+    individual button buckets.
+  </int>
+  <int value="12" label="Easter egg activated">
+    An error page was shown with the offline dino image and and the user
+    activated it (to play the dino game).
+  </int>
+  <int value="13" label="Show Cached Copy button shown">
+    An error page was shown with at least a &quot;Show Cached Copy&quot; button
+    on it.
+  </int>
+  <int value="14" label="Show Cached Copy button clicked">
+    An error page was shown with at least a &quot;Show Cached Copy&quot; button
+    on it and the user pressed that button.
+  </int>
+  <int value="15" label="Show Cached Page button shown">Obsolete.</int>
+  <int value="16" label="Show Cached Page button clicked">Obsolete.</int>
+  <int value="17" label="Diagnose button clicked">
+    An error page was shown with at least a &quot;Diagnose Error&quot; button on
+    it and the user pressed that button.
+  </int>
+  <int value="18" label="Show Offline Pages Button Shown">Obsolete.</int>
+  <int value="19" label="Show Offline Pages Button Clicked">Obsolete.</int>
+  <int value="20" label="Show Offline Copy Button Shown">Obsolete.</int>
+  <int value="21" label="Show Offline Copy Button Clicked">Obsolete.</int>
+  <int value="22" label="Download Button Shown">
+    An error page was shown with at least a &quot;Download Page Later&quot;
+    button on it.
+  </int>
+  <int value="23" label="Download Button Clicked">
+    An error page was shown with at least a &quot;Download Page Later&quot;
+    button on it and the user pressed that button.
+  </int>
+  <int value="24" label="Offline Suggestions List Shown">
+    A list containing at least one item of offline content suggestions was shown
+    in the expanded/shown state.
+  </int>
+  <int value="25" label="Offline Suggestion List Item Clicked">
+    An item from the offline content suggestions list was clicked.
+  </int>
+  <int value="26" label="Downloads Page Button Clicked">
+    A link that opens the downloads page was clicked.
+  </int>
+  <int value="27" label="Offline Content Summary Shown">
+    A summary of available offline content was shown.
+  </int>
+  <int value="28" label="Offline Suggestions List Shown Collapsed">
+    A list containing at least one item of offline content suggestions was shown
+    in the collapsed/hidden state.
+  </int>
+  <int value="29" label="Offline error shown">
+    The error page was shown because the device is offline (dino page).
+  </int>
+  <int value="30" label="Sign in to network button clicked">
+    An error page was shown with at least a &quot;Sign in to network&quot;
+    button on it and the user pressed that button.
+  </int>
+</enum>
+
+<enum name="NetFilterType2">
+  <summary>
+    Specific content decoding filter. See net::SourceStream::SourceType for more
+    details
+  </summary>
+  <int value="0" label="Brotli"/>
+  <int value="1" label="Deflate"/>
+  <int value="2" label="GZIP"/>
+  <int value="3" label="GZIPFallback"/>
+  <int value="4" label="SDCH"/>
+  <int value="5" label="SDCHPossible"/>
+  <int value="6" label="Invalid"/>
+  <int value="7" label="None"/>
+  <int value="8" label="Rejected">
+    Unlike other values, this one is reported from HttpNetworkTransaction in a
+    case when an unadvertised, but known encoding appears in a
+    &quot;Content-Encoding&quot; header, and is thus not comparable with the
+    other values, which are potentially returned from cached entries.
+  </int>
+  <int value="9" label="Unknown">
+    Reported from URLRequestHttpJob::SetUpSourceStream when an unknown encoding
+    appears in a &quot;Content-Encoding&quot; header. Despite being reported in
+    this histogram, this does not cause a CONTENT_DECODING_FAILED error.
+  </int>
+</enum>
+
+<enum name="NetNetworkErrorLoggingRequestOutcome">
+  <int value="0" label="Discarded: no NetworkErrorLoggingService"/>
+  <int value="1" label="Discarded: no ReportingService"/>
+  <int value="2" label="Discarded: insecure origin"/>
+  <int value="3" label="Discarded: no origin policy"/>
+  <int value="4" label="Discarded: unmapped error"/>
+  <int value="5" label="Discarded: Reporting upload"/>
+  <int value="6" label="Discarded: unsampled success"/>
+  <int value="7" label="Discarded: unsampled failure"/>
+  <int value="8" label="Queued"/>
+  <int value="9" label="Discarded: include_subdomains without DNS error"/>
+  <int value="10" label="Discarded: IP address mismatch"/>
+</enum>
+
+<enum name="NetReportingHeaderType">
+  <int value="0" label="Report-To"/>
+  <int value="1" label="Invalid Report-To"/>
+  <int value="2" label="Reporting-Endpoints"/>
+  <int value="3" label="Invalid Reporting-Endpoints"/>
+</enum>
+
+<enum name="NetReportingUploadHeaderType">
+  <int value="0" label="ReportTo"/>
+  <int value="1" label="ReportingEndpoints"/>
+</enum>
+
+<enum name="NetTrustAnchors">
+<!-- Generated from net/data/ssl/root_stores/root_stores.json.
+Called by update_net_trust_anchors.py.-->
+
+  <int value="0" label="Unknown or locally-installed trust anchor"/>
+  <int value="1"
+      label="1d75d0831b9e0885394d32c7a1bfdb3dbc1c28e2b0e8391fb135981dbc5ba936"/>
+  <int value="2"
+      label="4691cbfde84a6b6052ddbe152bb0c216ae25a86e5747813dbc0f147f338570be"/>
+  <int value="3"
+      label="c73afc2eba770d0cbc1ee41f252b52e8a93d12b72dccec031d8d839cbf818a79"/>
+  <int value="4"
+      label="a99972ce1f6c581d0097f62618062e53157b5276e1ec6651a3157057f057b339"/>
+  <int value="5"
+      label="628e3a1156f6faa92f94b409258d4cba3f2047480d30194faf3fbed05eaeb5b2"/>
+  <int value="6"
+      label="2b071c59a0a0ae76b0eadb2bad23bad4580b69c3601b630c2eaf0613afa83f92"/>
+  <int value="7"
+      label="8a27b5557b4bec7cc0305fbf3d53d1f71cd3f34910c5d65e27ecddb82077ba3d"/>
+  <int value="8"
+      label="cbe5ac15d88b5cac3f81e6df3bfb57bea60958813a47b77f3c5cb6b98191bdb5"/>
+  <int value="9"
+      label="e2d891efb738669105d530de5ed72e2b2ac3f4a67078b5349b3fdaca496f5eb8"/>
+  <int value="10"
+      label="563b3caf8cfef34c2335caf560a7a95906e8488462eb75ac59784830df9e5b2b"/>
+  <int value="11"
+      label="9dd55fc573f546cb6a3831d1112d8710a6f4f82dc87f5fae9d3a1a028dd36e4b"/>
+  <int value="12"
+      label="772fccca7d1646d60628134ff2e6e7f5ba095898be59698bce9d15f96f69a9f3"/>
+  <int value="13"
+      label="3c35e164bedd2cf12beb83ecff78b5e80da8158d2830217e4ebffce8928899a6"/>
+  <int value="14"
+      label="3b45918205c591298a1922a58b4921d01f648fa9d28bdddfad24aeec5942cfbf"/>
+  <int value="15"
+      label="a81293445db196a2030f9e455fe3c74a9a4f8317b02b01406027a8708174434c"/>
+  <int value="16"
+      label="eca0f181402ce7a8652b31b4d036df247e3a30b7f41a50d91ec4f90b006b43a1"/>
+  <int value="17"
+      label="8d767764b3cbda08929d072a22a561f4dcdd1bc57d3cbddc948c47d2b47f9122"/>
+  <int value="18"
+      label="706bb1017c855c59169bad5c1781cf597f12d2cad2f63d1a4aa37493800ffb80"/>
+  <int value="19"
+      label="ced43902ab5fb57b442322dc0e172a4fb55f7178b808f94e780a6fd6cc6bd818"/>
+  <int value="20"
+      label="6bcfc86c8ddc2af2e6a1180a2ddabb37b7ea3755316b64b9b8951bf0ca351f06"/>
+  <int value="21"
+      label="5632d97bfa775bf3c99ddea52fc2553410864016729c52dd6524c8a9c3b4489f"/>
+  <int value="22"
+      label="15f14ac45c9c7da233d3479164e8137fe35ee0f38ae858183f08410ea82ac4b4"/>
+  <int value="23"
+      label="bcfb44aab9ad021015706b4121ea761c81c9e88967590f6f94ae744dc88b78fb"/>
+  <int value="24"
+      label="acf65e1d62cb58a2bafd6ffab40fb88699c47397cf5cb483d42d69cad34cd48b"/>
+  <int value="25"
+      label="b03d87b056d08cc9d4e675ef19ca83ab53532168a8258598be72e6d85c7dd7c1"/>
+  <int value="26"
+      label="c3bc6100f57e320d8659f22584677e56860aab1014e0084a496fff8c880b6ba3"/>
+  <int value="27"
+      label="32d180ed31c935589ec9dbbb722123b883b5fc2dc10f9fca3a95d77e1bfcb534"/>
+  <int value="28"
+      label="fcf7da983603e88862030d96137d8e13031badfb4d56c1fd4cacc339f6bdbb2a"/>
+  <int value="29"
+      label="e42f24bd4d37f4aa2e56b979d83d1e65219fe0e9e3a382a1b3cb66c93955de75"/>
+  <int value="30"
+      label="7e8782c150ce3952f802e636023a5d3e95bb5d68e33e85adb2ba178125cebf15"/>
+  <int value="31"
+      label="aff988906dde12955d9bebbf928fdcc31cce328d5b9384f21c8941ca26e20391"/>
+  <int value="32"
+      label="ce24eb0626defd8168c96a7701f09301600fe5dd0dbce58e9c97b830af02ef28"/>
+  <int value="33"
+      label="63d9af9b47b1064d49a10e7b7fd566dbc8caa399459bfc2829c571ad8c6ef34a"/>
+  <int value="34"
+      label="942a6916a6e4ae527711c5450247a2a74fb8e156a8254ca66e739a11493bb445"/>
+  <int value="35"
+      label="40fcfc28875dccbfebcbdf6cd7433312da63c4efcf3bd7b1b505c22020ae0274"/>
+  <int value="36"
+      label="05570ae6eb0fceb4210e6db79486b7094caf200401e149b6677441b5f25e449b"/>
+  <int value="37"
+      label="05e77ef1fdfe05e2dca522cae64d8379a041b7b4f16c7cae36067a7f72a14872"/>
+  <int value="38"
+      label="1ea3c5e43ed66c2da2983a42a4a79b1e906786ce9f1b58621419a00463a87d38"/>
+  <int value="39"
+      label="1a7a3a1a68dd2361e3f3bb855f3b26fcd88b197d8dd4de06cf1b362ac89ec13b"/>
+  <int value="40"
+      label="15e7e717b428feee3af3afd9150dbad497008d3a3ff016964719907bdb01a645"/>
+  <int value="41"
+      label="cb6e91711ad6d55c8906f379cb071fb5c47933654a7415612eee6629f26fbcd7"/>
+  <int value="42"
+      label="76ee8590374c715437bbca6bba6028eadde2dc6dbbb8c3f610e851f11d1ab7f5"/>
+  <int value="43"
+      label="c746127c5f6b529ce9e2948efd9465444089319acf03f34d0bf37eadc77db22f"/>
+  <int value="44"
+      label="952c2039c0243eb515dd73d83fc3643184874feb0862a9837731ed9b4742e17a"/>
+  <int value="45"
+      label="1069fa47a0aa4f8cf7111b1caea365eeaed10bfff32660def6e0614bfae70875"/>
+  <int value="46"
+      label="d1de2ae61c8df2fa623966163d4c73d460bfc428e57585be6bfeb9a56323d1b6"/>
+  <int value="47"
+      label="4002fcd311d07331567e71bcd971e46048c8dce8d1659711753b3daa2a269afa"/>
+  <int value="48"
+      label="b2def5362ad3facd04bd29047a43844f767034ea4892f80e56bee690243e2502"/>
+  <int value="49"
+      label="9318226f8c83afe47f5f47c24f59ce12dba8c73b181bee6b2ea1f40a06bc1869"/>
+  <int value="50"
+      label="967b0cd93fcef7f27ce2c245767ae9b05a776b0649f9965b6290968469686872"/>
+  <int value="51"
+      label="44af8afcf1395d2a8e30ef812ce19ceb2e8948dfd21e00fbaa34689f9a24721f"/>
+  <int value="52"
+      label="17755a5c295f3d2d72e6f031a1f07f400c588b9e582b22f17eae31a1590d1185"/>
+  <int value="53"
+      label="86c13a3408dd1aa77ee8b6947c03958772f531248c1627befb2c4f4b04d04496"/>
+  <int value="54"
+      label="ff5680cd73a5703da04817a075fd462506a73506c4b81a1583ef549478d26476"/>
+  <int value="55"
+      label="006d7be7555dd82026442c4f1a27a80e89a1989cb87b34448ed2194c18196d5e"/>
+  <int value="56"
+      label="43cffc359f2e8caa57388ee9f6f1dbe93bf093682a699ac3852e6d1f8579e7f9"/>
+  <int value="57"
+      label="be3db7b79bfe579dcf9b07ca4cad75aff16975568e5b45cfcae4d61fb63175a8"/>
+  <int value="58"
+      label="5192438ec369d7ee0ce71f5c6db75f941efbf72e58441715e99eab04c2c8acee"/>
+  <int value="59"
+      label="25d4913cf587097414d29d26f6c1b1942cd6d64eaf45d0fcf81526adba96d324"/>
+  <int value="60"
+      label="f48badd7df6a06690d0ae31373b12855f8dedb14517f362a313101cc98cc6b35"/>
+  <int value="61"
+      label="25aeec63f3ccd73dd61cb4fbbd13603722e02cb54e03047737084211071d7850"/>
+  <int value="62"
+      label="10ba3485ca8bb6880ab9531a4063e4001555561c7f2e055165f49b2d74fc5f6b"/>
+  <int value="63"
+      label="1906c6124dbb438578d00e066d5054c6c37f0fa6028c05545e0994eddaec8629"/>
+  <int value="64"
+      label="23f2edff3ede90259a9e30f40af8f912a5e5b3694e6938440341f6060e014ffa"/>
+  <int value="65"
+      label="9adb99c93ab256ecca2b5350c75048a8584c12dfc248e3f60ea9354c34ebfcce"/>
+  <int value="66"
+      label="9736ac3b25d16c45a45418a964578156480a8cc434541ddc5dd59233229868de"/>
+  <int value="67"
+      label="a6e11ff15ec326a5e3f18ad33a056694dc84c699766d028a5ad0efe1a8e53ac7"/>
+  <int value="68"
+      label="b638cff05c8a832758edc3028af9e2d55514568bc6bb34ab36d140b97ac6b12d"/>
+  <int value="69"
+      label="023c81cce8e7c64fa942d3c15048707d35d9bb5b87f4f544c5bf1bc5643af2fa"/>
+  <int value="70"
+      label="a6f1f9bf8a0a9ddc080fb49b1efc3d1a1c2c32dc0e136a5b00c97316f2a3dc11"/>
+  <int value="71"
+      label="bd153ed7b0434f6886b17bce8bbe84ed340c7132d702a8f4fa318f756ecbd6f3"/>
+  <int value="72"
+      label="b1124142a5a1a5a28819c735340eff8c9e2f8168fee3ba187f253bc1a392d7e2"/>
+  <int value="73"
+      label="051cf9fa95e40e9b83edaeda6961f6168c7879c4660172479cdd51ab03cea62b"/>
+  <int value="74"
+      label="36ecc61fc7e5f1923d167e67dfde34608549b34a63c7c6e60ffd5c1840381f5c"/>
+  <int value="75"
+      label="87af34d66fb3f2fdf36e09111e9aba2f6f44b207f3863f3d0b54b25023909aa5"/>
+  <int value="76"
+      label="9392ae2149924ade37e645dba1ff4bdddcda2b291b6097669d2afa5c7a372619"/>
+  <int value="77"
+      label="8fd112c3c8370f147d5ccd3a7d865eb8dd540783bac69fc60088e3743ff33378"/>
+  <int value="78"
+      label="0656f5955204c8d2bc8b1ca475e2a4fa6e124d124512784157c858b55471141a"/>
+  <int value="79"
+      label="495a96ba6bad782407bd521a00bace657bb355555e4bb7f8146c71bba57e7ace"/>
+  <int value="80"
+      label="5a889647220e54d6bd8a16817224520bb5c78e58984bd570506388b9de0f075f"/>
+  <int value="81"
+      label="5955ae291574a931342cf7450e16652ede1e0fb3097e1571dfac11c915601564"/>
+  <int value="82"
+      label="b4a039eafc4310ba9bde093edb8f9d9d0b3d4c7c004d48288c35dbcc19467d18"/>
+  <int value="83"
+      label="2a29337c3d6224cc53f0bb5e5d5820c0d8848b04871328f090fee3cd6bf821b4"/>
+  <int value="84"
+      label="808d68b3fab4884a5f971ace7d10550d7a95a163774f3ec36afffb213fbe4c74"/>
+  <int value="85"
+      label="94072ad3f58f70f93098e5a5f6c04c96c710bd849d83184919ae90eb890ae400"/>
+  <int value="86"
+      label="7caa03465124590c601e567e52148e952c0cffe89000530fe0d95b6d50eaae41"/>
+  <int value="87"
+      label="dbc1e3a15238a0483bcdb8fdec616e03e705a48e2a501157cadf3b9c7311c5e5"/>
+  <int value="88"
+      label="1f4224cec84fc99ced881ff6fcfd3e21f8c519c547aa6a5dd3de247302ce50d1"/>
+  <int value="89"
+      label="e7ca91bbfbb18788057b3a8070446ea5291160194102f7dcc3b9848c63cb9cd5"/>
+  <int value="90"
+      label="56174d3ad971a8944964b189811f3008493a6a90422e3c5804ec838d4f94f622"/>
+  <int value="91"
+      label="0c7acaa710226720bbc940349ee2e6148652a89dbf406a232c895f6dc78ebb9a"/>
+  <int value="92"
+      label="702116ccd8bf23e16466f0e0dba0ed6a239a9c1cd6a8f5a66b39af3595020385"/>
+  <int value="93"
+      label="aa2630a7b617b04d0a294bab7a8caaa5016e6dbe604837a83a85719fab667eb5"/>
+  <int value="94"
+      label="36c22314131a5fbf1b70ea4ccf4bc13a777d938ec65e1da24e3c2cfd01d3d163"/>
+  <int value="95"
+      label="4905466623ab4178be92ac5cbd6584f7a1e17f27652d5a85af89504ea239aaaa"/>
+  <int value="96"
+      label="f463c54d9f1a047aed52656ac785e07ebec528e0207bfd3f55d893237668f6ae"/>
+  <int value="97"
+      label="62554c17005543b237215f04268dcd2fd1c470240ad3c8660e25ae2c59630f55"/>
+  <int value="98"
+      label="6544ff9adb642c4c3698a60d8143b6b93bcef01365b540f614dcc2a45ab94d31"/>
+  <int value="99"
+      label="927a1b8562280576d048c50321ada43d8703d2d9521a18c28b8c46cc6aae4efd"/>
+  <int value="100"
+      label="4eada9b5311e718199d98ea82b95005cba93198ab1f97efcbe8dc6201628f8af"/>
+  <int value="101"
+      label="3861d7b6961fcdb2120456ff6fc2eb7704b1a741b4bd933a8376f5e1915ca698"/>
+  <int value="102"
+      label="2a4212605aa3e8aecb0fc19806cf3b40b53b95f1a34dbbd6e3ed27230324abb3"/>
+  <int value="103"
+      label="d2a5f32f0e01b910ef4e3b46bf84e5af5fb5689e7d1507e929e368ac88c6cc76"/>
+  <int value="104"
+      label="67dc4f32fa10e7d01a79a073aa0c9e0212ec2ffc3d779e0aa7f9c0f0e1c2c893"/>
+  <int value="105"
+      label="bb4128ec9620f2d2a49ce8e2c4e257aebad93a0f11c56b5fa4b00e23759fa39d"/>
+  <int value="106"
+      label="a4003bd5bdd894e01a8e01e06b62c7aa82f03de5253133570aad4fd0e7d81d3c"/>
+  <int value="107"
+      label="b21d2a743318712ba16f39919d961a4bafba3bca9a43a75b1fcfe22c5d70caba"/>
+  <int value="108"
+      label="c444b5b66ce5d71e1b5e40f27385c95cbfd24a05b56f70cac0992f0f50c3379c"/>
+  <int value="109"
+      label="2bcee858158cf5465fc9d76f0dfa312fef25a4dca8501da9b46b67d1fbfa1b64"/>
+  <int value="110"
+      label="fea2b7d645fba73d753c1ec9a7870c40e1f7b0c561e927b985bf711866e36f22"/>
+  <int value="111"
+      label="92c46879626ef2cc1ecea50c72fb5e385844095f21cbf3b283cb82e6b9fc6a58"/>
+  <int value="112"
+      label="e5ca37bc7b6c361979bc6b123ca9a1db019046d7ff5f57dfb854b19d10b0682f"/>
+  <int value="113"
+      label="2a8f2d8af0eb123898f74c866ac3fa669054e23c17bc7a95bd0234192dc635d0"/>
+  <int value="114"
+      label="093db767888f6b1327555dbd42bb5c93fedec5044c7a84bc6ea32a578c2235c0"/>
+  <int value="115"
+      label="23849d094923d44a4881b63ab185e9be15aac8ef2c3044d934bc7f26e2d2cd69"/>
+  <int value="116"
+      label="2596904dc4d699ae20c2cef4dce47f285937d77464ac370746f52dea76ba0c28"/>
+  <int value="117"
+      label="6dbfae00d37b9cd73f8fb47de65917af00e0dddf42dbceac20c17c0275ee2095"/>
+  <int value="118"
+      label="f53c22059817dd96f400651639d2f857e21070a59abed9079400d9f695506900"/>
+  <int value="119"
+      label="fac95de3c24a174194800cffaa3ca51d7116630664a9b60c8758b4ef0dc58f88"/>
+  <int value="120"
+      label="a87443b3d896eb257ccce99b95ada9bc81b9db4e3142aa9a99af0942cb0a4a3a"/>
+  <int value="121"
+      label="567b8211fd20d3d283ee0cd7ce0672cb9d99bc5b487a58c9d54ec67f77d4a8f5"/>
+  <int value="122"
+      label="ab98495276adf1ecaff28f35c53048781e5c1718dab9c8e67a504f4f6a51328f"/>
+  <int value="123"
+      label="fd872d176617e50c266119d0fdb047b0732da2048b121af7b9860ca3e2f2f2be"/>
+  <int value="124"
+      label="c1ad1b1898ec395048df070bfa217e25c913bed8ca6b73de085528846a0103c1"/>
+  <int value="125"
+      label="3219b09114ff495a3eb6eb00c2efeab34002ae5f0a56c7679ea087a3fa037e4f"/>
+  <int value="126"
+      label="67ea193243ae383939b5ad9e356a6b2bf93a93bcdcf828a47082497883083f86"/>
+  <int value="127"
+      label="77290717614b25f12964ebdb38b5f83caadc0f6c36b0777f880fc6dee1d339cc"/>
+  <int value="128"
+      label="3b0d73b4be4a854adc3e51d7ef9fa48aefbb2cdd824d67bdc7d7d09a2abc2d43"/>
+  <int value="129"
+      label="effee1f1e5f39f42ff80d471c9c5a799a8c843f9b676315f9eab3f4c7a2f7fc8"/>
+  <int value="130"
+      label="3380709af3b096be3cc2a40548142c0a520028db09e2cb77ae2206616ab6cbb4"/>
+  <int value="131"
+      label="4bdc636f48d21fb68c5a3cd4a20685788043bdb524e7e84d4192c451ee3429b5"/>
+  <int value="132"
+      label="d0773adb60043e954309d9714fe053eaad8aa5b9586edba468e276df82065adf"/>
+  <int value="133"
+      label="ff342fb6c4c8bd30a4706f73489539f19e6e48cc05f46254654f6610dbc540e9"/>
+  <int value="134"
+      label="c7f43b4cf5b71568294f822b53762605f6ddd15cadece739e9e2c3cba61e9d67"/>
+  <int value="135"
+      label="9c6f6a123cbaa4ee34dbeceee24c97d738878cb423f3c2273903424f5d1f6dd5"/>
+  <int value="136"
+      label="052b687107ec84e8730382452ec2a27451745d7485a57d6f464e0da7a1b6af2a"/>
+  <int value="137"
+      label="6c464b9a5b233a5e874da765c26f045010d2ddcff45794f0b4c7e4aafa501495"/>
+  <int value="138"
+      label="3499f93fd394523bfb1ec4c3ad4dfb310131fbe9ee5476bde6295de808d5dd8f"/>
+  <int value="139"
+      label="9699225c5de52e56cdd32df2e96d1cfea5aa3ca0bb52cd8933c23b5c27443820"/>
+  <int value="140"
+      label="26c18dc6eea6f632f676bceba1d8c2b48352f29c2d5fcda878e09dcb832dd6e5"/>
+  <int value="141"
+      label="616167201433aea6c8e5e3070afcaf6749188f814bd1abb179ae8dad3abf26ec"/>
+  <int value="142"
+      label="b0f6f15b4817ebe6fe0b4bfcd7d3ace4c758b0ab6f8a9da2ed92e618239d9c98"/>
+  <int value="143"
+      label="3a803e7c0a43a29fd73672e3d0bb2c3653d948ede0b3cb1db4ce75a857e89af1"/>
+  <int value="144"
+      label="9ecc51368e86e3460f66c295e4942dd53080f27b1e410aff2d1aa9d4e6bc7e7c"/>
+  <int value="145"
+      label="8a2affbd1a1c5d1bdccbb7f548ba995f966806b3fd0c3a00fae2e52f3c853989"/>
+  <int value="146"
+      label="1528397da212890a830b0b95a59968cef234773779df5181cf10fa647534bb65"/>
+  <int value="147"
+      label="31de0cb19f2adbb0d1cd7b1b31ef8ee3eb59b74459aef94b480beeeeb85c64c9"/>
+  <int value="148"
+      label="cf0b474ace8469faba402f02eebdf9e1700d9cbe8be4e4348407b69dd3196e94"/>
+  <int value="149"
+      label="980922eee07f86bc7f5e5e95d57db8bdae68e17a421c4e72a96a708a87920124"/>
+  <int value="150"
+      label="3551de58a7d79cd980283df81790d63a982c1a63b30482ec5821db7661554ef9"/>
+  <int value="151"
+      label="6f3e077fe5504646c0191afce494e4eb68183e398f5a4dc05669f8b6e6e682fe"/>
+  <int value="152"
+      label="25b41b506e4930952823a6eb9f1d31def645ea38a5c6c6a96d71957e384df058"/>
+  <int value="153"
+      label="d8fb33e385c9c2da729a84706ba927dcbb79273e122ffd9673363b70b7f36cbb"/>
+  <int value="154"
+      label="510d20e5c47f63cf666b20f61af62bc099a42ac824ffa443a2da7c90b1808a91"/>
+  <int value="155"
+      label="4d40e7af4304a09de87fbf9896204c055141e3f809b2fe733bb2310fdf98a162"/>
+  <int value="156"
+      label="4462c107c485dd6a5443f5e7a1604416034a374c3f4d10875f1c3715027563af"/>
+  <int value="157"
+      label="04a6ea654b23658973c98198c64a3a691c0da72ebebd9aebf75324cde6960eaa"/>
+  <int value="158"
+      label="fc3b82796b572ca9731993635db8cf07c2bf01e199b2f273a3f953bd185de3c0"/>
+  <int value="159"
+      label="5e7673a17a08d61413cd51b57dbaacbebfe5acb915e3966e5321b13eb9efaaeb"/>
+  <int value="160"
+      label="ab5cdb3356397356d6e691973c25b8618b65d76a90486ea7a8a5c17767f4673a"/>
+  <int value="161"
+      label="2a8bed32ae680d2d187b9a7afd171d83fd0b935eaf9e2c1b43e80278d2063e39"/>
+  <int value="162"
+      label="1916f3508ec3fad795f8dc4bd316f9c6085a64de3c4153ac6d62d5ea19515d39"/>
+  <int value="163"
+      label="278a6391d3d36b49aa4080f56a36b3c10fba4e28aa6a9592a82e7535113a12d3"/>
+  <int value="164"
+      label="5f665b4060be9efaf6ad739f6b39a1db9847277eb8dc144045376de1009e3127"/>
+  <int value="165"
+      label="16d82d67a1ed8e89f9ab58f7d0fd3eb0d0017687fcaeecd40475f10083a5b593"/>
+  <int value="166"
+      label="81a98fc788c35f557645a95224e50cd1dac8ffb209dc1e5688aa29205f132218"/>
+  <int value="167"
+      label="c07135f6b452398264a4776dbd0a6a307c60a36f967bd26321dcb817b5c0c481"/>
+  <int value="168"
+      label="db15c0062b520f318a19dacfecd64f9e7a3fbe609fd586796f20ae028e8e3058"/>
+  <int value="169"
+      label="4a49edbd2f8f8230bd5592b313573fe1c172a45fa98011cc1eddbb36ade3fce5"/>
+  <int value="170"
+      label="86a68f050034126a540d39db2c5f917ef66a94fb9619fa1ecd827cea46ba0cb0"/>
+  <int value="171"
+      label="f1c6ba670cfc88e4df52973cae420f0a089dd474144fe5806c420064e1591229"/>
+  <int value="172"
+      label="d6a18443d348db994f934ccd8e635d833a27ac1e56f8afaf7c97cb4f43eab68b"/>
+  <int value="173"
+      label="59df317bfa9f4f0ab7ca514d7772296aa2c765b87664d08b96e57399e364729c"/>
+  <int value="174"
+      label="15eed339594b304f8cf847b477371d8d6fec61f4db2b01af589e7c53b35cae4c"/>
+  <int value="175"
+      label="8bb593a93be1d0e8a822bb887c547890c3e706aad2dab76254f97fb36b82fc26"/>
+  <int value="176"
+      label="6106c0e3a0a299831875127bd7d3cc1859803d511cac11eb6e0840dd166fc10e"/>
+  <int value="177"
+      label="f3438e23b3ce532522facf307923f58fd18608e9ba7addc30e952b43c49616c3"/>
+  <int value="178"
+      label="b94c198300cec5c057ad0727b70bbe91816992256439a7b32f4598119dda9c97"/>
+  <int value="179"
+      label="2021917e98263945c859c43f1d73cb4139053c414fa03ca3bc7ee88614298f3b"/>
+  <int value="180"
+      label="08b3a6335fce5ef48f8f0e543986c07fd18a3b1226129f61864bbd5bdd1f1cc9"/>
+  <int value="181"
+      label="7e0ead76bb6819dc2f54511a84354f6e8b307b9dd82058ea6c004f01d9dda5df"/>
+  <int value="182"
+      label="c784333d20bcd742b9fdc3236f4e509b8937070e73067e254dd3bf9c45bf4dde"/>
+  <int value="183"
+      label="82b5f84daf47a59c7ab521e4982aefa40a53406a3aec26039efa6b2e0e7244c1"/>
+  <int value="184"
+      label="4b72dfed3edccb5f4945682e295731a0864ac6b5b85b193ecd2f06b4900c1cfd"/>
+  <int value="185"
+      label="951ee046fa83316e6786c08c44f13b4ca2ead2d2644d63314391c0cc70887d0d"/>
+  <int value="186"
+      label="58dd61feb36ea7d258724371709149cb121337864cacb2d0999ad20739d06477"/>
+  <int value="187"
+      label="4223894003a881c5df6bab163db235c221a18d54bf759945820e670da82e3f39"/>
+  <int value="188"
+      label="4a2659666dc0203b916f53d80ad8f61ac30bea161f485cc7527e6a5937e49216"/>
+  <int value="189"
+      label="dd5ed1c090f9f448061baa94a6bb11017544e9eefaa20cc714ce6c633f5dc629"/>
+  <int value="190"
+      label="07e854f26a7cbd389927aa041bfef1b6cd21dd143818ad947dc655a9e587fe88"/>
+  <int value="191"
+      label="6b1a505e0246f2f60c490ff0c097a7be27210cbb7500237f88b0cd48298bc9b8"/>
+  <int value="192"
+      label="381a3fc7a8b082fa28613a4d07f2c7553f4e1918ee07caa9e8b7cede5a9ca06a"/>
+  <int value="193"
+      label="6e364b6133deefdcbb21273c5f445a20afbc05038d5b021c0c2153039016345b"/>
+  <int value="194"
+      label="6b3b57e9ec88d1bb3d01637ff33c7698b3c9758255e9f01ea9178f3e7f3b2b52"/>
+  <int value="195"
+      label="7aedddf36b18f8acb7379fe1ce183212b2350d0788abe0e82457be9badad6d54"/>
+  <int value="196"
+      label="149f2ee63b9a5e5803240a770dc991fc2e3445e62831c245a49bc4f1f738ff9c"/>
+  <int value="197"
+      label="ec9056fe9509411609763aee831ef37c832b75b3d727528fc7c75201c1ff28e6"/>
+  <int value="198"
+      label="675605f1567e25fbd2526befea2aefbdb2279f3e1baa3a303ae7555d1bda3ee4"/>
+  <int value="199"
+      label="891ff898e4a8d555140056e3176eea91f4d808ee7f6d1bfbcce6f84807639f91"/>
+  <int value="200"
+      label="0b9fa5a59eed715c26c1020c711b4f6ec42d58b0015e14337a39dad301c5afc3"/>
+  <int value="201"
+      label="bb52086d0639e8db332775ac8f4e8435d92ceb00f4e24f28fc0eabe240772e80"/>
+  <int value="202"
+      label="6d6f0c340971a218a31d10330ea9ae7c7a6550534c6eefeddd2118e114db473e"/>
+  <int value="203"
+      label="5375662628fa0a6840aec8c592bf5d8de564ed3efb62c7c932fca8d754d9bbd6"/>
+  <int value="204"
+      label="50cc86ba96db3263c79a43ead07553d9f56659e6907e72d8c026637a1cdc85dc"/>
+  <int value="205"
+      label="36abc32656acfc645c61b71613c4bf21c787f5cabbee48348d58597803d7abc9"/>
+  <int value="206"
+      label="2fc5667a4b9a2678ed6ac6ad25465fcbf6094bfcd9504097c7a8fa47ade5e888"/>
+  <int value="207"
+      label="b738290cc08547e79ac67f831ebb33547c4e7db4514e2d2988c23c441340eb41"/>
+  <int value="208"
+      label="f7ecded5c66047d28ed6466b543c40e0743abe81d109254dcf845d4c2c7853c5"/>
+  <int value="209"
+      label="7f4296fc5b6a4e3b35d3c369623e364ab1af381d8fa7121533c9d6c633ea2461"/>
+  <int value="210"
+      label="fbe3018031f9586bcbf41727e417b7d1c45c2f47f93be372a17b96b50757d5a2"/>
+  <int value="211"
+      label="b1be0f7a5e638b559d8b521fef6017ad8fa16eb0548e846b2ac4b41d89b41f14"/>
+  <int value="212"
+      label="e43dea894f42cecf4a1dd60ed1dab82f7c0a308ae32a3d49a7aa1a3e957015f7"/>
+  <int value="213"
+      label="c5697be91cd655539b560758e91b6e085461623741034c485e47d7e9d25a03c0"/>
+  <int value="214"
+      label="80dbfb97bdd3926baee41f73c5588faa17d707b03adf4907a2bc677f3ef1717c"/>
+  <int value="215"
+      label="eb4993efa9b089e593418aa893f8e93a7374d810e52fcbe01e7f1d7e92a6d024"/>
+  <int value="216"
+      label="674039e472561963c8cb00d21a97a90a18bb8a1c4c317ac67e382a652bb573c0"/>
+  <int value="217"
+      label="9b219d0fbff36a5fb32090571906bceea68617c833a3f61b81e962a8e64db8af"/>
+  <int value="218"
+      label="da8796be34cc81abee7304c4d2bca0ac984c5b24b61b13e2285e1d27ad8cebf0"/>
+  <int value="219"
+      label="ede4b1535a529bf1606bc6ff757b91470aa30aeaffd2d6df2eba340dae302fca"/>
+  <int value="220"
+      label="a7a8f039894f5f675e92a778e008e424c9417dba06a1738b45b4e08d36fc2d7c"/>
+  <int value="221"
+      label="659cb368ac56998bd07af2cafc5fb93f8e79474accc2a6cf1ac9f2192d136360"/>
+  <int value="222"
+      label="f8e5f905bc939911267b83d50814a90323b51e183629db52d4fc2d5468a5a578"/>
+  <int value="223"
+      label="98ca29f313386721afbf5d14f1abcaa1dc63cc8d1fd7dc361f6b01368938f24b"/>
+  <int value="224"
+      label="915086ccd4ed1ea749b427f6b0ceb4a0ef5b4a1cf18070539c0f2a758185a382"/>
+  <int value="225"
+      label="3fab784fc3c9ab9eedc12ecdc0db550f4c3dbfd3e86d78815333c5eba518cb9d"/>
+  <int value="226"
+      label="22076e5aef44bb9a416a28b7d1c44322d7059f60feffa5caf6c5be8447891303"/>
+  <int value="227"
+      label="7006a38311e58fb193484233218210c66125a0e4a826aed539ac561dfbfbd903"/>
+  <int value="228"
+      label="8ed5b4c041b6b293c0e6413015066d318483c901ff69e86a521d0cb25569f3e8"/>
+  <int value="229"
+      label="16a9e012d32329f282b10bbf57c7c0b42ae80f6ac9542eb409bc1c2cde50d322"/>
+  <int value="230"
+      label="da800b80b2a87d399e66fa19d72fdf49983b47d8cf322c7c79503a0c7e28feaf"/>
+  <int value="231"
+      label="68c3692214724d4b55a760f470b4fca8b5e0fe1d729cff22feb4ca88acd39809"/>
+  <int value="232"
+      label="c06c872fc2d0ac08d78d421981fbda4e35500d0946f79894edd21ac29dec0719"/>
+  <int value="233"
+      label="33af58b5589ecea7926252477838ba40247ab37b6fb39e34fcbd552cd5a8c66d"/>
+  <int value="234"
+      label="8adb238554a0cbfc3a11fecc183e3cd2c23d25e7894cf2bbae58eb70a44e7cf3"/>
+  <int value="235"
+      label="98b3f10a025041910f197cf17ca0fcdfed75fb2c8c14a843e04d5656c9ebac1a"/>
+  <int value="236"
+      label="dd9a6bfbf44e17a27f368ac8e067b307396269a747f92e8f2acf2b451e3ffc72"/>
+  <int value="237"
+      label="309f13d49ea66f523241b55524744464e28cc1b82ef79b64e4d581880dcd771f"/>
+  <int value="238"
+      label="98008e2edbb72bad42da2fcb06ac1aaa0b2e6e0c72e8ca204fbafd1bb4879441"/>
+  <int value="239"
+      label="8e8b56f5918a25bd85dce76663fd94cc23690f10ea9586613171c6f8378890d5"/>
+  <int value="240"
+      label="a25a7214c2b6c86142ada39dff2d73d865aa57843fdd2db77b3febf82683de2d"/>
+  <int value="241"
+      label="2896b4ddbe61457183cc7ed27bd78ac50a207f6901c5c52e53dc1676f9bb1e06"/>
+  <int value="242"
+      label="719cf5b36192e7bde650cc91341e6f649dbb8c3ee48bacaa97fa0e05b6374b41"/>
+  <int value="243"
+      label="bcce8e2bbaee71b6358ddd641cbbfc25de454003006271f75b50b726d67c3bc9"/>
+  <int value="244"
+      label="1c294bc25243768913ed4ad5ed61cb02bfbae0bce6e6e72e5f9658f346b42496"/>
+  <int value="245"
+      label="3bde97686e3af51d3f572c4888c12bd1d1e097f12f49ec3c92896551e36f0085"/>
+  <int value="246"
+      label="93a9b3c96aae1cd661215d0c2a065da963d7160d1c694621bcb28c406df64db2"/>
+  <int value="247"
+      label="f6146bc238e8fce0d47b7074c9a26b1aa0f883528510f06d9cfec41ff6ca1968"/>
+  <int value="248"
+      label="2dc9470be63ef4acf1bd828609402bb7b87bd99638a643934e88682d1be8c308"/>
+  <int value="249"
+      label="860a7f19210d5ead057a78532b80951453cb2907315f3ba7aa47b69897d70f3f"/>
+  <int value="250"
+      label="0bdd5abe940caaabe8b2bba88348fb6f4aa4cc84436f880bece66b48bda913d8"/>
+  <int value="251"
+      label="006cb226a772c7182d7772383e373f0f229e7dfe3444810a8d6e50905d20d661"/>
+  <int value="252"
+      label="aa1c2bedb1a508baad7fb3f5e02897b907c748dea9b7908904aadbd0497aab6a"/>
+  <int value="253"
+      label="d9c473cee25f94d1bc6062bd62911477276f064b827a944e064f85d0912d2c5e"/>
+  <int value="254"
+      label="31512680233f5f2a1f29437f56d4988cf0afc41cc6c5da6275928e9c0beade27"/>
+  <int value="255"
+      label="d2f91a04e3a61d4ead7848c8d43b5e1152d885727489bc65738b67c0a22785a7"/>
+  <int value="256"
+      label="3027a298fa57314dc0e3dd1019411b8f404c43c3f934ce3bdf856512c80aa15c"/>
+  <int value="257"
+      label="af207c61fd9c7cf92c2afe8154282dc3f2cbf32f75cd172814c52b03b7ebc258"/>
+  <int value="258"
+      label="809f2baae35afb4f36bd6476ce75c2001077901b6af5c4dab82e188c6b95c1a1"/>
+  <int value="259"
+      label="95735473bd67a3b95a8d5f90c5a21ace1e0d7947320674d4ab847972b91544d2"/>
+  <int value="260"
+      label="a51a2f3a050e838a5050696578dbbedaac1a107ee2d9d48fae505d18d0da5cf8"/>
+  <int value="261"
+      label="6b86de96a658a56820a4f35d90db6c3efdd574ce94b909cb0d7ff17c3c189d83"/>
+  <int value="262"
+      label="ab39a4b025955691a40269f353fa1d5cb94eaf6c7ea9808484bbbb62fd9f68f3"/>
+  <int value="263"
+      label="479d130bf3fc61dc2f1d508d239a13276ae7b3c9841011a02c1402c7e677bd5f"/>
+  <int value="264"
+      label="2dee5171596ab8f3cd3c7635fea8e6c3006aa9e31db39d03a7480ddb2428a33e"/>
+  <int value="265"
+      label="ab3876c3da5de0c9cf6736868ee5b88bf9ba1dff9c9d72d2fe5a8d2f78302166"/>
+  <int value="266"
+      label="47c7a149ca82fa7ba940a4d711d010625c6cb0b748b17016c46e25ce7acd2b0c"/>
+  <int value="267"
+      label="cc4997863c8c48a4cb5c3e6537dc06028d8638be49f5f8a2ba56f2f2c8a8c779"/>
+  <int value="268"
+      label="a86bdab8f480b6eb8942ab9170bdd0991971a7ad135dfbbcb7285f07a7d1e38a"/>
+  <int value="269"
+      label="2da8f9ea3454d21146464a3f9d028dc4c7fbb57b1c52c73c2b0572a2f599a2d3"/>
+  <int value="270"
+      label="0fe14c264b17bb6f0d653e7a70eb363dbf54be158039eddae5c25711df48c103"/>
+  <int value="271"
+      label="5efa073f49426344483ab0ddbbdda5e35972f9c47c74ddf98ec42290b251ca97"/>
+  <int value="272"
+      label="2e00915a9f7be06ab2370c7b7c200c0a96d5ac6a50ce1874dbefde4022d4de8e"/>
+  <int value="273"
+      label="85d26be90d934fccdb4ff7b38d8c79ca7652b816d6a52446ca8428a6b85dc57c"/>
+  <int value="274"
+      label="7f1dec8b0319548a056de5bb521bd93eb74e6a76f28dffb75b45a53b775af7ab"/>
+  <int value="275"
+      label="8a903b600a080b38dfe20dfb6acd23122f64620e5808b9fc8688952fc1a3559c"/>
+  <int value="276"
+      label="84aac093e08c49dbfff8e560759248dbe67135b372b23d2a881d5f99cbb191e8"/>
+  <int value="277"
+      label="6c5cbf02c1849166278f1cd1c83583a147fb7bc95e289b276366935e3153f302"/>
+  <int value="278"
+      label="482f76a2a9346dbb077619bbe1efecd54107e992ff4e8f4d70a39e2405d939d4"/>
+  <int value="279"
+      label="3a6c24e80f681d8b1047cec051c27594f885ba0887a26379092dfef506160e9b"/>
+  <int value="280"
+      label="30ab1bcd7bed1ff2679f71228820420a7063c6cead7ec30d4a016154876dddb5"/>
+  <int value="281"
+      label="ae56d847973d199390e66e4024c9f87d87371e8ba8876af83d1e644f54664738"/>
+  <int value="282"
+      label="93657f8530c596bf909e50da7d8d9cbb36b824cc16ab589137e1438011bc9901"/>
+  <int value="283"
+      label="01d0d8e07bc5a92da7e7b81e9a569fe3a2d63a997dac596002c5dc810cad17bd"/>
+  <int value="284"
+      label="4cc29758a2cb9b50109987f37537cf0c55ba2e6798937307a00296b01dffe44a"/>
+  <int value="285"
+      label="49b80685d332e072c0e7b720032647e842106104e0b1139ab9e811bfb11ec034"/>
+  <int value="286"
+      label="c5ea259c629803508649f02177f63c32fa85cc4ad5c35f0d541c45df10a49fd7"/>
+  <int value="287"
+      label="55e00be277ceb0545299f24fd9f877e2acf32852db43ffcd29bca74b39b4c9fa"/>
+  <int value="288"
+      label="ceb19411c65052c757f941eb826c96941e4d08d096c7db7e7ea3c4f8c13f1a13"/>
+  <int value="289"
+      label="ea87f462deefffbd7775aa2a4b7e0fcb91c22eee6df69ed90100ccc73b311476"/>
+  <int value="290"
+      label="c63d68c648a18b77641c427a669d61c9768a55f4fcd0322eac96c57700299cf1"/>
+  <int value="291"
+      label="7afe4b071a2f1f46f8ba944a26d584d5960b92fb48c3ba1b7cab84905f32aacd"/>
+  <int value="292"
+      label="d1c45377ebdcd618cd1651dc2e02c21d751e5aa9fcd1b3431ff6ecf6a31348fa"/>
+  <int value="293"
+      label="a320f4d534d7be97c1ae8dd0499735bc895c323add2d388bfccf662c23d7f99a"/>
+  <int value="294"
+      label="7cd67c248f69d83fc2f9bb01dcb1f7ad67a363d046043796d0984c3a231f6bb0"/>
+  <int value="295"
+      label="348767cdad3bdd28b2b8dd5351aec30c68cec5cd69d276df3827dbc4f5806464"/>
+  <int value="296"
+      label="5dee74cc343db93f8deaf9e41fbc65b334254b5b23b568fa2814db8b7321ac85"/>
+  <int value="297"
+      label="ea2f9e087eaebbdfc0569eca18364e5236254624854f92e37871b5ee36744883"/>
+  <int value="298"
+      label="805c6696266b96b147468a321eba9eb8b5968f2c477cdd95fdadd1fc63dd614b"/>
+  <int value="299"
+      label="991b5ed1b2fd364b9f634b624b305203f29908be318ef6399222d8a3ef7990e5"/>
+  <int value="300"
+      label="161e83ea32d47641e23cbe0eb413a3e0b06859922a49d1a20cfa05a41e280cfc"/>
+  <int value="301"
+      label="a7e39bd7df609bef3262bf3db4dc8f3814e0db5a7a52156a6d0c35b4dae8a6ad"/>
+  <int value="302"
+      label="06c7bd9553f710e058eb27b15d47dd62d7fd4352d91da96e1efc50e15354b8d7"/>
+  <int value="303"
+      label="3a0d885cb346d8f01fd300af1546f6355c00690e340ed98f346e77b574be3fd8"/>
+  <int value="304"
+      label="1a421223e89bd87c403b48fa616948470d0f2c21ce2ac7bdd22755061c62ba92"/>
+  <int value="305"
+      label="a5204dbb2754b97e3c8a104eacb374a6498a438773c75077f0063c2ceb25d2a2"/>
+  <int value="306"
+      label="7d434d1dada2a154d49f473e381310b83ee58d290a13455182d77f1962df55ee"/>
+  <int value="307"
+      label="a378419d1ae9ebd27b22948044c684ba29bc084b98f965be73262f0f6aaa1c6f"/>
+  <int value="308"
+      label="c954c2c0b189825bb65ddb3ddca080b7dbcfe6b17cade1022bada818336677d0"/>
+  <int value="309"
+      label="05ec0897b21995a4a9899f8fcb06601ade61c04389969d138fe32cd6cfc746ab"/>
+  <int value="310"
+      label="a12574f4eb7395cc630a15fec8db1c7c828f66699d984c8c897eca44c808f55d"/>
+  <int value="311"
+      label="2bb5c28a34c9a37dd9604500ca9b3038d00528b474773a2732aea79e4905c234"/>
+  <int value="312"
+      label="b9182f52af0dd18e3a99ebbae7883d4e4cc7fe2f81fad0d36ca661efc32d0a92"/>
+  <int value="313"
+      label="df530bac9fcd914c252c2fbdceddc6183d4ae8c680ad65f03e204861dd7b1c73"/>
+  <int value="314"
+      label="0d47e98588452cf0778af6af03d442721dc083660a4bb23c697441fe2bb84f9b"/>
+  <int value="315"
+      label="3c84d996722b3c1872f53ddd7717bb2fa50ebfa07b3f3b4a395335c56712fd69"/>
+  <int value="316"
+      label="96475b35acb1c9303a90bd1dbf57418f78e29af11c4de8c8cba2e5f9309e38d4"/>
+  <int value="317"
+      label="18cfa64518e916cafe985561513cab7a897a54bd23b8e26874c5c7cbd1249cfc"/>
+  <int value="318"
+      label="3c196f84e2a0c61fec18bacabd31783b574517aad8ebc6ce6d1d7dc82b3c50df"/>
+  <int value="319"
+      label="931f1cf03a6f84c30ff3ad869be3c21a410191cc98ac0afc9d4e8b89bd869ddc"/>
+  <int value="320"
+      label="522c3960328026a1e322389a8a08fedc1b86d9c2b59b33484b77f7ce790635d7"/>
+  <int value="321"
+      label="8991e219ce9f74479eafedb3535836121dd233ea768afb9d9ac8b4a22381a8d5"/>
+  <int value="322"
+      label="881a1b9edf69ade141839ae8673d31b4f4d47f126ca08a79ff065dc9a690f4a3"/>
+  <int value="323"
+      label="62a31a5c730dba674ddb25de33df143644375b49af07878a667b813491c73971"/>
+  <int value="324"
+      label="51b6ea6478687b47d963b6149059780cf08a4f02f042d61b5bd52639095ee910"/>
+  <int value="325"
+      label="6cae87c558d2441568e38270a8dd8ff484a259dc4f3ce94ccf434c1fa99811f6"/>
+  <int value="326"
+      label="d4af6c0a482310bd7c54bb7ab121916f86c0c07cd52fcac32d3844c26005115f"/>
+  <int value="327"
+      label="f6b59c8e2789a1fd5d5b253742feadc6925cb93edc345e53166e12c52ba2a601"/>
+  <int value="328"
+      label="4ba6031ca305b09e53bde3705145481d0332b651fe30370dd5254cc4d2cb32f3"/>
+  <int value="329"
+      label="0999bf900bd5c297865e21e1aade6cf6bb3a94d11ae5ea798442a4e2f813241f"/>
+  <int value="330"
+      label="1462009b2de65d6d4d39be892bd2c186490531ce6590e48fe196070d317b60b0"/>
+  <int value="331"
+      label="e26613a578e158c2a44e4fec41e6f37a0a991fe1a5fe736c303f4420a90fb50a"/>
+  <int value="332"
+      label="498bc0cd5a49b714071ec76a41661ce2f27fc39fe4168bc7b7799a0ae25f6528"/>
+  <int value="333"
+      label="9d98a1fb60538c4cc4857ff1a8c8034faf6fc592093f619994b2c813d250b864"/>
+  <int value="334"
+      label="a2dc98ca7cbbee1822b25b267bd5ca502fa7b0cf4fff0703ee6a416703f3c7ea"/>
+  <int value="335"
+      label="f5857d8862bc2ba3c9ddca3f84146dc8d81f4d579d2b387bf60065381ee641dd"/>
+  <int value="336"
+      label="9119e2f413579777954991703eee23a04523a312b5c65f7f9374aa3100ebd8e7"/>
+  <int value="337"
+      label="af6ab51b7bad1dedd533eb59332b6227d6557f20b4443216db735b92280c7a44"/>
+  <int value="338"
+      label="086dcd7bcf864aaad5ef8c1c577bb68a131e055c93f63b9c47ee26eef15be7ab"/>
+  <int value="339"
+      label="232cbe2d9e6994c1ceb7fbee23ab1657defb6b3564726f1e78951cef3a2b095d"/>
+  <int value="340"
+      label="431b79fd9355d10dc1b50dbf6a6b62d7a5b6d356541c27605255ca4ca79420c1"/>
+  <int value="341"
+      label="7c3b46d9be8f2741f980039521858e4cdd30774fb32b3b21ceea06aa79c6aac6"/>
+  <int value="342"
+      label="9dc38a9edcf82842b674da186b6d6215ab9e2ec6d72f57b08a892728c31431f3"/>
+  <int value="343"
+      label="283310819f5e09204995d8ad9ff6fc10746297b5c0ae06bdd1e1124b10a0d7ad"/>
+  <int value="344"
+      label="6046136879e56450400f7db2ecd0df1b88f667c1e3fffc52964ff9e2e48e85f5"/>
+  <int value="345"
+      label="e85fbf8b9a2ea4909dce0fb5b2fe5f5877343d27d58a410a8b237ab675a2ddaf"/>
+  <int value="346"
+      label="5aacf1b965e853010fcb2a110317d5fce3ee351e9cc95bf444a571d7b8ef9162"/>
+  <int value="347"
+      label="9546ce00e03dd61aca58c5c8dbf38a111bad6406c91d7422e7f4c40a0cb58f18"/>
+  <int value="348"
+      label="b4296d5fe60e52f3f0ff99da75af5e7e62599f99ebe0fa413f66e6b425c3d09f"/>
+  <int value="349"
+      label="7f7c88a77d4d3b44c33b3c030bc83f1a26c20d49177ca7745d91d9de17e08f14"/>
+  <int value="350"
+      label="faddde04bcf08ca8f4e22efd2afeade6bf3d850ae47be96a82d539494f120cbd"/>
+  <int value="351"
+      label="20e24a5a3393d6c3adc384faf95152e1f9aa7222774028b53c5a34ed0c6cb399"/>
+  <int value="352"
+      label="4697a5abea0070a395456fd358e91f72f227d5850933227f1e0bc79ff847bfac"/>
+  <int value="353"
+      label="463dbb9b0a26ed2616397b643125fbd29b66cf3a46fdb4384b209e78237a1aff"/>
+  <int value="354"
+      label="9e5a34b08929bc0a581c8936aafd6ab7517bb15188b4f6fc02c45906f71595b0"/>
+  <int value="355"
+      label="b3182e289ae34ddf2be643ab79c244301605fa0f1eaae6d10fb929600af84df0"/>
+  <int value="356"
+      label="a798d92f76c9c6755e5f55f86cd14aedcc0655371e27ccde0377745ce3c50013"/>
+  <int value="357"
+      label="004124ad6037fd5f3319e7a23d4d9c811f5598d66c4754155b0aaa9e8f00621f"/>
+  <int value="358"
+      label="c90d009c47eeb9f2a29ae848f5d930f2b41ef5edbc5c5695c1414345c1dd67b4"/>
+  <int value="359"
+      label="2a4f49ee7701a395ac932e444292671588ade21259ce296e194940368702ea7f"/>
+  <int value="360"
+      label="30b71c4f9122476e761e620eec42bfa5f84c493cd49bbb1834b26e555f60de40"/>
+  <int value="361"
+      label="ef53ffaf0ceb040d077f5bd80a9deef6d4507fdb6f9bcf8c3594bece7ebdb025"/>
+  <int value="362"
+      label="651bd66f5c3dc637957ef5185e4fa671c21654b1c0ea49384f44bcb256a5084c"/>
+  <int value="363"
+      label="f5e19c8e14fe755f551cec2b7113e7c98023b176ebe6c1abcf872b2a7b932304"/>
+  <int value="364"
+      label="a74b4b6a2eb55b9864c04ecb16003ff5db5b51e42cf859f95e9d0a1dd4644096"/>
+  <int value="365"
+      label="d92405c46d912a563e43287f56cd410a1cdf6367c57c9ea7c5cae039dcbcce50"/>
+  <int value="366"
+      label="86c84b1c3a66f4285af797052467e3ed236fd2986f033c02c4771be0b970482a"/>
+  <int value="367"
+      label="d1ecacca44012c3e1e6d1b39dd2968fc7fd3127aaa57ab5182a3beabccd7a3a9"/>
+  <int value="368"
+      label="3fb63c29f47bcc4e6aadb3577ce7ca8543e0bbaba553676b8fd161295bdb9011"/>
+  <int value="369"
+      label="e0ef882da48ab0b7efb0d9ba15b2717dd08f043c25ac09b56b8b57fceeb5a35d"/>
+  <int value="370"
+      label="8ab4e88556cbf864a5e9fd50171cd4ed8424e8f0801b99e236c810915950ae4b"/>
+  <int value="371"
+      label="a4b89bb70656ea498f2d9e00a497fdb9dcd20b81b8938e952bba2df9f65729c3"/>
+  <int value="372"
+      label="bedd8bc97ea86497195a078a999a237a060aebae07bc0a0b9b778982ba5f62f4"/>
+  <int value="373"
+      label="c42533d3af4998f5ad9f072521d85d472fa7ffdcfc588c8247b337dc77109389"/>
+  <int value="374"
+      label="d646f3ea2d7003fcaa77ad219136c78e024a6f2e2307dfb8cfa97a171373ecdf"/>
+  <int value="375"
+      label="8b49506a3461063ea8cc13ffce2b581de15a94b957092a93123467b89ed802e2"/>
+  <int value="376"
+      label="6d28f9e405148b69027da990815211c858841c543feced008c238021983c095a"/>
+  <int value="377"
+      label="ed1b229e0e0875021c1f1760c3407fb1d6608eda7add71a3e3275ced09690f7c"/>
+  <int value="378"
+      label="87157a7585f4d03b00a398461e164e4806e1b3f46d03afbdc9def4e4778be2e9"/>
+  <int value="379"
+      label="22050a92836481c2f3c1f8417d37447a167007ac9ba64ea228cb6a1e14c64b8b"/>
+  <int value="380"
+      label="f73be5eba536912c557fb855517ad1ee0487bd8f63498c3949164177ba06c5de"/>
+  <int value="381"
+      label="4ba24996ddee6f8e1fcec0aa9eccfd3aa5477b3ef8f5f85f0a06073f97522857"/>
+  <int value="382"
+      label="acf7ad98e6f065866e6f8cdf0ceb6f7481f6957b6dff823f6b94d79f01a61c39"/>
+  <int value="383"
+      label="ae2033b3082825a703e5a6adc3221a86854aa411db047dd5f53eb84aa14bdc01"/>
+  <int value="384"
+      label="8d775a4f93cd20c18306144f42b569fc2a897eaeaec3d3ea3cb025d1ad4d28e7"/>
+  <int value="385"
+      label="5094b73b736adf73a0cbf43e27bf14407b4a36aa363a457fce33949ceba8e649"/>
+  <int value="386"
+      label="af110f6b5ae8b767eac6e0aa273f3816e7a40a644edacb4398146356e77509d6"/>
+  <int value="387"
+      label="f7aff41b2709f175f8aba17e567b27046b2dd54bf6e7e263d3295873437b9cff"/>
+  <int value="388"
+      label="112432e4bb848c45549fcbf0c710c566d0082bbbc4e9b38e6c76ad46448128fc"/>
+  <int value="389"
+      label="7016270b60b28c6e177edebd718007dfd3310c64a737b7db01a07690c343bc27"/>
+  <int value="390"
+      label="ad304c884a5d376bd195209a14c39e07f0d3f5cf893d802b053e1b926e55d774"/>
+  <int value="391"
+      label="94b94bbf9a0726f17b0973af6d41e9fb2e7099651bcbefddd97b0a5f2aabb0dd"/>
+  <int value="392"
+      label="8a42eeadbc8b21a35c4b3aadd7dfbcbd2ed1b1da12e8c45a534da90607e564fd"/>
+  <int value="393"
+      label="ef4fa1c630f04950e0e2d10dc19f149d08ab46dec95da3131cbaea8af8ea3027"/>
+  <int value="394"
+      label="913119f2cd3f48aca74ea6443ee50e0de1202d9c54f336dc9300affe97d4577c"/>
+  <int value="395"
+      label="7e6acd853cacc6932e9b519fdad1beb515ed2a2d0025cfd398c3ac1f0dbb754b"/>
+  <int value="396"
+      label="979f6f6a8a41c421cc673473d58a6379817be73d2e524698c80ffb66a149d089"/>
+  <int value="397"
+      label="c7f584236d86395e8f6f82c010886a2c56e071a6a1c3ed2876b8a3a72c5efbb5"/>
+  <int value="398"
+      label="202665e4c5c380b4490a81773db5dba62a90db6f5be6e0e54d11992fb1e655fd"/>
+  <int value="399"
+      label="dc053d027fc186e7c41cd193af30fc09794eb9f3d9e6736dce041440d876a801"/>
+  <int value="400"
+      label="15bb28d9207e13f8bc9557dd785eba773bea944e04d7e08ff8aa55ef3194aa20"/>
+  <int value="401"
+      label="58a2a698d86fd8497d41f68e4caeb4a98874f433da913dd26c5ca44d08ff72fe"/>
+  <int value="402"
+      label="c9905b0ee01202293ca026e64f08412442c5504c06e44ca7e9726d61f20e4089"/>
+  <int value="403"
+      label="44a3d80d3f5348596d80a09842c23a39774439f8b0b919239d2a03dac5ce5213"/>
+  <int value="404"
+      label="bfe82909872e4434f115c51a56168019594d0e03dca363d9f3b4839d0babcde5"/>
+  <int value="405"
+      label="d5597ea3453a6261f5d42eb9caf5bdb4e38a1edebdb5bea6d7c0bc1a8abecab2"/>
+  <int value="406"
+      label="5143e47569a1d5fc867893e0cc412c41f55715da78e59e9f8e43770008ca42d2"/>
+  <int value="407"
+      label="9efd911d6ff46f1831111df3c54cd2611cae2398ff7386d1cb6b4f32e3337ed6"/>
+  <int value="408"
+      label="b656a4343831a2acf11eeabc3a44b97025fffba2b910da8714cf827d81be10c9"/>
+  <int value="409"
+      label="42a70984ffd399c4eaf0e702a44bef2ad8a79b8bf4648f6bb210e123fd075793"/>
+  <int value="410"
+      label="85a3d81d2ad0c79df0a79684e0e2666009a09de15760ea1d76cf0ee7b2825dbd"/>
+  <int value="411"
+      label="02376d0908ac23041cc7d666d9daf192554f7fc36317aa9cb800908616b28af8"/>
+  <int value="412"
+      label="b083ff536f7f48a9081e294a0187b53e819771402d9d4810306de031024e5f46"/>
+  <int value="413"
+      label="508f8c6178af329bb6bb753ab943d9023be796c3adbb6c5cd4664b66feeccae5"/>
+  <int value="414"
+      label="43c74262f7492662d2459bcc9899bac54a4ecc01e1a3f5e76558992b40152418"/>
+  <int value="415"
+      label="bf01c35f337113f167b4a50186765e7b1e3890af586328f185cd0d6bae813521"/>
+  <int value="416"
+      label="1eb9cf901f0858aa17c399babebbdd8cb303a4ef4e1220c493cca2f75a3f914e"/>
+  <int value="417"
+      label="19ad98de02155d7e33e9dd21f0e45610fd11d28044b8318bbebf9f6337888df0"/>
+  <int value="418"
+      label="8bea76ebd6137aff9f1ecc3c08caf1dec47db91690d5754c4e9f15232c0a2e78"/>
+  <int value="419"
+      label="1b8a89531701608c9ef3c65f5d60a948b1badb9753622a2e81c0a4a284be63cc"/>
+  <int value="420"
+      label="3ea7b5c045a99a9771e2dea8e8098ba2732d17ceee82279552feee905530f35f"/>
+  <int value="421"
+      label="6a7b1482127002f9005a87356e1dc3e00b70bbbfa795024ff8beff74c4259b75"/>
+  <int value="422"
+      label="2364d692dccae13da56ad4a07c1325dc575215ff1a071681dfca5dd6ed7c8452"/>
+  <int value="423"
+      label="816ba0bfdf5fd64d568ec0d052f71164d9e2ccae12e0219ed6cd81e7e845fb84"/>
+  <int value="424"
+      label="a1d45d06297341b1f3a735cfa38f283e6879fec06281a361e5f417cc70d29dc9"/>
+  <int value="425"
+      label="972fbc6d55bfefb1abe3758ad7d67a349bbef80c06f1d85001dfb9101b9abc1b"/>
+  <int value="426"
+      label="6a436b58d9d830e8d5b8a642505ad6b41406adcd6894d9414f7be0a1467badb7"/>
+  <int value="427"
+      label="2fcc99f5c9d00f9a20da6131dea5c027d92636d68cd9cdbe95290a3c408919e0"/>
+  <int value="428"
+      label="66b00539826a37484930191e028f62dab1cbc89b3acd472dc4e5905e47bf7364"/>
+  <int value="429"
+      label="689bf45b3083fdead55f147fd105e3cf218ad58edf3e4b301c0c5eeea6cf210d"/>
+  <int value="430"
+      label="b5ec35baab538884cfa8dd97376b102f03e53b482c64100c250722ae9b042cbc"/>
+  <int value="431"
+      label="9ea9fe274537f4f935642cde824fd77eb0e125cf118ab9b4c219f6cbf959b18d"/>
+  <int value="432"
+      label="b16cb1ba529a39e2dfd53b3ff5a79f1904614d83e31304f0278bb40b38cf7824"/>
+  <int value="433"
+      label="0f9c1299557598cf7521bcc8798420a155cec1bb23a57ac37f5120fc9a2057f8"/>
+  <int value="434"
+      label="99333c3a665cf0efbb7488b3807b8b65f87b5b29d6880f028edc28442eeae669"/>
+  <int value="435"
+      label="782d7e61e1323d2aafb877be34ee1de0c1345136d4fcb3c945937f6a67b412fe"/>
+  <int value="436"
+      label="3d8d061edcf7b3d45995ba4341328d1be7b7eb4e9d14fee70d2f18ad68bea7c5"/>
+  <int value="437"
+      label="78cf3d3c72daf91cc51b871357a551cf95b837d074c270b08facd463a8d39bb3"/>
+  <int value="438"
+      label="2d6d690c16b11853884bbea2723725267e3f9b54a6cf07ad4690ab1e7cfb75e8"/>
+  <int value="439"
+      label="8e15d426cd04898f218be2e5fe3784f375094cc435dc61ad86c4a3c01511dbe1"/>
+  <int value="440"
+      label="58044626c34c1a7b158ddb676d9e2e65443d818dab3116231e2d62ab6426a0b7"/>
+  <int value="441"
+      label="29e7fdda489e46ee486efd75acc48f251932dc9da1872b31753cd64719567aa5"/>
+  <int value="442"
+      label="111c24a243061da76e57e3b1243eda90879ffb750552395443fa8c34dc0ed737"/>
+  <int value="443"
+      label="c53dad9e53ae27ed95f0ea7a9203f7bf56eff0f8e1ce960cb4761b968342e34e"/>
+  <int value="444"
+      label="4376a99396769fd487240ee8b573ad49706a5b9473616acef38409e91586dc1e"/>
+  <int value="445"
+      label="e156445fa20c32ad00937b27d096b8963bcc863950333a877e68fa69707a03af"/>
+  <int value="446"
+      label="71ed918a7ac6d17b3849c20180b3e7334691bc5fb73377f0070afa0be789b2d1"/>
+  <int value="447"
+      label="439c19ff3edb265ef1a920f74a4802d3dd95ace024e21e5a6ce8e064dc1566cd"/>
+  <int value="448"
+      label="63f1a6f79d6e730d10432e6308194ff7bc28850adf2badf789d971385d8512ee"/>
+  <int value="449"
+      label="a4cbf48516af3160ebc62acac6e7f258609ed0891535010c16692493a9fe1fbf"/>
+  <int value="450"
+      label="b213a9cbaa9a8831ac0b3aa80e9d15856cd43a7cc2e0bac5fcb84a24751a8a78"/>
+  <int value="451"
+      label="abcadfa35ff835cb3a0a0b86400622b80d5e80c765bc027f1b1c4e0a620f5e1c"/>
+  <int value="452"
+      label="676b9ff303ede180fb95a4736fb4d3153032c014444f63a2074c41b98b51e0bd"/>
+  <int value="453"
+      label="a59d2f09c8b168cd9afa3bc3eb4db0d7a43588d523287f2b83a822eb33709170"/>
+  <int value="454"
+      label="4e6c1616637199b5077a80ad0c2248c725e576fc8a719989456bc9cafddb7524"/>
+  <int value="455"
+      label="a76e2949cb87f6236b5f68c690747587d6448ea21cfead7950084ac015190b25"/>
+  <int value="456"
+      label="0206ead163b10ea2f8620868ebd7a15f64a20250d16cd57d6e87c4fff1a2197c"/>
+  <int value="457"
+      label="49cbd83c03cabfa0713b97bc96481d035fd4ebe06f07fab5640ed9232d8110b2"/>
+  <int value="458"
+      label="33fa5a5300613d466e6f85c8051695bed5d1fad59f25e040acda0472a74f3c20"/>
+  <int value="459"
+      label="380739620e13335805eada8f9f8b81554d3bd3c0017f3632c2677669cac7a2bf"/>
+  <int value="460"
+      label="244803cfa35953385d06657ac4e5ab4f2bc0405277be662adb905e1498b1defd"/>
+  <int value="461"
+      label="3ec18dfeb894a9ea20eb2cd40c693e2a29144fe2ec60b4f7b89026040b39aebe"/>
+  <int value="462"
+      label="9962ab1699b0eb7c7e8a578bc79893042031c1158c633613199a90b9652a2a75"/>
+  <int value="463"
+      label="8e8046ec4cac015a507ce0d2d0154a4b40e8e42b3165cfa546571435112d17e5"/>
+  <int value="464"
+      label="57a742a88d3e18fc0bc611bc7976c22edc50011757512b1a7e2e1d069b3ecba0"/>
+  <int value="465"
+      label="b489ccb224b9a6b81dd274ceaf5209c252998c9a76af48e4f4c50a0728461825"/>
+  <int value="466"
+      label="42a807cec5ae9c0f03b40ca043ac70468b5219bd75cc5bbea51d921dd100156f"/>
+  <int value="467"
+      label="f42352c3cc3d84b8518989d647c88ca301c88fb991938bbcecc9ee60e565d377"/>
+  <int value="468"
+      label="5c41a73ab2c35dfcd771f6fd6e3e8fac9b469d386cadda56a95b646eb48cca34"/>
+  <int value="469"
+      label="1255cabe8152fa64df942f7a47417e29f96c1ce11bf8c84ecbe2815cc1280810"/>
+  <int value="470"
+      label="4ef7dacf77edb751f704035fb5c6c442351ec7220af90bdf82fd047bd3c24187"/>
+  <int value="471"
+      label="3329bfa13b6007ab5fc3713f0acb289426e2fbc99cc5c110a914b139571600b6"/>
+  <int value="472"
+      label="d3980aadd21638c70d74a4bb1f8ab5e11724e62ed408f9fa8d3d4d916900286b"/>
+  <int value="473"
+      label="7d6c3ebf9ea735d1854beea7cb941ab1e3503515e087bbb5be695d05f2f556e4"/>
+  <int value="474"
+      label="f2a4e6b263d0a552adff5d85dc96b5820fd66aa0b18228f48fdb087c8db34133"/>
+  <int value="475"
+      label="b89bcbb8acd474c1bea7dad65037f48dcecc9dfaa0612c3c2445956419df32fe"/>
+  <int value="476"
+      label="4f7162b974491c98585ec28fe759aa00c330d0b465190a896cc4b616231831fc"/>
+  <int value="477"
+      label="21ae412566324725ffefc1dccf88f16f8d6bf4dbbb37fe8caba47e8d66c2cdf9"/>
+  <int value="478"
+      label="9415b25dba3bbd711439e2a9964b7a5256aff3b05c772c8a34e6c93566aba63a"/>
+  <int value="479"
+      label="ac447dedd0432aab9c070f2cca01b6dab09bef07cf4ca6aaa755634f857b315a"/>
+  <int value="480"
+      label="67a84264d42e204a9a5b0a3667b951db22c505df95ed983b5e8c4d1fce77af43"/>
+  <int value="481"
+      label="3ee6b341402851b27e64021a3023aac7c1a0d2def27d5bce5c2dbeb0b22dcc71"/>
+  <int value="482"
+      label="5899d913ead119b9cdb7ba2f30efe0df68ad2cd225bdf493e8323a25aa4dbe23"/>
+  <int value="483"
+      label="871a9194f4eed5b312ff40c84c1d524aed2f778bbff25f138cf81f680a7adc67"/>
+  <int value="484"
+      label="55f77de41c03792428f8d518c55104225be43a5598d926a528ad653e1ccec7bf"/>
+  <int value="485"
+      label="4179edd981ef747477b49626408af43daa2ca7ab7f9e082c1060f84096774348"/>
+  <int value="486"
+      label="9847e5653e5e9e847516e5cb818606aa7544a19be67fd7366d506988e8d84347"/>
+  <int value="487"
+      label="682747f8ba621b87cdd3bc295ed5cabce722a1c0c0363d1d68b38928d2787f1e"/>
+  <int value="488"
+      label="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"/>
+  <int value="489"
+      label="282fb5cfbaf01518d9704de7884d7a25ff01cf882e994290d5995d5eb6c44988"/>
+  <int value="490"
+      label="fd371bea9755ff60c8828c849b8e5215de532d61b009855fa0ad630d90eef82e"/>
+  <int value="491"
+      label="d49c6f289cd056519492480f192f00a6fc7c1862dab2e7b5d8e05f6678fae141"/>
+  <int value="492"
+      label="cbad7b1d384849df0946b7ee8e7f5f7ce3aed876fda7bc9d30d8b16f29ff2c53"/>
+  <int value="493"
+      label="e0c780c629903e126f1d919570dce7c496f85f33aae66b9a3147ee75f8d1620a"/>
+  <int value="494"
+      label="376a1a7082a593dccc20d561d119e9ab8d30f11cc321d0a37fa41f0df284e01c"/>
+  <int value="495"
+      label="8d417db2dd8bf5e3084d1e3f196d583849d81bdd4c00c70b9d39369e96b8c782"/>
+  <int value="496"
+      label="b7408b4d2be0238ba37004dd34e276c6019bd2f24c9db7d4980f5f6c359a4bcc"/>
+  <int value="497"
+      label="eabc185c4e82d942b1a5978ba3c0181487d6b3b9974e5c49f72f6d0bd9637150"/>
+  <int value="498"
+      label="2541e53ba5b3b07acbe7097ac4a03e040c11cf7a6d4a67cb213d558b50167a06"/>
+  <int value="499"
+      label="68ded9a203ff6e367e12aa49977cd200f7127a800faa6f859f0bafed8286a4fb"/>
+  <int value="500"
+      label="36d7c79f3d089a0ff79972d90923dea5ca76b4ccbaf7c2751cb152e9494f52d0"/>
+  <int value="501"
+      label="be3280c6863c770a33c9040bd97d5540b216d1d91db8b088ceac1197dae1d660"/>
+  <int value="502"
+      label="c5750bf85f459fb70e2b6cd1898d375e92d7938e47a6e034cce0c12d30372ccd"/>
+  <int value="503"
+      label="22a36994f28f2fa3b16ae872a79dbb12a982da5b824d7ae434f96178ac540351"/>
+  <int value="504"
+      label="f26cdaa1c48e2d369eaf24993a424f8290983af7094a5bde9c7d44341f2e2428"/>
+  <int value="505"
+      label="c372f6d18ebee5aa23d9e919f3e6be98488ec01607df3162fc192e4b1346afb3"/>
+  <int value="506"
+      label="68aa635451d83962167e88fb08f8678d73aec66fc559462137cff9d1bc3d3871"/>
+  <int value="507"
+      label="b2f7298b52bf2c3cac4ddfe72de4d682ac58957595982f2b62301af597c699c5"/>
+  <int value="508"
+      label="35f53ce1264611e03340fe37e1ec7d4cc986c5613dca70fd04aa44545f2daf28"/>
+  <int value="509"
+      label="9091e31fe92546a5f5e1b3ed4071f4440b840c1e80dbfcba7a7ec6d5825f0b24"/>
+  <int value="510"
+      label="786ffa578618c3b9a311175e50816f4dda0605c3869f296ebc5943bf09f4e904"/>
+  <int value="511"
+      label="828b0eeff24654e8ff5841a29dd5d4e3ed30952ca43425a79283407208d39d16"/>
+  <int value="512"
+      label="497128fc90656b87290482b223efb72240fe9c421e79938de5f8110cb0be9056"/>
+  <int value="513"
+      label="2e06cae1fc20b200e6fb748557a4444bec9317dfff2e4151669e0f7944f0a9e0"/>
+  <int value="514"
+      label="122312c081949106b7049f3febf199c010ada13e3281cd358a41e7bd09c829d7"/>
+  <int value="515"
+      label="1134fd81561a2818eccfffc2e440a0cef9a40e2926c08299804d738b0a97f63d"/>
+  <int value="516"
+      label="79caaf5347e6e4a94c8e78a98496fc74020f809ede13f220fab6104c8ded329f"/>
+  <int value="517"
+      label="fde8999a5e427319835c89a17d64a2dcd13a851c0916c4c547b6d8f7a6437d94"/>
+  <int value="518"
+      label="453b74809b69019627f2f843001db5950cdd1d45371053e7f3dfdbc3714113c6"/>
+  <int value="519"
+      label="1f3c9fd4fdbb50a055bcca7fe5a581a92099cef1e9e476d6baef0c910831c7b3"/>
+  <int value="520"
+      label="c942262c0c7c0a95bb152b71c42556ddbe9a04fa8378373550d2b7ce27d952a3"/>
+  <int value="521"
+      label="42431627ea76cc78697f915e3455b1b2ec82ff2f6380ee6423ef3c0840b7e631"/>
+  <int value="522"
+      label="693c9aa6b245b3b0261637750863eadb6c248a16e52d6f4bc90c86bbf32d7042"/>
+  <int value="523"
+      label="a02fafa192c8cb81cb1341554f9c05b71cca2a890b0d1298d683647c961efbdf"/>
+  <int value="524"
+      label="e04a022ce32f4ccf2c7f6046287b828a32a909f5e751447f83fd2c71f6fd8173"/>
+  <int value="525"
+      label="ae7f962cb9e6a7dbf7b833fb18fa9b71a89175df949c232b6a9ef7cb3df2bbfc"/>
+  <int value="526"
+      label="96352d0ad875c027db82d599baa8d42e5c472649981eceed3bfc65f4c81fd5c1"/>
+  <int value="527"
+      label="e14e51891f3492243eea613bc2c814d47224b224c57d38169e958e30b3dedee4"/>
+  <int value="528"
+      label="b15ac9561204756124b9c4d3fe406d93833ff66652f67fbf139f5bbf030a0e64"/>
+  <int value="529"
+      label="a495c8d110e8b9e200f370aeda3ff92ee43f8e3d4ec0db1c0dc58bd762880ba5"/>
+  <int value="530"
+      label="d6ec6348a7c4d42ac48d9c43145a8cd71971362363267c6673a77b8a8573a66b"/>
+  <int value="531"
+      label="6a97b51c8219e93e5dec64bad5806cdeb0f8355be47e757010b702456e01aafd"/>
+  <int value="532"
+      label="48a8a7ecd03a83b26aec7574d09d6453e95f90360634ce204bcbd473997d4c05"/>
+  <int value="533"
+      label="c2b3c31a4a29850aa8f3cf472a1169ff71b416579f6a4482ec7744b83df988ac"/>
+  <int value="534"
+      label="fc784300ec8df4d3d1bad763835182918d52a9ff0238bdf695a1cd9bdb98321c"/>
+  <int value="535"
+      label="762195c225586ee6c0237456e2107dc54f1efc21f61a792ebd515913cce68332"/>
+  <int value="536"
+      label="681dc482c296c8402c6ebb20e68309a3bc846523ae34b984a84ee697a3312db7"/>
+  <int value="537"
+      label="f0011f92fcf9be36c7a5b36e7bc862ab20e94ef36fea8a561db0a8d7750c1f51"/>
+  <int value="538"
+      label="fee8af929175687f4638a3fc983db8ecd0e5e2a83e737f3fb77b4c22fcbac0a6"/>
+  <int value="539"
+      label="bdaccbf2e8b27c0c02a689ee866c9b86ec04442afcdddd5d4ec36def21e761dd"/>
+  <int value="540"
+      label="581cc15821169694c39c2991b53e93ab945a42b076661774c2ecf38a3323acea"/>
+  <int value="541"
+      label="bb0ce7040314a143dcd10e65ccaeef7010e1b784d15d195d77b5601956bf9e3f"/>
+  <int value="542"
+      label="de7b6932e9c44582ce0de07abdab7eea90c75d6d2a07331df57bd5cb88553d13"/>
+</enum>
+
+<enum name="NetworkConnectionCost">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unmetered"/>
+  <int value="2" label="Metered"/>
+</enum>
+
+<enum name="NsswitchService">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="&quot;files&quot;"/>
+  <int value="2" label="&quot;dns&quot;"/>
+  <int value="3" label="&quot;mdns&quot;"/>
+  <int value="4" label="&quot;mdns4&quot;"/>
+  <int value="5" label="&quot;mdns6&quot;"/>
+  <int value="6" label="&quot;mdns_minimal&quot;"/>
+  <int value="7" label="&quot;mdns4_minimal&quot;"/>
+  <int value="8" label="&quot;mdns6_minimal&quot;"/>
+  <int value="9" label="&quot;myhostname&quot;"/>
+  <int value="10" label="&quot;resolve&quot;"/>
+  <int value="11" label="&quot;nis&quot;"/>
+</enum>
+
+<enum name="OnTransferSizeUpdatedFrom">
+  <int value="0" label="CacheAliasSearchPrefetchURLLoader (Proxy)"/>
+  <int value="1" label="CorsURLLoader (Proxy)"/>
+  <int value="2" label="DelegatingURLLoaderClient (Proxy)"/>
+  <int value="3" label="DownloadResponseHandler (No-op)"/>
+  <int value="4" label="DriveFsURLLoaderClient (No-op)"/>
+  <int value="5" label="EmptyURLLoaderClient (No-op)"/>
+  <int value="6" label="FakeEmbeddedWorkerInstanceClient (No-op)"/>
+  <int value="7" label="HeaderRewritingURLLoaderClient (Proxy)"/>
+  <int value="8" label="InterceptedRequest (Proxy)"/>
+  <int value="9" label="InterceptionJob (Proxy+Work)"/>
+  <int value="10" label="MimeSniffingURLLoader (Proxy)"/>
+  <int value="11" label="MojoURLLoaderClient (Work)"/>
+  <int value="12" label="NavigationBodyLoader (Work)"/>
+  <int value="13" label="NavigationPreloadRequest (No-op)"/>
+  <int value="14" label="NavigationURLLoaderImpl (No-op)"/>
+  <int value="15" label="ObjectNavigationFallbackBodyLoader (No-op)"/>
+  <int value="16" label="PrefetchProxyProxyingURLLoaderFactory (Proxy)"/>
+  <int value="17" label="PrefetchURLLoader (Proxy)"/>
+  <int value="18" label="PreloadURLLoaderClient (No-op)"/>
+  <int value="19" label="ProxyingURLLoaderFactory (Proxy)"/>
+  <int value="20" label="ResultRecordingClient (Proxy)"/>
+  <int value="21" label="ServiceWorkerNewScriptFetcher (No-op)"/>
+  <int value="22" label="ServiceWorkerSingleScriptUpdateChecker (No-op)"/>
+  <int value="23" label="SignedExchangeCertFetcher (No-op)"/>
+  <int value="24" label="SignedExchangeLoader (No-op)"/>
+  <int value="25" label="SignedExchangePrefetchHandler (No-op)"/>
+  <int value="26" label="SimpleURLLoaderImpl (No-op)"/>
+  <int value="27" label="StreamingSearchPrefetchURLLoader (Proxy+Work)"/>
+  <int value="28" label="ThrottlingURLLoader (MaybeProxy)"/>
+  <int value="29" label="URLLoaderClientCheckedRemote (Proxy)"/>
+  <int value="30" label="URLLoaderRelay (Proxy)"/>
+  <int value="31" label="URLLoaderStatusMonitor"/>
+  <int value="32" label="WebBundleURLLoaderClient (Proxy)"/>
+  <int value="33" label="WebRequestProxyingURLLoaderFactory (Proxy)"/>
+  <int value="34" label="WorkerMainScriptLoader (No-op)"/>
+  <int value="35" label="WorkerScriptFetcher (No-op)"/>
+  <int value="36" label="WorkerScriptLoader (Proxy)"/>
+</enum>
+
+<enum name="PathValidationReason">
+  <int value="0" label="Reason unknown"/>
+  <int value="1" label="Multi port"/>
+  <int value="2" label="Reverse path validation"/>
+  <int value="3" label="Server preferred address migration"/>
+  <int value="4" label="Port migration"/>
+  <int value="5" label="Connection migration"/>
+</enum>
+
+<enum name="Ports">
+  <int value="80" label="Port 80"/>
+  <int value="443" label="Port 443"/>
+</enum>
+
+<enum name="ProxyScheme">
+  <int value="1" label="SCHEME_INVALID"/>
+  <int value="2" label="SCHEME_DIRECT"/>
+  <int value="4" label="SCHEME_HTTP"/>
+  <int value="8" label="SCHEME_SOCKS4"/>
+  <int value="16" label="SCHEME_SOCKS5"/>
+  <int value="32" label="SCHEME_HTTPS"/>
+  <int value="64" label="SCHEME_QUIC"/>
+</enum>
+
+<enum name="PushedStreamVaryResponseHeaderValues">
+  <int value="0" label="There is no Vary header."/>
+  <int value="1" label="The value of Vary is empty."/>
+  <int value="2" label="The value of Vary is &quot;*&quot;."/>
+  <int value="3"
+      label="The value of Vary is &quot;accept-encoding&quot; (case
+             insensitive)."/>
+  <int value="4"
+      label="The value of Vary contains &quot;accept-encoding&quot; (case
+             insensitive) and some other field names as well."/>
+  <int value="5"
+      label="The value of Vary does not contain &quot;accept-encoding&quot;,
+             is not empty, and is not &quot;*&quot;."/>
+</enum>
+
+<enum name="QuicAddressMismatch">
+  <int value="0" label="Address mismatch: IPv4 IPv4"/>
+  <int value="1" label="Address mismatch: IPv6 IPv6"/>
+  <int value="2" label="Address mismatch: IPv4 IPv6"/>
+  <int value="3" label="Address mismatch: IPv6 IPv4"/>
+  <int value="4" label="Port mismatch: IPv4 IPv4"/>
+  <int value="5" label="Port mismatch: IPv6 IPv6"/>
+  <int value="6" label="Address and port match: IPv4 IPv4"/>
+  <int value="7" label="Address and port match: IPv6 IPv6"/>
+</enum>
+
+<enum name="QuicAltSvcFormat">
+  <int value="0" label="Google format"/>
+  <int value="1" label="IETF format"/>
+</enum>
+
+<enum name="QuicBadPacketLossEvents">
+  <int value="1" label="ONE_PACKET_LOST"/>
+  <int value="2" label="TWO_PACKETS_LOST"/>
+  <int value="3" label="THREE_PACKETS_LOST"/>
+  <int value="4" label="FOUR_PACKETS_LOST"/>
+  <int value="5" label="FIVE_PACKETS_LOST"/>
+</enum>
+
+<enum name="QuicConnectionMigrationStatus">
+  <int value="0" label="No stream to migrate"/>
+  <int value="1" label="Already migrated"/>
+  <int value="2" label="Internal error"/>
+  <int value="3" label="Too many migrations"/>
+  <int value="4" label="Success"/>
+  <int value="5" label="Disabled by non-migratable stream"/>
+  <int value="6" label="Migration not enabled"/>
+  <int value="7" label="No alternate network"/>
+  <int value="8" label="Disabled by too many path degradings"/>
+  <int value="9" label="Disabled by config"/>
+  <int value="10" label="Path degrading not enabled"/>
+  <int value="11" label="Timeout with no new network"/>
+  <int value="12"
+      label="Exceeding maximum number of migrations on write error"/>
+  <int value="13" label="Path degrading before handshake confirmed"/>
+  <int value="14" label="Idle migration period exceeded"/>
+  <int value="15" label="Migration fails due to lack of connection ID"/>
+</enum>
+
+<enum name="QuicDisabledReason">
+  <int value="1" label="Public reset post handshake"/>
+  <int value="2" label="Timeout with open streams"/>
+  <int value="3" label="Bad packet loss rate"/>
+</enum>
+
+<enum name="QuicDiskCacheFailureReason">
+  <int value="0" label="WAIT_FOR_DATA_READY_INVALID_ARGUMENT_FAILURE"/>
+  <int value="1" label="GET_BACKEND_FAILURE"/>
+  <int value="2" label="OPEN_FAILURE"/>
+  <int value="3" label="CREATE_OR_OPEN_FAILURE"/>
+  <int value="4" label="PARSE_NO_DATA_FAILURE"/>
+  <int value="5" label="PARSE_FAILURE"/>
+  <int value="6" label="READ_FAILURE"/>
+  <int value="7" label="READY_TO_PERSIST_FAILURE"/>
+  <int value="8" label="PERSIST_NO_BACKEND_FAILURE"/>
+  <int value="9" label="WRITE_FAILURE"/>
+  <int value="10" label="NO_FAILURE"/>
+  <int value="11" label="PARSE_DATA_DECODE_FAILURE"/>
+</enum>
+
+<enum name="QuicDroppedPacketReason">
+  <int value="0" label="INVALID_PUBLIC_HEADER"/>
+  <int value="1" label="VERSION_MISMATCH"/>
+  <int value="2" label="INVALID_VERSION_NEGOTIATION_PACKET"/>
+  <int value="3" label="INVALID_PUBLIC_RESET_PACKET"/>
+  <int value="4" label="INVALID_PACKET_NUMBER"/>
+  <int value="5" label="INVALID_DIVERSIFICATION_NONCE"/>
+  <int value="6" label="DECRYPTION_FAILURE"/>
+</enum>
+
+<enum name="QuicErrorCodes">
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="INTERNAL_ERROR"/>
+  <int value="2" label="STREAM_DATA_AFTER_TERMINATION"/>
+  <int value="3" label="INVALID_PACKET_HEADER"/>
+  <int value="4" label="INVALID_FRAME_DATA"/>
+  <int value="5" label="INVALID_FEC_DATA"/>
+  <int value="6" label="INVALID_RST_STREAM_DATA"/>
+  <int value="7" label="INVALID_CONNECTION_CLOSE_DATA"/>
+  <int value="8" label="INVALID_GOAWAY_DATA"/>
+  <int value="9" label="INVALID_ACK_DATA"/>
+  <int value="10" label="INVALID_VERSION_NEGOTIATION_PACKET"/>
+  <int value="11" label="INVALID_PUBLIC_RST_PACKET"/>
+  <int value="12" label="DECRYPTION_FAILURE"/>
+  <int value="13" label="ENCRYPTION_FAILURE"/>
+  <int value="14" label="PACKET_TOO_LARGE"/>
+  <int value="15" label="PACKET_FOR_NONEXISTENT_STREAM"/>
+  <int value="16" label="PEER_GOING_AWAY"/>
+  <int value="17" label="INVALID_STREAM_ID"/>
+  <int value="18" label="TOO_MANY_OPEN_STREAMS"/>
+  <int value="19" label="PUBLIC_RESET"/>
+  <int value="20" label="INVALID_VERSION"/>
+  <int value="21" label="STREAM_RST_BEFORE_HEADERS_DECOMPRESSED"/>
+  <int value="22" label="INVALID_HEADER_ID"/>
+  <int value="23" label="INVALID_NEGOTIATED_VALUE"/>
+  <int value="24" label="DECOMPRESSION_FAILURE"/>
+  <int value="25" label="NETWORK_IDLE_TIMEOUT"/>
+  <int value="26" label="ERROR_MIGRATING_ADDRESS"/>
+  <int value="27" label="PACKET_WRITE_ERROR"/>
+  <int value="28" label="HANDSHAKE_FAILED"/>
+  <int value="29" label="CRYPTO_TAGS_OUT_OF_ORDER"/>
+  <int value="30" label="CRYPTO_TOO_MANY_ENTRIES"/>
+  <int value="31" label="CRYPTO_INVALID_VALUE_LENGTH"/>
+  <int value="32" label="CRYPTO_MESSAGE_AFTER_HANDSHAKE_COMPLETE"/>
+  <int value="33" label="INVALID_CRYPTO_MESSAGE_TYPE"/>
+  <int value="34" label="INVALID_CRYPTO_MESSAGE_PARAMETER"/>
+  <int value="35" label="CRYPTO_MESSAGE_PARAMETER_NOT_FOUND"/>
+  <int value="36" label="CRYPTO_MESSAGE_PARAMETER_NO_OVERLAP"/>
+  <int value="37" label="CRYPTO_MESSAGE_INDEX_NOT_FOUND"/>
+  <int value="38" label="CRYPTO_INTERNAL_ERROR"/>
+  <int value="39" label="CRYPTO_VERSION_NOT_SUPPORTED"/>
+  <int value="40" label="CRYPTO_NO_SUPPORT"/>
+  <int value="41" label="CRYPTO_TOO_MANY_REJECTS"/>
+  <int value="42" label="PROOF_INVALID"/>
+  <int value="43" label="CRYPTO_DUPLICATE_TAG"/>
+  <int value="44" label="CRYPTO_ENCRYPTION_LEVEL_INCORRECT"/>
+  <int value="45" label="CRYPTO_SERVER_CONFIG_EXPIRED"/>
+  <int value="46" label="INVALID_STREAM_DATA"/>
+  <int value="47" label="INVALID_CONGESTION_FEEDBACK_DATA"/>
+  <int value="48" label="MISSING_PAYLOAD"/>
+  <int value="49" label="INVALID_PRIORITY"/>
+  <int value="50" label="EMPTY_STREAM_FRAME_NO_FIN"/>
+  <int value="51" label="PACKET_READ_ERROR"/>
+  <int value="52" label="INVALID_CHANNEL_ID_SIGNATURE"/>
+  <int value="53" label="CRYPTO_SYMMETRIC_KEY_SETUP_FAILED"/>
+  <int value="54" label="CRYPTO_MESSAGE_WHILE_VALIDATING_CLIENT_HELLO"/>
+  <int value="55" label="VERSION_NEGOTIATION_MISMATCH"/>
+  <int value="56" label="INVALID_HEADERS_STREAM_DATA"/>
+  <int value="57" label="INVALID_WINDOW_UPDATE_DATA"/>
+  <int value="58" label="INVALID_BLOCKED_DATA"/>
+  <int value="59" label="FLOW_CONTROL_RECEIVED_TOO_MUCH_DATA"/>
+  <int value="60" label="INVALID_STOP_WAITING_DATA"/>
+  <int value="61" label="UNENCRYPTED_STREAM_DATA"/>
+  <int value="62" label="CONNECTION_IP_POOLED"/>
+  <int value="63" label="FLOW_CONTROL_SENT_TOO_MUCH_DATA"/>
+  <int value="64" label="FLOW_CONTROL_INVALID_WINDOW"/>
+  <int value="65" label="CRYPTO_UPDATE_BEFORE_HANDSHAKE_COMPLETE"/>
+  <int value="66" label="TOO_MANY_UNFINISHED_STREAMS"/>
+  <int value="67" label="HANDSHAKE_TIMEOUT"/>
+  <int value="68" label="TOO_MANY_OUTSTANDING_SENT_PACKETS"/>
+  <int value="69" label="TOO_MANY_OUTSTANDING_RECEIVED_PACKETS"/>
+  <int value="70" label="CONNECTION_CANCELLED"/>
+  <int value="71" label="BAD_PACKET_LOSS_RATE"/>
+  <int value="72" label="CRYPTO_HANDSHAKE_STATELESS_REJECT"/>
+  <int value="73" label="PUBLIC_RESETS_POST_HANDSHAKE"/>
+  <int value="74" label="TIMEOUTS_WITH_OPEN_STREAMS"/>
+  <int value="75" label="FAILED_TO_SERIALIZE_PACKET"/>
+  <int value="76" label="TOO_MANY_AVAILABLE_STREAMS"/>
+  <int value="77" label="UNENCRYPTED_FEC_DATA"/>
+  <int value="78" label="INVALID_PATH_CLOSE_DATA"/>
+  <int value="79" label="BAD_MULTIPATH_FLAG"/>
+  <int value="80" label="IP_ADDRESS_CHANGED"/>
+  <int value="81" label="CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS"/>
+  <int value="82" label="CONNECTION_MIGRATION_TOO_MANY_CHANGES"/>
+  <int value="83" label="CONNECTION_MIGRATION_NO_NEW_NETWORK"/>
+  <int value="84" label="CONNECTION_MIGRATION_NON_MIGRATABLE_STREAM"/>
+  <int value="85" label="TOO_MANY_RTOS"/>
+  <int value="86" label="ERROR_MIGRATING_PORT"/>
+  <int value="87" label="OVERLAPPING_STREAM_DATA"/>
+  <int value="88" label="ATTEMPT_TO_SEND_UNENCRYPTED_STREAM_DATA"/>
+  <int value="89" label="MAYBE_CORRUPTED_MEMORY"/>
+  <int value="90" label="CRYPTO_CHLO_TOO_LARGE"/>
+  <int value="91" label="MULTIPATH_PATH_DOES_NOT_EXIST"/>
+  <int value="92" label="MULTIPATH_PATH_NOT_ACTIVE"/>
+  <int value="93" label="TOO_MANY_STREAM_DATA_INTERVALS"/>
+  <int value="94" label="UNSUPPORTED_PROOF_DEMAND"/>
+  <int value="95" label="STREAM_SEQUENCER_INVALID_STATE"/>
+  <int value="96" label="TOO_MANY_SESSIONS_ON_SERVER"/>
+  <int value="97" label="HEADERS_STREAM_DATA_DECOMPRESS_FAILURE"/>
+  <int value="98" label="STREAM_LENGTH_OVERFLOW"/>
+  <int value="99" label="CONNECTION_MIGRATION_DISABLED_BY_CONFIG"/>
+  <int value="100" label="CONNECTION_MIGRATION_INTERNAL_ERROR"/>
+  <int value="101" label="INVALID_APPLICATION_CLOSE_DATA"/>
+  <int value="102" label="INVALID_MAX_DATA_FRAME_DATA"/>
+  <int value="103" label="INVALID_MAX_STREAM_DATA_FRAME_DATA"/>
+  <int value="104" label="MAX_STREAMS_DATA"/>
+  <int value="105" label="STREAMS_BLOCKED_DATA"/>
+  <int value="106" label="INVALID_STREAM_BLOCKED_DATA"/>
+  <int value="107" label="INVALID_NEW_CONNECTION_ID_DATA"/>
+  <int value="108" label="INVALID_STOP_SENDING_FRAME_DATA"/>
+  <int value="109" label="INVALID_PATH_CHALLENGE_DATA"/>
+  <int value="110" label="INVALID_PATH_RESPONSE_DATA"/>
+  <int value="111" label="CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED"/>
+  <int value="112" label="INVALID_MESSAGE_DATA"/>
+  <int value="113" label="IETF_QUIC_PROTOCOL_VIOLATION"/>
+  <int value="114" label="INVALID_NEW_TOKEN"/>
+  <int value="115" label="DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM"/>
+  <int value="116" label="TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM"/>
+  <int value="117" label="INVALID_RETIRE_CONNECTION_ID_DATA"/>
+  <int value="118" label="STREAMS_BLOCKED_ERROR"/>
+  <int value="119" label="MAX_STREAMS_ERROR"/>
+  <int value="120" label="HTTP_DECODER_ERROR"/>
+  <int value="121" label="STALE_CONNECTION_CANCELLED"/>
+  <int value="122" label="IETF_GQUIC_ERROR_MISSING"/>
+  <int value="123"
+      label="WINDOW_UPDATE_RECEIVED_ON_READ_UNIDIRECTIONAL_STREAM"/>
+  <int value="124" label="TOO_MANY_BUFFERED_CONTROL_FRAMES"/>
+  <int value="125" label="TRANSPORT_INVALID_CLIENT_INDICATION"/>
+  <int value="126" label="QPACK_DECOMPRESSION_FAILED"/>
+  <int value="127" label="QPACK_ENCODER_STREAM_ERROR"/>
+  <int value="128" label="QPACK_DECODER_STREAM_ERROR"/>
+  <int value="129" label="STREAM_DATA_BEYOND_CLOSE_OFFSET"/>
+  <int value="130" label="STREAM_MULTIPLE_OFFSET"/>
+  <int value="131" label="HTTP_FRAME_TOO_LARGE"/>
+  <int value="132" label="HTTP_FRAME_ERROR"/>
+  <int value="133" label="HTTP_FRAME_UNEXPECTED_ON_SPDY_STREAM"/>
+  <int value="134" label="HTTP_FRAME_UNEXPECTED_ON_CONTROL_STREAM"/>
+  <int value="135" label="HPACK_INDEX_VARINT_ERROR"/>
+  <int value="136" label="HPACK_NAME_LENGTH_VARINT_ERROR"/>
+  <int value="137" label="HPACK_VALUE_LENGTH_VARINT_ERROR"/>
+  <int value="138" label="HPACK_NAME_TOO_LONG"/>
+  <int value="139" label="HPACK_VALUE_TOO_LONG"/>
+  <int value="140" label="HPACK_NAME_HUFFMAN_ERROR"/>
+  <int value="141" label="HPACK_VALUE_HUFFMAN_ERROR"/>
+  <int value="142" label="HPACK_MISSING_DYNAMIC_TABLE_SIZE_UPDATE"/>
+  <int value="143" label="HPACK_INVALID_INDEX"/>
+  <int value="144" label="HPACK_INVALID_NAME_INDEX"/>
+  <int value="145" label="HPACK_DYNAMIC_TABLE_SIZE_UPDATE_NOT_ALLOWED"/>
+  <int value="146"
+      label="HPACK_INITIAL_TABLE_SIZE_UPDATE_IS_ABOVE_LOW_WATER_MARK"/>
+  <int value="147"
+      label="HPACK_TABLE_SIZE_UPDATE_IS_ABOVE_ACKNOWLEDGED_SETTING"/>
+  <int value="148" label="HPACK_TRUNCATED_BLOCK"/>
+  <int value="149" label="HPACK_FRAGMENT_TOO_LONG"/>
+  <int value="150" label="HPACK_COMPRESSED_HEADER_SIZE_EXCEEDS_LIMIT"/>
+  <int value="151" label="HTTP_INVALID_FRAME_SEQUENCE_ON_SPDY_STREAM"/>
+  <int value="152" label="HTTP_INVALID_FRAME_SEQUENCE_ON_CONTROL_STREAM"/>
+  <int value="153" label="HTTP_DUPLICATE_UNIDIRECTIONAL_STREAM"/>
+  <int value="154" label="HTTP_SERVER_INITIATED_BIDIRECTIONAL_STREAM"/>
+  <int value="155" label="HTTP_STREAM_WRONG_DIRECTION"/>
+  <int value="156" label="HTTP_CLOSED_CRITICAL_STREAM"/>
+  <int value="157" label="HTTP_MISSING_SETTINGS_FRAME"/>
+  <int value="158" label="HTTP_DUPLICATE_SETTING_IDENTIFIER"/>
+  <int value="159" label="HTTP_INVALID_MAX_PUSH_ID"/>
+  <int value="160" label="HTTP_STREAM_LIMIT_TOO_LOW"/>
+  <int value="161" label="ZERO_RTT_UNRETRANSMITTABLE"/>
+  <int value="162" label="ZERO_RTT_REJECTION_LIMIT_REDUCED"/>
+  <int value="163" label="ZERO_RTT_RESUMPTION_LIMIT_REDUCED"/>
+  <int value="164" label="HTTP_ZERO_RTT_RESUMPTION_SETTINGS_MISMATCH"/>
+  <int value="165" label="HTTP_ZERO_RTT_REJECTION_SETTINGS_MISMATCH"/>
+  <int value="166" label="HTTP_GOAWAY_INVALID_STREAM_ID"/>
+  <int value="167" label="HTTP_GOAWAY_ID_LARGER_THAN_PREVIOUS"/>
+  <int value="168" label="SILENT_IDLE_TIMEOUT"/>
+  <int value="169" label="QUIC_HTTP_RECEIVE_SPDY_SETTING"/>
+  <int value="170" label="QUIC_MISSING_WRITE_KEYS"/>
+  <int value="171" label="QUIC_HTTP_RECEIVE_SPDY_FRAME"/>
+  <int value="172" label="QUIC_KEY_UPDATE_ERROR"/>
+  <int value="173" label="QUIC_AEAD_LIMIT_REACHED"/>
+  <int value="174" label="QUIC_QPACK_ENCODER_STREAM_INTEGER_TOO_LARGE"/>
+  <int value="175" label="QUIC_QPACK_ENCODER_STREAM_STRING_LITERAL_TOO_LONG"/>
+  <int value="176" label="QUIC_QPACK_ENCODER_STREAM_HUFFMAN_ENCODING_ERROR"/>
+  <int value="177" label="QUIC_QPACK_ENCODER_STREAM_INVALID_STATIC_ENTRY"/>
+  <int value="178" label="QUIC_QPACK_ENCODER_STREAM_ERROR_INSERTING_STATIC"/>
+  <int value="179"
+      label="QUIC_QPACK_ENCODER_STREAM_INSERTION_INVALID_RELATIVE_INDEX"/>
+  <int value="180"
+      label="QUIC_QPACK_ENCODER_STREAM_INSERTION_DYNAMIC_ENTRY_NOT_FOUND"/>
+  <int value="181" label="QUIC_QPACK_ENCODER_STREAM_ERROR_INSERTING_DYNAMIC"/>
+  <int value="182" label="QUIC_QPACK_ENCODER_STREAM_ERROR_INSERTING_LITERAL"/>
+  <int value="183"
+      label="QUIC_QPACK_ENCODER_STREAM_DUPLICATE_INVALID_RELATIVE_INDEX"/>
+  <int value="184"
+      label="QUIC_QPACK_ENCODER_STREAM_DUPLICATE_DYNAMIC_ENTRY_NOT_FOUND"/>
+  <int value="185"
+      label="QUIC_QPACK_ENCODER_STREAM_SET_DYNAMIC_TABLE_CAPACITY"/>
+  <int value="186" label="QUIC_QPACK_DECODER_STREAM_INTEGER_TOO_LARGE"/>
+  <int value="187" label="QUIC_QPACK_DECODER_STREAM_INVALID_ZERO_INCREMENT"/>
+  <int value="188" label="QUIC_QPACK_DECODER_STREAM_INCREMENT_OVERFLOW"/>
+  <int value="189" label="QUIC_QPACK_DECODER_STREAM_IMPOSSIBLE_INSERT_COUNT"/>
+  <int value="190" label="QUIC_QPACK_DECODER_STREAM_INCORRECT_ACKNOWLEDGEMENT"/>
+  <int value="191" label="QUIC_MAX_AGE_TIMEOUT"/>
+  <int value="192" label="QUIC_INVALID_0RTT_PACKET_NUMBER_OUT_OF_ORDER"/>
+  <int value="193" label="QUIC_INVALID_PRIORITY_UPDATE"/>
+  <int value="194" label="QUIC_PEER_PORT_CHANGE_HANDSHAKE_UNCONFIRMED"/>
+  <int value="195" label="QUIC_TLS_BAD_CERTIFICATE"/>
+  <int value="196" label="QUIC_TLS_UNSUPPORTED_CERTIFICATE"/>
+  <int value="197" label="QUIC_TLS_CERTIFICATE_REVOKED"/>
+  <int value="198" label="QUIC_TLS_CERTIFICATE_EXPIRED"/>
+  <int value="199" label="QUIC_TLS_CERTIFICATE_UNKNOWN"/>
+  <int value="200" label="QUIC_TLS_INTERNAL_ERROR"/>
+  <int value="201" label="QUIC_TLS_UNRECOGNIZED_NAME"/>
+  <int value="202" label="QUIC_TLS_CERTIFICATE_REQUIRED"/>
+  <int value="203" label="QUIC_CONNECTION_ID_LIMIT_ERROR"/>
+  <int value="204" label="QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE"/>
+  <int value="205" label="QUIC_HTTP_RECEIVE_SERVER_PUSH"/>
+  <int value="206" label="QUIC_INVALID_CHARACTER_IN_FIELD_VALUE"/>
+</enum>
+
+<enum name="QuicHandshakeFailureReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="BLACK_HOLE"/>
+  <int value="2" label="PUBLIC_RESET"/>
+</enum>
+
+<enum name="QuicHandshakeState">
+  <int value="0" label="STARTED"/>
+  <int value="1" label="ENCRYPTION_ESTABLISHED"/>
+  <int value="2" label="HANDSHAKE_CONFIRMED"/>
+  <int value="3" label="FAILED"/>
+</enum>
+
+<enum name="QuicHttp3ErrorCodes">
+  <int value="256" label="H3_NO_ERROR"/>
+  <int value="257" label="H3_GENERAL_PROTOCOL_ERROR"/>
+  <int value="258" label="H3_INTERNAL_ERROR"/>
+  <int value="259" label="H3_STREAM_CREATION_ERROR"/>
+  <int value="260" label="H3_CLOSED_CRITICAL_STREAM"/>
+  <int value="261" label="H3_FRAME_UNEXPECTED"/>
+  <int value="262" label="H3_FRAME_ERROR"/>
+  <int value="263" label="H3_EXCESSIVE_LOAD"/>
+  <int value="264" label="H3_ID_ERROR"/>
+  <int value="265" label="H3_SETTINGS_ERROR"/>
+  <int value="266" label="H3_MISSING_SETTINGS"/>
+  <int value="267" label="H3_REQUEST_REJECTED"/>
+  <int value="268" label="H3_REQUEST_CANCELLED"/>
+  <int value="269" label="H3_REQUEST_INCOMPLETE"/>
+  <int value="271" label="H3_CONNECT_ERROR"/>
+  <int value="272" label="H3_VERSION_FALLBACK"/>
+  <int value="512" label="QPACK_DECOMPRESSION_FAILED"/>
+  <int value="513" label="QPACK_ENCODER_STREAM_ERROR"/>
+  <int value="514" label="QPACK_DECODER_STREAM_ERROR"/>
+</enum>
+
+<enum name="QuicKeyUpdateReason">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kRemote"/>
+  <int value="2" label="kLocalForTests"/>
+  <int value="3" label="kLocalForInteropRunner"/>
+  <int value="4" label="kLocalAeadConfidentialityLimit"/>
+  <int value="5" label="kLocalKeyUpdateLimitOverride"/>
+</enum>
+
+<enum name="QuicKeyUpdateSuccess">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kFailedInitial"/>
+  <int value="3" label="kFailedNonInitial"/>
+</enum>
+
+<enum name="QuicNotReusableReason">
+  <int value="0" label="NULLPTR"/>
+  <int value="1" label="TOO_SMALL"/>
+  <int value="2" label="REF_COUNT"/>
+</enum>
+
+<enum name="QuicPlatformNotification">
+  <int value="0" label="NETWORK_CONNECTED"/>
+  <int value="1" label="NETWORK_MADE_DEFAULT"/>
+  <int value="2" label="NETWORK_DISCONNECTED"/>
+  <int value="3" label="NETWORK_SOON_TO_DISCONNECT"/>
+  <int value="4" label="NETWORK_IP_ADDRESS_CHANGED"/>
+</enum>
+
+<enum name="QuicProtocolErrorRetryStatus">
+  <int value="0" label="NoRetryExceededMaxRetries"/>
+  <int value="1" label="NoRetryHeaderReceived"/>
+  <int value="2" label="NoRetryNoAlternativeService"/>
+  <int value="3" label="RetryAltServiceBroken"/>
+  <int value="4" label="RetryAltServiceNotBroken"/>
+</enum>
+
+<enum name="QuicRstStreamErrorCodes">
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="ERROR_PROCESSING_STREAM"/>
+  <int value="2" label="MULTIPLE_TERMINATION_OFFSETS"/>
+  <int value="3" label="BAD_APPLICATION_PAYLOAD"/>
+  <int value="4" label="CONNECTION_ERROR"/>
+  <int value="5" label="PEER_GOING_AWAY"/>
+  <int value="6" label="CANCELLED"/>
+  <int value="7" label="RST_ACKNOWLEDGEMENT"/>
+  <int value="8" label="REFUSED"/>
+  <int value="9" label="INVALID_PROMISE_URL"/>
+  <int value="10" label="UNAUTHORIZED_PROMISE_URL"/>
+  <int value="11" label="DUPLICATE_PROMISE_URL"/>
+  <int value="12" label="PROMISE_VARY_MISMATCH"/>
+  <int value="13" label="INVALID_PROMISE_METHOD"/>
+  <int value="14" label="PUSH_STREAM_TIMED_OUT"/>
+  <int value="15" label="HEADERS_TOO_LARGE"/>
+  <int value="16" label="TTL_EXPIRED"/>
+  <int value="17" label="DATA_AFTER_CLOSE_OFFSET"/>
+  <int value="18" label="GENERAL_PROTOCOL_ERROR"/>
+  <int value="19" label="INTERNAL_ERROR"/>
+  <int value="20" label="CREATION_ERROR"/>
+  <int value="21" label="CLOSED_CRITICAL_STREAM"/>
+  <int value="22" label="FRAME_UNEXPECTED"/>
+  <int value="23" label="FRAME_ERROR"/>
+  <int value="24" label="EXCESSIVE_LOAD"/>
+  <int value="25" label="ID_ERROR"/>
+  <int value="26" label="SETTINGS_ERROR"/>
+  <int value="27" label="MISSING_SETTINGS"/>
+  <int value="28" label="REQUEST_REJECTED"/>
+  <int value="29" label="REQUEST_INCOMPLETE"/>
+  <int value="30" label="CONNECT_ERROR"/>
+  <int value="31" label="VERSION_FALLBACK"/>
+  <int value="32" label="DECOMPRESSION_FAILED"/>
+  <int value="33" label="ENCODER_STREAM_ERROR"/>
+  <int value="34" label="DECODER_STREAM_ERROR"/>
+  <int value="35" label="UNKNOWN_APPLICATION_ERROR_CODE"/>
+</enum>
+
+<enum name="QuicServerConfigState">
+  <int value="0" label="SERVER_CONFIG_EMPTY"/>
+  <int value="1" label="SERVER_CONFIG_INVALID"/>
+  <int value="2" label="SERVER_CONFIG_CORRUPTED"/>
+  <int value="3" label="SERVER_CONFIG_EXPIRED"/>
+  <int value="4" label="SERVER_CONFIG_INVALID_EXPIRY"/>
+  <int value="5" label="SERVER_CONFIG_VALID"/>
+</enum>
+
+<enum name="QuicSessionErrorCodes">
+  <int value="0" label="CONNECTING_SOCKET"/>
+  <int value="1" label="SETTING_RECEIVE_BUFFER"/>
+  <int value="2" label="SETTING_SEND_BUFFER"/>
+  <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
+</enum>
+
+<enum name="QuicTransportErrorCodes">
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="INTERNAL_ERROR"/>
+  <int value="2" label="SERVER_BUSY"/>
+  <int value="3" label="FLOW_CONTROL_ERROR"/>
+  <int value="4" label="STREAM_LIMIT_ERROR"/>
+  <int value="5" label="STREAM_STATE_ERROR"/>
+  <int value="6" label="FINAL_SIZE_ERROR"/>
+  <int value="7" label="FRAME_ENCODING_ERROR"/>
+  <int value="8" label="TRANSPORT_PARAMETER_ERROR"/>
+  <int value="9" label="CONNECTION_ID_LIMIT_ERROR"/>
+  <int value="10" label="PROTOCOL_VIOLATION"/>
+  <int value="11" label="INVALID_TOKEN"/>
+  <int value="12" label="APPLICATION_ERROR"/>
+  <int value="13" label="CRYPTO_BUFFER_EXCEEDED"/>
+  <int value="14" label="KEY_UPDATE_ERROR"/>
+  <int value="256" label="CRYPTO_ERROR_close_notify"/>
+  <int value="266" label="CRYPTO_ERROR_unexpected_message"/>
+  <int value="276" label="CRYPTO_ERROR_bad_record_mac"/>
+  <int value="278" label="CRYPTO_ERROR_record_overflow"/>
+  <int value="296" label="CRYPTO_ERROR_handshake_failure"/>
+  <int value="298" label="CRYPTO_ERROR_bad_certificate"/>
+  <int value="299" label="CRYPTO_ERROR_unsupported_certificate"/>
+  <int value="300" label="CRYPTO_ERROR_certificate_revoked"/>
+  <int value="301" label="CRYPTO_ERROR_certificate_expired"/>
+  <int value="302" label="CRYPTO_ERROR_certificate_unknown"/>
+  <int value="303" label="CRYPTO_ERROR_illegal_parameter"/>
+  <int value="304" label="CRYPTO_ERROR_unknown_ca"/>
+  <int value="305" label="CRYPTO_ERROR_access_denied"/>
+  <int value="306" label="CRYPTO_ERROR_decode_error"/>
+  <int value="307" label="CRYPTO_ERROR_decrypt_error"/>
+  <int value="326" label="CRYPTO_ERROR_protocol_version"/>
+  <int value="327" label="CRYPTO_ERROR_insufficient_security"/>
+  <int value="336" label="CRYPTO_ERROR_internal_error"/>
+  <int value="342" label="CRYPTO_ERROR_inappropriate_fallback"/>
+  <int value="346" label="CRYPTO_ERROR_user_canceled"/>
+  <int value="365" label="CRYPTO_ERROR_missing_extension"/>
+  <int value="366" label="CRYPTO_ERROR_unsupported_extension"/>
+  <int value="368" label="CRYPTO_ERROR_unrecognized_name"/>
+  <int value="369" label="CRYPTO_ERROR_bad_certificate_status_response"/>
+  <int value="371" label="CRYPTO_ERROR_unknown_psk_identity"/>
+  <int value="372" label="CRYPTO_ERROR_certificate_required"/>
+  <int value="376" label="CRYPTO_ERROR_no_application_protocol"/>
+</enum>
+
+<enum name="QuicWriteStatus">
+  <int value="0" label="WRITE_STATUS_OK"/>
+  <int value="1" label="WRITE_STATUS_BLOCKED"/>
+  <int value="3" label="WRITE_STATUS_BLOCKED_DATA_BUFFERED"/>
+  <int value="4" label="WRITE_STATUS_ERROR"/>
+  <int value="5" label="WRITE_STATUS_MSG_TOO_BIG"/>
+  <int value="6" label="WRITE_STATUS_FAILED_TO_COALESCE_PACKET"/>
+</enum>
+
+<enum name="ResolutionCategory">
+  <int value="0" label="RESOLVE_SUCCESS"/>
+  <int value="1" label="RESOLVE_FAIL"/>
+  <int value="2" label="RESOLVE_SPECULATIVE_SUCCESS"/>
+  <int value="3" label="RESOLVE_SPECULATIVE_FAIL"/>
+  <int value="4" label="RESOLVE_ABORT"/>
+  <int value="5" label="RESOLVE_SPECULATIVE_ABORT"/>
+</enum>
+
+<enum name="RSAKeyUsage">
+  <int value="0" label="Not an RSA key"/>
+  <int value="1" label="OK (no extension)"/>
+  <int value="2" label="OK (both bits present)"/>
+  <int value="3" label="OK (digitalSignature present)"/>
+  <int value="4" label="OK (keyEncipherment present)"/>
+  <int value="5" label="Missing digitalSignature"/>
+  <int value="6" label="Missing keyEncipherment"/>
+  <int value="7" label="Error parsing certificate"/>
+</enum>
+
+<enum name="SCTOrigin">
+  <int value="0" label="SCT_EMBEDDED"/>
+  <int value="1" label="SCT_FROM_TLS_EXTENSION"/>
+  <int value="2" label="SCT_FROM_OCSP_RESPONSE"/>
+</enum>
+
+<enum name="SCTVerifyStatus">
+  <int value="0" label="SCT_STATUS_NONE"/>
+  <int value="1" label="SCT_STATUS_LOG_UNKNOWN"/>
+  <int value="2" label="DEPRECATED: SCT_STATUS_INVALID"/>
+  <int value="3" label="SCT_STATUS_OK"/>
+  <int value="4" label="SCT_STATUS_INVALID_SIGNATURE"/>
+  <int value="5" label="SCT_STATUS_INVALID_TIMESTAMP"/>
+</enum>
+
+<enum name="SecureDnsModeDetails">
+  <int value="0" label="Off, by user choice"/>
+  <int value="1" label="Off, by enterprise policy"/>
+  <int value="2" label="Off, due to managed environment"/>
+  <int value="3" label="Off, due to parental controls"/>
+  <int value="4" label="Automatic, by user choice"/>
+  <int value="5" label="Automatic, by enterprise policy"/>
+  <int value="6" label="Secure, by user choice"/>
+  <int value="7" label="Secure, by enterprise policy"/>
+</enum>
+
+<enum name="SharedDictionaryStoreError">
+  <int value="0" label="Ok"/>
+  <int value="1" label="FailedToInitializeDatabase"/>
+  <int value="2" label="InvalidSql"/>
+  <int value="3" label="FailedToExecuteSql"/>
+  <int value="4" label="FailedToBeginTransaction"/>
+  <int value="5" label="FailedToCommitTransaction"/>
+  <int value="6" label="InvalidTotalDictSize"/>
+  <int value="7" label="FailedToGetTotalDictSize"/>
+  <int value="8" label="FailedToSetTotalDictSize"/>
+  <int value="9" label="TooBigDictionary"/>
+</enum>
+
+<enum name="SpdyFrameFlowControlState">
+  <int value="0" label="Send not stalled"/>
+  <int value="1" label="Send stalled by stream"/>
+  <int value="2" label="Send stalled by session"/>
+  <int value="3" label="Send stalled by stream and session"/>
+</enum>
+
+<enum name="SpdyIPPoolDomainMatch">
+  <int value="0" label="mismatch"/>
+  <int value="1" label="match"/>
+</enum>
+
+<enum name="SpdyProtocolErrorDetails2">
+<!-- SpdyFramer::SpdyErrors -->
+
+  <int value="0" label="No error"/>
+  <int value="1" label="Invalid Control Frame"/>
+  <int value="2" label="Control Frame Payload Too Large"/>
+  <int value="3" label="Zlib Init Failure"/>
+  <int value="4" label="Unsupported Version"/>
+  <int value="5" label="Decompress Failure"/>
+  <int value="6" label="Compress Failure"/>
+  <int value="7" label="Credential Frame Corrupt"/>
+  <int value="8" label="Invalid Data Frame Flags"/>
+  <int value="9" label="Invalid Control Frame Flags"/>
+<!-- SpdyRstStreamStatus -->
+
+  <int value="10" label="(Unused)"/>
+  <int value="11" label="Protocol Error"/>
+  <int value="12" label="Closed Stream"/>
+  <int value="13" label="Refused Stream"/>
+  <int value="14" label="Unsupported Version (SpdyRstStreamStatus)"/>
+  <int value="15" label="Cancel"/>
+  <int value="16" label="Internal Error"/>
+  <int value="17" label="Flow Control Error"/>
+  <int value="18" label="Stream In Use"/>
+  <int value="19" label="Stream Already Closed"/>
+  <int value="20" label="Invalid Credentials"/>
+  <int value="21" label="Frame Too Large"/>
+<!-- SpdySession errors -->
+
+  <int value="22" label="Unexpected Ping"/>
+  <int value="23" label="Rst Stream For Non Active Stream"/>
+  <int value="24" label="Spdy Compression Failure"/>
+  <int value="25" label="Request For Secure Content Over Insecure Session"/>
+  <int value="26" label="Syn Reply Not Received"/>
+  <int value="27" label="Invalid Window Update Size"/>
+  <int value="28" label="Receive Window Size Violation"/>
+<!-- More SpdyFramer::SpdyErrors -->
+
+  <int value="29" label="GoAway Frame Corrupt"/>
+  <int value="30" label="RstStream Frame Corrupt"/>
+  <int value="31" label="Unexpected Frame (Expected Continuation)"/>
+<!-- More SpdyRstStreamStatus -->
+
+  <int value="32" label="Timeout waiting for settings acknowledgement"/>
+  <int value="33"
+      label="Connection established in response to CONNECT request was
+             abnormally closed"/>
+  <int value="34" label="Peer exhibiting suspect behavior."/>
+  <int value="35" label="Inadequate security."/>
+  <int value="36" label="HTTP/1.1 required."/>
+<!-- More SpdyFramer::SpdyErrors -->
+
+  <int value="37" label="Invalid control frame size."/>
+  <int value="38" label="Invalid stream ID."/>
+  <int value="39" label="Invalid padding length."/>
+  <int value="40" label="Oversized payload."/>
+<!-- More SpdyRstStreamStatus -->
+
+  <int value="41" label="No error."/>
+  <int value="42" label="Compression error."/>
+<!-- HttpDecoder or HttpDecoderAdapter errors -->
+
+  <int value="43" label="Varint beyond implementation limit."/>
+  <int value="44" label="Name length varint error."/>
+  <int value="45" label="Value legnth varint error."/>
+  <int value="46" label="Name string literal length exceeds buffer limit."/>
+  <int value="47" label="Value string literal length exceeds buffer limit."/>
+  <int value="48" label="Error in Huffman encoding for name."/>
+  <int value="49" label="Error in Huffman encoding for value."/>
+  <int value="50"
+      label="Next instruction should have been a dynamic table size update."/>
+  <int value="51"
+      label="Invalid index in indexed header field representation."/>
+  <int value="52"
+      label="Invalid index in literal header field with indexed name
+             representation."/>
+  <int value="53" label="Dynamic table size update not allowed."/>
+  <int value="54"
+      label="Initial dynamic table size update is above low water mark."/>
+  <int value="55"
+      label="Dynamic table size update is above acknowledged setting."/>
+  <int value="56" label="HPACK block ends in the middle of an instruction."/>
+  <int value="57" label="Incoming data fragment exceeds buffer limit."/>
+  <int value="58" label="Total compressed HPACK data size exceeds limit."/>
+</enum>
+
+<enum name="SpdyPushedStreamFate">
+  <int value="0" label="TOO_MANY_PUSHED_STREAMS"/>
+  <int value="1" label="TIMEOUT"/>
+  <int value="2" label="PROMISED_STREAM_ID_PARITY_ERROR"/>
+  <int value="3" label="ASSOCIATED_STREAM_ID_PARITY_ERROR"/>
+  <int value="4" label="STREAM_ID_OUT_OF_ORDER"/>
+  <int value="5" label="GOING_AWAY"/>
+  <int value="6" label="INVALID_URL"/>
+  <int value="7" label="INACTIVE_ASSOCIATED_STREAM"/>
+  <int value="8" label="NON_HTTP_SCHEME_FROM_TRUSTED_PROXY"/>
+  <int value="9" label="NON_HTTPS_PUSHED_SCHEME"/>
+  <int value="10" label="NON_HTTPS_ASSOCIATED_SCHEME"/>
+  <int value="11" label="CERTIFICATE_MISMATCH"/>
+  <int value="12" label="DUPLICATE_URL"/>
+  <int value="13" label="CLIENT_REQUEST_NOT_RANGE"/>
+  <int value="14" label="PUSHED_REQUEST_NOT_RANGE"/>
+  <int value="15" label="RANGE_MISMATCH"/>
+  <int value="16" label="VARY_MISMATCH"/>
+  <int value="17" label="ACCEPTED_NO_VARY"/>
+  <int value="18" label="ACCEPTED_MATCHING_VARY"/>
+  <int value="19" label="PUSH_DISABLED"/>
+  <int value="20" label="ALREADY_IN_CACHE"/>
+  <int value="21" label="UNSUPPORTED_STATUS_CODE"/>
+</enum>
+
+<enum name="SpdySessionGet">
+  <int value="0" label="created new"/>
+  <int value="1" label="found existing"/>
+  <int value="2" label="found existing from IP Pool"/>
+  <int value="3" label="imported from socket"/>
+</enum>
+
+<enum name="SSLECHResult">
+  <summary>The result of a TLS connection that offered ECH</summary>
+  <int value="0" label="The connection succeeded on the initial connection"/>
+  <int value="1"
+      label="The connection failed on the initial connection, without
+             providing retry configs"/>
+  <int value="2" label="The connection succeeded after getting retry configs"/>
+  <int value="3" label="The connection failed after getting retry configs"/>
+  <int value="4"
+      label="The connection succeeded after getting a rollback signal"/>
+  <int value="5" label="The connection failed after getting a rollback signal"/>
+</enum>
+
+<enum name="SSLHandshakeDetails">
+  <int value="0" label="TLS 1.2 (or earlier) full handshake (2-RTT)"/>
+  <int value="1" label="TLS 1.2 (or earlier) resumption (1-RTT)"/>
+  <int value="2" label="TLS 1.2 full handshake with False Start (1-RTT)"/>
+  <int value="3"
+      label="TLS 1.3 full handshake, HelloRetryRequest unknown (1-RTT or
+             2-RTT)"/>
+  <int value="4"
+      label="TLS 1.3 resumption handshake, HelloRetryRequest unknown (1-RTT
+             or 2-RTT)"/>
+  <int value="5" label="TLS 1.3 0-RTT handshake (0-RTT)"/>
+  <int value="6" label="TLS 1.3 full handshake (1-RTT)"/>
+  <int value="7" label="TLS 1.3 resumption handshake (1-RTT)"/>
+  <int value="8" label="TLS 1.3 full handshake with HelloRetryRequest (2-RTT)"/>
+  <int value="9"
+      label="TLS 1.3 resumption handshake with HelloRetryRequest (2-RTT)"/>
+</enum>
+
+<enum name="SSLHandshakeEarlyDataReason">
+<!-- Corresponds to //third_party/boringssl's ssl_early_data_reason_t -->
+
+  <int value="0"
+      label="The handshake has not progressed far enough for the 0-RTT status
+             to be known."/>
+  <int value="1" label="0-RTT is disabled for this connection."/>
+  <int value="2" label="0-RTT was accepted."/>
+  <int value="3"
+      label="The negotiated protocol version does not support 0-RTT."/>
+  <int value="4"
+      label="The peer declined to offer or accept 0-RTT for an unknown
+             reason."/>
+  <int value="5" label="The client did not offer a session."/>
+  <int value="6" label="The server declined to resume the session."/>
+  <int value="7" label="The session does not support 0-RTT."/>
+  <int value="8" label="The server sent a HelloRetryRequest."/>
+  <int value="9"
+      label="The negotiated ALPN protocol did not match the session."/>
+  <int value="10"
+      label="The connection negotiated Channel ID, which is incompatible with
+             0-RTT."/>
+  <int value="11"
+      label="The connection negotiated token binding, which is incompatible
+             with 0-RTT."/>
+  <int value="12" label="The client and server ticket age were too far apart."/>
+  <int value="13"
+      label="QUIC parameters differ between this connection and the original."/>
+</enum>
+
+<enum name="SSLKeyLogFileAction">
+  <int value="0" label="SSLKeyLogger enabled"/>
+  <int value="1" label="ssl-key-log-file switch set"/>
+  <int value="2" label="SSLKEYLOGFILE environment variable set"/>
+</enum>
+
+<enum name="SSLLegacyCryptoFallback">
+  <int value="0" label="No fallback used"/>
+  <int value="1" label="Used fallback and negotiated 3DES"/>
+  <int value="2" label="Used fallback and negotiated SHA-1"/>
+  <int value="3"
+      label="Used fallback and sent a certificate signed with
+             RSASSA-PKCS1-v1_5-SHA-1"/>
+  <int value="4"
+      label="Used fallback, negotiated 3DES, and sent a certificate signed
+             with RSASSA-PKCS1-v1_5-SHA-1"/>
+  <int value="5"
+      label="Used fallback, negotiated SHA-1, and sent a certificate signed
+             with RSASSA-PKCS1-v1_5-SHA-1"/>
+  <int value="6" label="Used fallback for unknown reason"/>
+</enum>
+
+<enum name="SSLNegotiatedAlpnProtocol">
+  <int value="0" label="ALPN not used"/>
+  <int value="1" label="HTTP/1.1 negotiated via ALPN"/>
+  <int value="2" label="HTTP/2 negotiated via ALPN"/>
+</enum>
+
+<enum name="SSLOrQUICVersion">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SSL 2.0"/>
+  <int value="2" label="SSL 3.0"/>
+  <int value="3" label="TLS 1.0"/>
+  <int value="4" label="TLS 1.1"/>
+  <int value="5" label="TLS 1.2"/>
+  <int value="6" label="TLS 1.3"/>
+  <int value="7" label="QUIC"/>
+</enum>
+
+<enum name="TPMSupport">
+  <int value="0" label="None"/>
+  <int value="1" label="RSA"/>
+  <int value="2" label="ECDSA"/>
+</enum>
+
+<enum name="TPMType">
+  <int value="0" label="None"/>
+  <int value="1" label="HW"/>
+  <int value="2" label="Virtual"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<enum name="TrustTokenRequestHelperFactoryOutcome">
+  <int value="0" label="Successfully created an issuance helper"/>
+  <int value="1" label="Successfully created a redemption helper"/>
+  <int value="2" label="Successfully created a signing helper"/>
+  <int value="3" label="Empty 'issuers' parameter"/>
+  <int value="4" label="Unsuitable issuer in 'issuers' parameter"/>
+  <int value="5" label="Unsuitable top frame origin"/>
+  <int value="6"
+      label="Request rejected due to bearing an internal Trust Tokens header"/>
+  <int value="7" label="Rejected by authorizer (check cookie settings?)"/>
+</enum>
+
+<enum name="UnexportableKeyServiceResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Crypto API failed"/>
+  <int value="2" label="Key not found"/>
+  <int value="3" label="Key collision"/>
+  <int value="4" label="No key provider"/>
+  <int value="5" label="Algorithm not supported"/>
+  <int value="6" label="Key not ready"/>
+</enum>
+
+<enum name="UnsolicitedHttpsRecordStatus">
+  <int value="0" label="Malformed"/>
+  <int value="1" label="Alias"/>
+  <int value="2" label="Service"/>
+</enum>
+
+<enum name="URLRequestReferrerPolicy">
+  <int value="0" label="CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE"/>
+  <int value="1"
+      label="REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN"/>
+  <int value="2" label="ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN"/>
+  <int value="3" label="NEVER_CLEAR_REFERRER"/>
+  <int value="4" label="ORIGIN"/>
+  <int value="5" label="CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN"/>
+  <int value="6" label="ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE"/>
+  <int value="7" label="NO_REFERRER"/>
+</enum>
+
+<enum name="WebSocketFallbackResult">
+  <int value="0" label="Success over HTTP/1.1"/>
+  <int value="1" label="Success over HTTP/2"/>
+  <int value="2" label="Success over HTTP/1.1 after fallback"/>
+  <int value="3" label="Failure without fallback"/>
+  <int value="4" label="Failure after fallback"/>
+</enum>
+
+<enum name="WebSocketHandshakeResult2">
+  <int value="0" label="INCOMPLETE">
+    Handshake not completed via Upgrade over HTTP/1 connection.
+  </int>
+  <int value="1" label="INVALID_STATUS">
+    Server responded to Upgrade request with invalid status.
+  </int>
+  <int value="2" label="EMPTY_RESPONSE">
+    Server responded to Upgrade request with empty response.
+  </int>
+  <int value="3" label="FAILED_SWITCHING_PROTOCOLS">
+    Server responded to Upgrade request with 101 status but there was some other
+    network error.
+  </int>
+  <int value="4" label="FAILED_UPGRADE">
+    Server responded to Upgrade request with invalid Upgrade header.
+  </int>
+  <int value="5" label="FAILED_ACCEPT">
+    Server responded to Upgrade request with invalid Sec-WebSocket-Accept
+    header.
+  </int>
+  <int value="6" label="FAILED_CONNECTION">
+    Server responded to Upgrade request with invalid Connection header.
+  </int>
+  <int value="7" label="FAILED_SUBPROTO">
+    Server responded to Upgrade request with invalid Sec-WebSocket-Protocol
+    header.
+  </int>
+  <int value="8" label="FAILED_EXTENSIONS">
+    Server responded to Upgrade request with invalid Sec-WebSocket-Extensions
+    header.
+  </int>
+  <int value="9" label="FAILED">
+    Upgrade request failed due to other network error.
+  </int>
+  <int value="10" label="CONNECTED">
+    Connected via Upgrade over HTTP/1 connection.
+  </int>
+  <int value="11" label="HTTP2_INCOMPLETE">
+    Handshake not completed over an HTTP/2 connection.
+  </int>
+  <int value="12" label="HTTP2_FAILED_STATUS">
+    Server responded to WebSocket request over an HTTP/2 connection with invalid
+    status code.
+  </int>
+  <int value="13" label="HTTP2_FAILED_SUBPROTO">
+    Server responded to WebSocket request over an HTTP/2 connection with invalid
+    sec-websocket-protocol header.
+  </int>
+  <int value="14" label="HTTP2_FAILED_EXTENSIONS">
+    Server responded to WebSocket request over an HTTP/2 connection with invalid
+    sec-websocket-extensions header.
+  </int>
+  <int value="15" label="HTTP2_FAILED">
+    WebSocket request over an HTTP/2 connection failed with some other error.
+  </int>
+  <int value="16" label="HTTP2_CONNECTED">
+    Connected over an HTTP/2 connection.
+  </int>
+  <int value="17" label="HTTP3_INCOMPLETE">
+    Handshake not completed over an HTTP/3 connection.
+  </int>
+  <int value="18" label="HTTP3_FAILED_STATUS">
+    Server responded to WebSocket request over an HTTP/3 connection with invalid
+    status code.
+  </int>
+  <int value="19" label="HTTP3_FAILED_SUBPROTO">
+    Server responded to WebSocket request over an HTTP/3 connection with invalid
+    sec-websocket-protocol header.
+  </int>
+  <int value="20" label="HTTP3_FAILED_EXTENSIONS">
+    Server responded to WebSocket request over an HTTP/3 connection with invalid
+    sec-websocket-extensions header.
+  </int>
+  <int value="21" label="HTTP3_FAILED">
+    WebSocket request over an HTTP/3 connection failed with some other error.
+  </int>
+  <int value="22" label="HTTP3_CONNECTED">
+    Connected over an HTTP/3 connection.
+  </int>
+</enum>
+
+<enum name="ZeroRttState">
+  <int value="0" label="Attempted and succeeded"/>
+  <int value="1" label="Attempted and rejected"/>
+  <int value="2" label="Not Attempted"/>
+</enum>
+
+<enum name="ZstdFilterDecodingStatus">
+  <int value="0" label="In progress"/>
+  <int value="1" label="End of Frame"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="ZstdFilterErrorCode">
+  <int value="0" label="No error detected"/>
+  <int value="1" label="Error (generic)"/>
+  <int value="2" label="Reserved (2)"/>
+  <int value="3" label="Reserved (3)"/>
+  <int value="4" label="Reserved (4)"/>
+  <int value="5" label="Reserved (5)"/>
+  <int value="6" label="Reserved (6)"/>
+  <int value="7" label="Reserved (7)"/>
+  <int value="8" label="Reserved (8)"/>
+  <int value="9" label="Reserved (9)"/>
+  <int value="10" label="Unknown frame descriptor"/>
+  <int value="11" label="Reserved (11)"/>
+  <int value="12" label="Version not supported"/>
+  <int value="13" label="Reserved (13)"/>
+  <int value="14" label="Unsupported frame parameter"/>
+  <int value="15" label="Reserved (15)"/>
+  <int value="16" label="Frame requires too much memory for decoding"/>
+  <int value="17" label="Reserved (17)"/>
+  <int value="18" label="Reserved (18)"/>
+  <int value="19" label="Reserved (19)"/>
+  <int value="20" label="Data corruption detected"/>
+  <int value="21" label="Reserved (21)"/>
+  <int value="22" label="Restored data doesn't match checksum"/>
+  <int value="23" label="Reserved (23)"/>
+  <int value="24"
+      label="Header of Literals' block doesn't respect format specification"/>
+  <int value="25" label="Reserved (25)"/>
+  <int value="26" label="Reserved (26)"/>
+  <int value="27" label="Reserved (27)"/>
+  <int value="28" label="Reserved (28)"/>
+  <int value="29" label="Reserved (29)"/>
+  <int value="30" label="Dictionary is corrupted"/>
+  <int value="31" label="Reserved (31)"/>
+  <int value="32" label="Dictionary mismatch"/>
+  <int value="33" label="Reserved (33)"/>
+  <int value="34" label="Cannot create Dictionary from provided samples"/>
+  <int value="35" label="Reserved (35)"/>
+  <int value="36" label="Reserved (36)"/>
+  <int value="37" label="Reserved (37)"/>
+  <int value="38" label="Reserved (38)"/>
+  <int value="39" label="Reserved (39)"/>
+  <int value="40" label="Unsupported parameter"/>
+  <int value="41" label="Unsupported combination of parameters"/>
+  <int value="42" label="Parameter is out of bound"/>
+  <int value="43" label="Reserved (43)"/>
+  <int value="44" label="TableLog requires too much memory : unsupported"/>
+  <int value="45" label="Reserved (45)"/>
+  <int value="46" label="Unsupported max Symbol Value : too large"/>
+  <int value="47" label="Reserved (47)"/>
+  <int value="48" label="Specified maxSymbolValue is too small"/>
+  <int value="49" label="Reserved (49)"/>
+  <int value="50" label="Pledged buffer stability condition is not respected"/>
+  <int value="51" label="Reserved (51)"/>
+  <int value="52" label="Reserved (52)"/>
+  <int value="53" label="Reserved (53)"/>
+  <int value="54" label="Reserved (54)"/>
+  <int value="55" label="Reserved (55)"/>
+  <int value="56" label="Reserved (56)"/>
+  <int value="57" label="Reserved (57)"/>
+  <int value="58" label="Reserved (58)"/>
+  <int value="59" label="Reserved (59)"/>
+  <int value="60" label="Operation not authorized at current processing stage"/>
+  <int value="61" label="Reserved (61)"/>
+  <int value="62" label="Context should be init first"/>
+  <int value="63" label="Reserved (63)"/>
+  <int value="64" label="Allocation error : not enough memory"/>
+  <int value="65" label="Reserved (65)"/>
+  <int value="66" label="WorkSpace buffer is not large enough"/>
+  <int value="67" label="Reserved (67)"/>
+  <int value="68" label="Reserved (68)"/>
+  <int value="69" label="Reserved (69)"/>
+  <int value="70" label="Destination buffer is too small"/>
+  <int value="71" label="Reserved (71)"/>
+  <int value="72" label="Src size is incorrect"/>
+  <int value="73" label="Reserved (73)"/>
+  <int value="74" label="Operation on NULL destination buffer"/>
+  <int value="75" label="Reserved (75)"/>
+  <int value="76" label="Reserved (76)"/>
+  <int value="77" label="Reserved (77)"/>
+  <int value="78" label="Reserved (78)"/>
+  <int value="79" label="Reserved (79)"/>
+  <int value="80"
+      label="Operation made no progress over multiple calls, due to output
+             buffer being full"/>
+  <int value="81" label="Reserved (81)"/>
+  <int value="82"
+      label="Operation made no progress over multiple calls, due to input
+             being empty"/>
+  <int value="83" label="Reserved (83)"/>
+  <int value="84" label="Reserved (84)"/>
+  <int value="85" label="Reserved (85)"/>
+  <int value="86" label="Reserved (86)"/>
+  <int value="87" label="Reserved (87)"/>
+  <int value="88" label="Reserved (88)"/>
+  <int value="89" label="Reserved (89)"/>
+  <int value="90" label="Reserved (90)"/>
+  <int value="91" label="Reserved (91)"/>
+  <int value="92" label="Reserved (92)"/>
+  <int value="93" label="Reserved (93)"/>
+  <int value="94" label="Reserved (94)"/>
+  <int value="95" label="Reserved (95)"/>
+  <int value="96" label="Reserved (96)"/>
+  <int value="97" label="Reserved (97)"/>
+  <int value="98" label="Reserved (98)"/>
+  <int value="99" label="Reserved (99)"/>
+  <int value="100" label="Frame index is too large"/>
+  <int value="101" label="Reserved (101)"/>
+  <int value="102" label="An I/O error occurred when reading/seeking"/>
+  <int value="103" label="Reserved (103)"/>
+  <int value="104" label="Destination buffer is wrong"/>
+  <int value="105" label="Source buffer is wrong"/>
+  <int value="106"
+      label="Block-level external sequence producer returned an error code"/>
+  <int value="107" label="External sequences are not valid"/>
+  <int value="108" label="Reserved (108)"/>
+  <int value="109" label="Reserved (109)"/>
+  <int value="110" label="Reserved (110)"/>
+  <int value="111" label="Reserved (111)"/>
+  <int value="112" label="Reserved (112)"/>
+  <int value="113" label="Reserved (113)"/>
+  <int value="114" label="Reserved (114)"/>
+  <int value="115" label="Reserved (115)"/>
+  <int value="116" label="Reserved (116)"/>
+  <int value="117" label="Reserved (117)"/>
+  <int value="118" label="Reserved (118)"/>
+  <int value="119" label="Reserved (119)"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

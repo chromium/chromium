@@ -28,9 +28,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * <p>This is used as a dynamic resource within the {@link ContextualSearchBarControl}.
  */
 public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
-    /**
-     * The search term View.
-     */
+    /** The search term View. */
     private TextView mSearchTerm;
 
     /**
@@ -39,12 +37,19 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
      * @param container         The container View used to inflate the View.
      * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
-    public ContextualSearchTermControl(OverlayPanel panel,
-                                          Context context,
-                                          ViewGroup container,
-                                          DynamicResourceLoader resourceLoader) {
-        super(panel, R.layout.contextual_search_term_view, R.id.contextual_search_term_view,
-                context, container, resourceLoader, R.dimen.contextual_search_end_padding,
+    public ContextualSearchTermControl(
+            OverlayPanel panel,
+            Context context,
+            ViewGroup container,
+            DynamicResourceLoader resourceLoader) {
+        super(
+                panel,
+                R.layout.contextual_search_term_view,
+                R.id.contextual_search_term_view,
+                context,
+                container,
+                resourceLoader,
+                R.dimen.contextual_search_end_padding,
                 R.dimen.contextual_search_padded_button_width);
     }
 
@@ -66,9 +71,9 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
         return mSearchTerm == null ? 0 : mSearchTerm.getHeight();
     }
 
-    //========================================================================================
+    // ========================================================================================
     // OverlayPanelInflater overrides
-    //========================================================================================
+    // ========================================================================================
 
     @Override
     protected void onFinishInflate() {
@@ -78,9 +83,9 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
         mSearchTerm = (TextView) view.findViewById(R.id.contextual_search_term);
     }
 
-    //========================================================================================
+    // ========================================================================================
     // OverlayPanelTextViewInflater overrides
-    //========================================================================================
+    // ========================================================================================
 
     @Override
     protected TextView getTextView() {

@@ -6,8 +6,8 @@
 /*
  * #css_wrapper_metadata_start
  * #type=style
- * #css_wrapper_metadata_end
- */
+ * #css_wrapper_metadata_end */
+
 :host {
   --scanning-action-toolbar-font-family: Roboto;
   --scanning-app-title-font-family: "Google Sans", Roboto, sans-serif;

@@ -118,17 +118,22 @@ void FakeLoginDisplayHost::UpdateWallpaper(const AccountId& prefilled_account) {
 
 bool FakeLoginDisplayHost::IsUserAllowlisted(
     const AccountId& account_id,
-    const absl::optional<user_manager::UserType>& user_type) {
+    const std::optional<user_manager::UserType>& user_type) {
   return false;
 }
 
 void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
+
+void FakeLoginDisplayHost::StartUserRecovery(
+    const AccountId& account_to_recover) {}
 
 void FakeLoginDisplayHost::ShowAllowlistCheckFailedError() {}
 
 void FakeLoginDisplayHost::ShowOsInstallScreen() {}
 
 void FakeLoginDisplayHost::ShowGuestTosScreen() {}
+
+void FakeLoginDisplayHost::ShowRemoteActivityNotificationScreen() {}
 
 void FakeLoginDisplayHost::HideOobeDialog(bool saml_page_closed) {}
 
@@ -155,8 +160,6 @@ void FakeLoginDisplayHost::RequestSystemInfoUpdate() {}
 bool FakeLoginDisplayHost::HasUserPods() {
   return false;
 }
-
-void FakeLoginDisplayHost::VerifyOwnerForKiosk(base::OnceClosure) {}
 
 void FakeLoginDisplayHost::AddObserver(LoginDisplayHost::Observer* observer) {}
 

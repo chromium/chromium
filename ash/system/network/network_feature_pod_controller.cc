@@ -208,7 +208,7 @@ void NetworkFeaturePodController::OnIconPressed() {
   // well as when the network technology cannot be toggled, e.g. ethernet.
   if (!was_enabled || !can_toggle) {
     TrackDiveInUMA();
-    tray_controller_->ShowNetworkDetailedView(/*force=*/!can_toggle);
+    tray_controller_->ShowNetworkDetailedView();
   }
 }
 
@@ -216,7 +216,7 @@ void NetworkFeaturePodController::OnLabelPressed() {
   TrackDiveInUMA();
 
   SetNetworkTypeEnabled(true);
-  tray_controller_->ShowNetworkDetailedView(/*force=*/true);
+  tray_controller_->ShowNetworkDetailedView();
 }
 
 void NetworkFeaturePodController::PropagateThemeChanged() {

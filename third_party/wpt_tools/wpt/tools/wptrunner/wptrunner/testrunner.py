@@ -701,8 +701,15 @@ class TestRunnerManager(threading.Thread):
                 # change result to unexpected if expected_fail_message does not
                 # match
                 expected_fail_message = test.expected_fail_message(result.name)
-                if expected_fail_message is not None and result.message != expected_fail_message:
+                if expected_fail_message is not None and result.message.strip() != expected_fail_message:
                     is_unexpected = True
+                    if result.status in known_intermittent:
+                        known_intermittent.remove(result.status)
+                    elif len(known_intermittent) > 0:
+                        expected = known_intermittent[0]
+                        known_intermittent = known_intermittent[1:]
+                    else:
+                        expected = "PASS"
 
             if is_unexpected:
                 subtest_unexpected = True

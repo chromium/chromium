@@ -110,7 +110,9 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_CELLULAR_SETUP_CONFIRMATION_CODE_PAGE_TITLE},
     {"profileLoadingPageTitle", IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_TITLE},
     {"profileLoadingPageMessage",
-     IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_MESSAGE}};
+     IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_MESSAGE},
+    {"eSimCarrierLockedDevice",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CARRIER_LOCKED_DEVICE}};
 
 struct NamedBoolean {
   const char* name;

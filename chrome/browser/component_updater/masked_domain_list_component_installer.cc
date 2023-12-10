@@ -20,9 +20,15 @@ void RegisterMaskedDomainListComponent(ComponentUpdateService* cus) {
 
   auto policy = std::make_unique<MaskedDomainListComponentInstallerPolicy>(
       /*on_list_ready=*/base::BindRepeating(
-          [](base::Version version, std::string raw_mdl) {
-            VLOG(1) << "Received Masked Domain List";
-            content::GetNetworkService()->UpdateMaskedDomainList(raw_mdl);
+          [](base::Version version,
+             const absl::optional<std::string>& raw_mdl) {
+            if (raw_mdl.has_value()) {
+              VLOG(1) << "Received Masked Domain List";
+              content::GetNetworkService()->UpdateMaskedDomainList(
+                  raw_mdl.value());
+            } else {
+              LOG(ERROR) << "Could not read Masked Domain List file";
+            }
           }));
 
   base::MakeRefCounted<ComponentInstaller>(std::move(policy))

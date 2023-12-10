@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mr">
+<translation id="1220509181886849806">सेव्ह केलेला पासवर्ड वापरायचा आहे का?</translation>
+<translation id="1435940442311036198">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
+<translation id="1717486229951421299">स्पर्श करून भरायची असलेली क्रेडेंशियलची सूची अर्ध्या भागावर उघडली आहे.</translation>
+<translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2364266287022099258">सेव्ह केलेली पासकी वापरायची आहे का?</translation>
+<translation id="3399357656427473483">स्पर्श करून भरायची असलेली क्रेडेंशियलची सूची.</translation>
+<translation id="3653689374478248324">तुम्ही <ph name="SITE_NAME" /> मध्ये साइन इन कराल</translation>
+<translation id="3950820424414687140">साइन इन करा</translation>
+<translation id="4553044860350038560">आणखी पासकी</translation>
+<translation id="4598345735110653698">पासकी व्यवस्थापित करा</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> साठी पासवर्ड</translation>
+<translation id="4907224763885298217">तुमचे स्‍क्रीन लॉक वापरा</translation>
+<translation id="5012523644916800014">पासवर्ड आणि पासकी व्यवस्थापित करा</translation>
+<translation id="5441504010984421144">स्पर्श करून भरायची असलेली क्रेडेंशियलची सूची संपूर्ण भागावर उघडली आहे.</translation>
+<translation id="5591247451101092906">सेव्ह केलेला पासवर्ड किंवा पासकी वापरायची आहे का?</translation>
+<translation id="5624120631404540903">पासवर्ड व्यवस्थापित करा</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> साठी पासकी, तुमचे स्क्रीन लॉक वापरा</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{या साइटसाठी नवीन पासवर्ड}other{या साइटसाठी नवीन पासवर्ड}}</translation>
+<translation id="7286867818472074330">पासकी निवडा</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> पैकी <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815">तुम्हाला <ph name="SITE_NAME" /> चे पासवर्ड मिळाले आहेत</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> यांनी तुमच्यासोबत <ph name="SITE_NAME" /> चा पासवर्ड शेअर केला आहे</translation>
+<translation id="8891372124884726271">क्रेडेंशियलची सूची बंद आहे.</translation>
+</translationbundle>

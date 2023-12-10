@@ -145,71 +145,66 @@ component("protobuf_lite") {
 # specify the LITE_RUNTIME option. The protocol compiler itself (protoc) falls
 # into that category. Do not use in Chrome code.
 static_library("protobuf_full") {
-  # Prevent people from depending on this outside our file.
-  visibility = [
-    ":*",
+  if (defined(build_with_chromium) && build_with_chromium) {
+    # Prevent people from depending on this outside our file.
+    visibility = [
+      ":*",
 
-    # Used for testing protobuf generation.
-    "//base/test:proto_test_support",
+      # Used for testing protobuf generation.
+      "//base/test:proto_test_support",
 
-    # requires descriptors & reflection; testonly.
-    "//third_party/libprotobuf-mutator:*",
+      # requires descriptors & reflection; testonly.
+      "//third_party/libprotobuf-mutator:*",
 
-    # Chromecast requires descriptors and reflection.
-    "//chromecast/*",
+      # Chromecast requires descriptors and reflection.
+      "//chromecast/*",
 
-    # libassistant requires descriptors and reflection for testing.
-    "//libassistant/*",
+      # libassistant requires descriptors and reflection for testing.
+      "//libassistant/*",
 
-    # Perfetto uses the full library for testing.
-    "//third_party/perfetto/gn:protobuf_full",
+      # Perfetto uses the full library for testing.
+      "//third_party/perfetto/gn:protobuf_full",
 
-    # Some tests inside ChromeOS need reflection to parse golden files.
-    # Not included in production code.
-    "//chrome/test:usage_time_limit_unittests",
+      # Some tests inside ChromeOS need reflection to parse golden files.
+      # Not included in production code.
+      "//chrome/test:usage_time_limit_unittests",
 
-    # The protobuf-based SQLite and GPU fuzzers need protobuf_full and are not
-    # included in Chrome.
-    "//gpu:gl_lpm_fuzzer_proto",
-    "//gpu:gl_lpm_fuzzer_proto_gen",
-    "//gpu:gl_lpm_shader_to_string_unittest",
-    "//testing/libfuzzer/fuzzers:command_buffer_lpm_fuzzer_proto",
-    "//testing/libfuzzer/fuzzers:command_buffer_lpm_fuzzer_proto_gen",
-    "//third_party/sqlite:sqlite3_lpm_corpus_gen",
+      # The protobuf-based SQLite and GPU fuzzers need protobuf_full and are not
+      # included in Chrome.
+      "//gpu:gl_lpm_fuzzer_proto",
+      "//gpu:gl_lpm_fuzzer_proto_gen",
+      "//gpu:gl_lpm_shader_to_string_unittest",
+      "//testing/libfuzzer/fuzzers:command_buffer_lpm_fuzzer_proto",
+      "//testing/libfuzzer/fuzzers:command_buffer_lpm_fuzzer_proto_gen",
+      "//third_party/sqlite:sqlite3_lpm_corpus_gen",
 
-    # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not included
-    # in Chrome.
-    "//mojo/public/tools/fuzzers:mojolpm",
+      # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not included
+      # in Chrome.
+      "//mojo/public/tools/fuzzers:mojolpm",
 
-    # The root store tool is not part of Chrome itself, and needs to parse
-    # human-readable protobufs. Protobuf is stored in //net/cert however as
-    # browser needs to be able to parse serialized protobuf (which is exposed
-    # as a separate lite BUILD rule).
-    "//net/cert:root_store_proto_full",
+      # The root store tool is not part of Chrome itself, and needs to parse
+      # human-readable protobufs. Protobuf is stored in //net/cert however as
+      # browser needs to be able to parse serialized protobuf (which is exposed
+      # as a separate lite BUILD rule).
+      "//net/cert:root_store_proto_full",
 
-    # The spirv-fuzz fuzzer tool needs protobuf_full and is not included in
-    # Chrome.
-    "//third_party/vulkan-deps/spirv-tools/src:spirv-fuzz",
-    "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz",
-    "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz_proto",
+      # The spirv-fuzz fuzzer tool needs protobuf_full and is not included in
+      # Chrome.
+      "//third_party/vulkan-deps/spirv-tools/src:spirv-fuzz",
+      "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz",
+      "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz_proto",
 
-    # Some fuzzers for tint need protobuf_full and are not included in Chrome.
-    # TODO(dawn:1339): Remove the *third_party/tint* entries once Tint
-    #                  is merged into Dawn
-    "//third_party/dawn/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer",
-    "//third_party/dawn/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer_proto",
-    "//third_party/dawn/src/tint/fuzzers/tint_spirv_tools_fuzzer:tint_spirv_tools_fuzzer",
-    "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer",
-    "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer_proto",
-    "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_spirv_tools_fuzzer:tint_spirv_tools_fuzzer",
+      # Some fuzzers for tint need protobuf_full and are not included in Chrome.
+      "//third_party/dawn/src/tint/*",
 
-    # Dawn LPM Fuzzers
-    "//third_party/dawn/src/dawn/fuzzers:dawn_lpm_proto",
-    "//third_party/dawn/src/dawn/fuzzers:dawn_lpm_proto_gen",
+      # Dawn LPM Fuzzers
+      "//third_party/dawn/src/dawn/fuzzers:dawn_lpm_proto",
+      "//third_party/dawn/src/dawn/fuzzers:dawn_lpm_proto_gen",
 
-    # The Cast Core gRPC generator tool.
-    "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
-  ]
+      # The Cast Core gRPC generator tool.
+      "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
+    ]
+  }
 
   deps = [ "//third_party/zlib" ]
 

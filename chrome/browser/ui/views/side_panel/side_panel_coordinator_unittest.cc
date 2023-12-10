@@ -7,31 +7,54 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/id_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 
 using testing::_;
@@ -47,6 +70,11 @@ std::unique_ptr<SidePanelEntry> CreateEntry(const SidePanelEntry::Key& key) {
       base::BindRepeating([]() { return std::make_unique<views::View>(); }));
 }
 
+std::unique_ptr<KeyedService> BuildSidePanelService(
+    content::BrowserContext* context) {
+  return std::make_unique<extensions::SidePanelService>(context);
+}
+
 }  // namespace
 
 class SidePanelCoordinatorTest : public TestWithBrowserView {
@@ -54,8 +82,8 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     TestWithBrowserView::SetUp();
 
-    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
-    AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+    AddTabToBrowser(GURL("http://foo1.com"));
+    AddTabToBrowser(GURL("http://foo2.com"));
 
     // Add a kSideSearch entry to the contextual registry for the first tab.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
@@ -108,29 +136,29 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
               SidePanelEntry::Id::kSideSearch);
   }
 
-  void VerifyEntryExistenceAndValue(absl::optional<SidePanelEntry*> entry,
+  void VerifyEntryExistenceAndValue(std::optional<SidePanelEntry*> entry,
                                     SidePanelEntry::Id id) {
     ASSERT_TRUE(entry.has_value());
     EXPECT_EQ(entry.value()->key().id(), id);
   }
 
-  void VerifyEntryExistenceAndValue(absl::optional<SidePanelEntry*> entry,
+  void VerifyEntryExistenceAndValue(std::optional<SidePanelEntry*> entry,
                                     const SidePanelEntry::Key& key) {
     ASSERT_TRUE(entry.has_value());
     EXPECT_EQ(entry.value()->key(), key);
   }
 
-  void VerifyEntryExistenceAndValue(absl::optional<SidePanelEntry::Id> entry,
+  void VerifyEntryExistenceAndValue(std::optional<SidePanelEntry::Id> entry,
                                     SidePanelEntry::Id id) {
     ASSERT_TRUE(entry.has_value());
     EXPECT_EQ(entry.value(), id);
   }
 
-  absl::optional<SidePanelEntry::Key> GetLastActiveEntryKey() {
+  std::optional<SidePanelEntry::Key> GetLastActiveEntryKey() {
     return coordinator_->GetLastActiveEntryKey();
   }
 
-  absl::optional<SidePanelEntry::Key> GetSelectedKey() {
+  std::optional<SidePanelEntry::Key> GetSelectedKey() {
     return coordinator_->GetSelectedKey();
   }
 
@@ -138,7 +166,17 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     return coordinator_->header_combobox_ != nullptr;
   }
 
+  void AddTabToBrowser(const GURL& tab_url) {
+    AddTab(browser_view()->browser(), tab_url);
+    // Remove the companion entry if it present.
+    auto* registry =
+        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
+  }
+
  protected:
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> coordinator_;
   raw_ptr<SidePanelRegistry, DanglingUntriaged> global_registry_;
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
@@ -386,6 +424,44 @@ TEST_F(SidePanelCoordinatorTest, SidePanelReopensToLastSeenGlobalEntry) {
   EXPECT_TRUE(GetLastActiveEntryKey().has_value());
   EXPECT_EQ(GetLastActiveEntryKey().value().id(),
             SidePanelEntry::Id::kReadingList);
+}
+
+TEST_F(SidePanelCoordinatorTest, SidePanelToggleWithEntriesTest) {
+  // Show reading list sidepanel.
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kReadingList);
+
+  // Toggle reading list sidepanel to close.
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  // If the same entry is loading, close the sidepanel.
+  coordinator_->SetNoDelaysForTesting(false);
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+  coordinator_->SetNoDelaysForTesting(true);
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  // Toggling reading list followed by bookmarks shows the reading list side
+  // panel followed by the bookmarks side panel.
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kReadingList);
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kBookmarks);
 }
 
 TEST_F(SidePanelCoordinatorTest, ShowOpensSidePanel) {
@@ -1288,7 +1364,7 @@ TEST_F(SidePanelCoordinatorTest, ComboboxAdditionsDoNotChangeSelection) {
   contextual_registry->Deregister(SidePanelEntry::Key(earlier_sorted_entry));
   coordinator_->Show(later_sorted_entry);
   // Verify the selected index in the combobox is the later entry.
-  absl::optional<size_t> selected_index =
+  std::optional<size_t> selected_index =
       coordinator_->GetComboboxForTesting()->GetSelectedIndex();
   EXPECT_TRUE(selected_index.has_value());
   EXPECT_EQ(coordinator_->GetComboboxModelForTesting()
@@ -1687,7 +1763,7 @@ TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
 class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
+    scoped_feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
     SidePanelCoordinatorTest::SetUp();
     content::WebContents* const web_contents =
         browser_view()->browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -1696,6 +1772,25 @@ class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
         SidePanelEntry::Id::kAboutThisSite, std::u16string(), ui::ImageModel(),
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
     contextual_registries_.push_back(registry);
+
+    extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildSidePanelService));
+
+    extension_system_ = static_cast<extensions::TestExtensionSystem*>(
+        extensions::ExtensionSystem::Get(profile()));
+    extension_system_->CreateExtensionService(
+        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+
+    extension_service_ =
+        extensions::ExtensionSystem::Get(profile())->extension_service();
+
+    CHECK(extension_service_);
+  }
+
+  void TearDown() override {
+    extension_service_ = nullptr;
+    extension_system_ = nullptr;
+    TestWithBrowserView::TearDown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -1714,8 +1809,77 @@ class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
         Profile::FromBrowserContext(context));
   }
 
+ protected:
+  void WaitForExtensionsContainerAnimation() {
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
+    // of support in unit tests. Therefore this is a no-op.
+#else
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+#endif
+  }
+
+  void ClickButton(views::Button* button) {
+    views::test::ButtonTestApi(button).NotifyClick(ui::MouseEvent(
+        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  }
+
+  SidePanelEntry::Key GetKeyForExtension(const extensions::ExtensionId& id) {
+    return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
+  }
+
+  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->extensions_container();
+  }
+
+  // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
+  // `enabled` and returns when the API call is complete.
+  void RunSetOptions(const extensions::Extension& extension,
+                     std::optional<int> tab_id,
+                     std::optional<std::string> path,
+                     bool enabled) {
+    auto function =
+        base::MakeRefCounted<extensions::SidePanelSetOptionsFunction>();
+    function->set_extension(&extension);
+
+    std::string tab_id_arg =
+        tab_id.has_value() ? base::StringPrintf(R"("tabId":%d,)", *tab_id) : "";
+    std::string path_arg =
+        path.has_value() ? base::StringPrintf(R"("path":"%s",)", path->c_str())
+                         : "";
+    std::string args =
+        base::StringPrintf(R"([{%s%s"enabled":%s}])", tab_id_arg.c_str(),
+                           path_arg.c_str(), enabled ? "true" : "false");
+    EXPECT_TRUE(extensions::api_test_utils::RunFunction(function.get(), args,
+                                                        profile()))
+        << function->GetError();
+  }
+
+  scoped_refptr<const extensions::Extension> LoadSidePanelExtension() {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder("Yes side panel")
+            .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+            .SetManifestVersion(3)
+            .AddPermission("sidePanel")
+            .Build();
+
+    extension_service()->GrantPermissions(extension.get());
+    extension_service()->AddExtension(extension.get());
+
+    return extension;
+  }
+
+  extensions::ExtensionService* extension_service() {
+    return extension_service_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<extensions::ExtensionService> extension_service_;
+  raw_ptr<extensions::TestExtensionSystem> extension_system_;
 };
 
 TEST_F(SidePanelPinningCoordinatorTest, SidePanelTitleUpdates) {
@@ -1743,6 +1907,50 @@ TEST_F(SidePanelPinningCoordinatorTest, SidePanelTitleUpdates) {
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE));
 }
 
+TEST_F(SidePanelPinningCoordinatorTest, SidePanelPinButtonsHideInGuestMode) {
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(coordinator_->GetHeaderPinButtonForTesting()->GetVisible());
+  coordinator_->Close();
+  TestingProfile* const testprofile = browser()->profile()->AsTestingProfile();
+  testprofile->SetGuestSession(true);
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(coordinator_->GetHeaderPinButtonForTesting()->GetVisible());
+}
+
+// Verifies that clicking the pin button on an extensions side panel, pins the
+// extension in ToolbarActionModel.
+TEST_F(SidePanelPinningCoordinatorTest, ExtensionSidePanelHasPinButton) {
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadSidePanelExtension();
+
+  // Set a global panel with the path to the side panel to use.
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt,
+                /*path=*/"panel.html",
+                /*enabled=*/true);
+
+  coordinator_->Show(GetKeyForExtension(extension->id()));
+  EXPECT_TRUE(coordinator_->IsSidePanelEntryShowing(
+      GetKeyForExtension(extension->id())));
+
+  views::ToggleImageButton* pin_button =
+      coordinator_->GetHeaderPinButtonForTesting();
+  EXPECT_TRUE(pin_button->GetVisible());
+  EXPECT_FALSE(pin_button->GetToggled());
+
+  ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
+  EXPECT_TRUE(model->pinned_action_ids().empty());
+
+  WaitForExtensionsContainerAnimation();
+  ClickButton(pin_button);
+  WaitForExtensionsContainerAnimation();
+
+  EXPECT_TRUE(pin_button->GetVisible());
+  EXPECT_TRUE(pin_button->GetToggled());
+  EXPECT_EQ(1u, model->pinned_action_ids().size());
+}
+
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing
 // with entries that load/display asynchronously.
 class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
@@ -1750,8 +1958,8 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
   void SetUp() override {
     TestWithBrowserView::SetUp();
 
-    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
-    AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+    AddTabToBrowser(GURL("http://foo1.com"));
+    AddTabToBrowser(GURL("http://foo2.com"));
 
     coordinator_ = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
     global_registry_ = SidePanelCoordinator::GetGlobalSidePanelRegistry(

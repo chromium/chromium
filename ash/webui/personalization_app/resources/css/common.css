@@ -22,7 +22,7 @@
   --personalization-app-grid-item-background-color: var(--google-grey-100);
   --personalization-app-grid-item-border-radius: 12px;
   --personalization-app-grid-item-height: 120px;
-  --personalization-app-grid-item-spacing: 16px;
+  --personalization-app-grid-item-spacing: 20px;
 
   --personalization-app-text-shadow-elevation-1: 0 1px 3px
       rgba(0, 0, 0, 15%), 0 1px 2px rgba(0, 0, 0, 30%);
@@ -195,7 +195,7 @@
 .ambient-subpage-element-title {
   color: var(--cros-text-color-primary);
   font: var(--personalization-app-label-font);
-  margin: 34px 8px 16px 8px;
+  margin: 34px 10px 16px 10px;
 }
 
 .ambient-toggle-row-container {

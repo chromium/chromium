@@ -98,7 +98,7 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithAccountKey(
         on_get_instance_callback) {
   CD_LOG(INFO, Feature::FP) << __func__;
 
-  absl::optional<std::vector<uint8_t>> account_key = device->account_key();
+  std::optional<std::vector<uint8_t>> account_key = device->account_key();
   DCHECK(account_key);
   DCHECK_EQ(account_key->size(), static_cast<size_t>(kPrivateKeyByteSize));
 
@@ -126,7 +126,7 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
 
   const std::string& public_anti_spoofing_key =
       device_metadata->GetDetails().anti_spoofing_key_pair().public_key();
-  absl::optional<fast_pair_encryption::KeyPair> key_pair =
+  std::optional<fast_pair_encryption::KeyPair> key_pair =
       fast_pair_encryption::GenerateKeysWithEcdhKeyAgreement(
           public_anti_spoofing_key);
 
@@ -159,17 +159,17 @@ FastPairDataEncryptorImpl::EncryptBytes(
   return fast_pair_encryption::EncryptBytes(secret_key_, bytes_to_encrypt);
 }
 
-const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>&
+const std::optional<std::array<uint8_t, kPublicKeyByteSize>>&
 FastPairDataEncryptorImpl::GetPublicKey() {
   return public_key_;
 }
 
 void FastPairDataEncryptorImpl::ParseDecryptedResponse(
     const std::vector<uint8_t>& encrypted_response_bytes,
-    base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+    base::OnceCallback<void(const std::optional<DecryptedResponse>&)>
         callback) {
   if (!ValidateInputSize(encrypted_response_bytes)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -183,10 +183,9 @@ void FastPairDataEncryptorImpl::ParseDecryptedResponse(
 
 void FastPairDataEncryptorImpl::ParseDecryptedPasskey(
     const std::vector<uint8_t>& encrypted_passkey_bytes,
-    base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-        callback) {
+    base::OnceCallback<void(const std::optional<DecryptedPasskey>&)> callback) {
   if (!ValidateInputSize(encrypted_passkey_bytes)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

@@ -1024,7 +1024,8 @@ TEST(ChromeUsbDelegateBrowserContextTest, BrowserContextIsNull) {
   EXPECT_FALSE(chrome_usb_delegate.CanRequestDevicePermission(
       /*browser_context=*/nullptr, origin));
   EXPECT_FALSE(chrome_usb_delegate.HasDevicePermission(
-      /*browser_context=*/nullptr, origin, device::mojom::UsbDeviceInfo()));
+      /*browser_context=*/nullptr, /*frame=*/nullptr, origin,
+      device::mojom::UsbDeviceInfo()));
   EXPECT_EQ(nullptr, chrome_usb_delegate.GetDeviceInfo(
                          /*browser_context=*/nullptr,
                          base::Uuid::GenerateRandomV4().AsLowercaseString()));

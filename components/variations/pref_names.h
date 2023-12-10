@@ -22,6 +22,8 @@ COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsFailedToFetchSeedStreak[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsGoogleGroups[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsLastFetchTime[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kVariationsLimitedEntropySyntheticTrialSeed[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedMilestone[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsPermanentConsistencyCountry[];

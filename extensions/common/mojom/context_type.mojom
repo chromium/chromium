@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+// The context type associated with a running JS context.
+// This should match the values in Feature::Context.
+enum ContextType {
+  kPrivilegedExtension,
+  kUnprivilegedExtension,
+  kContentScript,
+  kWebPage,
+  kPrivilegedWebPage,
+  kWebUi,
+  kUntrustedWebUi,
+  kLockscreenExtension,
+  kOffscreenExtension,
+  kUserScript,
+};

@@ -27,9 +27,11 @@
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 
 using SidePanelWebUIViewT_HistoryClustersSidePanelUI =
     SidePanelWebUIViewT<HistoryClustersSidePanelUI>;
@@ -70,7 +72,11 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
                                     ? IDS_HISTORY_TITLE
                                     : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL),
       ui::ImageModel::FromVectorIcon(
-          rename_journeys ? kHistoryIcon : kJourneysIcon, ui::kColorIcon,
+          rename_journeys ? (features::IsChromeRefresh2023()
+                                 ? vector_icons::kHistoryChromeRefreshIcon
+                                 : kHistoryIcon)
+                          : kJourneysIcon,
+          ui::kColorIcon,
           /*icon_size=*/16),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,

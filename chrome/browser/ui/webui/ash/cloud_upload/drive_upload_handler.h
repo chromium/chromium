@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -24,7 +25,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -42,7 +42,7 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
                            drive::DriveIntegrationService::Observer {
  public:
   using UploadCallback =
-      base::OnceCallback<void(absl::optional<GURL>, int64_t)>;
+      base::OnceCallback<void(OfficeTaskResult, std::optional<GURL>, int64_t)>;
 
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,
@@ -73,14 +73,21 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   void UpdateProgressNotification();
 
   // Called upon a copy to Drive success or failure. If required, complete or
-  // undo the operation. Then call |OnEndUpload| to end the upload.
-  void OnEndCopy(base::expected<GURL, std::string> hosted_url,
-                 OfficeFilesUploadResult result_metric);
+  // undo the operation. Then call |OnSuccessfulUpload| or |OnFailedUpload| to
+  // end the successful or failed upload respectively.
+  void OnEndCopy(OfficeFilesUploadResult result_metric,
+                 base::expected<GURL, std::string> hosted_url =
+                     base::unexpected(GetGenericErrorMessage()));
 
-  // Ends the upload by showing any complete or error notifications. Runs the
+  // Ends upload in a successful state, shows a complete notification and runs
+  // the upload callback.
+  void OnSuccessfulUpload(OfficeFilesUploadResult result_metric,
+                          GURL hosted_url);
+
+  // Ends upload in a failed state, shows an error notification and runs the
   // upload callback.
-  void OnEndUpload(base::expected<GURL, std::string> hosted_url,
-                   OfficeFilesUploadResult result_metric);
+  void OnFailedUpload(OfficeFilesUploadResult result_metric,
+                      std::string error_message);
 
   // Callback for when ImmediatelyUpload() is called on DriveFS.
   void ImmediatelyUploadDone(drive::FileError error);

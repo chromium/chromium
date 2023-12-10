@@ -15,6 +15,6 @@ public class NotificationCategory extends SiteSettingsCategory {
         // Android does not treat notifications as a 'permission', i.e. notification status cannot
         // be checked via Context#checkPermission(). Hence we pass an empty string here and override
         // #enabledForChrome() to use the notification-status checking API instead.
-        super(browserContextHandle, Type.NOTIFICATIONS, "" /* androidPermission*/);
+        super(browserContextHandle, Type.NOTIFICATIONS, /* androidPermission= */ "");
     }
 }

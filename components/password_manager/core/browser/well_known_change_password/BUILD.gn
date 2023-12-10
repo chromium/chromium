@@ -15,7 +15,6 @@ source_set("well_known_change_password") {
   deps = [
     "//components/password_manager/core/browser/affiliation",
     "//services/network/public/cpp",
-    "//third_party/abseil-cpp:absl",
     "//url",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

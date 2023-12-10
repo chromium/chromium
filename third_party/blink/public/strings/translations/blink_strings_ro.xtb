@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Micșorează acest text la cel mult <ph name="MAX_CHARACTERS" /> caractere (în prezent utilizezi <ph name="CURRENT_LENGTH" /> caractere).</translation>
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Melodia <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Camera foto și microfonul sunt permise</translation>
 <translation id="2393030564806080191">Valoarea hexazecimală a culorii</translation>
 <translation id="2398813069815436052">casetă de dialog deschisă.</translation>
 <translation id="245932805758469625">numărul de secunde rămase din videoclip</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Mărește acest text la cel puțin <ph name="MIN_CHARACTERS" /> caractere (în prezent folosești <ph name="CURRENT_LENGTH" /> caractere).</translation>
 <translation id="383465348367842624">Valoarea urmată de semnul „<ph name="ATSIGN" />” nu trebuie să conțină simbolul „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Ieși din ecranul complet</translation>
+<translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4103419683916926126">Milisecunde</translation>
 <translation id="4201051445878709314">Afișează luna anterioară</translation>
 <translation id="4360991593054037559">Introduceți o valoare validă. Cele mai apropiate valori valide sunt <ph name="VALID_VALUE_LOW" /> și <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalii</translation>
+<translation id="4663373278480897665">Camera foto este permisă</translation>
 <translation id="4664250907885839816">Valoarea care urmează după semnul „<ph name="ATSIGN" />” nu trebuie să conțină simbolul „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Se redă în modul picture-in-picture</translation>
 <translation id="4748357248530471599">decupaj inclus în ecranul complet</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">descarcă conținut media</translation>
 <translation id="698788488269350478">extins.</translation>
 <translation id="6989848892321993519">Mărește acest text la cel puțin <ph name="MIN_CHARACTERS" /> caractere (în prezent folosești 1 caracter).</translation>
+<translation id="7080893216867146095">Afișarea locației este permisă</translation>
 <translation id="709897737746224366">Respectă formatul solicitat.</translation>
 <translation id="7102274145889307184">locația actuală</translation>
 <translation id="7263440858009898357">Selectează un articol din listă.</translation>

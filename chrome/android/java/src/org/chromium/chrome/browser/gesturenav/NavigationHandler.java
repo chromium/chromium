@@ -39,14 +39,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Handles history overscroll navigation controlling the underlying UI widget.
- */
+/** Handles history overscroll navigation controlling the underlying UI widget. */
 class NavigationHandler implements TouchEventObserver {
     // Width of a rectangluar area in dp on the left/right edge used for navigation.
     // Swipe beginning from a point within these rects triggers the operation.
-    @VisibleForTesting
-    static final int EDGE_WIDTH_DP = 24;
+    @VisibleForTesting static final int EDGE_WIDTH_DP = 24;
 
     // Weighted value to determine when to trigger an edge swipe. Initial scroll
     // vector should form 30 deg or below to initiate swipe action.
@@ -64,8 +61,14 @@ class NavigationHandler implements TouchEventObserver {
         int GLOW = 3;
     }
 
-    @IntDef({GestureAction.SHOW_ARROW, GestureAction.SHOW_GLOW, GestureAction.RELEASE_BUBBLE,
-            GestureAction.RELEASE_GLOW, GestureAction.RESET_BUBBLE, GestureAction.RESET_GLOW})
+    @IntDef({
+        GestureAction.SHOW_ARROW,
+        GestureAction.SHOW_GLOW,
+        GestureAction.RELEASE_BUBBLE,
+        GestureAction.RELEASE_GLOW,
+        GestureAction.RESET_BUBBLE,
+        GestureAction.RESET_GLOW
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface GestureAction {
         int SHOW_ARROW = 1;
@@ -93,8 +96,7 @@ class NavigationHandler implements TouchEventObserver {
     private GestureDetector mDetector;
     private View.OnAttachStateChangeListener mAttachStateListener;
     private final BackActionDelegate mBackActionDelegate;
-    @Nullable
-    private TabOnBackGestureHandler mTabOnBackGestureHandler;
+    @Nullable private TabOnBackGestureHandler mTabOnBackGestureHandler;
     private Tab mTab;
     private final Supplier<Boolean> mWillNavigateSupplier;
 
@@ -125,8 +127,11 @@ class NavigationHandler implements TouchEventObserver {
         }
     }
 
-    public NavigationHandler(PropertyModel model, ViewGroup parentView,
-            BackActionDelegate backActionDelegate, Supplier<Boolean> supplier) {
+    public NavigationHandler(
+            PropertyModel model,
+            ViewGroup parentView,
+            BackActionDelegate backActionDelegate,
+            Supplier<Boolean> supplier) {
         mModel = model;
         mParentView = parentView;
         mContext = parentView.getContext();
@@ -136,15 +141,16 @@ class NavigationHandler implements TouchEventObserver {
 
         mEdgeWidthPx = EDGE_WIDTH_DP * parentView.getResources().getDisplayMetrics().density;
         mDetector = new GestureDetector(mContext, new SideNavGestureListener());
-        mAttachStateListener = new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View v) {}
+        mAttachStateListener =
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {}
 
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                reset();
-            }
-        };
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        reset();
+                    }
+                };
         parentView.addOnAttachStateChangeListener(mAttachStateListener);
     }
 
@@ -236,7 +242,8 @@ class NavigationHandler implements TouchEventObserver {
         }
         mInitialX = x;
         mInitialY = y;
-        if (navigable && willUpdateTabHistory(forward)
+        if (navigable
+                && willUpdateTabHistory(forward)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
             mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
             mTabOnBackGestureHandler.onBackStarted(
@@ -293,8 +300,7 @@ class NavigationHandler implements TouchEventObserver {
     private @CloseTarget int getCloseIndicator(boolean forward) {
         if (forward) return CloseTarget.NONE;
 
-        @ActionType
-        int type = mBackActionDelegate.getBackActionType(mTab);
+        @ActionType int type = mBackActionDelegate.getBackActionType(mTab);
         if (type == ActionType.CLOSE_TAB) {
             return CloseTarget.TAB;
         } else if (type == ActionType.EXIT_APP) {
@@ -415,9 +421,7 @@ class NavigationHandler implements TouchEventObserver {
         return Math.max(0, getTouchX() / width);
     }
 
-    /**
-     * Performs cleanup upon destruction.
-     */
+    /** Performs cleanup upon destruction. */
     void destroy() {
         mParentView.removeOnAttachStateChangeListener(mAttachStateListener);
         mDetector = null;

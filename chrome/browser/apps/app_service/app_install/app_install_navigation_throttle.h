@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -29,7 +29,7 @@ class AppInstallNavigationThrottle : public content::NavigationThrottle {
       content::NavigationHandle* handle);
 
   // Exposed for testing.
-  static absl::optional<PackageId> ExtractPackageId(std::string_view query);
+  static std::optional<PackageId> ExtractPackageId(std::string_view query);
 
   explicit AppInstallNavigationThrottle(
       content::NavigationHandle* navigation_handle);

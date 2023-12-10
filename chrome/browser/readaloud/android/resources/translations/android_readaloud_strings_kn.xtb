@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
-<translation id="2558806128245168542">ಹಿಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
-<translation id="3523426587027570423">"ಈ ಪುಟವನ್ನು ಆಲಿಸಿ" ಅನ್ನು ಮುಚ್ಚಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಷ್ಟು ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
+<translation id="1984328900355667246">ಪ್ಲೇಬ್ಯಾಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="3023502830214299618">ದುರದೃಷ್ಟವಶಾತ್, ಈ ಸಮಯದಲ್ಲಿ ಈ ಪುಟಕ್ಕೆ ಪ್ಲೇಬ್ಯಾಕ್ ಲಭ್ಯವಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="3807208219231826020">ಸ್ಕ್ರಬ್ ಪ್ಲೇಬ್ಯಾಕ್</translation>
+<translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="4431240646217225907">ಪಠ್ಯ ಮತ್ತು ಆಟೋ ಸ್ಕ್ರಾಲ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="4654641641922242357">"ಈ ಪುಟವನ್ನು ಆಲಿಸಿ" ಪ್ಲೇಯರ್.</translation>
-<translation id="4731877163452936634">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗ: <ph name="PLAYBACK_SPEED" />. ಬದಲಾಯಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಷ್ಟು ಹಿಂದಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="5234971936051226002">"ಈ ಪುಟವನ್ನು ಆಲಿಸಿ" ಪ್ಲೇಯರ್ ಅನ್ನು ಕುಗ್ಗಿಸಲಾಗಿದೆ.</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="6315170314923504164">ಧ್ವನಿ</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846298663435243399">ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7587250070160020374">Chrome ಪುಟವು ಈಗ ಪ್ಲೇ ಆಗುತ್ತಿದೆ</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಷ್ಟು ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳು ಹಿಂದಕ್ಕೆ</translation>
 <translation id="8136852699834914183">ಈ ಪುಟಕ್ಕೆ ಪ್ಲೇಬ್ಯಾಕ್ ಲಭ್ಯವಿಲ್ಲ.</translation>
+<translation id="8264989794233974275">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗವನ್ನು <ph name="PLAYBACK_SPEED" />x ನಷ್ಟು ಹೆಚ್ಚು/ಕಡಿಮೆ ಮಾಡಿ.</translation>
+<translation id="8407011429883244666">ಪ್ಲೇಯರ್ ಅನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="8953618380150219653">"ಈ ಪುಟವನ್ನು ಆಲಿಸಿ" ಪ್ಲೇಯರ್ ಅನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 </translationbundle>

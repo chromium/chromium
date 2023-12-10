@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
-#import <vector>
-
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <MaterialComponents/MaterialSnackbar.h>
+
+#import <optional>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
@@ -40,22 +41,23 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/set_up_list.h"
-#import "ios/chrome/browser/ntp/set_up_list_delegate.h"
-#import "ios/chrome/browser/ntp/set_up_list_item.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
-#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/set_up_list.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
@@ -63,7 +65,6 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -76,9 +77,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -116,7 +117,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -308,8 +308,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _syncService = syncService;
     _shoppingService = shoppingService;
 
-    BOOL isSetupListEnabled = IsIOSSetUpListEnabled() &&
-                              set_up_list_utils::IsSetUpListActive(_localState);
+    BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(_localState);
     if (IsTabResumptionEnabled() || isSetupListEnabled) {
       _syncObserverBridge =
           std::make_unique<SyncObserverBridge>(self, _syncService);
@@ -355,8 +354,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       _tabResumptionHelper = std::make_unique<TabResumptionHelper>(browser);
     }
 
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+    SceneState* sceneState = browser->GetSceneState();
 
     [sceneState addObserver:self];
 
@@ -416,6 +414,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _authServiceObserverBridge.reset();
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
+  _safetyCheckManagerObserver.reset();
   _syncedSessionsObserver.reset();
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
@@ -423,8 +422,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
   [_setUpList disconnect];
   _setUpList = nil;
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [sceneState.appState removeObserver:self];
   [sceneState removeObserver:self];
   _localState = nullptr;
@@ -457,7 +455,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel {
-  //  The most recent tab tile is part of the tab resume feature.
+  // The most recent tab tile is replaced by the tab resume feature.
   if (IsTabResumptionEnabled()) {
     return;
   }
@@ -477,8 +475,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       self.returnToRecentTabItem.icon = favicon.ToUIImage();
     }
   }
+  const GURL& URL = webState->GetLastCommittedURL();
   if (!self.returnToRecentTabItem.icon) {
-    driver->FetchFavicon(webState->GetLastCommittedURL(), false);
+    driver->FetchFavicon(URL, false);
   }
 
   self.returnToRecentTabItem.title =
@@ -486,6 +485,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   self.returnToRecentTabItem.subtitle = [self
       constructReturnToRecentTabSubtitleWithPageTitle:base::SysUTF16ToNSString(
                                                           webState->GetTitle())
+                                               forURL:URL
                                            timeString:timeLabel];
   self.showMostRecentTabStartSurfaceTile = YES;
   [self.consumer
@@ -544,9 +544,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)untrackParcel:(NSString*)parcelID {
-  _shoppingService->StopTrackingParcel(base::SysNSStringToUTF8(parcelID),
-                                       base::BindOnce(^(bool){
-                                       }));
+  _shoppingService->StopTrackingParcel(
+      base::SysNSStringToUTF8(parcelID), base::BindOnce(^(bool) {
+        parcel_tracking::RecordParcelsUntracked(
+            TrackingSource::kMagicStackModule, 1);
+      }));
 }
 
 - (void)trackParcel:(NSString*)parcelID carrier:(ParcelType)carrier {
@@ -594,20 +596,18 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (IsIOSSetUpListEnabled()) {
-        // User has signed in, mark SetUpList item complete. Delayed to allow
-        // Signin UI flow to be fully dismissed before starting SetUpList
-        // completion animation.
-        PrefService* localState = _localState;
-        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE, base::BindOnce(^{
-              set_up_list_prefs::MarkItemComplete(
-                  localState, SetUpListItemType::kSignInSync);
-            }),
-            base::Seconds(0.5));
-      }
-      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // User has signed in, mark SetUpList item complete. Delayed to allow
+      // Signin UI flow to be fully dismissed before starting SetUpList
+      // completion animation.
+      __weak __typeof(self) weakSelf = self;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf
+                markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
+          }),
+          base::Seconds(0.5));
+    } break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
       if (IsTabResumptionEnabled()) {
         // If the user is signed out, remove the tab resumption tile.
@@ -628,12 +628,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     if ([weakSelf.setUpList allItemsComplete]) {
       [weakSelf.consumer showSetUpListDoneWithAnimations:^{
         if (!IsMagicStackEnabled()) {
-          [self.delegate contentSuggestionsWasUpdated];
+          [weakSelf.delegate contentSuggestionsWasUpdated];
         }
       }];
     } else if (IsMagicStackEnabled()) {
-      [self.consumer scrollToNextMagicStackModuleForCompletedModule:
-                         SetUpListModuleTypeForSetUpListType(item.type)];
+      [weakSelf.consumer scrollToNextMagicStackModuleForCompletedModule:
+                             SetUpListModuleTypeForSetUpListType(item.type)];
     }
   };
   [self.consumer markSetUpListItemComplete:item.type completion:completion];
@@ -699,15 +699,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
   [self hideRecentTabTile];
-  WebStateList* web_state_list = self.browser->GetWebStateList();
-  web::WebState* web_state =
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  web::WebState* webState =
       StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
           ->most_recent_tab();
-  if (!web_state) {
+  if (!webState) {
     return;
   }
-  int index = web_state_list->GetIndexOfWebState(web_state);
-  web_state_list->ActivateWebStateAt(index);
+  int index = webStateList->GetIndexOfWebState(webState);
+  webStateList->ActivateWebStateAt(index);
 }
 
 - (void)openTabResumptionItem {
@@ -790,7 +790,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 #pragma mark - StartSurfaceRecentTabObserving
 
-- (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
+- (void)mostRecentTabWasRemoved:(web::WebState*)webState {
   if (IsTabResumptionEnabled() && _tabResumptionItem) {
     [self hideTabResumption];
   } else {
@@ -798,7 +798,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
-- (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
+- (void)mostRecentTab:(web::WebState*)webState
+    faviconUpdatedWithImage:(UIImage*)image {
   if (self.returnToRecentTabItem) {
     self.returnToRecentTabItem.icon = image;
     [self.consumer
@@ -806,14 +807,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
-- (void)mostRecentTabTitleWasUpdated:(NSString*)title {
+- (void)mostRecentTab:(web::WebState*)webState
+      titleWasUpdated:(NSString*)title {
   if (self.returnToRecentTabItem) {
-    SceneState* scene =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-    NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
-    self.returnToRecentTabItem.subtitle =
-        [self constructReturnToRecentTabSubtitleWithPageTitle:title
-                                                   timeString:time_label];
+    SceneState* scene = self.browser->GetSceneState();
+    NSString* timeLabel = GetRecentTabTileTimeLabelForSceneState(scene);
+    self.returnToRecentTabItem.subtitle = [self
+        constructReturnToRecentTabSubtitleWithPageTitle:title
+                                                 forURL:
+                                                     webState
+                                                         ->GetLastCommittedURL()
+                                             timeString:timeLabel];
     [self.consumer
         updateReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
@@ -871,7 +875,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level == SceneActivationLevelForegroundActive) {
-    if (IsIOSSetUpListEnabled() && _setUpList) {
+    if (_setUpList) {
       [self checkIfCPEEnabled];
     }
   }
@@ -901,34 +905,34 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           _browser->GetBrowserState());
 
   // Update Chrome check.
-  absl::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
+  std::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
       experimental_flags::GetUpdateChromeSafetyCheckState();
 
   state.updateChromeState = overrideUpdateChromeState.value_or(
       safetyCheckManager->GetUpdateChromeCheckState());
 
   // Password check.
-  absl::optional<PasswordSafetyCheckState> overridePasswordState =
+  std::optional<PasswordSafetyCheckState> overridePasswordState =
       experimental_flags::GetPasswordSafetyCheckState();
 
   state.passwordState = overridePasswordState.value_or(
       safetyCheckManager->GetPasswordCheckState());
 
   // Safe Browsing check.
-  absl::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
+  std::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
       experimental_flags::GetSafeBrowsingSafetyCheckState();
 
   state.safeBrowsingState = overrideSafeBrowsingState.value_or(
       safetyCheckManager->GetSafeBrowsingCheckState());
 
   // Insecure credentials.
-  absl::optional<int> overrideWeakPasswordsCount =
+  std::optional<int> overrideWeakPasswordsCount =
       experimental_flags::GetSafetyCheckWeakPasswordsCount();
 
-  absl::optional<int> overrideReusedPasswordsCount =
+  std::optional<int> overrideReusedPasswordsCount =
       experimental_flags::GetSafetyCheckReusedPasswordsCount();
 
-  absl::optional<int> overrideCompromisedPasswordsCount =
+  std::optional<int> overrideCompromisedPasswordsCount =
       experimental_flags::GetSafetyCheckCompromisedPasswordsCount();
 
   bool passwordCountsOverride = overrideWeakPasswordsCount.has_value() ||
@@ -967,7 +971,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Returns the last run time of the Safety Check, regardless if the check was
 // started from the Safety Check (Magic Stack) module, or the Safety Check
 // Settings UI.
-- (absl::optional<base::Time>)latestSafetyCheckRunTimestamp {
+- (std::optional<base::Time>)latestSafetyCheckRunTimestamp {
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
           _browser->GetBrowserState());
@@ -988,8 +992,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
   // Only return the Last Run Time if the run happened within the last 24hr.
   return lastRunAge <= kSafetyCheckRunThreshold
-             ? absl::optional<base::Time>(lastRunTime)
-             : absl::nullopt;
+             ? std::optional<base::Time>(lastRunTime)
+             : std::nullopt;
 }
 
 - (void)configureConsumer {
@@ -1156,15 +1160,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Shows a snackbar with an action to undo the removal of the most visited item
 // with a `URL`.
 - (void)showMostVisitedUndoForURL:(GURL)URL {
-  GURL copiedURL = URL;
-
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   __weak ContentSuggestionsMediator* weakSelf = self;
   action.handler = ^{
-    ContentSuggestionsMediator* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    [strongSelf allowMostVisitedURL:copiedURL];
+    [weakSelf allowMostVisitedURL:URL];
   };
   action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
   action.accessibilityIdentifier = @"Undo";
@@ -1178,10 +1177,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.dispatcher showSnackbarMessage:message];
 }
 
+// Creates a string containing the title and the time string.
+// If `title` is empty, use the `URL` instead.
 - (NSString*)constructReturnToRecentTabSubtitleWithPageTitle:
                  (NSString*)pageTitle
+                                                      forURL:(const GURL&)URL
                                                   timeString:(NSString*)time {
-  return [NSString stringWithFormat:@"%@%@", pageTitle, time];
+  NSString* title = pageTitle;
+  if (![title length]) {
+    title = [self displayableURLFromURL:URL];
+  }
+  return [NSString stringWithFormat:@"%@%@", title, time];
+}
+
+// Formats the URL to be displayed in the recent tabs card.
+- (NSString*)displayableURLFromURL:(const GURL&)URL {
+  return base::SysUTF16ToNSString(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              URL));
 }
 
 - (BOOL)shouldShowWhatsNewActionItem {
@@ -1427,9 +1441,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Returns YES if the conditions are right to display the Set Up List.
 - (BOOL)shouldShowSetUpList {
-  if (!IsIOSSetUpListEnabled()) {
-    return NO;
-  }
   if (!set_up_list_utils::IsSetUpListActive(_localState)) {
     return NO;
   }
@@ -1490,23 +1501,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           // The completion handler sent to ASCredentialIdentityStore is
           // executed on a background thread. Putting it back onto the main
           // thread to update local state prefs.
-          runner->PostTask(FROM_HERE, base::BindOnce(^{
-                             __typeof(self) strongSelf = weakSelf;
-                             if (!strongSelf) {
-                               return;
-                             }
-                             set_up_list_prefs::MarkItemComplete(
-                                 strongSelf->_localState,
-                                 SetUpListItemType::kAutofill);
-                           }));
+          runner->PostTask(
+              FROM_HERE, base::BindOnce(^{
+                [weakSelf
+                    markSetUpListItemPrefComplete:SetUpListItemType::kAutofill];
+              }));
         }
       }];
 }
 
+// Sets the pref for a SetUpList item to indicate it is complete.
+- (void)markSetUpListItemPrefComplete:(SetUpListItemType)type {
+  set_up_list_prefs::MarkItemComplete(_localState, type);
+}
+
 // Hides the Set Up List with an animation.
 - (void)hideSetUpList {
+  __weak __typeof(self) weakSelf = self;
   [self.consumer hideSetUpListWithAnimations:^{
-    [self.delegate contentSuggestionsWasUpdated];
+    [weakSelf.delegate contentSuggestionsWasUpdated];
   }];
 }
 
@@ -1740,15 +1753,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (IsIOSSetUpListEnabled()) {
-    if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
-        CredentialProviderPromoDismissed(_localState)) {
-      set_up_list_prefs::MarkItemComplete(_localState,
-                                          SetUpListItemType::kAutofill);
-    } else if (preferenceName == set_up_list_prefs::kDisabled &&
-               set_up_list_prefs::IsSetUpListDisabled(_localState)) {
-      [self hideSetUpList];
-    }
+  if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
+      CredentialProviderPromoDismissed(_localState)) {
+    [self markSetUpListItemPrefComplete:SetUpListItemType::kAutofill];
+  } else if (preferenceName == set_up_list_prefs::kDisabled &&
+             set_up_list_prefs::IsSetUpListDisabled(_localState)) {
+    [self hideSetUpList];
   }
   if (IsTabResumptionEnabled()) {
     if (_tabResumptionItem &&
@@ -1820,6 +1830,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.consumer showSafetyCheck:_safetyCheckState];
 }
 
+- (void)safetyCheckManagerWillShutdown {
+  _safetyCheckManagerObserver.reset();
+}
+
 #pragma mark - ReadingListModelBridgeObserver
 
 - (void)readingListModelLoaded:(const ReadingListModel*)model {
@@ -1845,8 +1859,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         HasManagedSyncDataType(_syncService)) {
       // Sync is now disabled, so mark the SetUpList item complete so that it
       // cannot be used again.
-      set_up_list_prefs::MarkItemComplete(_localState,
-                                          SetUpListItemType::kSignInSync);
+      [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
     }
   }
   if (IsTabResumptionEnabled()) {
@@ -1871,8 +1884,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
         // Signin is now disabled, so mark the SetUpList item complete so that
         // it cannot be used again.
-        set_up_list_prefs::MarkItemComplete(_localState,
-                                            SetUpListItemType::kSignInSync);
+        [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
     }
   }
 }

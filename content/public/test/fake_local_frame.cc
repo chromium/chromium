@@ -88,6 +88,12 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
+void FakeLocalFrame::RequestVideoFrameAt(const gfx::Point& window_point,
+                                         const gfx::Size& max_size,
+                                         int max_area,
+                                         RequestVideoFrameAtCallback callback) {
+}
+
 void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
                                     blink::mojom::PluginActionType action) {}
 
@@ -182,7 +188,8 @@ void FakeLocalFrame::GetOpenGraphMetadata(
     base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) {}
 
 void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
-    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
+    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays,
+    blink::mojom::NavigationApiEntryRestoreReason restore_reason) {}
 
 void FakeLocalFrame::NotifyNavigationApiOfDisposedEntries(
     const std::vector<std::string>& keys) {}
@@ -190,6 +197,11 @@ void FakeLocalFrame::NotifyNavigationApiOfDisposedEntries(
 void FakeLocalFrame::TraverseCancelled(
     const std::string& navigation_api_key,
     blink::mojom::TraverseCancelledReason reason) {}
+
+void FakeLocalFrame::DispatchNavigateEventForCrossDocumentTraversal(
+    const GURL&,
+    const std::string& page_state,
+    bool is_browser_initiated) {}
 
 void FakeLocalFrame::SnapshotDocumentForViewTransition(
     SnapshotDocumentForViewTransitionCallback callback) {}
@@ -204,7 +216,7 @@ void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(
     uint32_t response_code,
     const std::string& mime_type,
     const ::net::LoadTimingInfo& load_timing_info,
-    ::net::HttpResponseInfo::ConnectionInfo connection_info,
+    ::net::HttpConnectionInfo connection_info,
     const std::string& alpn_negotiated_protocol,
     bool is_secure_transport,
     bool is_validated,

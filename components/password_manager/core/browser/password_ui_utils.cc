@@ -20,7 +20,6 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace password_manager {

@@ -20,6 +20,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,7 +64,7 @@ class ResourcePoolTest : public testing::Test {
 
   void SetBackingOnResource(const ResourcePool::InUsePoolResource& resource) {
     auto backing = std::make_unique<StubGpuBacking>();
-    backing->mailbox = gpu::Mailbox::GenerateForSharedImage();
+    backing->shared_image = gpu::ClientSharedImage::CreateForTesting();
     backing->mailbox_sync_token.Set(
         gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
     resource.set_gpu_backing(std::move(backing));
@@ -700,8 +701,6 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
             viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t target = 5;
-  gpu::Mailbox mailbox;
-  mailbox.name[0] = 'a';
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x123), 7);
 
@@ -710,7 +709,8 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   SetBackingOnResource(resource);
 
   // More non-default values.
-  resource.gpu_backing()->mailbox = mailbox;
+  resource.gpu_backing()->shared_image =
+      gpu::ClientSharedImage::CreateForTesting();
   resource.gpu_backing()->mailbox_sync_token = sync_token;
   resource.gpu_backing()->texture_target = target;
   resource.gpu_backing()->wait_on_fence_required = true;
@@ -730,7 +730,8 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
 
   ASSERT_EQ(transfer.size(), 1u);
   EXPECT_EQ(transfer[0].id, resource.resource_id_for_export());
-  EXPECT_EQ(transfer[0].mailbox_holder.mailbox, mailbox);
+  EXPECT_EQ(transfer[0].mailbox_holder.mailbox,
+            resource.gpu_backing()->shared_image->mailbox());
   EXPECT_EQ(transfer[0].mailbox_holder.sync_token, sync_token);
   EXPECT_EQ(transfer[0].mailbox_holder.texture_target, target);
   EXPECT_EQ(transfer[0].format, format);

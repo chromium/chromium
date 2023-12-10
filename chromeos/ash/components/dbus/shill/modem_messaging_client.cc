@@ -107,14 +107,14 @@ class ModemMessagingProxy {
   // Handles responses of List method calls.
   void OnList(ListCallback callback, dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::vector<dbus::ObjectPath> sms_paths;
     if (!reader.PopArrayOfObjectPaths(&sms_paths)) {
       LOG(WARNING) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(std::move(sms_paths));

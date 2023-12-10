@@ -5,8 +5,6 @@
 #include "device/gamepad/test_support/fake_iraw_game_controller.h"
 
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/win/scoped_hstring.h"
 #include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
 
@@ -15,7 +13,7 @@ namespace device {
 FakeIRawGameController::FakeIRawGameController(int64_t gamepad_id,
                                                UINT16 hardware_product_id,
                                                UINT16 hardware_vendor_id,
-                                               base::StringPiece display_name)
+                                               std::string_view display_name)
     : gamepad_id_(gamepad_id),
       hardware_product_id_(hardware_product_id),
       hardware_vendor_id_(hardware_vendor_id),

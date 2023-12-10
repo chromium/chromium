@@ -3,7 +3,8 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "ChromeOS FYI Release Skylab (jacuzzi)": {
     "additional_compile_targets": [
-      "chromiumos_preflight"
+      "chromiumos_preflight",
+      "nacl_helper"
     ],
     "skylab_tests": [
       {
@@ -334,7 +335,8 @@
   },
   "Lacros FYI Release (jacuzzi)": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "nacl_helper"
     ],
     "isolated_scripts": [
       {
@@ -521,7 +523,8 @@
   },
   "Lacros FYI Release (octopus)": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "nacl_helper"
     ],
     "isolated_scripts": [
       {

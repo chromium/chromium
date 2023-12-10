@@ -6,11 +6,13 @@ package org.chromium.ui.display;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import org.chromium.base.compat.ApiHelperForR;
@@ -23,47 +25,45 @@ public abstract class DisplayUtil {
     private static final float UI_SCALING_FACTOR_FOR_AUTOMOTIVE = 1.34f;
     private static float sUiScalingFactorForAutomotive = UI_SCALING_FACTOR_FOR_AUTOMOTIVE;
 
-    /**
-     * Change the UI scaling factor on automotive devices for testing.
-     */
+    /** Change the UI scaling factor on automotive devices for testing. */
     public static void setUiScalingFactorForAutomotiveForTesting(float scalingFactor) {
         sUiScalingFactorForAutomotive = scalingFactor;
     }
 
-    /**
-     * Reset the UI scaling factor on automotive devices to the default value.
-     */
+    /** Reset the UI scaling factor on automotive devices to the default value. */
     public static void resetUiScalingFactorForAutomotiveForTesting() {
         sUiScalingFactorForAutomotive = UI_SCALING_FACTOR_FOR_AUTOMOTIVE;
     }
 
     /**
      * Retrieves the UI scaling factor on automotive devices.
+     * TODO: Remove this method and replace usages with getUiDensityForAutomotive.
      */
+    @Deprecated
     public static float getUiScalingFactorForAutomotive() {
         return sUiScalingFactorForAutomotive;
     }
 
-    /**
-     * @return The smaller of getDisplayWidth(), getDisplayHeight().
-     */
+    public static int getUiDensityForAutomotive(int baseDensity) {
+        int rawScaledDensity = (int) (baseDensity * sUiScalingFactorForAutomotive);
+        // Round up to the nearest 20 to align with DisplayMetrics defined densities.
+        return ((int) Math.ceil(rawScaledDensity / 20.0f)) * 20;
+    }
+
+    /** Returns the smaller of getDisplayWidth(), getDisplayHeight(). */
     public static int getSmallestWidth(DisplayAndroid display) {
         int width = display.getDisplayWidth();
         int height = display.getDisplayHeight();
         return width < height ? width : height;
     }
 
-    /**
-     * @return The given value converted from px to dp.
-     */
+    /** Returns the given value converted from px to dp. */
     public static int pxToDp(DisplayAndroid display, int value) {
         // Adding .5 is what Android does when doing this conversion.
         return (int) (value / display.getDipScale() + 0.5f);
     }
 
-    /**
-     * @return The given value converted from dp to px.
-     */
+    /** Returns the given value converted from dp to px. */
     public static int dpToPx(DisplayAndroid display, int value) {
         // Adding .5 is what Android does when doing this conversion.
         return (int) (value * display.getDipScale() + 0.5f);
@@ -75,16 +75,18 @@ public abstract class DisplayUtil {
      * @return The DisplayMetrics that was scaled up.
      */
     public static DisplayMetrics scaleUpDisplayMetricsForAutomotive(DisplayMetrics displayMetrics) {
-        displayMetrics.density *= getUiScalingFactorForAutomotive();
-        displayMetrics.densityDpi =
-                (int) (displayMetrics.densityDpi * getUiScalingFactorForAutomotive());
-        displayMetrics.xdpi *= getUiScalingFactorForAutomotive();
-        displayMetrics.ydpi *= getUiScalingFactorForAutomotive();
+        int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
+        float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
+        displayMetrics.density *= scaling;
+        displayMetrics.densityDpi = adjustedDensity;
+        displayMetrics.xdpi *= scaling;
+        displayMetrics.ydpi *= scaling;
         return displayMetrics;
     }
 
     /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for automotive devices.
+     *
      * @param context The context used to retrieve the system {@link WindowManager}.
      * @param configuration The Configuration to scale up UI for.
      */
@@ -96,12 +98,31 @@ public abstract class DisplayUtil {
         assert windowManager != null;
         windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
 
-        configuration.densityDpi =
-                (int) (displayMetrics.densityDpi * getUiScalingFactorForAutomotive());
-        configuration.screenWidthDp = (int) (displayMetrics.widthPixels
-                / (displayMetrics.density * getUiScalingFactorForAutomotive()));
-        configuration.screenHeightDp = (int) (displayMetrics.heightPixels
-                / (displayMetrics.density * getUiScalingFactorForAutomotive()));
+        int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
+        float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
+
+        int screenWidthDp = displayMetrics.widthPixels;
+        int screenHeightDp = displayMetrics.heightPixels;
+
+        // Configuration.screenWidthDp and Configuration.screenHeightDp are not supposed to take
+        // into account system bars. Since we are scaling up the UI in automotive during a time when
+        // we cannot access the default Configuration (CompatActivity#attachBaseContext), we need
+        // to manually subtract the system bar insets ourselves.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Insets systemBarInsets =
+                    windowManager
+                            .getCurrentWindowMetrics()
+                            .getWindowInsets()
+                            .getInsets(WindowInsets.Type.systemBars());
+            screenHeightDp = screenHeightDp - systemBarInsets.top - systemBarInsets.bottom;
+            screenWidthDp = screenWidthDp - systemBarInsets.left - systemBarInsets.right;
+        }
+
+        configuration.densityDpi = adjustedDensity;
+        configuration.screenWidthDp =
+                Math.round(screenWidthDp / (displayMetrics.density * scaling));
+        configuration.screenHeightDp =
+                Math.round(screenHeightDp / (displayMetrics.density * scaling));
         configuration.smallestScreenWidthDp =
                 Math.min(configuration.screenWidthDp, configuration.screenHeightDp);
     }
@@ -119,8 +140,10 @@ public abstract class DisplayUtil {
         // Continue to rely on context on this case.
         Context windowManagerContext =
                 (VERSION.SDK_INT >= VERSION_CODES.R && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
-                ? (display.getWindowContext() != null ? display.getWindowContext() : context)
-                : context;
+                        ? (display.getWindowContext() != null
+                                ? display.getWindowContext()
+                                : context)
+                        : context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // Context#getSystemService(Context.WINDOW_SERVICE) is preferred over
             // Activity#getWindowManager, because during #attachBaseContext, #getWindowManager

@@ -1,26 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/after-1kb.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/after-bogus-after-1kb.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/after-bogus.html
 [FAIL] Check http://web-platform.test:8001/html/syntax/charset/after-head-after-1kb-crlf.html
   assert_equals: Check characterSet expected "windows-1253" but got "windows-1251"
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/after-head-after-1kb.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/after-head-in-1kb-crlf.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/after-head-in-1kb.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/baseline.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/document-write.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-comment.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-noscript-after-template-after-1kb.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-object.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-script.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-style.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-svg.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-svg-in-cdata.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-template-after-1kb.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-template.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/in-title.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/ncr.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/non-ascii-in-comment-before.html
-[PASS] Check http://web-platform.test:8001/html/syntax/charset/non-ascii-in-title-before.html
 Harness: the test ran to completion.
 

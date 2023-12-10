@@ -323,12 +323,17 @@ class PredictionManagerBrowserTest
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "8000"}}},
     };
+    std::vector<base::test::FeatureRef> disabled_features;
     if (ShouldEnableInstallWideModelStore()) {
       enabled_features.emplace_back(
           features::kOptimizationGuideInstallWideModelStore,
           base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          features::kOptimizationGuideInstallWideModelStore);
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 };
 
@@ -461,16 +466,21 @@ class PredictionManagerModelDownloadingBrowserTest
         {features::kOptimizationGuideModelDownloading,
          {{"unrestricted_model_downloading", "true"}}},
     };
+    std::vector<base::test::FeatureRef> disabled_features;
     if (ShouldEnableInstallWideModelStore()) {
       enabled_features.emplace_back(
           features::kOptimizationGuideInstallWideModelStore,
           base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          features::kOptimizationGuideInstallWideModelStore);
     }
     if (ShouldEnableModelStoreUseRelativePath()) {
       enabled_features.emplace_back(features::kModelStoreUseRelativePath,
                                     base::FieldTrialParams());
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   std::unique_ptr<ModelFileObserver> model_file_observer_;

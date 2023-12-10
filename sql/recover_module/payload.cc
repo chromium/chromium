@@ -125,7 +125,7 @@ int MaxOverflowPayloadSize(int page_size) {
 }  // namespace
 
 LeafPayloadReader::LeafPayloadReader(DatabasePageReader* db_reader)
-    : db_reader_(db_reader), page_id_(DatabasePageReader::kInvalidPageId) {}
+    : db_reader_(db_reader) {}
 
 LeafPayloadReader::~LeafPayloadReader() = default;
 
@@ -194,7 +194,7 @@ bool LeafPayloadReader::Initialize(int64_t payload_size, int payload_offset) {
       page_size) {
     // Corruption can result in overly large payload sizes. Reject the obvious
     // case where the in-page payload extends past the end of the page.
-    page_id_ = DatabasePageReader::kInvalidPageId;
+    page_id_ = DatabasePageReader::kHighestInvalidPageId;
     return false;
   }
 
@@ -205,7 +205,7 @@ bool LeafPayloadReader::Initialize(int64_t payload_size, int payload_offset) {
 
 bool LeafPayloadReader::IsInitialized() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return page_id_ != DatabasePageReader::kInvalidPageId;
+  return DatabasePageReader::IsValidPageId(page_id_);
 }
 
 bool LeafPayloadReader::ReadPayload(int64_t offset,
@@ -220,7 +220,7 @@ bool LeafPayloadReader::ReadPayload(int64_t offset,
   DCHECK(buffer != nullptr);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(page_id_ != DatabasePageReader::kInvalidPageId)
+  DCHECK(IsInitialized())
       << "Initialize() not called, or last call did not succeed";
 
   if (offset < inline_payload_size_) {

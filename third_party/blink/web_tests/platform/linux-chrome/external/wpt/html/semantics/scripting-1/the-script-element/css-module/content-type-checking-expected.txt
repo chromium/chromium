@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: Unexpected token 'with'
+[NOTRUN] text/css
+[NOTRUN] application/css
+[NOTRUN] text/html+css
+[NOTRUN] text/css;boundary=something
+[NOTRUN] text/css;foo=bar
+Harness: the test ran to completion.

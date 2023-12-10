@@ -186,7 +186,7 @@ class ExtensionEnableFlowTestSupervised
 
   scoped_refptr<const extensions::Extension> test_extension_;
 
-  absl::optional<NextDialogAction> next_dialog_action_;
+  std::optional<NextDialogAction> next_dialog_action_;
 };
 
 // Tests launching an app that requires parent approval from the launcher.

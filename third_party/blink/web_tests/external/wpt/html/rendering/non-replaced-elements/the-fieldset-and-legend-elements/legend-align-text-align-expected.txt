@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] legend
 [FAIL] legend[align=left]
   assert_equals: expected "start" but got "left"
 [FAIL] legend[align=center]

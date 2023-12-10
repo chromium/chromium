@@ -5,6 +5,7 @@
 #include "media/base/decoder_status.h"
 
 #include <sstream>
+#include <string>
 
 #include "base/trace_event/trace_event.h"
 #include "media/base/status.h"
@@ -46,6 +47,10 @@ const std::string GetDecodeStatusString(const DecoderStatus& status) {
 }
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& os, const DecoderStatus& status) {
+  return os << GetDecodeStatusString(status);
+}
 
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      bool is_key_frame,

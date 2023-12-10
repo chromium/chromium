@@ -1,18 +1,19 @@
 This is a testharness.js-based test.
 [FAIL] treat-as-public-address to local: failed preflight.
   assert_equals: expected "timeout" but got "loaded"
-[PASS] treat-as-public-address to local: missing CORS headers.
-[PASS] treat-as-public-address to local: missing PNA header.
+[FAIL] treat-as-public-address to local: missing CORS headers.
+  assert_equals: expected "timeout" but got "no preflight received"
+[FAIL] treat-as-public-address to local: missing PNA header.
+  assert_equals: expected "timeout" but got "no preflight received"
 [FAIL] treat-as-public-address to local: success.
-  assert_equals: expected "loaded" but got "timeout"
-[PASS] treat-as-public-address to local (same-origin): no preflight required.
+  assert_equals: expected "loaded" but got "no preflight received"
 [FAIL] treat-as-public-address to private: failed preflight.
   assert_equals: expected "timeout" but got "loaded"
-[PASS] treat-as-public-address to private: missing CORS headers.
-[PASS] treat-as-public-address to private: missing PNA header.
+[FAIL] treat-as-public-address to private: missing CORS headers.
+  assert_equals: expected "timeout" but got "no preflight received"
+[FAIL] treat-as-public-address to private: missing PNA header.
+  assert_equals: expected "timeout" but got "no preflight received"
 [FAIL] treat-as-public-address to private: success.
-  assert_equals: expected "loaded" but got "timeout"
-[PASS] treat-as-public-address to public: no preflight required.
-[PASS] treat-as-public-address to local: optional preflight
+  assert_equals: expected "loaded" but got "no preflight received"
 Harness: the test ran to completion.
 

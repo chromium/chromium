@@ -213,7 +213,8 @@ TEST_F(AuctionMetricsRecorderTest, NumBidderWorklets) {
           /*wasm_url=*/absl::nullopt,
           /*signals_url=*/absl::nullopt,
           /*needs_cors_for_additional_bid=*/false,
-          /*experiment_group_id=*/absl::nullopt);
+          /*experiment_group_id=*/absl::nullopt,
+          /*trusted_bidding_signals_slot_size_param=*/"");
       recorder().ReportBidderWorkletKey(worklet_key);
     }
   }

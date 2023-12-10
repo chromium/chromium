@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -27,7 +28,6 @@
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -334,7 +334,7 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
 }
 
 std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
-    base::StringPiece tag) {
+    std::string_view tag) {
   // If you change the type of the object being created here you must also
   // change the downcast to it in SpawnTarget().
   auto policy = std::make_unique<PolicyBase>(tag);
@@ -408,8 +408,8 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // Construct the tokens and the job object that we are going to associate
   // with the soon to be created target process.
-  absl::optional<base::win::AccessToken> initial_token;
-  absl::optional<base::win::AccessToken> lockdown_token;
+  std::optional<base::win::AccessToken> initial_token;
+  std::optional<base::win::AccessToken> lockdown_token;
   ResultCode result = SBOX_ALL_OK;
 
   result = policy_base->MakeTokens(initial_token, lockdown_token);

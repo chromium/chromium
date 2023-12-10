@@ -22,6 +22,7 @@
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_types.h"
 
 namespace policy {
@@ -102,13 +103,21 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
                                          PolicyBundle* bundle) {
   // Enumerate the files and sort them lexicographically.
   std::set<base::FilePath> files;
+  std::string policy_level =
+      level == POLICY_LEVEL_MANDATORY ? "mandatory" : "recommended";
   base::FileEnumerator file_enumerator(path, false,
                                        base::FileEnumerator::FILES);
   for (base::FilePath config_file_path = file_enumerator.Next();
-       !config_file_path.empty(); config_file_path = file_enumerator.Next())
+       !config_file_path.empty(); config_file_path = file_enumerator.Next()) {
     files.insert(config_file_path);
+    LOG_POLICY(INFO, POLICY_FETCHING)
+        << "Found " << policy_level << " policy file: " << config_file_path;
+  }
 
   if (files.empty()) {
+    LOG_POLICY(INFO, POLICY_FETCHING)
+        << "Skipping " << policy_level
+        << " platform policies because no policy file was found at: " << path;
     return;
   }
 

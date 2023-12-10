@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_types.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ElementContext;
@@ -80,7 +80,7 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // specified `element_context`. If no help bubble is currently being shown for
   // the tracked element or if the tracked element does not exist, an absent
   // value is returned.
-  absl::optional<HelpBubbleId> GetHelpBubbleId(
+  std::optional<HelpBubbleId> GetHelpBubbleId(
       ui::ElementIdentifier element_id,
       ui::ElementContext element_context) const;
 

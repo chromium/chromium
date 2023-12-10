@@ -11,13 +11,9 @@ import java.util.List;
  * SelectionPopupController}.
  */
 public interface AdditionalSelectionMenuItemProvider {
-    /**
-     * Returns the list of items if any.
-     */
+    /** Returns the list of items if any. */
     List<SelectionMenuItem> getItems();
 
-    /**
-     * Callback for when the menu is destroyed.
-     */
+    /** Callback for when the menu is destroyed. */
     void onMenuDestroyed();
 }

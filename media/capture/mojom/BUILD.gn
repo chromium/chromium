@@ -138,7 +138,6 @@ mojom("image_capture") {
   # scramble these messages.
   scramble_message_ids = false
   webui_module_path = "/media/capture/mojom"
-  use_typescript_sources = true
 
   # Since these are exposed to layout tests, they need legacy bindings as
   # well.

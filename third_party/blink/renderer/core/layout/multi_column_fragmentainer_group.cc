@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 
-#include "third_party/blink/renderer/core/layout/fragmentation_context.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
@@ -24,24 +23,8 @@ MultiColumnFragmentainerGroup::MultiColumnFragmentainerGroup(
     const LayoutMultiColumnSet& column_set)
     : column_set_(&column_set) {}
 
-bool MultiColumnFragmentainerGroup::IsFirstGroup() const {
-  return &column_set_->FirstFragmentainerGroup() == this;
-}
-
-bool MultiColumnFragmentainerGroup::IsLastGroup() const {
-  return &column_set_->LastFragmentainerGroup() == this;
-}
-
 LogicalOffset MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
   return LogicalOffset(LayoutUnit(), LogicalTop());
-}
-
-LayoutUnit
-MultiColumnFragmentainerGroup::BlockOffsetInEnclosingFragmentationContext()
-    const {
-  return LogicalTop() + column_set_->LogicalTopFromMulticolContentEdge() +
-         column_set_->MultiColumnFlowThread()
-             ->BlockOffsetInEnclosingFragmentationContext();
 }
 
 LayoutUnit MultiColumnFragmentainerGroup::LogicalHeightInFlowThreadAt(
@@ -75,8 +58,7 @@ void MultiColumnFragmentainerGroup::ResetColumnHeight() {
 
 PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
     LayoutUnit offset_in_flow_thread,
-    LayoutBox::PageBoundaryRule rule,
-    CoordinateSpaceConversion mode) const {
+    LayoutBox::PageBoundaryRule rule) const {
   LayoutMultiColumnFlowThread* flow_thread =
       column_set_->MultiColumnFlowThread();
 
@@ -98,70 +80,15 @@ PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
       column_set_->CreateWritingModeConverter().ToPhysical(column_rect);
   physical_column_rect.offset += column_set_->PhysicalLocation();
 
-  PhysicalOffset translation_relative_to_flow_thread =
-      physical_column_rect.offset - portion_rect.offset;
-  if (mode == CoordinateSpaceConversion::kContaining)
-    return translation_relative_to_flow_thread;
-
-  PhysicalOffset enclosing_translation;
-  if (LayoutMultiColumnFlowThread* enclosing_flow_thread =
-          flow_thread->EnclosingFlowThread()) {
-    const MultiColumnFragmentainerGroup& first_row =
-        flow_thread->FirstMultiColumnSet()->FirstFragmentainerGroup();
-    // Translation that would map points in the coordinate space of the
-    // outermost flow thread to visual points in the first column in the first
-    // fragmentainer group (row) in our multicol container.
-    PhysicalOffset enclosing_translation_origin =
-        enclosing_flow_thread->FlowThreadTranslationAtOffset(
-            first_row.BlockOffsetInEnclosingFragmentationContext(),
-            LayoutBox::kAssociateWithLatterPage, mode);
-
-    // Translation that would map points in the coordinate space of the
-    // outermost flow thread to visual points in the first column in this
-    // fragmentainer group.
-    enclosing_translation =
-        enclosing_flow_thread->FlowThreadTranslationAtOffset(
-            BlockOffsetInEnclosingFragmentationContext(),
-            LayoutBox::kAssociateWithLatterPage, mode);
-
-    // What we ultimately return from this method is a translation that maps
-    // points in the coordinate space of our flow thread to a visual point in a
-    // certain column in this fragmentainer group. We had to go all the way up
-    // to the outermost flow thread, since this fragmentainer group may be in a
-    // different outer column than the first outer column that this multicol
-    // container lives in. It's the visual distance between the first
-    // fragmentainer group and this fragmentainer group that we need to add to
-    // the translation.
-    enclosing_translation -= enclosing_translation_origin;
-  }
-
-  return enclosing_translation + translation_relative_to_flow_thread;
-}
-
-LayoutUnit MultiColumnFragmentainerGroup::ColumnLogicalTopForOffset(
-    LayoutUnit offset_in_flow_thread) const {
-  unsigned column_index = ColumnIndexAtOffset(
-      offset_in_flow_thread, LayoutBox::kAssociateWithLatterPage);
-  return LogicalTopInFlowThreadAt(column_index);
+  return physical_column_rect.offset - portion_rect.offset;
 }
 
 LogicalOffset MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
-    const LogicalOffset& visual_point,
-    SnapToColumnPolicy snap) const {
+    const LogicalOffset& visual_point) const {
   unsigned column_index = ColumnIndexAtVisualPoint(visual_point);
   LogicalRect column_rect = ColumnRectAt(column_index);
   LogicalOffset local_point(visual_point);
   local_point -= column_rect.offset;
-  if (snap == kSnapToColumn) {
-    LayoutUnit column_start = column_set_->StyleRef().IsLeftToRightDirection()
-                                  ? LayoutUnit()
-                                  : column_rect.size.inline_size;
-    if (local_point.block_offset < 0) {
-      local_point = LogicalOffset(column_start, LayoutUnit());
-    } else if (local_point.block_offset > ColumnLogicalHeight()) {
-      local_point = LogicalOffset(column_start, ColumnLogicalHeight());
-    }
-  }
   return LogicalOffset(
       local_point.inline_offset,
       local_point.block_offset + LogicalTopInFlowThreadAt(column_index));
@@ -192,30 +119,16 @@ PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
   start_column_rect.Intersect(FlowThreadPortionOverflowRectAt(start_column));
   start_column_rect.offset += PhysicalOffset(
       FlowThreadTranslationAtOffset(LogicalTopInFlowThreadAt(start_column),
-                                    LayoutBox::kAssociateWithLatterPage,
-                                    CoordinateSpaceConversion::kContaining));
+                                    LayoutBox::kAssociateWithLatterPage));
   if (start_column == end_column)
     return start_column_rect;  // It all takes place in one column. We're done.
 
   PhysicalRect end_column_rect(bounding_box_in_flow_thread);
   end_column_rect.Intersect(FlowThreadPortionOverflowRectAt(end_column));
-  end_column_rect.offset += PhysicalOffset(FlowThreadTranslationAtOffset(
-      LogicalTopInFlowThreadAt(end_column), LayoutBox::kAssociateWithLatterPage,
-      CoordinateSpaceConversion::kContaining));
+  end_column_rect.offset += PhysicalOffset(
+      FlowThreadTranslationAtOffset(LogicalTopInFlowThreadAt(end_column),
+                                    LayoutBox::kAssociateWithLatterPage));
   return UnionRect(start_column_rect, end_column_rect);
-}
-
-LogicalRect MultiColumnFragmentainerGroup::CalculateOverflow() const {
-  // Note that we just return the bounding rectangle of the column boxes here.
-  // We currently don't examine overflow caused by the actual content that ends
-  // up in each column.
-  LogicalRect overflow_rect;
-  if (unsigned column_count = ActualColumnCount()) {
-    overflow_rect = ColumnRectAt(0);
-    if (column_count > 1)
-      overflow_rect.UniteEvenIfEmpty(ColumnRectAt(column_count - 1));
-  }
-  return overflow_rect;
 }
 
 unsigned MultiColumnFragmentainerGroup::ActualColumnCount() const {

@@ -326,10 +326,12 @@ source_set("unit_tests") {
     sources += [
       "app_storage/app_storage_file_handler_unittest.cc",
       "app_storage/app_storage_unittest.cc",
+      "icon_types_unittest.cc",
       "instance_registry_unittest.cc",
       "instance_unittest.cc",
       "instance_update_unittest.cc",
       "permission_unittest.cc",
+      "run_on_os_login_types_unittest.cc",
     ]
 
     deps += [

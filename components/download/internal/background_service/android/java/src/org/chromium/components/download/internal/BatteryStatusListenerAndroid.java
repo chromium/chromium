@@ -23,8 +23,9 @@ public final class BatteryStatusListenerAndroid {
     @CalledByNative
     public static int getBatteryPercentage() {
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = ContextUtils.registerProtectedBroadcastReceiver(
-                ContextUtils.getApplicationContext(), null, filter);
+        Intent batteryStatus =
+                ContextUtils.registerProtectedBroadcastReceiver(
+                        ContextUtils.getApplicationContext(), null, filter);
         if (batteryStatus == null) return 0;
 
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
@@ -33,7 +34,7 @@ public final class BatteryStatusListenerAndroid {
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int percentage = (int) Math.round(100.0 * level / scale);
 
-        assert(percentage >= 0 && percentage <= 100);
+        assert (percentage >= 0 && percentage <= 100);
         return percentage;
     }
 }

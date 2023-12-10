@@ -3,7 +3,6 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
 [FAIL] test_no_such_element_from_other_window_handle[open]
@@ -14,28 +13,4 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_frame[closed]
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_normal
-[PASS] test_boolean_attribute[audio-attrs0]
-[PASS] test_boolean_attribute[button-attrs1]
-[PASS] test_boolean_attribute[details-attrs2]
-[PASS] test_boolean_attribute[dialog-attrs3]
-[PASS] test_boolean_attribute[fieldset-attrs4]
-[PASS] test_boolean_attribute[form-attrs5]
-[PASS] test_boolean_attribute[iframe-attrs6]
-[PASS] test_boolean_attribute[img-attrs7]
-[PASS] test_boolean_attribute[input-attrs8]
-[PASS] test_boolean_attribute[menuitem-attrs9]
-[PASS] test_boolean_attribute[ol-attrs10]
-[PASS] test_boolean_attribute[optgroup-attrs11]
-[PASS] test_boolean_attribute[option-attrs12]
-[PASS] test_boolean_attribute[script-attrs13]
-[PASS] test_boolean_attribute[select-attrs14]
-[PASS] test_boolean_attribute[textarea-attrs15]
-[PASS] test_boolean_attribute[track-attrs16]
-[PASS] test_boolean_attribute[video-attrs17]
-[PASS] test_global_boolean_attributes
-[PASS] test_anchor_href[relative]
-[PASS] test_anchor_href[absolute]
 Harness: the test ran to completion.

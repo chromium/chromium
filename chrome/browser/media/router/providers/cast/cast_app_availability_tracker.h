@@ -14,6 +14,7 @@
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 
 namespace media_router {
@@ -114,7 +115,7 @@ class CastAppAvailabilityTracker {
     CapabilitiesAndAvailabilityMap(const CapabilitiesAndAvailabilityMap&);
     ~CapabilitiesAndAvailabilityMap();
 
-    BitwiseOr<cast_channel::CastDeviceCapability> capabilities;
+    cast_channel::CastDeviceCapabilitySet capabilities;
     AppAvailabilityMap availabilities;
   };
 

@@ -28,9 +28,7 @@ public class MaxAnticipatedResolutionEstimator {
     private static final int SCREEN_WIDTH_4K = 3840;
     private static final int SCREEN_HEIGHT_4K = 2160;
 
-    /**
-     * Class to represent display resolution.
-     */
+    /** Class to represent display resolution. */
     public static class Resolution {
         int mWidth;
         int mHeight;
@@ -77,7 +75,8 @@ public class MaxAnticipatedResolutionEstimator {
         // priv_app in their SELinux policy files. This means that for P devices
         // (except Nvidia Shield), we should continue to guess display size by
         // looking at the installed codecs.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P && !isNvidiaShield()
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P
+                && !isNvidiaShield()
                 && is4kVpxSupported()) {
             Log.d(TAG, "Assuming 4K display capabilities because we can decode VP9 4K video.");
             return new Resolution(SCREEN_WIDTH_4K, SCREEN_HEIGHT_4K);
@@ -89,8 +88,9 @@ public class MaxAnticipatedResolutionEstimator {
         DisplayManager displayManager =
                 (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
 
-        DisplayCompat.ModeCompat[] supportedModes = DisplayCompat.getSupportedModes(
-                context, displayManager.getDisplay(Display.DEFAULT_DISPLAY));
+        DisplayCompat.ModeCompat[] supportedModes =
+                DisplayCompat.getSupportedModes(
+                        context, displayManager.getDisplay(Display.DEFAULT_DISPLAY));
 
         // supportedModes always contain at least one native mode.
         // All native modes are equal in resolution (but differ in refresh rates).

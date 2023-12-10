@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Skratite ovaj tekst na sljedeći broj znakova ili manje: <ph name="MAX_CHARACTERS" /> (trenutno koristite sljedeći broj znakova: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. sedmica, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904">Zapis <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
 <translation id="2393030564806080191">Heksadecimalna vrijednost boje</translation>
 <translation id="2398813069815436052">dijaloški okvir je otvoren.</translation>
 <translation id="245932805758469625">preostali broj sekundi videozapisa</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Postavite dužinu teksta tako da je broj znakova minimalno <ph name="MIN_CHARACTERS" /> ili više (broj znakova koje trenutno koristite je <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Dio iza koga slijedi "<ph name="ATSIGN" />" ne smije sadržavati simbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Izađi iz prikaza cijelog ekrana</translation>
+<translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4103419683916926126">Milisekundi</translation>
 <translation id="4201051445878709314">Prikaz prethodnog mjeseca</translation>
 <translation id="4360991593054037559">Unesite važeću vrijednost. Dvije najbliže važeće vrijednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalji</translation>
+<translation id="4663373278480897665">Kamera je dozvoljena</translation>
 <translation id="4664250907885839816">Dio koji slijedi nakon znaka "<ph name="ATSIGN" />" ne smije sadržavati simbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproduciranje u načinu rada slike u slici</translation>
 <translation id="4748357248530471599">aktiviranje/deaktiviranje ureza u ekranu u cijeli ekran</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">preuzmi medije</translation>
 <translation id="698788488269350478">prošireno.</translation>
 <translation id="6989848892321993519">Produžite ovaj tekst tako da broj znakova bude najmanje <ph name="MIN_CHARACTERS" /> (trenutno koristite 1 znak).</translation>
+<translation id="7080893216867146095">Dijeljenje lokacije je dozvoljeno</translation>
 <translation id="709897737746224366">Prilagodite da se podudara s traženim formatom.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7263440858009898357">Odaberite stavku s liste.</translation>

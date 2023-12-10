@@ -127,7 +127,7 @@ class PlatformAppPathLauncher
   PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
   PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
-  void set_action_data(absl::optional<app_runtime::ActionData> action_data) {
+  void set_action_data(std::optional<app_runtime::ActionData> action_data) {
     action_data_ = std::move(action_data);
   }
 
@@ -217,7 +217,7 @@ class PlatformAppPathLauncher
 
     // TODO(crbug.com/1354063): This conditional block is being added here
     // temporarily, and should be removed once the underlying type of
-    // |launch_data.action_data| is wrapped with absl::optional<T>.
+    // |launch_data.action_data| is wrapped with std::optional<T>.
     if (action_data_) {
       launch_data.action_data = std::move(*action_data_);
       action_data_.reset();
@@ -352,7 +352,7 @@ class PlatformAppPathLauncher
   const std::string extension_id;
   extensions::AppLaunchSource launch_source_ =
       extensions::AppLaunchSource::kSourceFileHandler;
-  absl::optional<app_runtime::ActionData> action_data_;
+  std::optional<app_runtime::ActionData> action_data_;
   // A list of files and directories to be passed through to the app.
   std::vector<base::FilePath> entry_paths_;
   // A corresponding list with EntryInfo for every base::FilePath in
@@ -505,7 +505,7 @@ void RestartPlatformApp(content::BrowserContext* context,
   if (listening_to_launch && had_windows) {
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(
         context, app, extensions::AppLaunchSource::kSourceRestart,
-        absl::nullopt);
+        std::nullopt);
   }
 }
 

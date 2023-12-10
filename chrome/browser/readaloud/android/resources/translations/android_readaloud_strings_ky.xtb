@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
-<translation id="2558806128245168542">Артка кайтуу</translation>
-<translation id="3523426587027570423">"Бул баракты угуу" ойноткучун жабуу үчүн таптаңыз.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> секунд алдыга түрдүрүү</translation>
+<translation id="1984328900355667246">Окуп берүү жеткиликсиз</translation>
+<translation id="3023502830214299618">Тилекке каршы, учурда бул баракты окуп берүү жеткиликсиз. Кийинчерээк кайталап көрүңүз.</translation>
+<translation id="3807208219231826020">Ойнотууну түрдүрүү</translation>
+<translation id="385051799172605136">Артка</translation>
 <translation id="4431240646217225907">Текстти бөлүп көрсөтүү жана автоматтык сыдыруу</translation>
 <translation id="4654641641922242357">"Бул баракты угуу" ойноткучу.</translation>
-<translation id="4731877163452936634">Ойнотуу ылдамдыгы: <ph name="PLAYBACK_SPEED" />. Өзгөртүү үчүн чыкылдатыңыз.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> секунд артка түрдүрүү</translation>
 <translation id="5234971936051226002">"Бул баракты угуу" ойноткучу кичирейтилди.</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="6315170314923504164">Үн</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="6846298663435243399">Жүктөлүүдө…</translation>
 <translation id="7587250070160020374">Chrome'до окулуп жатат</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> секунд алдыга түрүү</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> секунд артка түрдүрүү</translation>
 <translation id="8136852699834914183">Бул бетте ойнотууга болбойт.</translation>
+<translation id="8264989794233974275">Ылдамдыкты <ph name="PLAYBACK_SPEED" /> эсе көбөйтүү/азайтуу.</translation>
+<translation id="8407011429883244666">Ойноткучту жабуу.</translation>
 <translation id="8953618380150219653">"Бул баракты угуу" ойноткучу толук экранда ачылды.</translation>
 </translationbundle>

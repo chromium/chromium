@@ -15,15 +15,17 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
                                     const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysBaseContainer};
-  mixer[kColorSidePanelEntryIcon] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelComboboxEntryIcon] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelComboboxEntryTitle] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelEntryDropdownIcon] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorSidePanelEntryTitle] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSysBaseContainer};
 
-  // After ChromeRefresh2023 roll out these three should be moved to replace
+  // After ChromeRefresh2023 roll out these five should be moved to replace
   // their colors in c/b/ui/color/chrome_color_mixer.cc. For now they need a
   // separate themed ChromeRefresh2023 color because the side panel header has a
   // different background color than it did before.
+  mixer[kColorSidePanelEntryIcon] = {kColorToolbarText};
+  mixer[kColorSidePanelEntryTitle] = {kColorToolbarText};
   mixer[kColorSidePanelHeaderButtonIcon] = {kColorToolbarText};
   mixer[kColorSidePanelHeaderButtonIconDisabled] = {kColorToolbarTextDisabled};
   mixer[kColorSidePanelResizeAreaHandle] = {kColorToolbarText};
@@ -106,10 +108,14 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimary};
   mixer[kColorSidePanelCustomizeChromeThemeSnapshotBackground] = {
       ui::kColorSysTonalContainer};
-  mixer[kColorSidePanelCustomizeChromeWallpaperSearchTileBackground] = {
-      ui::kColorSysSurface2};
   mixer[kColorSidePanelCustomizeChromeWebStoreBorder] = {
       ui::kColorSysNeutralOutline};
+  /*Customize Chrome Wallpaper Search*/
+  mixer[kColorSidePanelWallpaperSearchErrorButtonBackground] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorSidePanelWallpaperSearchErrorButtonText] = {
+      ui::kColorSysOnTonalContainer};
+  mixer[kColorSidePanelWallpaperSearchTileBackground] = {ui::kColorSysSurface2};
 
   /* Commerce */
   mixer[kColorSidePanelCommerceGraphAxis] = {ui::kColorSysDivider};
@@ -121,6 +127,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
+  mixer[kColorSidePanelEntryIcon] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelEntryTitle] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelHeaderButtonIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSidePanelHeaderButtonIconDisabled] = {ui::kColorSysStateDisabled};
   mixer[kColorSidePanelResizeAreaHandle] = {ui::kColorSysOnSurfaceSubtle};

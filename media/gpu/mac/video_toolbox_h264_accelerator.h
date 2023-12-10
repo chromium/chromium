@@ -17,7 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h264_decoder.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -29,7 +29,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
-      VideoToolboxSessionMetadata,
+      VideoToolboxDecompressionSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 

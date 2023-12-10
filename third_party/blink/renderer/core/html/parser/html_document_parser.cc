@@ -491,6 +491,16 @@ void HTMLDocumentParser::PrepareToStopParsing() {
     PumpTokenizerIfPossible();
   }
 
+  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+      features::kDelayAsyncScriptExecutionWhenLcpFoundInHtml.Get()) {
+    // If kDelayAsyncScriptExecutionWhenLcpFoundInHtml flag is turned on, and an
+    // LCP element wasn't found during Preload scan, there is no need to delay
+    // async scripts further.
+    if (!GetDocument()->IsLcpElementFoundInHtml()) {
+      GetDocument()->ResumeAsyncScriptExecution();
+    }
+  }
+
   if (IsStopped())
     return;
 
@@ -1394,6 +1404,34 @@ void HTMLDocumentParser::ProcessPreloadData(
   for (auto& request : preload_data->requests) {
     queued_preloads_.push_back(std::move(request));
   }
+
+  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+      features::kDelayAsyncScriptExecutionWhenLcpFoundInHtml.Get()) {
+    // If LCP element is found during preload scanning of main document,
+    // start/continue delaying async script execution on the document until the
+    // configured  milestone.
+    Document* document = GetDocument();
+    LocalFrame* frame = document->GetFrame();
+    if (preload_data->has_located_potential_lcp_element && frame &&
+        frame->IsMainFrame()) {
+      document->SetLcpElementFoundInHtml(true);
+      document->DelayAsyncScriptExecution();
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kLowPriorityAsyncScriptExecution) &&
+      features::kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam
+          .Get()) {
+    // Update main document whether LCP element was discovered in HTML.
+    Document* document = GetDocument();
+    LocalFrame* frame = document->GetFrame();
+    if (preload_data->has_located_potential_lcp_element && frame &&
+        frame->IsMainFrame()) {
+      document->SetLcpElementFoundInHtml(true);
+    }
+  }
+
   FetchQueuedPreloads();
 }
 

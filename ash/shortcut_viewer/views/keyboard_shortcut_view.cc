@@ -68,7 +68,7 @@ namespace {
 
 KeyboardShortcutView* g_ksv_view = nullptr;
 
-constexpr absl::nullopt_t kAllCategories = absl::nullopt;
+constexpr std::nullopt_t kAllCategories = std::nullopt;
 
 // Light mode colors:
 constexpr SkColor kSearchIllustrationIconColorLight =
@@ -79,6 +79,8 @@ constexpr SkColor kSearchIllustrationIconColorDark =
 
 // Custom No Results image view to handle color theme changes.
 class KSVNoResultsImageView : public views::ImageView {
+  METADATA_HEADER(KSVNoResultsImageView, views::ImageView)
+
  public:
   KSVNoResultsImageView()
       : dark_light_mode_controller_(ash::DarkLightModeControllerImpl::Get()) {}
@@ -105,6 +107,9 @@ class KSVNoResultsImageView : public views::ImageView {
   const raw_ptr<ash::DarkLightModeControllerImpl, ExperimentalAsh>
       dark_light_mode_controller_;
 };
+
+BEGIN_METADATA(KSVNoResultsImageView)
+END_METADATA
 
 // Creates the no search result view.
 std::unique_ptr<views::View> CreateNoSearchResultView() {
@@ -441,7 +446,7 @@ void KeyboardShortcutView::InitViews() {
 }
 
 void KeyboardShortcutView::InitCategoriesTabbedPane(
-    absl::optional<ash::ShortcutCategory> initial_category) {
+    std::optional<ash::ShortcutCategory> initial_category) {
   active_tab_index_ = categories_tabbed_pane_->GetSelectedTabIndex();
   // If the tab count is 0, GetSelectedTabIndex() will return kNoSelectedTab,
   // which we do not want to cache.

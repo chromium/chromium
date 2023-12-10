@@ -59,7 +59,7 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
   media_session_item_producer_ =
       std::make_unique<global_media_controls::MediaSessionItemProducer>(
           std::move(audio_focus_remote), std::move(controller_manager_remote),
-          item_manager_.get(), /*source_id=*/absl::nullopt);
+          item_manager_.get(), /*source_id=*/std::nullopt);
   item_manager_->AddItemProducer(media_session_item_producer_.get());
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
@@ -110,7 +110,7 @@ std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness,
     bool should_clip_height,
-    const std::string& item_id,
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     const std::string& show_devices_for_item_id) {
   CHECK(item_manager_);
   CHECK(color_theme_);
@@ -120,16 +120,9 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
               color_theme_->separator_color, separator_thickness),
           should_clip_height);
   media_item_ui_list_view_ = media_item_ui_list_view->GetWeakPtr();
+  entry_point_ = entry_point;
   show_devices_for_item_id_ = show_devices_for_item_id;
-  if (item_id.empty()) {
-    entry_point_ =
-        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray;
-    item_manager_->SetDialogDelegate(this);
-  } else {
-    entry_point_ =
-        global_media_controls::GlobalMediaControlsEntryPoint::kPresentation;
-    item_manager_->SetDialogDelegateForId(this, item_id);
-  }
+  item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
                                 entry_point_);
   return media_item_ui_list_view;
@@ -150,19 +143,18 @@ MediaNotificationProviderImpl::GetMediaItemManager() {
 }
 
 void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
-  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
-      !crosapi::CrosapiManager::IsInitialized()) {
-    return;
-  }
-
-  // Since user profile is now active, we can create a
-  // CastMediaNotificationProducer for the MediaItemManager to access media
-  // items being casted.
+  // Since the user profile is now active, we can create a
+  // CastMediaNotificationProducer for the MediaItemManager to access Cast media
+  // items.
   cast_service_ =
       CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
           GetProfile());
   AddMediaItemManagerToCastService(item_manager_.get());
 
+  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
+      !crosapi::CrosapiManager::IsInitialized()) {
+    return;
+  }
   supplemental_device_picker_producer_ =
       std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
   item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());

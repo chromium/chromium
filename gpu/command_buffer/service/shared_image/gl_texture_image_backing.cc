@@ -213,6 +213,8 @@ class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
 
 bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
     viz::SharedImageFormat format) {
+  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
+  // SharedMemory GMBs which correspond to specific multiplanar formats.
   return (format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kYV12 ||
           format == viz::MultiPlaneFormat::kI420 ||
@@ -226,6 +228,8 @@ bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
 
 bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     viz::SharedImageFormat format) {
+  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
+  // SharedMemory GMBs which correspond to specific multiplanar formats.
   return (format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kYV12 ||
           format == viz::MultiPlaneFormat::kI420 ||

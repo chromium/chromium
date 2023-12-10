@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/GPU Mac Builder/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -19,6 +22,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "mac"
               },

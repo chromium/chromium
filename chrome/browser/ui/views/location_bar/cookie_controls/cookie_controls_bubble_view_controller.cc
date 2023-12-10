@@ -27,6 +27,7 @@
 #include "cookie_controls_bubble_view_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -76,10 +77,11 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 
   bubble_view_->GetReloadingView()->SetVisible(false);
   bubble_view_->GetContentView()->SetVisible(true);
+  bubble_view_->GetContentView()->SetAccessibleRole(ax::mojom::Role::kAlert);
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
-  if (!controller_->HasCookieBlockingChangedForSite()) {
+  if (!controller_->HasUserChangedCookieBlockingForSite()) {
     controller_observation_.Reset();
     bubble_view_->CloseWidget();
     return;
@@ -97,6 +99,9 @@ void CookieControlsBubbleViewController::OnUserClosedContentView() {
 
 void CookieControlsBubbleViewController::SwitchToReloadingView() {
   bubble_view_->SwitchToReloadingView();
+  bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
+                                 GetSubjectUrlName(web_contents_.get())));
   bubble_view_->GetReloadingView()->RequestFocus();
 
   // Set a timeout for how long the reloading view is shown for.
@@ -344,6 +349,8 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
         "CookieControls.Bubble.BlockThirdPartyCookies"));
   }
   controller_->OnCookieBlockingEnabledForSite(!allow_third_party_cookies);
+  bubble_view_->GetContentView()->NotifyAccessibilityEvent(
+      ax::mojom::Event::kAlert, true);
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
@@ -372,8 +379,9 @@ CookieControlsBubbleViewController::InitReloadingView(
   reloading_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  auto progress_bar = std::make_unique<views::ProgressBar>(
-      kProgressBarHeight, /*allow_round_corner=*/false);
+  auto progress_bar = std::make_unique<views::ProgressBar>();
+  progress_bar->SetPreferredHeight(kProgressBarHeight);
+  progress_bar->SetPreferredCornerRadii(std::nullopt);
   progress_bar->SetValue(-1);
 
   auto reloading_content = std::make_unique<views::View>();
@@ -412,7 +420,7 @@ void CookieControlsBubbleViewController::FetchFaviconFrom(
   }
 
   favicon_service->GetFaviconImageForPageURL(
-      web_contents->GetVisibleURL(),
+      web_contents->GetLastCommittedURL(),
       base::BindOnce(&CookieControlsBubbleViewController::OnFaviconFetched,
                      weak_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
@@ -426,7 +434,7 @@ std::u16string CookieControlsBubbleViewController::GetSubjectUrlName(
   CHECK(web_contents);
   return UrlIdentity::CreateFromUrl(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-             web_contents->GetVisibleURL(), kUrlIdentityAllowedTypes,
+             web_contents->GetLastCommittedURL(), kUrlIdentityAllowedTypes,
              kUrlIdentityOptions)
       .name;
 }

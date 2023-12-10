@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Cache returns stale resource
+  assert_equals: (revalidated version loaded) expected "rgb(255, 0, 0)" but got "rgb(0, 128, 0)"
+Harness: the test ran to completion.

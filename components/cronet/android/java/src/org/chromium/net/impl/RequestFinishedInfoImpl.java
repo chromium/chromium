@@ -16,29 +16,28 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.Collections;
 
-/**
- * Implements information about a finished request. Passed to {@link RequestFinishedInfo.Listener}.
- */
+/** Implements information about a finished request. Passed to {@link RequestFinishedInfo.Listener}. */
 public class RequestFinishedInfoImpl extends RequestFinishedInfo {
     private final String mUrl;
     private final Collection<Object> mAnnotations;
     private final RequestFinishedInfo.Metrics mMetrics;
 
-    @FinishedReason
-    private final int mFinishedReason;
+    @FinishedReason private final int mFinishedReason;
 
-    @Nullable
-    private final UrlResponseInfo mResponseInfo;
-    @Nullable
-    private final CronetException mException;
+    @Nullable private final UrlResponseInfo mResponseInfo;
+    @Nullable private final CronetException mException;
 
     @IntDef({SUCCEEDED, FAILED, CANCELED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FinishedReason {}
 
-    public RequestFinishedInfoImpl(String url, Collection<Object> annotations,
-            RequestFinishedInfo.Metrics metrics, @FinishedReason int finishedReason,
-            @Nullable UrlResponseInfo responseInfo, @Nullable CronetException exception) {
+    public RequestFinishedInfoImpl(
+            String url,
+            Collection<Object> annotations,
+            RequestFinishedInfo.Metrics metrics,
+            @FinishedReason int finishedReason,
+            @Nullable UrlResponseInfo responseInfo,
+            @Nullable CronetException exception) {
         mUrl = url;
         mAnnotations = annotations;
         mMetrics = metrics;

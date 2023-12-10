@@ -106,6 +106,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     std::array<uint8_t, kRpIdHashLength> application_parameter;
     uint32_t counter = 0;
     bool is_resident = false;
+    bool backup_eligible = false;
+    bool backup_state = false;
     // is_u2f is true if the credential was created via a U2F interface.
     bool is_u2f = false;
     device::CredProtect protection = device::CredProtect::kUVOptional;
@@ -127,10 +129,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     absl::optional<LargeBlob> large_blob;
     absl::optional<std::array<uint8_t, 32>> large_blob_key;
     absl::optional<std::vector<uint8_t>> cred_blob;
-
-    // device_bound_key contains the optional device-bound key for this
-    // credential, thus simulating a multi-device credential.
-    absl::optional<std::unique_ptr<PrivateKey>> device_key;
   };
 
   using Credential = std::pair<base::span<const uint8_t>, RegistrationData*>;
@@ -198,6 +196,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     bool unset_uv_bit = false;
     // If true, UP bit is always set to 0 in the response.
     bool unset_up_bit = false;
+    // default_backup_eligibility determines the default value of the
+    // credential's BE (Backup Eligible) flag. This applies to both credentials
+    // created by invoking the CTAP make credential command (in which case the
+    // BE flag will also be reflected on make credential returned authenticator
+    // data) and by calling one of the |Inject*| functions below.
+    bool default_backup_eligibility = false;
+    // default_backup_state determines the default value of the credential's BS
+    // (Backup State) flag. This applies to both credentials created by invoking
+    // the CTAP make credential command (in which case the BS flag will also be
+    // reflected on make credential returned authenticator data) and by calling
+    // one of the |Inject*| functions below.
+    bool default_backup_state = false;
 
     // Number of PIN retries remaining.
     int pin_retries = kMaxPinRetries;

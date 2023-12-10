@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_features.h"
@@ -109,8 +110,7 @@ void SetCookieForPartition(
   const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   if (!cc)
     return;
 
@@ -169,8 +169,8 @@ void BuildUserContextForGaiaSignIn(
     bool using_saml_api,
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
-    const absl::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const absl::optional<ChallengeResponseKey> challenge_response_key,
+    const std::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
+    const std::optional<ChallengeResponseKey> challenge_response_key,
     UserContext* user_context) {
   *user_context = UserContext(user_type, account_id);
   if (using_saml && challenge_response_key.has_value()) {
@@ -221,6 +221,19 @@ AccountId GetAccountId(const std::string& authenticated_email,
   }
 
   return account_id;
+}
+
+bool IsFamilyLinkAllowed() {
+  if (!features::IsFamilyLinkOnSchoolDeviceEnabled()) {
+    return false;
+  }
+
+  CrosSettings* cros_settings = CrosSettings::Get();
+  bool family_link_allowed = false;
+  cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
+                            &family_link_allowed);
+
+  return family_link_allowed;
 }
 
 }  // namespace login

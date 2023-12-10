@@ -22,7 +22,9 @@ class ContextMenuItemWithIconButtonProperties extends ContextMenuItemProperties 
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(ContextMenuItemProperties.ALL_KEYS,
-                    new PropertyKey[] {BUTTON_IMAGE, BUTTON_CONTENT_DESC, BUTTON_MENU_ID,
-                            BUTTON_CLICK_LISTENER});
+            PropertyModel.concatKeys(
+                    ContextMenuItemProperties.ALL_KEYS,
+                    new PropertyKey[] {
+                        BUTTON_IMAGE, BUTTON_CONTENT_DESC, BUTTON_MENU_ID, BUTTON_CLICK_LISTENER
+                    });
 }

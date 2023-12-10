@@ -29,30 +29,20 @@ import java.lang.annotation.RetentionPolicy;
  * Call {@link #setState(int)} to transition between the loading spinner, button, or hidden states.
  */
 public class MoreProgressButton extends FrameLayout implements View.OnClickListener {
-    /**
-     * State for the button, reflects the visibility for the button and spinner
-     */
+    /** State for the button, reflects the visibility for the button and spinner */
     @IntDef({State.INVALID, State.HIDDEN, State.BUTTON, State.LOADING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
-        /**
-         * Internal state used before the button finished inflating.
-         */
+        /** Internal state used before the button finished inflating. */
         int INVALID = -1;
 
-        /**
-         * Both the button and spinner are GONE.
-         */
+        /** Both the button and spinner are GONE. */
         int HIDDEN = 0;
 
-        /**
-         * The button is visible and the loading spinner is hidden.
-         */
+        /** The button is visible and the loading spinner is hidden. */
         int BUTTON = 1;
 
-        /**
-         * The spinner is visible and the button is hidden.
-         */
+        /** The spinner is visible and the button is hidden. */
         int LOADING = 2;
     }
 

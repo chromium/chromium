@@ -11,7 +11,7 @@
 
 EmbeddedPermissionPromptPolicyView::EmbeddedPermissionPromptPolicyView(
     Browser* browser,
-    base::WeakPtr<Delegate> delegate,
+    base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate,
     bool is_permission_allowed)
     : EmbeddedPermissionPromptBaseView(browser, delegate),
       is_permission_allowed_(is_permission_allowed) {}

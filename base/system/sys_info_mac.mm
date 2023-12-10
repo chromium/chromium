@@ -64,7 +64,7 @@ absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
 
 BASE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation,
              "NumberOfCoresWithCpuSecurityMitigation",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 std::string SysInfo::OperatingSystemName() {

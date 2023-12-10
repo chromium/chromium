@@ -5,7 +5,9 @@
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -16,7 +18,6 @@
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

@@ -18,6 +18,8 @@
 struct RegisterOptions;
 struct ImpressionEvent;
 struct ClickEvent;
+struct HoverEvent;
+struct DragEvent;
 struct ChangeEvent;
 struct KeyDownEvent;
 
@@ -78,8 +80,6 @@ class DevToolsEmbedderMessageDispatcher {
         const std::string& port_forwarding_config,
         bool network_discovery_enabled,
         const std::string& network_discovery_config) = 0;
-    virtual void PerformActionOnRemotePage(const std::string& page_id,
-                                           const std::string& action) = 0;
     virtual void OpenRemotePage(const std::string& browser_id,
                                 const std::string& url) = 0;
     virtual void OpenNodeFrontend() = 0;
@@ -108,6 +108,8 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
     virtual void RecordImpression(const ImpressionEvent& event) = 0;
     virtual void RecordClick(const ClickEvent& event) = 0;
+    virtual void RecordHover(const HoverEvent& event) = 0;
+    virtual void RecordDrag(const DragEvent& event) = 0;
     virtual void RecordChange(const ChangeEvent& event) = 0;
     virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
     virtual void SendJsonRequest(DispatchCallback callback,
@@ -123,10 +125,8 @@ class DevToolsEmbedderMessageDispatcher {
                             const std::string& trigger) = 0;
     virtual void CanShowSurvey(DispatchCallback callback,
                                const std::string& trigger) = 0;
-#if defined(AIDA_SCOPE)
     virtual void DoAidaConversation(DispatchCallback callback,
                                     const std::string& request) = 0;
-#endif
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

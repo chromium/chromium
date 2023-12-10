@@ -110,8 +110,8 @@ public abstract class ListItem {
             TOP,
 
             /**
-               Represents the line divider between two items in a group card. It also contains
-               two side bars on left and right to make up for the padding between two items.
+             * Represents the line divider between two items in a group card. It also contains
+             * two side bars on left and right to make up for the padding between two items.
              */
             MIDDLE,
 
@@ -128,9 +128,7 @@ public abstract class ListItem {
         }
     }
 
-    /**
-     * The type of the section header.
-     */
+    /** The type of the section header. */
     @IntDef({SectionHeaderType.INVALID, SectionHeaderType.DATE, SectionHeaderType.JUST_NOW})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SectionHeaderType {
@@ -143,9 +141,7 @@ public abstract class ListItem {
     public static class SectionHeaderListItem extends DateListItem {
         public @SectionHeaderType int type;
 
-        /**
-         * Creates a {@link SectionHeaderListItem} instance for a given {@code timestamp}.
-         */
+        /** Creates a {@link SectionHeaderListItem} instance for a given {@code timestamp}. */
         public SectionHeaderListItem(long timestamp, @SectionHeaderType int type) {
             super(generateStableId(type, timestamp), new Date(timestamp));
             this.type = type;

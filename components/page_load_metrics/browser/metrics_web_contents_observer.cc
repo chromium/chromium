@@ -505,31 +505,17 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
   switch (details.type) {
     case content::CookieAccessDetails::Type::kRead:
       tracker.OnCookiesRead(details.url, details.first_party_url,
-                            details.blocked_by_policy, details.is_ad_tagged);
+                            details.blocked_by_policy, details.is_ad_tagged,
+                            details.cookie_setting_overrides);
       break;
     case content::CookieAccessDetails::Type::kChange:
       for (const auto& cookie : details.cookie_list) {
         tracker.OnCookieChange(details.url, details.first_party_url, cookie,
-                               details.blocked_by_policy, details.is_ad_tagged);
+                               details.blocked_by_policy, details.is_ad_tagged,
+                               details.cookie_setting_overrides);
       }
       break;
   }
-}
-
-void MetricsWebContentsObserver::DidActivatePortal(
-    content::WebContents* predecessor_web_contents,
-    base::TimeTicks activation_time) {
-  // The `predecessor_web_contents` is the WebContents that instantiated the
-  // portal.
-  MetricsWebContentsObserver* predecessor_observer =
-      MetricsWebContentsObserver::FromWebContents(predecessor_web_contents);
-  // We only track the portal activation if the predecessor is also being
-  // tracked.
-  if (!primary_page_ || !predecessor_observer ||
-      !predecessor_observer->primary_page_) {
-    return;
-  }
-  primary_page_->DidActivatePortal(activation_time);
 }
 
 void MetricsWebContentsObserver::DidActivatePreviewedPage(

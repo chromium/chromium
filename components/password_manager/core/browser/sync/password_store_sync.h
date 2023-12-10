@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/sync/model/sync_metadata_store.h"
 
 namespace syncer {

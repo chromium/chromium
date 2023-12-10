@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -59,23 +60,13 @@ void SetCheckStatus(FormFieldData* form_field_data,
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
     base::StringPiece attribute);
 
+// Returns `value` stripped from its whitespaces.
+std::u16string RemoveWhitespace(const std::u16string& value);
+
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
 // entered by the website and not a real value entered by the user.
 bool SanitizedFieldIsEmpty(const std::u16string& value);
-
-// Returns the Levenshtein distance of `a` and `b`.
-// If `k = max_distance` is provided, the distance is only correctly calculated
-// up to k. In case the actual Levenshtein distance is larger than k, k+1 is
-// returned instead. This is useful for checking whether the distance is at most
-// some small constant, since the algorithm is more efficient in this case.
-// Edits, inserts and removes each count as one step.
-// Complexity:
-// - Without k: O(|a| * |b|) time and O(max(|a|, |b|)) memory.
-// - With k: O(min(|a|, |b|) * k + k) time and O(k) memory.
-size_t LevenshteinDistance(std::u16string_view a,
-                           std::u16string_view b,
-                           std::optional<size_t> max_distance = std::nullopt);
 
 // Returns true if the first suggestion should be autoselected when the autofill
 // dropdown is shown due to an arrow down event. Enabled on desktop only.
@@ -89,6 +80,21 @@ mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
 
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
+
+// Checks if the user triggered Autofill on a field manually through the Chrome
+// context menu.
+bool IsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered address Autofill on a field manually through the
+// Chrome context menu.
+bool IsAddressAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered payments Autofill on a field manually through
+// the Chrome context menu.
+bool IsPaymentsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
 
 }  // namespace autofill
 

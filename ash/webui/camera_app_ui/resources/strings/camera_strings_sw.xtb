@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Futa ukurasa wa <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Hali ya kamera</translation>
 <translation id="1153190633558910465">Zima gridi</translation>
-<translation id="1175958423215084756">Kiungo kimetambuliwa. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ukurasa wa <ph name="PAGE_NUMBER" /> umefutwa</translation>
 <translation id="1258009455399840361">Zungusha kwa digrii 90 katika mzunguko wa saa</translation>
 <translation id="1417314334557041815">Badilisha ukurasa <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Inachakata video...</translation>
 <translation id="3789724198583203151">Zungusha kwa digrii 90 kinyume cha saa</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="4060608699153044055">Huwezi kurekodi kwa sababu kifaa kina nafasi ndogo ya kuhifadhi. Ili uanze kurekodi unahitaji kufuta faili ili uongeze nafasi kwenye kifaa chako.</translation>
 <translation id="4061162772429051350">MP <ph name="MAGAPIXELS_AMOUNT" /></translation>
 <translation id="4118525110028899586">Sitisha kurekodi</translation>
 <translation id="4121305183798804752">Hati imetambuliwa</translation>
 <translation id="414641094616694804">Kamera hii haiwezi kubadilisha ubora</translation>
 <translation id="4176463684765177261">Imezimwa</translation>
-<translation id="4269820728363426813">Nakili anwani ya kiungo</translation>
 <translation id="428234092390943511">Kijipicha cha ukurasa</translation>
 <translation id="4349714250734879769">Weka fremu ya Chrome</translation>
 <translation id="4383571725254449280">Chapisha kumbukumbu za utendaji</translation>
@@ -144,7 +141,6 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="7726641833034062494">Rekodi video ya kawaida</translation>
 <translation id="7748344063862150053">Pembe ya juu kulia ya hati</translation>
 <translation id="7933675232020478311">Inasogezwa upande wa chini kulia</translation>
-<translation id="7983668134180549431">Maandishi yametambuliwa.</translation>
 <translation id="8079255378695216066">Imeshindwa kuanza kurekodi</translation>
 <translation id="8120146556401698679">Kugeuza upande, kuinamisha na kukuza</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
@@ -163,6 +159,7 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="8870695351537079478">Imeshindwa kuanza kurekodi</translation>
 <translation id="8880167521484863515">4 kwa 3</translation>
 <translation id="8903921497873541725">Kuza karibu</translation>
+<translation id="8926890870105777777">Jiunge kwenye Mtandao wa "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Weka kingo zote za hati ndani ya fremu</translation>
 <translation id="9045155556724273246">Sekunde 10</translation>
 <translation id="906331135292332864">Inachakata picha...</translation>

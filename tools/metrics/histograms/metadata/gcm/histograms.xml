@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -191,22 +191,6 @@ chromium-metrics-reviews@google.com.
     Size of the GCM persistent store in kilobytes at startup. Warning: this
     histogram was expired from 2018-08-30 to 2021-09-20; data may be missing.
   </summary>
-</histogram>
-
-<histogram name="GCM.StoreUpdateSucceeded" enum="BooleanSuccess"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Success indicates successfully updating the GCM persistent store on message
-    update. Failure indicates a failure updating the persistence store.
-  </summary>
-</histogram>
-
-<histogram name="GCM.UnregistrationRequestStatus"
-    enum="GCMUnregistrationRequestStatus" expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>Status code of the outcome of a GCM unregistration request.</summary>
 </histogram>
 
 <histogram name="GCM.WebPushReceived.DeviceState" enum="WebPushDeviceState"

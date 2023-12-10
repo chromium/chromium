@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Styttu þennan texta í <ph name="MAX_CHARACTERS" /> stafi eða minna (sem stendur notarðu <ph name="CURRENT_LENGTH" /> stafi).</translation>
 <translation id="2247351761944213033">Vika <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Hljóðrás <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Myndavél og hljóðnemi eru leyfð</translation>
 <translation id="2393030564806080191">Sextándakerfisgildi litar</translation>
 <translation id="2398813069815436052">gluggi opnaðist.</translation>
 <translation id="245932805758469625">fjöldi sekúndna sem eftir eru af myndskeiði</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Lengdu þennan texta í <ph name="MIN_CHARACTERS" /> stafi eða meira (sem stendur notarðu <ph name="CURRENT_LENGTH" /> stafi).</translation>
 <translation id="383465348367842624">Hlutinn sem kemur á eftir „<ph name="ATSIGN" />“ á ekki að innihalda táknið „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Hætta að nota allan skjáinn</translation>
+<translation id="4031179711345676612">Hljóðnemi er leyfður</translation>
 <translation id="4103419683916926126">Millisekúndur</translation>
 <translation id="4201051445878709314">Sýna fyrri mánuð</translation>
 <translation id="4360991593054037559">Sláðu inn gilt gildi. Næstu tvö gildu gildi eru <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Upplýsingar</translation>
+<translation id="4663373278480897665">Myndavél er leyfð</translation>
 <translation id="4664250907885839816">Hlutinn sem kemur á eftir „<ph name="ATSIGN" />“ ætti ekki að innihalda táknið „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Spilar mynd í mynd</translation>
 <translation id="4748357248530471599">sýna eða hætta að sýna skjáskurð á öllum skjánum</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">sækja miðlaefni</translation>
 <translation id="698788488269350478">stækkað.</translation>
 <translation id="6989848892321993519">Lengdu þennan texta í <ph name="MIN_CHARACTERS" /> stafi eða meira (sem stendur notarðu einn staf).</translation>
+<translation id="7080893216867146095">Leyft að deila staðsetningu</translation>
 <translation id="709897737746224366">Fylgdu umbeðnu sniði.</translation>
 <translation id="7102274145889307184">núverandi staðsetning</translation>
 <translation id="7263440858009898357">Veldu atriði af listanum.</translation>

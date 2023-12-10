@@ -350,8 +350,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Add) {
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvcChange change = ServerCvcChange(
-      ServerCvcChange::ADD, base::NumberToString(server_cvc.instrument_id),
-      server_cvc);
+      ServerCvcChange::ADD, server_cvc.instrument_id, server_cvc);
   bridge()->ServerCvcChanged(change);
 }
 
@@ -370,8 +369,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Update) {
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvcChange change = ServerCvcChange(
-      ServerCvcChange::UPDATE, base::NumberToString(server_cvc.instrument_id),
-      server_cvc);
+      ServerCvcChange::UPDATE, server_cvc.instrument_id, server_cvc);
   bridge()->ServerCvcChanged(change);
 }
 
@@ -390,8 +388,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Remove) {
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvcChange change = ServerCvcChange(
-      ServerCvcChange::REMOVE, base::NumberToString(server_cvc.instrument_id),
-      server_cvc);
+      ServerCvcChange::REMOVE, server_cvc.instrument_id, server_cvc);
   bridge()->ServerCvcChanged(change);
 }
 
@@ -414,6 +411,25 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ApplyDisableSyncChanges) {
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
   EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+}
+
+// Test to verify no deletion APIs are triggered in `ApplyDisableSyncChanges`
+// when there is no server CVC data to delete.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       ApplyDisableSyncChanges_NoServerCvcPresent) {
+  EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
+
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+
+  EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+  EXPECT_FALSE(bridge()->change_processor()->GetError().has_value());
 }
 
 // Test to get all the server cvc data for a user which is filtered on the list

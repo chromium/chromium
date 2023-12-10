@@ -54,7 +54,7 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForBinaryClassifier) {
   // Model with binary classifier when `segment_id` is selected.
   SelectedSegment result(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER, 1);
-  result.selection_time = base::Time::Now();
+  result.selection_time = base::Time::Now() - base::Seconds(1);
   old_result_prefs_->SaveSegmentationResultToPref(kShoppingUserSegmentationKey,
                                                   result);
   prefs_migrator_ = std::make_unique<PrefsMigrator>(
@@ -65,18 +65,18 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForBinaryClassifier) {
   auto expected_output_config =
       migration_test_utils::GetTestOutputConfigForBinaryClassifier(
           proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
-  auto result_in_new_prefs = new_result_prefs_->ReadClientResultFromPrefs(
-      kShoppingUserSegmentationKey);
+  const auto* result_in_new_prefs =
+      new_result_prefs_->ReadClientResultFromPrefs(
+          kShoppingUserSegmentationKey);
 
-  EXPECT_TRUE(result_in_new_prefs.has_value());
-  proto::PredictionResult client_result =
-      result_in_new_prefs.value().client_result();
+  EXPECT_TRUE(result_in_new_prefs);
+  proto::PredictionResult client_result = result_in_new_prefs->client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             client_result.output_config().SerializeAsString());
   EXPECT_THAT(client_result.result(), testing::ElementsAre(1));
 
   new_result_prefs_->SaveClientResultToPrefs(kShoppingUserSegmentationKey,
-                                             result_in_new_prefs);
+                                             *result_in_new_prefs);
 
   // Models with binary classifier when `segment_id` is not selected.
   SelectedSegment result1(SegmentId::OPTIMIZATION_TARGET_UNKNOWN, 0);
@@ -89,8 +89,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForBinaryClassifier) {
 
   result_in_new_prefs = new_result_prefs_->ReadClientResultFromPrefs(
       kShoppingUserSegmentationKey);
-  EXPECT_TRUE(result_in_new_prefs.has_value());
-  client_result = result_in_new_prefs.value().client_result();
+  EXPECT_TRUE(result_in_new_prefs);
+  client_result = result_in_new_prefs->client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             client_result.output_config().SerializeAsString());
   EXPECT_THAT(client_result.result(), testing::ElementsAre(0));
@@ -110,18 +110,18 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForAdaptiveToolbar) {
 
   auto expected_output_config =
       migration_test_utils::GetTestOutputConfigForAdaptiveToolbar();
-  auto result_in_new_prefs = new_result_prefs_->ReadClientResultFromPrefs(
-      kAdaptiveToolbarSegmentationKey);
+  const auto* result_in_new_prefs =
+      new_result_prefs_->ReadClientResultFromPrefs(
+          kAdaptiveToolbarSegmentationKey);
 
-  EXPECT_TRUE(result_in_new_prefs.has_value());
-  proto::PredictionResult client_result =
-      result_in_new_prefs.value().client_result();
+  EXPECT_TRUE(result_in_new_prefs);
+  proto::PredictionResult client_result = result_in_new_prefs->client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             client_result.output_config().SerializeAsString());
   EXPECT_THAT(client_result.result(), testing::ElementsAre(1, 0, 0, 0, 0));
 
   new_result_prefs_->SaveClientResultToPrefs(kAdaptiveToolbarSegmentationKey,
-                                             result_in_new_prefs);
+                                             *result_in_new_prefs);
 
   // AdpativeToolbar model when share is selected.
   SelectedSegment result1(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, 1);
@@ -136,8 +136,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForAdaptiveToolbar) {
   result_in_new_prefs = new_result_prefs_->ReadClientResultFromPrefs(
       kAdaptiveToolbarSegmentationKey);
 
-  EXPECT_TRUE(result_in_new_prefs.has_value());
-  client_result = result_in_new_prefs.value().client_result();
+  EXPECT_TRUE(result_in_new_prefs);
+  client_result = result_in_new_prefs->client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             client_result.output_config().SerializeAsString());
   EXPECT_THAT(client_result.result(), testing::ElementsAre(0, 1, 0, 0, 0));
@@ -153,9 +153,9 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForOtherConfig) {
 
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
-  auto result_in_new_prefs =
+  const auto* result_in_new_prefs =
       new_result_prefs_->ReadClientResultFromPrefs(kSearchUserKey);
-  EXPECT_FALSE(result_in_new_prefs.has_value());
+  EXPECT_FALSE(result_in_new_prefs);
 }
 
 }  // namespace segmentation_platform

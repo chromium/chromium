@@ -94,7 +94,7 @@ readAll(stream);
       }
       if (!result->IsUndefined()) {
         DCHECK(result->IsString());
-        return ToCoreString(result.As<v8::String>());
+        return ToCoreString(isolate, result.As<v8::String>());
       }
 
       // Need to run the event loop for the Serialize test to pass messages
@@ -735,7 +735,8 @@ bool IsTypeError(ScriptState* script_state,
                ->Get(script_state->GetContext(),
                      V8AtomicString(script_state->GetIsolate(), key))
                .ToLocal(&actual) &&
-           ToCoreStringWithUndefinedOrNullCheck(actual) == value;
+           ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(),
+                                                actual) == value;
   };
 
   return Has("name", "TypeError") && Has("message", message);

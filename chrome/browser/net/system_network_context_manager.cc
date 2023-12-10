@@ -562,19 +562,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
           &SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts,
           base::Unretained(this)));
 
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  pref_change_registrar_.Add(
-      prefs::kChromeRootStoreEnabled,
-      base::BindRepeating(
-          &SystemNetworkContextManager::UpdateChromeRootStoreEnabled,
-          base::Unretained(this)));
-  // Call the update function immediately to set the initial value, if any.
-  // TODO(https://crbug.com/1085233): If CertVerifierServiceFactory is moved to
-  // a separate process, will need to handle restarts so that the current value
-  // can be re-initialized into the cert verifier service process when it is
-  // re-created.
-  UpdateChromeRootStoreEnabled();
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  // TODO(crbug.com/1501418): If this call is removed, clank crashes on startup.
+  // Not sure why.
+  content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
+      IsUsingChromeRootStore(), base::DoNothing());
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -655,11 +648,6 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kMaxConnectionsPerProxy, -1);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  // Note that the default value is not relevant because the pref is only
-  // evaluated when it is managed.
-  registry->RegisterBooleanPref(prefs::kChromeRootStoreEnabled, false);
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Note that the default value is not relevant because the pref is only
@@ -892,6 +880,9 @@ SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
       cert_verifier_creation_params =
           cert_verifier::mojom::CertVerifierCreationParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get());
+  // The system network context doesn't update the CertVerifyProc
+  // InstanceParams while running, so it does not attach a
+  // CertVerifierServiceUpdater.
   network_context_params->cert_verifier_params =
       content::GetCertVerifierParams(std::move(cert_verifier_creation_params));
   network_context_params->acam_preflight_spec_conformant =
@@ -980,43 +971,17 @@ void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
 bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
   if (certificate_transparency_enabled_for_testing_.has_value())
     return certificate_transparency_enabled_for_testing_.value();
-#if defined(OFFICIAL_BUILD)
-// TODO(carlosil): Figure out if we can/should remove the OFFICIAL_BUILD
-// check now that enforcement does not rely on build dates.
-//    Certificate Transparency is enabled:
-//   - by default for Chrome-branded builds
-//   - on an opt-in basis for other builds and embedders, controlled with the
-//     kCertificateTransparencyAskBeforeEnabling flag
+  // Certificate Transparency is enabled:
+  //   - by default for Chrome-branded builds
+  //   - on an opt-in basis for other builds and embedders, controlled with the
+  //     kCertificateTransparencyAskBeforeEnabling flag
   return base::FeatureList::IsEnabled(
       features::kCertificateTransparencyAskBeforeEnabling);
-#else
-  return false;
-#endif  // defined(OFFICIAL_BUILD)
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 // static
 bool SystemNetworkContextManager::IsUsingChromeRootStore() {
-  // SystemNetworkContextManager::GetInstance() may be null in unit_tests. In
-  // that case just fall back to only using the feature flag.
-  return IsUsingChromeRootStoreImpl(
-      SystemNetworkContextManager::GetInstance()
-          ? SystemNetworkContextManager::GetInstance()->local_state_
-          : nullptr);
-}
-
-// static
-bool SystemNetworkContextManager::IsUsingChromeRootStoreImpl(
-    PrefService* local_state) {
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  if (local_state) {
-    const PrefService::Preference* chrome_root_store_enabled_pref =
-        local_state->FindPreference(prefs::kChromeRootStoreEnabled);
-    if (chrome_root_store_enabled_pref->IsManaged()) {
-      return chrome_root_store_enabled_pref->GetValue()->GetBool();
-    }
-  }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
@@ -1043,13 +1008,6 @@ void SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts() {
   content::GetNetworkService()->SetExplicitlyAllowedPorts(
       ConvertExplicitlyAllowedNetworkPortsPref(local_state_));
 }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-void SystemNetworkContextManager::UpdateChromeRootStoreEnabled() {
-  content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
-      IsUsingChromeRootStoreImpl(local_state_), base::DoNothing());
-}
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

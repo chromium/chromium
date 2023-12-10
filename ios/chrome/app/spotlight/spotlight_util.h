@@ -24,7 +24,7 @@ enum Domain {
   DOMAIN_ACTIONS = 3,
   DOMAIN_READING_LIST = 4,
   DOMAIN_OPEN_TABS = 5,
-  DOMAIN_COUNT
+  kMaxValue = DOMAIN_OPEN_TABS
 };
 
 // The key of a custom attribute containing the item ID so the item is

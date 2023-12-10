@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/optional_ref.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -43,6 +44,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(b/265970428): Fix and include extensions tests on LaCrOS.
 // TODO(b/266051970): Fix and include extensions tests on Windows/Mac/Linux.
@@ -115,6 +117,10 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   void TearDown() override;
 
  private:
+  // This test does not create a root window. Because of this,
+  // ScopedDisableRootChecking needs to be used (which disables the root window
+  // check).
+  test::ScopedDisableRootChecking disable_root_checking_;
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
@@ -639,8 +645,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     // |may_enable| is only returned for extensions which are not enabled.
@@ -663,8 +668,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -687,8 +691,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -714,8 +717,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_TRUE(info->may_disable);
@@ -737,8 +739,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_FALSE(info->may_disable);

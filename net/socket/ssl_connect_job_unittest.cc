@@ -511,6 +511,24 @@ TEST_F(SSLConnectJobTest, DirectCertError) {
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
 
+TEST_F(SSLConnectJobTest, DirectIgnoreCertErrors) {
+  session_->IgnoreCertificateErrorsForTesting();
+
+  StaticSocketDataProvider data;
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_ignore_certificate_errors = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+  TestConnectJobDelegate test_delegate(
+      TestConnectJobDelegate::SocketExpected::ALWAYS);
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+
+  test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
+                                        /*expect_sync_result=*/false);
+}
+
 TEST_F(SSLConnectJobTest, DirectSSLError) {
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
@@ -704,7 +722,6 @@ TEST_F(SSLConnectJobTest, DirectWithNPN) {
 
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                         false /* expect_sync_result */);
-  EXPECT_TRUE(test_delegate.socket()->WasAlpnNegotiated());
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
 
@@ -721,7 +738,6 @@ TEST_F(SSLConnectJobTest, DirectGotHTTP2) {
 
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                         false /* expect_sync_result */);
-  EXPECT_TRUE(test_delegate.socket()->WasAlpnNegotiated());
   EXPECT_EQ(kProtoHTTP2, test_delegate.socket()->GetNegotiatedProtocol());
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }

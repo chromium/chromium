@@ -18,22 +18,26 @@
 --      slices that ran after a CPU power-up.
 
 -- The CPU power transitions in the trace.
---
--- @column ts            The timestamp at the start of the slice.
--- @column dur           The duration of the slice.
--- @column cpu           The CPU on which the transition occurred
--- @column power_state   The power state that the CPU was in at time 'ts' for
---                       duration 'dur'.
--- @column previous_power_state The power state that the CPU was previously in.
--- @column powerup_id    A unique ID for the CPU power-up.
---
 -- Power states are encoded as non-negative integers, with zero representing
 -- full-power operation and positive values representing increasingly deep
 -- sleep states.
 --
 -- On ARM systems, power state 1 represents the WFI (Wait For Interrupt) sleep
 -- state that the CPU enters while idle.
-CREATE VIEW chrome_cpu_power_slice AS
+CREATE PERFETTO VIEW chrome_cpu_power_slice(
+  -- The timestamp at the start of the slice.
+  ts INT,
+  -- The duration of the slice.
+  dur INT,
+  -- The CPU on which the transition occurred
+  cpu INT,
+  -- The power state that the CPU was in at time 'ts' for duration 'dur'.
+  power_state INT,
+  -- The power state that the CPU was previously in.
+  previous_power_state INT,
+  -- A unique ID for the CPU power-up.
+  powerup_id INT
+) AS
   WITH cpu_power_states AS (
     SELECT
       c.id AS id,
@@ -67,7 +71,7 @@ CREATE VIEW chrome_cpu_power_slice AS
     ORDER BY ts ASC;
 
 -- We do not want scheduler slices with utid = 0 (the 'swapper' kernel thread).
-CREATE VIEW internal_cpu_power_valid_sched_slice AS
+CREATE PERFETTO VIEW internal_cpu_power_valid_sched_slice AS
   SELECT *
   FROM sched_slice
   WHERE utid != 0;
@@ -93,28 +97,36 @@ USING
 
 -- The Linux scheduler slices that executed immediately after a
 -- CPU power up.
---
--- @column ts          The timestamp at the start of the slice.
--- @column dur         The duration of the slice.
--- @column cpu         The cpu on which the slice executed.
--- @column sched_id    Id for the sched_slice table.
--- @column utid        Unique id for the thread that ran within the slice.
--- @column previous_power_state   The CPU's power state before this slice.
-CREATE PERFETTO TABLE chrome_cpu_power_first_sched_slice_after_powerup AS
-  SELECT
-    ts,
-    dur,
-    cpu,
-    id AS sched_id,
-    utid,
-    previous_power_state,
-    powerup_id
-  FROM internal_cpu_power_and_sched_slice
-  WHERE power_state = 0     -- Power-ups only.
-  GROUP BY cpu, powerup_id
-  HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
-                            -- per CPU power up.
-  ORDER BY ts ASC;
+CREATE PERFETTO TABLE chrome_cpu_power_first_sched_slice_after_powerup(
+  -- The timestamp at the start of the slice.
+  ts INT,
+  -- The duration of the slice.
+  dur INT,
+  -- The cpu on which the slice executed.
+  cpu INT,
+  -- Id for the sched_slice table.
+  sched_id INT,
+  -- Unique id for the thread that ran within the slice.
+  utid INT,
+  -- The CPU's power state before this slice.
+  previous_power_state INT,
+  -- A unique ID for the CPU power-up.
+  powerup_id INT
+) AS
+SELECT
+  ts,
+  dur,
+  cpu,
+  id AS sched_id,
+  utid,
+  previous_power_state,
+  powerup_id
+FROM internal_cpu_power_and_sched_slice
+WHERE power_state = 0     -- Power-ups only.
+GROUP BY cpu, powerup_id
+HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
+                          -- per CPU power up.
+ORDER BY ts ASC;
 
 -- A view joining thread tracks and top-level slices.
 --
@@ -125,7 +137,7 @@ CREATE PERFETTO TABLE chrome_cpu_power_first_sched_slice_after_powerup AS
 --   slice_id  The slice_id for the top-level slice.
 --   ts        Starting timestamp for the slice.
 --   dur       The duration for the slice.
-CREATE VIEW internal_cpu_power_thread_and_toplevel_slice AS
+CREATE PERFETTO VIEW internal_cpu_power_thread_and_toplevel_slice AS
   SELECT
     t.utid AS utid,
     s.id AS slice_id,
@@ -155,10 +167,12 @@ USING
             internal_cpu_power_thread_and_toplevel_slice PARTITIONED utid);
 
 -- The first top-level slice that ran after a CPU power-up.
---
--- @column slice_id              ID of the slice in the slice table.
--- @column previous_power_state  The power state of the CPU prior to power-up.
-CREATE VIEW chrome_cpu_power_first_toplevel_slice_after_powerup AS
+CREATE PERFETTO VIEW chrome_cpu_power_first_toplevel_slice_after_powerup(
+  -- ID of the slice in the slice table.
+  slice_id INT,
+  -- The power state of the CPU prior to power-up.
+  previous_power_state INT
+) AS
   SELECT slice_id, previous_power_state
   FROM chrome_cpu_power_post_powerup_slice
   GROUP BY cpu, powerup_id

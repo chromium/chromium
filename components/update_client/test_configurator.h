@@ -30,7 +30,6 @@ class SharedURLLoaderFactory;
 
 namespace update_client {
 
-class ActivityDataService;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatchChromiumFactory;
@@ -73,7 +72,7 @@ const uint8_t gjpm_hash[] = {0x69, 0xfc, 0x41, 0xf6, 0x17, 0x20, 0xc6, 0x36,
 
 class TestConfigurator : public Configurator {
  public:
-  explicit TestConfigurator(PrefService* pref_service = nullptr);
+  explicit TestConfigurator(PrefService* pref_service);
   TestConfigurator(const TestConfigurator&) = delete;
   TestConfigurator& operator=(const TestConfigurator&) = delete;
 
@@ -99,7 +98,7 @@ class TestConfigurator : public Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  ActivityDataService* GetActivityDataService() const override;
+  PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
       const override;
@@ -134,6 +133,7 @@ class TestConfigurator : public Configurator {
   std::string download_preference_;
   bool enabled_cup_signing_;
   raw_ptr<PrefService> pref_service_;  // Not owned by this class.
+  std::unique_ptr<PersistedData> persisted_data_;
   std::vector<GURL> update_check_urls_;
   GURL ping_url_;
 

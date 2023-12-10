@@ -37,8 +37,12 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
     private Context mContext;
     private GURL mPlainUrl;
 
-    ContextMenuHeaderMediator(Context context, PropertyModel model, ContextMenuParams params,
-            Profile profile, ContextMenuNativeDelegate nativeDelegate) {
+    ContextMenuHeaderMediator(
+            Context context,
+            PropertyModel model,
+            ContextMenuParams params,
+            Profile profile,
+            ContextMenuNativeDelegate nativeDelegate) {
         mContext = context;
         mPlainUrl = params.getUrl();
         mModel = model;
@@ -52,7 +56,8 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
                     imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
         } else if (!params.isImage() && !params.isVideo()) {
             LargeIconBridge iconBridge = new LargeIconBridge(profile);
-            iconBridge.getLargeIconForUrl(mPlainUrl,
+            iconBridge.getLargeIconForUrl(
+                    mPlainUrl,
                     context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
                     this::onFaviconAvailable);
         } else if (params.isVideo()) {
@@ -71,11 +76,12 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         // TODO(sinansahin): Handle the case where the retrieval of the thumbnail fails.
     }
 
-    /**
-     * See {@link org.chromium.components.favicon.LargeIconBridge#getLargeIconForUrl}
-     */
-    private void onFaviconAvailable(@Nullable Bitmap icon, @ColorInt int fallbackColor,
-            boolean isColorDefault, @IconType int iconType) {
+    /** See {@link org.chromium.components.favicon.LargeIconBridge#getLargeIconForUrl} */
+    private void onFaviconAvailable(
+            @Nullable Bitmap icon,
+            @ColorInt int fallbackColor,
+            boolean isColorDefault,
+            @IconType int iconType) {
         // If we didn't get a favicon, generate a monogram instead
         if (icon == null) {
             final RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
@@ -126,8 +132,11 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         // 1. Create a bitmap for the checkerboard pattern.
         Drawable drawable =
                 ApiCompatibilityUtils.getDrawable(res, R.drawable.checkerboard_background);
-        Bitmap tileBitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap tileBitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas tileCanvas = new Canvas(tileBitmap);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         drawable.draw(tileCanvas);
@@ -154,12 +163,16 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
     }
 
     private void setVideoIcon() {
-        Drawable drawable = ApiCompatibilityUtils.getDrawable(
-                mContext.getResources(), R.drawable.gm_filled_videocam_24);
+        Drawable drawable =
+                ApiCompatibilityUtils.getDrawable(
+                        mContext.getResources(), R.drawable.gm_filled_videocam_24);
         drawable.setColorFilter(
                 SemanticColorUtils.getDefaultIconColor(mContext), PorterDuff.Mode.SRC_IN);
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);

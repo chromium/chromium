@@ -124,7 +124,7 @@ class AudioDetailedViewAgcInfoTest
 
   static apps::CapabilityAccessPtr MakeCapabilityAccess(
       const char* app_id,
-      absl::optional<bool> mic) {
+      std::optional<bool> mic) {
     apps::CapabilityAccessPtr access =
         std::make_unique<apps::CapabilityAccess>(app_id);
     access->camera = false;
@@ -134,7 +134,7 @@ class AudioDetailedViewAgcInfoTest
 
   void LaunchApp(const char* id,
                  const char* name,
-                 absl::optional<bool> use_mic) {
+                 std::optional<bool> use_mic) {
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name));
     registry_cache_.OnAppsForTesting(std::move(registry_deltas),

@@ -178,7 +178,6 @@ class LocationBarMediator
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
-    private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
@@ -205,6 +204,7 @@ class LocationBarMediator
     private boolean mShouldClearOmniboxOnFocus = true;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private boolean mIsSurfacePolishOmniboxColorEnabled;
+    private SearchEngineUtils mSearchEngineUtils;
 
     /*package */ LocationBarMediator(
             @NonNull Context context,
@@ -218,7 +218,6 @@ class LocationBarMediator
             @NonNull BackKeyBehaviorDelegate backKeyBehavior,
             @NonNull WindowAndroid windowAndroid,
             boolean isTablet,
-            @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
             @NonNull SaveOfflineButtonState saveOfflineButtonState,
             @NonNull OmniboxUma omniboxUma,
@@ -240,7 +239,6 @@ class LocationBarMediator
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
-        mSearchEngineLogoUtils = searchEngineLogoUtils;
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
         mSaveOfflineButtonState = saveOfflineButtonState;
@@ -546,7 +544,7 @@ class LocationBarMediator
         }
 
         if (currentTab != null) {
-            boolean isCurrentTabNtpUrl = UrlUtilities.isNTPUrl(currentTab.getUrl());
+            boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
             if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
                 mOmniboxUma.recordNavigationOnNtp(
                         url, transition, !currentTab.isIncognito() && isCurrentTabNtpUrl);
@@ -719,10 +717,7 @@ class LocationBarMediator
         if (mIsTablet) {
             float urlFocusChangeFraction = showExpandedState ? 1.0f : 0.0f;
             mLocationBarLayout.setUrlFocusChangePercent(
-                    urlFocusChangeFraction,
-                    urlFocusChangeFraction,
-                    urlFocusChangeFraction,
-                    mIsUrlFocusChangeInProgress);
+                    urlFocusChangeFraction, urlFocusChangeFraction, urlFocusChangeFraction, false);
             mLocationBarLayout.updateLayoutParams(
                     MeasureSpec.makeMeasureSpec(
                             mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));
@@ -870,8 +865,7 @@ class LocationBarMediator
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Only reset values if the animation is ending because it's completely
-                        // finished
-                        // and not because it was canceled.
+                        // finished and not because it was canceled.
                         if (locationBarTablet.getWidthChangeFraction() == 0.f) {
                             locationBarTablet.finishAnimatingWidthChange();
                             locationBarTablet.resetValuesAfterAnimation();
@@ -944,8 +938,7 @@ class LocationBarMediator
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Only reset values if the animation is ending because it's completely
-                        // finished
-                        // and not because it was canceled.
+                        // finished and not because it was canceled.
                         if (locationBarTablet.getWidthChangeFraction() == 1.f) {
                             locationBarTablet.finishAnimatingWidthChange();
                             locationBarTablet.resetValuesAfterAnimation();
@@ -1029,6 +1022,8 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
         mOmniboxPrerender.initializeForProfile(profile);
+        mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
+        mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
     }
 
     private void focusCurrentTab() {
@@ -1243,8 +1238,7 @@ class LocationBarMediator
     private void updateSearchEngineStatusIconShownState() {
         // The search engine icon will be the first visible focused view when it's showing.
         boolean shouldShowSearchEngineLogo =
-                mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito());
+                mSearchEngineUtils == null || mSearchEngineUtils.shouldShowSearchEngineLogo();
 
         // This branch will be hit if the search engine logo should be shown.
         if (shouldShowSearchEngineLogo && mLocationBarLayout instanceof LocationBarPhone) {
@@ -1254,7 +1248,7 @@ class LocationBarMediator
         }
     }
 
-    // LocationBarData.Observer implementation
+    // LocationBarData.Observer implementation.
     // Using the default empty onSecurityStateChanged.
     // Using the default empty onTitleChanged.
 

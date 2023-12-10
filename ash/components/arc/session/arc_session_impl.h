@@ -151,7 +151,7 @@ class ArcSessionImpl : public ArcSession,
 
     // Gets the available disk space under /home. The result is in bytes.
     using GetFreeDiskSpaceCallback =
-        base::OnceCallback<void(absl::optional<int64_t>)>;
+        base::OnceCallback<void(std::optional<int64_t>)>;
     virtual void GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) = 0;
 
     // Returns the channel for the installation.
@@ -199,6 +199,7 @@ class ArcSessionImpl : public ArcSession,
   void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) override;
   void SetDefaultDeviceScaleFactor(float scale_factor) override;
   void SetUseVirtioBlkData(bool use_virtio_blk_data) override;
+  void SetArcSignedIn(bool arc_signed_in) override;
 
   // ash::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
@@ -241,7 +242,7 @@ class ArcSessionImpl : public ArcSession,
   void DoStartMiniInstance(size_t num_cores_disabled);
 
   // Free disk space under /home in bytes.
-  void OnFreeDiskSpace(absl::optional<int64_t> space);
+  void OnFreeDiskSpace(std::optional<int64_t> space);
 
   // Whether adb sideloading can be changed
   void OnCanChangeAdbSideloading(bool can_change_adb_sideloading);
@@ -270,6 +271,9 @@ class ArcSessionImpl : public ArcSession,
 
   // Whether ARCVM uses virtio-blk for /data.
   bool use_virtio_blk_data_ = false;
+
+  // Whether ARC is already signed in (provisioned).
+  bool arc_signed_in_ = false;
 
   // In CONNECTING_MOJO state, this is set to the write side of the pipe
   // to notify cancelling of the procedure.

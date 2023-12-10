@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feedback/system_logs/system_logs_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -54,8 +54,8 @@ class DebugDaemonLogSource : public SystemLogsSource {
 
   // Callbacks for the dbus calls to debugd.
   void OnGetRoutes(bool is_ipv6,
-                   absl::optional<std::vector<std::string>> routes);
-  void OnGetOneLog(std::string key, absl::optional<std::string> status);
+                   std::optional<std::vector<std::string>> routes);
+  void OnGetOneLog(std::string key, std::optional<std::string> status);
   void OnGetLogs(const base::TimeTicks get_start_time,
                  bool succeeded,
                  const KeyValueMap& logs);

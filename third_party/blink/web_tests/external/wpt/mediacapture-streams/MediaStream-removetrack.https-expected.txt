@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Tests that a removal from a MediaStream works as expected
 [FAIL] Test that removal from a MediaStream fires ended on media elements (video first)
   assert_equals: audio element ended because no more audio tracks expected true but got false
 [FAIL] Test that removal from a MediaStream fires ended on media elements (audio first)

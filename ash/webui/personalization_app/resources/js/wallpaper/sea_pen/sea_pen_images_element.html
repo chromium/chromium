@@ -1,4 +1,4 @@
-<style include="common wallpaper">
+<style include="common wallpaper sea-pen">
   :host {
     overflow: hidden;
   }
@@ -10,13 +10,16 @@
   .thumbnail-item-container,
   .thumbnail-placeholder-container {
     box-sizing: border-box;
-    height: 250px;
+    height: 240px;
     overflow: hidden;
-    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
     /* Subtract 0.5px to fix subpixel rounding issues with iron-list. This
      * ensures all grid items in a row add up to at least 1px smaller than the
      * parent width. */
     width: calc(100% / 2 - 0.5px);
+  }
+
+  .thumbnail-placeholder-container {
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
   }
 
   .thumbnail-placeholder {
@@ -24,21 +27,25 @@
     border-radius: var(--personalization-app-grid-item-border-radius);
     height: 100%;
   }
-
-  img {
-    border-radius: var(--personalization-app-grid-item-border-radius);
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
-  }
 </style>
 <!-- TODO(b/308200616): Add real text -->
 <h2 class="wallpaper-collections-heading">TBD Wallpapers</h2>
+<template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
+  <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
+    <template>
+      <div class="thumbnail-placeholder-container">
+        <sparkle-placeholder-element class="thumbnail-placeholder"
+            index="[[index]]">
+        </sparkle-placeholder-element>
+      </div>
+    </template>
+  </iron-list>
+</template>
 <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
   <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
     <template>
       <div class="thumbnail-placeholder-container">
-        <div class$="[[getThumbnailPlaceholderClass_(thumbnailsLoading_)]]"></div>
+        <div class="thumbnail-placeholder"></div>
       </div>
     </template>
   </iron-list>
@@ -47,10 +54,20 @@
   <iron-list id="grid"
       items="[[thumbnails_]]"
       grid
-      role="list">
+      role="listbox">
     <template>
-      <div class="thumbnail-item-container" role="listitem">
-        <img is="cr-auto-img" auto-src="[[item.image.url]]"></img>
+      <div class="thumbnail-item-container">
+        <wallpaper-grid-item
+            class="sea-pen-image"
+            index="[[index]]"
+            data-sea-pen-image
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            on-wallpaper-grid-item-selected="onThumbnailSelected_"
+            role="option"
+            selected="[[isThumbnailSelected_(item, pendingSelected_)]]"
+            src="[[item.image]]"
+            tabindex$="[[tabIndex]]">
+        </wallpaper-grid-item>
       </div>
     </template>
   </iron-list>

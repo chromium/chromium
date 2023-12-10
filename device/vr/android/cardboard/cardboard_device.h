@@ -50,11 +50,6 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
                                      int render_process_id,
                                      int render_frame_id);
 
-  // We actually only care about being called back once, but the
-  // XrActivityStateHandler requires a RepeatingClosure. Since we're binding a
-  // few mojo objects, we can only create a OnceClosure, so this method serves
-  // as an abstraction to allow us to create a RepeatingClosure.
-  void OnActivityResumed();
   // OnDrawingSurface* methods are used as callbacks from XrJavaCoordinator and
   // notify us of the state of things on the Java side of things.
   void OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
@@ -85,8 +80,6 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
 
   std::unique_ptr<XrActivityStateHandlerFactory>
       activity_state_handler_factory_;
-  std::unique_ptr<XrActivityStateHandler> activity_state_handler_;
-  base::OnceClosure on_activity_resumed_callback_;
 
   // Outstanding Session Request Data
   mojom::XRRuntime::RequestSessionCallback pending_session_request_callback_;

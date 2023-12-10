@@ -71,8 +71,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   // mechanism, if the sync service isn't created yet, we proceed as if the
   // user isn't syncing which forces moving the passwords to the Android backend
   // to avoid data loss.
-  ps = new password_manager::PasswordStore(
-      CreatePasswordStoreBackend(profile->GetPath(), profile->GetPrefs()));
+  ps = new password_manager::PasswordStore(CreateProfilePasswordStoreBackend(
+      profile->GetPath(), profile->GetPrefs(),
+      AffiliationsPrefetcherFactory::GetForProfile(profile)));
 #else
   NOTIMPLEMENTED();
 #endif

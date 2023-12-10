@@ -107,14 +107,15 @@ base::WritableSharedMemoryMapping AllocateAndRegisterSharedBitmapMemory(
   return std::move(shm.mapping);
 }
 
-void DeleteSharedImage(scoped_refptr<RasterContextProvider> context_provider,
-                       gpu::Mailbox mailbox,
-                       const gpu::SyncToken& sync_token,
-                       bool is_lost) {
+void DeleteSharedImage(
+    scoped_refptr<RasterContextProvider> context_provider,
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::move(client_shared_image));
 }
 
 ResourceId CreateGpuResource(
@@ -127,20 +128,18 @@ ResourceId CreateGpuResource(
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
-  gpu::Mailbox mailbox =
-      sii->CreateSharedImage(format, size, color_space,
-                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
-                             pixels)
-          ->mailbox();
+  auto client_shared_image = sii->CreateSharedImage(
+      format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel", pixels);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  TransferableResource gl_resource =
-      TransferableResource::MakeGpu(mailbox, GL_TEXTURE_2D, sync_token, size,
-                                    format, false /* is_overlay_candidate */);
+  TransferableResource gl_resource = TransferableResource::MakeGpu(
+      client_shared_image, GL_TEXTURE_2D, sync_token, size, format,
+      false /* is_overlay_candidate */);
   gl_resource.color_space = std::move(color_space);
   auto release_callback =
-      base::BindOnce(&DeleteSharedImage, std::move(context_provider), mailbox);
+      base::BindOnce(&DeleteSharedImage, std::move(context_provider),
+                     std::move(client_shared_image));
   return resource_provider->ImportResource(gl_resource,
                                            std::move(release_callback));
 }
@@ -296,7 +295,8 @@ void CreateTestTwoColoredTextureDrawQuad(
         AllocateAndRegisterSharedBitmapMemory(shared_bitmap_id, rect.size(),
                                               shared_bitmap_manager);
     resource = child_resource_provider->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, rect.size(),
+        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
+                                           rect.size(),
                                            SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
 
@@ -359,7 +359,8 @@ void CreateTestTextureDrawQuad(
         AllocateAndRegisterSharedBitmapMemory(shared_bitmap_id, rect.size(),
                                               shared_bitmap_manager);
     resource = child_resource_provider->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, rect.size(),
+        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
+                                           rect.size(),
                                            SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
 
@@ -3802,10 +3803,18 @@ TEST_P(RendererPixelTestWithBackdropFilter, OffsetFilter) {
   backdrop_filters_.Append(
       cc::FilterOperation::CreateOffsetFilter(gfx::Point(5, 5)));
   SetUpRenderPassList();
-  EXPECT_TRUE(RunPixelTest(
-      &pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_offset.png")),
-      cc::ExactPixelComparator()));
+
+  // TODO(989329): See comment in
+  // LayerTreeHostFiltersPixelTest/BackdropFilterOffsetTest. The software
+  // compositor does not correctly apply clamping when accessing content outside
+  // of the layer.
+  base::FilePath expected_path(
+      is_software_renderer()
+          ? FILE_PATH_LITERAL("backdrop_filter_offset_sw.png")
+          : FILE_PATH_LITERAL("backdrop_filter_offset.png"));
+
+  EXPECT_TRUE(
+      RunPixelTest(&pass_list_, expected_path, cc::ExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {

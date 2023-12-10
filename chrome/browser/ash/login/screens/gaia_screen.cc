@@ -39,7 +39,7 @@ constexpr char kUserActionEnterIdentifier[] = "identifierEntered";
 constexpr char kUserActionQuickStartButtonClicked[] = "activateQuickStart";
 
 bool ShouldPrepareForRecovery(const AccountId& account_id) {
-  if (!features::IsCryptohomeRecoveryEnabled() || !account_id.is_valid()) {
+  if (!account_id.is_valid()) {
     return false;
   }
 
@@ -57,7 +57,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
       static_cast<int>(ReauthReason::kOther),
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
+  std::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
   return reauth_reason.has_value() &&
          base::Contains(kPossibleReasons, reauth_reason.value());
 }
@@ -72,14 +72,6 @@ bool ShouldUseReauthEndpoint(const AccountId& account_id,
   // Use reauth endpoint for child users.
   if (user && user->IsChild()) {
     return true;
-  }
-
-  // Do not use the reauth endpoint when non-Gaia authentication (SAML) is used.
-  // This is to ensure the "Enter Google Account Info" button on the SAML screen
-  // uses an endpoint that allows changing of email address.
-  if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) !=
-      GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_DEFAULT) {
-    return false;
   }
 
   // Use reauth endpoint in potential recovery flow.
@@ -129,10 +121,9 @@ void GaiaScreen::LoadOnlineGaia() {
   auto* context = LoginDisplayHost::default_host()->GetWizardContext();
   switch (context->gaia_config.gaia_path) {
     case WizardContext::GaiaPath::kDefault:
-      LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
-      break;
+    case WizardContext::GaiaPath::kSamlRedirect:
     case WizardContext::GaiaPath::kReauth:
-      LoadDefaultOnlineGaia(EmptyAccountId());
+      LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
       break;
     case WizardContext::GaiaPath::kChildSignin:
     case WizardContext::GaiaPath::kChildSignup:
@@ -152,7 +143,6 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
   // conditions which may be difficult as of now.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceCryptohomeRecoveryForTesting)) {
-    DCHECK(features::IsCryptohomeRecoveryEnabled());
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
@@ -168,6 +158,12 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
         base::BindOnce(&GaiaScreen::OnGetAuthFactorsConfiguration,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
+    if (GaiaScreenHandler::GetGaiaScreenMode(/*email=*/"") ==
+        GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_SAML_REDIRECT) {
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->gaia_config.gaia_path = WizardContext::GaiaPath::kSamlRedirect;
+    }
     view_->LoadGaiaAsync(account);
   }
 }
@@ -311,7 +307,7 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
 
 void GaiaScreen::OnGetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   bool is_recovery_configured = false;
   bool is_gaia_password_configured = true;
   if (error.has_value()) {
@@ -334,10 +330,16 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
   }
 
   const AccountId& account_id = user_context->GetAccountId();
-  if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
-    LoginDisplayHost::default_host()
-        ->GetWizardContext()
-        ->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
+  WizardContext::GaiaPath& gaia_path = LoginDisplayHost::default_host()
+                                           ->GetWizardContext()
+                                           ->gaia_config.gaia_path;
+  if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) ==
+      GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_SAML_REDIRECT) {
+    // TODO(b/309131477): use reauth path in "SAML redirect" mode if this is a
+    // reauthentication of a known user.
+    gaia_path = WizardContext::GaiaPath::kSamlRedirect;
+  } else if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
+    gaia_path = WizardContext::GaiaPath::kReauth;
   }
 
   if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {

@@ -37,6 +37,7 @@ source_set("form_util_feature") {
     "form_util_java_script_feature.mm",
   ]
   deps = [
+    ":autofill_form_features",
     ":fill_js",
     ":form_js",
     "//base",
@@ -56,6 +57,7 @@ source_set("form_handler_feature") {
     ":form_util",
     ":form_util_feature",
     "//base",
+    "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
     "//components/password_manager/ios:password_manager_feature_header",
     "//ios/web/public/js_messaging",
@@ -63,17 +65,60 @@ source_set("form_handler_feature") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+# For inclusion by other TS/JS files, so they can check feature state
+compile_ts("autofill_form_features_ts") {
+  sources = [ "resources/autofill_form_features.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+# For bundling with form_util_feature, which enables/disables features
+optimize_js("autofill_form_features") {
+  deps = [
+    ":autofill_form_features_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+
+  _script = filter_include(get_target_outputs(":autofill_form_features_ts"),
+                           [ "*autofill_form_features.js" ])
+  primary_script = _script[0]
+  sources = _script
+}
+
+compile_ts("child_frame_registration_ts_lib") {
+  sources = [ "resources/child_frame_registration_lib.ts" ]
+  deps = [
+    ":autofill_form_features_ts",
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+optimize_ts("child_frame_registration_test_ts") {
+  sources = [ "resources/child_frame_registration_test.ts" ]
+  deps = [
+    ":autofill_form_features_ts",
+    ":child_frame_registration_ts_lib",
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
 compile_ts("fill_js_dependencies") {
   allow_js = true
   sources = [
     "resources/create_fill_namespace.ts",
     "resources/fill_constants.ts",
-    "resources/fill_element_inference.js",
+    "resources/fill_element_inference.ts",
     "resources/fill_element_inference_util.ts",
     "resources/fill_util.js",
   ]
 
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    ":autofill_form_features_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 optimize_js("fill_js") {
@@ -81,8 +126,11 @@ optimize_js("fill_js") {
   sources = [ "resources/fill.js" ]
 
   deps = [
+    ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
+    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -99,6 +147,13 @@ optimize_ts("form_js") {
 optimize_js("form_handlers_js") {
   primary_script = "resources/form_handlers.js"
   sources = [ "resources/form_handlers.js" ]
+  deps = [
+    ":autofill_form_features_ts",
+    ":child_frame_registration_ts_lib",
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("test_support") {
@@ -153,15 +208,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [
-      "fill_js_unittest.mm",
-      "form_activity_tab_helper_unittest.mm",
-      "form_unittest.mm",
-    ]
-  }
 }
 if (is_ios) {
   fuzzer_test("form_activity_tab_helper_fuzzer") {

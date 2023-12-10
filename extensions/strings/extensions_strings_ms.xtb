@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Yikes! Gagal untuk menjanakan kunci persendirian RSA rawak.</translation>
 <translation id="1445572445564823378">Sambungan ini melambatkan <ph name="PRODUCT_NAME" />. Anda perlu melumpuhkannya untuk memulihkan prestasi <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL tidak disokong.</translation>
+<translation id="1610570795592207282">Tidak dapat memuatkan css '<ph name="RELATIVE_PATH" />' untuk skrip.</translation>
 <translation id="1803557475693955505">Tidak dapat memuatkan halaman latar belakang '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Tidak dapat menyahkod imej: ' <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Penempatan digunakan, tetapi default_locale tidak dinyatakan dalam ketara.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Gagal untuk menggantikan fail crx. Periksa untuk melihat jika fail sedang digunakan.</translation>
 <translation id="3163201441334626963">Produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /> tidak diketahui</translation>
-<translation id="3302709122321372472">Tidak dapat memuatkan css '<ph name="RELATIVE_PATH" />' untuk skrip kandungan.</translation>
 <translation id="3369521687965833290">Tidak dapat menyahpek sambungan.  Untuk menyahpek sambungan dengan selamat, perlu ada laluan ke direktori profil anda yang bermula dengan huruf pemacu dan tidak  mengandungi simpang, titik peletakan atau symlink.  Laluan tersebut tidak wujud untuk profil anda.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> daripada vendor <ph name="VENDOR_ID" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Nilai input untuk kunci persendirian mestilah laluan yang sah.</translation>
 <translation id="388442998277590542">Tidak dapat memuatkan halaman pilihan '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Ralat semasa menandatangani sambungan.</translation>
-<translation id="39964277676607559">Tidak dapat memuatkan javascript '<ph name="RELATIVE_PATH" />' untuk skrip kandungan.</translation>
 <translation id="4115165561519362854">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> untuk mempunyai versi minimum <ph name="EXTENSION_VERSION" />. Ia tidak dapat didayakan sehingga ia telah dikemas kini kepada versi itu (atau lebih tinggi).</translation>
 <translation id="4233778200880751280">Tidak dapat memuatkan halaman perihal '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Gagal untuk output kunci persendirian.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Gagal intuk mengeksport kunci awam.</translation>
 <translation id="5026754133087629784">Paparan Web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Tidak dapat mencari laluan mutlak ke direktori ke pek.</translation>
+<translation id="5160071981665899014">Tidak dapat memuatkan javascript '<ph name="RELATIVE_PATH" />' untuk skrip.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Tetingkap berbentuk tidak disokong.</translation>
 <translation id="5456409301717116725">Sambungan ini merangkumi fail utama ' <ph name="KEY_PATH" /> '. Anda mungkin tidak mahu melakukannya.</translation>

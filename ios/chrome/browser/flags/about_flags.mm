@@ -76,12 +76,9 @@
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
-#import "ios/chrome/browser/follow/follow_features.h"
+#import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
@@ -100,7 +97,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
-#import "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
@@ -285,6 +282,17 @@ const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
      std::size(kDiscoverFeedTopSyncPromoCompactHorizontal), nullptr},
     {"Compact Vertical", kDiscoverFeedTopSyncPromoCompactVertical,
      std::size(kDiscoverFeedTopSyncPromoCompactVertical), nullptr}};
+
+const FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
+    {kContentPushNotificationsExperimentType, "1"}};
+const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
+    {{kContentPushNotificationsExperimentType, "2"}};
+
+const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
+    {"Promo", kContentPushNotificationsEnabledPromo,
+     std::size(kContentPushNotificationsEnabledPromo), nullptr},
+    {"Set up list", kContentPushNotificationsEnabledSetupLists,
+     std::size(kContentPushNotificationsEnabledSetupLists), nullptr}};
 
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};
@@ -503,6 +511,8 @@ const FeatureEntry::FeatureParam kTabPickupThresholdOneHour[] = {
     {kTabPickupThresholdParameterName, kTabPickupThresholdOneHourParam}};
 const FeatureEntry::FeatureParam kTabPickupThresholdTwoHours[] = {
     {kTabPickupThresholdParameterName, kTabPickupThresholdTwoHoursParam}};
+const FeatureEntry::FeatureParam kTabPickupNoFavicon[] = {
+    {kTabPickupThresholdParameterName, kTabPickupNoFaviconParam}};
 
 const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
     {"Ten Minutes", kTabPickupThresholdTenMinutes,
@@ -511,6 +521,8 @@ const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
      std::size(kTabPickupThresholdOneHour), nullptr},
     {"Two Hours", kTabPickupThresholdTwoHours,
      std::size(kTabPickupThresholdTwoHours), nullptr},
+    {"No favicon", kTabPickupNoFavicon, std::size(kTabPickupNoFavicon),
+     nullptr},
 };
 
 const FeatureEntry::FeatureParam kTabResumptionMostRecentTabOnly[] = {
@@ -610,6 +622,27 @@ const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
          std::size(kBottomOmniboxDefaultSettingSafariSwitcher), nullptr},
 };
 
+const FeatureEntry::FeatureParam kBottomOmniboxPromoForced[] = {
+    {kBottomOmniboxPromoParam, kBottomOmniboxPromoParamForced}};
+const FeatureEntry::FeatureVariation kBottomOmniboxPromoVariations[] = {
+    {"Forced", kBottomOmniboxPromoForced, std::size(kBottomOmniboxPromoForced),
+     nullptr},
+};
+
+const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionTop[] = {
+    {kBottomOmniboxPromoDefaultPositionParam,
+     kBottomOmniboxPromoDefaultPositionParamTop}};
+const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionBottom[] = {
+    {kBottomOmniboxPromoDefaultPositionParam,
+     kBottomOmniboxPromoDefaultPositionParamBottom}};
+const FeatureEntry::FeatureVariation
+    kBottomOmniboxPromoDefaultPositionVariations[] = {
+        {"Top", kBottomOmniboxPromoDefaultPositionTop,
+         std::size(kBottomOmniboxPromoDefaultPositionTop), nullptr},
+        {"Bottom", kBottomOmniboxPromoDefaultPositionBottom,
+         std::size(kBottomOmniboxPromoDefaultPositionBottom), nullptr},
+};
+
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
@@ -643,7 +676,8 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords,"
      "HistoryOptInForRestoreShortyAndReSignin,"
-     "EnableBatchUploadFromBookmarksManager"},
+     "EnableBatchUploadFromBookmarksManager,"
+     "EnableReviewAccountSettingsPromo"},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
@@ -789,11 +823,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::test::kAutofillShowTypePredictions)},
-    {"autofill-account-profiles-storage",
-     flag_descriptions::kAutofillAccountProfilesStorageName,
-     flag_descriptions::kAutofillAccountProfilesStorageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillAccountProfileStorage)},
     {"fullscreen-promos-manager-skip-internal-limits",
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsName,
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsDescription,
@@ -854,10 +883,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
-    {"restore-session-from-cache",
-     flag_descriptions::kRestoreSessionFromCacheName,
-     flag_descriptions::kRestoreSessionFromCacheDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::kRestoreSessionFromCache)},
     {"shared-highlighting-ios", flag_descriptions::kSharedHighlightingIOSName,
      flag_descriptions::kSharedHighlightingIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSharedHighlightingIOS)},
@@ -883,14 +908,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxNewImplementationName,
      flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSNewOmniboxImplementation)},
-    {"omnibox-report-assisted-query-stats",
-     flag_descriptions::kOmniboxReportAssistedQueryStatsName,
-     flag_descriptions::kOmniboxReportAssistedQueryStatsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kReportAssistedQueryStats)},
-    {"omnibox-report-searchbox-stats",
-     flag_descriptions::kOmniboxReportSearchboxStatsName,
-     flag_descriptions::kOmniboxReportSearchboxStatsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kReportSearchboxStats)},
     {"start-surface", flag_descriptions::kStartSurfaceName,
      flag_descriptions::kStartSurfaceDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,
@@ -918,21 +935,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"content-push-notifications",
      flag_descriptions::kContentPushNotificationsName,
      flag_descriptions::kContentPushNotificationsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kContentPushNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kContentPushNotifications,
+                                    kContentPushNotificationsVariations,
+                                    "ContentPushNotifications")},
     {"overflow-menu-customization",
      flag_descriptions::kOverflowMenuCustomizationName,
      flag_descriptions::kOverflowMenuCustomizationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOverflowMenuCustomization)},
-    {"enable-lens-in-home-screen-widget",
-     flag_descriptions::kEnableLensInHomeScreenWidgetName,
-     flag_descriptions::kEnableLensInHomeScreenWidgetDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableLensInHomeScreenWidget)},
-    {"enable-lens-in-keyboard", flag_descriptions::kEnableLensInKeyboardName,
-     flag_descriptions::kEnableLensInKeyboardDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableLensInKeyboard)},
-    {"enable-lens-in-ntp", flag_descriptions::kEnableLensInNTPName,
-     flag_descriptions::kEnableLensInNTPDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableLensInNTP)},
     {"enable-lens-in-omnibox-copied-image",
      flag_descriptions::kEnableLensInOmniboxCopiedImageName,
      flag_descriptions::kEnableLensInOmniboxCopiedImageDescription,
@@ -982,18 +991,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardProductNameDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
-    {"autofill-upstream-allow-additional-email-domains",
-     flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
-     flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamAllowAdditionalEmailDomains)},
-    {"autofill-upstream-allow-all-email-domains",
-     flag_descriptions::kAutofillUpstreamAllowAllEmailDomainsName,
-     flag_descriptions::kAutofillUpstreamAllowAllEmailDomainsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
     {"enable-download-service-foreground-session",
      flag_descriptions::kDownloadServiceForegroundSessionName,
      flag_descriptions::kDownloadServiceForegroundSessionDescription,
@@ -1008,12 +1005,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOptimizationGuideDebugLogsDescription,
      flags_ui::kOsIos,
      SINGLE_VALUE_TYPE(optimization_guide::switches::kDebugLoggingEnabled)},
-    {"optimization-guide-install-wide-model-store",
-     flag_descriptions::kOptimizationGuideInstallWideModelStoreName,
-     flag_descriptions::kOptimizationGuideInstallWideModelStoreDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(optimization_guide::features::
-                            kOptimizationGuideInstallWideModelStore)},
     {"optimization-guide-push-notifications",
      flag_descriptions::kOptimizationGuidePushNotificationClientName,
      flag_descriptions::kOptimizationGuidePushNotificationClientDescription,
@@ -1074,10 +1065,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-feed-ablation", flag_descriptions::kEnableFeedAblationName,
      flag_descriptions::kEnableFeedAblationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFeedAblation)},
-    {"enable-feed-card-menu-sign-in-promo",
-     flag_descriptions::kEnableFeedCardMenuSignInPromoName,
-     flag_descriptions::kEnableFeedCardMenuSignInPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedCardMenuSignInPromo)},
     {"content-suggestions-magic-stack", flag_descriptions::kMagicStackName,
      flag_descriptions::kMagicStackDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMagicStack,
@@ -1091,6 +1078,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kIOSHideFeedWithSearchChoice,
          kIOSHideFeedWithSearchChoiceVariations,
          flag_descriptions::kIOSHideFeedWithSearchChoiceName)},
+    {"ios-keyboard-accessory-upgrade",
+     flag_descriptions::kIOSKeyboardAccessoryUpgradeName,
+     flag_descriptions::kIOSKeyboardAccessoryUpgradeDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgrade)},
     {"ios-large-fakebox", flag_descriptions::kIOSLargeFakeboxName,
      flag_descriptions::kIOSLargeFakeboxDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSLargeFakebox)},
@@ -1106,12 +1097,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
      flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserIntentsShowSettings)},
-    {"ios-password-ui-split", flag_descriptions::kIOSPasswordUISplitName,
-     flag_descriptions::kIOSPasswordUISplitDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordUISplit)},
-    {"ios-set-up-list", flag_descriptions::kIOSSetUpListName,
-     flag_descriptions::kIOSSetUpListDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSSetUpList)},
     {"ios-password-bottom-sheet",
      flag_descriptions::kIOSPasswordBottomSheetName,
      flag_descriptions::kIOSPasswordBottomSheetDescription, flags_ui::kOsIos,
@@ -1147,17 +1132,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUIButtonConfigurationName,
      flag_descriptions::kEnableUIButtonConfigurationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableUIButtonConfiguration)},
-    {"enable-user-policy-for-signin-and-nosync-consent-level",
-     flag_descriptions::kEnableUserPolicyForSigninAndNoSyncConsentLevelName,
-     flag_descriptions::
-         kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::kUserPolicyForSigninAndNoSyncConsentLevel)},
-    {"enable-user-policy-for-signin-or-sync-consent-level",
-     flag_descriptions::kEnableUserPolicyForSigninOrSyncConsentLevelName,
-     flag_descriptions::kEnableUserPolicyForSigninOrSyncConsentLevelDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::kUserPolicyForSigninOrSyncConsentLevel)},
     {"omnibox-max-url-matches", flag_descriptions::kOmniboxMaxURLMatchesName,
      flag_descriptions::kOmniboxMaxURLMatchesDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMaxURLMatches,
@@ -1223,9 +1197,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxKeyboardPasteButtonName,
      flag_descriptions::kOmniboxKeyboardPasteButtonDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxKeyboardPasteButton)},
-    {"whats-new-ios-m116", flag_descriptions::kWhatsNewIOSM116Name,
-     flag_descriptions::kWhatsNewIOSM116Description, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kWhatsNewIOSM116)},
     {"app-store-rating", flag_descriptions::kAppStoreRatingName,
      flag_descriptions::kAppStoreRatingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppStoreRating)},
@@ -1256,9 +1227,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-    {"ios-password-checkup", flag_descriptions::kIOSPasswordCheckupName,
-     flag_descriptions::kIOSPasswordCheckupDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordCheckup)},
     {"promos-manager-uses-fet", flag_descriptions::kPromosManagerUsesFETName,
      flag_descriptions::kPromosManagerUsesFETDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPromosManagerUsesFET)},
@@ -1284,10 +1252,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTabInactivityThreshold,
                                     kTabInactivityThresholdVariations,
                                     "TabInactivityThreshold")},
-    {"enable-feed-synthetic-capabilities",
-     flag_descriptions::kEnableFeedSyntheticCapabilitiesName,
-     flag_descriptions::kEnableFeedSyntheticCapabilitiesDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedSyntheticCapabilities)},
     {"enable-friendlier-safe-browsing-settings-enhanced-protection",
      flag_descriptions::
          kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName,
@@ -1335,11 +1299,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePolicyTestPageName,
      flag_descriptions::kEnablePolicyTestPageDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(policy::features::kEnablePolicyTestPage)},
-    {"enable-bookmarks-account-storage",
-     flag_descriptions::kEnableBookmarksAccountStorageName,
-     flag_descriptions::kEnableBookmarksAccountStorageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(syncer::kEnableBookmarksAccountStorage)},
     {"web-feed-feedback-reroute",
      flag_descriptions::kWebFeedFeedbackRerouteName,
      flag_descriptions::kWebFeedFeedbackRerouteDescription, flags_ui::kOsIos,
@@ -1379,11 +1338,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSPasswordSettingsBulkUploadLocalPasswords)},
-    {"enable-reading-list-account-storage",
-     flag_descriptions::kEnableReadingListAccountStorageName,
-     flag_descriptions::kEnableReadingListAccountStorageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(syncer::kReadingListEnableDualReadingListModel)},
     {"enable-reading-list-sign-in-promo",
      flag_descriptions::kEnableReadingListSignInPromoName,
      flag_descriptions::kEnableReadingListSignInPromoDescription,
@@ -1525,17 +1479,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumption,
                                     kTabResumptionVariations,
                                     "TabResumption")},
-    {"ios-lens-use-direct-upload",
-     flag_descriptions::kIOSLensUseDirectUploadName,
-     flag_descriptions::kIOSLensUseDirectUploadDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSLensUseDirectUpload)},
-    {"autofill-enable-payments-mandatory-reauth-on-bling",
-     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthOnBlingName,
-     flag_descriptions::
-         kAutofillEnablePaymentsMandatoryReauthOnBlingDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePaymentsMandatoryReauthOnBling)},
     {"bottom-omnibox-default-setting",
      flag_descriptions::kBottomOmniboxDefaultSettingName,
      flag_descriptions::kBottomOmniboxDefaultSettingDescription,
@@ -1653,7 +1596,51 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"dynamic-background-color", flag_descriptions::kDynamicBackgroundColorName,
      flag_descriptions::kDynamicBackgroundColorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDynamicBackgroundColor)},
-
+    {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
+     flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kFullscreenImprovement)},
+    {"tab-groups-in-grid", flag_descriptions::kTabGroupsInGridName,
+     flag_descriptions::kTabGroupsInGridDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGroupsInGrid)},
+    {"autofill-enable-payments-mandatory-reauth",
+     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthName,
+     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePaymentsMandatoryReauth)},
+    {"autofill-enable-card-benefits",
+     flag_descriptions::kAutofillEnableCardBenefitsName,
+     flag_descriptions::kAutofillEnableCardBenefitsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefits)},
+    {"password-manager-signin-uff",
+     flag_descriptions::kIOSPasswordSignInUffName,
+     flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordSignInUff)},
+    {"tab-grid-compositional-layout",
+     flag_descriptions::kTabGridCompositionalLayoutName,
+     flag_descriptions::kTabGridCompositionalLayoutDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTabGridCompositionalLayout)},
+    {"bottom-omnibox-promo-fre", flag_descriptions::kBottomOmniboxPromoFREName,
+     flag_descriptions::kBottomOmniboxPromoFREDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoFRE,
+                                    kBottomOmniboxPromoVariations,
+                                    "BottomOmniboxPromoFRE")},
+    {"bottom-omnibox-promo-app-launch",
+     flag_descriptions::kBottomOmniboxPromoAppLaunchName,
+     flag_descriptions::kBottomOmniboxPromoAppLaunchDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoAppLaunch,
+                                    kBottomOmniboxPromoVariations,
+                                    "BottomOmniboxPromoAppLaunch")},
+    {"bottom-omnibox-promo-default-position",
+     flag_descriptions::kBottomOmniboxPromoDefaultPositionName,
+     flag_descriptions::kBottomOmniboxPromoDefaultPositionDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kBottomOmniboxPromoDefaultPosition,
+         kBottomOmniboxPromoDefaultPositionVariations,
+         "BottomOmniboxPromoDefaultPosition")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: gc is not defined
+[FAIL] Test that navigator.presentation.defaultRequest.onconnectionavailable with one URL isn't reset after gc().
+  gc is not defined
+[FAIL] Test that navigator.presentation.defaultRequest.onconnectionavailable with multiple URLs isn't reset after gc().
+  gc is not defined
+Harness: the test ran to completion.

@@ -55,15 +55,15 @@ increase verbosity.
 ### Test expectations and Baselines
 
 The
-[TestExpectations](../../third_party/blink/web_tests/TestExpectations) file (and related
-files) contains the list of all known web test failures. A special tag `Chrome` is
-introduced to specify chrome specific failures. See the
+[ChromeTestExpectations](../../third_party/blink/web_tests/ChromeTestExpectations) file contains the list of all known Chrome
+specific test failures, and it inherits or overrides test expectations from the default [TestExpectations](../../third_party/blink/web_tests/ChromeTestExpectations) file.
+A special tag `Chrome` is introduced to specify chrome specific failures. See the
 [Web Test Expectations documentation](./web_test_expectations.md) for more
 on this.
 
 Chrome specific baselines reside at `third_party/blink/web_tests/platform/linux-chrome`, and
 falls back to `third_party/blink/web_tests/platform/linux`. To update baselines for chrome,
-you should trigger `linux-wpt-fyi-rel` and run [rebaseline tool](./web_test_expectations.md#How-to-rebaseline) after the results are ready.
+you should trigger `linux-wpt-chromium-rel` and run [rebaseline tool](./web_test_expectations.md#How-to-rebaseline) after the results are ready.
 
 ### Running webdriver tests with Chrome
 
@@ -74,7 +74,7 @@ the same way as other web platform tests, e.g.
 third_party/blink/tools/run_wpt_tests.py --release -p chrome external/wpt/webdriver/tests/classic/find_element/find.py
 ```
 
-The `webdriver_tests_suite` step of `linux-blink-rel` runs wdspec tests and can provide results for rebaselining.
+The `webdriver_wpt_tests` step of `linux-blink-rel` runs wdspec tests and can provide results for rebaselining.
 
 ## Running Web Platform Tests with Chrome Android
 

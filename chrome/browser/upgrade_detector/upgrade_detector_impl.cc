@@ -28,6 +28,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
 #include "chrome/common/chrome_switches.h"
@@ -202,6 +203,13 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
 
   if (!base::FeatureList::IsEnabled(kOutdatedBuildDetector))
     return;
+
+  // Don't detect outdated builds for obsolete operating systems when new builds
+  // are no longer available.
+  if (ObsoleteSystem::IsObsoleteNowOrSoon() &&
+      ObsoleteSystem::IsEndOfTheLine()) {
+    return;
+  }
 
   // Don't show the bubble if we have a brand code that is NOT organic, unless
   // an outdated build is being simulated by command line switches.

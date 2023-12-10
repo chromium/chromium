@@ -41,6 +41,7 @@ void ProfileReportGeneratorDesktop::GetExtensionInfo(
 
 void ProfileReportGeneratorDesktop::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!profile_->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled))
     return;
   const base::Value::Dict& pending_requests =
@@ -81,6 +82,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
       request->set_justification(*justification);
     }
   }
+#endif
 }
 
 }  // namespace enterprise_reporting

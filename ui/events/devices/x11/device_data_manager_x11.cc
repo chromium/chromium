@@ -27,8 +27,8 @@
 #include "ui/events/event_switches.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/future.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 
 // XIScrollClass was introduced in XI 2.1 so we need to define it here
 // for backward-compatibility with older versions of XInput.
@@ -217,10 +217,8 @@ DeviceDataManagerX11* DeviceDataManagerX11::GetInstance() {
 }
 
 DeviceDataManagerX11::DeviceDataManagerX11()
-    : xi_opcode_(-1),
-      high_precision_scrolling_disabled_(IsHighPrecisionScrollingDisabled()) {
+    : high_precision_scrolling_disabled_(IsHighPrecisionScrollingDisabled()) {
   CHECK(x11::Connection::Get());
-  InitializeXInputInternal();
 
   UpdateDeviceList(x11::Connection::Get());
   UpdateButtonMap();
@@ -228,39 +226,9 @@ DeviceDataManagerX11::DeviceDataManagerX11()
 
 DeviceDataManagerX11::~DeviceDataManagerX11() = default;
 
-bool DeviceDataManagerX11::InitializeXInputInternal() {
-  // Check if XInput is available on the system.
-  xi_opcode_ = -1;
-  auto* connection = x11::Connection::Get();
-  if (!connection->xinput().present()) {
-    VLOG(1) << "X Input extension not available";
-    return false;
-  }
-
-  // Check the XInput version.
-  auto version = connection->xinput().XIQueryVersion(
-      {x11::Input::major_version, x11::Input::minor_version});
-  if (auto reply = version.Sync()) {
-    if (base::Version({reply->major_version, reply->minor_version}) <
-        base::Version("2.2")) {
-      DVLOG(1) << "XI version on server is " << reply->major_version << "."
-               << reply->minor_version << ". "
-               << "But 2.2 is required.";
-      return false;
-    }
-  } else {
-    VLOG(1) << "XInput2 not supported in the server.";
-    return false;
-  }
-
-  xi_opcode_ = connection->xinput().major_opcode();
-  CHECK_NE(-1, xi_opcode_);
-
-  return true;
-}
-
 bool DeviceDataManagerX11::IsXInput2Available() const {
-  return xi_opcode_ != -1;
+  return x11::Connection::Get()->xinput_version() >=
+         std::pair<uint32_t, uint32_t>{2, 2};
 }
 
 void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {

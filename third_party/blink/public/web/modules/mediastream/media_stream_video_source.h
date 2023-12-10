@@ -38,6 +38,7 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
+class CapturedWheelAction;
 class MediaStreamVideoTrack;
 class VideoTrackAdapter;
 class VideoTrackAdapterSettings;
@@ -167,6 +168,26 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   virtual bool SupportsEncodedOutput() const;
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Deliver a wheel event on the captured tab.
+  //
+  // `action` contains the parameters of the action that's to be delivered.
+  //
+  // `callback` is used to report the result.
+  // `callback.success` reports back success/failure.
+  // `callback.error` has the error message upon failure. (Empty otherwise.)
+  virtual void SendWheel(
+      CapturedWheelAction* action,
+      base::OnceCallback<void(bool success, const String& error)> callback);
+
+  // Retrieves the zoom level from the captured tab.
+  //
+  // `callback` is used to report the result.
+  // `callback.zoom_level` has the zoom level or nullopt in case of failure.
+  // `callback.error` has the error message upon failure. (Empty otherwise.)
+  virtual void GetZoomLevel(
+      base::OnceCallback<void(absl::optional<int> zoom_level,
+                              const String& error)> callback);
+
   // Start/stop cropping or restricting the video track.
   //
   // Non-empty |sub_capture_target_id| sets (or changes) the target.

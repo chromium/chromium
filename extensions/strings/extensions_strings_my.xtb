@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ဖြစ်မှဖြစ်ရတယ်! ကျပန်း RSA ကိုယ်ပိုင် သော့ ထုတ်လုပ် မရလိုက်ပါ။</translation>
 <translation id="1445572445564823378">ဒီတိုးချဲ့မှုက <ph name="PRODUCT_NAME" />ကို နှေးလာစေနေသည်။ သင်သည် <ph name="PRODUCT_NAME" />၏ လုပ်ကိုင်နိုင်စွမ်းကို ပြန်ဖေါ်ထုတ်ပေးရန် ၎င်းကို ပိတ်သင့်ပါသည်။</translation>
 <translation id="1468038450257740950">WebGL ကို မပံ့ပိုးပါ။</translation>
+<translation id="1610570795592207282">CSS '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="1803557475693955505">နောက်ခံစာမျက်နှာ '<ph name="BACKGROUND_PAGE" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
 <translation id="2350172092385603347">ဒေသတွင်း အသုံးပြုနိုင်ရန် ဖန်တီးရာတွင် အသုံးပြုခဲ့၊ သို့သော် default_locale အားသိသာစွာ သတ်မှတ်မထားပါ။</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">အမည်မသိ ပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx ဖိုင်ကို အစားထိုးပေး မရခဲ့ပါ။ ဖိုင်ကို သုံးနေသလား စစ်ကြည့်ပါ။</translation>
 <translation id="3163201441334626963">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> မှဖြစ်၏</translation>
-<translation id="3302709122321372472">content script အတွက် css '<ph name="RELATIVE_PATH" />' ဖွင့်၍မရပါ။</translation>
 <translation id="3369521687965833290">အိတ်စတန်းရှင်း ရှင်းလင်းမရပါ။ အိတ်စတန်းရှင်းကို သေချာစွာရှင်းနိုင်ရန်၊ junction၊ mount point သို့မဟုတ် symlink မပါဘဲ၊ ဒရိုက်ဗ် စာလုံးတစ်ခုနှင့်စသည့် သင့်ပရိုဖိုင်းထံသွား တိုက်ရိုက် လမ်းကြောင်းရှိရမည်။ သင့်ပရိုဖိုင်းတွင် အဆိုပါလမ်းကြောင်း မရှိပါ။</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ကိုယ်ပိုင် သော့ အတွက် ထည့်သွင်းမှု တန်ဖိုးမှာ မှန်ကန်သည့် လမ်းကြောင်း ရှိရမည်။</translation>
 <translation id="388442998277590542">ရွေးစရာ စာမျက်နှာ'<ph name="OPTIONS_PAGE" />'ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="3984413272403535372">အိတ်စတန်းရှင်းအား လတ်မှတ်ထိုးစဉ် မှားယွင်းနေ</translation>
-<translation id="39964277676607559">အကြောင်းအရာ စာကြောင်းတန်း အတွက် javascript '<ph name="RELATIVE_PATH" />' ကို မတင်နိုင်ခဲ့ပါ။</translation>
 <translation id="4115165561519362854">ဤစက်အား စီမံကွပ်ကဲသူသည် <ph name="EXTENSION_NAME" /> အား <ph name="EXTENSION_VERSION" />၏ အနိမ့်ဆုံးဗားရှင်း ရှိစေလိုသည်။ ၄င်းတွင် ယင်းဗားရှင်းအထိ (သို့မဟုတ် ထို့ထက်မြင့်သော)မွမ်းမံပြောင်းလဲထားသည့်တိုင်အောင်။</translation>
 <translation id="4233778200880751280">စာမျက်နှာ '<ph name="ABOUT_PAGE" />' အကြောင်းကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="471800408830181311">ကိုယ်ပိုင် သော့ကို ထုတ်ပေးမှု မအောင်မြင်ခဲ့ပါ။</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">အများပြည်သူ သော့ကို တင်ပို့ မရခဲ့ပါ။</translation>
 <translation id="5026754133087629784">ဝက်ဘ်မြင်ကွင်း: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">အထုပ်ဆီ သွားရာ ဒါရိုက်ထရီ ထံသို့ ပကတိ လမ်းကြောင်းကို မရှာနိုင်ပါ။</translation>
+<translation id="5160071981665899014">JavaScript '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="5356315618422219272">Appview- <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ပုံသွင်းထားသည့် ဝင်းဒိုးများ မထောက်ပံ့ပါ။</translation>
 <translation id="5456409301717116725">အိတ်စတန်းရှင်းတွင် '<ph name="KEY_PATH" />' ကီးဖိုင်ပါဝင်သည်။ သင်လုပ်ချင်မည်မဟုတ်ပါ။</translation>

@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] squeeze float32 2D tensor by eliminating one dimension default options / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 3D tensor by eliminating one dimension default options / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 3D tensor by eliminating two dimensions default options / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 4D tensor by eliminating two dimensions default options / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 4D tensor by eliminating all dimensions default options / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 5D tensor by eliminating four dimensions default options / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 2D tensor by eliminating one dimension options.axes / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 3D tensor by eliminating two dimensions options.axes / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 4D tensor by eliminating two dimensions options.axes / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 5D tensor by eliminating two dimensions options.axes / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 5D tensor by eliminating four dimensions options.axes / sync
+  builder[operationName] is not a function
+[FAIL] squeeze float32 2D tensor by eliminating one dimension default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 3D tensor by eliminating one dimension default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 3D tensor by eliminating two dimensions default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 4D tensor by eliminating two dimensions default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 4D tensor by eliminating all dimensions default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 5D tensor by eliminating four dimensions default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 2D tensor by eliminating one dimension options.axes / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 3D tensor by eliminating two dimensions options.axes / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 4D tensor by eliminating two dimensions options.axes / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 5D tensor by eliminating two dimensions options.axes / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] squeeze float32 5D tensor by eliminating four dimensions options.axes / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+Harness: the test ran to completion.
+

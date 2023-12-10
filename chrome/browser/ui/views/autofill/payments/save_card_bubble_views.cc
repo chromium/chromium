@@ -73,9 +73,9 @@ void SaveCardBubbleViews::Hide() {
 }
 
 void SaveCardBubbleViews::OnDialogAccepted() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
+  if (controller_) {
     controller_->OnSaveButton({});
+  }
 }
 
 void SaveCardBubbleViews::AddedToWidget() {
@@ -120,7 +120,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
   view->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
-  // If applicable, add the upload explanation label.  Appears above the card
+  // If applicable, add the upload explanation label. Appears above the card
   // info.
   std::u16string explanation = controller_->GetExplanatoryMessage();
   if (!explanation.empty()) {
@@ -147,8 +147,11 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
   auto* card_identifier_view =
       description_view->AddChildView(GetCardIdentifierView());
 
-  // Flex |card_identifier_view| to fill up space before the expiry date.
-  if (!base::FeatureList::IsEnabled(
+  // Flex |card_identifier_view| to fill up space before the expiry date or CVC
+  // icon.
+  if (controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
+      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE ||
+      !base::FeatureList::IsEnabled(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
     description_view->SetFlexForView(card_identifier_view, 1);
   }
@@ -163,40 +166,55 @@ void SaveCardBubbleViews::InitFootnoteView(views::View* footnote_view) {
 }
 
 std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
-  // If feature enabled, display the expiration date of this view in a
-  // separate lines. Else, card name, last 4 digit and expiration date
-  // in the same line
+  bool is_cvc_only_save =
+      controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
+      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE;
+
+  // If `AutofillMoveLegalTermsAndIconForNewCardEnrollment` is enabled,
+  // display the card expiration date in a separate line for credit card saves.
+  // Else, the card name, last 4 digit and expiration date or CVC icon will be
+  // shown in the same line
   auto card_identifier_view = std::make_unique<views::BoxLayoutView>();
-  if (base::FeatureList::IsEnabled(
+  if (is_cvc_only_save ||
+      !base::FeatureList::IsEnabled(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+    card_identifier_view->SetBetweenChildSpacing(
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+  } else {
     card_identifier_view->SetOrientation(
         views::BoxLayout::Orientation::kVertical);
     card_identifier_view->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
-  } else {
-    card_identifier_view->SetBetweenChildSpacing(
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
-  }
-
-  auto* const card_identifier_label =
-      card_identifier_view->AddChildView(std::make_unique<views::Label>(
-          GetCardIdentifierString(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_PRIMARY));
-  card_identifier_label->SetMultiLine(true);
-  card_identifier_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    // Flex |card_identifier_label| to fill up remaining space and tail align
-    // the expiry date.
-    card_identifier_view->SetFlexForView(card_identifier_label, 1);
   }
 
   const CreditCard& card = controller_->GetCard();
+  auto* const card_identifier_label =
+      card_identifier_view->AddChildView(std::make_unique<views::Label>(
+          is_cvc_only_save ? card.CardNameForAutofillDisplay()
+                           : GetCardIdentifierString(),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  // Disable multi line for CVC-only save (prompted after card usage) as the
+  // name can be very long with card name and art enabled. This change does not
+  // affect credit card upload save (prompted after a new or local card is
+  // entered).
+  card_identifier_label->SetMultiLine(!is_cvc_only_save);
+  card_identifier_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+
+  // Flex |card_identifier_label| to fill up remaining space and tail align
+  // the expiry date or CVC icon if the card info will be shown in the same
+  // line.
+  if (is_cvc_only_save ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+    card_identifier_view->SetFlexForView(card_identifier_label, /*flex=*/1);
+  }
+
   // Show CVC icon for CVC only save cases and card expiration in other cases
-  if (controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
-      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE) {
+  if (is_cvc_only_save) {
+    card_identifier_view->AddChildView(std::make_unique<views::Label>(
+        card.ObfuscatedNumberWithVisibleLastFourDigits(),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
     card_identifier_view->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
             ui::ResourceBundle::GetSharedInstance().GetImageNamed(

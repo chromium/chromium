@@ -20,10 +20,14 @@ class SiteSearchPolicyHandler : public SimpleSchemaValidatingPolicyHandler {
   static const char kName[];
   static const char kShortcut[];
   static const char kUrl[];
+  static const char kFeatured[];
 
   // The maximum number of site search providers to be defined via policy, to
   // avoid issues with very long lists.
   static const int kMaxSiteSearchProviders;
+
+  // The maximum number of site search providers that can be marked as featured.
+  static const int kMaxFeaturedProviders;
 
   explicit SiteSearchPolicyHandler(Schema schema);
 

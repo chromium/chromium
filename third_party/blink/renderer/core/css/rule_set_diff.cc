@@ -29,6 +29,11 @@ RuleSet* RuleSetDiff::CreateDiffRuleset() const {
     return nullptr;
   }
 
+  if (old_ruleset_->RuleCount() + new_ruleset_->RuleCount() >=
+      (1 << RuleData::kPositionBits)) {
+    return nullptr;
+  }
+
   RuleSet* ruleset = MakeGarbageCollected<RuleSet>();
   ruleset->AddFilteredRulesFromOtherSet(*old_ruleset_, changed_rules_);
   ruleset->AddFilteredRulesFromOtherSet(*new_ruleset_, changed_rules_);

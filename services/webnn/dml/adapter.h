@@ -10,8 +10,11 @@
 #include <dxgi.h>
 #include <wrl.h>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 
 namespace webnn::dml {
 
@@ -26,7 +29,8 @@ class CommandQueue;
 // `webnn::dml::GraphImpl` of the same adapter. The `Adapter` instance is
 // created upon the first `webnn::dml::GraphImpl` call `Adapter::GetInstance()`
 // and is released when the last ``webnn::dml::GraphImpl` is destroyed.
-class Adapter final : public base::RefCounted<Adapter> {
+class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
+    : public base::RefCounted<Adapter> {
  public:
   // Get the shared `Adapter` instance for the default adapter. At the current
   // stage, the default adapter is queried from ANGLE. This method is not
@@ -37,13 +41,14 @@ class Adapter final : public base::RefCounted<Adapter> {
   // specify a lower feature level than what WebNN requires.
   //
   // TODO(crbug.com/1273291): Support `Adapter` instance for other adapters.
-  static scoped_refptr<Adapter> GetInstance(
+  static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetInstance(
       DML_FEATURE_LEVEL min_feature_level_required);
 
   // Same as GetInstance() but always uses DML_FEATURE_LEVEL_1_0 for testing
   // purposes. Allows tests to run on a per feature level basis using
   // IsDMLFeatureLevelSupported().
-  static scoped_refptr<Adapter> GetInstanceForTesting();
+  static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
+  GetInstanceForTesting();
 
   Adapter(const Adapter&) = delete;
   Adapter& operator=(const Adapter&) = delete;
@@ -79,7 +84,7 @@ class Adapter final : public base::RefCounted<Adapter> {
           DML_FEATURE_LEVEL max_feature_level_supported);
   ~Adapter();
 
-  static scoped_refptr<Adapter> Create(
+  static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Create(
       ComPtr<IDXGIAdapter> dxgi_adapter,
       DML_FEATURE_LEVEL min_feature_level_required);
 

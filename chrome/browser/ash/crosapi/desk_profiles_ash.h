@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/desk_profiles.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
@@ -36,6 +36,9 @@ class DeskProfilesAsh : public mojom::DeskProfileObserver,
 
   // ash::DeskProfilesDelegate:
   std::vector<ash::LacrosProfileSummary> GetProfilesSnapshot() const override;
+  uint64_t GetPrimaryProfileId() const override;
+  const ash::LacrosProfileSummary* GetProfilesSnapshotByProfileId(
+      uint64_t profile_id) const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -48,17 +51,17 @@ class DeskProfilesAsh : public mojom::DeskProfileObserver,
   // was known.
   bool RemoveProfile(uint64_t profile_id);
 
-  // Invoked if Lacros disconnects.
-  void OnDisconnect();
-
   // Cached list of profiles received from Lacros.
   std::vector<ash::LacrosProfileSummary> profiles_;
 
+  // The profile ID of the primary user.
+  uint64_t primary_user_profile_id_ = 0;
+
   base::ObserverList<Observer> observers_;
 
-  mojo::Receiver<mojom::DeskProfileObserver> receiver_{this};
+  mojo::ReceiverSet<mojom::DeskProfileObserver> receivers_;
 };
 
 }  // namespace crosapi
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_CLIPBOARD_HISTORY_ASH_H_
+#endif  // CHROME_BROWSER_ASH_CROSAPI_DESK_PROFILES_ASH_H_

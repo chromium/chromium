@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -329,7 +330,7 @@ void ProcessSnapshotWin::InitializeUnloadedModules() {
           uet.SizeOfImage,
           uet.CheckSum,
           uet.TimeDateStamp,
-          base::WideToUTF8(base::WStringPiece(
+          base::WideToUTF8(std::wstring_view(
               uet.ImageName,
               wcsnlen(uet.ImageName, std::size(uet.ImageName))))));
     }

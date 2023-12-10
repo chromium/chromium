@@ -325,14 +325,14 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       // instances whose primary main RenderFrameHosts are in `process`. Refine
       // our determination of the `process.renderer_type`, and record the page
       // titles.
-      render_process_host->ForEachRenderFrameHost(base::BindRepeating(
-          &UpdateProcessTypeAndTitles,
+      render_process_host->ForEachRenderFrameHost(
+          [&](content::RenderFrameHost* frame) {
+            UpdateProcessTypeAndTitles(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-          process_is_for_extensions ? extension_set : nullptr,
+                process_is_for_extensions ? extension_set : nullptr,
 #endif
-          // It is safe to use `std::ref` here, since `process` outlives this
-          // callback.
-          std::ref(process)));
+                process, frame);
+          });
     }
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)

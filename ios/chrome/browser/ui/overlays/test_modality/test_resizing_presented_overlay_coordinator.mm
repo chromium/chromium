@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/test_modality/test_resizing_presented_overlay_coordinator.h"
 
-#import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/test_modality/test_resizing_presented_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/test_modality/test_presented_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/test_modality/test_resizing_presented_overlay_request_config.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"

@@ -126,6 +126,12 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   void SetTopContentAlignment(views::LayoutAlignment alignment);
   void SetMiddleContentAlignment(views::LayoutAlignment alignment);
 
+  // If true, hides the accept button in `button_container_`.
+  void SetAcceptButtonVisible(bool visible);
+
+  // Sets the margins for the title label view.
+  void SetTitleMargins(const gfx::Insets& margins);
+
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
@@ -204,6 +210,8 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, MiddleContentView)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalViewInButtonRow)
 VIEW_BUILDER_PROPERTY(views::LayoutAlignment, TopContentAlignment)
 VIEW_BUILDER_PROPERTY(views::LayoutAlignment, MiddleContentAlignment)
+VIEW_BUILDER_PROPERTY(bool, AcceptButtonVisible)
+VIEW_BUILDER_PROPERTY(const gfx::Insets&, TitleMargins)
 VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
 END_VIEW_BUILDER
 

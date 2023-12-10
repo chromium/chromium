@@ -18,6 +18,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaArrayOfByteArrayToBytesVector;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;

@@ -274,6 +274,11 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     is_combine_desks_type_ = is_combine_desks_type;
   }
 
+  // When true, this indicates that we have failed to take a screenshot (either
+  // the first or the second) and that the desk switch should proceed without
+  // any animation.
+  bool screenshot_failed() const { return screenshot_failed_; }
+
   // Begins phase (1) of the animation by taking a screenshot of the starting
   // desk content. Delegate::OnStartingDeskScreenshotTaken() will be called once
   // the screenshot is taken and placed on top of everything on the screen.
@@ -302,9 +307,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // units and then used to shift the animation layer. If the animation layer is
   // near its boundaries, this will return an index for the desk we should take
   // a screenshot for. If we are not near the boundaries, or if there is no next
-  // adjacent desk in the direction we are heading, return absl::nullopt. The
+  // adjacent desk in the direction we are heading, return std::nullopt. The
   // delegate is responsible for requesting the screenshot.
-  absl::optional<int> UpdateSwipeAnimation(float scroll_delta_x);
+  std::optional<int> UpdateSwipeAnimation(float scroll_delta_x);
 
   // Maybe called after UpdateSwipeAnimation() if we need a new screenshot.
   // Updates |ending_desk_index_| and resets some other internal state related
@@ -416,6 +421,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
 
   // True when phase (3) finishes.
   bool animation_finished_ = false;
+
+  // True if we have failed (including retries) to take any screenshot.
+  bool screenshot_failed_ = false;
 
   // True if during a continuous swipe, the user went all the way left or right
   // and swiping in that direction will no longer update the UI.

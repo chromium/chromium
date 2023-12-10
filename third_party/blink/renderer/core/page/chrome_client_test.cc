@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -46,31 +47,31 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorFlood) {
   ChromeClient* client = &logger;
   HitTestLocation location(PhysicalOffset(10, 20));
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
-  ScopedNullExecutionContext execution_context;
-  auto* doc = Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* element = MakeGarbageCollected<HTMLElement>(html_names::kDivTag, *doc);
+  auto holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  auto* element = MakeGarbageCollected<HTMLElement>(html_names::kDivTag,
+                                                    holder->GetDocument());
   element->setAttribute(html_names::kTitleAttr, AtomicString("tooltip"));
   result.SetInnerNode(element);
 
-  client->UpdateTooltipUnderCursor(*doc->GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   EXPECT_EQ("tooltip", logger.ToolTipForLastUpdateTooltipUnderCursor());
 
   // seToolTip(HitTestResult) again in the same condition.
   logger.ClearToolTipForLastUpdateTooltipUnderCursor();
-  client->UpdateTooltipUnderCursor(*doc->GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should not be called.
   EXPECT_EQ(String(), logger.ToolTipForLastUpdateTooltipUnderCursor());
 
   // Cancel the tooltip, and UpdateTooltipUnderCursor(HitTestResult) again.
-  client->ClearToolTip(*doc->GetFrame());
+  client->ClearToolTip(holder->GetFrame());
   logger.ClearToolTipForLastUpdateTooltipUnderCursor();
-  client->UpdateTooltipUnderCursor(*doc->GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should not be called.
   EXPECT_EQ(String(), logger.ToolTipForLastUpdateTooltipUnderCursor());
 
   logger.ClearToolTipForLastUpdateTooltipUnderCursor();
   element->setAttribute(html_names::kTitleAttr, AtomicString("updated"));
-  client->UpdateTooltipUnderCursor(*doc->GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should be called because
   // tooltip string is different from the last one.
   EXPECT_EQ("updated", logger.ToolTipForLastUpdateTooltipUnderCursor());
@@ -80,28 +81,28 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorEmptyString) {
   ChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   HitTestLocation location(PhysicalOffset(10, 20));
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
-  ScopedNullExecutionContext execution_context;
-  auto& doc = *Document::CreateForTest(execution_context.GetExecutionContext());
-  auto& input_element = *MakeGarbageCollected<HTMLInputElement>(doc);
+  auto holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  auto& input_element =
+      *MakeGarbageCollected<HTMLInputElement>(holder->GetDocument());
   input_element.setAttribute(html_names::kTypeAttr, AtomicString("file"));
 
   result.SetInnerNode(&input_element);
-  client->UpdateTooltipUnderCursor(*doc.GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   EXPECT_EQ("<<NoFileChosenLabel>>", client->last_tool_tip_text_);
 
   client->last_tool_tip_text_ = String();
   input_element.removeAttribute(html_names::kTitleAttr);
-  client->UpdateTooltipUnderCursor(*doc.GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   EXPECT_EQ("<<NoFileChosenLabel>>", client->last_tool_tip_text_);
 
   client->last_tool_tip_text_ = String();
   input_element.setAttribute(html_names::kTitleAttr, g_empty_atom);
-  client->UpdateTooltipUnderCursor(*doc.GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   EXPECT_EQ(g_empty_atom, client->last_tool_tip_text_);
 
   client->last_tool_tip_text_ = String();
   input_element.setAttribute(html_names::kTitleAttr, AtomicString("test"));
-  client->UpdateTooltipUnderCursor(*doc.GetFrame(), location, result);
+  client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   EXPECT_EQ("test", client->last_tool_tip_text_);
 }
 

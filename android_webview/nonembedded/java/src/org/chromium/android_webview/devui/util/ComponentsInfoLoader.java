@@ -42,9 +42,10 @@ public class ComponentsInfoLoader {
 
             // TODO(https://crbug.com/1231543): Handle multiple versions by sorting semantically and
             // picking out the highest version
-            String version = (componentVersions == null || componentVersions.length == 0)
-                    ? ""
-                    : componentVersions[0];
+            String version =
+                    (componentVersions == null || componentVersions.length == 0)
+                            ? ""
+                            : componentVersions[0];
             String name = componentDirectory.getName();
 
             componentInfoList.add(new ComponentInfo(name, version));

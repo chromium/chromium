@@ -61,9 +61,7 @@ public class ExponentialBackoffScheduler {
         mMaxMilliseconds = maxMilliseconds;
     }
 
-    /**
-     * Calculates when the next event should occur, including delays due to failures.
-     */
+    /** Calculates when the next event should occur, including delays due to failures. */
     public long calculateNextTimestamp() {
         return generateRandomDelay() + getCurrentTime();
     }
@@ -84,9 +82,7 @@ public class ExponentialBackoffScheduler {
         preferences.edit().putInt(PREFERENCE_FAILED_ATTEMPTS, 0).apply();
     }
 
-    /**
-     * Returns a timestamp representing now, according to the backoff scheduler.
-     */
+    /** Returns a timestamp representing now, according to the backoff scheduler. */
     public long getCurrentTime() {
         return TimeUtils.currentTimeMillis();
     }
@@ -133,8 +129,9 @@ public class ExponentialBackoffScheduler {
     }
 
     private SharedPreferences getSharedPreferences() {
-        SharedPreferences preferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                mPreferencePackage, Context.MODE_PRIVATE);
+        SharedPreferences preferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(mPreferencePackage, Context.MODE_PRIVATE);
         return preferences;
     }
 }

@@ -48,7 +48,7 @@ DrawImage::DrawImage(PaintImage image,
                      const SkIRect& src_rect,
                      PaintFlags::FilterQuality filter_quality,
                      const SkM44& matrix,
-                     absl::optional<size_t> frame_index)
+                     std::optional<size_t> frame_index)
     : paint_image_(std::move(image)),
       use_dark_mode_(use_dark_mode),
       src_rect_(src_rect),
@@ -62,7 +62,7 @@ DrawImage::DrawImage(PaintImage image,
                      const SkIRect& src_rect,
                      PaintFlags::FilterQuality filter_quality,
                      const SkM44& matrix,
-                     absl::optional<size_t> frame_index,
+                     std::optional<size_t> frame_index,
                      const TargetColorParams& target_color_params)
     : paint_image_(std::move(image)),
       use_dark_mode_(use_dark_mode),

@@ -93,7 +93,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/sandboxed_process_thread_type_handler.h"
-#include "content/gpu/gpu_sandbox_hook_linux.h"
+#include "content/common/gpu_pre_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/sandbox_type.h"
 #endif
@@ -241,7 +241,9 @@ int GpuMain(MainFunctionParams parameters) {
 
 #if BUILDFLAG(IS_WIN)
   base::win::EnableHighDPISupport();
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::trace_event::TraceEventETWExport::EnableETWExport();
+#endif
 
   // Prevent Windows from displaying a modal dialog on failures like not being
   // able to load a DLL.
@@ -491,7 +493,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
   bool res = sandbox::policy::SandboxLinux::GetInstance()->InitializeSandbox(
       sandbox::policy::SandboxTypeFromCommandLine(
           *base::CommandLine::ForCurrentProcess()),
-      base::BindOnce(GpuProcessPreSandboxHook), sandbox_options);
+      base::BindOnce(GpuPreSandboxHook), sandbox_options);
 
   if (watchdog_thread) {
     watchdog_thread->Start();

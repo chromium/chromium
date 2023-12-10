@@ -331,13 +331,13 @@
         Writing help
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
-        For example, "write a thank you note"
+        Enter custom prompt such as "write a thank you note"
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
         Rewrite
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
-        Custom (for example, "sound more confident")
+        Enter custom rewrite prompt such as "sound more confident"
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
         Settings
@@ -2521,7 +2521,7 @@
           Downloading the screen saver
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
-          When your screen is idle, show photos, time, weather, and media info.
+          When your screen is idle, show photos, time, weather, and media info
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON" desc="Label for the toggle row in ambient mode settings page when it is enabled.">
           On
@@ -2764,6 +2764,18 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL" desc="Sublabel for the Time of Day wallpaper collection.">
           Exclusive
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE" desc="Title for the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
+          Turn on dark mode automatically?
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT" desc="Content for the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
+          Turn this on for best results with this wallpaper. You can turn off this setting at anytime.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON" desc="Label for the button to close the dialog confirming user's selection of auto dark mode for Time of Day wallpaper">
+          No thanks
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON" desc="Label for the button to accept the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
+          Turn on
         </message>
 
         <!-- Personalization App Search Results -->
@@ -3888,6 +3900,27 @@
         <message name="IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION" desc="Information text to users that to proceed with the firmware update that they need to click on the Next button.">
           To proceed with the update, click Next.
         </message>
+        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google." translateable="false">
+          This update is provided by the external device manufacturer and hasn't been verified by Google.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB device be unplugged and reinserted." translateable="false">
+          The update will continue when the device USB cable has been unplugged and then re-inserted.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB device be unplugged." translateable="false">
+          The update will continue when the device USB cable has been unplugged.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB device be reinserted." translateable="false">
+          The update will continue when the device USB cable has been re-inserted.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK" desc="Request shown to the user during an update, requesting that the user press unlock on the device being updated." translateable="false">
+          Press unlock on the device to continue the update process.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF" desc="Request shown to the user during an update, requesting that the user not turn off their computer during the update." translateable="false">
+          Do not turn off your computer or remove the AC adaptor while the update is in progress.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again." translateable="false">
+          Unplug and replug the device, then install the firmware.
+        </message>
         <!-- Search Page -->
         <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">
           Continue
@@ -4431,7 +4464,7 @@
           Remove an APN to add a new APN
         </message>
         <message name="IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK" desc="Text describing APN settings menu with a link to more detailed information.">
-          Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+          Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION" desc="Text explaining there is no APN information to show because the network has not been attempted to be connected with, and that the user might need to add a custom APN.">
           You are not connected yet. If your mobile carrier recommends a custom APN, enter the APN information by selecting "+ New APN"
@@ -4460,6 +4493,9 @@
         <message name="IDS_SETTINGS_APN_A11Y_NAME" desc="Accessibility text to display the name of an APN item in the APN list and what index it is in the list">
           <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>5</ex></ph>, <ph name="NAME">$3<ex>ATT Broadband</ex></ph>.
         </message>
+        <message name="IDS_SETTINGS_APN_A11Y_USER_FRIENDLY_NAME_INDICATOR" desc="Accessibility text to indicate that the displayed APN name is the user-friendly name">
+          <ph name="USER_FRIENDLY_APN_NAME">$1<ex>ATT Broadband</ex></ph> is the user-friendly name for <ph name="APN_NAME">$2<ex>broadband</ex></ph>.
+        </message>
         <message name="IDS_SETTINGS_APN_A11Y_AUTO_DETECTED" desc="Accessibility text for when an APN is automatically detected">
           APN is automatically detected.
         </message>
@@ -4468,6 +4504,9 @@
         </message>
         <message name="IDS_SETTINGS_APN_A11Y_DISABLED" desc="Accessibility text for when an APN is disabled">
           APN is disabled.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_ENABLED" desc="Accessibility text for when an APN is enabled">
+          APN is enabled.
         </message>
         <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
           More actions for <ph name="APN_NAME">$1<ex>vzwinternet</ex></ph>
@@ -4525,6 +4564,15 @@
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN type will be used">
           Attach
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_AND_ATTACH_APN" desc="Accessibility text for when an APN is both a default and an attach APN">
+          APN is type default and attach.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_APN_ONLY" desc="Accessibility text for when an APN is only a default APN">
+          APN is type default.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_ATTACH_APN_ONLY" desc="Accessibility text for when an APN is only an attach APN">
+          APN is type attach.
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
           A default APN is required
@@ -4601,6 +4649,13 @@
         <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS" desc="Text presented via a tooltip so the user knows how to interact when the touch point is focused.">
           Move the blue touch point to an action. Select the associated key to customize.
         </message>
+        <!-- TODO(b/274690042): Make the strings translatable. -->
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_TITLE" desc="Button placement mode rich nudge title text." translateable="false">
+          Create control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_BODY" desc="Button placement mode rich nudge body text." translateable="false">
+          Place control on game action to play with your keyboard
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 
@@ -4629,6 +4684,12 @@
         Your administrator doesn't allow closing this app
       </message>
       <!-- End of Strings for WebAppSettings -->
+      <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_TITLE" desc="Title of the app relaunch notification.">
+          Restarting and updating <ph name="APP_NAME">$1</ph>
+      </message>
+      <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_MESSAGE" desc="Message of the app relaunch notification.">
+          Please wait while this application is being updated
+      </message>
 
     </messages>
   </release>

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/fake_tcp_connected_socket.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -33,7 +33,7 @@ void FakeTCPConnectedSocket::UpgradeToTLS(
   std::move(callback).Run(tls_upgrade_code_,
                           mojo::ScopedDataPipeConsumerHandle(),
                           mojo::ScopedDataPipeProducerHandle(),
-                          /*ssl_info=*/absl::nullopt);
+                          /*ssl_info=*/std::nullopt);
 }
 
 void FakeTCPConnectedSocket::SetSendBufferSize(

@@ -103,14 +103,14 @@ void FootprintsFetcherImpl::OnGetComplete(
 
   if (!response_body) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": No response.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   nearby::fastpair::UserReadDevicesResponse devices;
   if (!devices.ParseFromString(*response_body)) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": Failed to parse.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

@@ -22,6 +22,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace viz {
 
 struct ReturnedResource;
@@ -70,11 +74,20 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   static TransferableResource MakeSoftware(
       const SharedBitmapId& id,
+      const gpu::SyncToken& sync_token,
       const gfx::Size& size,
       SharedImageFormat format,
       ResourceSource source = ResourceSource::kUnknown);
   static TransferableResource MakeGpu(
       const gpu::Mailbox& mailbox,
+      uint32_t texture_target,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      bool is_overlay_candidate,
+      ResourceSource source = ResourceSource::kUnknown);
+  static TransferableResource MakeGpu(
+      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
       uint32_t texture_target,
       const gpu::SyncToken& sync_token,
       const gfx::Size& size,

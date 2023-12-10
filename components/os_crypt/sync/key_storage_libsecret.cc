@@ -63,8 +63,7 @@ KeyStorageLibsecret::KeyStorageLibsecret(std::string application_name)
 
 absl::optional<std::string>
 KeyStorageLibsecret::AddRandomPasswordInLibsecret() {
-  std::string password;
-  base::Base64Encode(base::RandBytesAsString(16), &password);
+  std::string password = base::Base64Encode(base::RandBytesAsVector(16));
   GError* error = nullptr;
   bool success = LibsecretLoader::secret_password_store_sync(
       &kKeystoreSchemaV2, nullptr, KeyStorageLinux::kKey, password.c_str(),

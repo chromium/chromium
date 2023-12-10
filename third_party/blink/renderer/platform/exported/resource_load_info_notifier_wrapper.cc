@@ -108,12 +108,10 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
     if (resource_load_info_->request_destination ==
         network::mojom::RequestDestination::kDocument) {
       UMA_HISTOGRAM_ENUMERATION("Net.ConnectionInfo.MainFrame",
-                                response_head->connection_info,
-                                net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS);
+                                response_head->connection_info);
     } else {
       UMA_HISTOGRAM_ENUMERATION("Net.ConnectionInfo.SubResource",
-                                response_head->connection_info,
-                                net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS);
+                                response_head->connection_info);
     }
   }
 

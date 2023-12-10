@@ -11,12 +11,10 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/process/process_handle.h"
-#include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
+#include "base/types/optional_ref.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -27,78 +25,32 @@
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/process_type.h"
 
 namespace performance_manager::metrics {
 
-namespace {
-
 using resource_attribution::PageContext;
 using resource_attribution::ResourceContext;
 
-class CPUMeasurementDelegateImpl final
-    : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
- public:
-  // Default factory function.
-  static std::unique_ptr<CPUMeasurementDelegate> Create(
-      const ProcessNode* process_node) {
-    return std::make_unique<CPUMeasurementDelegateImpl>(process_node);
-  }
-
-  explicit CPUMeasurementDelegateImpl(const ProcessNode* process_node);
-  ~CPUMeasurementDelegateImpl() final = default;
-
-  base::TimeDelta GetCumulativeCPUUsage() final;
-
- private:
-  std::unique_ptr<base::ProcessMetrics> process_metrics_;
-};
-
-CPUMeasurementDelegateImpl::CPUMeasurementDelegateImpl(
-    const ProcessNode* process_node) {
-  const base::ProcessHandle handle = process_node->GetProcess().Handle();
-#if BUILDFLAG(IS_MAC)
-  process_metrics_ = base::ProcessMetrics::CreateProcessMetrics(
-      handle, content::BrowserChildProcessHost::GetPortProvider());
-#else
-  process_metrics_ = base::ProcessMetrics::CreateProcessMetrics(handle);
-#endif
-}
-
-base::TimeDelta CPUMeasurementDelegateImpl::GetCumulativeCPUUsage() {
-#if BUILDFLAG(IS_WIN)
-  return process_metrics_->GetPreciseCumulativeCPUUsage();
-#else
-  return process_metrics_->GetCumulativeCPUUsage();
-#endif
-}
-
-}  // namespace
-
 PageTimelineCPUMonitor::PageTimelineCPUMonitor()
     : cpu_measurement_delegate_factory_(
-          base::BindRepeating(&CPUMeasurementDelegateImpl::Create)) {}
+          CPUMeasurementDelegate::GetDefaultFactory()) {}
 
 PageTimelineCPUMonitor::~PageTimelineCPUMonitor() = default;
 
 void PageTimelineCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
     Graph* graph,
-    CPUMeasurementDelegate::FactoryCallback factory) {
+    CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     CPUMeasurementDelegate::SetDelegateFactoryForTesting(  // IN_TEST
-        graph, std::move(factory));
+        graph, factory);
     return;
   }
   // Ensure that all CPU measurements use the same delegate.
   CHECK(cpu_measurement_map_.empty());
-  if (factory.is_null()) {
-    cpu_measurement_delegate_factory_ =
-        base::BindRepeating(&CPUMeasurementDelegateImpl::Create);
-  } else {
-    cpu_measurement_delegate_factory_ = std::move(factory);
-  }
+  CHECK(factory);
+  cpu_measurement_delegate_factory_ = factory;
 }
 
 void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
@@ -109,7 +61,7 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
 
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     CHECK(cached_cpu_measurements_.empty());
-    cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>(graph);
+    cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>();
     return;
   }
 
@@ -118,8 +70,7 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
   // Start monitoring CPU usage for all existing processes. Can't read their
   // CPU usage until they have a pid assigned.
   for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
-    if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER &&
-        process_node->GetProcessId() != base::kNullProcessId) {
+    if (cpu_measurement_delegate_factory_->ShouldMeasureProcess(process_node)) {
       MonitorCPUUsage(process_node);
     }
   }
@@ -207,20 +158,13 @@ void PageTimelineCPUMonitor::OnProcessLifetimeChange(
     CHECK(cpu_measurement_map_.empty());
     return;
   }
-  // Only handle process start notifications (which is when the pid is
-  // assigned), not exit notifications.
-  if (!process_node->GetProcess().IsValid()) {
-    return;
-  }
-  CHECK_NE(process_node->GetProcessId(), base::kNullProcessId);
-  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
-    return;
-  }
-  auto it = cpu_measurement_map_.find(process_node);
-  if (it == cpu_measurement_map_.end()) {
-    // Process isn't being measured yet so it must have been created while
-    // measurements were already started.
-    MonitorCPUUsage(process_node);
+  if (cpu_measurement_delegate_factory_->ShouldMeasureProcess(process_node)) {
+    auto it = cpu_measurement_map_.find(process_node);
+    if (it == cpu_measurement_map_.end()) {
+      // Process isn't being measured yet so it must have been created while
+      // measurements were already started.
+      MonitorCPUUsage(process_node);
+    }
   }
 }
 
@@ -235,10 +179,14 @@ void PageTimelineCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   // Only measure renderers.
-  CHECK_EQ(process_node->GetProcessType(), content::PROCESS_TYPE_RENDERER);
+  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
+    return;
+  }
   const auto& [it, was_inserted] = cpu_measurement_map_.emplace(
       process_node,
-      CPUMeasurement(cpu_measurement_delegate_factory_.Run(process_node)));
+      CPUMeasurement(
+          cpu_measurement_delegate_factory_->CreateDelegateForProcess(
+              process_node)));
   CHECK(was_inserted);
 }
 
@@ -257,14 +205,17 @@ void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
 
   // Swap a new measurement into `cached_cpu_measurements_`, storing the
   // previous contents in `previous_measurements`.
-  std::map<ResourceContext, resource_attribution::CPUTimeResult>
-      previous_measurements = std::exchange(cached_cpu_measurements_, results);
+  resource_attribution::QueryResultMap previous_measurements =
+      std::exchange(cached_cpu_measurements_, results);
 
   CPUUsageMap cpu_usage_map;
-  for (const auto& [context, result] : cached_cpu_measurements_) {
+  for (const auto& [context, query_result] : cached_cpu_measurements_) {
+    using CPUTimeResult = resource_attribution::CPUTimeResult;
     if (!resource_attribution::ContextIs<PageContext>(context)) {
       continue;
     }
+    const auto& result =
+        resource_attribution::AsResult<CPUTimeResult>(query_result).value();
 
     // Let time A be the last time UpdateCPUMeasurements() was called (with the
     // results saved in `previous_measurements`), or the time when
@@ -335,7 +286,9 @@ void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
     base::TimeDelta current_cpu = result.cumulative_cpu;
     const auto it = previous_measurements.find(context);
     if (it != previous_measurements.end()) {
-      current_cpu -= it->second.cumulative_cpu;
+      const auto& previous_result =
+          resource_attribution::AsResult<CPUTimeResult>(it->second).value();
+      current_cpu -= previous_result.cumulative_cpu;
     }
     CHECK(!current_cpu.is_negative());
     cpu_usage_map.emplace(context, current_cpu / measurement_interval);

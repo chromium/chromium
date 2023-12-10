@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -28,7 +29,6 @@
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -176,7 +176,7 @@ void FastPairDiscoverableScannerImpl::OnDeviceFound(
 
 void FastPairDiscoverableScannerImpl::OnModelIdRetrieved(
     const std::string& address,
-    const absl::optional<std::string>& model_id) {
+    const std::optional<std::string>& model_id) {
   auto it = model_id_parse_attempts_.find(address);
 
   // If there's no entry in the map, the device was lost while parsing.

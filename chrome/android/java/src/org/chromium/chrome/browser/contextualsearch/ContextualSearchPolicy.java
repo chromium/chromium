@@ -33,9 +33,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.url.GURL;
 
-/**
- * Handles business decision policy for the {@code ContextualSearchManager}.
- */
+/** Handles business decision policy for the {@code ContextualSearchManager}. */
 class ContextualSearchPolicy {
     private static final String TAG = "ContextualSearch";
     private static final String DOMAIN_GOOGLE = "google";
@@ -61,10 +59,9 @@ class ContextualSearchPolicy {
     private boolean mDidOverrideAllowSendingPageUrlForTesting;
     private boolean mAllowSendingPageUrlForTesting;
 
-    /**
-     * ContextualSearchPolicy constructor.
-     */
-    public ContextualSearchPolicy(ContextualSearchSelectionController selectionController,
+    /** ContextualSearchPolicy constructor. */
+    public ContextualSearchPolicy(
+            ContextualSearchSelectionController selectionController,
             ContextualSearchNetworkCommunicator networkCommunicator) {
         mPreferencesManager = ChromeSharedPreferences.getInstance();
 
@@ -180,9 +177,7 @@ class ContextualSearchPolicy {
         return false;
     }
 
-    /**
-     * Registers that a tap has taken place by incrementing tap-tracking counters.
-     */
+    /** Registers that a tap has taken place by incrementing tap-tracking counters. */
     void registerTap() {
         if (isPromoAvailable()) {
             DisableablePromoTapCounter promoTapCounter = getPromoTapCounter();
@@ -191,9 +186,7 @@ class ContextualSearchPolicy {
         }
     }
 
-    /**
-     * Updates all the counters to account for an open-action on the panel.
-     */
+    /** Updates all the counters to account for an open-action on the panel. */
     void updateCountersForOpen() {
         // Disable the "promo tap" counter, but only if we're using the Opt-out onboarding.
         // For Opt-in, we never disable the promo tap counter.
@@ -207,8 +200,7 @@ class ContextualSearchPolicy {
      *         is no existing request.
      */
     boolean shouldCreateVerbatimRequest() {
-        @SelectionType
-        int selectionType = mSelectionController.getSelectionType();
+        @SelectionType int selectionType = mSelectionController.getSelectionType();
         return (mSelectionController.getSelectedText() != null
                 && (selectionType == SelectionType.LONG_PRESS || !shouldPreviousGestureResolve()));
     }
@@ -222,9 +214,7 @@ class ContextualSearchPolicy {
         return !(VersionInfo.isStableBuild() || VersionInfo.isBetaBuild());
     }
 
-    /**
-     * Logs the current user's state, including preference, tap and open counters, etc.
-     */
+    /** Logs the current user's state, including preference, tap and open counters, etc. */
     void logCurrentState() {
         ContextualSearchUma.logPreferenceState();
         RelatedSearchesUma.logRelatedSearchesPermissionsForAllUsers(
@@ -255,7 +245,7 @@ class ContextualSearchPolicy {
 
         // Ensure that the default search provider is Google.
         if (!TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
-                        .isDefaultSearchEngineGoogle()) {
+                .isDefaultSearchEngineGoogle()) {
             return false;
         }
 
@@ -298,7 +288,8 @@ class ContextualSearchPolicy {
     boolean shouldRetryCurrentState(@InternalState int state) {
         // Make sure we don't get stuck in the IDLE state if the panel is still showing.
         // See https://crbug.com/1251774
-        return state == InternalState.IDLE && mSearchPanel != null
+        return state == InternalState.IDLE
+                && mSearchPanel != null
                 && (mSearchPanel.isShowing() || mSearchPanel.isActive());
     }
 
@@ -369,9 +360,7 @@ class ContextualSearchPolicy {
         return getPrefService().getInteger(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT);
     }
 
-    /**
-     * Sets Count of times the promo card has been shown.
-     */
+    /** Sets Count of times the promo card has been shown. */
     private static void setContextualSearchPromoCardShownCount(int count) {
         getPrefService().setInteger(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT, count);
     }
@@ -393,8 +382,10 @@ class ContextualSearchPolicy {
      */
     static void setContextualSearchState(boolean enabled) {
         @ContextualSearchPreference
-        int onState = isContextualSearchOptInEnabled() ? ContextualSearchPreference.ENABLED
-                                                       : ContextualSearchPreference.UNINITIALIZED;
+        int onState =
+                isContextualSearchOptInEnabled()
+                        ? ContextualSearchPreference.ENABLED
+                        : ContextualSearchPreference.UNINITIALIZED;
         setContextualSearchStateInternal(enabled ? onState : ContextualSearchPreference.DISABLED);
     }
 
@@ -403,8 +394,9 @@ class ContextualSearchPolicy {
      *         itself.
      */
     static boolean isContextualSearchPrefFullyOptedIn() {
-        return isContextualSearchOptInUninitialized() ? isContextualSearchEnabled()
-                                                      : isContextualSearchOptInEnabled();
+        return isContextualSearchOptInUninitialized()
+                ? isContextualSearchEnabled()
+                : isContextualSearchOptInEnabled();
     }
 
     /**
@@ -415,8 +407,10 @@ class ContextualSearchPolicy {
      */
     static void setContextualSearchFullyOptedIn(boolean enabled) {
         getPrefService().setBoolean(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED, enabled);
-        setContextualSearchStateInternal(enabled ? ContextualSearchPreference.ENABLED
-                                                 : ContextualSearchPreference.UNINITIALIZED);
+        setContextualSearchStateInternal(
+                enabled
+                        ? ContextualSearchPreference.ENABLED
+                        : ContextualSearchPreference.UNINITIALIZED);
     }
 
     /** Notifies that a promo card has been shown. */
@@ -436,12 +430,12 @@ class ContextualSearchPolicy {
                 getPrefService().clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
                 break;
             case ContextualSearchPreference.ENABLED:
-                getPrefService().setString(
-                        Pref.CONTEXTUAL_SEARCH_ENABLED, CONTEXTUAL_SEARCH_ENABLED);
+                getPrefService()
+                        .setString(Pref.CONTEXTUAL_SEARCH_ENABLED, CONTEXTUAL_SEARCH_ENABLED);
                 break;
             case ContextualSearchPreference.DISABLED:
-                getPrefService().setString(
-                        Pref.CONTEXTUAL_SEARCH_ENABLED, CONTEXTUAL_SEARCH_DISABLED);
+                getPrefService()
+                        .setString(Pref.CONTEXTUAL_SEARCH_ENABLED, CONTEXTUAL_SEARCH_DISABLED);
                 break;
             default:
                 Log.e(TAG, "Unexpected state for ContextualSearchPreference state=" + state);
@@ -548,12 +542,6 @@ class ContextualSearchPolicy {
      */
     boolean isRelatedSearchesParamEnabled(String paramName) {
         return ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(paramName);
-    }
-
-    /** @return whether we're missing the Related Searches configuration stamp. */
-    boolean isMissingRelatedSearchesConfiguration() {
-        return TextUtils.isEmpty(
-                ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp());
     }
 
     // --------------------------------------------------------------------------------------------

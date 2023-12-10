@@ -24,7 +24,6 @@ cast_source_set("service") {
     "//base",
     "//chromecast/base",
     "//chromecast/common/mojom",
-    "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/media",
     "//chromecast/media/service/mojom",
     "//media",

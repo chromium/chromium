@@ -20,6 +20,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <bit>
+
 #include "base/base_export.h"
 #include "base/base_switches.h"
 #include "base/bits.h"
@@ -450,8 +452,9 @@ bool SetNonBlocking(int fd) {
     return false;
   if (flags & O_NONBLOCK)
     return true;
-  if (HANDLE_EINTR(fcntl(fd, F_SETFL, flags | O_NONBLOCK)) == -1)
+  if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
     return false;
+  }
   return true;
 }
 
@@ -461,8 +464,23 @@ bool SetCloseOnExec(int fd) {
     return false;
   if (flags & FD_CLOEXEC)
     return true;
-  if (HANDLE_EINTR(fcntl(fd, F_SETFD, flags | FD_CLOEXEC)) == -1)
+  if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == -1) {
     return false;
+  }
+  return true;
+}
+
+bool RemoveCloseOnExec(int fd) {
+  const int flags = fcntl(fd, F_GETFD);
+  if (flags == -1) {
+    return false;
+  }
+  if ((flags & FD_CLOEXEC) == 0) {
+    return true;
+  }
+  if (fcntl(fd, F_SETFD, flags & ~FD_CLOEXEC) == -1) {
+    return false;
+  }
   return true;
 }
 
@@ -1018,7 +1036,8 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   blksize_t block_size = 512;  // Start with something safe.
   stat_wrapper_t statbuf;
   if (File::Fstat(file->GetPlatformFile(), &statbuf) == 0 &&
-      statbuf.st_blksize > 0 && base::bits::IsPowerOfTwo(statbuf.st_blksize)) {
+      statbuf.st_blksize > 0 &&
+      std::has_single_bit(base::checked_cast<uint64_t>(statbuf.st_blksize))) {
     block_size = static_cast<blksize_t>(statbuf.st_blksize);
   }
 

@@ -16,10 +16,10 @@ interface ViewHandle {
 // browser to attach a GuestView to a container frame, and notify the browser
 // of state relating to a guest's container.
 interface GuestViewHost {
-  // We have a RenderFrame with routing id of |embedder_local_frame_routing_id|.
+  // This `GuestViewHost` is associated with a `RenderFrame`/local frame.
   // We want this local frame to be replaced with a remote frame that points
   // to a GuestView. This message will attach the local frame to the guest.
-  // The GuestView is identified by its ID: |guest_instance_id|.
+  // The GuestView is identified by its ID: `guest_instance_id`.
   AttachToEmbedderFrame(
       int32 element_instance_id,
       int32 guest_instance_id,

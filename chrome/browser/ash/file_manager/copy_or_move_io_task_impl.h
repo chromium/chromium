@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -102,6 +102,9 @@ class CopyOrMoveIOTaskImpl {
       const storage::FileSystemURL& destination_url);
 
  protected:
+  // A helper for `GetHookDelegate`.
+  bool ShouldSkipEncryptedFiles();
+
   // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
   // operation.
   virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
@@ -169,6 +172,8 @@ class CopyOrMoveIOTaskImpl {
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
 
+  void OnEncryptedFileSkipped(size_t idx, storage::FileSystemURL url);
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
@@ -209,7 +214,7 @@ class CopyOrMoveIOTaskImpl {
 
   // Stores the id of the copy or move operation if one is in progress. Used so
   // the transfer can be cancelled.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.

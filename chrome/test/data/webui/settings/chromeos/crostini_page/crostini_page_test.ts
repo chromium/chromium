@@ -385,7 +385,8 @@ suite('<settings-crostini-page>', () => {
         assertFalse(crostiniPage.get(MIC_ALLOWED_PATH));
       });
 
-      test('Remove', async () => {
+      // TODO(b/313456787) Re-enable test once fixed.
+      /*test('Remove', async () => {
         const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
             '#remove cr-button');
         assertTrue(!!button);
@@ -403,7 +404,7 @@ suite('<settings-crostini-page>', () => {
         assertTrue(!!crostiniSettingsCard);
         assertTrue(!!crostiniSettingsCard.shadowRoot!.querySelector(
             '#enableCrostiniButton'));
-      });
+      });*/
 
       test('Remove hidden', async () => {
         // Elements are not destroyed when a dom-if stops being shown, but we

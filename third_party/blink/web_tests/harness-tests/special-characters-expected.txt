@@ -1,207 +1,139 @@
 This is a testharness.js-based test.
-[PASS] Unescaped \ in test name.
-[PASS] Escaped "\\" in test name.
-[FAIL] Unescaped "\\" in test message.
-  Expected Error: \ character.
-[FAIL] Escaped "\\" in test message.
-  Expected Error: "\\" character.
-[PASS] Unescaped \r\n in test name.
-[PASS] Escaped "\r\n" in test name.
-[FAIL] Unescaped "\r\n" in test message.
+[FAIL] Unescaped "\\\\" in test message.
+  Expected Error: \\ character.
+[FAIL] Escaped "\\\\" in test message.
+  Expected Error: "\\\\" character.
+[FAIL] Unescaped "\\r\\n" in test message.
   Expected Error: \r\n character.
-[FAIL] Escaped "\r\n" in test message.
-  Expected Error: "\r\n" character.
-[PASS] Unescaped \0 in test name.
-[PASS] Escaped "\0" in test name.
-[FAIL] Unescaped "\0" in test message.
+[FAIL] Escaped "\\r\\n" in test message.
+  Expected Error: "\\r\\n" character.
+[FAIL] Unescaped "\\0" in test message.
   Expected Error: \0 character.
-[FAIL] Escaped "\0" in test message.
-  Expected Error: "\0" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x01" in test name.
-[FAIL] Unescaped "\x01" in test message.
+[FAIL] Escaped "\\0" in test message.
+  Expected Error: "\\0" character.
+[FAIL] Unescaped "\\x01" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x01" in test message.
-  Expected Error: "\x01" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x02" in test name.
-[FAIL] Unescaped "\x02" in test message.
+[FAIL] Escaped "\\x01" in test message.
+  Expected Error: "\\x01" character.
+[FAIL] Unescaped "\\x02" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x02" in test message.
-  Expected Error: "\x02" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x03" in test name.
-[FAIL] Unescaped "\x03" in test message.
+[FAIL] Escaped "\\x02" in test message.
+  Expected Error: "\\x02" character.
+[FAIL] Unescaped "\\x03" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x03" in test message.
-  Expected Error: "\x03" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x04" in test name.
-[FAIL] Unescaped "\x04" in test message.
+[FAIL] Escaped "\\x03" in test message.
+  Expected Error: "\\x03" character.
+[FAIL] Unescaped "\\x04" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x04" in test message.
-  Expected Error: "\x04" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x05" in test name.
-[FAIL] Unescaped "\x05" in test message.
+[FAIL] Escaped "\\x04" in test message.
+  Expected Error: "\\x04" character.
+[FAIL] Unescaped "\\x05" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x05" in test message.
-  Expected Error: "\x05" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x06" in test name.
-[FAIL] Unescaped "\x06" in test message.
+[FAIL] Escaped "\\x05" in test message.
+  Expected Error: "\\x05" character.
+[FAIL] Unescaped "\\x06" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x06" in test message.
-  Expected Error: "\x06" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x07" in test name.
-[FAIL] Unescaped "\x07" in test message.
+[FAIL] Escaped "\\x06" in test message.
+  Expected Error: "\\x06" character.
+[FAIL] Unescaped "\\x07" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x07" in test message.
-  Expected Error: "\x07" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\b" in test name.
-[FAIL] Unescaped "\b" in test message.
+[FAIL] Escaped "\\x07" in test message.
+  Expected Error: "\\x07" character.
+[FAIL] Unescaped "\\b" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\b" in test message.
-  Expected Error: "\b" character.
-[PASS] Unescaped 	 in test name.
-[PASS] Escaped "\t" in test name.
-[FAIL] Unescaped "\t" in test message.
+[FAIL] Escaped "\\b" in test message.
+  Expected Error: "\\b" character.
+[FAIL] Unescaped "\\t" in test message.
   Expected Error: 	 character.
-[FAIL] Escaped "\t" in test message.
-  Expected Error: "\t" character.
-[PASS] Unescaped \n in test name.
-[PASS] Escaped "\n" in test name.
-[FAIL] Unescaped "\n" in test message.
+[FAIL] Escaped "\\t" in test message.
+  Expected Error: "\\t" character.
+[FAIL] Unescaped "\\n" in test message.
   Expected Error: \n character.
-[FAIL] Escaped "\n" in test message.
-  Expected Error: "\n" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\v" in test name.
-[FAIL] Unescaped "\v" in test message.
+[FAIL] Escaped "\\n" in test message.
+  Expected Error: "\\n" character.
+[FAIL] Unescaped "\\v" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\v" in test message.
-  Expected Error: "\v" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\f" in test name.
-[FAIL] Unescaped "\f" in test message.
+[FAIL] Escaped "\\v" in test message.
+  Expected Error: "\\v" character.
+[FAIL] Unescaped "\\f" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\f" in test message.
-  Expected Error: "\f" character.
-[PASS] Unescaped \r in test name.
-[PASS] Escaped "\r" in test name.
-[FAIL] Unescaped "\r" in test message.
+[FAIL] Escaped "\\f" in test message.
+  Expected Error: "\\f" character.
+[FAIL] Unescaped "\\r" in test message.
   Expected Error: \r character.
-[FAIL] Escaped "\r" in test message.
-  Expected Error: "\r" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x0e" in test name.
-[FAIL] Unescaped "\x0e" in test message.
+[FAIL] Escaped "\\r" in test message.
+  Expected Error: "\\r" character.
+[FAIL] Unescaped "\\x0e" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x0e" in test message.
-  Expected Error: "\x0e" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x0f" in test name.
-[FAIL] Unescaped "\x0f" in test message.
+[FAIL] Escaped "\\x0e" in test message.
+  Expected Error: "\\x0e" character.
+[FAIL] Unescaped "\\x0f" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x0f" in test message.
-  Expected Error: "\x0f" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x10" in test name.
-[FAIL] Unescaped "\x10" in test message.
+[FAIL] Escaped "\\x0f" in test message.
+  Expected Error: "\\x0f" character.
+[FAIL] Unescaped "\\x10" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x10" in test message.
-  Expected Error: "\x10" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x11" in test name.
-[FAIL] Unescaped "\x11" in test message.
+[FAIL] Escaped "\\x10" in test message.
+  Expected Error: "\\x10" character.
+[FAIL] Unescaped "\\x11" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x11" in test message.
-  Expected Error: "\x11" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x12" in test name.
-[FAIL] Unescaped "\x12" in test message.
+[FAIL] Escaped "\\x11" in test message.
+  Expected Error: "\\x11" character.
+[FAIL] Unescaped "\\x12" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x12" in test message.
-  Expected Error: "\x12" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x13" in test name.
-[FAIL] Unescaped "\x13" in test message.
+[FAIL] Escaped "\\x12" in test message.
+  Expected Error: "\\x12" character.
+[FAIL] Unescaped "\\x13" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x13" in test message.
-  Expected Error: "\x13" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x14" in test name.
-[FAIL] Unescaped "\x14" in test message.
+[FAIL] Escaped "\\x13" in test message.
+  Expected Error: "\\x13" character.
+[FAIL] Unescaped "\\x14" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x14" in test message.
-  Expected Error: "\x14" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x15" in test name.
-[FAIL] Unescaped "\x15" in test message.
+[FAIL] Escaped "\\x14" in test message.
+  Expected Error: "\\x14" character.
+[FAIL] Unescaped "\\x15" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x15" in test message.
-  Expected Error: "\x15" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x16" in test name.
-[FAIL] Unescaped "\x16" in test message.
+[FAIL] Escaped "\\x15" in test message.
+  Expected Error: "\\x15" character.
+[FAIL] Unescaped "\\x16" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x16" in test message.
-  Expected Error: "\x16" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x17" in test name.
-[FAIL] Unescaped "\x17" in test message.
+[FAIL] Escaped "\\x16" in test message.
+  Expected Error: "\\x16" character.
+[FAIL] Unescaped "\\x17" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x17" in test message.
-  Expected Error: "\x17" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x18" in test name.
-[FAIL] Unescaped "\x18" in test message.
+[FAIL] Escaped "\\x17" in test message.
+  Expected Error: "\\x17" character.
+[FAIL] Unescaped "\\x18" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x18" in test message.
-  Expected Error: "\x18" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x19" in test name.
-[FAIL] Unescaped "\x19" in test message.
+[FAIL] Escaped "\\x18" in test message.
+  Expected Error: "\\x18" character.
+[FAIL] Unescaped "\\x19" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x19" in test message.
-  Expected Error: "\x19" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x1a" in test name.
-[FAIL] Unescaped "\x1a" in test message.
+[FAIL] Escaped "\\x19" in test message.
+  Expected Error: "\\x19" character.
+[FAIL] Unescaped "\\x1a" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x1a" in test message.
-  Expected Error: "\x1a" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x1b" in test name.
-[FAIL] Unescaped "\x1b" in test message.
+[FAIL] Escaped "\\x1a" in test message.
+  Expected Error: "\\x1a" character.
+[FAIL] Unescaped "\\x1b" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x1b" in test message.
-  Expected Error: "\x1b" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x1c" in test name.
-[FAIL] Unescaped "\x1c" in test message.
+[FAIL] Escaped "\\x1b" in test message.
+  Expected Error: "\\x1b" character.
+[FAIL] Unescaped "\\x1c" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x1c" in test message.
-  Expected Error: "\x1c" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x1d" in test name.
-[FAIL] Unescaped "\x1d" in test message.
+[FAIL] Escaped "\\x1c" in test message.
+  Expected Error: "\\x1c" character.
+[FAIL] Unescaped "\\x1d" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x1d" in test message.
-  Expected Error: "\x1d" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x1e" in test name.
-[FAIL] Unescaped "\x1e" in test message.
+[FAIL] Escaped "\\x1d" in test message.
+  Expected Error: "\\x1d" character.
+[FAIL] Unescaped "\\x1e" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x1e" in test message.
-  Expected Error: "\x1e" character.
-[PASS] Unescaped  in test name.
-[PASS] Escaped "\x1f" in test name.
-[FAIL] Unescaped "\x1f" in test message.
+[FAIL] Escaped "\\x1e" in test message.
+  Expected Error: "\\x1e" character.
+[FAIL] Unescaped "\\x1f" in test message.
   Expected Error:  character.
-[FAIL] Escaped "\x1f" in test message.
-  Expected Error: "\x1f" character.
+[FAIL] Escaped "\\x1f" in test message.
+  Expected Error: "\\x1f" character.
 Harness: the test ran to completion.
 

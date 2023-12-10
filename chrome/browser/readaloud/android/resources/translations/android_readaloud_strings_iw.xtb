@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1178581264944972037">השהיה</translation>
-<translation id="2558806128245168542">ניווט חזרה</translation>
-<translation id="3523426587027570423">ניתן להקיש כדי לסגור את הנגן 'האזנה לדף הזה'.</translation>
+<translation id="1921351128855867012">הרצה <ph name="NUMBER_OF_SECONDS" /> שניות קדימה</translation>
+<translation id="1984328900355667246">ההקראה לא זמינה</translation>
+<translation id="3023502830214299618">לצערנו, ההקראה לא זמינה בדף הזה כרגע. אפשר לנסות שוב מאוחר יותר.</translation>
+<translation id="3807208219231826020">בחירת מיקום בהפעלה</translation>
+<translation id="385051799172605136">חזרה</translation>
 <translation id="4431240646217225907">הדגשת טקסט וגלילה אוטומטית</translation>
 <translation id="4654641641922242357">הנגן 'האזנה לדף הזה'.</translation>
-<translation id="4731877163452936634">מהירות ההפעלה: <ph name="PLAYBACK_SPEED" />. אפשר ללחוץ כדי לשנות.</translation>
+<translation id="4872475766448853257">הרצה של <ph name="NUMBER_OF_SECONDS" /> שניות אחורה</translation>
 <translation id="5234971936051226002">הנגן 'האזנה לדף הזה' ממוזער.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="6315170314923504164">קול</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6846298663435243399">הטעינה מתבצעת...</translation>
 <translation id="7587250070160020374">‏בהאזנה לדף ב-Chrome</translation>
-<translation id="7945822420239537236">הרצה של <ph name="NUMBER_OF_SECONDS" /> שניות קדימה</translation>
-<translation id="7972866381678406344">הרצה של <ph name="NUMBER_OF_SECONDS" /> שניות אחורה</translation>
 <translation id="8136852699834914183">ההפעלה לא זמינה בדף הזה.</translation>
+<translation id="8264989794233974275">הגברה או הפחתה של המהירות פי <ph name="PLAYBACK_SPEED" />.</translation>
+<translation id="8407011429883244666">סגירת הנגן.</translation>
 <translation id="8953618380150219653">הנגן 'האזנה לדף הזה' נפתח בגובה מלא.</translation>
 </translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1000498691615767391">ખોલવા માટે એક ફોલ્ડર પસંદ કરો</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> કૉપિ કરી શકાયું નથી કારણ કે તે એન્ક્રિપ્ટેડ છે.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> આઇટમ્સ કાઢી નાખી રહ્યું છે...</translation>
 <translation id="1049926623896334335">Word દસ્તાવેજ</translation>
 <translation id="1056775291175587022">કોઈ નેટવર્ક નથી</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="1439919885608649279">ફૂલો લઈને ઉભેલી વ્યક્તિ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />ને બહાર કાઢો</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ફાઇલને કૉપિ કરી શકાઈ નથી કારણ કે તે એન્ક્રિપ્ટેડ છે.</translation>
 <translation id="1471718551822868769">સ્લોવાક</translation>
 <translation id="1482884275703521657">ફિનિશ</translation>
 <translation id="148466539719134488">સ્વીસ</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ઉપલબ્ધ નથી</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ફાઇલો માટે ડિફૉલ્ટ ઍપ પસંદ કરો:</translation>
 <translation id="3255159654094949700">અરબી</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખસેડી શકાઈ નથી કારણ કે તે એનક્રિપ્ટેડ છે.</translation>
 <translation id="3264582393905923483">સંદર્ભ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ખોલી શક્યા નથી</translation>
 <translation id="3280431534455935878">તૈયારી કરી રહ્યાં છીએ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> સાથે 1 ફોલ્ડર શેર કરવામાં આવ્યું</translation>
 <translation id="3524311639100184459">ચેતવણી: આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક પર સ્પેસ ખાલી કરવા માટે તેમને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
+<translation id="3529424493985988200">વિગતો માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="3548125359243647069">ઘણી બધી વખત કોઈ ખોટો પિન દાખલ કરવામાં આવ્યો છે.</translation>
 <translation id="3549797760399244642">drive.google.com પર જાઓ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">આ ફાઇલને બીજા ડેસ્કટૉપ પર ખોલેલી. તેને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="6394388407447716302">ફક્ત વાંચવા માટે</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> ખસેડી શકાયું નથી કારણ કે તે એન્ક્રિપ્ટેડ છે.</translation>
 <translation id="642282551015776456">આ નામનો ઉપયોગ ફોલ્ડર નામની કોઈ ફાઇલ તરીકે થઈ શકશે નહીં</translation>
 <translation id="6423031066725912715">વિયેતનામીઝ, TCVN કીબોર્ડ સાથે</translation>
 <translation id="6430271654280079150">તમારો 1 પ્રયાસ બાકી છે.</translation>

@@ -9,6 +9,7 @@
 
 #include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/raw_ref.h"
+#include "base/timer/timer.h"
 
 namespace ash {
 class Shell;
@@ -43,6 +44,7 @@ class Session {
   void CurtainOffRootWindow(aura::Window* root_window);
   void RemoveCurtainOfAllRootWindows();
   void RemoveCurtainOfRootWindow(const aura::Window* root_window);
+  void MuteAudioOutput();
 
   // Helper class observing all root windows being added/removed.
   class RootWindowsObserver;
@@ -59,6 +61,7 @@ class Session {
   std::unique_ptr<ScopedAudioOutputMuter> scoped_audio_output_muter_;
   std::unique_ptr<ScopedAudioInputMuter> scoped_audio_input_muter_;
   std::unique_ptr<ScopedCameraDisabler> scoped_camera_disabler_;
+  base::OneShotTimer audio_output_mute_timer_;
 };
 
 }  // namespace ash::curtain

@@ -39,6 +39,7 @@ gnome-keyring \
 gobject-introspection \
 graphite2 \
 gtk+3.0 \
+gyp \
 ido \
 jasper-initramfs \
 libappindicator3-1 \

@@ -4,6 +4,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_ENGINES_CRYPTOHOME_PASSWORD_ENGINE_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_ENGINES_CRYPTOHOME_PASSWORD_ENGINE_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -12,7 +14,6 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/cryptohome_core.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -31,12 +32,12 @@ class CryptohomePasswordEngine : public CryptohomeBasedEngine {
   // CryptohomeCore::Client
   void OnAuthFactorUpdate(cryptohome::AuthFactorRef factor) override;
   // CryptohomeBasedEngine:
-  absl::optional<cryptohome::AuthFactorRef> LookUpFactor(
+  std::optional<cryptohome::AuthFactorRef> LookUpFactor(
       UserContext& context) override;
 
  private:
   void OnAuthAttempt(std::unique_ptr<UserContext>,
-                     absl::optional<AuthenticationError>);
+                     std::optional<AuthenticationError>);
 
   base::WeakPtrFactory<CryptohomePasswordEngine> weak_factory_{this};
 };

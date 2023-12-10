@@ -73,7 +73,7 @@ public class StatusIndicatorTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        TabbedRootUiCoordinator.setDisableStatusIndicatorAnimationsForTesting(true);
+        TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mStatusIndicatorCoordinator =
                 ((TabbedRootUiCoordinator)
@@ -244,7 +244,10 @@ public class StatusIndicatorTest {
     // TODO(https://crbug.com/1315676): Remove this test once the Start surface refactor is done.
     // This is because the "secondary_tasks_surface_view" will go away, and testShowAfterHide() will
     // cover the testing of grid tab switcher directly.
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
+    @DisableFeatures({
+        ChromeFeatureList.START_SURFACE_REFACTOR,
+        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
+    })
     public void testShowAndHideOnStartSurface() {
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
@@ -330,7 +333,7 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    public void testShowAndHideOnNTP() {
+    public void testShowAndHideOnNtp() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);

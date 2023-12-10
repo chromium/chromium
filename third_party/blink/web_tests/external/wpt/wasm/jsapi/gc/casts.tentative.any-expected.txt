@@ -1,15 +1,5 @@
 This is a testharness.js-based test.
-[PASS] anyref casts
-[PASS] eqref casts
-[PASS] structref casts
-[PASS] arrayref casts
-[PASS] i31ref casts
-[PASS] funcref casts
-[PASS] externref casts
 [FAIL] null casts
   assert_throws_js: function "() => nullfunc(exports.makeStruct())" did not throw
-[PASS] concrete struct casts
-[PASS] concrete array casts
-[PASS] concrete func casts
 Harness: the test ran to completion.
 

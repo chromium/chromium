@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_infobar_delegate.cc",
+    "fake_infobar_delegate.h",
+    "fake_infobar_ios.h",
+    "fake_infobar_ios.mm",
+    "mock_infobar_delegate.cc",
+    "mock_infobar_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//testing/gmock",
+  ]
+}

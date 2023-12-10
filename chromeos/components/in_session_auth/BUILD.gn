@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("in_session_auth") {
+  sources = [
+    "in_process_instances.cc",
+    "in_process_instances.h",
+    "in_session_auth.cc",
+    "in_session_auth.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chromeos/ash/components/osauth/public",
+  ]
+
+  public_deps = [
+    "//chromeos/components/in_session_auth/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}

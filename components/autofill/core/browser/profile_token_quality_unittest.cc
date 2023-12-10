@@ -83,29 +83,8 @@ class ProfileTokenQualityTest : public testing::Test {
   TestPersonalDataManager pdm_;
 };
 
-// Ensures that `ProfileTokenQualityTest` supports all supported types of
-// `AutofillProfile`. In particular, this test ensures that whenever a new
-// non-stored type is added, the map in `GetStoredTypeOf()` is updated
-// accordingly. If the type is supposed to be stored, it should be added to
-// `AutofillTable::GetStoredTypesForAutofillProfile()`.
-TEST_F(ProfileTokenQualityTest, AllSupportedTypesHandled) {
-  ServerFieldTypeSet supported_types;
-  AutofillProfile profile;
-  profile.GetSupportedTypes(&supported_types);
-  ProfileTokenQuality quality(&profile);
-  for (ServerFieldType type : supported_types) {
-    // See comment above `GetStoredTypeOf()` why this type is special.
-    if (type == ADDRESS_HOME_ADDRESS) {
-      continue;
-    }
-    // `GetObservationTypesForFieldType()` will internally call
-    // `GetStoredTypeOf()`. A `CHECK()` will fail if the mapping is incomplete.
-    EXPECT_TRUE(quality.GetObservationTypesForFieldType(type).empty());
-  }
-}
-
 TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   ProfileTokenQuality quality(&profile);
 
   EXPECT_TRUE(quality.GetObservationTypesForFieldType(NAME_FIRST).empty());

@@ -128,9 +128,7 @@ class FirstRunAppRestrictionInfo {
         }
     }
 
-    /**
-     * Start fetching app restriction on an async thread.
-     */
+    /** Start fetching app restriction on an async thread. */
     private void initialize() {
         ThreadUtils.assertOnUiThread();
         long startTime = SystemClock.elapsedRealtime();
@@ -150,22 +148,24 @@ class FirstRunAppRestrictionInfo {
 
         Context appContext = ContextUtils.getApplicationContext();
         try {
-            mFetchAppRestrictionAsyncTask = new AsyncTask<Boolean>() {
-                @Override
-                protected Boolean doInBackground() {
-                    UserManager userManager =
-                            (UserManager) appContext.getSystemService(Context.USER_SERVICE);
-                    Bundle bundle =
-                            AppRestrictionsProvider.getApplicationRestrictionsFromUserManager(
-                                    userManager, appContext.getPackageName());
-                    return bundle != null && !bundle.isEmpty();
-                }
+            mFetchAppRestrictionAsyncTask =
+                    new AsyncTask<Boolean>() {
+                        @Override
+                        protected Boolean doInBackground() {
+                            UserManager userManager =
+                                    (UserManager) appContext.getSystemService(Context.USER_SERVICE);
+                            Bundle bundle =
+                                    AppRestrictionsProvider
+                                            .getApplicationRestrictionsFromUserManager(
+                                                    userManager, appContext.getPackageName());
+                            return bundle != null && !bundle.isEmpty();
+                        }
 
-                @Override
-                protected void onPostExecute(Boolean isAppRestricted) {
-                    onRestrictionDetected(isAppRestricted, startTime);
-                }
-            };
+                        @Override
+                        protected void onPostExecute(Boolean isAppRestricted) {
+                            onRestrictionDetected(isAppRestricted, startTime);
+                        }
+                    };
             mFetchAppRestrictionAsyncTask.executeWithTaskTraits(TaskTraits.USER_BLOCKING_MAY_BLOCK);
         } catch (RejectedExecutionException e) {
             // Though unlikely, if the task is rejected, we assume no restriction exists.
@@ -181,9 +181,13 @@ class FirstRunAppRestrictionInfo {
         if (startTime > 0) {
             mCompletionElapsedRealtimeMs = SystemClock.elapsedRealtime();
             long runTime = mCompletionElapsedRealtimeMs - startTime;
-            Log.i(TAG,
-                    String.format(Locale.US, "Policy received. Runtime: [%d], result: [%s]",
-                            runTime, isAppRestricted));
+            Log.i(
+                    TAG,
+                    String.format(
+                            Locale.US,
+                            "Policy received. Runtime: [%d], result: [%s]",
+                            runTime,
+                            isAppRestricted));
         }
 
         while (!mCallbacks.isEmpty()) {

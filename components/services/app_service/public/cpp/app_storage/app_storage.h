@@ -32,10 +32,10 @@ using AppInfo = AppStorageFileHandler::AppInfo;
 // AppStorage is responsible for reading and writing the app information on
 // disk.
 class COMPONENT_EXPORT(APP_UPDATE) AppStorage
-    : public apps::AppRegistryCache::Observer {
+    : public AppRegistryCache::Observer {
  public:
   explicit AppStorage(const base::FilePath& base_path,
-                      apps::AppRegistryCache& app_registry_cache,
+                      AppRegistryCache& app_registry_cache,
                       base::OnceCallback<void()> on_get_app_info_callback);
 
   AppStorage(const AppStorage&) = delete;
@@ -46,10 +46,11 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
  private:
   friend class FakeAppStorage;
 
-  // apps::AppRegistryCache::Observer overrides:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
+  // AppRegistryCache::Observer overrides:
+  void OnAppUpdate(const AppUpdate& update) override;
+  void OnAppsInitialized(const std::vector<AppPtr>& deltas,
+                         apps::AppType app_type) override;
+  void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
   // Invoked when reading the app info data from the AppStorage file is
   // finished.
@@ -58,7 +59,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
 
   // Returns true if the app info is changed compared with the app info saved in
   // the AppStorage file.
-  bool IsAppChanged(const apps::AppUpdate& update);
+  bool IsAppChanged(const AppUpdate& update);
 
   // Writes the app info to the AppStorage file if there is no reading or
   // writing in progress, and there are some app info changes.
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
   // Invoked when writing to the file operation is finished.
   virtual void OnSaveFinished();
 
-  raw_ref<apps::AppRegistryCache> app_registry_cache_;
+  raw_ref<AppRegistryCache> app_registry_cache_;
 
   scoped_refptr<AppStorageFileHandler> file_handler_;
 
@@ -85,8 +86,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
   // true, as those updates have been written in the AppStorage file.
   bool onapps_in_progress_ = false;
 
-  base::ScopedObservation<apps::AppRegistryCache,
-                          apps::AppRegistryCache::Observer>
+  base::ScopedObservation<AppRegistryCache, AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
   base::WeakPtrFactory<AppStorage> weak_factory_{this};

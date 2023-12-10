@@ -45,14 +45,12 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOG
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
@@ -99,7 +97,6 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -143,6 +140,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Tests for {@link StartSurfaceMediator}. */
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class StartSurfaceMediatorUnitTest {
@@ -152,7 +150,7 @@ public class StartSurfaceMediatorUnitTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-    @Mock private TabSwitcher.Controller mCarouselOrSingleTabSwitcherModuleController;
+    @Mock private TabSwitcher.Controller mSingleTabSwitcherModuleController;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
     @Mock private TabModel mNormalTabModel;
@@ -163,7 +161,6 @@ public class StartSurfaceMediatorUnitTest {
     @Mock private OmniboxStub mOmniboxStub;
     @Mock private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
     @Mock private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
-    @Mock private NightModeStateProvider mNightModeStateProvider;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private StartSurfaceMediator.ActivityStateChecker mActivityStateChecker;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
@@ -177,20 +174,18 @@ public class StartSurfaceMediatorUnitTest {
     @Mock private Supplier<Tab> mParentTabSupplier;
     @Mock private View mLogoContainerView;
     @Mock private LogoView mLogoView;
-    @Mock LogoBridge.Natives mLogoBridge;
+    @Mock private LogoBridge.Natives mLogoBridge;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private OnClickListener mTabSwitcherClickHandler;
     @Mock private TabSwitcher mTabSwitcherModule;
     @Mock private TabListDelegate mTabListDelegate;
-    @Mock private TabSwitcher.Controller mSingleTabSwitcherModuleController;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
-    private ArgumentCaptor<TabSwitcherViewObserver>
-            mCarouselTabSwitcherModuleVisibilityObserverCaptor;
+    private ArgumentCaptor<TabSwitcherViewObserver> mCardTabSwitcherModuleVisibilityObserverCaptor;
 
     @Captor private ArgumentCaptor<UrlFocusChangeListener> mUrlFocusChangeListenerCaptor;
 
@@ -204,15 +199,13 @@ public class StartSurfaceMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
-    private ObservableSupplierImpl<Boolean>
-            mCarouselTabSwitcherModuleControllerBackPressStateSupplier =
-                    new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean>
-            mCarouselTabSwitcherModuleControllerDialogVisibleSupplier =
-                    new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mSecondaryControllerBackPressStateSupplier =
+    private final ObservableSupplierImpl<Boolean>
+            mCardTabSwitcherModuleControllerBackPressStateSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean>
+            mCardTabSwitcherModuleControllerDialogVisibleSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mSecondaryControllerBackPressStateSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mSecondaryControllerDialogVisibleSupplier =
+    private final ObservableSupplierImpl<Boolean> mSecondaryControllerDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
@@ -251,14 +244,14 @@ public class StartSurfaceMediatorUnitTest {
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mNormalTabModelFilter);
         when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mNormalTabModelFilter);
 
-        doReturn(TabSwitcherType.CAROUSEL)
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+        doReturn(TabSwitcherType.SINGLE)
+                .when(mSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
-        doReturn(mCarouselTabSwitcherModuleControllerBackPressStateSupplier)
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+        doReturn(mCardTabSwitcherModuleControllerBackPressStateSupplier)
+                .when(mSingleTabSwitcherModuleController)
                 .getHandleBackPressChangedSupplier();
-        doReturn(mCarouselTabSwitcherModuleControllerDialogVisibleSupplier)
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+        doReturn(mCardTabSwitcherModuleControllerDialogVisibleSupplier)
+                .when(mSingleTabSwitcherModuleController)
                 .isDialogVisibleSupplier();
         doReturn(mSecondaryTasksSurfaceController)
                 .when(mSecondaryTasksSurfaceInitializer)
@@ -293,21 +286,21 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ false);
         verify(mTabModelSelector, never()).addObserver(mTabModelSelectorObserverCaptor.capture());
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         mediator.showOverview(false);
-        verify(mCarouselOrSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
+        verify(mSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
 
         mediator.hideTabSwitcherView(true);
-        verify(mCarouselOrSingleTabSwitcherModuleController).hideTabSwitcherView(eq(true));
+        verify(mSingleTabSwitcherModuleController).hideTabSwitcherView(eq(true));
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
         // TODO(crbug.com/1020223): Test the other SurfaceMode.NO_START_SURFACE operations.
     }
@@ -320,9 +313,9 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
         // Sets the current StartSurfaceState to SHOWING_START before calling the
@@ -331,7 +324,7 @@ public class StartSurfaceMediatorUnitTest {
         // {@link StartSurfaceMediator#showOverview()}.
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_START);
 
-        verify(mCarouselOrSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
+        verify(mSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
         verify(mOmniboxStub, times(2))
                 .addUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
@@ -340,8 +333,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
 
         UrlFocusChangeListener urlFocusChangeListener =
                 mUrlFocusChangeListenerCaptor.getAllValues().get(1);
@@ -353,20 +346,20 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE), equalTo(true));
 
         mediator.hideTabSwitcherView(true);
-        verify(mCarouselOrSingleTabSwitcherModuleController).hideTabSwitcherView(eq(true));
+        verify(mSingleTabSwitcherModuleController).hideTabSwitcherView(eq(true));
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(false));
         verify(mOmniboxStub).removeUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.getValue());
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
         // TODO(crbug.com/1020223): Test the other SurfaceMode.SINGLE_PANE operations.
     }
 
     // TODO(crbug.com/1020223): Test SurfaceMode.SINGLE_PANE and SurfaceMode.TWO_PANES modes.
     @Test
-    public void hideTabCarouselWithNoTabs() {
+    public void hideTabCardWithNoTabs() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -378,12 +371,11 @@ public class StartSurfaceMediatorUnitTest {
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
     }
 
     @Test
-    public void hideTabCarouselWhenClosingLastTab() {
+    public void hideTabCardWhenClosingLastTab() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -396,23 +388,20 @@ public class StartSurfaceMediatorUnitTest {
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false, true);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
         doReturn(1).when(mNormalTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false, true);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
     }
 
     @Test
-    public void hideTabCarouselWhenClosingAndSelectingNTPTab() {
+    public void hideTabCardWhenClosingAndSelectingNtpTab() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -425,26 +414,23 @@ public class StartSurfaceMediatorUnitTest {
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
         Tab tab1 = mock(Tab.class);
         doReturn(JUnitTestGURLs.URL_1).when(tab1).getUrl();
         mTabModelObserverCaptor.getValue().didSelectTab(tab1, TabSelectionType.FROM_CLOSE, 1);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
-        Tab NTPTab = mock(Tab.class);
-        doReturn(JUnitTestGURLs.NTP_URL).when(NTPTab).getUrl();
-        mTabModelObserverCaptor.getValue().didSelectTab(NTPTab, TabSelectionType.FROM_CLOSE, 2);
+        Tab ntpTab = mock(Tab.class);
+        doReturn(JUnitTestGURLs.NTP_URL).when(ntpTab).getUrl();
+        mTabModelObserverCaptor.getValue().didSelectTab(ntpTab, TabSelectionType.FROM_CLOSE, 2);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
     }
 
     @Test
-    public void reshowTabCarouselWhenTabClosureUndone() {
+    public void reshowTabCardWhenTabClosureUndone() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -461,13 +447,11 @@ public class StartSurfaceMediatorUnitTest {
 
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false, true);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
 
         mTabModelObserverCaptor.getValue().tabClosureUndone(mock(Tab.class));
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
         doReturn(2).when(mNormalTabModel).getCount();
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
@@ -475,8 +459,7 @@ public class StartSurfaceMediatorUnitTest {
         mTabModelObserverCaptor.getValue().tabClosureUndone(mock(Tab.class));
         doReturn(0).when(mNormalTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false, true);
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
     }
 
@@ -602,19 +585,17 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
-        mediator.onClick(mock(View.class));
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(
                 mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
@@ -627,8 +608,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
 
         mediator.startedHiding();
@@ -656,8 +636,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(true));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(
                 mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
@@ -689,8 +668,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
@@ -709,8 +687,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
     }
 
@@ -736,20 +713,18 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
-        mediator.onClick(mock(View.class));
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(
                 mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
@@ -763,8 +738,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
@@ -792,8 +766,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
@@ -846,9 +819,9 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
@@ -860,8 +833,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(BOTTOM_BAR_HEIGHT), equalTo(30));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(BOTTOM_BAR_HEIGHT), equalTo(0));
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
 
         mBrowserControlsStateProviderCaptor.getValue().onBottomControlsHeightChanged(0, 0);
         assertThat(mPropertyModel.get(BOTTOM_BAR_HEIGHT), equalTo(0));
@@ -872,7 +845,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mSecondaryTasksSurfacePropertyModel.get(BOTTOM_BAR_HEIGHT), equalTo(0));
 
         mediator.hideTabSwitcherView(false);
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
         verify(mBrowserControlsStateProvider)
                 .removeObserver(mBrowserControlsStateProviderCaptor.getValue());
     }
@@ -981,9 +954,9 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         if (!ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
             assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
@@ -991,7 +964,7 @@ public class StartSurfaceMediatorUnitTest {
         }
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        verify(mCarouselOrSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
+        verify(mSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
         verify(mOmniboxStub, times(2))
                 .addUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
         assertThat(mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
@@ -1073,9 +1046,9 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
         mediator.showOverview(false);
@@ -1090,15 +1063,15 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
-        verify(mCarouselOrSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
+        verify(mSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
         verify(mOmniboxStub, times(2))
                 .addUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
         assertThat(mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
@@ -1135,19 +1108,18 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        InOrder carouselTabSwitcherModuleController =
-                inOrder(mCarouselOrSingleTabSwitcherModuleController);
+        InOrder carouselTabSwitcherModuleController = inOrder(mSingleTabSwitcherModuleController);
         carouselTabSwitcherModuleController
-                .verify(mCarouselOrSingleTabSwitcherModuleController)
+                .verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_PREVIOUS);
         carouselTabSwitcherModuleController
-                .verify(mCarouselOrSingleTabSwitcherModuleController)
+                .verify(mSingleTabSwitcherModuleController)
                 .showTabSwitcherView(eq(false));
         InOrder omniboxStub = inOrder(mOmniboxStub);
         omniboxStub
@@ -1157,12 +1129,12 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
 
         mediator.hideTabSwitcherView(true);
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_PREVIOUS);
         carouselTabSwitcherModuleController
-                .verify(mCarouselOrSingleTabSwitcherModuleController)
+                .verify(mSingleTabSwitcherModuleController)
                 .showTabSwitcherView(eq(false));
         omniboxStub
                 .verify(mOmniboxStub, times(2))
@@ -1178,8 +1150,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
 
         mediator.hideTabSwitcherView(true);
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
         mediator.setStartSurfaceState(StartSurfaceState.SHOWING_PREVIOUS);
         mediator.showOverview(false);
@@ -1198,12 +1170,11 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        InOrder carouselTabSwitcherModuleController =
-                inOrder(mCarouselOrSingleTabSwitcherModuleController);
+        InOrder carouselTabSwitcherModuleController = inOrder(mSingleTabSwitcherModuleController);
         carouselTabSwitcherModuleController
-                .verify(mCarouselOrSingleTabSwitcherModuleController)
+                .verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
@@ -1211,7 +1182,7 @@ public class StartSurfaceMediatorUnitTest {
                 .thenReturn(mExploreSurfaceCoordinator);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         carouselTabSwitcherModuleController
-                .verify(mCarouselOrSingleTabSwitcherModuleController)
+                .verify(mSingleTabSwitcherModuleController)
                 .showTabSwitcherView(eq(false));
         assertThat(
                 mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
@@ -1219,8 +1190,8 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(TabLaunchType.FROM_START_SURFACE).when(mTab).getLaunchType();
         mediator.hideTabSwitcherView(true);
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
         assertNull(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR));
 
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_PREVIOUS);
@@ -1230,8 +1201,8 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(TabLaunchType.FROM_LINK).when(mTab).getLaunchType();
         mediator.hideTabSwitcherView(true);
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
         assertNull(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR));
     }
 
@@ -1307,9 +1278,9 @@ public class StartSurfaceMediatorUnitTest {
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
                         /* useMagicSpace= */ false);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
         // Sets the current StartSurfaceState to SHOWING_START before calling the
@@ -1318,9 +1289,8 @@ public class StartSurfaceMediatorUnitTest {
         // {@link StartSurfaceMediator#showOverview()}.
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_START);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
-        verify(mCarouselOrSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
+        verify(mSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
 
-        when(mCarouselOrSingleTabSwitcherModuleController.overviewVisible()).thenReturn(true);
         mediator.initWithNative(
                 mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService, null);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
@@ -1333,8 +1303,6 @@ public class StartSurfaceMediatorUnitTest {
                 resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin);
         int mvTilesContainerTopMargin =
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
-        int tabSwitcherTitleTopMargin =
-                resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 
         createStartSurfaceMediatorWithoutInit(
                 /* isStartSurfaceEnabled= */ true,
@@ -1347,9 +1315,6 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(
                 mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
                 equalTo(mvTilesContainerTopMargin));
-        assertThat(
-                mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
-                equalTo(tabSwitcherTitleTopMargin));
 
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
         assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(0));
@@ -1360,8 +1325,6 @@ public class StartSurfaceMediatorUnitTest {
     public void initializeStartSurfaceTopMargins_SurfacePolish() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         int tasksSurfaceBodyTopMarginPolished = 0;
-        int tabSwitcherTitleTopMargin =
-                resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 
         createStartSurfaceMediatorWithoutInit(
                 /* isStartSurfaceEnabled= */ true,
@@ -1372,9 +1335,6 @@ public class StartSurfaceMediatorUnitTest {
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginPolished));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
-        assertThat(
-                mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
-                equalTo(tabSwitcherTitleTopMargin));
 
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
         assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(0));
@@ -1388,7 +1348,7 @@ public class StartSurfaceMediatorUnitTest {
         Context context = ContextUtils.getApplicationContext();
         Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context));
         doReturn(TabSwitcherType.SINGLE)
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+                .when(mSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
 
         Resources resources = context.getResources();
@@ -1399,8 +1359,6 @@ public class StartSurfaceMediatorUnitTest {
         int mvTilesContainerTopMargin =
                 resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
                         + resources.getDimensionPixelOffset(R.dimen.ntp_search_box_bottom_margin);
-        int tabSwitcherTitleTopMargin =
-                resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
         int singleTopMargin =
                 resources.getDimensionPixelSize(
                         R.dimen.single_tab_view_top_margin_for_feed_improvement);
@@ -1417,9 +1375,6 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(
                 mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
                 equalTo(mvTilesContainerTopMargin));
-        assertThat(
-                mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
-                equalTo(tabSwitcherTitleTopMargin));
         assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(singleTopMargin));
 
         // Tasks surface body top margin should be updated when tab carousel/single card visibility
@@ -1427,14 +1382,14 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(0).when(mNormalTabModel).getCount();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithoutTab));
 
         doReturn(2).when(mNormalTabModel).getCount();
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithTab));
@@ -1493,7 +1448,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(TabSwitcherType.SINGLE)
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+                .when(mSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
 
         StartSurfaceMediator mediator =
@@ -1504,12 +1459,11 @@ public class StartSurfaceMediatorUnitTest {
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
     }
 
     @Test
-    public void hideSingleTabSwitcherWhenCurrentSelectedTabIsNTP() {
+    public void hideSingleTabSwitcherWhenCurrentSelectedTabIsNtp() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -1517,7 +1471,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
         doReturn(TabSwitcherType.SINGLE)
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+                .when(mSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
         MockTab regularTab = new MockTab(1, mProfile);
         regularTab.setGurlOverrideForTesting(JUnitTestGURLs.NTP_URL);
@@ -1529,8 +1483,7 @@ public class StartSurfaceMediatorUnitTest {
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
     }
 
     @Test
@@ -1658,9 +1611,9 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
-        verify(mCarouselOrSingleTabSwitcherModuleController)
+        verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
-                        mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
+                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
@@ -1669,14 +1622,14 @@ public class StartSurfaceMediatorUnitTest {
         UrlFocusChangeListener listener = mUrlFocusChangeListenerCaptor.getAllValues().get(0);
         assertThat(listener, equalTo(mFeedReliabilityLogger));
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedShowing();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
 
         mediator.hideTabSwitcherView(true);
         verify(mOmniboxStub).removeUrlFocusChangeListener(listener);
 
-        mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
+        mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
     }
 
     @Test
@@ -1699,8 +1652,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        doAnswer((inv) -> mCarouselTabSwitcherModuleControllerDialogVisibleSupplier.get())
-                .when(mCarouselOrSingleTabSwitcherModuleController)
+        doAnswer((inv) -> mCardTabSwitcherModuleControllerDialogVisibleSupplier.get())
+                .when(mSingleTabSwitcherModuleController)
                 .isDialogVisible();
         doAnswer((inv) -> mSecondaryControllerDialogVisibleSupplier.get())
                 .when(mSecondaryTasksSurfaceController)
@@ -1714,21 +1667,21 @@ public class StartSurfaceMediatorUnitTest {
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         Assert.assertFalse(
                 "Should not intercept back press by default", mediator.shouldInterceptBackPress());
-        mCarouselTabSwitcherModuleControllerDialogVisibleSupplier.set(true);
+        mCardTabSwitcherModuleControllerDialogVisibleSupplier.set(true);
         Assert.assertTrue(mediator.shouldInterceptBackPress());
-        doReturn(true).when(mCarouselOrSingleTabSwitcherModuleController).onBackPressed();
+        doReturn(true).when(mSingleTabSwitcherModuleController).onBackPressed();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController).onBackPressed();
+        verify(mSingleTabSwitcherModuleController).onBackPressed();
 
-        mCarouselTabSwitcherModuleControllerDialogVisibleSupplier.set(false);
+        mCardTabSwitcherModuleControllerDialogVisibleSupplier.set(false);
         Assert.assertFalse(mediator.shouldInterceptBackPress());
 
-        mCarouselTabSwitcherModuleControllerDialogVisibleSupplier.set(true);
+        mCardTabSwitcherModuleControllerDialogVisibleSupplier.set(true);
         mSecondaryControllerDialogVisibleSupplier.set(true);
         Assert.assertTrue(mediator.shouldInterceptBackPress());
         doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController).onBackPressed();
+        verify(mSingleTabSwitcherModuleController).onBackPressed();
         verify(
                         mSecondaryTasksSurfaceController,
                         description(
@@ -1737,7 +1690,7 @@ public class StartSurfaceMediatorUnitTest {
                 .onBackPressed();
 
         mSecondaryControllerDialogVisibleSupplier.set(false);
-        mCarouselTabSwitcherModuleControllerDialogVisibleSupplier.set(false);
+        mCardTabSwitcherModuleControllerDialogVisibleSupplier.set(false);
         verify(
                         mSecondaryTasksSurfaceController,
                         description(
@@ -1782,13 +1735,13 @@ public class StartSurfaceMediatorUnitTest {
 
         showHomepageAndVerify(mediator, state);
 
-        doReturn(true).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(true).when(mSingleTabSwitcherModuleController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController).onBackPressed();
+        verify(mSingleTabSwitcherModuleController).onBackPressed();
 
-        doReturn(false).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(false).when(mSingleTabSwitcherModuleController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController, times(2)).onBackPressed();
+        verify(mSingleTabSwitcherModuleController, times(2)).onBackPressed();
     }
 
     /**
@@ -1812,16 +1765,16 @@ public class StartSurfaceMediatorUnitTest {
 
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
-        doReturn(true).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(true).when(mSingleTabSwitcherModuleController).isDialogVisible();
         doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController).onBackPressed();
+        verify(mSingleTabSwitcherModuleController).onBackPressed();
         verify(mSecondaryTasksSurfaceController, never()).onBackPressed();
 
-        doReturn(false).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(false).when(mSingleTabSwitcherModuleController).isDialogVisible();
         doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController, times(2)).onBackPressed();
+        verify(mSingleTabSwitcherModuleController, times(2)).onBackPressed();
         // Reach the end of #onBackPressed.
         verify(mSecondaryTasksSurfaceController).onBackPressed();
     }
@@ -1839,13 +1792,13 @@ public class StartSurfaceMediatorUnitTest {
 
         showHomepageAndVerify(mediator, null);
 
-        doReturn(true).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(true).when(mSingleTabSwitcherModuleController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController, times(1)).onBackPressed();
+        verify(mSingleTabSwitcherModuleController, times(1)).onBackPressed();
 
-        doReturn(false).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(false).when(mSingleTabSwitcherModuleController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mCarouselOrSingleTabSwitcherModuleController, times(2)).onBackPressed();
+        verify(mSingleTabSwitcherModuleController, times(2)).onBackPressed();
     }
 
     /**
@@ -1867,7 +1820,7 @@ public class StartSurfaceMediatorUnitTest {
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         Assert.assertEquals(StartSurfaceState.SHOWN_TABSWITCHER, mediator.getStartSurfaceState());
         // The primary task surface is invisible when showing the Tab Switcher.
-        doReturn(false).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
+        doReturn(false).when(mSingleTabSwitcherModuleController).isDialogVisible();
 
         doReturn(true).when(mSecondaryTasksSurfaceController).isDialogVisible();
         doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed();
@@ -1875,7 +1828,7 @@ public class StartSurfaceMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.Intercept", 4); // START_SURFACE enum value
         Assert.assertTrue(mediator.onBackPressed());
-        verify(mCarouselOrSingleTabSwitcherModuleController, never()).onBackPressed();
+        verify(mSingleTabSwitcherModuleController, never()).onBackPressed();
         verify(mSecondaryTasksSurfaceController).onBackPressed();
         histogramWatcher.assertExpected();
 
@@ -2066,14 +2019,14 @@ public class StartSurfaceMediatorUnitTest {
         OnTabSelectingListener onTabSelectingListener = Mockito.mock(OnTabSelectingListener.class);
         mediator.setOnTabSelectingListener(onTabSelectingListener);
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, lastId);
-        verify(onTabSelectingListener).onTabSelecting(anyLong(), eq(currentId));
+        verify(onTabSelectingListener).onTabSelecting(eq(currentId));
 
         doReturn(true).when(mTab).isIncognito();
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, lastId);
-        verify(onTabSelectingListener, times(2)).onTabSelecting(anyLong(), eq(currentId));
+        verify(onTabSelectingListener, times(2)).onTabSelecting(eq(currentId));
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_CLOSE, lastId);
-        verify(onTabSelectingListener, times(2)).onTabSelecting(anyLong(), eq(currentId));
+        verify(onTabSelectingListener, times(2)).onTabSelecting(eq(currentId));
     }
 
     @Test
@@ -2198,7 +2151,7 @@ public class StartSurfaceMediatorUnitTest {
         boolean hasTasksView = isStartSurfaceEnabled && !isRefactorEnabled;
         boolean hasTabSwitcherModule = isStartSurfaceEnabled && isRefactorEnabled && !useMagicSpace;
         return new StartSurfaceMediator(
-                useMagicSpace ? null : mCarouselOrSingleTabSwitcherModuleController,
+                useMagicSpace ? null : mSingleTabSwitcherModuleController,
                 /* tabSwitcherContainer= */ null,
                 hasTabSwitcherModule ? mTabSwitcherModule : null,
                 mTabModelSelector,

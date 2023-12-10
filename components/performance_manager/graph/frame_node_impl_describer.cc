@@ -82,9 +82,10 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_holding_indexeddb_lock",
           impl->is_holding_indexeddb_lock_.value());
   ret.Set("is_current", impl->is_current_.value());
-  ret.Set("priority",
-          PriorityAndReasonToValue(impl->priority_and_reason_.value()));
+  ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());
+  ret.Set("is_capturing_media_stream",
+          impl->is_capturing_media_stream_.value());
   ret.Set("viewport_intersection",
           IntersectsViewportToString(impl->intersects_viewport_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
@@ -92,9 +93,9 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",
-              base::NumberToString(impl->resident_set_kb_estimate()));
+              base::NumberToString(impl->GetResidentSetKbEstimate()));
   metrics.Set("private_footprint",
-              base::NumberToString(impl->private_footprint_kb_estimate()));
+              base::NumberToString(impl->GetPrivateFootprintKbEstimate()));
   ret.Set("metrics_estimates", std::move(metrics));
 
   return ret;

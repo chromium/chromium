@@ -45,9 +45,7 @@ public class ExternalAuthUtils {
         mGoogleDelegate = new ExternalAuthGoogleDelegateImpl();
     }
 
-    /**
-     * @return The singleton instance of ExternalAuthUtils.
-     */
+    /** @return The singleton instance of ExternalAuthUtils. */
     public static ExternalAuthUtils getInstance() {
         return sInstance;
     }
@@ -193,12 +191,13 @@ public class ExternalAuthUtils {
         // resultCode is some kind of error.
         Log.v(TAG, "Unable to use Google Play Services: %s", describeError(resultCode));
         if (isUserRecoverableError(resultCode)) {
-            Runnable errorHandlerTask = new Runnable() {
-                @Override
-                public void run() {
-                    errorHandler.handleError(context, resultCode);
-                }
-            };
+            Runnable errorHandlerTask =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            errorHandler.handleError(context, resultCode);
+                        }
+                    };
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, errorHandlerTask);
         }
         return false;
@@ -244,9 +243,7 @@ public class ExternalAuthUtils {
         return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
     }
 
-    /**
-     * @return this object's {@link ExternalAuthGoogleDelegate} instance.
-     */
+    /** @return this object's {@link ExternalAuthGoogleDelegate} instance. */
     public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
         return mGoogleDelegate;
     }

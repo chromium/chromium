@@ -95,14 +95,14 @@ void CupsPrintJobNotificationManager::UpdateNotification(
   it->second->OnPrintJobStatusUpdated();
 }
 
-absl::optional<CupsPrintJobNotification*>
+std::optional<CupsPrintJobNotification*>
 CupsPrintJobNotificationManager::GetNotificationForTesting(CupsPrintJob* job) {
   auto it = notification_map_.find(job);
   if (it != notification_map_.end()) {
     return it->second.get();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash

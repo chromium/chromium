@@ -321,8 +321,9 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
   }
 
   // Avoid sRGB transfer function by setting the color space to nullptr.
-  if (image_info.colorSpace()->isSRGB())
+  if (image_info.colorSpace() && image_info.colorSpace()->isSRGB()) {
     image_info = image_info.makeColorSpace(nullptr);
+  }
 
   sk_sp<SkData> image_pixels =
       TryAllocateSkData(image_info.computeMinByteSize());

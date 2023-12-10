@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -490,29 +489,21 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   static constexpr char kScript[] = "setIcon(%s);";
 
-  const std::string histogram_name =
-      "Extensions.DynamicExtensionActionIconWasVisible";
   {
-    base::HistogramTester histogram_tester;
     EXPECT_EQ("Icon not sufficiently visible.",
               EvalJs(background_page->host_contents(),
                      base::StringPrintf(kScript, "invisibleImageData")));
     // The icon should not have changed.
     EXPECT_TRUE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-    EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-                testing::ElementsAre(base::Bucket(0, 1)));
   }
 
   {
-    base::HistogramTester histogram_tester;
     EXPECT_EQ("", EvalJs(background_page->host_contents(),
                          base::StringPrintf(kScript, "visibleImageData")));
     // The icon should have changed.
     EXPECT_FALSE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-    EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-                testing::ElementsAre(base::Bucket(1, 1)));
   }
 }
 

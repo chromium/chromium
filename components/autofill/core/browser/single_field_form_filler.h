@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILLER_H_
 
+#include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
@@ -18,20 +19,19 @@ struct SuggestionsContext;
 // time, such as autocomplete or merchant promo codes.
 class SingleFieldFormFiller {
  public:
-  // Interface to be implemented by classes that want to fetch autocomplete
+  // Some `SingleFieldFormFillers` return suggestions asynchronously. This
+  // callback is used to eventually return suggestions. `field_id` identifies
+  // the field the query refer to. `suggestions` is the list of fetched
   // suggestions.
-  class SuggestionsHandler {
-   public:
-    virtual ~SuggestionsHandler() = default;
-
-    // Will be called-back once SingleFieldFormFiller gets the corresponding
-    // response from the DB. `field_id` identifies the field the query refers
-    // to. `suggestions` is the list of fetched suggestions.
-    virtual void OnSuggestionsReturned(
-        FieldGlobalId field_id,
-        AutofillSuggestionTriggerSource trigger_source,
-        const std::vector<Suggestion>& suggestions) = 0;
-  };
+  // TODO(crbug.com/1007974): This should be a `base::OnceCallback<>`. It is
+  // currently a repeating callback, because the `SingleFieldFormFillRouter`
+  // asks all available `SingleFieldFormFiller`s using
+  // `OnGetSingleFieldSuggestions()`, until the first one returns true. This
+  // requires passing the callback to all `SingleFieldFormFillers` (even though
+  // only one of them will end up calling it).
+  using OnSuggestionsReturnedCallback =
+      base::RepeatingCallback<void(FieldGlobalId,
+                                   const std::vector<Suggestion>&)>;
 
   SingleFieldFormFiller();
   virtual ~SingleFieldFormFiller();
@@ -55,10 +55,9 @@ class SingleFieldFormFiller {
   // SingleFieldFormFillers to offer filling the field. The callback can happen
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
-      base::WeakPtr<SuggestionsHandler> handler,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
       const SuggestionsContext& context) = 0;
 
   // Runs when a form is going to be submitted. In the case of Autocomplete, it
@@ -70,9 +69,9 @@ class SingleFieldFormFiller {
       const std::vector<FormFieldData>& fields,
       bool is_autocomplete_enabled) = 0;
 
-  // Cancels the currently pending WebDataService queries associated with the
-  // given |handler|.
-  virtual void CancelPendingQueries(const SuggestionsHandler* handler) = 0;
+  // Cancels all pending queries. This is only applicable to
+  // `SingleFieldFormFillers`` that fetch suggestions asynchronously.
+  virtual void CancelPendingQueries() = 0;
 
   // If applicable, removes the currently-selected suggestion from the database.
   // `popup_item_id` is the PopupItemId of the suggestion to be removed.
@@ -87,34 +86,6 @@ class SingleFieldFormFiller {
   // suggestion selected.
   virtual void OnSingleFieldSuggestionSelected(const std::u16string& value,
                                                PopupItemId popup_item_id) = 0;
-
- protected:
-  // Internal data object used to keep a request's context to associate it
-  // with the appropriate response.
-  struct QueryHandler {
-    QueryHandler(FieldGlobalId field_id,
-                 AutofillSuggestionTriggerSource trigger_source,
-                 std::u16string prefix,
-                 base::WeakPtr<SuggestionsHandler> handler);
-    QueryHandler(const QueryHandler& original);
-    ~QueryHandler();
-
-    // The queried field ID.
-    FieldGlobalId field_id_;
-
-    // Describes what caused the suggestions to trigger. This value was provided
-    // by the handler when requesting suggestions. It is temporarily stored
-    // while suggestions are queried, so it can be passed on to
-    // `OnSuggestionsReturned()`.
-    AutofillSuggestionTriggerSource trigger_source_;
-
-    // Prefix used to search suggestions, submitted by the handler.
-    std::u16string prefix_;
-
-    // Weak pointer to the handler instance which will be called-back when
-    // we get the response for the associate query.
-    base::WeakPtr<SuggestionsHandler> handler_;
-  };
 };
 
 }  // namespace autofill

@@ -8,12 +8,16 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_tether_hosts_header_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Fake implementation of NetworkListTetherHostsHeaderView
 class ASH_EXPORT FakeNetworkListTetherHostsHeaderView
     : public NetworkListTetherHostsHeaderView {
+  METADATA_HEADER(FakeNetworkListTetherHostsHeaderView,
+                  NetworkListTetherHostsHeaderView)
+
  public:
   explicit FakeNetworkListTetherHostsHeaderView(
       NetworkListNetworkHeaderView::Delegate* delegate);

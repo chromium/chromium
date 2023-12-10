@@ -8,10 +8,11 @@
 #include <stddef.h>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -49,7 +49,7 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class AppLock;
+class WithAppResources;
 
 // Implementation of WebAppUiManager that depends upon //c/b/ui.
 // Allows //c/b/web_applications code to call into //c/b/ui without directly
@@ -78,8 +78,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       content::WebContents* web_contents) const override;
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
-      const absl::optional<webapps::AppId>& previous_app_id,
-      const absl::optional<webapps::AppId>& new_app_id) const override;
+      const std::optional<webapps::AppId>& previous_app_id,
+      const std::optional<webapps::AppId>& new_app_id) const override;
   bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                  bool shortcut_created) const override;
   void ReparentAppTabToWindow(content::WebContents* contents,
@@ -100,11 +100,14 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback) override;
   void ShowWebAppSettings(const webapps::AppId& app_id) override;
-  void WaitForFirstRunAndLaunchWebApp(apps::AppLaunchParams params,
-                                      LaunchWebAppWindowSetting launch_setting,
-                                      Profile& profile,
-                                      LaunchWebAppCallback callback,
-                                      AppLock& lock) override;
+  void LaunchWebApp(apps::AppLaunchParams params,
+                    LaunchWebAppWindowSetting launch_setting,
+                    Profile& profile,
+                    LaunchWebAppDebugValueCallback callback,
+                    WithAppResources& lock) override;
+  void WaitForFirstRunService(
+      Profile& profile,
+      FirstRunServiceCompletedCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,
@@ -114,6 +117,13 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       const std::vector<std::string>& app_names,
       base::WeakPtr<Profile> profile) override;
 #endif
+
+  void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
+                              const webapps::AppId& final_app_id,
+                              const std::u16string& final_app_name,
+                              base::WeakPtr<Profile> profile,
+                              AppRelaunchState relaunch_state) override;
+
   content::WebContents* CreateNewTab() override;
   bool IsWebContentsActiveTabInBrowser(
       content::WebContents* web_contents) override;
@@ -144,6 +154,11 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   void MaybeCreateEnableSupportedLinksInfobar(
       content::WebContents* web_contents,
       const std::string& launch_name) override;
+
+  void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+      content::WebContents* web_contents,
+      Profile* profile,
+      const std::string& app_id) override;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -189,6 +204,15 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       const GURL app_start_url,
       UninstallCompleteCallback uninstall_complete_callback,
       webapps::UninstallResultCode uninstall_code);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  void ShowIPHPromoForAppsLaunchedViaLinkCapturing(const Browser* browser,
+                                                   const webapps::AppId& app_id,
+                                                   bool is_activated);
+
+  void OnIPHPromoResponseForLinkCapturing(const Browser* browser,
+                                          const webapps::AppId& app_id);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   const raw_ptr<Profile> profile_;
   std::map<webapps::AppId, std::vector<base::OnceClosure>>

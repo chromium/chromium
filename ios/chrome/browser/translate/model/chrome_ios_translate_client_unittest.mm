@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+
 #import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
@@ -10,19 +11,22 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
+#import "components/optimization_guide/core/optimization_guide_features.h"
+#import "components/optimization_guide/core/prediction_model_store.h"
 #import "components/translate/core/browser/translate_metrics_logger.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -36,6 +40,9 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     PlatformTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled}, {});
+    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      OptimizationGuideServiceFactory::InitializePredictionModelStore();
+    }
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
@@ -56,8 +63,20 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
 
+  void TearDown() override {
+    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      // Reinitialize the store, so that tests do not use state from the
+      // previous test.
+      optimization_guide::PredictionModelStore::GetInstance()
+          ->ResetForTesting();
+    }
+
+    PlatformTest::TearDown();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

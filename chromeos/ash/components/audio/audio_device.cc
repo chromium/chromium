@@ -145,13 +145,15 @@ AudioDevice::AudioDevice(const AudioNode& node) {
   id = node.id;
   stable_device_id_version = node.StableDeviceIdVersion();
   stable_device_id = node.StableDeviceId();
-  if (stable_device_id_version == 2)
+  if (stable_device_id_version == 2) {
     deprecated_stable_device_id = node.stable_device_id_v1;
+  }
   type = GetAudioType(node.type);
-  if (!node.name.empty() && node.name != "(default)")
+  if (!node.name.empty() && node.name != "(default)") {
     display_name = node.name;
-  else
+  } else {
     display_name = node.device_name;
+  }
   device_name = node.device_name;
   priority = GetDevicePriority(type, node.is_input);
   active = node.active;
@@ -182,6 +184,8 @@ std::string AudioDevice::ToString() const {
   base::StringAppendF(&result, "display_name = %s ", display_name.c_str());
   base::StringAppendF(&result, "device_name = %s ", device_name.c_str());
   base::StringAppendF(&result, "type = %s ", GetTypeString(type).c_str());
+  base::StringAppendF(&result, "priority = %d ", priority);
+  base::StringAppendF(&result, "user_priority = %d ", user_priority);
   base::StringAppendF(&result, "active = %s ", active ? "true" : "false");
   base::StringAppendF(&result, "plugged_time = %s ",
                       base::NumberToString(plugged_time).c_str());
@@ -195,8 +199,9 @@ std::string AudioDevice::ToString() const {
 }
 
 bool AudioDevice::IsExternalDevice() const {
-  if (!is_for_simple_usage())
+  if (!is_for_simple_usage()) {
     return false;
+  }
 
   if (is_input) {
     return !IsInternalMic();
@@ -240,11 +245,7 @@ bool LessUserPriority(const AudioDevice& a, const AudioDevice& b) {
 
 bool AudioDeviceCompare::operator()(const AudioDevice& a,
                                     const AudioDevice& b) const {
-  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
-    return LessUserPriority(a, b);
-  } else {
-    return LessBuiltInPriority(a, b);
-  }
+  return LessUserPriority(a, b);
 }
 
 }  // namespace ash

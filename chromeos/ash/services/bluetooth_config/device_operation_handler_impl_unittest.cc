@@ -183,7 +183,7 @@ class DeviceOperationHandlerImplTest : public testing::Test {
 
   void InvokePendingConnectCallback(bool success) {
     if (success) {
-      std::move(connect_callback_).Run(absl::nullopt);
+      std::move(connect_callback_).Run(std::nullopt);
     } else {
       std::move(connect_callback_)
           .Run(device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
@@ -225,7 +225,7 @@ class DeviceOperationHandlerImplTest : public testing::Test {
     return fake_fast_pair_delegate_.forgotten_device_addresses();
   }
 
-  absl::optional<std::string> GetDeviceNickname(const std::string& device_id) {
+  std::optional<std::string> GetDeviceNickname(const std::string& device_id) {
     return fake_device_name_manager_.GetDeviceNickname(device_id);
   }
 
@@ -246,10 +246,10 @@ class DeviceOperationHandlerImplTest : public testing::Test {
   std::vector<std::tuple<std::string, Operation, bool>> results_;
 
   device::BluetoothDevice::ConnectCallback connect_callback_;
-  absl::optional<
+  std::optional<
       std::pair<base::OnceClosure, device::BluetoothDevice::ErrorCallback>>
       disconnect_callbacks_;
-  absl::optional<
+  std::optional<
       std::pair<base::OnceClosure, device::BluetoothDevice::ErrorCallback>>
       forget_callbacks_;
 
@@ -379,7 +379,7 @@ TEST_F(DeviceOperationHandlerImplTest, ForgettingDeviceRemovesNickname) {
   AddDevice(&device_id);
 
   SetDeviceNickname(device_id);
-  absl::optional<std::string> nickname = GetDeviceNickname(device_id);
+  std::optional<std::string> nickname = GetDeviceNickname(device_id);
   EXPECT_TRUE(nickname.has_value());
   EXPECT_EQ(kTestBluetoothNickname, nickname.value());
 

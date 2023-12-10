@@ -83,11 +83,12 @@ void LayoutImage::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
 
-  bool old_orientation =
-      old_style ? old_style->RespectImageOrientation()
-                : ComputedStyleInitialValues::InitialRespectImageOrientation();
-  if (Style() && StyleRef().RespectImageOrientation() != old_orientation)
+  RespectImageOrientationEnum old_orientation =
+      old_style ? old_style->ImageOrientation()
+                : ComputedStyleInitialValues::InitialImageOrientation();
+  if (StyleRef().ImageOrientation() != old_orientation) {
     IntrinsicSizeChanged();
+  }
 }
 
 void LayoutImage::SetImageResource(LayoutImageResource* image_resource) {
@@ -345,13 +346,12 @@ bool LayoutImage::OverrideIntrinsicSizingInfo(
 }
 
 bool LayoutImage::CanApplyObjectViewBox() const {
-  auto* svg_image = EmbeddedSVGImage();
-  if (!svg_image)
+  if (!EmbeddedSVGImage()) {
     return true;
-
-  // Only apply object-view-box if the image has both intrinsic width/height.
-  IntrinsicSizingInfo info;
-  svg_image->GetIntrinsicSizingInfo(info);
+  }
+  // Only apply object-view-box if the image has both natural width/height.
+  const IntrinsicSizingInfo info =
+      image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
   return info.has_width && info.has_height;
 }
 
@@ -360,24 +360,22 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   if (!OverrideIntrinsicSizingInfo(intrinsic_sizing_info)) {
-    if (SVGImage* svg_image = EmbeddedSVGImage()) {
-      svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info);
+    if (EmbeddedSVGImage()) {
+      intrinsic_sizing_info =
+          image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
 
-      // Scale for the element's effective zoom (which includes scaling for
-      // device scale) is already applied when computing the view box. If the
-      // element has no view box then it needs to be explicitly applied here.
       if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
         DCHECK(intrinsic_sizing_info.has_width);
         DCHECK(intrinsic_sizing_info.has_height);
         intrinsic_sizing_info.size = *view_box_size;
-      } else {
-        intrinsic_sizing_info.size.Scale(StyleRef().EffectiveZoom());
       }
 
-      // Handle zoom & vertical writing modes here, as the embedded SVG document
-      // doesn't know about them.
-      if (StyleRef().GetObjectFit() != EObjectFit::kScaleDown)
-        intrinsic_sizing_info.size.Scale(ImageDevicePixelRatio());
+      // The value returned by LayoutImageResource will be in zoomed CSS
+      // pixels, but for the 'scale-down' object-fit value we want "zoomed
+      // device pixels", so undo the DPR part here.
+      if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
+        intrinsic_sizing_info.size.InvScale(ImageDevicePixelRatio());
+      }
       return;
     }
 

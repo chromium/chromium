@@ -5,36 +5,37 @@
 #include <memory>
 
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/on_device_model/chrome_ml_instance.h"
+#include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/on_device_model_executor.h"
+#include "services/on_device_model/ml/utils.h"
 #include "services/on_device_model/on_device_model_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
-#include "third_party/ml/public/on_device_model_executor.h"
-#include "third_party/ml/public/utils.h"
 
 namespace on_device_model {
 
 // static
-std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
-    ModelAssets assets) {
-  if (!GetChromeMLInstance()) {
-    return nullptr;
+base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
+OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
+  auto* chrome_ml = ml::ChromeML::Get();
+  if (!chrome_ml) {
+    return base::unexpected(mojom::LoadModelResult::kFailedToLoadLibrary);
   }
 
-  auto executor = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
-                                                    std::move(assets));
-  if (!executor) {
-    return nullptr;
-  }
-  return executor;
+  return ml::OnDeviceModelExecutor::CreateWithResult(*chrome_ml,
+                                                     std::move(params));
 }
 
 // static
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  if (!GetChromeMLInstance()) {
-    return mojom::PerformanceClass::kError;
+  auto* chrome_ml = ml::ChromeML::Get();
+  if (!chrome_ml) {
+    return mojom::PerformanceClass::kFailedToLoadLibrary;
   }
-  return ml::GetEstimatedPerformanceClass(*GetChromeMLInstance());
+  if (chrome_ml->IsGpuBlocked()) {
+    return mojom::PerformanceClass::kGpuBlocked;
+  }
+  return ml::GetEstimatedPerformanceClass(*chrome_ml);
 }
 
 }  // namespace on_device_model

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
@@ -86,6 +87,9 @@ class QuickAnswersView : public views::View {
   void InitLayout();
   void AddContentView();
   void AddFrameButtons();
+  bool ShouldAddPhoneticsAudioButton(ResultType result_type,
+                                     GURL phonetics_audio,
+                                     bool tts_audio_enabled);
   void AddPhoneticsAudioButton(
       const quick_answers::PhoneticsInfo& phonetics_info,
       View* container);
@@ -93,7 +97,7 @@ class QuickAnswersView : public views::View {
   void AddGoogleIcon();
   void AddDefaultResultTypeIcon();
   int GetBoundsWidth();
-  int GetLabelWidth();
+  int GetLabelWidth(bool is_title);
   void ResetContentView();
   void UpdateBounds();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);

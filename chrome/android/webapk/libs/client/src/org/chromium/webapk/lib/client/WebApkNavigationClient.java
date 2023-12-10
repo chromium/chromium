@@ -9,17 +9,16 @@ import android.net.Uri;
 
 import org.chromium.webapk.lib.common.WebApkConstants;
 
-/**
- * WebApkNavigationClient provides an API to get an intent to launch a WebAPK.
- */
+/** WebApkNavigationClient provides an API to get an intent to launch a WebAPK. */
 public class WebApkNavigationClient {
     /**
      * Creates intent to launch a WebAPK.
+     *
      * @param webApkPackageName Package name of the WebAPK to launch.
      * @param url URL to navigate WebAPK to.
      * @param forceNavigation Whether the WebAPK should be navigated to the url if the WebAPK is
-     *        already open. If {@link forceNavigation} is false and the WebAPK is already running,
-     *        the WebAPK will be brought to the foreground.
+     *     already open. If {@link forceNavigation} is false and the WebAPK is already running, the
+     *     WebAPK will be brought to the foreground.
      * @return The intent.
      */
     public static Intent createLaunchWebApkIntent(

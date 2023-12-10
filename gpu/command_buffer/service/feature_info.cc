@@ -1142,13 +1142,6 @@ void FeatureInfo::InitializeFeatures() {
     validators_.g_l_state.AddValue(GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES);
   }
 
-  if (gfx::HasExtension(extensions, "GL_CHROMIUM_texture_filtering_hint")) {
-    AddExtensionString("GL_CHROMIUM_texture_filtering_hint");
-    feature_flags_.chromium_texture_filtering_hint = true;
-    validators_.hint_target.AddValue(GL_TEXTURE_FILTERING_HINT_CHROMIUM);
-    validators_.g_l_state.AddValue(GL_TEXTURE_FILTERING_HINT_CHROMIUM);
-  }
-
   if (gfx::HasExtension(extensions, "GL_OES_EGL_image_external")) {
     AddExtensionString("GL_OES_EGL_image_external");
     feature_flags_.oes_egl_image_external = true;

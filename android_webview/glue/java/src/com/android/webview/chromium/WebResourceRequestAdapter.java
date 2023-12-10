@@ -11,9 +11,7 @@ import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 
 import java.util.Map;
 
-/**
- * Adapter between WebResourceRequest and AwWebResourceRequest.
- */
+/** Adapter between WebResourceRequest and AwWebResourceRequest. */
 public class WebResourceRequestAdapter implements WebResourceRequest {
     private final AwWebResourceRequest mRequest;
 

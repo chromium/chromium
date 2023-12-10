@@ -60,11 +60,6 @@ bool RenderFrameHostDelegate::CheckMediaAccessPermission(
   return false;
 }
 
-std::string RenderFrameHostDelegate::GetDefaultMediaDeviceID(
-    blink::mojom::MediaStreamType type) {
-  return std::string();
-}
-
 ui::AXMode RenderFrameHostDelegate::GetAccessibilityMode() {
   return ui::AXMode();
 }
@@ -90,6 +85,10 @@ void RenderFrameHostDelegate::FullscreenStateChanged(
     RenderFrameHostImpl* rfh,
     bool is_fullscreen,
     blink::mojom::FullscreenOptionsPtr options) {}
+
+bool RenderFrameHostDelegate::CanUseWindowingControls(RenderFrameHostImpl*) {
+  return false;
+}
 
 bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
     RenderFrameHostImpl* target_rfh) const {
@@ -134,12 +133,6 @@ Visibility RenderFrameHostDelegate::GetVisibility() {
 std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
     RenderFrameHostImpl* owner) {
   return {};
-}
-
-media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback(
-    const GURL& page_main_frame_last_committed_url) {
-  return base::NullCallback();
 }
 
 void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(

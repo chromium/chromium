@@ -10,10 +10,15 @@
 #include <set>
 
 #include "base/containers/id_map.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_errors.h"
+#include "content/common/gin_java_bridge.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -27,6 +32,7 @@ class GinJavaBridgeObject;
 // again.
 class GinJavaBridgeDispatcher
     : public base::SupportsWeakPtr<GinJavaBridgeDispatcher>,
+      public mojom::GinJavaBridge,
       public RenderFrameObserver {
  public:
   // GinJavaBridgeObjects are managed by gin. An object gets destroyed
@@ -47,7 +53,8 @@ class GinJavaBridgeDispatcher
   bool OnMessageReceived(const IPC::Message& message) override;
   void DidClearWindowObject() override;
 
-  void GetJavaMethods(ObjectID object_id, std::set<std::string>* methods);
+  void GetJavaMethods(ObjectID object_id, std::vector<std::string>* methods);
+
   bool HasJavaMethod(ObjectID object_id, const std::string& method_name);
   std::unique_ptr<base::Value> InvokeJavaMethod(
       ObjectID object_id,
@@ -57,18 +64,23 @@ class GinJavaBridgeDispatcher
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);
 
+  void AddNamedObject(const std::string& name, ObjectID object_id) override;
+  void RemoveNamedObject(const std::string& name) override;
+  void SetHost(mojo::PendingRemote<mojom::GinJavaBridgeHost> host) override;
+
+  mojom::GinJavaBridgeHost* GetRemoteObjectHost();
+
  private:
   // RenderFrameObserver implementation.
   void OnDestruct() override;
 
-  void OnAddNamedObject(const std::string& name,
-                        ObjectID object_id);
-  void OnRemoveNamedObject(const std::string& name);
-
   typedef std::map<std::string, ObjectID> NamedObjectMap;
   NamedObjectMap named_objects_;
   ObjectMap objects_;
-  bool inside_did_clear_window_object_;
+  bool inside_did_clear_window_object_ = false;
+  const bool enable_mojo_;
+
+  mojo::Remote<mojom::GinJavaBridgeHost> remote_;
 };
 
 }  // namespace content

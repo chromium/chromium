@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">刪除第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="1113173431709655881">相機模式</translation>
 <translation id="1153190633558910465">關閉格線</translation>
-<translation id="1175958423215084756">偵測到連結。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">已刪除第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="1258009455399840361">順時針旋轉 90 度</translation>
 <translation id="1417314334557041815">編輯第 <ph name="INDEX" /> 頁</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">正在處理影片...</translation>
 <translation id="3789724198583203151">逆時針旋轉 90 度</translation>
 <translation id="3810838688059735925">影片</translation>
-<translation id="3892148308691398805">複製文字</translation>
 <translation id="4060608699153044055">裝置儲存空間不足，因此無法錄影。如要開始錄影，請先釋出裝置空間。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">這部攝影機無法變更解析度</translation>
 <translation id="4176463684765177261">已停用</translation>
-<translation id="4269820728363426813">複製連結網址</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
 <translation id="4349714250734879769">由 Chrome 縮放畫面</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">錄製一般影片</translation>
 <translation id="7748344063862150053">文件右上角</translation>
 <translation id="7933675232020478311">向右下移動</translation>
-<translation id="7983668134180549431">偵測到文字。</translation>
 <translation id="8079255378695216066">無法開始錄影</translation>
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">無法開始錄影</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">放大</translation>
+<translation id="8926890870105777777">加入「<ph name="WIFINAME" />」網路</translation>
 <translation id="9045010116236796332">將鏡頭對準文件，確認各邊都在方框內</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="906331135292332864">正在處理圖片…</translation>

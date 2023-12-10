@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 
 namespace metrics {
@@ -28,6 +29,7 @@ class AndroidMetricsLogUploader : public MetricsLogUploader {
   // server. This uploader uses a Java logging mechanism that ignores these
   // fields.
   void UploadLog(const std::string& compressed_log_data,
+                 const LogMetadata& log_metadata,
                  const std::string& log_hash,
                  const std::string& log_signature,
                  const ReportingInfo& reporting_info) override;

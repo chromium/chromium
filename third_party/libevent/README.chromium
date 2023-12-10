@@ -5,6 +5,7 @@ License: BSD
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:libevent_project:libevent
 
 Local Modifications:
 Rather than use libevent's own build system, we just build a Chrome

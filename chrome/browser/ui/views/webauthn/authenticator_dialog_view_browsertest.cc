@@ -136,7 +136,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       pairing->name = "Phone";
       phones.emplace_back(std::move(pairing));
       dialog_model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt, std::move(phones),
+          /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       dialog_model_->StartFlow(std::move(transport_availability),
                                /*is_conditional_mediation=*/false);

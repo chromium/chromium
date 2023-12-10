@@ -9,6 +9,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -80,6 +81,14 @@ ci.builder(
             gs_bucket = "chromium-browser-asan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
         short_name = "dbg",
@@ -111,6 +120,15 @@ ci.builder(
             gs_bucket = "chromium-browser-asan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "v8_heap",
+            "debug_builder",
+            "reclient",
+            "v8_hybrid",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "dbg",
@@ -139,6 +157,16 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-asan",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
@@ -171,6 +199,16 @@ ci.builder(
             gs_bucket = "chromium-browser-asan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+            "v8_hybrid",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "rel",
@@ -200,6 +238,16 @@ ci.builder(
             gs_bucket = "chrome-test-builds/media",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "v8_heap",
+            "chromeos_codecs",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
         short_name = "med",
@@ -212,6 +260,20 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "centipede",
+            "asan",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "shared",
+            "release",
+            "reclient",
+            "disable_seed_corpus",
+        ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -243,6 +305,17 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chrome-test-builds/media",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "chromeos_codecs",
+            "release_builder",
+            "reclient",
+            "v8_hybrid",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
@@ -277,6 +350,17 @@ ci.builder(
             gs_bucket = "chromium-browser-asan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos",
+            "asan",
+            "lsan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "cros asan",
     ),
@@ -306,6 +390,13 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-msan",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "release_builder",
+            "reclient",
+        ],
     ),
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
@@ -339,6 +430,13 @@ ci.builder(
             gs_bucket = "chromium-browser-msan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan_no_origins",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
         category = "linux msan",
@@ -370,6 +468,16 @@ ci.builder(
             gs_bucket = "chromium-browser-asan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "disable_nacl",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = False,
     cores = 12,
     os = os.MAC_DEFAULT,
@@ -378,6 +486,13 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    health_spec = health_spec.modified_default({
+        "Unhealthy": struct(
+            pending_time = struct(
+                p50_mins = None,  # exception added because this builder has a pool of 1 machine and 2 concurrent invocations
+            ),
+        ),
+    }),
 )
 
 ci.builder(
@@ -401,6 +516,17 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chrome-test-builds/media",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "disable_nacl",
+            "fuzzer",
+            "v8_heap",
+            "chrome_with_codecs",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = False,
     cores = 12,
@@ -434,6 +560,14 @@ ci.builder(
             gs_bucket = "chromium-browser-tsan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
         short_name = "dbg",
@@ -465,6 +599,14 @@ ci.builder(
             gs_bucket = "chromium-browser-tsan",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
         short_name = "rel",
@@ -491,6 +633,13 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-ubsan",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan",
+            "release_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",
@@ -519,6 +668,14 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-ubsan",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_vptr",
+            "ubsan_vptr_no_recover_hack",
+            "release_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",
@@ -549,6 +706,16 @@ ci.builder(
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-asan",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "clang",
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
@@ -582,6 +749,17 @@ ci.builder(
             gs_bucket = "chrome-test-builds/media",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "clang",
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "chrome_with_codecs",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -598,6 +776,20 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "chromeos-asan",
@@ -610,6 +802,20 @@ ci.builder(
 ci.builder(
     name = "Libfuzzer Upload iOS Catalyst Debug",
     executable = "recipe:chromium/fuzz",
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "debug_static_builder",
+            "reclient",
+            "ios",
+            "ios_catalyst",
+            "x64",
+            "asan",
+            "libfuzzer",
+            "no_dsyms",
+            "no_remoting",
+        ],
+    ),
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -627,6 +833,20 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "mojo_fuzzer",
+            "shared",
+            "release",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "linux",
@@ -641,6 +861,20 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "debug_builder",
+            "reclient",
+            "shared",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ],
     ),
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
@@ -658,6 +892,20 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "msan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ],
+    ),
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
@@ -672,6 +920,20 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "ubsan_security_non_vptr",
+            "release_builder",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+            "shared",
+        ],
     ),
     # Do not use builderless for this (crbug.com/980080).
     builderless = False,
@@ -690,6 +952,21 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm64",
+            "disable_seed_corpus",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "arm64",
@@ -703,6 +980,21 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "debug_builder",
+            "reclient",
+            "shared",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm64",
+            "disable_seed_corpus",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "arm64-dbg",
@@ -715,6 +1007,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "x86",
+            "disable_seed_corpus",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
@@ -730,6 +1037,21 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm",
+            "disable_seed_corpus",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "arm",
@@ -744,6 +1066,21 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "debug_builder",
+            "reclient",
+            "shared",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm",
+            "disable_seed_corpus",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "arm-dbg",
@@ -754,6 +1091,19 @@ ci.builder(
 ci.builder(
     name = "Libfuzzer Upload Mac ASan",
     executable = "recipe:chromium/fuzz",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+        ],
+    ),
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -769,6 +1119,22 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
+    ),
+    # Note that because of optimize_for_fuzzing, Windows cannot share a config
+    # with other libFuzzer builds. optimize_for_fuzzing is used by the other
+    # libFuzzer build configs but it does not work on Windows.
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "release_builder",
+            "reclient",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "minimal_symbols",
+            "mojo_fuzzer",
+        ],
     ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,

@@ -75,4 +75,9 @@ void SyncRecordModelClearedOnceHistogram(ModelType model_type) {
                                 ModelTypeHistogramValue(model_type));
 }
 
+void RecordSyncToSigninMigrationReadingListStep(ReadingListMigrationStep step) {
+  base::UmaHistogramEnumeration(
+      "Sync.SyncToSigninMigration.ReadingListMigrationStep", step);
+}
+
 }  // namespace syncer

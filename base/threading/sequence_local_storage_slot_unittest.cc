@@ -176,4 +176,31 @@ TEST(SequenceLocalStorageSlotMultipleMapTest, EmplaceGetMultipleMapsOneSlot) {
   }
 }
 
+TEST(SequenceLocalStorageComPtrTest,
+     TestClassesWithNoAddressOfOperatorCanCompile) {
+  internal::SequenceLocalStorageMap sequence_local_storage_map;
+  internal::ScopedSetSequenceLocalStorageMapForCurrentThread
+      scoped_sequence_local_storage(&sequence_local_storage_map);
+  // Microsoft::WRL::ComPtr overrides & operator to release the underlying
+  // pointer.
+  // https://learn.microsoft.com/en-us/cpp/cppcx/wrl/comptr-class?view=msvc-170#operator-ampersand
+  // Types stored in SequenceLocalStorage may override `operator&` to have
+  // additional side effects, e.g. Microsoft::WRL::ComPtr. Make sure
+  // SequenceLocalStorage does not invoke/use custom `operator&`s to avoid
+  // triggering those side effects.
+  class TestNoAddressOfOperator {
+   public:
+    TestNoAddressOfOperator() = default;
+    ~TestNoAddressOfOperator() {
+      // Define a non-trivial destructor so that SequenceLocalStorageSlot
+      // will use the external value path.
+    }
+    // See note above class definition for the reason this operator is deleted.
+    TestNoAddressOfOperator* operator&() = delete;
+  };
+  SequenceLocalStorageSlot<TestNoAddressOfOperator> slot;
+  slot.emplace(TestNoAddressOfOperator());
+  EXPECT_NE(slot.GetValuePointer(), nullptr);
+}
+
 }  // namespace base

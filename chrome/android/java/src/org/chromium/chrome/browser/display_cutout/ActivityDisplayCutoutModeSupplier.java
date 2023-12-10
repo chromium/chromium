@@ -23,6 +23,7 @@ public class ActivityDisplayCutoutModeSupplier extends UnownedUserDataSupplier<I
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
     private static final UnownedUserDataKey<ActivityDisplayCutoutModeSupplier> KEY =
             new UnownedUserDataKey<>(ActivityDisplayCutoutModeSupplier.class);
+
     private static ObservableSupplierImpl<Integer> sInstanceForTesting;
 
     public static @Nullable ObservableSupplier<Integer> from(@NonNull WindowAndroid window) {

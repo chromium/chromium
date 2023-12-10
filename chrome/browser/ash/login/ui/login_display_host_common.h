@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_COMMON_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -29,6 +29,7 @@ namespace ash {
 class KioskLaunchController;
 class LoginFeedback;
 class OobeMetricsHelper;
+class OobeCrosEventsMetrics;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
 // implementation - the goal is to reduce code duplication between
@@ -61,7 +62,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void UpdateWallpaper(const AccountId& prefilled_account) final;
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const absl::optional<user_manager::UserType>& user_type) final;
+      const std::optional<user_manager::UserType>& user_type) final;
   void CancelPasswordChangedFlow() final;
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;
@@ -133,7 +134,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   void OnPowerwashAllowedCallback(
       bool is_reset_allowed,
-      absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
+      std::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
 
   void OnAppTerminating();
 
@@ -168,6 +169,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   base::CallbackListSubscription app_terminating_subscription_;
 
   std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
+
+  std::unique_ptr<OobeCrosEventsMetrics> oobe_cros_events_metrics_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

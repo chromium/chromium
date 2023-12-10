@@ -22,7 +22,7 @@
 #include "media/filters/manifest_demuxer.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/parse_status.h"
-#include "media/formats/hls/rendition_selector.h"
+#include "media/formats/hls/rendition_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -39,7 +39,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                            MediaLog* media_log);
   ~HlsManifestDemuxerEngine() override;
 
-  // HlsRenditionHost implementation
+  // ManifestDemuxer::Engine implementation
   std::string GetName() const override;
   void Initialize(ManifestDemuxerEngineHost* host,
                   PipelineStatusCallback status_cb) override;
@@ -52,22 +52,22 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   bool IsSeekable() const override;
   int64_t GetMemoryUsage() const override;
   void Stop() override;
+
+  // HlsRenditionHost implementation.
   void ReadFromUrl(GURL uri,
                    bool read_chunked,
                    absl::optional<hls::types::ByteRange> range,
                    HlsDataSourceProvider::ReadCb cb) override;
   void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
                   HlsDataSourceProvider::ReadCb cb) override;
-
-  // Parses a playlist using the multivariant playlist, if it's being used.
-  hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
-  ParseMediaPlaylistFromStringSource(
-      base::StringPiece source,
-      GURL uri,
-      hls::types::DecimalInteger version) override;
+  void UpdateNetworkSpeed(uint64_t bps) override;
+  void UpdateRenditionManifestUri(std::string role,
+                                  GURL uri,
+                                  base::OnceClosure cb) override;
 
   // Test helpers.
-  void AddRenditionForTesting(std::unique_ptr<HlsRendition> test_rendition);
+  void AddRenditionForTesting(std::string role,
+                              std::unique_ptr<HlsRendition> test_rendition);
   void InitializeWithMockCodecDetectorForTesting(
       ManifestDemuxerEngineHost* host,
       PipelineStatusCallback cb,
@@ -96,15 +96,25 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
     bool allow_multivariant_playlist;
   };
 
-  // Call the `CheckState` method of each rendition recursively and
-  // asynchronously while also maintaining the correct delay time.
-  // `media_time` and `playback_rate` represent the state of the playing media
-  // `cb` allows requesting a delay time until the next CheckState call,
-  // `rendition_index` is the index into `renditions_` that should be
-  // asynchronously checked next, and `response_time` is what the previously
-  // checked renditions requested for a delay time. The ultimate response to
-  // `cb` should be the lowest of all requested delays, adjusted for the time
-  // taken to calculate later delays, e.g.:
+  // Allows continuing any pending seeks after important network requests have
+  // completed.
+  void FinishInitialization(PipelineStatusCallback cb, PipelineStatus status);
+  void OnAdaptationComplete(PipelineStatus status);
+
+  // Calls Rendition::CheckState and binds OnStateChecked to it's closure arg,
+  // and records the timetick when the state checking happened.
+  void CheckState(base::TimeDelta time,
+                  double playback_rate,
+                  std::string role,
+                  ManifestDemuxer::DelayCallback cb,
+                  base::TimeDelta delay_time);
+
+  // The `prior_delay` arg represents the time that was previously calculated
+  // for delay by another rendition. If it is kNoTimestamp, then the other
+  // rendition has no need of a new event, so we can use whatever the response
+  // from our current state check is, and vice-versa. The response to `cb`
+  // othwewise should be the lower of `new_delay` and `prior_delay` - calctime
+  // where calctime is Now() - `start`. For example:
   // Rendition1 requests 5 seconds, takes 2 seconds
   // Rendition2 requests 4 seconds, takes 1.5 seconds
   // Rendition3 requests kNoTimestamp, takes 1 second
@@ -113,19 +123,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // seconds is carried forward as a delay time. Finally after the kNoTimestamp
   // response is acquired, the duration is once again subtracted and a final
   // delay time of 2.5 seconds is returned via cb.
-  void CheckStateAtIndex(base::TimeDelta media_time,
-                         double playback_rate,
-                         ManifestDemuxer::DelayCallback cb,
-                         size_t rendition_index,
-                         absl::optional<base::TimeDelta> response_time);
-
-  // Helper for `CheckStateAtIndex` to be bound for Rendition::CheckState
-  // method calls.
-  void OnStateChecked(
-      base::TimeTicks call_start,
-      absl::optional<base::TimeDelta> prior_delay,
-      base::OnceCallback<void(absl::optional<base::TimeDelta>)> cb,
-      base::TimeDelta delay_time);
+  void OnStateChecked(base::TimeTicks start,
+                      base::TimeDelta prior_delay,
+                      ManifestDemuxer::DelayCallback cb,
+                      base::TimeDelta new_delay);
 
   // Helpers to call |PlayerImplDemuxer::OnDemuxerError|.
   void Abort(HlsDemuxerStatus status);
@@ -143,9 +144,17 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void OnMultivariantPlaylist(
       PipelineStatusCallback parse_complete_cb,
       scoped_refptr<hls::MultivariantPlaylist> playlist);
-  void SetStreams(std::vector<PlaylistParseInfo> playlists,
-                  PipelineStatusCallback cb,
-                  PipelineStatus exit_on_error);
+  void OnRenditionsReselected(
+      const hls::VariantStream* variant,
+      const hls::AudioRendition* audio_override_rendition);
+
+  void OnRenditionsSelected(
+      PipelineStatusCallback on_complete,
+      const hls::VariantStream* variant,
+      const hls::AudioRendition* audio_override_rendition);
+
+  void LoadPlaylist(PlaylistParseInfo parse_info,
+                    PipelineStatusCallback on_complete);
 
   void OnMediaPlaylist(PipelineStatusCallback parse_complete_cb,
                        PlaylistParseInfo parse_info,
@@ -173,6 +182,17 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       ManifestDemuxerEngineHost* host,
       PipelineStatusCallback status_cb,
       std::unique_ptr<HlsCodecDetector> codec_detector);
+  void UpdateMediaPlaylistForRole(
+      std::string role,
+      GURL uri,
+      base::OnceClosure cb,
+      HlsDataSourceProvider::ReadResult maybe_stream);
+
+  // Parses a playlist using the multivariant playlist, if it's being used.
+  hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
+  ParseMediaPlaylistFromStringSource(base::StringPiece source,
+                                     GURL uri,
+                                     hls::types::DecimalInteger version);
 
   base::SequenceBound<HlsDataSourceProvider> data_source_provider_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
@@ -193,25 +213,32 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // dependant media playlists.
   scoped_refptr<hls::MultivariantPlaylist> multivariant_root_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
-  std::unique_ptr<hls::RenditionSelector> rendition_selector_
+  std::unique_ptr<hls::RenditionManager> rendition_manager_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  std::vector<std::string> selected_variant_codecs_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // Multiple renditions are allowed, and have to be synchronized.
-  std::vector<std::unique_ptr<HlsRendition>> renditions_
+  base::flat_map<std::string, std::unique_ptr<HlsRendition>> renditions_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
+
+  size_t pending_playlist_network_requests_
+      GUARDED_BY_CONTEXT(media_sequence_checker_) = 0;
+
+  // This captures a pending seek and prevents it from interrupting manifest
+  // updates. When the last manifest update completes, the seek closure can
+  // continue.
+  base::OnceClosure pending_seek_closure_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+
+  // Disallow seeking until all renditions are parsed.
+  bool pending_initialization_ GUARDED_BY_CONTEXT(media_sequence_checker_) =
+      false;
+  bool pending_adaptation_ GUARDED_BY_CONTEXT(media_sequence_checker_) = false;
 
   // When renditions are added, this ensures that they are all of the same
   // liveness, and allows access to the liveness check later.
   absl::optional<bool> is_seekable_ = absl::nullopt;
-
-  // Preferences for selecting optimal renditions. Storing them allows them
-  // to be changed later due to network constraints or user changes.
-  hls::RenditionSelector::VideoPlaybackPreferences video_preferences_
-      GUARDED_BY_CONTEXT(media_sequence_checker_) = {absl::nullopt,
-                                                     absl::nullopt};
-  hls::RenditionSelector::AudioPlaybackPreferences audio_preferences_
-      GUARDED_BY_CONTEXT(media_sequence_checker_) = {absl::nullopt,
-                                                     absl::nullopt};
 
   // Ensure that safe member fields are only accessed on the media sequence.
   SEQUENCE_CHECKER(media_sequence_checker_);

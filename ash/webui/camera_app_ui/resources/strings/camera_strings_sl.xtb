@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Izbriši stran <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Način fotoaparata</translation>
 <translation id="1153190633558910465">Mreža izklopljena</translation>
-<translation id="1175958423215084756">Zaznana je bila povezava. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stran <ph name="PAGE_NUMBER" /> je izbrisana</translation>
 <translation id="1258009455399840361">Zavrti za 90 stopinj v desno</translation>
 <translation id="1417314334557041815">Uredi stran <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Obdelava videoposnetka …</translation>
 <translation id="3789724198583203151">Zavrti za 90 stopinj v levo</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="4060608699153044055">Snemanje ni mogoče zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite začeti snemati, morate sprostiti prostor v napravi.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> mio. slikovnih pik</translation>
 <translation id="4118525110028899586">Začasna zaustavitev snemanja</translation>
 <translation id="4121305183798804752">Dokument je zaznan</translation>
 <translation id="414641094616694804">Za ta fotoaparat ni mogoče spremeniti ločljivosti</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
-<translation id="4269820728363426813">Kopiraj naslov povezave</translation>
 <translation id="428234092390943511">Sličica strani</translation>
 <translation id="4349714250734879769">Prilagajanje velikosti okvirov v Chromu</translation>
 <translation id="4383571725254449280">Tiskanje dnevnikov delovanja</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Snemanje običajnega videoposnetka</translation>
 <translation id="7748344063862150053">Zgornji desni kot dokumenta</translation>
 <translation id="7933675232020478311">Premikanje proti spodnjemu desnemu kotu</translation>
-<translation id="7983668134180549431">Zaznano je bilo besedilo.</translation>
 <translation id="8079255378695216066">Snemanja ni mogoče začeti</translation>
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="8131740175452115882">Potrdi</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Snemanja ni mogoče začeti</translation>
 <translation id="8880167521484863515">4 : 3</translation>
 <translation id="8903921497873541725">Povečaj</translation>
+<translation id="8926890870105777777">Pridružite se omrežju »<ph name="WIFINAME" />«</translation>
 <translation id="9045010116236796332">Postavite vse robove dokumenta znotraj okvira.</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Obdelava slike …</translation>

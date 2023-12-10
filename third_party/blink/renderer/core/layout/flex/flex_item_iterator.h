@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class NGBlockBreakToken;
+class BlockBreakToken;
 struct NGFlexItem;
 struct NGFlexLine;
 
@@ -32,7 +32,7 @@ class CORE_EXPORT FlexItemIterator {
 
  public:
   FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
-                   const NGBlockBreakToken* break_token,
+                   const BlockBreakToken* break_token,
                    bool is_column);
 
   // Returns the next flex item which should be laid out, along with its
@@ -49,12 +49,12 @@ class CORE_EXPORT FlexItemIterator {
   void NextLine();
 
  private:
-  NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
+  NGFlexItem* FindNextItem(const BlockBreakToken* item_break_token = nullptr);
   void AdjustItemIndexForNewLine();
 
   NGFlexItem* next_unstarted_item_ = nullptr;
   const HeapVector<NGFlexLine>& flex_lines_;
-  const NGBlockBreakToken* break_token_;
+  const BlockBreakToken* break_token_;
   bool is_column_ = false;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
@@ -77,7 +77,7 @@ struct FlexItemIterator::Entry {
   Entry(NGFlexItem* flex_item,
         wtf_size_t flex_item_idx,
         wtf_size_t flex_line_idx,
-        const NGBlockBreakToken* token)
+        const BlockBreakToken* token)
       : flex_item(flex_item),
         flex_item_idx(flex_item_idx),
         flex_line_idx(flex_line_idx),
@@ -86,7 +86,7 @@ struct FlexItemIterator::Entry {
   NGFlexItem* flex_item;
   wtf_size_t flex_item_idx;
   wtf_size_t flex_line_idx;
-  const NGBlockBreakToken* token;
+  const BlockBreakToken* token;
 
   bool operator==(const FlexItemIterator::Entry& other) const {
     return flex_item == other.flex_item &&

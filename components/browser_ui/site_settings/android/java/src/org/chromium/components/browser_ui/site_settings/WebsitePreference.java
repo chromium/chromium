@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,9 +33,9 @@ import org.chromium.url.GURL;
  * can be used.
  */
 class WebsitePreference extends ChromeImageViewPreference {
-    private final SiteSettingsDelegate mSiteSettingsDelegate;
-    private final Website mSite;
-    private final SiteSettingsCategory mCategory;
+    protected final SiteSettingsDelegate mSiteSettingsDelegate;
+    protected final Website mSite;
+    protected final SiteSettingsCategory mCategory;
     private Runnable mRefreshZoomsListFunction;
 
     // TODO(crbug.com/1076571): Move these constants to dimens.xml
@@ -42,7 +44,18 @@ class WebsitePreference extends ChromeImageViewPreference {
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
 
-    WebsitePreference(Context context, SiteSettingsDelegate siteSettingsClient, Website site,
+    private OnStorageAccessWebsiteDetailsRequested mStorageAccessSettingsPageListener;
+
+    /** Used to notify storage access website details subpage requests. */
+    public interface OnStorageAccessWebsiteDetailsRequested {
+        /** Notify that website details subpage is requested. */
+        void onStorageAccessWebsiteDetailsRequested(WebsitePreference website);
+    }
+
+    WebsitePreference(
+            Context context,
+            SiteSettingsDelegate siteSettingsClient,
+            Website site,
             SiteSettingsCategory category) {
         super(context);
         mSiteSettingsDelegate = siteSettingsClient;
@@ -64,6 +77,11 @@ class WebsitePreference extends ChromeImageViewPreference {
         mRefreshZoomsListFunction = refreshZoomsListCallback;
     }
 
+    public void setStorageAccessSettingsPageListener(
+            OnStorageAccessWebsiteDetailsRequested storageAccessSettingsPageListener) {
+        mStorageAccessSettingsPageListener = storageAccessSettingsPageListener;
+    }
+
     public void putSiteIntoExtras(String key) {
         getExtras().putSerializable(key, mSite);
     }
@@ -72,86 +90,151 @@ class WebsitePreference extends ChromeImageViewPreference {
         getExtras().putSerializable(key, mSite.getAddress());
     }
 
-    /**
-     * Return the Website this object is representing.
-     */
+    /** Return the Website this object is representing. */
     public Website site() {
         return mSite;
     }
 
-    /**
-     * Returns the url of the site to fetch a favicon for.
-     */
+    /** Returns the url of the site to fetch a favicon for. */
     private GURL faviconUrl() {
         String origin = mSite.getMainAddress().getOrigin();
-        GURL uri = new GURL(origin.contains(WebsiteAddress.ANY_SUBDOMAIN_PATTERN)
-                        ? origin.replace(WebsiteAddress.ANY_SUBDOMAIN_PATTERN, "")
-                        : origin);
+        GURL uri =
+                new GURL(
+                        origin.contains(WebsiteAddress.ANY_SUBDOMAIN_PATTERN)
+                                ? origin.replace(WebsiteAddress.ANY_SUBDOMAIN_PATTERN, "")
+                                : origin);
         return UrlUtilities.clearPort(uri);
     }
 
-    private void refresh() {
-        setTitle(mSite.getTitle());
+    /** @return if a |mCategory| has a sub page to show the |mSite| permissions. */
+    private boolean hasSubPage() {
+        int type = mCategory.getContentSettingsType();
 
-        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
-            // Create and set the delete button for this preference.
-            setImageView(R.drawable.btn_close, R.string.webstorage_delete_data_dialog_title,
-                    (OnClickListener) view -> {
-                        SiteSettingsUtil.resetZoomLevel(
-                                mSite, mSiteSettingsDelegate.getBrowserContextHandle());
-                        mRefreshZoomsListFunction.run();
-                    });
-            setImageViewEnabled(true);
-            setImagePadding(25, 0, 0, 0);
+        if (!Website.isEmbeddedPermission(type)) {
+            return false;
         }
 
+        int numberSites = mSite.getEmbeddedContentSettings(type).size();
+        return numberSites != 1 || !mSite.isEmbargoed(type);
+    }
+
+    protected String buildTitle() {
+        if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
+            return mSite.getTitleForPreferenceRow();
+        }
+
+        return mSite.getTitle();
+    }
+
+    protected String buildExpirationSummary(ContentSettingException exception) {
+        assert exception != null && exception.hasExpiration();
+        var expirationInDays = exception.getExpirationInDays();
+        return expirationInDays == 0
+                ? getContext().getString(R.string.site_settings_expires_today_label)
+                : getContext()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.site_settings_expires_label,
+                                expirationInDays,
+                                expirationInDays);
+    }
+
+    protected String buildSummary() {
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
                 && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
                 && mSite.getFPSCookieInfo() != null) {
             var fpsInfo = mSite.getFPSCookieInfo();
-            setSummary(getContext().getResources().getQuantityString(
-                    R.plurals.allsites_fps_list_summary, fpsInfo.getMembersCount(),
-                    Integer.toString(fpsInfo.getMembersCount()), fpsInfo.getOwner()));
-            return;
+            return getContext()
+                    .getResources()
+                    .getQuantityString(
+                            R.plurals.allsites_fps_list_summary,
+                            fpsInfo.getMembersCount(),
+                            Integer.toString(fpsInfo.getMembersCount()),
+                            fpsInfo.getOwner());
+        }
+
+        if (hasSubPage()) {
+            int numberSites =
+                    mSite.getEmbeddedContentSettings(mCategory.getContentSettingsType()).size();
+            return getContext()
+                    .getResources()
+                    .getQuantityString(
+                            R.plurals.number_sites, numberSites, Integer.toString(numberSites));
         }
 
         if (mSite.getEmbedder() == null) {
             if (mSite.isEmbargoed(mCategory.getContentSettingsType())) {
-                setSummary(getContext().getString(R.string.automatically_blocked));
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                    && mSite.getAddress().getIsAnySubdomainPattern()) {
-                setSummary(String.format(
-                        getContext().getString(R.string.website_settings_domain_exception_label),
-                        mSite.getAddress().getHost()));
+                return getContext().getString(R.string.automatically_blocked);
             }
+
+            if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
+                    && mSite.getAddress().getIsAnySubdomainPattern()) {
+                return String.format(
+                        getContext().getString(R.string.website_settings_domain_exception_label),
+                        mSite.getAddress().getHost());
+            }
+
+            return null;
+        }
+
+        if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
+            if (exception != null && exception.hasExpiration()) {
+                return buildExpirationSummary(exception);
+            }
+            return null;
+        }
+
+        String embedderTitle = mSite.getEmbedder().getTitle();
+        if (mSite.representsThirdPartiesOnSite()
+                || (embedderTitle != null
+                        && (embedderTitle.isEmpty() || embedderTitle.equals(SITE_WILDCARD)))) {
+            return null;
+        }
+
+        // TODO(crbug.com/1478113): Check if on Android there is a possibility of other exceptions
+        // being scoped to an embedder.
+        return String.format(
+                getContext().getString(R.string.website_settings_embedded_on),
+                mSite.getEmbedder().getTitle());
+    }
+
+    protected void maybeSetImageView() {
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            // Create and set the delete button for this preference.
+            setImageView(
+                    R.drawable.btn_close,
+                    R.string.webstorage_delete_data_dialog_title,
+                    (OnClickListener)
+                            view -> {
+                                SiteSettingsUtil.resetZoomLevel(
+                                        mSite, mSiteSettingsDelegate.getBrowserContextHandle());
+                                mRefreshZoomsListFunction.run();
+                            });
+            setImageViewEnabled(true);
+            setImagePadding(25, 0, 0, 0);
             return;
         }
 
-        if (Website.isEmbeddedPermission(mCategory.getContentSettingsType())) {
-            String subtitleText;
-            if (mSite.representsThirdPartiesOnSite()) {
-                subtitleText = getContext().getString(
-                        R.string.website_settings_third_party_cookies_exception_label);
-            } else {
-                subtitleText =
-                        String.format(getContext().getString(R.string.website_settings_embedded_on),
-                                mSite.getEmbedder().getTitle());
-            }
-            setSummary(subtitleText);
+        if (hasSubPage()) {
+            setImageView(
+                    R.drawable.ic_expand_more_horizontal_black_24dp,
+                    R.string.webstorage_delete_data_dialog_title,
+                    (OnClickListener)
+                            view -> {
+                                mStorageAccessSettingsPageListener
+                                        .onStorageAccessWebsiteDetailsRequested(this);
+                            });
+            setImageViewEnabled(true);
+            setImagePadding(25, 0, 0, 0);
+            return;
         }
+    }
 
-        if (mSiteSettingsDelegate.isUserBypassUIEnabled()
-                && mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
-            var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
-            if (exception != null && exception.hasExpiration()) {
-                var expirationInDays = exception.getExpirationInDays();
-                setSummary(expirationInDays == 0
-                                ? getContext().getString(R.string.site_settings_expires_today_label)
-                                : getContext().getResources().getQuantityString(
-                                        R.plurals.site_settings_expires_label, expirationInDays,
-                                        expirationInDays));
-            }
-        }
+    protected void refresh() {
+        setTitle(buildTitle());
+        maybeSetImageView();
+        setSummary(buildSummary());
     }
 
     @Override
@@ -181,10 +264,14 @@ class WebsitePreference extends ChromeImageViewPreference {
             }
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
-            long readableZoomLevel = Math.round(
-                    100 * PageZoomUtils.convertZoomFactorToZoomLevel(mSite.getZoomFactor()));
-            usageText.setText(String.format(
-                    getContext().getString(R.string.page_zoom_level), readableZoomLevel));
+            long readableZoomLevel =
+                    Math.round(
+                            100
+                                    * PageZoomUtils.convertZoomFactorToZoomLevel(
+                                            mSite.getZoomFactor()));
+            usageText.setText(
+                    String.format(
+                            getContext().getString(R.string.page_zoom_level), readableZoomLevel));
             usageText.setTextSize(TEXT_SIZE_SP);
             usageText.setVisibility(View.VISIBLE);
             setViewClickable(false);

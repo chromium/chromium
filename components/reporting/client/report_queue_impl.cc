@@ -10,11 +10,14 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -25,6 +28,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -186,7 +190,9 @@ void ReportQueueImpl::Create(
 ReportQueueImpl::ReportQueueImpl(
     std::unique_ptr<ReportQueueConfiguration> config,
     scoped_refptr<StorageModuleInterface> storage)
-    : config_(std::move(config)), storage_(storage) {}
+    : config_(std::move(config)), storage_(storage) {
+  CHECK(config_);
+}
 
 ReportQueueImpl::~ReportQueueImpl() = default;
 
@@ -226,6 +232,10 @@ ReportQueueImpl::PrepareToAttachActualQueue() const {
   return base::DoNothing();
 }
 
+Destination ReportQueueImpl::GetDestination() const {
+  return config_->destination();
+}
+
 // Implementation of SpeculativeReportQueueImpl::PendingRecordProducer
 
 SpeculativeReportQueueImpl::PendingRecordProducer::PendingRecordProducer(
@@ -256,18 +266,21 @@ SpeculativeReportQueueImpl::PendingRecordProducer::operator=(
 
 // static
 std::unique_ptr<SpeculativeReportQueueImpl, base::OnTaskRunnerDeleter>
-SpeculativeReportQueueImpl::Create() {
+SpeculativeReportQueueImpl::Create(
+    const SpeculativeConfigSettings& config_settings) {
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
   return std::unique_ptr<SpeculativeReportQueueImpl, base::OnTaskRunnerDeleter>(
-      new SpeculativeReportQueueImpl(sequenced_task_runner),
+      new SpeculativeReportQueueImpl(config_settings, sequenced_task_runner),
       base::OnTaskRunnerDeleter(sequenced_task_runner));
 }
 
 SpeculativeReportQueueImpl::SpeculativeReportQueueImpl(
+    const SpeculativeConfigSettings& config_settings,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-    : sequenced_task_runner_(sequenced_task_runner) {
+    : sequenced_task_runner_(sequenced_task_runner),
+      config_settings_(config_settings) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -390,6 +403,10 @@ SpeculativeReportQueueImpl::PrepareToAttachActualQueue() const {
                      weak_ptr_factory_.GetMutableWeakPtr()));
 }
 
+Destination SpeculativeReportQueueImpl::GetDestination() const {
+  return config_settings_.destination;
+}
+
 void SpeculativeReportQueueImpl::AttachActualQueue(
     StatusOr<std::unique_ptr<ReportQueue>> status_or_actual_queue) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -404,6 +421,8 @@ void SpeculativeReportQueueImpl::AttachActualQueue(
     return;
   }
   // Actual report queue succeeded, store it (never to change later).
+  CHECK_EQ(config_settings_.destination,
+           status_or_actual_queue.value()->GetDestination());
   actual_report_queue_ = std::move(status_or_actual_queue.value());
   EnqueuePendingRecordProducers();
 }

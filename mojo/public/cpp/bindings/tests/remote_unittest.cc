@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include <optional>
 #include "base/barrier_closure.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -39,7 +40,6 @@
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/scoping.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -1307,7 +1307,7 @@ TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
 }
 
 TEST_P(RemoteTest, RemoteSet) {
-  std::vector<absl::optional<MathCalculatorImpl>> impls(4);
+  std::vector<std::optional<MathCalculatorImpl>> impls(4);
 
   PendingRemote<math::Calculator> remote0;
   PendingRemote<math::Calculator> remote1;

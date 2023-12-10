@@ -25,9 +25,7 @@ public class LensQueryParams {
     private @LensEntryPoint int mLensEntryPoint;
     private boolean mIsTablet;
 
-    /**
-     * Builder class for LensQueryParams.
-     */
+    /** Builder class for LensQueryParams. */
     public static class Builder {
         private Uri mImageUri = Uri.EMPTY;
         private String mPageUrl;
@@ -105,9 +103,7 @@ public class LensQueryParams {
             return this;
         }
 
-        /**
-         * Build LensQueryParams object from parameters set.
-         */
+        /** Build LensQueryParams object from parameters set. */
         public LensQueryParams build() {
             LensQueryParams lensQueryParams = new LensQueryParams();
             lensQueryParams.mLensEntryPoint = this.mLensEntryPoint;

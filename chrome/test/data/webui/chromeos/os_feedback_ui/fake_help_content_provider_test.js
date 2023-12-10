@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
+
 import {fakeHelpContentList, fakeSearchRequest, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {HelpContentList, SearchResponse} from 'chrome://os-feedback/feedback_types.js';
+import {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
+import {SearchResponse} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function fakeHelpContentProviderTestSuite() {
+suite('fakeHelpContentProviderTestSuite', () => {
   /** @type {?FakeHelpContentProvider} */
   let provider = null;
 
@@ -57,4 +60,4 @@ export function fakeHelpContentProviderTestSuite() {
     assertEquals(
         mojoString16ToString(fakeSearchRequest.query), provider.lastQuery);
   });
-}
+});

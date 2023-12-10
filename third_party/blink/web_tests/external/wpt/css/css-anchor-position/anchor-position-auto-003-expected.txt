@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] .target 5
+  assert_equals: \n<div class="target" id="target5" data-offset-x="450" data-offset-y="200"></div>\noffsetLeft expected 450 but got 250
+[FAIL] .target 6
+  assert_equals: \n<div class="target" id="target6" data-offset-x="200" data-offset-y="450"></div>\noffsetTop expected 450 but got 250
+[FAIL] .target 7
+  assert_equals: \n<div class="target" id="target7" data-offset-x="250" data-offset-y="450"></div>\noffsetTop expected 450 but got 250
+[FAIL] .target 8
+  assert_equals: \n<div class="target" id="target8" data-offset-x="450" data-offset-y="250"></div>\noffsetLeft expected 450 but got 250
+Harness: the test ran to completion.
+

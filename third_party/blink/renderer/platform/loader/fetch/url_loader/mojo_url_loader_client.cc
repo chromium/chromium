@@ -55,16 +55,16 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
       absl::optional<mojo_base::BigBuffer> cached_metadata,
-      base::TimeTicks response_arrival)
+      base::TimeTicks response_ipc_arrival_time)
       : response_head_(std::move(response_head)),
         body_(std::move(body)),
         cached_metadata_(std::move(cached_metadata)),
-        response_arrival_(response_arrival) {}
+        response_ipc_arrival_time_(response_ipc_arrival_time) {}
 
   void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnReceivedResponse(
         std::move(response_head_), std::move(body_),
-        std::move(cached_metadata_), response_arrival_);
+        std::move(cached_metadata_), response_ipc_arrival_time_);
   }
   bool IsCompletionMessage() const override { return false; }
 
@@ -72,30 +72,29 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
   network::mojom::URLResponseHeadPtr response_head_;
   mojo::ScopedDataPipeConsumerHandle body_;
   absl::optional<mojo_base::BigBuffer> cached_metadata_;
-  const base::TimeTicks response_arrival_;
+  const base::TimeTicks response_ipc_arrival_time_;
 };
 
 class MojoURLLoaderClient::DeferredOnReceiveRedirect final
     : public DeferredMessage {
  public:
-  DeferredOnReceiveRedirect(
-      const net::RedirectInfo& redirect_info,
-      network::mojom::URLResponseHeadPtr response_head,
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
+  DeferredOnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                            network::mojom::URLResponseHeadPtr response_head,
+                            base::TimeTicks redirect_ipc_arrival_time)
       : redirect_info_(redirect_info),
         response_head_(std::move(response_head)),
-        task_runner_(std::move(task_runner)) {}
+        redirect_ipc_arrival_time_(redirect_ipc_arrival_time) {}
 
   void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnReceivedRedirect(
-        redirect_info_, std::move(response_head_), task_runner_);
+        redirect_info_, std::move(response_head_), redirect_ipc_arrival_time_);
   }
   bool IsCompletionMessage() const override { return false; }
 
  private:
   const net::RedirectInfo redirect_info_;
   network::mojom::URLResponseHeadPtr response_head_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const base::TimeTicks redirect_ipc_arrival_time_;
 };
 
 class MojoURLLoaderClient::DeferredOnUploadProgress final
@@ -117,16 +116,20 @@ class MojoURLLoaderClient::DeferredOnUploadProgress final
 
 class MojoURLLoaderClient::DeferredOnComplete final : public DeferredMessage {
  public:
-  explicit DeferredOnComplete(const network::URLLoaderCompletionStatus& status)
-      : status_(status) {}
+  explicit DeferredOnComplete(const network::URLLoaderCompletionStatus& status,
+                              base::TimeTicks complete_ipc_arrival_time)
+      : status_(status),
+        complete_ipc_arrival_time_(complete_ipc_arrival_time) {}
 
   void HandleMessage(ResourceRequestSender* resource_request_sender) override {
-    resource_request_sender->OnRequestComplete(status_);
+    resource_request_sender->OnRequestComplete(status_,
+                                               complete_ipc_arrival_time_);
   }
   bool IsCompletionMessage() const override { return true; }
 
  private:
   const network::URLLoaderCompletionStatus status_;
+  const base::TimeTicks complete_ipc_arrival_time_;
 };
 
 class MojoURLLoaderClient::BodyBuffer final
@@ -308,13 +311,13 @@ void MojoURLLoaderClient::OnReceiveResponse(
 
   has_received_response_head_ = true;
   has_received_response_body_ = !!body;
-  base::TimeTicks response_arrival_timing = base::TimeTicks::Now();
+  base::TimeTicks response_ipc_arrival_time = base::TimeTicks::Now();
 
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   if (!NeedsStoringMessage()) {
     resource_request_sender_->OnReceivedResponse(
         std::move(response_head), std::move(body), std::move(cached_metadata),
-        response_arrival_timing);
+        response_ipc_arrival_time);
     return;
   }
 
@@ -339,7 +342,7 @@ void MojoURLLoaderClient::OnReceiveResponse(
   }
   StoreAndDispatch(std::make_unique<DeferredOnReceiveResponse>(
       std::move(response_head), std::move(body), std::move(cached_metadata),
-      response_arrival_timing));
+      response_ipc_arrival_time));
 }
 
 void MojoURLLoaderClient::EvictFromBackForwardCache(
@@ -377,6 +380,7 @@ void MojoURLLoaderClient::StopBackForwardCacheEvictionTimer() {
 void MojoURLLoaderClient::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
+  base::TimeTicks redirect_ipc_arrival_time = base::TimeTicks::Now();
   DCHECK(!has_received_response_head_);
   if (freeze_mode_ == LoaderFreezeMode::kBufferIncoming) {
     // Evicting a page from the bfcache and aborting the request is not good for
@@ -401,10 +405,10 @@ void MojoURLLoaderClient::OnReceiveRedirect(
   last_loaded_url_ = KURL(redirect_info.new_url);
   if (NeedsStoringMessage()) {
     StoreAndDispatch(std::make_unique<DeferredOnReceiveRedirect>(
-        redirect_info, std::move(response_head), task_runner_));
+        redirect_info, std::move(response_head), redirect_ipc_arrival_time));
   } else {
     resource_request_sender_->OnReceivedRedirect(
-        redirect_info, std::move(response_head), task_runner_);
+        redirect_info, std::move(response_head), redirect_ipc_arrival_time);
   }
 }
 
@@ -434,6 +438,7 @@ void MojoURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 
 void MojoURLLoaderClient::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
+  base::TimeTicks complete_ipc_arrival_time = base::TimeTicks::Now();
   has_received_complete_ = true;
   StopBackForwardCacheEvictionTimer();
 
@@ -441,9 +446,11 @@ void MojoURLLoaderClient::OnComplete(
   // Except for errors, there must always be a response's body.
   DCHECK(has_received_response_body_ || status.error_code != net::OK);
   if (NeedsStoringMessage()) {
-    StoreAndDispatch(std::make_unique<DeferredOnComplete>(status));
+    StoreAndDispatch(std::make_unique<DeferredOnComplete>(
+        status, complete_ipc_arrival_time));
   } else {
-    resource_request_sender_->OnRequestComplete(status);
+    resource_request_sender_->OnRequestComplete(status,
+                                                complete_ipc_arrival_time);
   }
 }
 
@@ -480,7 +487,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
     return;
   }
   WebVector<std::unique_ptr<DeferredMessage>> messages;
-  messages.Swap(deferred_messages_);
+  messages.swap(deferred_messages_);
   bool has_completion_message = false;
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   // First, dispatch all messages excluding the followings:

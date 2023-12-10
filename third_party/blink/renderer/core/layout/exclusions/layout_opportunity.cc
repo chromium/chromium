@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/exclusions/layout_opportunity.h"
 
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 
 namespace blink {
@@ -96,7 +96,7 @@ bool LayoutOpportunity::IsBlockDeltaBelowShapes(LayoutUnit block_delta) const {
 }
 
 LayoutUnit LayoutOpportunity::ComputeLineLeftOffset(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     LayoutUnit line_block_size,
     LayoutUnit block_delta) const {
   if (!shape_exclusions || shape_exclusions->line_left_shapes.empty())
@@ -128,7 +128,7 @@ LayoutUnit LayoutOpportunity::ComputeLineLeftOffset(
 }
 
 LayoutUnit LayoutOpportunity::ComputeLineRightOffset(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     LayoutUnit line_block_size,
     LayoutUnit block_delta) const {
   if (!shape_exclusions || shape_exclusions->line_right_shapes.empty())

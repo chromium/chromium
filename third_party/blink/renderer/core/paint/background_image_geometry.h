@@ -13,15 +13,19 @@
 namespace blink {
 
 class ComputedStyle;
-class Document;
 class FillLayer;
 class ImageResourceObserver;
 class LayoutBox;
 class LayoutBoxModelObject;
 class LayoutTableCell;
 class LayoutView;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 struct PaintInfo;
+
+struct SnappedAndUnsnappedOutsets {
+  PhysicalBoxStrut snapped;
+  PhysicalBoxStrut unsnapped;
+};
 
 class BackgroundImageGeometry {
   STACK_ALLOCATED();
@@ -41,7 +45,7 @@ class BackgroundImageGeometry {
                           const LayoutBox& table_part,
                           PhysicalSize table_part_size);
 
-  explicit BackgroundImageGeometry(const NGPhysicalBoxFragment&);
+  explicit BackgroundImageGeometry(const PhysicalBoxFragment&);
 
   // Compute the initial position area based on the geometry for the object
   // this BackgroundImageGeometry was created for.
@@ -96,10 +100,7 @@ class BackgroundImageGeometry {
   }
 
   const ImageResourceObserver& ImageClient() const;
-  const Document& ImageDocument() const;
   const ComputedStyle& ImageStyle(const ComputedStyle& fragment_style) const;
-  InterpolationQuality ImageInterpolationQuality() const;
-  cc::PaintFlags::DynamicRangeLimit DynamicRangeLimit() const;
 
   bool CanCompositeBackgroundAttachmentFixed() const;
 
@@ -123,12 +124,8 @@ class BackgroundImageGeometry {
   void SetNoRepeatY(const FillLayer&,
                     LayoutUnit y_offset,
                     LayoutUnit snapped_y_offset);
-  void SetRepeatX(const FillLayer&,
-                  LayoutUnit available_width,
-                  LayoutUnit extra_offset);
-  void SetRepeatY(const FillLayer&,
-                  LayoutUnit available_height,
-                  LayoutUnit extra_offset);
+  void SetRepeatX(LayoutUnit x_offset);
+  void SetRepeatY(LayoutUnit y_offset);
   void SetSpaceX(LayoutUnit space, LayoutUnit extra_offset);
   void SetSpaceY(LayoutUnit space, LayoutUnit extra_offset);
 
@@ -139,20 +136,18 @@ class BackgroundImageGeometry {
   // both optimize painting when the background is obscured by a
   // border, and snap the dest rect to the border. They also
   // account for the background-clip property.
-  void ComputeDestRectAdjustments(const FillLayer&,
-                                  const PhysicalRect&,
-                                  bool,
-                                  PhysicalBoxStrut&,
-                                  PhysicalBoxStrut&) const;
+  SnappedAndUnsnappedOutsets ComputeDestRectAdjustments(
+      const FillLayer&,
+      const PhysicalRect& unsnapped_positioning_area,
+      bool disallow_border_derived_adjustment) const;
 
   // Positioning area adjustments modify the size of the
   // positioning area to snap values and apply the
   // background-origin property.
-  void ComputePositioningAreaAdjustments(const FillLayer&,
-                                         const PhysicalRect&,
-                                         bool,
-                                         PhysicalBoxStrut&,
-                                         PhysicalBoxStrut&) const;
+  SnappedAndUnsnappedOutsets ComputePositioningAreaAdjustments(
+      const FillLayer&,
+      const PhysicalRect& unsnapped_positioning_area,
+      bool disallow_border_derived_adjustment) const;
 
   void AdjustPositioningArea(const PaintInfo&,
                              const FillLayer&,
@@ -164,6 +159,21 @@ class BackgroundImageGeometry {
   void CalculateFillTileSize(const FillLayer&,
                              const PhysicalSize&,
                              const PhysicalSize&);
+  void CalculateRepeatAndPosition(
+      const FillLayer&,
+      const PhysicalOffset& offset_in_background,
+      const PhysicalSize& unsnapped_positioning_area_size,
+      const PhysicalSize& snapped_positioning_area_size,
+      const PhysicalOffset& unsnapped_box_offset,
+      const PhysicalOffset& snapped_box_offset);
+
+  PhysicalBoxStrut VisualOverflowOutsets() const;
+  PhysicalBoxStrut InnerBorderOutsets(
+      const PhysicalRect& dest_rect,
+      const PhysicalRect& positioning_area) const;
+  SnappedAndUnsnappedOutsets ObscuredBorderOutsets(
+      const PhysicalRect& dest_rect,
+      const PhysicalRect& positioning_area) const;
 
   // The offset of the background image within the background positioning area.
   PhysicalOffset OffsetInBackground(const FillLayer&) const;
@@ -175,11 +185,8 @@ class BackgroundImageGeometry {
   // 2. a table cell using its row/column's background (box_ is the table cell,
   //    and positioning_box_ is the row/column).
   // When they are different:
-  // - ImageDocument() uses box_;
   // - ImageClient() uses box_ if painting view, otherwise positioning_box_;
   // - ImageStyle() uses positioning_box_;
-  // - ImageInterpolationQuality() uses box_;
-  // - DynamicRangeLimit() uses box_;
   // - FillLayers come from box_ if painting view, otherwise positioning_box_.
   const LayoutBoxModelObject* const box_;
 

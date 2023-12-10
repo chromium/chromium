@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller.h"
+#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
+#import "ios/chrome/browser/unit_conversion/unit_conversion_service_factory.h"
 
 namespace {
 
@@ -16,16 +18,23 @@ namespace {
 const CGFloat kPopOverSourceRectWidth = 1;
 const CGFloat kPopOverSourceRectHeight = 1;
 
+// The height offset to add to the half sheet detent's height.
+const CGFloat kHalfSheetDetentHeightOffset = 40;
+
+// Sets a custom radius for the half sheet.
+CGFloat const kHalfSheetCornerRadius = 13;
+
 }  // namespace
 
 @interface UnitConversionCoordinator () <
     UIAdaptivePresentationControllerDelegate>
 
+// The view controller managed by this coordinator.
+@property(nonatomic, strong) UnitConversionViewController* viewController;
+
 @end
 
 @implementation UnitConversionCoordinator {
-  // The view controller managed by this coordinator.
-  UnitConversionViewController* _viewController;
 
   // Mediator to handle the units updates and conversion.
   UnitConversionMediator* _mediator;
@@ -55,12 +64,16 @@ const CGFloat kPopOverSourceRectHeight = 1;
 }
 
 - (void)start {
+  // Init the keyed service to track the changes of the target unit and pass it
+  // to the mediator.
+  UnitConversionService* service =
+      UnitConversionServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  _mediator = [[UnitConversionMediator alloc] initWithService:service];
   _viewController = [[UnitConversionViewController alloc]
       initWithSourceUnit:_sourceUnit
+              targetUnit:service->GetDefaultTargetFromUnit(_sourceUnit)
                unitValue:_sourceUnitValue];
-
-  _mediator = [[UnitConversionMediator alloc] init];
-
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
@@ -70,6 +83,8 @@ const CGFloat kPopOverSourceRectHeight = 1;
 
 - (void)stop {
   [_mediator reportMetrics];
+  [_mediator shutdown];
+  _mediator = nil;
   [self dismissViewController];
 }
 
@@ -112,10 +127,32 @@ const CGFloat kPopOverSourceRectHeight = 1;
       popover.adaptiveSheetPresentationController;
   sheetPresentationController.delegate = _viewController;
   sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
-  ];
+  sheetPresentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+
+  if (@available(iOS 16, *)) {
+    __weak UnitConversionCoordinator* weakSelf = self;
+    auto resolver = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      CGFloat sheetHeight =
+          weakSelf.viewController.preferredContentSize.height +
+          kHalfSheetDetentHeightOffset;
+      BOOL tooLarge = (sheetHeight > context.maximumDetentValue);
+      return tooLarge ? context.maximumDetentValue : sheetHeight;
+    };
+
+    UISheetPresentationControllerDetent* customDetent =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:nil
+                              resolver:resolver];
+
+    sheetPresentationController.detents = @[ customDetent ];
+  } else {
+    sheetPresentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+  }
+
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];

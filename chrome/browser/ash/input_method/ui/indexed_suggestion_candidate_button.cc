@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/ui/indexed_suggestion_candidate_button.h"
 
 #include "chrome/browser/ash/input_method/ui/colors.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
@@ -119,5 +120,8 @@ void IndexedSuggestionCandidateButton::BuildCandidate(
 }
 
 IndexedSuggestionCandidateButton::~IndexedSuggestionCandidateButton() = default;
+
+BEGIN_METADATA(IndexedSuggestionCandidateButton)
+END_METADATA
 
 }  // namespace ui::ime

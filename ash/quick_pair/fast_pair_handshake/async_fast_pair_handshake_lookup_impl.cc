@@ -83,13 +83,13 @@ void AsyncFastPairHandshakeLookupImpl::Create(
 
   fast_pair_handshakes_.emplace(device, std::move(handshake_to_emplace));
 
-  AttemptHandshakeWithRetries(device, std::move(on_complete), absl::nullopt);
+  AttemptHandshakeWithRetries(device, std::move(on_complete), std::nullopt);
 }
 
 void AsyncFastPairHandshakeLookupImpl::AttemptHandshakeWithRetries(
     scoped_refptr<Device> device,
     OnCompleteCallback on_complete_callback,
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   auto* handshake = Get(device);
   CHECK(handshake);
 
@@ -128,7 +128,7 @@ void AsyncFastPairHandshakeLookupImpl::OnHandshakeComplete(
   // situation, such as handshake happening directly before the device rotates
   // ble addresses.
   fast_pair_handshake_attempt_counts_.erase(device);
-  std::move(on_complete_callback).Run(device, absl::nullopt);
+  std::move(on_complete_callback).Run(device, std::nullopt);
 }
 
 }  // namespace ash::quick_pair

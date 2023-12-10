@@ -20,6 +20,7 @@ public @interface PaneId {
     int TAB_SWITCHER = 0;
     int INCOGNITO_TAB_SWITCHER = 1;
     int BOOKMARKS = 2;
+
     /** Must be last. */
     int COUNT = 3;
 }

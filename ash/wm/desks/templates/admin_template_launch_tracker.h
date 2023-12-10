@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_TEMPLATES_ADMIN_TEMPLATE_LAUNCH_TRACKER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -14,7 +15,6 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -31,14 +31,14 @@ struct AdminTemplateWindowUpdate {
   int32_t template_rwid;
 
   // Optional new bounds for the window.
-  absl::optional<gfx::Rect> bounds;
+  std::optional<gfx::Rect> bounds;
 
   // Optional new display ID for the window.
-  absl::optional<int64_t> display_id;
+  std::optional<int64_t> display_id;
 
   // Optional new Z index for the window, relative to the other tracked
   // windows.
-  absl::optional<int32_t> activation_index;
+  std::optional<int32_t> activation_index;
 };
 
 // Apply changes in `update` to `admin_template`. If `update` has specified a

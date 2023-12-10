@@ -1,25 +1,7 @@
 This is a testharness.js-based test.
-[PASS] A label element with a 'for' attribute should only be associated with a labelable element.
-[PASS] A label element not in a document can not label any element in the document.
-[PASS] The labeled control for a label element that has no 'for' attribute is the first labelable element which is a descendant of that label element.
-[PASS] The 'for' attribute points to an inexistent id.
-[PASS] A non-control follows by a control with same ID.
-[PASS] The 'for' attribute is an empty string.
-[PASS] A form control has multiple labels.
-[PASS] A labelable element is moved to outside of nested associated labels.
-[PASS] A labelable element is moved to inside of nested associated labels.
-[PASS] A labelable element which is a descendant of non-labelable element is moved to outside of associated label.
-[PASS] A labelable element is moved to iframe.
 [FAIL] A div element which contains labelable element is removed.
   assert_equals: The number of labels should be 1 after the labelable element is removed but label element is still in the same tree. expected 1 but got 0
 [FAIL] A labelable element not in a document can label element in the same tree.
   assert_equals: The number of labels associated with a form control should be the number of label elements for which it is a labeled control. expected 2 but got 0
-[PASS] A labelable element inside the shadow DOM.
-[PASS] A form control has an implicit label.
-[PASS] A form control has no label 1.
-[PASS] A form control has no label 2.
-[PASS] A label in a form without a control
-[PASS] A label outside a form with a control inside the form
-[PASS] A label's htmlFor attribute must reflect the for content attribute
 Harness: the test ran to completion.
 

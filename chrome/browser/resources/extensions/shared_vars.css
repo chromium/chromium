@@ -22,7 +22,7 @@ html {
 
 @media (prefers-color-scheme: dark) {
   html {
-    --review-panel-icon-color: rgb(50, 54, 57); /* #323639 */
+    --review-panel-icon-color: var(--google-grey-500); /* #323639 */
     --error-color: var(--google-red-300);
     --warning-color: var(--google-yellow-300);
   }

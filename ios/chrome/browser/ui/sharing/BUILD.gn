@@ -64,7 +64,6 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -1,14 +1,8 @@
 This is a testharness.js-based test.
-[PASS] Property appearance has initial value none
-[PASS] Property appearance does not inherit
-[PASS] Property caret-color has initial value rgb(0, 255, 0)
-[PASS] Property caret-color inherits
 [FAIL] Property caret-shape has initial value auto
   assert_true: caret-shape doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property caret-shape inherits
   assert_true: caret-shape doesn't seem to be supported in the computed style expected true got false
-[PASS] Property cursor has initial value auto
-[PASS] Property cursor inherits
 [FAIL] Property nav-down has initial value auto
   assert_true: nav-down doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property nav-down does not inherit
@@ -25,17 +19,6 @@ This is a testharness.js-based test.
   assert_true: nav-up doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property nav-up does not inherit
   assert_true: expected true got false
-[PASS] Property outline-color has initial value rgb(0, 255, 0)
-[PASS] Property outline-color does not inherit
-[PASS] Property outline-offset has initial value 0px
-[PASS] Property outline-offset does not inherit
-[PASS] Property outline-style has initial value none
-[PASS] Property outline-style does not inherit
-[PASS] Property outline-width has initial value 3px
-[PASS] Property outline-width does not inherit
-[PASS] Property resize has initial value none
-[PASS] Property resize does not inherit
-[PASS] Property user-select has initial value auto
 [FAIL] Property user-select does not inherit
   assert_not_equals: got disallowed value "none"
 Harness: the test ran to completion.

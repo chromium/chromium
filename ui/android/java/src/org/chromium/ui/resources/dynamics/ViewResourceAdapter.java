@@ -33,13 +33,16 @@ public class ViewResourceAdapter
     public interface CaptureMechanism {
         /** See {@link Resource#shouldRemoveResourceOnNullBitmap()}. */
         boolean shouldRemoveResourceOnNullBitmap();
+
         /** Called when the size of the view changes. */
         default void onViewSizeChange(View view, float scale) {}
+
         /** Called to drop any cached bitmaps to free up memory. */
         void dropCachedBitmap();
 
         /**
          * Called to trigger the actual bitmap capture.
+         *
          * @param view The view being captured.
          * @param dirtyRect The area that has changed since last capture.
          * @param scale Scalar to apply to width and height when capturing a bitmap.
@@ -47,7 +50,11 @@ public class ViewResourceAdapter
          * @param onBitmapCapture The callback to return the recorded image.
          * @return If the dirty rect can be cleared on a successful capture.
          */
-        boolean startBitmapCapture(View view, Rect dirtyRect, float scale, CaptureObserver observer,
+        boolean startBitmapCapture(
+                View view,
+                Rect dirtyRect,
+                float scale,
+                CaptureObserver observer,
                 Callback<Bitmap> onBitmapCapture);
     }
 
@@ -104,7 +111,7 @@ public class ViewResourceAdapter
         mThreadChecker.assertOnValidThread();
         try (TraceEvent e = TraceEvent.scoped("ViewResourceAdapter:getBitmap")) {
             if (mCaptureMechanism.startBitmapCapture(
-                        mView, new Rect(mDirtyRect), mScale, this, this::onCapture)) {
+                    mView, new Rect(mDirtyRect), mScale, this, this::onCapture)) {
                 mDirtyRect.setEmpty();
             }
         }
@@ -112,9 +119,12 @@ public class ViewResourceAdapter
 
     private void onCapture(Bitmap bitmap) {
         mThreadChecker.assertOnValidThread();
-        Resource resource = new DynamicResourceSnapshot(bitmap,
-                mCaptureMechanism.shouldRemoveResourceOnNullBitmap(), mViewSize,
-                createNativeResource());
+        Resource resource =
+                new DynamicResourceSnapshot(
+                        bitmap,
+                        mCaptureMechanism.shouldRemoveResourceOnNullBitmap(),
+                        mViewSize,
+                        createNativeResource());
         for (Callback<Resource> observer : mOnResourceReadyObservers) observer.onResult(resource);
     }
 
@@ -164,8 +174,16 @@ public class ViewResourceAdapter
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         final int width = right - left;
         final int height = bottom - top;
         final int oldWidth = oldRight - oldLeft;

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/GPU Linux Builder/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -90,15 +93,7 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux-mbi-mode-per-site-instance-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-siso-rel",
           "group": "tryserver.chromium.linux"
         }
       ]

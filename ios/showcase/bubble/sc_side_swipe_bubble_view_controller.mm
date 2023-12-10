@@ -14,7 +14,13 @@
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  UILayoutGuide* guide = self.view.safeAreaLayoutGuide;
+  UILayoutGuide* guide = [[UILayoutGuide alloc] init];
+  [self.view addLayoutGuide:guide];
+  AddSameConstraintsToSides(guide, self.view.safeAreaLayoutGuide,
+                            LayoutSides::kTop);
+  AddSameConstraintsToSides(
+      guide, self.view,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
   SideSwipeBubbleView* sideSwipeBubbleView =
       [[SideSwipeBubbleView alloc] initWithText:@"Lorem ipsum dolor"
                              bubbleBoundingSize:guide.layoutFrame.size

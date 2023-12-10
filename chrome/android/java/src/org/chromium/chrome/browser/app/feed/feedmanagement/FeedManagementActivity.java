@@ -19,11 +19,9 @@ import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementCoordinator;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator;
 
-/**
- * Activity for managing feed and webfeed settings on the new tab page.
- */
-public class FeedManagementActivity
-        extends SnackbarActivity implements FeedManagementMediator.FollowManagementLauncher {
+/** Activity for managing feed and webfeed settings on the new tab page. */
+public class FeedManagementActivity extends SnackbarActivity
+        implements FeedManagementMediator.FollowManagementLauncher {
     private static final String TAG = "FeedMActivity";
     public static final String INITIATING_STREAM_TYPE_EXTRA =
             "feed_management_initiating_stream_type_extra";

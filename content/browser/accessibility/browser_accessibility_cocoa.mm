@@ -1015,7 +1015,7 @@ bool content::IsNSRange(id value) {
           ->ToBrowserAccessibilityManagerMac();
   if (!manager) {
     // TODO(accessibility) Determine why this is happening.
-    SANITIZER_NOTREACHED();
+    DCHECK(false);
     return nil;
   }
   SANITIZER_CHECK(manager->GetParentView());

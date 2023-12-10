@@ -46,7 +46,11 @@ bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
   }
   struct group grp, *result = nullptr;
   std::vector<char> buffer(16384);
-  getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(), &result);
+  // HANDLE_EINTR is not suitable for use with getgrnam_r, as it returns the
+  // error rather than setting errno.
+  while (getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(),
+                    &result) == EINTR) {
+  }
   // Ignoring as the group might not exist in tests.
   if (result &&
       HANDLE_EINTR(chown(dir_path.value().c_str(), -1, grp.gr_gid)) != 0) {

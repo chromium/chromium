@@ -11,8 +11,8 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/common/pref_names.h"
@@ -124,10 +124,10 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
  protected:
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
-  raw_ptr<commerce::ShoppingListUiTabHelper, AcrossTasksDanglingUntriaged>
+  raw_ptr<commerce::CommerceUiTabHelper, AcrossTasksDanglingUntriaged>
       tab_helper_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
-  absl::optional<commerce::ProductInfo> product_info_;
+  std::optional<commerce::ProductInfo> product_info_;
   base::CallbackListSubscription create_services_subscription_;
   bool is_browser_context_services_created{false};
 
@@ -156,8 +156,8 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
                   .Run(std::move(image), image_fetcher::RequestMetadata());
             });
 
-    tab_helper_ = static_cast<commerce::ShoppingListUiTabHelper*>(
-        commerce::ShoppingListUiTabHelper::FromWebContents(
+    tab_helper_ = static_cast<commerce::CommerceUiTabHelper*>(
+        commerce::CommerceUiTabHelper::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
     tab_helper_->SetImageFetcherForTesting(image_fetcher_.get());
 
@@ -640,4 +640,3 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                 "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
             1);
 }
-

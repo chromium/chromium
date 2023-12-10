@@ -63,8 +63,7 @@ void PipeMessagingChannel::ProcessMessage(base::Value message) {
   }
 }
 
-void PipeMessagingChannel::SendMessage(
-    absl::optional<base::ValueView> message) {
+void PipeMessagingChannel::SendMessage(std::optional<base::ValueView> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool success = message && native_messaging_writer_;

@@ -179,7 +179,8 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
             Rect startValue, Rect endValue, @Nullable Size thumbnailSize) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
-                    ShrinkExpandAnimator animator = new ShrinkExpandAnimator(mView, startValue, endValue);
+                    ShrinkExpandAnimator animator =
+                            new ShrinkExpandAnimator(mView, startValue, endValue);
                     animator.setThumbnailSizeForOffset(thumbnailSize);
                     animator.setRect(startValue);
                     return animator;

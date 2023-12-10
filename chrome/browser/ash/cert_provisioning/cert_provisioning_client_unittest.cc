@@ -88,8 +88,8 @@ using NoDataFuture =
 class StartCsrFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
-          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-          absl::optional<int64_t>,
+          std::optional<em::ClientCertificateProvisioningResponse::Error>,
+          std::optional<int64_t>,
           std::string,
           std::string,
           em::HashingAlgorithm,
@@ -98,18 +98,18 @@ class StartCsrFuture
   CertProvisioningClient::StartCsrCallback GetStartCsrCallback() {
     return GetCallback<
         policy::DeviceManagementStatus,
-        absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-        absl::optional<int64_t>, const std::string&, const std::string&,
+        std::optional<em::ClientCertificateProvisioningResponse::Error>,
+        std::optional<int64_t>, const std::string&, const std::string&,
         em::HashingAlgorithm, std::vector<uint8_t>>();
   }
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
 
-  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
+  std::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
     return Get<1>();
   }
 
-  absl::optional<int64_t> GetTryLater() { return Get<2>(); }
+  std::optional<int64_t> GetTryLater() { return Get<2>(); }
 
   const std::string& GetInvalidationTopic() { return Get<3>(); }
 
@@ -125,8 +125,8 @@ class StartCsrFuture
 class FinishCsrFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
-          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-          absl::optional<int64_t>> {
+          std::optional<em::ClientCertificateProvisioningResponse::Error>,
+          std::optional<int64_t>> {
  public:
   CertProvisioningClient::FinishCsrCallback GetFinishCsrCallback() {
     return GetCallback();
@@ -134,11 +134,11 @@ class FinishCsrFuture
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
 
-  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
+  std::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
     return Get<1>();
   }
 
-  absl::optional<int64_t> GetTryLater() { return Get<2>(); }
+  std::optional<int64_t> GetTryLater() { return Get<2>(); }
 };
 
 // A TestFuture that supports waiting for a
@@ -146,24 +146,24 @@ class FinishCsrFuture
 class DownloadCertFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
-          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-          absl::optional<int64_t>,
+          std::optional<em::ClientCertificateProvisioningResponse::Error>,
+          std::optional<int64_t>,
           std::string> {
  public:
   CertProvisioningClient::DownloadCertCallback GetDownloadCertCallback() {
     return GetCallback<
         policy::DeviceManagementStatus,
-        absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-        absl::optional<int64_t>, const std::string&>();
+        std::optional<em::ClientCertificateProvisioningResponse::Error>,
+        std::optional<int64_t>, const std::string&>();
   }
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
 
-  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
+  std::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
     return Get<1>();
   }
 
-  absl::optional<int64_t> GetTryLater() { return Get<2>(); }
+  std::optional<int64_t> GetTryLater() { return Get<2>(); }
 
   const std::string& GetPemEncodedCertificate() { return Get<3>(); }
 };
@@ -421,8 +421,8 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(start_csr_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(start_csr_future.GetError(), absl::nullopt);
-  EXPECT_EQ(start_csr_future.GetTryLater(), absl::nullopt);
+  EXPECT_EQ(start_csr_future.GetError(), std::nullopt);
+  EXPECT_EQ(start_csr_future.GetTryLater(), std::nullopt);
   EXPECT_EQ(start_csr_future.GetInvalidationTopic(), kInvalidationTopic);
   EXPECT_EQ(start_csr_future.GetVaChallenge(), kVaChallange);
   EXPECT_EQ(start_csr_future.GetHashingAlgorithm(), kHashAlgorithm);
@@ -454,8 +454,8 @@ TEST_P(CertProvisioningClientTest, StartCsrTryLater) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(start_csr_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(start_csr_future.GetError(), absl::nullopt);
-  EXPECT_EQ(start_csr_future.GetTryLater(), absl::make_optional(try_later));
+  EXPECT_EQ(start_csr_future.GetError(), std::nullopt);
+  EXPECT_EQ(start_csr_future.GetTryLater(), std::make_optional(try_later));
 }
 
 // Checks that CertProvisioningClient correctly reacts on the `error` field
@@ -484,8 +484,8 @@ TEST_P(CertProvisioningClientTest, StartCsrError) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(start_csr_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(start_csr_future.GetError(), absl::make_optional(error));
-  EXPECT_EQ(start_csr_future.GetTryLater(), absl::nullopt);
+  EXPECT_EQ(start_csr_future.GetError(), std::make_optional(error));
+  EXPECT_EQ(start_csr_future.GetTryLater(), std::nullopt);
 }
 
 // 1. Checks that `FinishCsr` generates a correct request.
@@ -530,8 +530,8 @@ TEST_P(CertProvisioningClientTest, FinishCsrSuccess) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(finish_csr_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(finish_csr_future.GetError(), absl::nullopt);
-  EXPECT_EQ(finish_csr_future.GetTryLater(), absl::nullopt);
+  EXPECT_EQ(finish_csr_future.GetError(), std::nullopt);
+  EXPECT_EQ(finish_csr_future.GetTryLater(), std::nullopt);
 }
 
 // Checks that CertProvisioningClient correctly reacts on the `error` field
@@ -560,8 +560,8 @@ TEST_P(CertProvisioningClientTest, FinishCsrError) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(finish_csr_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(finish_csr_future.GetError(), absl::make_optional(error));
-  EXPECT_EQ(finish_csr_future.GetTryLater(), absl::nullopt);
+  EXPECT_EQ(finish_csr_future.GetError(), std::make_optional(error));
+  EXPECT_EQ(finish_csr_future.GetTryLater(), std::nullopt);
 }
 
 // 1. Checks that `DownloadCert` generates a correct request.
@@ -604,8 +604,8 @@ TEST_P(CertProvisioningClientTest, DownloadCertSuccess) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(download_cert_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(download_cert_future.GetError(), absl::nullopt);
-  EXPECT_EQ(download_cert_future.GetTryLater(), absl::nullopt);
+  EXPECT_EQ(download_cert_future.GetError(), std::nullopt);
+  EXPECT_EQ(download_cert_future.GetTryLater(), std::nullopt);
   EXPECT_EQ(download_cert_future.GetPemEncodedCertificate(), kPemEncodedCert);
 }
 
@@ -634,8 +634,8 @@ TEST_P(CertProvisioningClientTest, DownloadCertError) {
 
   // Check that CertProvisioningClient has translated the answer correctly.
   EXPECT_EQ(download_cert_future.GetStatus(), policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(download_cert_future.GetError(), absl::make_optional(error));
-  EXPECT_EQ(download_cert_future.GetTryLater(), absl::nullopt);
+  EXPECT_EQ(download_cert_future.GetError(), std::make_optional(error));
+  EXPECT_EQ(download_cert_future.GetTryLater(), std::nullopt);
   EXPECT_EQ(download_cert_future.GetPemEncodedCertificate(), std::string());
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_EXTENSION_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -36,7 +36,7 @@ class ExtensionProvider : public ProviderInterface,
                     ProviderId id,
                     Capabilities capabilities,
                     std::string name,
-                    absl::optional<IconSet> icon_set);
+                    std::optional<IconSet> icon_set);
 
   ~ExtensionProvider() override;
 

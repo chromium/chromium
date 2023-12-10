@@ -76,20 +76,21 @@ class NearbyPresenceService {
   class PresenceDevice {
    public:
     PresenceDevice(::nearby::internal::Metadata metadata,
-                   absl::optional<std::string> stable_device_id,
+                   std::optional<std::string> stable_device_id,
                    std::string endpoint_id,
                    std::vector<Action> actions,
                    int rssi);
 
-    PresenceDevice(const PresenceDevice&) = delete;
-    PresenceDevice& operator=(const PresenceDevice&) = delete;
+    PresenceDevice(const PresenceDevice&);
+    PresenceDevice& operator=(const PresenceDevice&);
     ~PresenceDevice();
 
+    ::nearby::internal::Metadata GetMetadata() const { return metadata_; }
     ::nearby::internal::DeviceType GetType() const {
       return metadata_.device_type();
     }
 
-    const absl::optional<std::string> GetStableId() const {
+    const std::optional<std::string> GetStableId() const {
       return stable_device_id_;
     }
     const std::string& GetEndpointId() const { return endpoint_id_; }
@@ -99,7 +100,7 @@ class NearbyPresenceService {
 
    private:
     ::nearby::internal::Metadata metadata_;
-    absl::optional<std::string> stable_device_id_;
+    std::optional<std::string> stable_device_id_;
     std::string endpoint_id_;
     std::vector<Action> actions_;
     int rssi_;
@@ -119,12 +120,9 @@ class NearbyPresenceService {
     ScanDelegate();
     virtual ~ScanDelegate();
 
-    virtual void OnPresenceDeviceFound(
-        const PresenceDevice& presence_device) = 0;
-    virtual void OnPresenceDeviceChanged(
-        const PresenceDevice& presence_device) = 0;
-    virtual void OnPresenceDeviceLost(
-        const PresenceDevice& presence_device) = 0;
+    virtual void OnPresenceDeviceFound(PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceChanged(PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceLost(PresenceDevice presence_device) = 0;
     virtual void OnScanSessionInvalidated() = 0;
   };
 

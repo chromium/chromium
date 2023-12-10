@@ -21,7 +21,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -47,30 +47,16 @@ using content::WebContents;
 
 namespace android_webview {
 
-void AwAutofillClient::CreateForWebContents(content::WebContents* contents,
-                                            bool use_android_autofill_manager) {
+void AwAutofillClient::CreateForWebContents(content::WebContents* contents) {
   DCHECK(contents);
-  if (!ContentAutofillClient::FromWebContents(contents)) {
+  if (!FromWebContents(contents)) {
     contents->SetUserData(UserDataKey(),
-                          base::WrapUnique(new AwAutofillClient(
-                              contents, use_android_autofill_manager)));
+                          base::WrapUnique(new AwAutofillClient(contents)));
   }
-#if DCHECK_IS_ON()
-  DCHECK_EQ(use_android_autofill_manager,
-            FromWebContents(contents)->use_android_autofill_manager_);
-#endif
 }
 
 AwAutofillClient::~AwAutofillClient() {
   HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
-}
-
-void AwAutofillClient::SetSaveFormData(bool enabled) {
-  save_form_data_ = enabled;
-}
-
-bool AwAutofillClient::GetSaveFormData() const {
-  return save_form_data_;
 }
 
 bool AwAutofillClient::IsOffTheRecord() {
@@ -85,16 +71,19 @@ AwAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-autofill::AutofillDownloadManager* AwAutofillClient::GetDownloadManager() {
-  if (autofill::AutofillProvider::is_download_manager_disabled_for_testing()) {
+autofill::AutofillCrowdsourcingManager*
+AwAutofillClient::GetCrowdsourcingManager() {
+  if (autofill::AutofillProvider::
+          is_crowdsourcing_manager_disabled_for_testing()) {
     return nullptr;
   }
-  if (!download_manager_) {
+  if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    download_manager_ = std::make_unique<autofill::AutofillDownloadManager>(
-        this, GetChannel(), GetLogManager());
+    crowdsourcing_manager_ =
+        std::make_unique<autofill::AutofillCrowdsourcingManager>(
+            this, GetChannel(), GetLogManager());
   }
-  return download_manager_.get();
+  return crowdsourcing_manager_.get();
 }
 
 autofill::PersonalDataManager* AwAutofillClient::GetPersonalDataManager() {
@@ -128,7 +117,8 @@ autofill::FormDataImporter* AwAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::payments::PaymentsClient* AwAutofillClient::GetPaymentsClient() {
+autofill::payments::PaymentsNetworkInterface*
+AwAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;
 }
 
@@ -281,17 +271,14 @@ void AwAutofillClient::HideAutofillPopup(autofill::PopupHidingReason reason) {
 }
 
 bool AwAutofillClient::IsAutocompleteEnabled() const {
-  return GetSaveFormData();
+  return false;
 }
 
 bool AwAutofillClient::IsPasswordManagerEnabled() {
-  // Android O+ relies on the AndroidAutofillManager, which does not call this
-  // function. If it ever does, the function needs to be implemented in a
-  // meaningful way.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_OREO) {
-    NOTREACHED();
-  }
+  // Android WebView (since Android O+) relies on the AndroidAutofillManager,
+  // which does not call this function. If it ever does, the function needs to
+  // be implemented in a meaningful way.
+  NOTREACHED();
   // This is behavior preserving: For pre-O versions, AwAutofill did rely on a
   // BrowserAutofillManager, which now calls the function. But pre-O only
   // offered an autocomplete feature that restored values of specific input
@@ -326,10 +313,6 @@ bool AwAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
-  NOTIMPLEMENTED();
-}
-
 autofill::FormInteractionsFlowId
 AwAutofillClient::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper
@@ -351,9 +334,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
                                           const JavaParamRef<jobject>& object,
                                           jint position) {
   if (delegate_) {
-    delegate_->DidAcceptSuggestion(
-        suggestions_[position], position,
-        autofill::AutofillSuggestionTriggerSource::kAndroidWebView);
+    delegate_->DidAcceptSuggestion(suggestions_[position], {.row = position});
   }
 }
 
@@ -361,20 +342,10 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
 // AwContents. The native object creates the java peer which handles most
 // autofill functionality at the java side. The java peer is owned by Java
 // AwContents. The native object only maintains a weak ref to it.
-AwAutofillClient::AwAutofillClient(WebContents* contents,
-                                   bool use_android_autofill_manager)
+AwAutofillClient::AwAutofillClient(WebContents* contents)
     : autofill::ContentAutofillClient(
           contents,
-          use_android_autofill_manager
-              ? base::BindRepeating(&autofill::AndroidDriverInitHook, this)
-              : base::BindRepeating(&autofill::BrowserDriverInitHook,
-                                    this,
-                                    base::android::GetDefaultLocaleString()))
-#if DCHECK_IS_ON()
-      ,
-      use_android_autofill_manager_(use_android_autofill_manager)
-#endif
-{
+          base::BindRepeating(&autofill::AndroidDriverInitHook, this)) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate;
   delegate.Reset(

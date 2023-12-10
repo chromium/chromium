@@ -87,7 +87,7 @@ WebVideoCaptureImplManager::~WebVideoCaptureImplManager() {
     Platform::Current()->GetIOTaskRunner()->DeleteSoon(FROM_HERE,
                                                        entry.impl.release());
   }
-  devices_.Clear();
+  devices_.clear();
 }
 
 base::OnceClosure WebVideoCaptureImplManager::UseDevice(

@@ -236,12 +236,12 @@ void FakeCrosHealthd::EmitSignalStrengthChangedEventForTesting(
   }
 }
 
-absl::optional<mojom::DiagnosticRoutineEnum>
-FakeCrosHealthd::GetLastRunRoutine() const {
+std::optional<mojom::DiagnosticRoutineEnum> FakeCrosHealthd::GetLastRunRoutine()
+    const {
   return last_run_routine_;
 }
 
-absl::optional<FakeCrosHealthd::RoutineUpdateParams>
+std::optional<FakeCrosHealthd::RoutineUpdateParams>
 FakeCrosHealthd::GetRoutineUpdateParams() const {
   return routine_update_params_;
 }
@@ -339,7 +339,7 @@ void FakeCrosHealthd::RunSmartctlCheckRoutine(
 
 void FakeCrosHealthd::RunAcPowerRoutine(
     mojom::AcPowerStatusEnum expected_status,
-    const absl::optional<std::string>& expected_power_type,
+    const std::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_passed_parameters_.Set("expected_status",
@@ -510,7 +510,7 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
 }
 
 void FakeCrosHealthd::RunMemoryRoutine(
-    absl::optional<uint32_t> max_testing_mem_kib,
+    std::optional<uint32_t> max_testing_mem_kib,
     RunMemoryRoutineCallback callback) {
   actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kMemory;
@@ -598,7 +598,7 @@ void FakeCrosHealthd::RunHttpsLatencyRoutine(
 }
 
 void FakeCrosHealthd::RunVideoConferencingRoutine(
-    const absl::optional<std::string>& stun_server_hostname,
+    const std::optional<std::string>& stun_server_hostname,
     RunVideoConferencingRoutineCallback callback) {
   actual_passed_parameters_.clear();
   if (stun_server_hostname.has_value()) {
@@ -820,7 +820,7 @@ void FakeCrosHealthd::ProbeProcessInfo(const uint32_t process_id,
 }
 
 void FakeCrosHealthd::ProbeMultipleProcessInfo(
-    const absl::optional<std::vector<uint32_t>>& process_ids,
+    const std::optional<std::vector<uint32_t>>& process_ids,
     bool ignore_single_process_error,
     ProbeMultipleProcessInfoCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

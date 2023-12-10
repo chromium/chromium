@@ -16,9 +16,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
-/**
- * This class is responsible for rendering the check passwords view in the settings menu.
- */
+/** This class is responsible for rendering the check passwords view in the settings menu. */
 public class PasswordCheckFragmentView extends PreferenceFragmentCompat {
     // Key for the argument with which the PasswordsCheck fragment will be launched. The value for
     // this argument should be part of the PasswordCheckReferrer enum, which contains
@@ -49,8 +47,9 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat {
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(TraceEventVectorDrawableCompat.create(
-                getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 
     @Override
@@ -72,8 +71,8 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat {
         }
         Bundle extras = getArguments();
         assert extras.containsKey(PASSWORD_CHECK_REFERRER)
-            : "PasswordCheckFragmentView must be launched with a password-check-referrer fragment "
-                + "argument, but none was provided.";
+                : "PasswordCheckFragmentView must be launched with a password-check-referrer fragment "
+                        + "argument, but none was provided.";
         return extras.getInt(PASSWORD_CHECK_REFERRER);
     }
 
@@ -91,6 +90,7 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat {
             mComponentDelegate.destroy();
         }
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

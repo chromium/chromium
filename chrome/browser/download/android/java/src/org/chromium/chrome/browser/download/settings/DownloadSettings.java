@@ -18,11 +18,9 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
-/**
- * Fragment containing Download settings.
- */
-public class DownloadSettings
-        extends ChromeBaseSettingsFragment implements Preference.OnPreferenceChangeListener {
+/** Fragment containing Download settings. */
+public class DownloadSettings extends ChromeBaseSettingsFragment
+        implements Preference.OnPreferenceChangeListener {
     public static final String PREF_LOCATION_CHANGE = "location_change";
     public static final String PREF_LOCATION_PROMPT_ENABLED = "location_prompt_enabled";
 
@@ -38,12 +36,13 @@ public class DownloadSettings
         mLocationPromptEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_LOCATION_PROMPT_ENABLED);
         mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
-        mLocationPromptEnabledPrefDelegate = new ChromeManagedPreferenceDelegate(getProfile()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return DownloadDialogBridge.isLocationDialogManaged();
-            }
-        };
+        mLocationPromptEnabledPrefDelegate =
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return DownloadDialogBridge.isLocationDialogManaged();
+                    }
+                };
         mLocationPromptEnabledPref.setManagedPreferenceDelegate(mLocationPromptEnabledPrefDelegate);
         mLocationChangePref = (DownloadLocationPreference) findPreference(PREF_LOCATION_CHANGE);
     }
@@ -76,8 +75,9 @@ public class DownloadSettings
                     DownloadDialogBridge.getPromptForDownloadPolicy());
         } else {
             // Location prompt is marked enabled if the prompt status is not DONT_SHOW.
-            boolean isLocationPromptEnabled = DownloadDialogBridge.getPromptForDownloadAndroid()
-                    != DownloadPromptStatus.DONT_SHOW;
+            boolean isLocationPromptEnabled =
+                    DownloadDialogBridge.getPromptForDownloadAndroid()
+                            != DownloadPromptStatus.DONT_SHOW;
             mLocationPromptEnabledPref.setChecked(isLocationPromptEnabled);
             mLocationPromptEnabledPref.setEnabled(true);
         }

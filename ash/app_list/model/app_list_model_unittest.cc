@@ -288,7 +288,7 @@ TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
   FolderImage* regular_config_image =
       folder->GetFolderImageForTesting(AppListConfigType::kRegular);
   ASSERT_TRUE(regular_config_image);
-  EXPECT_EQ(regular_config->unclipped_icon_size(),
+  EXPECT_EQ(regular_config->folder_icon_size(),
             regular_config_image->icon().size());
 
   // Verify that the folder is observing the app list item.
@@ -310,7 +310,7 @@ TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
   FolderImage* dense_config_image =
       folder->GetFolderImageForTesting(AppListConfigType::kDense);
   ASSERT_TRUE(dense_config_image);
-  EXPECT_EQ(dense_config->unclipped_icon_size(),
+  EXPECT_EQ(dense_config->folder_icon_size(),
             dense_config_image->icon().size());
 
   // Verify that the folder is observing the app list item.

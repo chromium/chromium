@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
 
   capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
-  base::EraseIf(captured_stdout, isspace);
+  std::erase_if(captured_stdout, isspace);
 
   // Expect about:blank page DOM.
   EXPECT_THAT(captured_stdout,
@@ -290,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(
 
   capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
-  base::EraseIf(captured_stdout, isspace);
+  std::erase_if(captured_stdout, isspace);
 
   if (delay_response()) {
     EXPECT_THAT(result,

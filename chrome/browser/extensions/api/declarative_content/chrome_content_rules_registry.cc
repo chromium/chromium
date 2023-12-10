@@ -81,7 +81,6 @@ ChromeContentRulesRegistry::ChromeContentRulesRegistry(
     PredicateEvaluatorsFactory evaluators_factory)
     : ContentRulesRegistry(browser_context,
                            declarative_content_constants::kOnPageChanged,
-                           content::BrowserThread::UI,
                            cache_delegate,
                            RulesRegistryService::kDefaultRulesRegistryID),
       evaluators_(std::move(evaluators_factory).Run(this)),

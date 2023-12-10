@@ -12,34 +12,139 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "jank_metric_uma_recorder.h"
 
 namespace base::android {
 
 namespace {
 
-void RecordJankMetricReportingIntervalTraceEvent(
-    int64_t reporting_interval_start_time,
-    int64_t reporting_interval_duration,
-    uint64_t janky_frame_count,
-    uint64_t non_janky_frame_count,
-    int scenario) {
-  if (reporting_interval_start_time <= 0) {
-    return;
+// Histogram min, max and no. of buckets.
+constexpr int kVsyncCountsMin = 1;
+constexpr int kVsyncCountsMax = 50;
+constexpr int kVsyncCountsBuckets = 25;
+
+enum class PerScrollHistogramType {
+  kPercentage = 0,
+  kMax = 1,
+  kSum = 2,
+};
+
+const char* GetPerScrollHistogramName(JankScenario scenario,
+                                      int num_frames,
+                                      PerScrollHistogramType type) {
+#define HISTOGRAM_NAME(hist_scenario, hist_type, length)     \
+  "Android.FrameTimelineJank." #hist_scenario "." #hist_type \
+  "."                                                        \
+  "PerScroll." #length
+  if (scenario == JankScenario::WEBVIEW_SCROLLING) {
+    if (type == PerScrollHistogramType::kPercentage) {
+      if (num_frames <= 16) {
+        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage, Small);
+      } else if (num_frames <= 64) {
+        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage,
+                              Medium);
+      } else {
+        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage, Large);
+      }
+    } else if (type == PerScrollHistogramType::kMax) {
+      if (num_frames <= 16) {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, Small);
+      } else if (num_frames <= 64) {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, Medium);
+      } else {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, Large);
+      }
+    } else {
+      DCHECK_EQ(type, PerScrollHistogramType::kSum);
+      if (num_frames <= 16) {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, Small);
+      } else if (num_frames <= 64) {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, Medium);
+      } else {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, Large);
+      }
+    }
+  } else {
+    DCHECK_EQ(scenario, JankScenario::FEED_SCROLLING);
+    if (type == PerScrollHistogramType::kPercentage) {
+      if (num_frames <= 16) {
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, Small);
+      } else if (num_frames <= 64) {
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, Medium);
+      } else {
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, Large);
+      }
+    } else if (type == PerScrollHistogramType::kMax) {
+      if (num_frames <= 16) {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, Small);
+      } else if (num_frames <= 64) {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, Medium);
+      } else {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, Large);
+      }
+    } else {
+      DCHECK_EQ(type, PerScrollHistogramType::kSum);
+      if (num_frames <= 16) {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, Small);
+      } else if (num_frames <= 64) {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, Medium);
+      } else {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, Large);
+      }
+    }
+  }
+#undef HISTOGRAM_NAME
+}
+
+// Emits trace event for all scenarios and per scroll histograms for webview and
+// feed scrolling scenarios.
+void EmitMetrics(JankScenario scenario,
+                 int janky_frame_count,
+                 int missed_vsyncs_max,
+                 int missed_vsyncs_sum,
+                 int num_presented_frames,
+                 int64_t reporting_interval_start_time,
+                 int64_t reporting_interval_duration) {
+  DCHECK_GT(num_presented_frames, 0);
+  int delayed_frames_percentage =
+      (100 * janky_frame_count) / num_presented_frames;
+  if (reporting_interval_start_time > 0) {
+    // The following code does nothing if base tracing is disabled.
+    [[maybe_unused]] int non_janky_frame_count =
+        num_presented_frames - janky_frame_count;
+    [[maybe_unused]] auto t = perfetto::Track(static_cast<uint64_t>(
+        reporting_interval_start_time + static_cast<int>(scenario)));
+    TRACE_EVENT_BEGIN(
+        "android_webview.timeline,android.ui.jank",
+        "JankMetricsReportingInterval", t,
+        base::TimeTicks::FromUptimeMillis(reporting_interval_start_time),
+        "janky_frames", janky_frame_count, "non_janky_frames",
+        non_janky_frame_count, "scenario", static_cast<int>(scenario),
+        "delayed_frames_percentage", delayed_frames_percentage,
+        "missed_vsyns_max", missed_vsyncs_max, "missed_vsyncs_sum",
+        missed_vsyncs_sum);
+    TRACE_EVENT_END(
+        "android_webview.timeline,android.ui.jank", t,
+        base::TimeTicks::FromUptimeMillis(
+            (reporting_interval_start_time + reporting_interval_duration)));
   }
 
-  // The following code does nothing if base tracing is disabled.
-  [[maybe_unused]] auto t = perfetto::Track(
-      static_cast<uint64_t>(reporting_interval_start_time + scenario));
-  TRACE_EVENT_BEGIN(
-      "android_webview.timeline,android.ui.jank",
-      "JankMetricsReportingInterval", t,
-      base::TimeTicks::FromUptimeMillis(reporting_interval_start_time),
-      "janky_frames", janky_frame_count, "non_janky_frames",
-      non_janky_frame_count, "scenario", scenario);
-  TRACE_EVENT_END(
-      "android_webview.timeline,android.ui.jank", t,
-      base::TimeTicks::FromUptimeMillis(
-          (reporting_interval_start_time + reporting_interval_duration)));
+  if (scenario != JankScenario::WEBVIEW_SCROLLING &&
+      scenario != JankScenario::FEED_SCROLLING) {
+    return;
+  }
+  base::UmaHistogramPercentage(
+      GetPerScrollHistogramName(scenario, num_presented_frames,
+                                PerScrollHistogramType::kPercentage),
+      delayed_frames_percentage);
+  base::UmaHistogramCustomCounts(
+      GetPerScrollHistogramName(scenario, num_presented_frames,
+                                PerScrollHistogramType::kMax),
+      missed_vsyncs_max, kVsyncCountsMin, kVsyncCountsMax, kVsyncCountsBuckets);
+  base::UmaHistogramCustomCounts(
+      GetPerScrollHistogramName(scenario, num_presented_frames,
+                                PerScrollHistogramType::kSum),
+      missed_vsyncs_sum, kVsyncCountsMin, kVsyncCountsMax, kVsyncCountsBuckets);
 }
 
 }  // namespace
@@ -110,11 +215,11 @@ const char* GetAndroidFrameTimelineDurationHistogramName(
 void JNI_JankMetricUMARecorder_RecordJankMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
-    const base::android::JavaParamRef<jbooleanArray>& java_jank_status,
+    const base::android::JavaParamRef<jintArray>& java_missed_vsyncs,
     jlong java_reporting_interval_start_time,
     jlong java_reporting_interval_duration,
     jint java_scenario_enum) {
-  RecordJankMetrics(env, java_durations_ns, java_jank_status,
+  RecordJankMetrics(env, java_durations_ns, java_missed_vsyncs,
                     java_reporting_interval_start_time,
                     java_reporting_interval_duration, java_scenario_enum);
 }
@@ -122,15 +227,15 @@ void JNI_JankMetricUMARecorder_RecordJankMetrics(
 void RecordJankMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
-    const base::android::JavaParamRef<jbooleanArray>& java_jank_status,
+    const base::android::JavaParamRef<jintArray>& java_missed_vsyncs,
     jlong java_reporting_interval_start_time,
     jlong java_reporting_interval_duration,
     jint java_scenario_enum) {
   std::vector<int64_t> durations_ns;
   JavaLongArrayToInt64Vector(env, java_durations_ns, &durations_ns);
 
-  std::vector<bool> jank_status;
-  JavaBooleanArrayToBoolVector(env, java_jank_status, &jank_status);
+  std::vector<int> missed_vsyncs;
+  JavaIntArrayToIntVector(env, java_missed_vsyncs, &missed_vsyncs);
 
   JankScenario scenario = static_cast<JankScenario>(java_scenario_enum);
 
@@ -144,9 +249,18 @@ void RecordJankMetrics(
                             base::Nanoseconds(frame_duration_ns));
   }
 
-  uint64_t janky_frame_count = 0;
+  int janky_frame_count = 0;
+  int missed_vsyncs_max = 0;
+  int missed_vsyncs_sum = 0;
+  const int num_presented_frames = static_cast<int>(missed_vsyncs.size());
 
-  for (bool is_janky : jank_status) {
+  for (int curr_frame_missed_vsyncs : missed_vsyncs) {
+    bool is_janky = curr_frame_missed_vsyncs > 0;
+    if (curr_frame_missed_vsyncs > missed_vsyncs_max) {
+      missed_vsyncs_max = curr_frame_missed_vsyncs;
+    }
+    missed_vsyncs_sum += curr_frame_missed_vsyncs;
+
     base::UmaHistogramEnumeration(
         janky_frames_per_scenario_histogram_name,
         is_janky ? FrameJankStatus::kJanky : FrameJankStatus::kNonJanky);
@@ -155,10 +269,12 @@ void RecordJankMetrics(
     }
   }
 
-  RecordJankMetricReportingIntervalTraceEvent(
-      java_reporting_interval_start_time, java_reporting_interval_duration,
-      janky_frame_count, jank_status.size() - janky_frame_count,
-      java_scenario_enum);
+  if (num_presented_frames > 0) {
+    EmitMetrics(scenario, janky_frame_count, missed_vsyncs_max,
+                missed_vsyncs_sum, num_presented_frames,
+                java_reporting_interval_start_time,
+                java_reporting_interval_duration);
+  }
 }
 
 }  // namespace base::android

@@ -25,7 +25,8 @@ class SplitCompatEngineFacade {
     private final Logger mLogger;
 
     public SplitCompatEngineFacade() {
-        this(SplitInstallManagerFactory.create(ContextUtils.getApplicationContext()),
+        this(
+                SplitInstallManagerFactory.create(ContextUtils.getApplicationContext()),
                 new PlayCoreLogger());
     }
 

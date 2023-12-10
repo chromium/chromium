@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -47,19 +48,25 @@ class ReadAnythingAppToolbarTest : public InProcessBrowserTest {
       base::ReadFileToString(path, &script);
       script = "'use strict';" + script;
     }
-
-    // Run the test.
+    // Run the test. Navigating to the URL will trigger the read anything
+    // navigation throttle and open the side panel instead of loading read
+    // anything in the main content area.
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)));
-    content::RenderFrameHost* webui = browser()
-                                          ->tab_strip_model()
-                                          ->GetActiveWebContents()
-                                          ->GetPrimaryMainFrame();
-    if (!webui) {
+    // Get the side panel entry registry.
+    auto* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser());
+    auto* side_panel_web_contents =
+        side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
+
+    if (!side_panel_web_contents) {
       return testing::AssertionFailure() << "Failed to navigate to WebUI";
     }
-
-    bool result = content::EvalJs(webui, script).ExtractBool();
+    // Wait for the view to load before trying to run the test. This ensures
+    // that chrome.readingMode is set.
+    content::WaitForLoadStop(side_panel_web_contents);
+    // Eval the JS test.
+    bool result =
+        content::EvalJs(side_panel_web_contents, script).ExtractBool();
     return result ? testing::AssertionSuccess()
                   : (testing::AssertionFailure() << "Check console output");
   }

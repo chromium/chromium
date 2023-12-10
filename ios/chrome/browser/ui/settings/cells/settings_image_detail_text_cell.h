@@ -27,6 +27,9 @@
 // Cell subtitle.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
+// Sets the image view's alpha.
+- (void)setImageViewAlpha:(CGFloat)alpha;
+
 // Sets the image view's tint color.
 - (void)setImageViewTintColor:(UIColor*)color;
 

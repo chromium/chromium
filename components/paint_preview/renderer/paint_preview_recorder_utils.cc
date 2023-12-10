@@ -60,7 +60,7 @@ class OpConverterAndTracker {
   const cc::PaintOp* ConvertAndTrack(const cc::PaintOp& op) {
     converted_op_.emplace<absl::monostate>();
     switch (op.GetType()) {
-      case cc::PaintOpType::kDrawtextblob: {
+      case cc::PaintOpType::kDrawTextBlob: {
         const auto& text_blob_op = static_cast<const cc::DrawTextBlobOp&>(op);
         tracker_->AddGlyphs(text_blob_op.blob.get());
         break;
@@ -74,7 +74,7 @@ class OpConverterAndTracker {
         // Delete the op. We no longer need it.
         return nullptr;
       }
-      case cc::PaintOpType::kCustomdata: {
+      case cc::PaintOpType::kCustomData: {
         const auto& custom_op = static_cast<const cc::CustomDataOp&>(op);
         tracker_->TransformClipForFrame(custom_op.id);
         break;
@@ -83,11 +83,11 @@ class OpConverterAndTracker {
         tracker_->Save();
         break;
       }
-      case cc::PaintOpType::kSavelayer: {
+      case cc::PaintOpType::kSaveLayer: {
         tracker_->Save();
         break;
       }
-      case cc::PaintOpType::kSavelayeralpha: {
+      case cc::PaintOpType::kSaveLayerAlpha: {
         tracker_->Save();
         break;
       }
@@ -95,7 +95,7 @@ class OpConverterAndTracker {
         tracker_->Restore();
         break;
       }
-      case cc::PaintOpType::kSetmatrix: {
+      case cc::PaintOpType::kSetMatrix: {
         const auto& matrix_op = static_cast<const cc::SetMatrixOp&>(op);
         tracker_->SetMatrix(matrix_op.matrix.asM33());
         break;
@@ -120,7 +120,7 @@ class OpConverterAndTracker {
         tracker_->Translate(translate_op.dx, translate_op.dy);
         break;
       }
-      case cc::PaintOpType::kDrawimage: {
+      case cc::PaintOpType::kDrawImage: {
         const auto& image_op = static_cast<const cc::DrawImageOp&>(op);
         if (image_op.image.IsTextureBacked()) {
           converted_op_.emplace<cc::DrawImageOp>(
@@ -130,7 +130,7 @@ class OpConverterAndTracker {
         }
         break;
       }
-      case cc::PaintOpType::kDrawimagerect: {
+      case cc::PaintOpType::kDrawImageRect: {
         const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
         if (image_op.image.IsTextureBacked()) {
           converted_op_.emplace<cc::DrawImageRectOp>(

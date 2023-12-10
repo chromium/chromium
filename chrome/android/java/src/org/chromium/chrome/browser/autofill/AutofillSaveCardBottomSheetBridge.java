@@ -32,20 +32,25 @@ public class AutofillSaveCardBottomSheetBridge {
     private BottomSheetController mBottomSheetController;
     private LayoutStateProvider mLayoutStateProvider;
     private CoordinatorFactory mCoordinatorFactory;
-    @Nullable
-    private AutofillSaveCardBottomSheetCoordinator mCoordinator;
+    @Nullable private AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
     @VisibleForTesting
     private AutofillSaveCardBottomSheetBridge(
             long nativeAutofillSaveCardBottomSheetBridge, WindowAndroid window, TabModel tabModel) {
-        this(nativeAutofillSaveCardBottomSheetBridge, window, tabModel,
+        this(
+                nativeAutofillSaveCardBottomSheetBridge,
+                window,
+                tabModel,
                 AutofillSaveCardBottomSheetCoordinator::new);
     }
 
     @VisibleForTesting
-    /*package*/ AutofillSaveCardBottomSheetBridge(long nativeAutofillSaveCardBottomSheetBridge,
-            WindowAndroid window, TabModel tabModel, CoordinatorFactory coordinatorFactory) {
+    /*package*/ AutofillSaveCardBottomSheetBridge(
+            long nativeAutofillSaveCardBottomSheetBridge,
+            WindowAndroid window,
+            TabModel tabModel,
+            CoordinatorFactory coordinatorFactory) {
         mContext = window.getContext().get();
         mNativeAutofillSaveCardBottomSheetBridge = nativeAutofillSaveCardBottomSheetBridge;
         mBottomSheetController = BottomSheetControllerProvider.from(window);
@@ -56,10 +61,13 @@ public class AutofillSaveCardBottomSheetBridge {
 
     @VisibleForTesting
     /*package*/ static interface CoordinatorFactory {
-        AutofillSaveCardBottomSheetCoordinator create(Context context,
+        AutofillSaveCardBottomSheetCoordinator create(
+                Context context,
                 BottomSheetController bottomSheetController,
-                LayoutStateProvider layoutStateProvider, TabModel tabModel,
-                AutofillSaveCardUiInfo uiInfo, AutofillSaveCardBottomSheetBridge bridge);
+                LayoutStateProvider layoutStateProvider,
+                TabModel tabModel,
+                AutofillSaveCardUiInfo uiInfo,
+                AutofillSaveCardBottomSheetBridge bridge);
     }
 
     /**
@@ -73,8 +81,14 @@ public class AutofillSaveCardBottomSheetBridge {
     @CalledByNative
     public void requestShowContent(AutofillSaveCardUiInfo uiInfo) {
         if (mNativeAutofillSaveCardBottomSheetBridge != 0) {
-            mCoordinator = mCoordinatorFactory.create(mContext, mBottomSheetController,
-                    mLayoutStateProvider, mTabModel, uiInfo, this);
+            mCoordinator =
+                    mCoordinatorFactory.create(
+                            mContext,
+                            mBottomSheetController,
+                            mLayoutStateProvider,
+                            mTabModel,
+                            uiInfo,
+                            this);
             mCoordinator.requestShowContent();
         }
     }
@@ -92,32 +106,32 @@ public class AutofillSaveCardBottomSheetBridge {
     /** Called when the bottom sheet has been shown. */
     public void onUiShown() {
         if (mNativeAutofillSaveCardBottomSheetBridge != 0) {
-            AutofillSaveCardBottomSheetBridgeJni.get().onUiShown(
-                    mNativeAutofillSaveCardBottomSheetBridge);
+            AutofillSaveCardBottomSheetBridgeJni.get()
+                    .onUiShown(mNativeAutofillSaveCardBottomSheetBridge);
         }
     }
 
     /** Called when the confirm button as been clicked. */
     public void onUiAccepted() {
         if (mNativeAutofillSaveCardBottomSheetBridge != 0) {
-            AutofillSaveCardBottomSheetBridgeJni.get().onUiAccepted(
-                    mNativeAutofillSaveCardBottomSheetBridge);
+            AutofillSaveCardBottomSheetBridgeJni.get()
+                    .onUiAccepted(mNativeAutofillSaveCardBottomSheetBridge);
         }
     }
 
     /** Called when the cancel button is pushed or bottom sheet dismissed (e.g. back press). */
     public void onUiCanceled() {
         if (mNativeAutofillSaveCardBottomSheetBridge != 0) {
-            AutofillSaveCardBottomSheetBridgeJni.get().onUiCanceled(
-                    mNativeAutofillSaveCardBottomSheetBridge);
+            AutofillSaveCardBottomSheetBridgeJni.get()
+                    .onUiCanceled(mNativeAutofillSaveCardBottomSheetBridge);
         }
     }
 
     /** Called when the the bottom sheet is hidden without interaction with the bottom sheet. */
     public void onUiIgnored() {
         if (mNativeAutofillSaveCardBottomSheetBridge != 0) {
-            AutofillSaveCardBottomSheetBridgeJni.get().onUiIgnored(
-                    mNativeAutofillSaveCardBottomSheetBridge);
+            AutofillSaveCardBottomSheetBridgeJni.get()
+                    .onUiIgnored(mNativeAutofillSaveCardBottomSheetBridge);
         }
     }
 

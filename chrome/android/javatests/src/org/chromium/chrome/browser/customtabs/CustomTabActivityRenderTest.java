@@ -100,7 +100,7 @@ public class CustomTabActivityRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
                     .build();
 

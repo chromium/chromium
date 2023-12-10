@@ -170,6 +170,9 @@ class DISPLAY_EXPORT Display final {
   const gfx::Size& size() const { return bounds_.size(); }
   const gfx::Size& work_area_size() const { return work_area_.size(); }
 
+  // Returns the work area relative to this display's origin.
+  gfx::Rect GetLocalWorkArea() const;
+
   // Returns the work area insets.
   gfx::Insets GetWorkAreaInsets() const;
 

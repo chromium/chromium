@@ -12,6 +12,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -26,44 +27,38 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
-namespace {
 
-// A Context for the receiver of a KeepAliveURLLoaderFactory connection between
-// a renderer and the browser.
-//
-// See `mojo::ReceiverSetBase` for more details.
-struct FactoryContext {
-  FactoryContext(scoped_refptr<network::SharedURLLoaderFactory> factory,
-                 scoped_refptr<PolicyContainerHost> frame_policy_container_host)
-      : factory(factory),
-        policy_container_host(std::move(frame_policy_container_host)) {
-    CHECK(policy_container_host);
-  }
+KeepAliveURLLoaderService::FactoryContext::FactoryContext(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    scoped_refptr<PolicyContainerHost> frame_policy_container_host)
+    : factory(shared_url_loader_factory),
+      policy_container_host(std::move(frame_policy_container_host)) {
+  CHECK(policy_container_host);
+}
 
-  explicit FactoryContext(const std::unique_ptr<FactoryContext>& other)
-      : FactoryContext(other->factory, other->policy_container_host) {}
+KeepAliveURLLoaderService::FactoryContext::FactoryContext(
+    const std::unique_ptr<FactoryContext>& other)
+    : factory(other->factory),
+      weak_document_ptr(other->weak_document_ptr),
+      policy_container_host(other->policy_container_host) {}
 
-  ~FactoryContext() = default;
-  // Not Copyable.
-  FactoryContext(const FactoryContext&) = delete;
-  FactoryContext& operator=(const FactoryContext&) = delete;
+KeepAliveURLLoaderService::FactoryContext::~FactoryContext() = default;
 
-  // A refptr to the factory to use for the requests initiated from this
-  // context.
-  scoped_refptr<network::SharedURLLoaderFactory> factory;
+void KeepAliveURLLoaderService::FactoryContext::OnDidCommitNavigation(
+    WeakDocumentPtr committed_document) {
+  weak_document_ptr = committed_document;
 
-  // A refptr to `PolicyContainerHost` of the RenderFrameHostImpl connecting to
-  // the `KeepAliveURLLoaderFactory` using this context.
-  //
-  // This field keeps the pointed object alive such that any pending keepalive
-  // redirect requests can still be verified against these same policies.
-  scoped_refptr<PolicyContainerHost> policy_container_host;
+  CHECK(weak_document_ptr.AsRenderFrameHostIfValid());
+  policy_container_host = static_cast<RenderFrameHostImpl*>(
+                              weak_document_ptr.AsRenderFrameHostIfValid())
+                              ->policy_container_host();
+  CHECK(policy_container_host);
+}
 
-  // This must be the last member.
-  base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
-};
-
-}  // namespace
+void KeepAliveURLLoaderService::FactoryContext::UpdateFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> new_factory) {
+  factory = new_factory;
+}
 
 // KeepAliveURLLoaderFactoriesBase is an abstract base class for creating and
 // managing all the KeepAliveURLLoader instances created by multiple factories
@@ -162,8 +157,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         // `context` can be destroyed right at the end of this method if the
         // caller renderer is already unloaded, meaning `loader` also needs to
         // hold another refptr to ensure `PolicyContainerHost` alive.
-        context->policy_container_host, service_->browser_context_,
-        CreateThrottles(resource_request),
+        context->policy_container_host, context->weak_document_ptr,
+        service_->browser_context_, CreateThrottles(resource_request),
         base::PassKey<KeepAliveURLLoaderService>());
     // Adds a new loader receiver to the set held by `this`, binding the pending
     // `receiver` from a renderer to `raw_loader` with `loader` as its context.
@@ -292,7 +287,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
   // `network::SharedURLLoaderFactory`, which is constructed with
   // `subresource_proxying_factory_bundle`, and then bound with `receiver`.
   // `policy_container_host` must not be null.
-  void BindFactory(
+  base::WeakPtr<FactoryContext> BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<network::SharedURLLoaderFactory>
           subresource_proxying_factory_bundle,
@@ -307,8 +302,10 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     auto context = std::make_unique<FactoryContext>(
         std::move(subresource_proxying_factory_bundle),
         std::move(policy_container_host));
+    auto weak_context = context->weak_ptr_factory.GetWeakPtr();
     loader_factory_receivers_.Add(this, std::move(receiver),
                                   std::move(context));
+    return weak_context;
   }
 
   // `network::mojom::URLLoaderFactory` overrides:
@@ -391,7 +388,7 @@ class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
   // Creates a `FactoryContext` to hold a refptr to `shared_url_loader_factory`,
   // and then bound with `receiver`.
   // `policy_container_host` must not be null.
-  void BindFactory(
+  base::WeakPtr<FactoryContext> BindFactory(
       mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
           receiver,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
@@ -405,8 +402,10 @@ class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
     // reference to `shared_url_loader_factory`.
     auto context = std::make_unique<FactoryContext>(
         std::move(shared_url_loader_factory), std::move(policy_container_host));
+    auto weak_context = context->weak_ptr_factory.GetWeakPtr();
     loader_factory_receivers_.Add(this, std::move(receiver),
                                   std::move(context));
+    return weak_context;
   }
 
   // `blink::mojom::FetchLaterLoaderFactory` overrides:
@@ -474,7 +473,8 @@ KeepAliveURLLoaderService::KeepAliveURLLoaderService(
 
 KeepAliveURLLoaderService::~KeepAliveURLLoaderService() = default;
 
-void KeepAliveURLLoaderService::BindFactory(
+base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+KeepAliveURLLoaderService::BindFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<network::SharedURLLoaderFactory>
         subresource_proxying_factory_bundle,
@@ -483,12 +483,13 @@ void KeepAliveURLLoaderService::BindFactory(
   CHECK(subresource_proxying_factory_bundle);
   CHECK(policy_container_host);
 
-  url_loader_factories_->BindFactory(std::move(receiver),
-                                     subresource_proxying_factory_bundle,
-                                     std::move(policy_container_host));
+  return url_loader_factories_->BindFactory(
+      std::move(receiver), std::move(subresource_proxying_factory_bundle),
+      std::move(policy_container_host));
 }
 
-void KeepAliveURLLoaderService::BindFetchLaterLoaderFactory(
+base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+KeepAliveURLLoaderService::BindFetchLaterLoaderFactory(
     mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
         receiver,
     scoped_refptr<network::SharedURLLoaderFactory>
@@ -498,8 +499,8 @@ void KeepAliveURLLoaderService::BindFetchLaterLoaderFactory(
   CHECK(subresource_proxying_factory_bundle);
   CHECK(policy_container_host);
 
-  fetch_later_loader_factories_->BindFactory(
-      std::move(receiver), subresource_proxying_factory_bundle,
+  return fetch_later_loader_factories_->BindFactory(
+      std::move(receiver), std::move(subresource_proxying_factory_bundle),
       std::move(policy_container_host));
 }
 

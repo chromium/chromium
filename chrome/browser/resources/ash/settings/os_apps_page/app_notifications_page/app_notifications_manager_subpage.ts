@@ -8,11 +8,13 @@
  * for sending notifications for the apps.
  */
 
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './app_notification_row.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
 import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {isAppInstalled} from '../os_apps_page.js';
 
@@ -30,16 +32,31 @@ export class SettingsAppNotificationsManagerSubpage extends PolymerElement {
 
   static get properties() {
     return {
+      searchTerm: {
+        type: String,
+      },
+
       appList_: {
         type: Array,
         value: [],
       },
+
+      /**
+       * List of apps filtered through a search term.
+       */
+      filteredAppList_: {
+        type: Array,
+        value: () => [],
+        computed: 'computeFilteredAppList_(appList_.*, searchTerm)',
+      },
     };
   }
 
+  searchTerm: string;
   private appList_: App[];
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver|
       null;
+  private filteredAppList_: App[];
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
 
   constructor() {
@@ -54,6 +71,9 @@ export class SettingsAppNotificationsManagerSubpage extends PolymerElement {
   }
 
   override connectedCallback(): void {
+    // This page only exists when revamp wayfinding is enabled.
+    assert(isRevampWayfindingEnabled());
+
     super.connectedCallback();
 
     this.startObservingAppNotifications_();
@@ -104,11 +124,31 @@ export class SettingsAppNotificationsManagerSubpage extends PolymerElement {
     this.appList_ = appList;
   }
 
+  private computeFilteredAppList_(): App[] {
+    if (this.appList_.length === 0) {
+      return [];
+    }
+
+    if (!this.searchTerm) {
+      return [...this.appList_];
+    }
+
+    const lowerCaseSearchTerm = this.searchTerm.toLocaleLowerCase();
+    return this.appList_.filter(app => {
+      assert(app.title);
+      return app.title.toLocaleLowerCase().includes(lowerCaseSearchTerm);
+    });
+  }
+
   /**
    * A function used for sorting languages alphabetically.
    */
   private alphabeticalSort_(first: App, second: App): number {
     return first.title!.localeCompare(second.title!);
+  }
+
+  private isAppListEmpty_(appList: App[]): boolean {
+    return appList.length === 0;
   }
 }
 

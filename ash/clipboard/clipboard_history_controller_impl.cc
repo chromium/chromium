@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -52,7 +53,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -109,16 +109,16 @@ PrefService* GetLastActiveUserPrefService() {
 }
 
 // Returns the time when the menu was last shown for the user associated with
-// the last active user pref service, or `absl::nullopt` if the menu was not
+// the last active user pref service, or `std::nullopt` if the menu was not
 // previously marked as having been shown.
-absl::optional<base::Time> GetMenuLastTimeShown() {
+std::optional<base::Time> GetMenuLastTimeShown() {
   if (auto* prefs = GetLastActiveUserPrefService()) {
     if (auto* pref = prefs->FindPreference(prefs::kMultipasteMenuLastTimeShown);
         pref && !pref->IsDefaultValue()) {
       return base::ValueToTime(pref->GetValue());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Marks the time when the menu was last shown for the user associated with the
@@ -696,13 +696,6 @@ bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
     const std::string& item_id,
     int event_flags,
     crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
-  // Prevent multiple pastes in quick succession.
-  // TODO(http://b/279825892): This branch code handles the virtual keyboard
-  // paste specifically. Move this code logic to the virtual keyboard delegate.
-  if (currently_pasting_) {
-    return false;
-  }
-
   const std::list<ClipboardHistoryItem>& history_items = history()->GetItems();
   auto iter_by_id = std::find_if(history_items.cbegin(), history_items.cend(),
                                  [&item_id](const ClipboardHistoryItem& item) {
@@ -806,8 +799,10 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
     pastes_to_be_confirmed_ = 0;
   }
 
-  if (confirmed_operation_callback_for_test_)
+  // Callback will be run after clipboard data restoration.
+  if (confirmed_operation_callback_for_test_ && !clipboard_data_replaced_) {
     confirmed_operation_callback_for_test_.Run(/*success=*/true);
+  }
 }
 
 void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
@@ -929,9 +924,13 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     ClipboardHistoryItem item,
     ClipboardHistoryPasteType paste_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
-  // It's possible that the window could change or we could enter a disabled
-  // mode after posting the `PasteClipboardHistoryItem()` task.
-  if (!intended_window || intended_window != window_util::GetActiveWindow() ||
+  // Return early if any of these conditions occur:
+  // 1. The original clipboard data has been replaced by an in-progress
+  //    clipboard history paste.
+  // 2. The active window has changed.
+  // 3. The clipboard history feature is disabled under the current mode.
+  if (clipboard_data_replaced_ || !intended_window ||
+      intended_window != window_util::GetActiveWindow() ||
       !clipboard_history_util::IsEnabledInCurrentMode()) {
     if (confirmed_operation_callback_for_test_)
       confirmed_operation_callback_for_test_.Run(/*success=*/false);
@@ -971,6 +970,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
         clipboard_history_util::PauseBehavior::kDefault);
     replaced_data =
         GetClipboard()->WriteClipboardData(std::move(data_to_paste));
+    clipboard_data_replaced_ = !!replaced_data;
   }
 
   ++pastes_to_be_confirmed_;
@@ -995,13 +995,10 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     return;
   }
 
-  // `currently_pasting_` only needs to be set when clipboard history and the
-  // clipboard buffer are not in a consistent state for subsequent pastes.
-  currently_pasting_ = true;
-
-  // Replace the clipboard data. Some apps take a long time to receive the paste
-  // event, and some apps will read from the clipboard multiple times per paste.
-  // Wait a bit before writing `data_to_restore` back to the clipboard.
+  // Restore the clipboard data asynchronously. Some apps take a long time to
+  // receive the paste event, and some apps will read from the clipboard
+  // multiple times per paste. Wait a bit before writing `data_to_restore` back
+  // to the clipboard.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
@@ -1009,7 +1006,6 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
              std::unique_ptr<ui::ClipboardData> data_to_restore) {
             std::unique_ptr<ScopedClipboardHistoryPauseImpl> scoped_pause;
             if (weak_ptr) {
-              weak_ptr->currently_pasting_ = false;
               // When restoring the original clipboard content, pause clipboard
               // history to avoid committing data already at the top of the
               // clipboard history list.
@@ -1018,6 +1014,17 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
                   clipboard_history_util::PauseBehavior::kDefault);
             }
             GetClipboard()->WriteClipboardData(std::move(data_to_restore));
+
+            if (weak_ptr) {
+              weak_ptr->clipboard_data_replaced_ = false;
+
+              // Confirm the operation after data restoration if needed.
+              if (auto& callback_for_test =
+                      weak_ptr->confirmed_operation_callback_for_test_;
+                  callback_for_test && !weak_ptr->pastes_to_be_confirmed_) {
+                callback_for_test.Run(/*success=*/true);
+              }
+            }
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(replaced_data)),
       buffer_restoration_delay_for_test_.value_or(base::Milliseconds(200)));

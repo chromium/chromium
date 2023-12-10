@@ -50,6 +50,8 @@ const char
     kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref
         [] = "profile.content_settings.exceptions.get_display_media_set_select_"
              "all_screens";
+constexpr char kObsoleteFederatedIdentityActiveSesssionExceptionsPref[] =
+    "profile.content_settings.exceptions.fedcm_active_session";
 
 }  // namespace
 
@@ -83,6 +85,8 @@ void PrefProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
+  registry->RegisterListPref(
+      kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
@@ -145,7 +149,8 @@ PrefProvider::~PrefProvider() {
 
 std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record) const {
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
   if (!supports_type(content_type)) {
     return nullptr;
   }
@@ -153,12 +158,14 @@ std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
   return GetPref(content_type)->GetRuleIterator(off_the_record);
 }
 
+// TODO(b/307193732): handle the PartitionKey in all relevant methods.
 bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints) {
+    const ContentSettingConstraints& constraints,
+    const PartitionKey& partition_key) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -179,8 +186,6 @@ bool PrefProvider::SetWebsiteSetting(
   base::Time modified_time =
       store_last_modified_ ? clock_->Now() : base::Time();
 
-  // Last visit timestamps should only be tracked for ContentSettings that are
-  // "ASK" by default.
   DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
          content_settings::CanTrackLastVisit(content_type));
   // Last visit timestamps can only be tracked for host-specific pattern.
@@ -344,7 +349,8 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
 }
 
 void PrefProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -395,6 +401,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
+  prefs_->ClearPref(kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
 }
 
 void PrefProvider::SetClockForTesting(base::Clock* clock) {

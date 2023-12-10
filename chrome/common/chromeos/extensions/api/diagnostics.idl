@@ -6,7 +6,7 @@
 //
 // Many types defined here map with Mojo structs defined in
 // chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api.h", modernised_enums]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api.h"]
 namespace os.diagnostics {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.
@@ -315,6 +315,29 @@ namespace os.diagnostics {
     long timeout_seconds;
   };
 
+  enum HardwarePresenceStatus {
+    // The hardware presence matches the description.
+    matched,
+    // The hardware presence does not match the description.
+    not_matched,
+    // There is no description available, skipping check.
+    not_configured
+  };
+
+  dictionary FanRoutineFinishedInfo {
+    DOMString? uuid;
+    boolean? has_passed;
+    // The ids of fans that can be controlled.
+    long[]? passed_fan_ids;
+    // The ids of fans that cannot be controlled.
+    long[]? failed_fan_ids;
+    // Whether the number of fan probed is matched.
+    HardwarePresenceStatus? fan_count_status;
+  };
+
+  dictionary RunFanRoutineArguments {
+  };
+
   dictionary CreateRoutineResponse {
     DOMString? uuid;
   };
@@ -443,6 +466,13 @@ namespace os.diagnostics {
     // Checks whether a certain `RunVolumeButtonRoutineArguments` is supported on the platform.
     [supportsPromises] static void isVolumeButtonRoutineArgumentSupported(RunVolumeButtonRoutineArguments args,
                                                                           RoutineSupportStatusInfoCallback callback);
+
+    [supportsPromises] static void createFanRoutine(RunFanRoutineArguments args,
+                                                       CreateRoutineCallback callback);
+
+    // Checks whether a certain `RunFanRoutineArguments` is supported on the platform.
+    [supportsPromises] static void isFanRoutineArgumentSupported(RunFanRoutineArguments args,
+                                                          RoutineSupportStatusInfoCallback callback);
   };
 
   interface Events {
@@ -466,6 +496,9 @@ namespace os.diagnostics {
 
     // Informs the extension that a volume button routine finished.
     static void onVolumeButtonRoutineFinished(VolumeButtonRoutineFinishedInfo finishedInfo);
+
+    // Informs the extension that a fan routine finished.
+    static void onFanRoutineFinished(FanRoutineFinishedInfo finishedInfo);
 
     // Informs the extension that an exception occured. The error passed in
     // `ExceptionInfo` is non-recoverable.

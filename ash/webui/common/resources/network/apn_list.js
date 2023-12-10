@@ -20,6 +20,7 @@ import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {ApnProperties, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
 
@@ -54,6 +55,11 @@ export class ApnList extends ApnListBase {
       },
 
       errorState: String,
+
+      /** @type {?PortalState} */
+      portalState: {
+        type: Object,
+      },
 
       shouldOmitLinks: {
         type: Boolean,
@@ -253,13 +259,6 @@ export class ApnList extends ApnListBase {
         currentApn.apnTypes.includes(ApnType.kAttach) &&
         !currentApn.apnTypes.includes(ApnType.kDefault);
   }
-
-  /**
-   * Redirects to "Lean more about APN" page.
-   * TODO(b/162365553): Implement.
-   * @private
-   */
-  onLearnMoreClicked_() {}
 
   /**
    * @param {!Event} event

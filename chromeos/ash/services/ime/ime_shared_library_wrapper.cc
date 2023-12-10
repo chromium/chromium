@@ -56,7 +56,7 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 ImeSharedLibraryWrapperImpl::ImeSharedLibraryWrapperImpl() = default;
 
-absl::optional<ImeSharedLibraryWrapper::EntryPoints>
+std::optional<ImeSharedLibraryWrapper::EntryPoints>
 ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
   if (entry_points_) {
     return entry_points_;
@@ -69,7 +69,7 @@ ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
   if (!library.is_valid()) {
     LOG(ERROR) << "Failed to load decoder shared library from: " << path
                << ", error: " << library.GetError()->ToString();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   EntryPoints entry_points = {
@@ -101,7 +101,7 @@ ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
       !entry_points.close_mojo_mode ||
       !entry_points.is_input_method_connected ||
       !entry_points.initialize_connection_factory) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Optional function pointer.

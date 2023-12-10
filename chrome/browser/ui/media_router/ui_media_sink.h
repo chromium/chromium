@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_UI_MEDIA_SINK_H_
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_UI_MEDIA_SINK_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -67,7 +67,7 @@ struct UIMediaSink {
   GURL presentation_url;
 
   // Active route associated with the sink.
-  absl::optional<MediaRoute> route;
+  std::optional<MediaRoute> route;
 
   // The icon to use for the sink.
   SinkIconType icon_type = SinkIconType::GENERIC;
@@ -80,7 +80,7 @@ struct UIMediaSink {
 
   // An issue the sink is having. This is a nullopt when there are no issues
   // with the sink.
-  absl::optional<Issue> issue;
+  std::optional<Issue> issue;
 
   // Set of Cast Modes (e.g. presentation, desktop mirroring) supported by the
   // sink.

@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1178581264944972037">Пауза</translation>
-<translation id="2558806128245168542">Навигиране назад</translation>
-<translation id="3523426587027570423">Докоснете, за да затворите плейъра „Слушане на тази страница“.</translation>
+<translation id="1921351128855867012">Превъртане с(ъс) <ph name="NUMBER_OF_SECONDS" /> секунди напред</translation>
+<translation id="1984328900355667246">Възпроизвеждането не е възможно</translation>
+<translation id="3023502830214299618">За съжаление, понастоящем възпроизвеждането не е възможно за тази страница. Опитайте отново по-късно.</translation>
+<translation id="3807208219231826020">Превъртане на възпроизвеждането</translation>
+<translation id="385051799172605136">Назад</translation>
 <translation id="4431240646217225907">Открояване на текст и автоматично превъртане</translation>
 <translation id="4654641641922242357">Плейър „Слушане на тази страница“.</translation>
-<translation id="4731877163452936634">Скорост на възпроизвеждане: <ph name="PLAYBACK_SPEED" />. Кликнете за промяна.</translation>
+<translation id="4872475766448853257">Превъртане с(ъс) <ph name="NUMBER_OF_SECONDS" /> секунди назад</translation>
 <translation id="5234971936051226002">Плейърът „Слушане на тази страница“ е намален.</translation>
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="6315170314923504164">Глас</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6846298663435243399">Зарежда се…</translation>
 <translation id="7587250070160020374">Сега слушате Chrome</translation>
-<translation id="7945822420239537236">Превъртане с(ъс) <ph name="NUMBER_OF_SECONDS" /> секунди напред</translation>
-<translation id="7972866381678406344">Превъртане с(ъс) <ph name="NUMBER_OF_SECONDS" /> секунди назад</translation>
 <translation id="8136852699834914183">Възпроизвеждането не е възможно за тази страница.</translation>
+<translation id="8264989794233974275">Увеличаване/намаляване на скоростта с(ъс) <ph name="PLAYBACK_SPEED" />.</translation>
+<translation id="8407011429883244666">Затваряне на плейъра.</translation>
 <translation id="8953618380150219653">Плейърът „Слушане на тази страница“ е отворен на пълната височина.</translation>
 </translationbundle>

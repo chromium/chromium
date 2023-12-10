@@ -9,12 +9,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_message_bubble_bridge.h"
+#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -59,27 +58,6 @@ bool g_acknowledge_existing_ntp_extensions =
 // been automatically acknowledged.
 const char kDidAcknowledgeExistingNtpExtensions[] =
     "ack_existing_ntp_extensions";
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-void ShowSettingsApiBubble(SettingsApiOverrideType type,
-                           Browser* browser) {
-  ToolbarActionsModel* model = ToolbarActionsModel::Get(browser->profile());
-  if (model->has_active_bubble())
-    return;
-
-  std::unique_ptr<ExtensionMessageBubbleController> settings_api_bubble(
-      new ExtensionMessageBubbleController(
-          new SettingsApiBubbleDelegate(browser->profile(), type), browser));
-  if (!settings_api_bubble->ShouldShow())
-    return;
-
-  settings_api_bubble->SetIsActiveBubble();
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(settings_api_bubble)));
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
-      std::move(bridge));
-}
-#endif
 
 }  // namespace
 
@@ -126,7 +104,15 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
 
 void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  ShowSettingsApiBubble(BUBBLE_TYPE_HOME_PAGE, browser);
+  auto bubble_delegate =
+      std::make_unique<ControlledHomeBubbleDelegate>(browser);
+  if (!bubble_delegate->ShouldShow()) {
+    return;
+  }
+
+  bubble_delegate->PendingShow();
+  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
+      std::move(bubble_delegate));
 #endif
 }
 
@@ -143,7 +129,7 @@ void MaybeShowExtensionControlledSearchNotification(
   if (!browser)
     return;
 
-  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(browser->profile());
   if (!params)
     return;
@@ -187,11 +173,8 @@ void MaybeShowExtensionControlledNewTabPage(
     return;  // Not being overridden by an extension.
 
   Profile* const profile = browser->profile();
-  ToolbarActionsModel* model = ToolbarActionsModel::Get(profile);
-  if (model->has_active_bubble())
-    return;
 
-  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);
   if (!params)
     return;

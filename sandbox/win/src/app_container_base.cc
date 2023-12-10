@@ -107,7 +107,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
     return false;
   }
 
-  absl::optional<base::win::SecurityDescriptor> sd =
+  std::optional<base::win::SecurityDescriptor> sd =
       base::win::SecurityDescriptor::FromName(
           object_name, object_type,
           OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
@@ -125,24 +125,24 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
     }
   }
 
-  absl::optional<base::win::AccessToken> primary =
+  std::optional<base::win::AccessToken> primary =
       base::win::AccessToken::FromCurrentProcess(
           /*impersonation=*/false, TOKEN_DUPLICATE);
   if (!primary.has_value()) {
     return false;
   }
-  absl::optional<base::win::AccessToken> lowbox = BuildPrimaryToken(*primary);
+  std::optional<base::win::AccessToken> lowbox = BuildPrimaryToken(*primary);
   if (!lowbox) {
     return false;
   }
-  absl::optional<base::win::AccessToken> token_query =
+  std::optional<base::win::AccessToken> token_query =
       lowbox->DuplicateImpersonation(
           base::win::SecurityImpersonationLevel::kIdentification);
   if (!token_query) {
     return false;
   }
 
-  absl::optional<base::win::AccessCheckResult> result =
+  std::optional<base::win::AccessCheckResult> result =
       sd->AccessCheck(*token_query, desired_access, object_type);
   if (!result) {
     return false;
@@ -166,7 +166,7 @@ bool AppContainerBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
 }
 
 bool AppContainerBase::AddCapability(
-    const absl::optional<base::win::Sid>& capability_sid,
+    const std::optional<base::win::Sid>& capability_sid,
     bool impersonation_only) {
   if (!capability_sid)
     return false;
@@ -220,38 +220,38 @@ AppContainerBase::GetSecurityCapabilities() {
   return std::make_unique<SecurityCapabilities>(package_sid_, capabilities_);
 }
 
-absl::optional<base::win::AccessToken>
-AppContainerBase::BuildImpersonationToken(const base::win::AccessToken& token) {
-  absl::optional<base::win::AccessToken> lowbox = token.CreateAppContainer(
+std::optional<base::win::AccessToken> AppContainerBase::BuildImpersonationToken(
+    const base::win::AccessToken& token) {
+  std::optional<base::win::AccessToken> lowbox = token.CreateAppContainer(
       package_sid_, impersonation_capabilities_, TOKEN_ALL_ACCESS);
   ;
   if (!lowbox.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::win::SecurityDescriptor> sd =
+  std::optional<base::win::SecurityDescriptor> sd =
       base::win::SecurityDescriptor::FromHandle(
           lowbox->get(), base::win::SecurityObjectType::kKernel,
           DACL_SECURITY_INFORMATION);
   if (!sd) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   lowbox = lowbox->DuplicateImpersonation(
       base::win::SecurityImpersonationLevel::kImpersonation, TOKEN_ALL_ACCESS);
   if (!lowbox.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!sd->WriteToHandle(lowbox->get(), base::win::SecurityObjectType::kKernel,
                          DACL_SECURITY_INFORMATION)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return lowbox;
 }
 
-absl::optional<base::win::AccessToken> AppContainerBase::BuildPrimaryToken(
+std::optional<base::win::AccessToken> AppContainerBase::BuildPrimaryToken(
     const base::win::AccessToken& token) {
   return token.CreateAppContainer(package_sid_, capabilities_,
                                   TOKEN_ALL_ACCESS);

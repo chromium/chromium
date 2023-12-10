@@ -108,7 +108,7 @@ std::string ToString(const std::vector<SigningScheme>& vec) {
   return res.str();
 }
 
-std::string ToString(const absl::optional<chaps::KeyPermissions>& val) {
+std::string ToString(const std::optional<chaps::KeyPermissions>& val) {
   if (!val.has_value()) {
     return "<empty>";
   }
@@ -171,16 +171,16 @@ bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
 // Reads a file in the PEM format, decodes it, returns the content of the first
 // PEM block in the DER format. Currently supports CERTIFICATE and PRIVATE KEY
 // block types.
-absl::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
+std::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
     const base::FilePath& path) {
   std::string pem_data;
   if (!base::ReadFileToString(path, &pem_data)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bssl::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
   if (!tokenizer.GetNext()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return StrToBytes(tokenizer.data());
 }
@@ -230,8 +230,8 @@ class NotificationsObserver {
  private:
   const raw_ref<base::test::TaskEnvironment> task_environment_;
   size_t notifications_counter_ = 0;
-  absl::optional<base::RunLoop> run_loop_;
-  absl::optional<size_t> expected_notifications_;
+  std::optional<base::RunLoop> run_loop_;
+  std::optional<size_t> expected_notifications_;
   base::WeakPtrFactory<NotificationsObserver> weak_factory_{this};
 };
 
@@ -994,10 +994,10 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
 TEST_F(KcerNssTest, ImportCertForImportedKey) {
   InitializeKcer({Token::kUser});
 
-  absl::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
       net::GetTestCertsDirectory().AppendASCII("client_1.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
-  absl::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
       net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
@@ -1194,7 +1194,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
   TestKeyType GetKeyType() { return GetParam(); }
 
   // Requires Kcer to be initialized.
-  absl::optional<PublicKey> CreateKey(Token token, TestKeyType key_type) {
+  std::optional<PublicKey> CreateKey(Token token, TestKeyType key_type) {
     base::test::TestFuture<base::expected<PublicKey, Error>> key_waiter;
     switch (key_type) {
       case TestKeyType::kRsa:
@@ -1212,7 +1212,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
         key_type_ = KeyType::kEcc;
         break;
       case TestKeyType::kImportedRsa: {
-        absl::optional<std::vector<uint8_t>> key_to_import =
+        std::optional<std::vector<uint8_t>> key_to_import =
             ReadPemFileReturnDer(
                 net::GetTestCertsDirectory().AppendASCII("client_1.key"));
         kcer_->ImportKey(token, Pkcs8PrivateKeyInfoDer(key_to_import.value()),
@@ -1222,7 +1222,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
         break;
       }
       case TestKeyType::kImportedEcc: {
-        absl::optional<std::vector<uint8_t>> key_to_import =
+        std::optional<std::vector<uint8_t>> key_to_import =
             ReadPemFileReturnDer(
                 net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
         kcer_->ImportKey(token, Pkcs8PrivateKeyInfoDer(key_to_import.value()),
@@ -1233,7 +1233,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
       }
     }
     if (!key_waiter.Get().has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return key_waiter.Take().value();
   }
@@ -1260,8 +1260,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
 // returns correct results when Kcer has access to two tokens.
 TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
   InitializeKcer({Token::kUser, Token::kDevice});
-  absl::optional<PublicKey> public_key =
-      CreateKey(Token::kDevice, GetKeyType());
+  std::optional<PublicKey> public_key = CreateKey(Token::kDevice, GetKeyType());
   ASSERT_TRUE(public_key.has_value());
 
   {
@@ -1359,7 +1358,7 @@ TEST_P(KcerNssAllKeyTypesTest, KeyLifecycle) {
   }
 
   // Add a new key.
-  absl::optional<PublicKey> public_key = CreateKey(Token::kUser, GetKeyType());
+  std::optional<PublicKey> public_key = CreateKey(Token::kUser, GetKeyType());
   ASSERT_TRUE(public_key.has_value());
 
   // Check that the key is listed.

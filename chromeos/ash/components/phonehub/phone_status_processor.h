@@ -99,7 +99,7 @@ class PhoneStatusProcessor
       const proto::PhoneProperties& phone_properties);
 
   void MaybeSetPhoneModelName(
-      const absl::optional<multidevice::RemoteDeviceRef>& remote_device);
+      const std::optional<multidevice::RemoteDeviceRef>& remote_device);
 
   void SetEcheFeatureStatusReceivedFromPhoneHub(
       proto::FeatureStatus eche_feature_status);

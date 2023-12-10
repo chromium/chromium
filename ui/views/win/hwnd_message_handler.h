@@ -127,6 +127,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   virtual void StackAbove(HWND other_hwnd);
   virtual void StackAtTop();
 
+  // Sets the parent of the HWND if it is a child window. Otherwise, sets the
+  // owner of the HWND.
+  virtual void SetParentOrOwner(HWND new_parent);
+
   // Shows the window. If |show_state| is maximized, |pixel_restore_bounds| is
   // the bounds to restore the window to when going back to normal.
   virtual void Show(ui::WindowShowState show_state,

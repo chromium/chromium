@@ -17,12 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappsIconUtils;
 
-/**
- * The view portion of the PWA Install bottom sheet.
- */
+/** The view portion of the PWA Install bottom sheet. */
 public class PwaInstallBottomSheetView {
     /** The context to use. */
     private final Context mContext;
+
     /** The lower part of the bottom sheet. */
     private final View mContentView;
 
@@ -30,25 +29,29 @@ public class PwaInstallBottomSheetView {
             Context context, PwaBottomSheetController.ScreenshotsAdapter adapter) {
         mContext = context;
 
-        mContentView = LayoutInflater.from(context).inflate(
-                R.layout.pwa_install_bottom_sheet_content, /* root= */ null);
+        mContentView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.pwa_install_bottom_sheet_content, /* root= */ null);
 
         RecyclerView recyclerView = mContentView.findViewById(R.id.screenshots_container);
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, int itemPosition, RecyclerView parent) {
-                super.getItemOffsets(outRect, itemPosition, parent);
+        recyclerView.addItemDecoration(
+                new RecyclerView.ItemDecoration() {
+                    @Override
+                    public void getItemOffsets(
+                            Rect outRect, int itemPosition, RecyclerView parent) {
+                        super.getItemOffsets(outRect, itemPosition, parent);
 
-                // Add a fixed margin between images.
-                RecyclerView.Adapter adapter = parent.getAdapter();
-                int margin = mContext.getResources().getDimensionPixelSize(
-                        R.dimen.webapk_screenshot_margin);
-                outRect.left = margin;
-                if (itemPosition == adapter.getItemCount() - 1) {
-                    outRect.right = margin;
-                }
-            }
-        });
+                        // Add a fixed margin between images.
+                        RecyclerView.Adapter adapter = parent.getAdapter();
+                        int margin =
+                                mContext.getResources()
+                                        .getDimensionPixelSize(R.dimen.webapk_screenshot_margin);
+                        outRect.left = margin;
+                        if (itemPosition == adapter.getItemCount() - 1) {
+                            outRect.right = margin;
+                        }
+                    }
+                });
         recyclerView.setAdapter(adapter);
     }
 
@@ -104,12 +107,15 @@ public class PwaInstallBottomSheetView {
     public static int getButtonInstallViewIdForTesting() {
         return R.id.button_install;
     }
+
     public static int getAppNameViewIdForTesting() {
         return R.id.app_name;
     }
+
     public static int getAppOriginViewIdForTesting() {
         return R.id.app_origin;
     }
+
     public static int getDescViewIdForTesting() {
         return R.id.description;
     }

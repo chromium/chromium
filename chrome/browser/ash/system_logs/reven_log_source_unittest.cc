@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 
+#include <optional>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -16,7 +18,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -124,11 +125,11 @@ healthd::OsInfoPtr CreateOsInfo(healthd::BootMode boot_mode) {
 
 healthd::DmiInfoPtr CreateDmiInfo() {
   healthd::DmiInfoPtr dmi_info = healthd::DmiInfo::New();
-  dmi_info->sys_vendor = absl::optional<std::string>("LENOVO");
-  dmi_info->product_name = absl::optional<std::string>("20U9001PUS");
+  dmi_info->sys_vendor = std::optional<std::string>("LENOVO");
+  dmi_info->product_name = std::optional<std::string>("20U9001PUS");
   dmi_info->product_version =
-      absl::optional<std::string>("ThinkPad X1 Carbon Gen 8");
-  dmi_info->bios_version = absl::optional<std::string>("N2WET26W (1.16 )");
+      std::optional<std::string>("ThinkPad X1 Carbon Gen 8");
+  dmi_info->bios_version = std::optional<std::string>("N2WET26W (1.16 )");
   return dmi_info;
 }
 
@@ -147,7 +148,7 @@ healthd::BusDevicePtr CreatePciDevice(healthd::BusDeviceClass device_class,
   pci_info->vendor_id = vendor_id;
   pci_info->device_id = device_id;
   if (driver != "") {
-    pci_info->driver = absl::optional<std::string>(driver);
+    pci_info->driver = std::optional<std::string>(driver);
   }
 
   device->bus_info = healthd::BusInfo::NewPciBusInfo(std::move(pci_info));
@@ -219,7 +220,7 @@ healthd::BusDevicePtr CreateUsbDevice(healthd::BusDeviceClass device_class,
   usb_info->product_id = product_id;
   auto usb_if_info = healthd::UsbBusInterfaceInfo::New();
   if (driver != "") {
-    usb_if_info->driver = absl::optional<std::string>(driver);
+    usb_if_info->driver = std::optional<std::string>(driver);
   }
   usb_info->interfaces.push_back(std::move(usb_if_info));
 
@@ -296,7 +297,7 @@ void SetTpmInfo(healthd::TelemetryInfoPtr& telemetry_info,
 
   healthd::TpmInfoPtr tpm_info = healthd::TpmInfo::New();
   if (did_vid != "") {
-    tpm_info->did_vid = absl::optional<std::string>(did_vid);
+    tpm_info->did_vid = std::optional<std::string>(did_vid);
   }
 
   tpm_info->version = std::move(version);

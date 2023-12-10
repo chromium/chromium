@@ -26,7 +26,7 @@ using Microsoft::WRL::ComPtr;
 FakeBluetoothLEAdvertisementReceivedEventArgsWinrt::
     FakeBluetoothLEAdvertisementReceivedEventArgsWinrt(
         int16_t rssi,
-        base::StringPiece address,
+        std::string_view address,
         ComPtr<IBluetoothLEAdvertisement> advertisement)
     : rssi_(rssi),
       raw_address_(FakeBluetoothAdapterWinrt::ToRawBluetoothAddress(address)),

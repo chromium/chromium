@@ -182,7 +182,7 @@ void LayoutFlowThread::AddOutlineRects(
     OutlineRectCollector& collector,
     OutlineInfo* info,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects_in_flowthread;
   UnionOutlineRectCollector flow_collector;
@@ -218,9 +218,9 @@ bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
                                       accumulated_offset, phase);
 }
 
-RecalcLayoutOverflowResult LayoutFlowThread::RecalcLayoutOverflow() {
+RecalcScrollableOverflowResult LayoutFlowThread::RecalcScrollableOverflow() {
   NOT_DESTROYED();
-  // RecalcLayoutOverflow() traverses a physical fragment tree. So it's not
+  // RecalcScrollableOverflow() traverses a physical fragment tree. So it's not
   // called for LayoutFlowThread, which has no physical fragments.
   NOTREACHED_NORETURN();
 }

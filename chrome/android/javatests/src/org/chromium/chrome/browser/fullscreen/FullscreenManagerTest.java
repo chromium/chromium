@@ -184,6 +184,7 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisabledTest(message = "crbug.com/1489541")
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
         testBackPressExitPersistentFullscreenInternal();
     }

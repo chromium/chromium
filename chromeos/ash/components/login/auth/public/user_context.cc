@@ -128,7 +128,7 @@ void UserContext::CryptohomeContext::SetAuthFactorsConfiguration(
 }
 
 void UserContext::CryptohomeContext::ClearAuthFactorsConfiguration() {
-  auth_factors_configuration_ = absl::nullopt;
+  auth_factors_configuration_ = std::nullopt;
 }
 
 const AuthFactorsConfiguration&
@@ -276,17 +276,17 @@ const std::string& UserContext::GetReauthProofToken() const {
   return reauth_proof_token_;
 }
 
-const absl::optional<password_manager::PasswordHashData>&
+const std::optional<password_manager::PasswordHashData>&
 UserContext::GetSyncPasswordData() const {
   return sync_password_data_;
 }
 
-const absl::optional<SamlPasswordAttributes>&
+const std::optional<SamlPasswordAttributes>&
 UserContext::GetSamlPasswordAttributes() const {
   return saml_password_attributes_;
 }
 
-const absl::optional<SyncTrustedVaultKeys>&
+const std::optional<SyncTrustedVaultKeys>&
 UserContext::GetSyncTrustedVaultKeys() const {
   return sync_trusted_vault_keys_;
 }
@@ -329,7 +329,7 @@ void UserContext::SaveKeyForReplacement() {
 void UserContext::ReuseReplacementKey() {
   DCHECK(replacement_key_.has_value());
   key_ = *replacement_key_;
-  replacement_key_ = absl::nullopt;
+  replacement_key_ = std::nullopt;
 }
 
 void UserContext::SetPasswordKey(const Key& key) {
@@ -348,17 +348,17 @@ void UserContext::SetLocalPasswordInput(const LocalPasswordInput& password) {
   local_input_.emplace(password);
 }
 
-absl::optional<OnlinePassword> UserContext::GetOnlinePassword() const {
+std::optional<OnlinePassword> UserContext::GetOnlinePassword() const {
   if (gaia_password_.has_value()) {
     return OnlinePassword{gaia_password_->value()};
   } else if (saml_password_.has_value()) {
     return OnlinePassword{saml_password_->value()};
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
-absl::optional<PasswordInput> UserContext::GetPassword() const {
+std::optional<PasswordInput> UserContext::GetPassword() const {
   if (local_input_.has_value()) {
     return PasswordInput{local_input_->value()};
   } else if (gaia_password_.has_value()) {
@@ -366,7 +366,7 @@ absl::optional<PasswordInput> UserContext::GetPassword() const {
   } else if (saml_password_.has_value()) {
     return PasswordInput{saml_password_->value()};
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -528,7 +528,7 @@ void UserContext::AddAuthorizedIntent(const AuthSessionIntent auth_intent) {
 void UserContext::ClearSecrets() {
   key_.ClearSecret();
   password_key_.ClearSecret();
-  replacement_key_ = absl::nullopt;
+  replacement_key_ = std::nullopt;
   auth_code_.clear();
   refresh_token_.clear();
   sync_trusted_vault_keys_.reset();

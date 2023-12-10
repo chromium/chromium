@@ -72,8 +72,6 @@ bool SevenZipAnalyzer::OnDirectory(const seven_zip::EntryInfo& entry) {
 
 bool SevenZipAnalyzer::EntryDone(seven_zip::Result result,
                                  const seven_zip::EntryInfo& entry) {
-  base::UmaHistogramEnumeration("SBClientDownload.SevenZipEntryResult", result);
-
   // Since unpacking an encrypted entry is expected to fail, allow all results
   // here for encrypted entries.
   if (result == seven_zip::Result::kSuccess || entry.is_encrypted) {

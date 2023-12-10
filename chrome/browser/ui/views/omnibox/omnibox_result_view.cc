@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -441,9 +442,20 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
   // The selection indicator indicates when the suggestion is focused. Do not
   // show the selection indicator if an auxiliary button is selected.
-  selection_indicator_->SetVisible(selected &&
-                                   popup_view_->GetSelection().state ==
-                                       OmniboxPopupSelection::NORMAL);
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      match_.HasInstantKeyword(
+          popup_view_->controller()->client()->GetTemplateURLService())) {
+    const OmniboxPopupSelection::LineState line_state =
+        popup_view_->GetSelection().state;
+    selection_indicator_->SetVisible(
+        selected &&
+        (line_state == OmniboxPopupSelection::LineState::NORMAL ||
+         line_state == OmniboxPopupSelection::LineState::KEYWORD_MODE));
+  } else {
+    selection_indicator_->SetVisible(selected &&
+                                     popup_view_->GetSelection().state ==
+                                         OmniboxPopupSelection::NORMAL);
+  }
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
@@ -561,6 +573,18 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      match_.type == AutocompleteMatchType::STARTER_PACK) {
+    // Starter pack matches in the keyword mode refresh are a special case that
+    // does not commit the omnibox by opening a selected match.
+    OmniboxEditModel* model = popup_view_->model();
+    model->ClearKeyword();
+    model->SetPopupSelection(OmniboxPopupSelection(
+        model_index_, OmniboxPopupSelection::LineState::KEYWORD_MODE));
+    model->AcceptKeyword(metrics::OmniboxEventProto::TAB);
+    return;
+  }
+
   if (event.IsOnlyMiddleMouseButton() || event.IsOnlyLeftMouseButton()) {
     WindowOpenDisposition disposition =
         event.IsOnlyLeftMouseButton()

@@ -10,6 +10,7 @@
 #include <limits>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -53,12 +54,12 @@ const char kLongitudeString[] = "lng";
 const char kAccuracyString[] = "accuracy";
 
 // Keys for the network request.
-constexpr base::StringPiece kAgeKey = "age";
-constexpr base::StringPiece kChannelKey = "channel";
-constexpr base::StringPiece kMacAddressKey = "macAddress";
-constexpr base::StringPiece kSignalStrengthKey = "signalStrength";
-constexpr base::StringPiece kSignalToNoiseRatioKey = "signalToNoiseRatio";
-constexpr base::StringPiece kWifiAccessPointsKey = "wifiAccessPoints";
+constexpr std::string_view kAgeKey = "age";
+constexpr std::string_view kChannelKey = "channel";
+constexpr std::string_view kMacAddressKey = "macAddress";
+constexpr std::string_view kSignalStrengthKey = "signalStrength";
+constexpr std::string_view kSignalToNoiseRatioKey = "signalToNoiseRatio";
+constexpr std::string_view kWifiAccessPointsKey = "wifiAccessPoints";
 
 enum NetworkLocationRequestEvent {
   // NOTE: Do not renumber these as that would confuse interpretation of
@@ -84,14 +85,6 @@ void RecordUmaEvent(NetworkLocationRequestEvent event) {
 void RecordUmaResponseCode(int code) {
   base::UmaHistogramSparse("Geolocation.NetworkLocationRequest.ResponseCode",
                            code);
-}
-
-void RecordUmaAccessPoints(int count) {
-  const int min = 1;
-  const int max = 20;
-  const int buckets = 21;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Geolocation.NetworkLocationRequest.AccessPoints",
-                              count, min, max, buckets);
 }
 
 void RecordUmaRequestInterval(base::TimeDelta time_delta) {
@@ -202,7 +195,6 @@ void NetworkLocationRequest::MakeRequest(
       << "Sending a network location request: Number of Wi-Fi APs="
       << wifi_data.access_point_data.size();
   RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_REQUEST_START);
-  RecordUmaAccessPoints(wifi_data.access_point_data.size());
   if (url_loader_) {
     GEOLOCATION_LOG(DEBUG) << "Cancelling pending network location request";
     DVLOG(1) << "NetworkLocationRequest : Cancelling pending request";
@@ -374,14 +366,14 @@ base::Value::Dict FormUploadData(const WifiData& wifi_data,
   return request;
 }
 
-void AddString(base::StringPiece property_name,
+void AddString(std::string_view property_name,
                const std::string& value,
                base::Value::Dict& dict) {
   if (!value.empty())
     dict.Set(property_name, value);
 }
 
-void AddInteger(base::StringPiece property_name,
+void AddInteger(std::string_view property_name,
                 int value,
                 base::Value::Dict& dict) {
   if (value != std::numeric_limits<int32_t>::min())

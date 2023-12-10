@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_WEB_APP_PRELOAD_INSTALLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -94,7 +94,7 @@ class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
       web_app_service_observer_{this};
 
   bool lacros_is_connected_;
-  absl::optional<std::vector<PreloadAppDefinition>> apps_for_installation_;
+  std::optional<std::vector<PreloadAppDefinition>> apps_for_installation_;
   WebAppPreloadInstalledCallback installation_complete_callback_;
 
   raw_ptr<Profile> profile_;

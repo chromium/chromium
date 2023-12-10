@@ -145,7 +145,7 @@ class OverrideNavigationParamsObserver : public content::WebContentsObserver {
     EXPECT_TRUE(handle);
 
     // Check the values that are changed in OverrideNavigationParams.
-    EXPECT_EQ(absl::nullopt, handle->GetInitiatorOrigin());
+    EXPECT_EQ(std::nullopt, handle->GetInitiatorOrigin());
     EXPECT_FALSE(handle->IsRendererInitiated());
     ui::PageTransitionCoreTypeIs(handle->GetPageTransition(),
                                  ui::PAGE_TRANSITION_AUTO_BOOKMARK);

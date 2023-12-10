@@ -9,22 +9,16 @@ import android.view.InputDevice;
 
 import org.chromium.content.browser.DeviceUtilsImpl;
 
-/**
- * A utility class that has helper methods for device configuration.
- */
+/** A utility class that has helper methods for device configuration. */
 public final class DeviceUtils {
     private DeviceUtils() {}
 
-    /**
-     * Appends the switch specifying which user agent should be used for this device.
-     */
+    /** Appends the switch specifying which user agent should be used for this device. */
     public static void addDeviceSpecificUserAgentSwitch() {
         DeviceUtilsImpl.addDeviceSpecificUserAgentSwitch();
     }
 
-    /**
-     * Appends or removes the switch specifying which user agent should be used for this device.
-     */
+    /** Appends or removes the switch specifying which user agent should be used for this device. */
     public static void updateDeviceSpecificUserAgentSwitch(boolean isTablet) {
         DeviceUtilsImpl.updateDeviceSpecificUserAgentSwitch(isTablet);
     }

@@ -53,7 +53,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-    ChromeFeatureList.START_SURFACE_ANDROID
 })
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,

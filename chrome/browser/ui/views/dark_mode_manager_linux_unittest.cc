@@ -23,7 +23,10 @@ class MockLinuxUi : public FakeLinuxUi {
 
 class MockNativeTheme : public NativeTheme {
  public:
-  MockNativeTheme() : NativeTheme(false) {}
+  MockNativeTheme()
+      : NativeTheme(/*should_only_use_dark_colors=*/false,
+                    /*system_theme=*/ui::SystemTheme::kDefault,
+                    /*theme_to_update=*/nullptr) {}
   ~MockNativeTheme() override = default;
 
   void SetUseDarkColors(bool use_dark_colors) {
@@ -48,7 +51,7 @@ class MockNativeTheme : public NativeTheme {
                const gfx::Rect& rect,
                const ExtraParams& extra,
                ColorScheme color_scheme,
-               const absl::optional<SkColor>& accent_color),
+               const std::optional<SkColor>& accent_color),
               (const override));
   MOCK_METHOD(bool, SupportsNinePatch, (Part part), (const override));
   MOCK_METHOD(gfx::Size, GetNinePatchCanvasSize, (Part part), (const override));

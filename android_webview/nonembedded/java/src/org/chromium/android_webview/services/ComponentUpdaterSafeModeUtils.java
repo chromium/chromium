@@ -14,9 +14,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.io.File;
 import java.util.Set;
 
-/**
- * A util class for Component Updater Safe Mode operations.
- */
+/** A util class for Component Updater Safe Mode operations. */
 public class ComponentUpdaterSafeModeUtils {
     private static final String TAG = "AwCUSafeMode";
     private static final String HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED =

@@ -14,20 +14,17 @@ import './screens/common/assistant_optin.js';
 import './screens/common/autolaunch.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
-import './screens/common/cryptohome_recovery_setup.js';
 import './screens/common/device_disabled.js';
 import './screens/common/display_size.js';
 import './screens/common/drive_pinning.js';
 import './screens/common/enable_kiosk.js';
 import './screens/common/error_message.js';
 import './screens/common/family_link_notice.js';
-import './screens/common/fingerprint_setup.js';
 import './screens/common/gaia_info.js';
 import './screens/common/gaia_signin.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
 import './screens/common/hw_data_collection.js';
-import './screens/common/local_password_setup.js';
 import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
@@ -38,8 +35,6 @@ import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
 import './screens/common/os_trial.js';
 import './screens/common/parental_handoff.js';
-import './screens/common/password_selection.js';
-import './screens/common/pin_setup.js';
 import './screens/common/recommend_apps.js';
 import './screens/common/remote_activity_notification.js';
 import './screens/common/saml_confirm_password.js';
@@ -51,11 +46,23 @@ import './screens/common/touchpad_scroll.js';
 import './screens/common/tpm_error.js';
 import './screens/common/user_allowlist_check_screen.js';
 import './screens/common/wrong_hwid.js';
+// COMMON SCREENS USED TO SET UP AUTHENTICATION
+import './screens/osauth/apply_online_password.js';
+import './screens/osauth/cryptohome_recovery_setup.js';
+import './screens/osauth/factor_setup_success.js';
+import './screens/osauth/fingerprint_setup.js';
+import './screens/osauth/local_password_setup.js';
+import './screens/osauth/local_data_loss_warning.js';
+import './screens/osauth/enter_old_password.js';
+import './screens/osauth/osauth_error.js';
+import './screens/osauth/password_selection.js';
+import './screens/osauth/pin_setup.js';
+// AUTHENTICATION SCREENS USED DURING THE LOGIN FLOW
+import './screens/osauth/cryptohome_recovery.js';
+import './screens/osauth/gaia_password_changed.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
-import './screens/login/cryptohome_recovery.js';
 import './screens/login/encryption_migration.js';
-import './screens/login/gaia_password_changed.js';
 import './screens/login/lacros_data_backward_migration.js';
 import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
@@ -87,6 +94,11 @@ export const commonScreensList = [
     id: 'assistant-optin-flow',
     condition: 'isOobeAssistantEnabled',
   },
+  {
+    tag: 'apply-online-password-element',
+    id: 'apply-online-password',
+    condition: 'isOobeConsumersLocalPasswordsEnabled',
+  },
   {tag: 'autolaunch-element', id: 'autolaunch'},
   {
     tag: 'choobe-element',
@@ -108,6 +120,10 @@ export const commonScreensList = [
     condition: 'isDrivePinningEnabled',
   },
   {tag: 'enable-kiosk-element', id: 'kiosk-enable'},
+  {
+    tag: 'enter-old-password-element',
+    id: 'enter-old-password',
+  },
   {tag: 'error-message-element', id: 'error-message'},
   {tag: 'family-link-notice-element', id: 'family-link-notice'},
   {tag: 'fingerprint-setup-element', id: 'fingerprint-setup'},
@@ -125,6 +141,10 @@ export const commonScreensList = [
     id: 'local-password-setup',
     condition: 'isOobeConsumersLocalPasswordsEnabled',
   },
+  {
+    tag: 'local-data-loss-warning-element',
+    id: 'local-data-loss-warning',
+  },
   {tag: 'local-state-error-element', id: 'local-state-error'},
   {tag: 'managed-terms-of-service-element', id: 'terms-of-service'},
   {tag: 'marketing-opt-in-element', id: 'marketing-opt-in'},
@@ -135,6 +155,8 @@ export const commonScreensList = [
     id: 'online-authentication-screen',
   },
   {tag: 'oobe-reset-element', id: 'reset'},
+  {tag: 'osauth-error-element', id: 'osauth-error'},
+  {tag: 'factor-setup-success-element', id: 'factor-setup-success'},
   {
     tag: 'os-install-element',
     id: 'os-install',

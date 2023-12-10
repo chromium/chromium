@@ -146,33 +146,37 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
 }
 
-// crbug.com/1435375
 IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
-                       DISABLED_ExclusionListMatchesWildCards) {
-  PrefService* prefs = GetPrefs();
+                       ExclusionListMatchesSchemeWildCards) {
   base::Value::List exclude_sites_with_http_scheme;
   exclude_sites_with_http_scheme.Append("http://*");
-  prefs->SetList(
+  GetPrefs()->SetList(
       performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
       std::move(exclude_sites_with_http_scheme));
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL, kPathWithQuery)));
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GURL(chrome::kChromeUISettingsURL)));
+}
 
+IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+                       ExclusionListMatchesQueryParamWildCards) {
   base::Value::List wildcard_at_end_of_query;
   wildcard_at_end_of_query.Append(
       "example.com/extensions/favicon/test_file.html?q=hello*");
-  prefs->SetList(
+  GetPrefs()->SetList(
       performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
       std::move(wildcard_at_end_of_query));
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL, kPathWithQuery)));
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kExampleURL)));
+}
 
+IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+                       ExclusionListMatchesAllSitesWildCards) {
   base::Value::List exclude_all_sites;
   exclude_all_sites.Append("*");
-  prefs->SetList(
+  GetPrefs()->SetList(
       performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
       std::move(exclude_all_sites));
 

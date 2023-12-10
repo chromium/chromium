@@ -22,6 +22,7 @@ import '../settings_shared.css.js';
 import {PrefControlMixinInterface} from '/shared/settings/controls/pref_control_mixin.js';
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -64,15 +65,13 @@ export interface SettingsClearBrowsingDataDialogElement {
   };
 }
 
-enum TimePeriod {
+export enum TimePeriod {
   LAST_HOUR = 0,
   LAST_DAY = 1,
   LAST_WEEK = 2,
   FOUR_WEEKS = 3,
   ALL_TIME = 4,
-  OLDER_THAN_30_DAYS = 5,
-  LAST_15_MINUTES = 6,
-  TIME_PERIOD_LAST = LAST_15_MINUTES
+  TIME_PERIOD_LAST = ALL_TIME
 }
 
 // TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
@@ -88,8 +87,8 @@ export enum TimePeriodExperiment {
   TIME_PERIOD_LAST = LAST_15_MINUTES
 }
 
-const SettingsClearBrowsingDataDialogElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SettingsClearBrowsingDataDialogElementBase = RouteObserverMixin(
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
@@ -163,6 +162,13 @@ export class SettingsClearBrowsingDataDialogElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enableCbdTimeframeRequired');
+        },
+      },
+
+      unoDesktopEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('unoDesktopEnabled');
         },
       },
 
@@ -308,12 +314,22 @@ export class SettingsClearBrowsingDataDialogElement extends
     };
   }
 
+  static get observers() {
+    return [
+      `onTimePeriodAdvancedPrefUpdated_(
+          prefs.browser.clear_data.time_period.value)`,
+      `onTimePeriodBasicPrefUpdated_(
+          prefs.browser.clear_data.time_period_basic.value)`,
+    ];
+  }
+
   // TODO(dpapad): make |syncStatus| private.
   syncStatus: SyncStatus|undefined;
   private counters_: {[k: string]: string};
   private clearFromOptions_: DropdownMenuOptionList;
   private clearFromOptionsV2_: DropdownMenuOptionList;
   private enableCbdTimeframeRequired_: boolean;
+  private unoDesktopEnabled_: boolean;
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
@@ -438,21 +454,26 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   /**
    * Choose a label for the cookie checkbox
+   * @param isSignedIn boolean whether the user is signed in or not.
    * @param shouldShowCookieException boolean whether the exception about not
-   *  being signed out of your Google account should be shown when user is
+   * being signed out of your Google account should be shown when user is
    * sync.
    * @param cookiesSummary string explaining that deleting cookies and site data
-   * will sign the user out of most websites
-   * @param cookiesSummarySignedIn string explaining that deleting cookies and
-   * site data will sign the user out of most websites but Google sign in will
-   * stay.
+   * will sign the user out of most websites.
+   * @param clearCookiesSummarySignedIn string explaining that deleting cookies
+   * and site data will sign the user out of most websites but Google sign in
+   * will stay.
+   * @param clearCookiesSummarySyncing string explaining that deleting cookies
+   * and site data will sign the user out of most websites but Google sign in
+   * will stay when user is syncing.
    * @param clearCookiesSummarySignedInSupervisedProfile string used for a
    * supervised user. Gives information about family link controls and that they
    * will not be signed out on clearing cookies
    */
   private cookiesCheckboxLabel_(
-      shouldShowCookieException: boolean, cookiesSummary: string,
-      cookiesSummarySignedIn: string,
+      isSignedIn: boolean, shouldShowCookieException: boolean,
+      cookiesSummary: string, clearCookiesSummarySignedIn: string,
+      clearCookiesSummarySyncing: string,
       clearCookiesSummarySignedInSupervisedProfile: string): string {
     if (loadTimeData.getBoolean('isChildAccount') &&
         loadTimeData.getBoolean(
@@ -460,8 +481,12 @@ export class SettingsClearBrowsingDataDialogElement extends
       return clearCookiesSummarySignedInSupervisedProfile;
     }
 
+    if (this.unoDesktopEnabled_ && isSignedIn) {
+      return clearCookiesSummarySignedIn;
+    }
+
     if (shouldShowCookieException) {
-      return cookiesSummarySignedIn;
+      return clearCookiesSummarySyncing;
     }
     // <if expr="chromeos_lacros">
     if (!loadTimeData.getBoolean('isSecondaryUser')) {
@@ -583,7 +608,10 @@ export class SettingsClearBrowsingDataDialogElement extends
   private onSyncDescriptionLinkClicked_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
       e.preventDefault();
-      if (!this.syncStatus!.hasError) {
+      if (this.showSigninInfo_()) {
+        chrome.metricsPrivate.recordUserAction('ClearBrowsingData_SignOut');
+        this.syncBrowserProxy_.signOut(/*delete_profile=*/ false);
+      } else if (this.showSyncInfo_()) {
         chrome.metricsPrivate.recordUserAction('ClearBrowsingData_Sync_Pause');
         this.syncBrowserProxy_.pauseSync();
       } else if (this.isSyncPaused_) {
@@ -630,9 +658,50 @@ export class SettingsClearBrowsingDataDialogElement extends
   private shouldShowFooter_(): boolean {
     let showFooter = false;
     // <if expr="not is_chromeos">
-    showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
+    if (this.unoDesktopEnabled_) {
+      showFooter = this.isSignedIn_;
+    } else {
+      showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
+    }
     // </if>
     return showFooter;
+  }
+
+  /**
+   * @return Whether the signed info description should be shown in the footer.
+   */
+  private showSigninInfo_(): boolean {
+    return this.unoDesktopEnabled_ && this.isSignedIn_ &&
+        (!this.syncStatus || !this.syncStatus.signedIn);
+  }
+
+  /**
+   * @return Whether the synced info description should be shown in the footer.
+   */
+  private showSyncInfo_(): boolean {
+    return !this.showSigninInfo_() && !!this.syncStatus &&
+        !this.syncStatus.hasError;
+  }
+
+  private onTimePeriodAdvancedPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(false);
+  }
+
+  private onTimePeriodBasicPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(true);
+  }
+
+
+  private onTimePeriodPrefUpdated_(basic: boolean) {
+    const timePeriodPref = basic ? 'browser.clear_data.time_period_basic' :
+                                   'browser.clear_data.time_period';
+
+    const timePeriodValue = this.getPref(timePeriodPref).value;
+
+    if (!(timePeriodValue in TimePeriod)) {
+      // If the synced time period is not supported, default to "Last hour".
+      this.setPrefValue(timePeriodPref, TimePeriod.LAST_HOUR);
+    }
   }
 }
 

@@ -132,6 +132,13 @@ void ServiceWorkerContextAdapter::UnregisterServiceWorker(
   NOTIMPLEMENTED();
 }
 
+void ServiceWorkerContextAdapter::UnregisterServiceWorkerImmediately(
+    const GURL& scope,
+    const blink::StorageKey& key,
+    ResultCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 content::ServiceWorkerExternalRequestResult
 ServiceWorkerContextAdapter::StartingExternalRequest(
     int64_t service_worker_version_id,
@@ -351,13 +358,13 @@ void ServiceWorkerContextAdapter::OnControlleeRemoved(
   // notification is dropped.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 
   size_t removed = it->second.erase(client_uuid);
   if (!removed) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 

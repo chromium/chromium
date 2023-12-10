@@ -27,7 +27,7 @@
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/disk_cache/simple/post_doom_waiter.h"
+#include "net/disk_cache/simple/post_operation_waiter.h"
 #include "net/disk_cache/simple/simple_entry_impl.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
 
@@ -92,8 +92,9 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // The entry for |entry_hash| is being doomed; the backend will not attempt
   // run new operations for this |entry_hash| until the Doom is completed.
   //
-  // The return value should be used to call OnDoomComplete.
-  scoped_refptr<SimplePostDoomWaiterTable> OnDoomStart(uint64_t entry_hash);
+  // The return value should be used to call OnOperationComplete.
+  scoped_refptr<SimplePostOperationWaiterTable> OnDoomStart(
+      uint64_t entry_hash);
 
   // SimpleIndexDelegate:
   void DoomEntries(std::vector<uint64_t>* entry_hashes,
@@ -167,6 +168,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
     int net_error;
   };
 
+  enum class PostOperationQueue { kNone, kPostDoom, kPostOpenByHash };
+
   void InitializeIndex(CompletionOnceCallback callback,
                        const DiskStatResult& result);
 
@@ -196,17 +199,20 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
       uint64_t suggested_max_size,
       net::CacheType cache_type);
 
-  // Looks at current state of |entries_pending_doom_| and |active_entries_|
-  // relevant to |entry_hash|, and, as appropriate, either returns a valid entry
-  // matching |entry_hash| and |key|, or returns nullptr and sets |*post_doom|
-  // to point to a vector of closures which will be invoked when it's an
-  // appropriate time to try again.  The caller is expected to append its retry
-  // closure to that vector.
+  // Looks at current state of `post_doom_waiting_`,
+  // `post_open_by_hash_waiting_` and `active_entries_` relevant to
+  // `entry_hash`, and, as appropriate, either returns a valid entry matching
+  // `entry_hash` and `key`, or returns nullptr and sets `post_operation` to
+  // point to a vector of closures which will be invoked when it's an
+  // appropriate time to try again. The caller is expected to append its retry
+  // closure to that vector. `post_operation_queue` will be set exactly when
+  // `post_operation` is.
   scoped_refptr<SimpleEntryImpl> CreateOrFindActiveOrDoomedEntry(
       uint64_t entry_hash,
       const std::string& key,
       net::RequestPriority request_priority,
-      std::vector<SimplePostDoomWaiter>** post_doom);
+      std::vector<base::OnceClosure>*& post_operation,
+      PostOperationQueue& post_operation_queue);
 
   // If post-doom and settings indicates that optimistically succeeding a create
   // due to being immediately after a doom is possible, sets up an entry for
@@ -218,7 +224,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
       uint64_t entry_hash,
       const std::string& key,
       net::RequestPriority request_priority,
-      std::vector<SimplePostDoomWaiter>* post_doom);
+      std::vector<base::OnceClosure>* post_doom);
 
   // Given a hash, will try to open the corresponding Entry. If we have an Entry
   // corresponding to |hash| in the map of active entries, opens it. Otherwise,
@@ -233,13 +239,14 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   net::Error DoomEntryFromHash(uint64_t entry_hash,
                                CompletionOnceCallback callback);
 
-  // Called when we tried to open an entry from key. When the entry has been
-  // opened, a check for key mismatch is performed.
-  void OnEntryOpenedFromKey(const std::string key,
-                            Entry** entry,
-                            const scoped_refptr<SimpleEntryImpl>& simple_entry,
-                            CompletionOnceCallback callback,
-                            int error_code);
+  // Called when we tried to open an entry with hash alone. When a blank entry
+  // has been created and filled in with information from the disk - based on a
+  // hash alone - this resumes operations that were waiting on the key
+  // information to have been loaded.
+  void OnEntryOpenedFromHash(uint64_t hash,
+                             const scoped_refptr<SimpleEntryImpl>& simple_entry,
+                             EntryResultCallback callback,
+                             EntryResult result);
 
   // A callback thunk used by DoomEntries to clear the |entries_pending_doom_|
   // after a mass doom.
@@ -270,10 +277,15 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   // The set of all entries which are currently being doomed. To avoid races,
   // these entries cannot have Doom/Create/Open operations run until the doom
-  // is complete. The base::OnceClosure |SimplePostDoomWaiter::run_post_doom|
-  // field is used to store deferred operations to be run at the completion of
-  // the Doom.
-  scoped_refptr<SimplePostDoomWaiterTable> post_doom_waiting_;
+  // is complete. They store a vector of base::OnceClosure's of deferred
+  // operations to be run at the completion of the Doom.
+  scoped_refptr<SimplePostOperationWaiterTable> post_doom_waiting_;
+
+  // Set of entries which are being opened by hash. We don't have their key,
+  // so can't check for collisions on Doom/Open/Create ops until that is
+  // complete.  This stores a vector of base::OnceClosure's of deferred
+  // operations to be run at the completion of the Doom.
+  scoped_refptr<SimplePostOperationWaiterTable> post_open_by_hash_waiting_;
 
   const raw_ptr<net::NetLog> net_log_;
 

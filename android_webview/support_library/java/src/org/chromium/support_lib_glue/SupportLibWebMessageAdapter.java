@@ -31,7 +31,7 @@ public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface 
     @Override
     public String getData() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_MESSAGE_GET_DATA")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_MESSAGE_GET_DATA")) {
             recordApiCall(ApiCall.WEB_MESSAGE_GET_DATA);
             return mMessagePayload.getAsString();
         }
@@ -39,8 +39,8 @@ public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface 
 
     @Override
     public /* MessagePayload */ InvocationHandler getMessagePayload() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_MESSAGE_GET_MESSAGE_PAYLOAD")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_MESSAGE_GET_MESSAGE_PAYLOAD")) {
             recordApiCall(ApiCall.WEB_MESSAGE_GET_MESSAGE_PAYLOAD);
             return new SupportLibWebMessagePayloadAdapter(mMessagePayload).getInvocationHandler();
         }
@@ -49,7 +49,7 @@ public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface 
     @Override
     public /* WebMessagePort */ InvocationHandler[] getPorts() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_MESSAGE_GET_PORTS")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_MESSAGE_GET_PORTS")) {
             recordApiCall(ApiCall.WEB_MESSAGE_GET_PORTS);
             return SupportLibWebMessagePortAdapter.fromMessagePorts(mPorts);
         }

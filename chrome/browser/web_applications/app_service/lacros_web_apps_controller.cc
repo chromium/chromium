@@ -244,7 +244,15 @@ void LacrosWebAppsController::ExecuteContextMenuCommandInternal(
           [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
                  callback,
              content::WebContents* contents) {
-            std::move(callback).Run({contents});
+            // These calls are piped through LaunchWebAppCommand and can end
+            // early during an Abort due to various reasons (like
+            // FirstRunService not completed), in which case there will be no
+            // web contents.
+            if (contents) {
+              std::move(callback).Run({contents});
+            } else {
+              std::move(callback).Run({});
+            }
           },
           std::move(callback)));
 }
@@ -312,7 +320,15 @@ void LacrosWebAppsController::LaunchInternal(const std::string& app_id,
           [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
                  callback,
              content::WebContents* contents) {
-            std::move(callback).Run({contents});
+            // These calls are piped through LaunchWebAppCommand and can end
+            // early during an Abort due to various reasons (like
+            // FirstRunService not completed), in which case there will be no
+            // web contents.
+            if (contents) {
+              std::move(callback).Run({contents});
+            } else {
+              std::move(callback).Run({});
+            }
           },
           std::move(callback)));
 }
@@ -326,7 +342,9 @@ void LacrosWebAppsController::ReturnLaunchResults(
   auto launch_result = crosapi::mojom::LaunchResult::New();
   launch_result->instance_id = base::UnguessableToken::Create();
   launch_result->instance_ids = std::vector<base::UnguessableToken>();
-  launch_result->state = crosapi::mojom::LaunchResultState::kSuccess;
+  launch_result->state = web_contentses.size()
+                             ? crosapi::mojom::LaunchResultState::kSuccess
+                             : crosapi::mojom::LaunchResultState::kFailed;
 
   // TODO(crbug.com/1144877): Replaced with DCHECK when the app instance tracker
   // flag is turned on.

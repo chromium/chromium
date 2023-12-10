@@ -11,16 +11,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Represents the output of the {@link TabSuggestions} pipeline.
- */
+/** Represents the output of the {@link TabSuggestions} pipeline. */
 public final class TabSuggestion {
     /** Types of Suggestion Actions */
-    @IntDef({TabSuggestion.TabSuggestionAction.GROUP, TabSuggestion.TabSuggestionAction.CLOSE})
+    @IntDef({TabSuggestion.TabSuggestionAction.CLOSE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSuggestionAction {
-        int GROUP = 0;
-        int CLOSE = 1;
+        int CLOSE = 0;
     }
 
     private final List<TabContext.TabInfo> mTabsInfo;
@@ -28,13 +25,18 @@ public final class TabSuggestion {
     private final String mProviderName;
     private final Integer mTabGroupId;
 
-    public TabSuggestion(List<TabContext.TabInfo> tabsInfo, @TabSuggestionAction int action,
+    public TabSuggestion(
+            List<TabContext.TabInfo> tabsInfo,
+            @TabSuggestionAction int action,
             String providerName) {
         this(tabsInfo, action, providerName, null);
     }
 
-    public TabSuggestion(List<TabContext.TabInfo> tabsInfo, @TabSuggestionAction int action,
-            String providerName, Integer tabGroupId) {
+    public TabSuggestion(
+            List<TabContext.TabInfo> tabsInfo,
+            @TabSuggestionAction int action,
+            String providerName,
+            Integer tabGroupId) {
         mTabsInfo =
                 tabsInfo == null ? Collections.emptyList() : Collections.unmodifiableList(tabsInfo);
         mAction = action;
@@ -42,23 +44,17 @@ public final class TabSuggestion {
         mTabGroupId = tabGroupId;
     }
 
-    /**
-     * Returns the list of the suggested tabs
-     */
+    /** Returns the list of the suggested tabs */
     public List<TabContext.TabInfo> getTabsInfo() {
         return mTabsInfo;
     }
 
-    /**
-     * Returns the suggested action
-     */
+    /** Returns the suggested action */
     public @TabSuggestionAction int getAction() {
         return mAction;
     }
 
-    /**
-     * Returns the provider's name
-     */
+    /** Returns the provider's name */
     public String getProviderName() {
         return mProviderName;
     }

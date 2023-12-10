@@ -8,9 +8,7 @@ import androidx.annotation.AnyThread;
 
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * A String-type {@link CachedFieldTrialParameter}.
- */
+/** A String-type {@link CachedFieldTrialParameter}. */
 public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
     private final String mDefaultValue;
 
@@ -41,11 +39,13 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
                 return value;
             }
 
-            value = CachedFlagsSafeMode.getInstance().getStringFieldTrialParam(
-                    preferenceName, defaultValue);
+            value =
+                    CachedFlagsSafeMode.getInstance()
+                            .getStringFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
-                value = ChromeSharedPreferences.getInstance().readString(
-                        preferenceName, defaultValue);
+                value =
+                        ChromeSharedPreferences.getInstance()
+                                .readString(preferenceName, defaultValue);
             }
 
             ValuesReturned.sStringValues.put(preferenceName, value);
@@ -61,8 +61,8 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
     void cacheToDisk() {
         String value =
                 ChromeFeatureList.getFieldTrialParamByFeature(getFeatureName(), getParameterName());
-        ChromeSharedPreferences.getInstance().writeString(
-                getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
+        ChromeSharedPreferences.getInstance()
+                .writeString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
     }
 
     /**

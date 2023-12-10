@@ -7,16 +7,16 @@
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
-#include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
+#include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -32,7 +32,7 @@ struct SameSizeAsFragmentItem {
     FragmentItem::BoxItem box_;
   };
   PhysicalRect rect;
-  NGInkOverflow ink_overflow;
+  InkOverflow ink_overflow;
   Member<void*> member;
   wtf_size_t sizes[2];
   unsigned flags;
@@ -53,10 +53,10 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
       const_traced_type_(kNone),
       type_(kText),
       sub_type_(static_cast<unsigned>(inline_item.TextType())),
-      style_variant_(static_cast<unsigned>(inline_item.StyleVariant())),
+      style_variant_(static_cast<unsigned>(inline_item.GetStyleVariant())),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(inline_item.Direction())),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
 #if DCHECK_IS_ON()
@@ -71,7 +71,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
 
 FragmentItem::FragmentItem(const LayoutObject& layout_object,
                            TextItemType text_type,
-                           NGStyleVariant style_variant,
+                           StyleVariant style_variant,
                            TextDirection direction,
                            scoped_refptr<const ShapeResultView> shape_result,
                            const String& text_content,
@@ -86,7 +86,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
       style_variant_(static_cast<unsigned>(style_variant)),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(direction)),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(layout_object_);
@@ -102,7 +102,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
                            bool is_hidden_for_paint)
     : FragmentItem(*inline_item.GetLayoutObject(),
                    inline_item.TextType(),
-                   inline_item.StyleVariant(),
+                   inline_item.GetStyleVariant(),
                    inline_item.Direction(),
                    std::move(shape_result),
                    text_content,
@@ -116,26 +116,26 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
       const_traced_type_(kLineItem),
       type_(kLine),
       sub_type_(static_cast<unsigned>(line.GetLineBoxType())),
-      style_variant_(static_cast<unsigned>(line.StyleVariant())),
+      style_variant_(static_cast<unsigned>(line.GetStyleVariant())),
       is_hidden_for_paint_(false),
       text_direction_(static_cast<unsigned>(line.BaseDirection())),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
 }
 
-FragmentItem::FragmentItem(const NGPhysicalBoxFragment& box,
+FragmentItem::FragmentItem(const PhysicalBoxFragment& box,
                            TextDirection resolved_direction)
     : box_(&box, /* descendants_count */ 1),
       rect_({PhysicalOffset(), box.Size()}),
       layout_object_(box.GetLayoutObject()),
       const_traced_type_(kBoxItem),
       type_(kBox),
-      style_variant_(static_cast<unsigned>(box.StyleVariant())),
+      style_variant_(static_cast<unsigned>(box.GetStyleVariant())),
       is_hidden_for_paint_(box.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(resolved_direction)),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
@@ -167,8 +167,8 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   }
 
   if (line_item.layout_result) {
-    const NGPhysicalBoxFragment& box_fragment =
-        To<NGPhysicalBoxFragment>(line_item.layout_result->PhysicalFragment());
+    const auto& box_fragment =
+        To<PhysicalBoxFragment>(line_item.layout_result->GetPhysicalFragment());
     new (this) FragmentItem(box_fragment, line_item.ResolvedDirection());
     return;
   }
@@ -201,7 +201,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
       text_direction_(source.text_direction_),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
@@ -229,7 +229,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
   if (source.IsInkOverflowComputed()) {
     ink_overflow_type_ = static_cast<unsigned>(source.InkOverflowType());
     new (&ink_overflow_)
-        NGInkOverflow(source.InkOverflowType(), source.ink_overflow_);
+        InkOverflow(source.InkOverflowType(), source.ink_overflow_);
   }
 }
 
@@ -297,8 +297,9 @@ FragmentItem::~FragmentItem() {
 
 bool FragmentItem::IsInlineBox() const {
   if (Type() == kBox) {
-    if (const NGPhysicalBoxFragment* box = BoxFragment())
+    if (const PhysicalBoxFragment* box = BoxFragment()) {
       return box->IsInlineBox();
+    }
     NOTREACHED();
   }
   return false;
@@ -307,8 +308,9 @@ bool FragmentItem::IsInlineBox() const {
 bool FragmentItem::IsAtomicInline() const {
   if (Type() != kBox)
     return false;
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
+  if (const PhysicalBoxFragment* box = BoxFragment()) {
     return box->IsAtomicInline();
+  }
   return false;
 }
 
@@ -328,8 +330,9 @@ bool FragmentItem::IsBlockInInline() const {
 }
 
 bool FragmentItem::IsFloating() const {
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
+  if (const PhysicalBoxFragment* box = BoxFragment()) {
     return box->IsFloating();
+  }
   return false;
 }
 
@@ -348,7 +351,7 @@ bool FragmentItem::IsGeneratedText() const {
 }
 
 bool FragmentItem::IsFormattingContextRoot() const {
-  const NGPhysicalBoxFragment* box = BoxFragment();
+  const PhysicalBoxFragment* box = BoxFragment();
   return box && box->IsFormattingContextRoot();
 }
 
@@ -440,24 +443,27 @@ bool FragmentItem::InclusiveContains(const gfx::PointF& position) const {
 }
 
 bool FragmentItem::HasNonVisibleOverflow() const {
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->HasNonVisibleOverflow();
+  }
   return false;
 }
 
 bool FragmentItem::IsScrollContainer() const {
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->IsScrollContainer();
+  }
   return false;
 }
 
 bool FragmentItem::HasSelfPaintingLayer() const {
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->HasSelfPaintingLayer();
+  }
   return false;
 }
 
-FragmentItem::BoxItem::BoxItem(const NGPhysicalBoxFragment* box_fragment,
+FragmentItem::BoxItem::BoxItem(const PhysicalBoxFragment* box_fragment,
                                wtf_size_t descendants_count)
     : box_fragment(box_fragment), descendants_count(descendants_count) {}
 
@@ -465,7 +471,7 @@ void FragmentItem::BoxItem::Trace(Visitor* visitor) const {
   visitor->Trace(box_fragment);
 }
 
-const NGPhysicalBoxFragment* FragmentItem::BoxItem::PostLayout() const {
+const PhysicalBoxFragment* FragmentItem::BoxItem::PostLayout() const {
   if (box_fragment)
     return box_fragment->PostLayout();
   return nullptr;
@@ -473,8 +479,9 @@ const NGPhysicalBoxFragment* FragmentItem::BoxItem::PostLayout() const {
 
 void FragmentItem::LayoutObjectWillBeDestroyed() const {
   const_cast<FragmentItem*>(this)->layout_object_ = nullptr;
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     fragment->LayoutObjectWillBeDestroyed();
+  }
 }
 
 void FragmentItem::LayoutObjectWillBeMoved() const {
@@ -488,8 +495,9 @@ void FragmentItem::LayoutObjectWillBeMoved() const {
 
 const PhysicalOffset FragmentItem::ContentOffsetInContainerFragment() const {
   PhysicalOffset offset = OffsetInContainerFragment();
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
+  if (const PhysicalBoxFragment* box = BoxFragment()) {
     offset += box->ContentOffset();
+  }
   return offset;
 }
 
@@ -507,17 +515,19 @@ inline LayoutBox* FragmentItem::MutableInkOverflowOwnerBox() {
   return nullptr;
 }
 
-PhysicalRect FragmentItem::SelfInkOverflow() const {
-  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
-    return box_fragment->SelfInkOverflow();
+PhysicalRect FragmentItem::SelfInkOverflowRect() const {
+  if (const PhysicalBoxFragment* box_fragment = BoxFragment()) {
+    return box_fragment->SelfInkOverflowRect();
+  }
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
-PhysicalRect FragmentItem::InkOverflow() const {
-  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
-    return box_fragment->InkOverflow();
+PhysicalRect FragmentItem::InkOverflowRect() const {
+  if (const PhysicalBoxFragment* box_fragment = BoxFragment()) {
+    return box_fragment->InkOverflowRect();
+  }
   if (!HasInkOverflow())
     return LocalRect();
   if (!IsContainer() || HasNonVisibleOverflow())
@@ -583,7 +593,7 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
   return StringView();
 }
 
-NGTextFragmentPaintInfo FragmentItem::TextPaintInfo(
+TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
@@ -766,7 +776,7 @@ String FragmentItem::ToString() const {
     if (const LayoutBlockFlow* block_flow =
             layout_object_->FragmentItemsContainer()) {
       for (unsigned i = 0; i < block_flow->PhysicalFragmentCount(); ++i) {
-        const NGPhysicalBoxFragment* containing_fragment =
+        const PhysicalBoxFragment* containing_fragment =
             block_flow->GetPhysicalFragment(i);
         fragment_items = containing_fragment->Items();
         if (fragment_items)
@@ -797,7 +807,7 @@ PhysicalRect FragmentItem::LocalVisualRectFor(
     const FragmentItem& item = *cursor.Current().Item();
     if (UNLIKELY(item.IsHiddenForPaint()))
       continue;
-    PhysicalRect child_visual_rect = item.SelfInkOverflow();
+    PhysicalRect child_visual_rect = item.SelfInkOverflowRect();
     child_visual_rect.offset += item.OffsetInContainerFragment();
     visual_rect.Unite(child_visual_rect);
   }
@@ -811,7 +821,7 @@ void FragmentItem::InvalidateInkOverflow() {
 
 PhysicalRect FragmentItem::RecalcInkOverflowForCursor(
     InlineCursor* cursor,
-    NGInlinePaintContext* inline_context) {
+    InlinePaintContext* inline_context) {
   DCHECK(cursor);
   DCHECK(!cursor->Current() || cursor->IsAtFirst());
   PhysicalRect contents_ink_overflow;
@@ -838,7 +848,7 @@ PhysicalRect FragmentItem::RecalcInkOverflowForCursor(
 }
 
 void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
-                                     NGInlinePaintContext* inline_context,
+                                     InlinePaintContext* inline_context,
                                      PhysicalRect* self_and_contents_rect_out) {
   DCHECK_EQ(this, cursor.CurrentItem());
 
@@ -855,11 +865,11 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     // text decorations and outlines that are invalidated before this point in
     // the code.
     if (IsInkOverflowComputed()) {
-      *self_and_contents_rect_out = SelfInkOverflow();
+      *self_and_contents_rect_out = SelfInkOverflowRect();
       return;
     }
 
-    NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
+    TextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
       if (Type() == kSvgText) {
         ink_overflow_type_ =
@@ -872,8 +882,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
       }
       // Create |ScopedInlineItem| here because the decoration box is not
       // supported for SVG.
-      NGInlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
-                                                                inline_context);
+      InlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
+                                                              inline_context);
       ink_overflow_type_ =
           static_cast<unsigned>(ink_overflow_.SetTextInkOverflow(
               InkOverflowType(), cursor, paint_info, Style(),
@@ -889,14 +899,14 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   }
 
   if (Type() == kBox) {
-    const NGPhysicalBoxFragment* box_fragment = PostLayoutBoxFragment();
+    const PhysicalBoxFragment* box_fragment = PostLayoutBoxFragment();
     if (UNLIKELY(!box_fragment))
       return;
     if (!box_fragment->IsInlineBox()) {
       DCHECK(!HasChildren());
       if (box_fragment->CanUseFragmentsForInkOverflow()) {
         box_fragment->GetMutableForPainting().RecalcInkOverflow();
-        *self_and_contents_rect_out = box_fragment->InkOverflow();
+        *self_and_contents_rect_out = box_fragment->InkOverflowRect();
         return;
       }
       LayoutBox* owner_box = MutableInkOverflowOwnerBox();
@@ -907,19 +917,19 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     }
 
     DCHECK(box_fragment->IsInlineBox());
-    NGInlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
-                                                              inline_context);
+    InlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
+                                                            inline_context);
     const PhysicalRect contents_rect =
         RecalcInkOverflowForDescendantsOf(cursor, inline_context);
     DCHECK(box_fragment->Children().empty());
     DCHECK_EQ(box_fragment->Size(), Size());
     box_fragment->GetMutableForPainting().RecalcInkOverflow(contents_rect);
-    *self_and_contents_rect_out = box_fragment->InkOverflow();
+    *self_and_contents_rect_out = box_fragment->InkOverflowRect();
     return;
   }
 
   if (Type() == kLine) {
-    NGInlinePaintContext::ScopedLineBox scoped_line_box(cursor, inline_context);
+    InlinePaintContext::ScopedLineBox scoped_line_box(cursor, inline_context);
     PhysicalRect contents_rect =
         RecalcInkOverflowForDescendantsOf(cursor, inline_context);
     const auto* const text_combine =
@@ -938,7 +948,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
 
 PhysicalRect FragmentItem::RecalcInkOverflowForDescendantsOf(
     const InlineCursor& cursor,
-    NGInlinePaintContext* inline_context) const {
+    InlinePaintContext* inline_context) const {
   // Re-compute descendants, then compute the contents ink overflow from them.
   InlineCursor descendants_cursor = cursor.CursorForDescendants();
   PhysicalRect contents_rect =
@@ -1058,7 +1068,7 @@ PhysicalRect FragmentItem::ComputeTextBoundsRectForHitTest(
       inline_root_offset + OffsetInContainerFragment();
   const PhysicalRect border_rect(offset, Size());
   if (UNLIKELY(is_occlusion_test)) {
-    PhysicalRect ink_overflow = SelfInkOverflow();
+    PhysicalRect ink_overflow = SelfInkOverflowRect();
     ink_overflow.Move(border_rect.offset);
     return ink_overflow;
   }
@@ -1088,8 +1098,8 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());
   DCHECK_LE(text_offset, EndOffset());
-  const CaretPosition unadjusted_position{
-      cursor, CaretPositionType::kAtTextOffset, text_offset};
+  const InlineCaretPosition unadjusted_position{
+      cursor, InlineCaretPositionType::kAtTextOffset, text_offset};
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
     return unadjusted_position.ToPositionInDOMTreeWithAffinity();
   if (text_offset > StartOffset() && text_offset < EndOffset())
@@ -1169,14 +1179,14 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
       break;
   }
   ostream << " ";
-  switch (item.StyleVariant()) {
-    case NGStyleVariant::kStandard:
+  switch (item.GetStyleVariant()) {
+    case StyleVariant::kStandard:
       ostream << "Standard";
       break;
-    case NGStyleVariant::kFirstLine:
+    case StyleVariant::kFirstLine:
       ostream << "FirstLine";
       break;
-    case NGStyleVariant::kEllipsis:
+    case StyleVariant::kEllipsis:
       ostream << "Ellipsis";
       break;
   }

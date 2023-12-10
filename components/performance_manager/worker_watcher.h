@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "components/performance_manager/service_worker_client.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
@@ -48,7 +47,7 @@ class WorkerNodeImpl;
 // Service workers are more complicated to handle. They also can have any number
 // of clients, but they aren't only frames. They could also be dedicated worker
 // and shared worker clients. These different types of clients are tracked using
-// the ServiceWorkerClient class. Also, because of the important role the
+// the ServiceWorkerClientInfo type. Also, because of the important role the
 // service worker plays with frame navigations, the service worker can be
 // created before its first client's navigation has committed to a
 // RenderFrameHost. So when a OnControlleeAdded() notification is received for
@@ -78,10 +77,10 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   void OnWorkerCreated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       int worker_process_id,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+      content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+      content::DedicatedWorkerCreator creator) override;
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const GURL& url) override;
@@ -254,9 +253,9 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   base::flat_set<AwaitingKey> client_frames_awaiting_commit_;
 
   // Maps each service worker to its clients.
-  base::flat_map<
-      int64_t /*version_id*/,
-      base::flat_map<std::string /*client_uuid*/, ServiceWorkerClient>>
+  base::flat_map<int64_t /*version_id*/,
+                 base::flat_map<std::string /*client_uuid*/,
+                                content::ServiceWorkerClientInfo>>
       service_worker_clients_;
 
   // Maps each frame to the number of connections to each worker that this frame
@@ -286,7 +285,8 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
 
   // Keeps track of shared and dedicated workers that were not present when
   // a service worker tried to add a client relationship for them.
-  base::flat_map<WorkerNodeImpl*, base::flat_set<ServiceWorkerClient>>
+  base::flat_map<WorkerNodeImpl*,
+                 base::flat_set<content::ServiceWorkerClientInfo>>
       missing_service_worker_clients_;
 #endif  // DCHECK_IS_ON()
 };

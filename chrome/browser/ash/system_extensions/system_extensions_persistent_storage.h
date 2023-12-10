@@ -47,7 +47,7 @@ class SystemExtensionsPersistentStorage {
 
   // Returns the System Extension with |system_extension_id| if it's in
   // persistent storage, or nullopt if it's not.
-  absl::optional<SystemExtensionPersistedInfo> Get(
+  std::optional<SystemExtensionPersistedInfo> Get(
       const SystemExtensionId& system_extension_id);
   std::vector<SystemExtensionPersistedInfo> GetAll();
 
@@ -58,4 +58,4 @@ class SystemExtensionsPersistentStorage {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PERSISTENCE_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PERSISTENT_STORAGE_H_

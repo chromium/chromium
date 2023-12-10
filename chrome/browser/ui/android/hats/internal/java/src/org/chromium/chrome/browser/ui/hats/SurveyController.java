@@ -27,7 +27,10 @@ public interface SurveyController {
      * @param onFailureRunnable The runnable to notify when downloading the survey failed, or the
      *                          survey does not exist.
      */
-    default void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+    default void downloadSurvey(
+            Context context,
+            String triggerId,
+            Runnable onSuccessRunnable,
             Runnable onFailureRunnable) {}
 
     /**
@@ -39,7 +42,10 @@ public interface SurveyController {
      * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
      * @param psd key-value set of list of PSD attaching to the survey.
      */
-    default void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+    default void showSurveyIfAvailable(
+            Activity activity,
+            String triggerId,
+            int displayLogoResId,
             @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
             @Nullable Map<String, String> psd) {}
 
@@ -52,8 +58,6 @@ public interface SurveyController {
         return false;
     }
 
-    /**
-     * Destroy the SurveyController and release related resources.
-     */
+    /** Destroy the SurveyController and release related resources. */
     default void destroy() {}
 }

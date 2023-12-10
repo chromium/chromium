@@ -57,6 +57,8 @@ class EmbeddedA11yManagerLacros
   // accessibility feature that selected text should be spoken.
   void SpeakSelectedText();
 
+  bool IsSelectToSpeakEnabled();
+
   // We can't use extensions::ExtensionHostTestHelper as those require a
   // background page, and these extensions do not have background pages.
   void AddExtensionChangedCallbackForTest(base::RepeatingClosure callback);

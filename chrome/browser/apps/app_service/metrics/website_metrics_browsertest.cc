@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/command_line.h"
@@ -36,7 +37,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   // cleared.
   auto info = history::DeletionInfo(
       history::DeletionTimeRange(base::Time(), base::Time::Now()),
-      /*is_from_expiration=*/true, {}, {}, absl::optional<std::set<GURL>>());
+      /*is_from_expiration=*/true, {}, {}, std::optional<std::set<GURL>>());
   website_metrics()->OnURLsDeleted(nullptr, info);
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());

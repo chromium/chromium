@@ -522,7 +522,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
   }
 
   void SetupProgressObserver(FakeUpdateProgressObserver* observer) {
-    install_controller_remote_->AddObserver(observer->pending_remote());
+    install_controller_remote_->AddUpdateProgressObserver(
+        observer->pending_remote());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -842,6 +843,11 @@ TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kUpdating,
             update_progress_observer.GetLatestUpdate()->state);
   EXPECT_EQ(1u, update_progress_observer.GetLatestUpdate()->percentage);
+  // Waiting for user action.
+  SetProperties(/**percentage=*/25u, /**status=*/14u);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kWaitingForUser,
+            update_progress_observer.GetLatestUpdate()->state);
+  EXPECT_EQ(25u, update_progress_observer.GetLatestUpdate()->percentage);
   // Device restarting
   SetProperties(/**percentage=*/100u, /**status=*/4u);
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kRestarting,

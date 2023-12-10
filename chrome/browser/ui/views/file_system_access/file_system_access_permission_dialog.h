@@ -34,4 +34,4 @@ CreateFileSystemAccessPermissionDialogForTesting(
     const FileSystemAccessPermissionRequestManager::RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback);
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_

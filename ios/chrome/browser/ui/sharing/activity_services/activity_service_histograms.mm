@@ -36,6 +36,8 @@ const char kShareShareChromeActionsHistogram[] =
     "Mobile.Share.ShareChrome.Actions";
 const char kShareOmniboxMostVisitedEntryActionsHistogram[] =
     "Mobile.Share.OmniboxMostVisitedEntry.Actions";
+const char kShareTabStripItemActionsHistogram[] =
+    "Mobile.Share.TabStripItem.Actions";
 
 // Enum representing an aggregation of the `ActivityType` enum values in a way
 // that is relevant for metric collection. Current values should not
@@ -185,6 +187,10 @@ void RecordActionForScenario(ShareActionType actionType,
       break;
     case SharingScenario::OmniboxMostVisitedEntry:
       histogramName = kShareOmniboxMostVisitedEntryActionsHistogram;
+      break;
+    case SharingScenario::TabStripItem:
+      histogramName = kShareTabStripItemActionsHistogram;
+      break;
   }
   base::UmaHistogramEnumeration(histogramName, actionType);
 }

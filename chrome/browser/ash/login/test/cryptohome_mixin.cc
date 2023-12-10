@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -41,6 +42,22 @@ std::pair<std::string, std::string> CryptohomeMixin::AddSession(
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
   return FakeUserDataAuthClient::TestApi::Get()->AddSession(
       std::move(account_id), authenticated);
+}
+
+void CryptohomeMixin::ApplyAuthConfig(const AccountId& user,
+                                      const test::UserAuthConfig& config) {
+  if (config.factors.Has(ash::AshAuthFactor::kGaiaPassword)) {
+    AddGaiaPassword(user, config.online_password);
+  }
+  if (config.factors.Has(ash::AshAuthFactor::kLocalPassword)) {
+    AddLocalPassword(user, config.local_password);
+  }
+  if (config.factors.Has(ash::AshAuthFactor::kCryptohomePin)) {
+    AddCryptohomePin(user, config.pin, config.pin_salt);
+  }
+  if (config.factors.Has(ash::AshAuthFactor::kRecovery)) {
+    AddRecoveryFactor(user);
+  }
 }
 
 void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
@@ -84,11 +101,10 @@ void CryptohomeMixin::AddLocalPassword(const AccountId& user,
 }
 
 void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
-                                       const std::string& pin) {
+                                       const std::string& pin,
+                                       const std::string& pin_salt) {
   auto account_identifier =
       cryptohome::CreateAccountIdentifierFromAccountId(user);
-
-  const std::string pin_salt = "pin_salt";
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
   known_user.SetStringPref(user, prefs::kQuickUnlockPinSalt, pin_salt);

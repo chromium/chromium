@@ -1,7 +1,9 @@
 Name: serde_json
 URL: https://crates.io/crates/serde_json
 Description: A JSON serialization file format
-Version: 1.0.78
+Version: 1.0.108
 Security Critical: no
 Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/serde_json-1.0.108/LICENSE-APACHE
+Revision: 4bc1eaa03a6160593575bc9bc60c94dba4cab1e3

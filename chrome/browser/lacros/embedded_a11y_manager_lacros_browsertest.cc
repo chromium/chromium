@@ -116,23 +116,12 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
       const EmbeddedA11yManagerLacrosTest&) = delete;
 
   void SetUp() override {
-    // For the ash version that supports the browser-window APIs for closing
-    // ash browser windows (via crosapi::mojom::TestController), run the test
-    // with the shared ash (by default), because CloseAllAshBrowserWindows()
-    // will be called from TearDownOnMainThread() to guarantee closing all ash
-    // browser windows opened by this test. However, for the older ash version
-    // that does not support the browser-window APIs, there is no guarantee the
-    // ash browser window won't be leaked into the tests running after this
-    // test. Therefore, the test has to run with an unique ash instance so that
-    // it won't fail the subsequent tests which expect no existing ash browser
-    // windows to begin with.
-    if (!IsCloseAndWaitAshBrowserWindowApisSupported()) {
-      StartUniqueAshChrome(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{}, /*additional_cmdline_switches=*/{},
-          "crbug/1473375 Switch to shared ash CloseAllAshBrowserWindows is "
-          "supported by stable ash.");
-    }
+    // This test has conflicts with some other tests(crbug/1501236).
+    StartUniqueAshChrome(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{}, /*additional_cmdline_switches=*/{},
+        "crbug/1501236 Switch to shared ash once the bug is fixed.");
+
     InProcessBrowserTest::SetUp();
   }
 
@@ -157,9 +146,7 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
-      CloseAllAshBrowserWindows();
-    }
+    CloseAllAshBrowserWindows();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 

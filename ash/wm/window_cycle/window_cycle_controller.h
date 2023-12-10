@@ -115,7 +115,7 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   // Gets the window for the preview item located at |event|. Returns nullptr if
   // |event| is not on the cycle view or a preview item, or |window_cycle_list_|
   // does not exist.
-  aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event) const;
+  aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
   // Returns whether or not the event is located in tab slider container.
   bool IsEventInTabSliderContainer(const ui::LocatedEvent* event) const;
@@ -196,7 +196,7 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   // Returns true if the direction is valid regarding the component that the
   // focus is currently on. For example, moving the focus on the top most
   // component, the tab slider button, further up is invalid.
-  bool IsValidKeyboardNavigation(KeyboardNavDirection direction);
+  bool IsValidKeyboardNavigation(KeyboardNavDirection direction) const;
 
   std::unique_ptr<WindowCycleList> window_cycle_list_;
 

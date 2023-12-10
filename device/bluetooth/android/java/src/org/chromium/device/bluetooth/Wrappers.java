@@ -64,9 +64,7 @@ class Wrappers {
 
         protected ThreadUtilsWrapper() {}
 
-        /**
-         * Returns the singleton instance of ThreadUtilsWrapper, creating it if needed.
-         */
+        /** Returns the singleton instance of ThreadUtilsWrapper, creating it if needed. */
         public static ThreadUtilsWrapper getInstance() {
             if (sInstance == null) {
                 if (sFactory == null) {
@@ -86,20 +84,18 @@ class Wrappers {
          * Instantiate this to explain how to create a ThreadUtilsWrapper instance in
          * ThreadUtilsWrapper.getInstance().
          */
-        public interface Factory { public ThreadUtilsWrapper create(); }
+        public interface Factory {
+            public ThreadUtilsWrapper create();
+        }
 
-        /**
-         * Call this to use a different subclass of ThreadUtilsWrapper throughout the program.
-         */
+        /** Call this to use a different subclass of ThreadUtilsWrapper throughout the program. */
         public static void setFactory(Factory factory) {
             sFactory = factory;
             sInstance = null;
         }
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothAdapter.
-     */
+    /** Wraps android.bluetooth.BluetoothAdapter. */
     static class BluetoothAdapterWrapper {
         private final BluetoothAdapter mAdapter;
         protected final Context mContext;
@@ -119,12 +115,14 @@ class Wrappers {
             // adapter.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 final boolean hasPermission =
-                        ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                                Manifest.permission.BLUETOOTH)
-                                == PackageManager.PERMISSION_GRANTED
-                        && ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                                   Manifest.permission.BLUETOOTH_ADMIN)
-                                == PackageManager.PERMISSION_GRANTED;
+                        ContextUtils.getApplicationContext()
+                                                .checkCallingOrSelfPermission(
+                                                        Manifest.permission.BLUETOOTH)
+                                        == PackageManager.PERMISSION_GRANTED
+                                && ContextUtils.getApplicationContext()
+                                                .checkCallingOrSelfPermission(
+                                                        Manifest.permission.BLUETOOTH_ADMIN)
+                                        == PackageManager.PERMISSION_GRANTED;
 
                 if (!hasPermission) {
                     Log.w(
@@ -137,8 +135,9 @@ class Wrappers {
 
             // Only Low Energy currently supported, see BluetoothAdapterAndroid class note.
             final boolean hasLowEnergyFeature =
-                    ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                            PackageManager.FEATURE_BLUETOOTH_LE);
+                    ContextUtils.getApplicationContext()
+                            .getPackageManager()
+                            .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
             if (!hasLowEnergyFeature) {
                 Log.i(TAG, "BluetoothAdapterWrapper.create failed: No Low Energy support.");
                 return null;
@@ -203,9 +202,7 @@ class Wrappers {
         }
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothLeScanner.
-     */
+    /** Wraps android.bluetooth.BluetoothLeScanner. */
     static class BluetoothLeScannerWrapper {
         protected final BluetoothLeScanner mScanner;
         private final HashMap<ScanCallbackWrapper, ForwardScanCallbackToWrapper> mCallbacks;
@@ -269,18 +266,16 @@ class Wrappers {
         }
     }
 
-    /**
-     * Wraps android.bluetooth.le.ScanCallback, being called by ScanCallbackImpl.
-     */
+    /** Wraps android.bluetooth.le.ScanCallback, being called by ScanCallbackImpl. */
     abstract static class ScanCallbackWrapper {
         public abstract void onBatchScanResult(List<ScanResultWrapper> results);
+
         public abstract void onScanResult(int callbackType, ScanResultWrapper result);
+
         public abstract void onScanFailed(int errorCode);
     }
 
-    /**
-     * Wraps android.bluetooth.le.ScanResult.
-     */
+    /** Wraps android.bluetooth.le.ScanResult. */
     static class ScanResultWrapper {
         private final ScanResult mScanResult;
 
@@ -321,9 +316,7 @@ class Wrappers {
         }
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothDevice.
-     */
+    /** Wraps android.bluetooth.BluetoothDevice. */
     static class BluetoothDeviceWrapper {
         private final BluetoothDevice mDevice;
         private final HashMap<BluetoothGattCharacteristic, BluetoothGattCharacteristicWrapper>
@@ -339,11 +332,17 @@ class Wrappers {
                     new HashMap<BluetoothGattDescriptor, BluetoothGattDescriptorWrapper>();
         }
 
-        public BluetoothGattWrapper connectGatt(Context context, boolean autoConnect,
-                BluetoothGattCallbackWrapper callback, int transport) {
+        public BluetoothGattWrapper connectGatt(
+                Context context,
+                boolean autoConnect,
+                BluetoothGattCallbackWrapper callback,
+                int transport) {
             return new BluetoothGattWrapper(
-                    mDevice.connectGatt(context, autoConnect,
-                            new ForwardBluetoothGattCallbackToWrapper(callback, this), transport),
+                    mDevice.connectGatt(
+                            context,
+                            autoConnect,
+                            new ForwardBluetoothGattCallbackToWrapper(callback, this),
+                            transport),
                     this);
         }
 
@@ -369,9 +368,7 @@ class Wrappers {
         }
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothGatt.
-     */
+    /** Wraps android.bluetooth.BluetoothGatt. */
     static class BluetoothGattWrapper {
         private final BluetoothGatt mGatt;
         private final BluetoothDeviceWrapper mDeviceWrapper;
@@ -441,7 +438,8 @@ class Wrappers {
         final BluetoothGattCallbackWrapper mWrapperCallback;
         final BluetoothDeviceWrapper mDeviceWrapper;
 
-        ForwardBluetoothGattCallbackToWrapper(BluetoothGattCallbackWrapper wrapperCallback,
+        ForwardBluetoothGattCallbackToWrapper(
+                BluetoothGattCallbackWrapper wrapperCallback,
                 BluetoothDeviceWrapper deviceWrapper) {
             mWrapperCallback = wrapperCallback;
             mDeviceWrapper = deviceWrapper;
@@ -512,22 +510,27 @@ class Wrappers {
     abstract static class BluetoothGattCallbackWrapper {
         public abstract void onCharacteristicChanged(
                 BluetoothGattCharacteristicWrapper characteristic);
+
         public abstract void onCharacteristicRead(
                 BluetoothGattCharacteristicWrapper characteristic, int status);
+
         public abstract void onCharacteristicWrite(
                 BluetoothGattCharacteristicWrapper characteristic, int status);
+
         public abstract void onDescriptorRead(
                 BluetoothGattDescriptorWrapper descriptor, int status);
+
         public abstract void onDescriptorWrite(
                 BluetoothGattDescriptorWrapper descriptor, int status);
+
         public abstract void onConnectionStateChange(int status, int newState);
+
         public abstract void onMtuChanged(int mtu, int status);
+
         public abstract void onServicesDiscovered(int status);
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothGattService.
-     */
+    /** Wraps android.bluetooth.BluetoothGattService. */
     static class BluetoothGattServiceWrapper {
         private final BluetoothGattService mService;
         private final BluetoothDeviceWrapper mDeviceWrapper;
@@ -565,9 +568,7 @@ class Wrappers {
         }
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothGattCharacteristic.
-     */
+    /** Wraps android.bluetooth.BluetoothGattCharacteristic. */
     static class BluetoothGattCharacteristicWrapper {
         final BluetoothGattCharacteristic mCharacteristic;
         final BluetoothDeviceWrapper mDeviceWrapper;
@@ -622,9 +623,7 @@ class Wrappers {
         }
     }
 
-    /**
-     * Wraps android.bluetooth.BluetoothGattDescriptor.
-     */
+    /** Wraps android.bluetooth.BluetoothGattDescriptor. */
     static class BluetoothGattDescriptorWrapper {
         private final BluetoothGattDescriptor mDescriptor;
         final BluetoothDeviceWrapper mDeviceWrapper;

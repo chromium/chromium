@@ -28,24 +28,12 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/fragmentation_context.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 
 namespace blink {
 
 class LayoutMultiColumnSet;
 class LayoutMultiColumnSpannerPlaceholder;
-
-// What to translate *to* when translating from a flow thread coordinate space.
-enum class CoordinateSpaceConversion {
-  // Just translate to the nearest containing coordinate space (i.e. where our
-  // multicol container lives) of this flow thread, i.e. don't walk ancestral
-  // flow threads, if any.
-  kContaining,
-
-  // Translate to visual coordinates, by walking all ancestral flow threads.
-  kVisual
-};
 
 // Flow thread implementation for CSS multicol. This will be inserted as an
 // anonymous child block of the actual multicol container (i.e. the
@@ -141,9 +129,7 @@ enum class CoordinateSpaceConversion {
 //
 // There's also some documentation online:
 // https://www.chromium.org/developers/design-documents/multi-column-layout
-class CORE_EXPORT LayoutMultiColumnFlowThread final
-    : public LayoutFlowThread,
-      public FragmentationContext {
+class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
  public:
   ~LayoutMultiColumnFlowThread() override;
   void Trace(Visitor*) const override;
@@ -209,11 +195,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   bool IsPageLogicalHeightKnown() const final;
 
   PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
-                                               PageBoundaryRule,
-                                               CoordinateSpaceConversion) const;
+                                               PageBoundaryRule) const;
   PhysicalOffset FlowThreadTranslationAtPoint(
-      const PhysicalOffset& flow_thread_point,
-      CoordinateSpaceConversion) const;
+      const PhysicalOffset& flow_thread_point) const;
 
   PhysicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const final;
@@ -230,22 +214,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   LayoutMultiColumnFlowThread* EnclosingFlowThread(
       AncestorSearchConstraint = kIsolateUnbreakableContainers) const;
-  FragmentationContext* EnclosingFragmentationContext(
-      AncestorSearchConstraint = kIsolateUnbreakableContainers) const;
-  LayoutUnit BlockOffsetInEnclosingFragmentationContext() const {
-    NOT_DESTROYED();
-    DCHECK(EnclosingFragmentationContext(kAnyAncestor));
-    return block_offset_in_enclosing_fragmentation_context_;
-  }
 
   void SetColumnCountFromNG(unsigned column_count);
   void FinishLayoutFromNG(LayoutUnit flow_thread_offset);
-
-  // Implementing FragmentationContext:
-  LayoutMultiColumnFlowThread* AssociatedFlowThread() final {
-    NOT_DESTROYED();
-    return this;
-  }
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -260,8 +231,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   PhysicalSize Size() const override;
 
  private:
-  void CalculateColumnCountAndWidth(LayoutUnit& width, unsigned& count) const;
-  static LayoutUnit ColumnGap(const ComputedStyle&, LayoutUnit available_width);
   void CreateAndInsertMultiColumnSet(LayoutBox* insert_before = nullptr);
   void CreateAndInsertSpannerPlaceholder(
       LayoutBox* spanner_object_in_flow_thread,
@@ -300,11 +269,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   // The used value of column-count
   unsigned column_count_;
-
-  // Cached block offset from this flow thread to the enclosing fragmentation
-  // context, if any. In
-  // the coordinate space of the enclosing fragmentation context.
-  LayoutUnit block_offset_in_enclosing_fragmentation_context_;
 
   bool all_columns_have_known_height_ = false;
 

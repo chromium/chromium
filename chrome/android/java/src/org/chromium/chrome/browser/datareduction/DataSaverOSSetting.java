@@ -13,9 +13,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForN;
 
-/**
- * Wrapper for the datareduction::DataSaverOSSetting.
- */
+/** Wrapper for the datareduction::DataSaverOSSetting. */
 @JNINamespace("datareduction::android")
 public class DataSaverOSSetting {
     @CalledByNative

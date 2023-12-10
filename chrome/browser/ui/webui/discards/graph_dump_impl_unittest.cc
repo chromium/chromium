@@ -205,7 +205,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   mock_graph.other_page->OnMainFrameNavigationCommitted(
       false, now, next_navigation_id++, kExampleUrl, kHtmlMimeType);
 
-  auto* main_frame = mock_graph.page->GetMainFrameNodeImpl();
+  auto* main_frame = mock_graph.page->main_frame_node();
   main_frame->OnNavigationCommitted(kExampleUrl, /* same_document */ false);
 
   std::unique_ptr<DiscardsGraphDumpImpl> impl =
@@ -330,7 +330,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
               // Check that the descriptions make sense.
               for (auto kv : node_descriptions_json) {
                 keys_received.push_back(kv.first);
-                absl::optional<base::Value> v =
+                std::optional<base::Value> v =
                     base::JSONReader::Read(kv.second);
                 EXPECT_TRUE(v->is_dict());
                 base::Value::Dict* dict = v->GetDict().FindDict("test");

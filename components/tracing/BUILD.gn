@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build_overrides/build.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -28,6 +29,13 @@ component("startup_tracing") {
     "common/tracing_switches.h",
     "tracing_export.h",
   ]
+
+  if (is_win && use_perfetto_client_library) {
+    sources += [
+      "common/etw_export_win.cc",
+      "common/etw_export_win.h",
+    ]
+  }
 
   defines = [ "TRACING_IMPLEMENTATION" ]
 

@@ -72,7 +72,7 @@ member class=ui::InputDevice id=1
  name=""
  phys=""
  enabled=1
- suspected_imposter=0
+ suspected_keyboard_imposter=0
  sys_path=""
  vendor_id=0000
  product_id=0000
@@ -93,7 +93,7 @@ member class=ui::InputDevice id=1
  name="Logitech USB Keyboard"
  phys=""
  enabled=1
- suspected_imposter=0
+ suspected_keyboard_imposter=0
  sys_path=""
  vendor_id=046D
  product_id=C31C
@@ -114,7 +114,7 @@ member class=ui::InputDevice id=1
  name="PRP0001:00"
  phys=""
  enabled=1
- suspected_imposter=0
+ suspected_keyboard_imposter=0
  sys_path=""
  vendor_id=0001
  product_id=0001
@@ -135,7 +135,7 @@ member class=ui::InputDevice id=1
  name="ELAN2703:00 04F3:323B Touchpad"
  phys=""
  enabled=1
- suspected_imposter=0
+ suspected_keyboard_imposter=0
  sys_path=""
  vendor_id=04F3
  product_id=323B
@@ -931,12 +931,12 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeImposter) {
   ui::EventDeviceInfo devinfo;
   SetUpDevice(devinfo);
 
-  device()->SetSuspectedImposter(true);
+  device()->SetSuspectedKeyboardImposter(true);
 
   std::stringstream output;
   device()->DescribeForLog(output);
-  std::string log =
-      LogSubst(kDefaultDeviceLogDescription, "suspected_imposter", "1");
+  std::string log = LogSubst(kDefaultDeviceLogDescription,
+                             "suspected_keyboard_imposter", "1");
   EXPECT_EQ(output.str(), log);
 }
 

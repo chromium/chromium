@@ -140,6 +140,9 @@ BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
 // Feature that enables sports card in the feed.
 BASE_DECLARE_FEATURE(kFeedSportsCard);
 
+// Feature that enables refreshing feed when Chrome restarts.
+BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

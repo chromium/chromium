@@ -10,9 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 
-/**
- * An {@link android.app.Activity} for running native browser tests.
- */
+/** An {@link android.app.Activity} for running native browser tests. */
 public abstract class NativeBrowserTestActivity extends FragmentActivity {
     private static final String TAG = "NativeTest";
 

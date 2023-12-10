@@ -5,11 +5,11 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_DRAG_CONTROLLER_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_DRAG_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/views/drag_controller.h"
 
@@ -97,7 +97,7 @@ class AshNotificationDragController
 
   // Corresponds to the notification view under drag. Set/reset when the drag on
   // a notification view starts/ends.
-  absl::optional<std::string> dragged_notification_id_;
+  std::optional<std::string> dragged_notification_id_;
 
   // Helps to track drag-and-drop events. Set/reset when the drag on a
   // notification view starts/ends.

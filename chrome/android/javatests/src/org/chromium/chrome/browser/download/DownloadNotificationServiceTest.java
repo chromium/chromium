@@ -46,10 +46,7 @@ import java.util.UUID;
 /** Tests of {@link DownloadNotificationService}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DisableFeatures({
-    ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER,
-    ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API
-})
+@DisableFeatures({ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API})
 @Batch(Batch.UNIT_TESTS)
 public class DownloadNotificationServiceTest {
     private static final ContentId ID1 =

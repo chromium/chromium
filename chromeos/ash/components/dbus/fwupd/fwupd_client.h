@@ -74,6 +74,11 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
   FwupdClient();
   ~FwupdClient() override;
 
+  // Set fwupd client-capability feature flags.
+  // See https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h for the
+  // full list of FwupdFeatureFlags.
+  virtual void SetFwupdFeatureFlags() = 0;
+
   // Auxiliary variables for testing.
   // TODO(swifton): Replace this with an observer.
   bool client_is_in_testing_mode_ = false;

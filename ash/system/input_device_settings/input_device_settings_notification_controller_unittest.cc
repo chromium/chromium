@@ -7,9 +7,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/contains.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -19,6 +23,21 @@
 namespace ash {
 
 namespace {
+
+const mojom::Mouse kMouse1 = mojom::Mouse(
+    /*name=*/"Razer Basilisk V3",
+    /*is_external=*/false,
+    /*id=*/1,
+    /*device_key=*/"fake-device-key1",
+    /*customization_restriction=*/
+    mojom::CustomizationRestriction::kAllowCustomizations,
+    mojom::MouseSettings::New());
+
+const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
+    /*name=*/"Wacom Intuos S",
+    /*id=*/2,
+    /*device_key=*/"fake-device-key2",
+    mojom::GraphicsTabletSettings::New());
 
 int GetPrefNotificationCount(const char* pref_name) {
   PrefService* prefs =
@@ -39,7 +58,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     message_center::Notification* notification =
         FindVisibleNotificationById(id);
     CHECK(notification);
-    notification->delegate()->Click(absl::nullopt, absl::nullopt);
+    notification->delegate()->Click(std::nullopt, std::nullopt);
   }
 
   void ClickOnNotificationButton(const std::string& id,
@@ -47,7 +66,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     message_center::Notification* notification =
         FindVisibleNotificationById(id);
     CHECK(notification);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 };
 
@@ -241,6 +260,31 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
                    prefs::kRemapToRightClickNotificationsRemaining));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowPeripheralSettingsOnCustomizationNotificationClick) {
+  controller()->NotifyMouseIsCustomizable(kMouse1);
+  message_center()->ClickOnNotification("peripheral_customization_mouse_1");
+  EXPECT_EQ(GetSystemTrayClient()->show_mouse_settings_count(), 1);
+
+  controller()->NotifyGraphicsTabletIsCustomizable(kGraphicsTablet2);
+  message_center()->ClickOnNotification(
+      "peripheral_customization_graphics_tablet_2");
+  EXPECT_EQ(GetSystemTrayClient()->show_graphics_tablet_settings_count(), 1);
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowPeripheralSettingsOnCustomizationNotificationButtonClick) {
+  controller()->NotifyMouseIsCustomizable(kMouse1);
+  message_center()->ClickOnNotificationButton(
+      "peripheral_customization_mouse_1", /*button_index=*/0);
+  EXPECT_EQ(GetSystemTrayClient()->show_mouse_settings_count(), 1);
+
+  controller()->NotifyGraphicsTabletIsCustomizable(kGraphicsTablet2);
+  message_center()->ClickOnNotificationButton(
+      "peripheral_customization_graphics_tablet_2", /*button_index=*/0);
+  EXPECT_EQ(GetSystemTrayClient()->show_graphics_tablet_settings_count(), 1);
+}
+
 // TODO(b/279503977): Add test that verifies behavior of clicking on the
 // "Learn more" button.
 TEST_F(InputDeviceSettingsNotificationControllerTest,
@@ -327,18 +371,6 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotifyPeripheralCustomization) {
   size_t expected_notification_count = 1;
-  const mojom::Mouse kMouse1 = mojom::Mouse(
-      /*name=*/"Razer Basilisk V3",
-      /*is_external=*/false,
-      /*id=*/1,
-      /*device_key=*/"fake-device-key1",
-      /*customization_restriction=*/
-      mojom::CustomizationRestriction::kAllowCustomizations,
-      mojom::MouseSettings::New());
-  const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
-      /*name=*/"Wacom Intuos S",
-      /*id=*/2,
-      /*device_key=*/"fake-device-key2", mojom::GraphicsTabletSettings::New());
   controller()->NotifyMouseIsCustomizable(kMouse1);
   EXPECT_EQ(expected_notification_count++,
             message_center()->NotificationCount());
@@ -375,6 +407,88 @@ TEST_F(InputDeviceSettingsNotificationControllerTest, LearnMoreButtonClicked) {
   message_center()->ClickOnNotificationButton(
       "delete_six_pack_rewrite_blocked_by_setting_1",
       NotificationButtonIndex::BUTTON_LEARN_MORE);
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyMouseFirstTimeConnected) {
+  size_t expected_notification_count = 1;
+  mojom::MousePtr mojom_mouse = mojom::Mouse::New();
+  mojom_mouse->device_key = "0001:0001";
+  mojom_mouse->id = 1;
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).empty());
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 1u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     base::Value("0001:0001")));
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_1"));
+
+  mojom_mouse->id = 2;
+  mojom_mouse->device_key = "0001:0002";
+
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 2u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     base::Value("0001:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_2"));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyGraphicsTabletFirstTimeConnected) {
+  size_t expected_notification_count = 1;
+  mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
+  mojom_graphics_tablet->id = 1;
+  mojom_graphics_tablet->device_key = "0002:0001";
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen)
+                  .empty());
+  controller()->NotifyGraphicsTabletFirstTimeConnected(
+      mojom_graphics_tablet.get());
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_1"));
+
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
+      base::Value("0002:0001")));
+  controller()->NotifyGraphicsTabletFirstTimeConnected(
+      mojom_graphics_tablet.get());
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      1u);
+
+  mojom_graphics_tablet->id = 2;
+  mojom_graphics_tablet->device_key = "0002:0002";
+
+  controller()->NotifyGraphicsTabletFirstTimeConnected(
+      mojom_graphics_tablet.get());
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      2u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
+      base::Value("0002:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_2"));
 }
 
 }  // namespace ash

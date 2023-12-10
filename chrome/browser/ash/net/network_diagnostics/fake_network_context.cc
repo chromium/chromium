@@ -27,8 +27,8 @@ net::IPEndPoint FakeIPAddress() {
 FakeNetworkContext::DnsResult::DnsResult(
     int32_t result,
     net::ResolveErrorInfo resolve_error_info,
-    absl::optional<net::AddressList> resolved_addresses,
-    absl::optional<net::HostResolverEndpointResults>
+    std::optional<net::AddressList> resolved_addresses,
+    std::optional<net::HostResolverEndpointResults>
         endpoint_results_with_metadata)
     : result_(result),
       resolve_error_info_(resolve_error_info),
@@ -69,7 +69,7 @@ void FakeNetworkContext::ResolveHost(
 }
 
 void FakeNetworkContext::CreateTCPConnectedSocket(
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -112,7 +112,7 @@ void FakeNetworkContext::CreateUDPSocket(
 }
 
 void FakeNetworkContext::SetTCPConnectCode(
-    absl::optional<net::Error>& tcp_connect_code) {
+    std::optional<net::Error>& tcp_connect_code) {
   if (tcp_connect_code.has_value()) {
     tcp_connect_code_ = tcp_connect_code.value();
     fake_tcp_connected_socket_ = std::make_unique<FakeTCPConnectedSocket>();
@@ -120,7 +120,7 @@ void FakeNetworkContext::SetTCPConnectCode(
 }
 
 void FakeNetworkContext::SetTLSUpgradeCode(
-    absl::optional<net::Error>& tls_upgrade_code) {
+    std::optional<net::Error>& tls_upgrade_code) {
   if (tls_upgrade_code.has_value()) {
     DCHECK(fake_tcp_connected_socket_);
 

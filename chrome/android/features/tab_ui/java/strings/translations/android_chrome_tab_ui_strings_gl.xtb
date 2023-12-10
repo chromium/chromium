@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1075622780330595106">Ultimamente non se utilizaron <ph name="NUMBER_OF_TABS" /> das túas pestanas. Queres pechalas?</translation>
+<translation id="1155815720264022949">Queres pechar as pestanas antigas?</translation>
 <translation id="1215127405478249895">Revisar as pestanas</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
 <translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Ocultar grade en pantalla completa</translation>
 <translation id="5076161749301278626">Queres ver recensións da tenda?</translation>
 <translation id="5082793167783849073">Crea un grupo para comparar rapidamente varias páxinas. Para comezar, mantén premida unha ligazón.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> pestana que non usaches recentemente}other{Hai <ph name="TABS_COUNT_MANY" /> pestanas que non usaches recentemente}}</translation>
 <translation id="5339733443032484186">A túa última pestana</translation>
 <translation id="5490235265819901748">Grupo de pestanas despregado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
+<translation id="5545379293264651575">Pechar sen revisar</translation>
 <translation id="5556417849629758491">Ver información sobre a tenda, opción dispoñible preto da parte superior da pantalla</translation>
 <translation id="5558362125926932819">Pechar grupo de pestanas con <ph name="NUMBER_OF_TABS" /> pestanas</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> pestanas agrupadas</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Mover pestana cara á dereita</translation>
 <translation id="7966321538264951561">Ignorar estas suxestións.</translation>
 <translation id="8029301326595421733">A folla de información sobre esta tenda está aberta a pantalla completa</translation>
-<translation id="814503310257431685">Ver todo</translation>
 <translation id="8205266828577616993">Mover pestana cara arriba</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Pechar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Pechar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="8398929769197326728">Cartafol novo: <ph name="CURRENT_TIMESTAMP_MS" /></translation>

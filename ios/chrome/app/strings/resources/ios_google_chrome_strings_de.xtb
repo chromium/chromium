@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">Der Google Passwortmanager konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="1407843355326180937">Melde dich bei dieser Website und in Chrome an, um deine Lesezeichen und mehr auf allen deinen Geräten abzurufen.</translation>
 <translation id="1436059927646026729">Aktuellen Tab in Chrome öffnen</translation>
+<translation id="1449241544691504574">Lesezeichen in Chrome hinzufügen</translation>
 <translation id="1462727070346936664">Wenn du Chrome optimal nutzen möchtest, melde dich an.</translation>
-<translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1491435845014430217">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
@@ -33,10 +33,10 @@ Wichtige Hinweise:
         Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chrome hinzu.</translation>
 <translation id="1843217788865538014">Automatisch Chrome verwenden, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1987779152850321833">Mit den unten vorgeschlagenen Aktionen lässt sich das Beste aus Chrome herausholen.</translation>
-<translation id="2009224836393115614">Chrome konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="2056123005618757196">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="2120238739383482109">Öffnet die Chrome-Lesezeichen.</translation>
 <translation id="2147651015520127414">Chrome hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
@@ -58,7 +58,7 @@ Wichtige Hinweise:
 <translation id="2671426118752779020">Du kannst die im Google Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>
 <translation id="2689064829982324496">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chrome abmeldest<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
-<translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
+<translation id="2702250627063295552">Leselisteneintrag zu Chrome hinzufügen</translation>
 <translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2868822340714096138">Browserdaten in Chrome löschen</translation>
@@ -76,7 +76,6 @@ Wichtige Hinweise:
 <translation id="3472587960215700950">Chrome nutzt Google Maps, um dir Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
 <translation id="3503014945441706099">Hol dir für dieses Chrome-Profil auch erweitertes Safe Browsing</translation>
 <translation id="3522659714780527202">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
-<translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="3577555362230509265">Du kannst Chrome in anderen Apps verwenden.</translation>
 <translation id="3594076341410558780">„Chrome optimal nutzen“ ausblenden</translation>
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
@@ -85,6 +84,7 @@ Wichtige Hinweise:
 <translation id="3744018071945602754">Passwörter in Chrome verwalten</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
+<translation id="3863841106411295595">Fügt die eingegebenen URLs deiner Leseliste in Chrome hinzu.</translation>
 <translation id="3901001113120561395">Chrome optimal nutzen.</translation>
 <translation id="3967382818307165056">Zahlungsmethoden in Chrome verwalten</translation>
 <translation id="3980220367029651214">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chrome-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
@@ -98,12 +98,10 @@ Wichtige Hinweise:
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251174643044751591">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chrome geöffnet.</translation>
 <translation id="4453284704333523777">Chrome-Einstellungen verwalten</translation>
-<translation id="4471662743048412085">Erkannte Pakete in Chrome verfolgen</translation>
 <translation id="4508370294876102450">Chrome über jede App öffnen</translation>
 <translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere:</translation>
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4636900170638246267">Melde dich bei dieser Website und in Chrome an.</translation>
-<translation id="4698415050768537821">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4761869838909035636">Chrome-Sicherheitscheck ausführen</translation>
 <translation id="4819268619367838612">Chrome sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
@@ -161,7 +159,6 @@ Wichtige Hinweise:
 <translation id="6815466750807582739">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
 
 Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
 <translation id="6851982868877411675">Öffne unter iOS die Chrome-Einstellungen, tippe auf „Standard-Browser-App“ und wähle „Chrome“ aus.</translation>
 <translation id="6916015246697034114">Sprachsuche in Chrome</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>

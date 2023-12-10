@@ -1,0 +1,149 @@
+{
+  "description": "Aggregatable report with trigger context ID",
+  "needs_trigger_context_id": true,
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "aggregation_keys": {
+                  "a": "0x159"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "trigger_context_id": 456 // wrong type
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "trigger_context_id": "" // empty
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "trigger_context_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // too long
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_source_registration_time": "include",
+                "trigger_context_id": "123" // not allowed
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 123
+                },
+                "trigger_context_id": "456"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "unparsable_registrations": [
+      {"time": "1", "type": "trigger"},
+      {"time": "2", "type": "trigger"},
+      {"time": "3", "type": "trigger"},
+      {"time": "4", "type": "trigger"}
+    ],
+    "reports": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x559",
+              "value": 123
+            }
+          ],
+          "trigger_context_id": "456"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "5"
+      }
+    ]
+  }
+}

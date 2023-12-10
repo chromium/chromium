@@ -15,36 +15,28 @@
 // navigations.
 
 namespace blink {
-// Navigation type that affects the download decision and relevant metrics to be
-// reported at download-discovery time.
-//
-// This enum backs a histogram. Please keep enums.xml up to date with any
-// changes, and new entries should be appended at the end. Never re-arrange /
-// re-use values.
+// Navigation type that affects the download decision at download-discovery
+// time.
 enum class NavigationDownloadType {
-  // An entry reserved just for histogram. The client code is not expected to
-  // set or query this type in a policy.
-  kDefaultAllow = 0,
-
-  kViewSource = 1,
-  kInterstitial = 2,
+  kViewSource = 0,
+  kInterstitial = 1,
 
   // The navigation was initiated on a x-origin opener.
-  kOpenerCrossOrigin = 5,
+  kOpenerCrossOrigin = 2,
 
   // The navigation was initiated from or occurred in an ad frame without user
   // activation.
-  kAdFrameNoGesture = 8,
+  kAdFrameNoGesture = 3,
 
   // The navigation was initiated from or occurred in an ad frame.
-  kAdFrame = 10,
+  kAdFrame = 4,
 
   // The navigation was initiated from or occurred in an iframe with
   // |network::mojom::WebSandboxFlags::kDownloads| flag set.
-  kSandbox = 11,
+  kSandbox = 5,
 
   // The navigation was initiated without user activation.
-  kNoGesture = 12,
+  kNoGesture = 6,
 
   kMaxValue = kNoGesture
 };
@@ -72,9 +64,6 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
 
   // Returns if download is allowed based on |disallowed_types|.
   bool IsDownloadAllowed() const;
-
-  // Record the download policy to histograms from |observed_types|.
-  void RecordHistogram() const;
 
   // Possibly set the kOpenerCrossOrigin and kSandboxNoGesture policy in
   // |download_policy|. The parameter `openee_can_access_opener_origin` only

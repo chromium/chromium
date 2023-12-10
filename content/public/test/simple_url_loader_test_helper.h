@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_SIMPLE_URL_LOADER_TEST_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -27,21 +28,26 @@ class SimpleURLLoaderTestHelper {
 
   ~SimpleURLLoaderTestHelper();
 
-  // Returns a BodyAsStringCallback for use with a SimpleURLLoader. May be
-  // called only once.
+  // Returns a BodyAsStringCallbackDeprecated for use with a SimpleURLLoader.
+  // May be called only once.
   network::SimpleURLLoader::BodyAsStringCallback GetCallback();
+  network::SimpleURLLoader::BodyAsStringCallbackDeprecated
+  GetCallbackDeprecated();
 
   // Waits until the callback returned by GetCallback() is invoked.
   void WaitForCallback();
 
   // Response body passed to the callback returned by GetCallback, if there was
   // one.
-  const std::string* response_body() const { return response_body_.get(); }
+  const std::optional<std::string>& response_body() const {
+    return response_body_;
+  }
 
  private:
   // Called back GetCallback().  Stores the response body and quits the message
   // loop.
-  void OnCompleteCallback(std::unique_ptr<std::string> response_body);
+  void OnCompleteCallback(std::optional<std::string> response_body);
+  void OnCompleteCallbackDeprecated(std::unique_ptr<std::string> response_body);
 
   // Used to ensure GetCallback() is called only once.
   bool callback_created_ = false;
@@ -50,7 +56,7 @@ class SimpleURLLoaderTestHelper {
 
   base::RunLoop run_loop_;
 
-  std::unique_ptr<std::string> response_body_;
+  std::optional<std::string> response_body_;
 
   base::WeakPtrFactory<SimpleURLLoaderTestHelper> weak_ptr_factory_{this};
 };

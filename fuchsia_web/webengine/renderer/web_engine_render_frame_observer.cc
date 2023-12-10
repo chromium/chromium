@@ -5,12 +5,15 @@
 #include "fuchsia_web/webengine/renderer/web_engine_render_frame_observer.h"
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 WebEngineRenderFrameObserver::WebEngineRenderFrameObserver(
     content::RenderFrame* render_frame,
-    base::OnceCallback<void(int)> on_render_frame_deleted_callback)
+    base::OnceCallback<void(const blink::LocalFrameToken&)>
+        on_render_frame_deleted_callback)
     : content::RenderFrameObserver(render_frame),
       url_request_rules_receiver_(render_frame),
       on_render_frame_deleted_callback_(
@@ -22,5 +25,13 @@ WebEngineRenderFrameObserver::WebEngineRenderFrameObserver(
 WebEngineRenderFrameObserver::~WebEngineRenderFrameObserver() = default;
 
 void WebEngineRenderFrameObserver::OnDestruct() {
-  std::move(on_render_frame_deleted_callback_).Run(routing_id());
+  // We should never hit this since we will have destroyed this observer
+  // in WillDetach.
+  NOTREACHED();
+}
+
+void WebEngineRenderFrameObserver::WillDetach(
+    blink::DetachReason detach_reason) {
+  std::move(on_render_frame_deleted_callback_)
+      .Run(render_frame()->GetWebFrame()->GetLocalFrameToken());
 }

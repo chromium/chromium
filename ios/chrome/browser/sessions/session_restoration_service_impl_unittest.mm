@@ -16,7 +16,6 @@
 #import "base/run_loop.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -27,7 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/navigation_util.h"
@@ -40,10 +39,6 @@
 #import "ui/base/page_transition_types.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -188,7 +183,6 @@ FilePathSet ExpectedStorageFilesForWebStates(
         session_dir, reference.web_state->GetUniqueIdentifier());
 
     result.insert(web_state_dir.Append(kWebStateStorageFilename));
-    result.insert(web_state_dir.Append(kWebStateMetadataStorageFilename));
     if (reference.is_native_session_available) {
       result.insert(web_state_dir.Append(kWebStateSessionFilename));
     }
@@ -207,7 +201,8 @@ FilePathSet ExpectedStorageFilesForBrowser(const base::FilePath& session_dir,
         .is_native_session_available = true,
     });
   }
-  return ExpectedStorageFilesForWebStates(session_dir, true, references);
+  return ExpectedStorageFilesForWebStates(
+      session_dir, /*expect_session_metadata_storage=*/true, references);
 }
 
 // Set union.
@@ -239,10 +234,6 @@ base::RepeatingClosure ExpectNCall(base::RepeatingClosure closure, size_t n) {
 class SessionRestorationServiceImplTest : public PlatformTest {
  public:
   SessionRestorationServiceImplTest() {
-    // Enable the feature. Needs to happen before the threads are created.
-    scoped_feature_list_.InitAndEnableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
     // Use the ChromeWebClient as the test tries to load chrome:// URLs.
     scoped_web_client_ = std::make_unique<web::ScopedTestingWebClient>(
         std::make_unique<ChromeWebClient>());
@@ -262,9 +253,10 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     // the code using the `enable_pinned_web_states` is tested by the
     // deserialization code and does not need to be tested again here).
     service_ = std::make_unique<SessionRestorationServiceImpl>(
-        kSaveDelay, /* enable_pinned_web_states */ true,
+        kSaveDelay, /*enable_pinned_web_states=*/true,
         browser_state_->GetStatePath(),
-        base::SequencedTaskRunner::GetCurrentDefault());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        /*tab_restore_service=*/nullptr);
   }
 
   ~SessionRestorationServiceImplTest() override { service_->Shutdown(); }
@@ -343,7 +335,6 @@ class SessionRestorationServiceImplTest : public PlatformTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   FileModificationTracker file_tracker_;
 
   std::unique_ptr<web::ScopedTestingWebClient> scoped_web_client_;
@@ -554,7 +545,7 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionChangesOnlyRequiredFiles) {
   EXPECT_EQ(ModifiedFiles(),
             ExpectedStorageFilesForWebStates(
                 SessionPathFromIdentifier(kIdentifier0),
-                /* expect_session_metadata_storage */ true,
+                /*expect_session_metadata_storage=*/true,
                 {WebStateReference{
                     .web_state = browser.GetWebStateList()->GetActiveWebState(),
                     .is_native_session_available = true,
@@ -656,7 +647,7 @@ TEST_F(SessionRestorationServiceImplTest, AdoptUnrealizedWebStateOnMove) {
 
   FilePathSet expected_browser0 = ExpectedStorageFilesForWebStates(
       SessionPathFromIdentifier(kIdentifier0),
-      /* expect_session_metadata_storage */ true, {});
+      /*expect_session_metadata_storage=*/true, {});
   FilePathSet expected_browser1 = ExpectedStorageFilesForBrowser(
       SessionPathFromIdentifier(kIdentifier1), &browser1);
 
@@ -708,10 +699,9 @@ TEST_F(SessionRestorationServiceImplTest, SavePendingChangesOnDisconnect) {
   // has been written to disk (because it was scheduled when the Browser
   // was disconnected as it contained pending changes).
   EXPECT_LT(base::Time::Now() - disconnect_time, kSaveDelay);
-  EXPECT_EQ(ModifiedFiles(),
-            ExpectedStorageFilesForWebStates(
-                SessionPathFromIdentifier(kIdentifier0),
-                /* expect_session_metadata_storage */ true, {}));
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForWebStates(
+                                 SessionPathFromIdentifier(kIdentifier0),
+                                 /*expect_session_metadata_storage=*/true, {}));
 }
 
 // Tests that the service delete obsolete files when loading the session.
@@ -748,13 +738,13 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
     EXPECT_EQ(ModifiedFiles(),
               ExpectedStorageFilesForWebStates(
                   SessionPathFromIdentifier(kIdentifier0),
-                  /* expect_session_metatadat_storage */ true, {}));
+                  /*expect_session_metadata_storage=*/true, {}));
 
     // Record the files used to represent the state of the detached WebState.
     // Those files will be deleted when the session is loaded.
     expected_deleted_files = ExpectedStorageFilesForWebStates(
         SessionPathFromIdentifier(kIdentifier0),
-        /* expect_session_metadata_storage */ false,
+        /*expect_session_metadata_storage=*/false,
         {WebStateReference{.web_state = detached_web_state.get(),
                            .is_native_session_available = true}});
 
@@ -847,13 +837,13 @@ TEST_F(SessionRestorationServiceImplTest, CreateUnrealizedWebState) {
 
   // Record the list of expected files while the pointer to the newly created
   // WebState is still valid.
-  const FilePathSet expected_files = ExpectedStorageFilesForWebStates(
-      SessionPathFromIdentifier(kIdentifier0),
-      /* expect_session_metadata_storage */ true,
-      {WebStateReference{
-          .web_state = web_state.get(),
-          .is_native_session_available = false,
-      }});
+  const FilePathSet expected_files =
+      ExpectedStorageFilesForWebStates(SessionPathFromIdentifier(kIdentifier0),
+                                       /*expect_session_metadata_storage=*/true,
+                                       {WebStateReference{
+                                           .web_state = web_state.get(),
+                                           .is_native_session_available = false,
+                                       }});
 
   // Insert the WebState into the Browser's WebStateList and then wait for
   // the session to be saved to storage.
@@ -913,10 +903,9 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionsCallableAtAnyTime) {
 
   service()->SaveSessions();
   WaitForBackgroundTaskComplete();
-  EXPECT_EQ(ModifiedFiles(),
-            ExpectedStorageFilesForWebStates(
-                SessionPathFromIdentifier(kIdentifier0),
-                /* expect_session_metadata_storage */ true, {}));
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForWebStates(
+                                 SessionPathFromIdentifier(kIdentifier0),
+                                 /*expect_session_metadata_storage=*/true, {}));
 
   SnapshotFiles();
 
@@ -981,10 +970,9 @@ TEST_F(SessionRestorationServiceImplTest, ScheduleSaveSessions) {
 
   // Check that the session are saved after waiting to the save delay.
   WaitForSessionSaveComplete();
-  EXPECT_EQ(ModifiedFiles(),
-            ExpectedStorageFilesForWebStates(
-                SessionPathFromIdentifier(kIdentifier0),
-                /* expect_session_metadata_storage */ true, {}));
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForWebStates(
+                                 SessionPathFromIdentifier(kIdentifier0),
+                                 /*expect_session_metadata_storage=*/true, {}));
 
   SnapshotFiles();
 
@@ -997,4 +985,62 @@ TEST_F(SessionRestorationServiceImplTest, ScheduleSaveSessions) {
 
   WaitForBackgroundTaskComplete();
   EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+}
+
+// Tests that calling DeleteDataForDiscardedSessions() deletes data for
+// discarded sessions and accept inexistant sessions identifiers.
+TEST_F(SessionRestorationServiceImplTest, DeleteDataForDiscardedSessions) {
+  TestBrowser browser = TestBrowser(browser_state());
+  service()->SetSessionID(&browser, kIdentifier0);
+
+  // Insert a few WebStage in one of the Browser and wait for the changes
+  // to automatically be saved (this is because loading the pages will
+  // take time and may cause automatically saving the session).
+  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  WaitForSessionSaveComplete();
+
+  // Record the file that make the storage for `browser`.
+  const FilePathSet browser_storage = ExpectedStorageFilesForBrowser(
+      SessionPathFromIdentifier(kIdentifier0), &browser);
+
+  EXPECT_EQ(ModifiedFiles(), browser_storage);
+
+  service()->Disconnect(&browser);
+  WaitForSessionSaveComplete();
+
+  SnapshotFiles();
+
+  // Ask for deletion of session for the disconnected Browser's identifier
+  // and for a non-existent identifier.
+  base::RunLoop run_loop;
+  service()->DeleteDataForDiscardedSessions({kIdentifier0, kIdentifier1},
+                                            run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the files for Browser have been deleted.
+  EXPECT_EQ(DeletedFiles(), browser_storage);
+}
+
+// Tests that PurgeUnassociatedData() can be called at any point as the
+// SessionRestorationServiceImpl version is a no-op.
+TEST_F(SessionRestorationServiceImplTest, PurgeUnassociatedData) {
+  // Test that the method can be called before any Browser has been
+  // registered.
+  {
+    base::RunLoop run_loop;
+    service()->PurgeUnassociatedData(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Test that the method can be called after a Browser has been
+  // registered.
+  TestBrowser browser = TestBrowser(browser_state());
+  service()->SetSessionID(&browser, kIdentifier0);
+  {
+    base::RunLoop run_loop;
+    service()->PurgeUnassociatedData(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  service()->Disconnect(&browser);
 }

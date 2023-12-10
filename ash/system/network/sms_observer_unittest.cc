@@ -5,6 +5,7 @@
 #include "ash/system/network/sms_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -20,7 +21,6 @@
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
@@ -47,11 +47,11 @@ base::Value::Dict CreateMessage(const char* kDefaultMessage,
   return sms;
 }
 
-absl::optional<const std::string> GetStringOptional(const char* text) {
+std::optional<const std::string> GetStringOptional(const char* text) {
   if (text) {
-    return absl::make_optional<const std::string>(text);
+    return std::make_optional<const std::string>(text);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

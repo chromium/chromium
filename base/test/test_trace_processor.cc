@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/test_trace_processor.h"
+#include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/test/chrome_track_event.descriptor.h"
 #include "base/test/perfetto_sql_stdlib.h"
 #include "base/trace_event/trace_log.h"
@@ -33,6 +35,9 @@ void EmitChromeTrackEventDescriptor() {
 }
 
 std::string kChromeSqlModuleName = "chrome";
+// A command-line switch to save the trace test trace processor generated to
+// make debugging complex traces.
+constexpr char kSaveTraceSwitch[] = "ttp-save-trace";
 
 // Returns a vector of pairs of strings consisting of
 // {include_key, sql_file_contents}. For example, the include key for
@@ -44,6 +49,9 @@ TestTraceProcessorImpl::PerfettoSQLModule GetChromeStdlib() {
        perfetto::trace_processor::chrome_stdlib::kFileToSql) {
     std::string include_key;
     base::ReplaceChars(file_to_sql.path, "/", ".", &include_key);
+    if (include_key.ends_with(".sql")) {
+      include_key.resize(include_key.size() - 4);
+    }
     stdlib.emplace_back(kChromeSqlModuleName + "." + include_key,
                         file_to_sql.sql);
   }
@@ -81,13 +89,18 @@ TraceConfig DefaultTraceConfig(const StringPiece& category_filter_string,
     track_event_config.add_disabled_categories(excluded_category);
   }
 
-  source_config->set_track_event_config_raw(
-      track_event_config.SerializeAsString());
+  // This category is added by default to tracing sessions initiated via
+  // command-line flags (see TraceConfig::ToPerfettoTrackEventConfigRaw),
+  // so to adopt startup sessions correctly, we need to specify it too.
+  track_event_config.add_enabled_categories("__metadata");
 
   if (privacy_filtering) {
     track_event_config.set_filter_debug_annotations(true);
     track_event_config.set_filter_dynamic_event_names(true);
   }
+
+  source_config->set_track_event_config_raw(
+      track_event_config.SerializeAsString());
 
   return trace_config;
 }
@@ -135,6 +148,13 @@ absl::Status TestTraceProcessor::StopAndParseTrace() {
   base::TrackEvent::Flush();
   session_->StopBlocking();
   std::vector<char> trace = session_->ReadTraceBlocking();
+
+  if (CommandLine::ForCurrentProcess()->HasSwitch(kSaveTraceSwitch)) {
+    ScopedAllowBlockingForTesting allow;
+    WriteFile(base::FilePath::FromASCII("test.pftrace"), trace.data(),
+              trace.size());
+  }
+
   return test_trace_processor_.ParseTrace(trace);
 }
 

@@ -78,8 +78,8 @@ public class CompositorButton implements VirtualView {
     private boolean mIsVisible;
     private boolean mIsIncognito;
     private boolean mIsEnabled;
-    private String mAccessibilityDescription;
-    private String mAccessibilityDescriptionIncognito;
+    private String mAccessibilityDescription = "";
+    private String mAccessibilityDescriptionIncognito = "";
 
     /**
      * Default constructor for {@link CompositorButton}
@@ -112,7 +112,10 @@ public class CompositorButton implements VirtualView {
      * @param incognitoResource         The incognito Android resource.
      * @param incognitoPressedResource  The incognito pressed resource.
      */
-    public void setResources(int resource, int pressedResource, int incognitoResource,
+    public void setResources(
+            int resource,
+            int pressedResource,
+            int incognitoResource,
             int incognitoPressedResource) {
         mResource = resource;
         mPressedResource = pressedResource;

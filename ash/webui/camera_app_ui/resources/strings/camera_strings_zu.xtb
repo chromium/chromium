@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Sula ikhasi <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Imodi yekhamera</translation>
 <translation id="1153190633558910465">Igridi ivaliwe</translation>
-<translation id="1175958423215084756">Isixhumanisi sitholiwe. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ikhasi <ph name="PAGE_NUMBER" /> lisuliwe</translation>
 <translation id="1258009455399840361">Zungezisa u-90 degrees ngokwewashi</translation>
 <translation id="1417314334557041815">Hlela ikhasi <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Ukuqhubekisa ividiyo...</translation>
 <translation id="3789724198583203151">Zungezisa u-90 degrees ngokuphambana nezinti zewashi</translation>
 <translation id="3810838688059735925">Ividiyo</translation>
-<translation id="3892148308691398805">Kopisha umbhalo</translation>
 <translation id="4060608699153044055">Awukwazi ukurekhoda ngenxa yesikhala sesitoreji esincane. Ukuze uqale ukurekhoda, udinga ukukhulula isikhala kudivayisi yakho.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Misa okwesikhashana ukurekhoda</translation>
 <translation id="4121305183798804752">Idokhumenti itholiwe</translation>
 <translation id="414641094616694804">Le khamera ayikwazi ukushintsha ukucaca</translation>
 <translation id="4176463684765177261">Kukhutshaziwe</translation>
-<translation id="4269820728363426813">Kopisha ikheli lesixhumanisi</translation>
 <translation id="428234092390943511">Isithonjana sekhasi</translation>
 <translation id="4349714250734879769">Linganisa izinhlaka nge-Chrome</translation>
 <translation id="4383571725254449280">Amalogu okusebenza kokuphrinta</translation>
@@ -144,7 +141,6 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="7726641833034062494">Rekhoda ividiyo evamile</translation>
 <translation id="7748344063862150053">Idokhumenti ekhoneni eliphezulu kwesokudla</translation>
 <translation id="7933675232020478311">Ihambela ngasohlangothini lwesokudla phansi</translation>
-<translation id="7983668134180549431">Umbhalo utholiwe.</translation>
 <translation id="8079255378695216066">Ayikwazi ukuqala ukurekhoda</translation>
 <translation id="8120146556401698679">Ukusondeza kokutshekisa i-pan</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>
@@ -163,6 +159,7 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="8870695351537079478">Ayikwazi ukuqala ukurekhoda</translation>
 <translation id="8880167521484863515">4 kuya ku-3</translation>
 <translation id="8903921497873541725">Sondeza</translation>
+<translation id="8926890870105777777">Joyina Inethiwekhi "ye-<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Beka bonke onqenqema bedokhumenti ngaphakathi kohlaka</translation>
 <translation id="9045155556724273246">10 amasekhondi</translation>
 <translation id="906331135292332864">Icubungula isithombe...</translation>

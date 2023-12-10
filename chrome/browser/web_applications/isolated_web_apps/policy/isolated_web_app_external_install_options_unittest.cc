@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"

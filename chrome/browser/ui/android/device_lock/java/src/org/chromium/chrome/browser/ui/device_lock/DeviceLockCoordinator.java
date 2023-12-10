@@ -17,9 +17,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * The coordinator handles the creation, update, and interaction of the device lock UI.
- */
+/** The coordinator handles the creation, update, and interaction of the device lock UI. */
 public class DeviceLockCoordinator {
     /** Delegate for device lock MVC. */
     public interface Delegate {
@@ -30,14 +28,10 @@ public class DeviceLockCoordinator {
          */
         void setView(View view);
 
-        /**
-         * The device has a device lock set and the user has chosen to continue.
-         */
+        /** The device has a device lock set and the user has chosen to continue. */
         void onDeviceLockReady();
 
-        /**
-         * The user has decided to dismiss the dialog without setting a device lock.
-         */
+        /** The user has decided to dismiss the dialog without setting a device lock. */
         void onDeviceLockRefused();
 
         /** Returns which source the user accessed the device lock UI from. */
@@ -60,7 +54,10 @@ public class DeviceLockCoordinator {
      * @param account The account that will be used for the reauthentication challenge, or null
      *                if reauthentication is not needed.
      */
-    public DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid, Activity activity,
+    public DeviceLockCoordinator(
+            Delegate delegate,
+            WindowAndroid windowAndroid,
+            Activity activity,
             @Nullable Account account) {
         this(delegate, windowAndroid, createDeviceLockAuthenticatorBridge(), activity, account);
     }
@@ -76,29 +73,34 @@ public class DeviceLockCoordinator {
      * @param account The account that will be used for the reauthentication challenge, or null
      *        if reauthentication is not needed.
      */
-    public DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid,
-            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
+    public DeviceLockCoordinator(
+            Delegate delegate,
+            WindowAndroid windowAndroid,
+            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge,
+            Activity activity,
             @Nullable Account account) {
         mView = DeviceLockView.create(LayoutInflater.from(activity));
         mWindowAndroid = windowAndroid;
         mDeviceLockAuthenticatorBridge = deviceLockAuthenticatorBridge;
-        mMediator = new DeviceLockMediator(
-                delegate, mWindowAndroid, mDeviceLockAuthenticatorBridge, activity, account);
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mMediator.getModel(), mView, DeviceLockViewBinder::bind);
+        mMediator =
+                new DeviceLockMediator(
+                        delegate,
+                        mWindowAndroid,
+                        mDeviceLockAuthenticatorBridge,
+                        activity,
+                        account);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mMediator.getModel(), mView, DeviceLockViewBinder::bind);
         delegate.setView(mView);
     }
 
-    /**
-     * Get a {@link ReauthenticatorBridge} for the Device Lock page.
-     */
+    /** Get a {@link ReauthenticatorBridge} for the Device Lock page. */
     public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge() {
         return ReauthenticatorBridge.create(DeviceAuthSource.DEVICE_LOCK_PAGE);
     }
 
-    /**
-     * Releases the resources used by the coordinator.
-     */
+    /** Releases the resources used by the coordinator. */
     public void destroy() {
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();

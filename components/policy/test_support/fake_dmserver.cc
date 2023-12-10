@@ -4,12 +4,14 @@
 
 #include "components/policy/test_support/fake_dmserver.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -543,29 +545,28 @@ bool FakeDMServer::SetExternalPolicyPayload(
 
 bool FakeDMServer::ReadPolicyBlobFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
-  base::FilePath policy_blob_file(policy_blob_path_);
-  if (!base::PathExists(policy_blob_file)) {
+  if (!base::PathExists(policy_blob_path_)) {
     LOG(INFO) << "Policy blob file doesn't exist yet.";
     return true;
   }
-  JSONFileValueDeserializer deserializer(policy_blob_file);
+  JSONFileValueDeserializer deserializer(policy_blob_path_);
   int error_code = 0;
   std::string error_msg;
   std::unique_ptr<base::Value> value =
       deserializer.Deserialize(&error_code, &error_msg);
   if (!value) {
-    LOG(ERROR) << "Failed to read the policy blob file "
-               << policy_blob_file.value() << ": " << error_msg;
+    LOG(ERROR) << "Failed to read the policy blob file " << policy_blob_path_
+               << ": " << error_msg;
     return false;
   }
   LOG(INFO) << "Deserialized value of the policy blob: " << *value;
-  if (!value->is_dict()) {
+  const base::Value::Dict* dict = value->GetIfDict();
+  if (!dict) {
     LOG(ERROR) << "Policy blob isn't a dict";
     return false;
   }
-  base::Value::Dict& dict = value->GetDict();
 
-  std::string* policy_user = dict.FindString(kPolicyUserKey);
+  const std::string* policy_user = dict->FindString(kPolicyUserKey);
   if (policy_user) {
     LOG(INFO) << "Adding " << *policy_user << " as a policy user";
     policy_storage()->set_policy_user(*policy_user);
@@ -575,7 +576,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
               << policy::kDefaultUsername << " will be used";
   }
 
-  base::Value::List* managed_users = dict.FindList(kManagedUsersKey);
+  const base::Value::List* managed_users = dict->FindList(kManagedUsersKey);
   if (managed_users) {
     for (const base::Value& managed_user : *managed_users) {
       const std::string* managed_val = managed_user.GetIfString();
@@ -586,8 +587,8 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
   }
 
-  base::Value::List* device_affiliation_ids =
-      dict.FindList(kDeviceAffiliationIdsKey);
+  const base::Value::List* device_affiliation_ids =
+      dict->FindList(kDeviceAffiliationIdsKey);
   if (device_affiliation_ids) {
     for (const base::Value& device_affiliation_id : *device_affiliation_ids) {
       const std::string* device_affiliation_id_val =
@@ -600,8 +601,8 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
   }
 
-  base::Value::List* user_affiliation_ids =
-      dict.FindList(kUserAffiliationIdsKey);
+  const base::Value::List* user_affiliation_ids =
+      dict->FindList(kUserAffiliationIdsKey);
   if (user_affiliation_ids) {
     for (const base::Value& user_affiliation_id : *user_affiliation_ids) {
       const std::string* user_affiliation_id_val =
@@ -614,17 +615,15 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
   }
 
-  std::string* directory_api_id = dict.FindString(kDirectoryApiIdKey);
+  const std::string* directory_api_id = dict->FindString(kDirectoryApiIdKey);
   if (directory_api_id) {
     LOG(INFO) << "Adding " << *directory_api_id << " as a directory API ID";
     policy_storage()->set_directory_api_id(*directory_api_id);
   }
 
-  if (dict.contains(kAllowSetDeviceAttributesKey)) {
-    absl::optional<bool> allow_set_device_attributes =
-        dict.FindBool(kAllowSetDeviceAttributesKey);
+  if (const base::Value* v = dict->Find(kAllowSetDeviceAttributesKey); v) {
+    absl::optional<bool> allow_set_device_attributes = v->GetIfBool();
     if (!allow_set_device_attributes.has_value()) {
-      base::Value* v = dict.Find(kAllowSetDeviceAttributesKey);
       LOG(ERROR)
           << "The allow_set_device_attributes key isn't a bool, found type "
           << v->type() << ", found value " << *v;
@@ -634,29 +633,31 @@ bool FakeDMServer::ReadPolicyBlobFile() {
         allow_set_device_attributes.value());
   }
 
-  base::Value* use_universal_signing_keys =
-      dict.Find(kUseUniversalSigningKeysKey);
+  const base::Value* use_universal_signing_keys =
+      dict->Find(kUseUniversalSigningKeysKey);
   if (use_universal_signing_keys) {
-    if (!use_universal_signing_keys->is_bool()) {
+    absl::optional<bool> maybe_value = use_universal_signing_keys->GetIfBool();
+    if (!maybe_value.has_value()) {
       LOG(ERROR)
           << "The use_universal_signing_keys key isn't a bool, found type "
           << use_universal_signing_keys->type() << ", found value "
           << *use_universal_signing_keys;
       return false;
     }
-    if (use_universal_signing_keys->GetBool()) {
+    if (maybe_value.value()) {
       policy_storage()->signature_provider()->SetUniversalSigningKeys();
     }
   }
 
-  std::string* robot_api_auth_code = dict.FindString(kRobotApiAuthCodeKey);
+  const std::string* robot_api_auth_code =
+      dict->FindString(kRobotApiAuthCodeKey);
   if (robot_api_auth_code) {
     LOG(INFO) << "Adding " << *robot_api_auth_code
               << " as a robot api auth code";
     policy_storage()->set_robot_api_auth_code(*robot_api_auth_code);
   }
 
-  base::Value::Dict* request_errors = dict.FindDict(kRequestErrorsKey);
+  const base::Value::Dict* request_errors = dict->FindDict(kRequestErrorsKey);
   if (request_errors) {
     for (auto request_error : *request_errors) {
       absl::optional<int> net_error_code = request_error.second.GetIfInt();
@@ -672,25 +673,24 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
   }
 
-  base::Value::Dict* initial_enrollment_state =
-      dict.FindDict(kInitialEnrollmentStateKey);
+  const base::Value::Dict* initial_enrollment_state =
+      dict->FindDict(kInitialEnrollmentStateKey);
   if (initial_enrollment_state) {
-    for (base::detail::dict_iterator::reference state :
-         *initial_enrollment_state) {
-      if (!state.second.is_dict()) {
+    for (auto state : *initial_enrollment_state) {
+      const base::Value::Dict* state_val = state.second.GetIfDict();
+      if (!state_val) {
         LOG(ERROR) << "The current state value for key " << state.first
                    << " isn't a dict";
         return false;
       }
-      base::Value::Dict& state_val = state.second.GetDict();
-      std::string* management_domain =
-          state_val.FindString(kManagementDomainKey);
+      const std::string* management_domain =
+          state_val->FindString(kManagementDomainKey);
       if (!management_domain) {
         LOG(ERROR) << "The management_domain key isn't a string";
         return false;
       }
       absl::optional<int> initial_enrollment_mode =
-          state_val.FindInt(kInitialEnrollmentModeKey);
+          state_val->FindInt(kInitialEnrollmentModeKey);
       if (!initial_enrollment_mode.has_value()) {
         LOG(ERROR) << "The initial_enrollment_mode key isn't an int";
         return false;
@@ -704,10 +704,9 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
   }
 
-  if (dict.contains(kCurrentKeyIndexKey)) {
-    absl::optional<int> current_key_index = dict.FindInt(kCurrentKeyIndexKey);
+  if (const base::Value* v = dict->Find(kCurrentKeyIndexKey); v) {
+    absl::optional<int> current_key_index = v->GetIfInt();
     if (!current_key_index.has_value()) {
-      base::Value* v = dict.Find(kCurrentKeyIndexKey);
       LOG(ERROR) << "The current_key_index key isn't an int, found type "
                  << v->type() << ", found value " << *v;
       return false;
@@ -716,33 +715,36 @@ bool FakeDMServer::ReadPolicyBlobFile() {
         current_key_index.value());
   }
 
-  base::Value::List* policies = dict.FindList(kPoliciesKey);
+  const base::Value::List* policies = dict->FindList(kPoliciesKey);
   if (policies) {
     for (const base::Value& policy : *policies) {
-      if (!policy.is_dict()) {
+      const base::Value::Dict* policy_as_dict = policy.GetIfDict();
+      if (!policy_as_dict) {
         LOG(ERROR) << "The current policy isn't a dict";
         return false;
       }
-      if (!SetPolicyPayload(policy.GetDict().FindString(kPolicyTypeKey),
-                            policy.GetDict().FindString(kEntityIdKey),
-                            policy.GetDict().FindString(kPolicyValueKey))) {
+      if (!SetPolicyPayload(policy_as_dict->FindString(kPolicyTypeKey),
+                            policy_as_dict->FindString(kEntityIdKey),
+                            policy_as_dict->FindString(kPolicyValueKey))) {
         LOG(ERROR) << "Failed to set the policy";
         return false;
       }
     }
   }
 
-  base::Value::List* external_policies = dict.FindList(kExternalPoliciesKey);
+  const base::Value::List* external_policies =
+      dict->FindList(kExternalPoliciesKey);
   if (external_policies) {
     for (const base::Value& policy : *external_policies) {
-      if (!policy.is_dict()) {
+      const base::Value::Dict* policy_as_dict = policy.GetIfDict();
+      if (!policy_as_dict) {
         LOG(ERROR) << "The current external policy isn't a dict";
         return false;
       }
       if (!SetExternalPolicyPayload(
-              policy.GetDict().FindString(kPolicyTypeKey),
-              policy.GetDict().FindString(kEntityIdKey),
-              policy.GetDict().FindString(kPolicyValueKey))) {
+              policy_as_dict->FindString(kPolicyTypeKey),
+              policy_as_dict->FindString(kEntityIdKey),
+              policy_as_dict->FindString(kPolicyValueKey))) {
         LOG(ERROR) << "Failed to set the external policy";
         return false;
       }
@@ -773,7 +775,6 @@ base::Value::Dict FakeDMServer::GetValueFromClient(
 
 bool FakeDMServer::WriteClientStateFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
-  base::FilePath client_state_file(client_state_path_);
   std::vector<policy::ClientStorage::ClientInfo> clients =
       client_storage()->GetAllClients();
   base::Value::Dict dict_clients;
@@ -781,7 +782,7 @@ bool FakeDMServer::WriteClientStateFile() {
     dict_clients.Set(c.device_id, GetValueFromClient(c));
   }
 
-  JSONFileValueSerializer serializer(client_state_file);
+  JSONFileValueSerializer serializer(client_state_path_);
   return serializer.Serialize(base::ValueView(dict_clients));
 }
 
@@ -806,8 +807,7 @@ bool FakeDMServer::FindKey(const base::Value::Dict& dict,
       return true;
     }
     default: {
-      NOTREACHED() << "Unsupported type for client file key";
-      return false;
+      NOTREACHED_NORETURN() << "Unsupported type for client file key";
     }
   }
 }
@@ -815,26 +815,26 @@ bool FakeDMServer::FindKey(const base::Value::Dict& dict,
 absl::optional<policy::ClientStorage::ClientInfo>
 FakeDMServer::GetClientFromValue(const base::Value& v) {
   policy::ClientStorage::ClientInfo client_info;
-  if (!v.is_dict()) {
+  const base::Value::Dict* dict = v.GetIfDict();
+  if (!dict) {
     LOG(ERROR) << "Client value isn't a dict";
     return absl::nullopt;
   }
 
-  const base::Value::Dict& dict = v.GetDict();
-  if (!FindKey(dict, kDeviceIdKey, base::Value::Type::STRING) ||
-      !FindKey(dict, kDeviceTokenKey, base::Value::Type::STRING) ||
-      !FindKey(dict, kMachineNameKey, base::Value::Type::STRING) ||
-      !FindKey(dict, kUsernameKey, base::Value::Type::STRING) ||
-      !FindKey(dict, kStateKeysKey, base::Value::Type::LIST) ||
-      !FindKey(dict, kAllowedPolicyTypesKey, base::Value::Type::LIST)) {
+  if (!FindKey(*dict, kDeviceIdKey, base::Value::Type::STRING) ||
+      !FindKey(*dict, kDeviceTokenKey, base::Value::Type::STRING) ||
+      !FindKey(*dict, kMachineNameKey, base::Value::Type::STRING) ||
+      !FindKey(*dict, kUsernameKey, base::Value::Type::STRING) ||
+      !FindKey(*dict, kStateKeysKey, base::Value::Type::LIST) ||
+      !FindKey(*dict, kAllowedPolicyTypesKey, base::Value::Type::LIST)) {
     return absl::nullopt;
   }
 
-  client_info.device_id = *dict.FindString(kDeviceIdKey);
-  client_info.device_token = *dict.FindString(kDeviceTokenKey);
-  client_info.machine_name = *dict.FindString(kMachineNameKey);
-  client_info.username = *dict.FindString(kUsernameKey);
-  const base::Value::List* state_keys = dict.FindList(kStateKeysKey);
+  client_info.device_id = *dict->FindString(kDeviceIdKey);
+  client_info.device_token = *dict->FindString(kDeviceTokenKey);
+  client_info.machine_name = *dict->FindString(kMachineNameKey);
+  client_info.username = *dict->FindString(kUsernameKey);
+  const base::Value::List* state_keys = dict->FindList(kStateKeysKey);
   for (const auto& it : *state_keys) {
     const std::string* key = it.GetIfString();
     if (!key) {
@@ -843,7 +843,8 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
     }
     client_info.state_keys.emplace_back(*key);
   }
-  const base::Value::List* policy_types = dict.FindList(kAllowedPolicyTypesKey);
+  const base::Value::List* policy_types =
+      dict->FindList(kAllowedPolicyTypesKey);
   for (const auto& it : *policy_types) {
     const std::string* key = it.GetIfString();
     if (!key) {
@@ -857,27 +858,26 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
 
 bool FakeDMServer::ReadClientStateFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
-  base::FilePath client_state_file(client_state_path_);
-  if (!base::PathExists(client_state_file)) {
+  if (!base::PathExists(client_state_path_)) {
     LOG(INFO) << "Client state file doesn't exist yet.";
     return true;
   }
-  JSONFileValueDeserializer deserializer(client_state_file);
+  JSONFileValueDeserializer deserializer(client_state_path_);
   int error_code = 0;
   std::string error_msg;
   std::unique_ptr<base::Value> value =
       deserializer.Deserialize(&error_code, &error_msg);
   if (!value) {
-    LOG(ERROR) << "Failed to read client state file "
-               << client_state_file.value() << ": " << error_msg;
+    LOG(ERROR) << "Failed to read client state file " << client_state_path_
+               << ": " << error_msg;
     return false;
   }
-  if (!value->is_dict()) {
+  const base::Value::Dict* dict = value->GetIfDict();
+  if (!dict) {
     LOG(ERROR) << "The client state file isn't a dict.";
     return false;
   }
-  base::Value::Dict& dict = value->GetDict();
-  for (auto it : dict) {
+  for (auto it : *dict) {
     absl::optional<policy::ClientStorage::ClientInfo> c =
         GetClientFromValue(it.second);
     if (!c.has_value()) {

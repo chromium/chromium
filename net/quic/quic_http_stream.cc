@@ -46,31 +46,30 @@ QuicHttpStream::~QuicHttpStream() {
   Close(false);
 }
 
-HttpResponseInfo::ConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
+HttpConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
     quic::ParsedQuicVersion quic_version) {
   switch (quic_version.transport_version) {
     case quic::QUIC_VERSION_UNSUPPORTED:
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION;
+      return HttpConnectionInfo::kQUIC_UNKNOWN_VERSION;
     case quic::QUIC_VERSION_46:
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_46;
+      return HttpConnectionInfo::kQUIC_46;
     case quic::QUIC_VERSION_50:
-      return quic_version.UsesTls()
-                 ? HttpResponseInfo::CONNECTION_INFO_QUIC_T050
-                 : HttpResponseInfo::CONNECTION_INFO_QUIC_Q050;
+      return quic_version.UsesTls() ? HttpConnectionInfo::kQUIC_T050
+                                    : HttpConnectionInfo::kQUIC_Q050;
     case quic::QUIC_VERSION_IETF_DRAFT_29:
       DCHECK(quic_version.UsesTls());
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_29;
+      return HttpConnectionInfo::kQUIC_DRAFT_29;
     case quic::QUIC_VERSION_IETF_RFC_V1:
       DCHECK(quic_version.UsesTls());
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1;
+      return HttpConnectionInfo::kQUIC_RFC_V1;
     case quic::QUIC_VERSION_RESERVED_FOR_NEGOTIATION:
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_999;
+      return HttpConnectionInfo::kQUIC_999;
     case quic::QUIC_VERSION_IETF_RFC_V2:
       DCHECK(quic_version.UsesTls());
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8;
+      return HttpConnectionInfo::kQUIC_2_DRAFT_8;
   }
   NOTREACHED();
-  return HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION;
+  return HttpConnectionInfo::kQUIC_UNKNOWN_VERSION;
 }
 
 void QuicHttpStream::RegisterRequest(const HttpRequestInfo* request_info) {
@@ -613,7 +612,7 @@ int QuicHttpStream::ProcessResponseHeaders(
       ConnectionInfoFromQuicVersion(quic_session()->GetQuicVersion());
   response_info_->was_alpn_negotiated = true;
   response_info_->alpn_negotiated_protocol =
-      HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);
+      HttpConnectionInfoToString(response_info_->connection_info);
   response_info_->response_time = base::Time::Now();
   response_info_->request_time = request_time_;
   response_headers_received_ = true;

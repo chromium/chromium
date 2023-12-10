@@ -39,9 +39,10 @@ using RequiredNoticeId = ui::ElementIdentifier;
 class [[nodiscard]] RequiredNoticePriorityHandle final {
  public:
   RequiredNoticePriorityHandle();
+  RequiredNoticePriorityHandle(RequiredNoticePriorityHandle&&) noexcept;
+  RequiredNoticePriorityHandle& operator=(
+      RequiredNoticePriorityHandle&&) noexcept;
   ~RequiredNoticePriorityHandle();
-  RequiredNoticePriorityHandle(RequiredNoticePriorityHandle&&);
-  RequiredNoticePriorityHandle& operator=(RequiredNoticePriorityHandle&&);
 
   // Whether this handle is valid.
   explicit operator bool() const;
@@ -77,9 +78,9 @@ using RequiredNoticeShowCallback =
 class ProductMessagingController final {
  public:
   ProductMessagingController();
-  ~ProductMessagingController();
   ProductMessagingController(const ProductMessagingController&) = delete;
   void operator=(const ProductMessagingController&) = delete;
+  ~ProductMessagingController();
 
   // Returns whether there are any notices queued or showing. This can be used
   // to prevent other, lower-priority User Education experiences from showing.

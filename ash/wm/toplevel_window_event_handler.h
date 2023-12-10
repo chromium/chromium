@@ -127,6 +127,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // Returns true if there is a drag in progress.
   bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
 
+  bool in_pinch() const { return in_pinch_; }
+
   void CompleteDragForTesting(DragResult result) { CompleteDrag(result); }
 
  private:

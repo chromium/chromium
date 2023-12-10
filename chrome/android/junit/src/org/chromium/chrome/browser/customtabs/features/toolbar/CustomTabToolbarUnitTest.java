@@ -550,8 +550,7 @@ public class CustomTabToolbarUnitTest {
         // Should show only the reminder IPH.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, times(1))
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any());
+        verify(mPageInfoIPHController, times(1)).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -568,8 +567,7 @@ public class CustomTabToolbarUnitTest {
         // None of the IPHs should be shown.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, never())
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any());
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -586,8 +584,7 @@ public class CustomTabToolbarUnitTest {
         // Should show only the Cookie controls IPH.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, never())
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any());
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

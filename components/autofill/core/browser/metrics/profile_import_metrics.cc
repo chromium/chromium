@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill::autofill_metrics {
@@ -70,11 +72,25 @@ void LogAddressFormImportRequirementMetric(
                                 metric);
 }
 
-void LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-    bool is_zip_missing,
-    bool is_state_missing,
-    bool is_city_missing,
-    bool is_line1_missing) {
+void LogAddressFormImportRequirementMetric(const AutofillProfile& profile) {
+  std::vector<AddressProfileImportRequirementMetric> requirements =
+      ValidateProfileImportRequirements(profile);
+  for (AddressProfileImportRequirementMetric& requirement : requirements) {
+    LogAddressFormImportRequirementMetric(requirement);
+  }
+
+  bool is_zip_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kZipRequirementViolated);
+  bool is_state_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kStateRequirementViolated);
+  bool is_city_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kCityRequirementViolated);
+  bool is_line1_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kLine1RequirementViolated);
   const auto metric =
       static_cast<AddressProfileImportCountrySpecificFieldRequirementsMetric>(
           (is_zip_missing ? 0b1 : 0) | (is_state_missing ? 0b10 : 0) |

@@ -12,6 +12,7 @@
     color: var(--cros-text-color-primary);
     display: flex;
     flex-direction: row;
+    font: var(--cros-button-1-font);
     text-decoration: none;
   }
 
@@ -34,61 +35,6 @@
     padding-inline-end: calc(12px - var(--settings-menu-item-border-width));
   }
 
-  /* Font */
-  :host-context(body:not(.jelly-enabled)):host {
-    font-weight: 500;
-  }
-
-  :host-context(body.jelly-enabled):host {
-    font: var(--cros-button-1-font);
-  }
-
-  /* Hover state */
-  :host-context(body:not(.jelly-enabled)):host(:not(.iron-selected):hover) {
-    background-color: var(--cros-ripple-color) !important;
-  }
-
-  :host-context(body.jelly-enabled):host(:not(.iron-selected):hover) {
-    background-color: var(--cros-sys-hover_on_subtle) !important;
-  }
-
-  /* Focused state */
-  :host-context(.focus-outline-visible):host(:focus) {
-    border-color: var(--cros-focus-ring-color);
-  }
-
-  /* Selected state */
-  :host-context(body:not(.jelly-enabled)):host(.iron-selected) {
-    background-color: var(--cros-highlight-color) !important;
-    color: var(--cros-text-color-selection);
-  }
-
-  :host-context(body.jelly-enabled):host(.iron-selected) {
-    background-color: var(--cros-sys-primary) !important;
-    color: var(--cros-sys-on_primary);
-  }
-
-  /* Icon styles */
-  iron-icon {
-    pointer-events: none;
-  }
-
-  :host-context(body:not(.revamp-wayfinding-enabled)) iron-icon {
-    margin-inline-end: 16px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) iron-icon {
-    margin-inline-end: 12px;
-  }
-
-  :host-context(body:not(.jelly-enabled)):host(.iron-selected) > iron-icon {
-    fill: var(--cros-icon-color-selection);
-  }
-
-  :host-context(body.jelly-enabled):host(.iron-selected) > iron-icon {
-    fill: var(--cros-sys-on_primary);
-  }
-
   /* Label & sublabel styles */
   #labelWrapper {
     /* Expand to fill remaining space */
@@ -107,6 +53,44 @@
   #sublabel {
     color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-2-font);
+  }
+
+  /* Default icon styles */
+  iron-icon {
+    pointer-events: none;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled)) iron-icon {
+    margin-inline-end: 16px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) iron-icon {
+    margin-inline-end: 12px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled):host(:not(.iron-selected))
+      iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+
+  /* Hover state */
+  :host(:not(.iron-selected):hover) {
+    background-color: var(--cros-sys-hover_on_subtle) !important;
+  }
+
+  /* Focused state */
+  :host-context(.focus-outline-visible):host(:focus) {
+    border-color: var(--cros-focus-ring-color);
+  }
+
+  /* Selected state */
+  :host(.iron-selected) {
+    background-color: var(--cros-sys-primary) !important;
+    color: var(--cros-sys-on_primary);
+  }
+
+  :host(.iron-selected) > iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-on_primary);
   }
 
   :host(.iron-selected) #sublabel {

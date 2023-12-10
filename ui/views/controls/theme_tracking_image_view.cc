@@ -58,7 +58,7 @@ void ThemeTrackingImageView::SetDarkImage(
     SetImage(dark_image_model_);
 }
 
-BEGIN_METADATA(ThemeTrackingImageView, views::ImageView)
+BEGIN_METADATA(ThemeTrackingImageView)
 END_METADATA
 
 }  // namespace views

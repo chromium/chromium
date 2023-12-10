@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -29,8 +30,7 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -46,7 +46,6 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -57,11 +56,13 @@ using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
 using signin::GaiaIdHash;
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Ne;
+using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::SizeIs;
@@ -253,7 +254,8 @@ class LoginDatabaseTest : public testing::Test {
     file_ = temp_dir_.GetPath().AppendASCII("TestMetadataStoreMacDatabase");
     OSCryptMocker::SetUp();
 
-    db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false));
+    db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false),
+                                          is_empty_cb_.Get());
     ASSERT_TRUE(db_->Init());
   }
 
@@ -263,6 +265,8 @@ class LoginDatabaseTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath file_;
+  NiceMock<base::MockCallback<base::RepeatingCallback<void(bool)>>>
+      is_empty_cb_;
   std::unique_ptr<LoginDatabase> db_;
   // A full TaskEnvironment is required instead of only
   // SingleThreadTaskEnvironment because on iOS,
@@ -2204,7 +2208,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/true, /*blocklisted=*/true);
 
-  LoginDatabase db(database_path(), IsAccountStore(false));
+  NiceMock<base::MockCallback<base::RepeatingCallback<void(bool)>>> is_empty_cb;
+  LoginDatabase db(database_path(), IsAccountStore(false), is_empty_cb.Get());
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(db.Init());
 
@@ -2220,6 +2225,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   EXPECT_TRUE(result.empty());
 
   // Delete undecryptable logins and make sure we can get valid logins.
+  // `is_empty_cb_` is called more than once because DeleteUndecryptableLogins()
+  // internally calls RemoveLogin() for each form.
+  EXPECT_CALL(is_empty_cb, Run(false)).Times(AnyNumber());
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
   EXPECT_TRUE(db.GetAutofillableLogins(&result));
   EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
@@ -2771,6 +2779,80 @@ TEST_F(LoginDatabaseTest, AddLoginWithNonEmptyInvalidURL) {
   auto error = AddCredentialError::kNone;
   EXPECT_THAT(db().AddLogin(form, &error), IsEmpty());
   EXPECT_EQ(error, AddCredentialError::kConstraintViolation);
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_InitEmpty) {
+  NiceMock<base::MockCallback<base::RepeatingCallback<void(bool)>>> is_empty_cb;
+  LoginDatabase db(temp_dir_.GetPath().AppendASCII("DbDirectory"),
+                   IsAccountStore(false), is_empty_cb.Get());
+  EXPECT_CALL(is_empty_cb, Run(true));
+  db.Init();
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
+  base::FilePath directory = temp_dir_.GetPath().AppendASCII("DbDirectory");
+  {
+    // Simulate the DB being populated in a previous startup.
+    auto db = std::make_unique<LoginDatabase>(directory, IsAccountStore(false),
+                                              base::NullCallback());
+    db->Init();
+    std::ignore =
+        db->AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
+    db.reset();
+  }
+
+  NiceMock<base::MockCallback<base::RepeatingCallback<void(bool)>>> is_empty_cb;
+  LoginDatabase db(directory, IsAccountStore(false), is_empty_cb.Get());
+  EXPECT_CALL(is_empty_cb, Run(false));
+  db.Init();
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_AddLogin) {
+  ASSERT_TRUE(db().IsEmpty());
+  EXPECT_CALL(is_empty_cb_, Run(false));
+  std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_AddBlocklist) {
+  ASSERT_TRUE(db().IsEmpty());
+  PasswordForm blocklist;
+  blocklist.signon_realm = "http://g.com/";
+  blocklist.url = GURL("http://g.com");
+  blocklist.blocked_by_user = true;
+  EXPECT_CALL(is_empty_cb_, Run(false));
+  std::ignore = db().AddLogin(blocklist, /*error=*/nullptr);
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_RemoveLogin) {
+  std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
+  ASSERT_FALSE(db().IsEmpty());
+  EXPECT_CALL(is_empty_cb_, Run(true));
+  std::ignore =
+      db().RemoveLogin(GenerateExamplePasswordForm(), /*changes=*/nullptr);
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_RemoveLoginByPrimaryKey) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordStoreChangeList changes = db().AddLogin(form);
+  ASSERT_EQ(changes.size(), 1u);
+  EXPECT_CALL(is_empty_cb_, Run(true));
+  std::ignore =
+      db().RemoveLoginByPrimaryKey(*changes[0].form().primary_key, &changes);
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_RemoveLoginsCreatedBetween) {
+  std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
+  ASSERT_FALSE(db().IsEmpty());
+  EXPECT_CALL(is_empty_cb_, Run(true));
+  std::ignore = db().RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
+                                                /*changes=*/nullptr);
+}
+
+TEST_F(LoginDatabaseTest, IsEmptyCb_DeleteAndRecreateDatabaseFile) {
+  std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
+  ASSERT_FALSE(db().IsEmpty());
+  EXPECT_CALL(is_empty_cb_, Run(true));
+  db().DeleteAndRecreateDatabaseFile();
 }
 
 class LoginDatabaseForAccountStoreTest : public testing::Test {

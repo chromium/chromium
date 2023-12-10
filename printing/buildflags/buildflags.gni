@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
@@ -13,9 +13,10 @@ declare_args() {
   # Enables printing support.
   enable_printing = !is_ios && !is_castos && !is_cast_android
 
-  # TODO(crbug.com/1432082): iOS blink port only enables printing_unittests for
-  # now because the port does not enable the printing feature yet.
-  enable_printing_unittests = is_ios && use_blink
+  # TODO(crbug.com/1432082): iOS blink port only enables printing_tests to run
+  # unit tests and web tests for now because the port does not enable the
+  # printing feature yet.
+  enable_printing_tests = is_ios && use_blink
 }
 
 declare_args() {
@@ -40,11 +41,10 @@ declare_args() {
                !is_fuchsia
   }
 
-  # Enables out-of-process printing. While this definition matches
-  # `enable_print_preview`, do not base this definition upon that.  This
-  # feature could still be appropriate for some build configurations which
-  # explicitly disable print preview.
-  enable_oop_printing = enable_printing && !is_android
+  # Enables out-of-process printing.  Do not have this definition just be
+  # based on `enable_print_preview`; this feature could still be appropriate
+  # for some build configurations which explicitly disable print preview.
+  enable_oop_printing = enable_printing && !is_android && !is_fuchsia
 
   # Enable snapshotting a page when printing for its content to be analyzed for
   # sensitive content by enterprise users.

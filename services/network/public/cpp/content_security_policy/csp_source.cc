@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <sstream>
-
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
+
+#include <sstream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
@@ -22,7 +23,7 @@ bool HasHost(const mojom::CSPSource& source) {
   return !source.host.empty() || source.is_host_wildcard;
 }
 
-bool DecodePath(const base::StringPiece& path, std::string* output) {
+bool DecodePath(const std::string_view& path, std::string* output) {
   url::RawCanonOutputT<char16_t> unescaped;
   url::DecodeURLEscapeSequences(path, url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped);

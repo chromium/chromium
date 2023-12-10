@@ -373,6 +373,9 @@ Additional details:
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR" desc="The text displayed in the status column of the SiteSearchSettings policy when the max number of search providers is exceeded.">
     This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>1000</ex></ph> entries.
   </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_FEATURED_PROVIDERS_LIMIT_ERROR" desc="The text displayed in the status column of the SiteSearchSettings policy when the max number of featured search providers is exceeded.">
+    This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>10</ex></ph> featured entries.
+  </message>
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT" desc="The text displayed in the status column of the SiteSearchSettings policy when there is more than one entry using the same shortcut.">
     Ignored non-unique shortcut: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>
@@ -400,7 +403,9 @@ Additional details:
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is the same as the keyword defined by the DefaultSearchProviderKeyword policy.">
     Shortcut can't be the same as the default search provider keyword defined by <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph>: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>
-
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL scheme is not HTTPS.">
+    HTTPS scheme recommended for search URL: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
+  </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">

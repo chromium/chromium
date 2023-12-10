@@ -37,11 +37,9 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
-#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -66,7 +64,6 @@ using password_manager::CanonicalizeUsername;
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
-using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordForm;
 using ui::TimeFormat;
 
@@ -401,6 +398,13 @@ PasswordCheckDelegate::GetInsecureCredentialsManager() {
   return &insecure_credentials_manager_;
 }
 
+void PasswordCheckDelegate::OnBulkCheckServiceShutDown() {
+  // Stop observing BulkLeakCheckService when the service shuts down.
+  CHECK(observed_bulk_leak_check_service_.IsObservingSource(
+      BulkLeakCheckServiceFactory::GetForProfile(profile_)));
+  observed_bulk_leak_check_service_.Reset();
+}
+
 void PasswordCheckDelegate::OnSavedPasswordsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
   // Getting the first notification about a change in saved passwords implies
@@ -511,12 +515,6 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   api_credential.id = id_generator_->GenerateId(std::move(copy));
 
   return api_credential;
-}
-
-PasswordChangeSuccessTracker*
-PasswordCheckDelegate::GetPasswordChangeSuccessTracker() const {
-  return password_manager::PasswordChangeSuccessTrackerFactory::
-      GetForBrowserContext(profile_);
 }
 
 }  // namespace extensions

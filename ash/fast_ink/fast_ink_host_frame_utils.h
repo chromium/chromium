@@ -23,6 +23,10 @@ class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -52,6 +56,14 @@ ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
     const gfx::Size& size,
     const gfx::BufferUsageAndFormat& usage_and_format);
 
+// Creates a Mappable SharedImage of given `size`, `shared_image_usage`, and
+// `buffer_usage`. The returned ClientSharedImage will be null if creation
+// failed.
+ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
+    const gfx::Size& size,
+    uint32_t shared_image_usage,
+    gfx::BufferUsage buffer_usage);
+
 // Creates a UiResource of a given `size` and `format`. Uses the SharedImage
 // that `mailbox` is referencing if that is non-zero, in which case the created
 // UiResource does not own that SharedImage. Otherwise creates a new SharedImage
@@ -80,6 +92,9 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     UiResourceManager* resource_manager,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token);
+
+// Returns the RasterContextProvider used within FastInk.
+ASH_EXPORT scoped_refptr<viz::RasterContextProvider> GetContextProvider();
 
 }  // namespace fast_ink_internal
 }  // namespace ash

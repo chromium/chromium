@@ -45,9 +45,6 @@ constexpr int kQrCodeImageSize = 100;
 const char kQRCodeURL[] =
     "https://itunes.apple.com/app/apple-store/"
     "id535886823?pt=9008&ct=saved-passwords-ios-promo-direct-qr&mt=8";
-
-// URL used for the new tab opened by clicking the "Get Started" button.
-const char kGetStartedButtonURL[] = "https://google.com/chrome/chrome-for-ios";
 }  // namespace constants
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IOSPromoPasswordBubble, kQRCodeView);
@@ -78,10 +75,6 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
 
   // Callback for when the bubble is dismissed.
   void OnDismissal() {
-    if (promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
-      return;
-    }
-
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(
             browser_->profile());
@@ -120,38 +113,17 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
     image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap));
   }
 
-  // Callback for when the "Get started" button is clicked.
-  void OnGetStartedButtonClicked() {
-    if (!promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
-      promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
-          browser_->profile()->GetPrefs()->GetInteger(
-              promos_prefs::kiOSPasswordPromoImpressionsCounter),
-          promos_utils::DesktopIOSPasswordPromoAction::kGetStartedClicked);
-
-      impression_histogram_already_recorded_ = true;
-    }
-
-    browser_->OpenURL(content::OpenURLParams(
-        GURL(constants::kGetStartedButtonURL), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
-
-    ios_promo_password_delegate_->GetWidget()->Close();
-  }
-
   // Callback for when the "No thanks" button is clicked.
   void OnNoThanksButtonClicked() {
-    if (!promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
-      browser_->profile()->GetPrefs()->SetBoolean(
-          promos_prefs::kiOSPasswordPromoOptOut, true);
+    browser_->profile()->GetPrefs()->SetBoolean(
+        promos_prefs::kiOSPasswordPromoOptOut, true);
 
-      promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
-          browser_->profile()->GetPrefs()->GetInteger(
-              promos_prefs::kiOSPasswordPromoImpressionsCounter),
-          promos_utils::DesktopIOSPasswordPromoAction::kExplicitlyClosed);
+    promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
+        browser_->profile()->GetPrefs()->GetInteger(
+            promos_prefs::kiOSPasswordPromoImpressionsCounter),
+        promos_utils::DesktopIOSPasswordPromoAction::kExplicitlyClosed);
 
-      impression_histogram_already_recorded_ = true;
-    }
+    impression_histogram_already_recorded_ = true;
 
     ios_promo_password_delegate_->GetWidget()->Close();
   }
@@ -169,7 +141,6 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
 
 // CreateFooter creates the view that is inserted as footer to the bubble.
 std::unique_ptr<views::View> CreateFooter(
-    IOSPromoPasswordBubble::PromoVariant variant,
     IOSPromoPasswordBubbleDelegate* bubble_delegate) {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
 
@@ -211,122 +182,81 @@ std::unique_ptr<views::View> CreateFooter(
                             .SetIsDefault(false)
                             .SetCallback(decline_button_callback);
 
-  if (variant ==
-      IOSPromoPasswordBubble::PromoVariant::GET_STARTED_BUTTON_VARIANT) {
-    auto footer_description =
-        views::Builder<views::Label>()
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_GENERIC))
-            .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-            .SetTextStyle(views::style::STYLE_SECONDARY)
-            .SetMultiLine(true)
-            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  auto footer_content_container =
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .AddChild(
+              views::Builder<views::Label>()
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR))
+                  .SetTextContext(
+                      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                  .SetTextStyle(views::style::STYLE_SECONDARY)
+                  .SetMultiLine(true)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true))
+                  .SetHorizontalAlignment(
+                      gfx::HorizontalAlignment::ALIGN_TO_HEAD))
+          .AddChild(
+              views::Builder<views::ImageView>()
+                  .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
+                  .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
+                  .SetImageSize(gfx::Size(constants::kQrCodeImageSize,
+                                          constants::kQrCodeImageSize))
+                  .SetPreferredSize(gfx::Size(constants::kQrCodeImageSize,
+                                              constants::kQrCodeImageSize) +
+                                    gfx::Size(constants::kQrCodeMargin,
+                                              constants::kQrCodeMargin))
+                  .SetProperty(views::kElementIdentifierKey,
+                               IOSPromoPasswordBubble::kQRCodeView)
+                  .SetVisible(true)
+                  .SetBackground(views::CreateRoundedRectBackground(
+                      SK_ColorWHITE,
+                      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                          views::Emphasis::kHigh),
+                      2)))
+          .SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse);
 
-    auto accept_button_callback = base::BindRepeating(
-        &IOSPromoPasswordBubbleDelegate::OnGetStartedButtonClicked,
-        base::Unretained(bubble_delegate));
-    auto footer_button_container =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
-            .SetBetweenChildSpacing(provider->GetDistanceMetric(
-                views::DISTANCE_RELATED_LABEL_HORIZONTAL))
-            .AddChild(decline_button)
-            .AddChild(views::Builder<views::MdTextButton>()
-                          .SetText(l10n_util::GetStringUTF16(
-                              IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON))
-                          .SetIsDefault(true)
-                          .SetCallback(accept_button_callback));
+  auto built_footer_view =
+      std::move(
+          footer_view.AddChild(footer_title_container)
+              .AddChild(footer_content_container)
+              .AddChild(views::Builder<views::BoxLayoutView>()
+                            .SetOrientation(
+                                views::BoxLayout::Orientation::kHorizontal)
+                            .SetMainAxisAlignment(
+                                views::BoxLayout::MainAxisAlignment::kStart)
+                            .AddChild(decline_button)))
+          .Build();
 
-    return std::move(footer_view.AddChild(footer_title_container)
-                         .AddChild(footer_description)
-                         .AddChild(footer_button_container))
-        .Build();
+  qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
+      qrcode_generator::mojom::GenerateQRCodeRequest::New();
+  request->data = std::string(constants::kQRCodeURL);
+  request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
 
-  } else if (variant == IOSPromoPasswordBubble::PromoVariant::QR_CODE_VARIANT) {
-    auto footer_content_container =
-        views::Builder<views::FlexLayoutView>()
-            .SetOrientation(views::LayoutOrientation::kHorizontal)
-            .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-            .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-            .AddChild(
-                views::Builder<views::Label>()
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR))
-                    .SetTextContext(
-                        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                    .SetTextStyle(views::style::STYLE_SECONDARY)
-                    .SetMultiLine(true)
-                    .SetProperty(
-                        views::kFlexBehaviorKey,
-                        views::FlexSpecification(
-                            views::MinimumFlexSizeRule::kScaleToMinimum,
-                            views::MaximumFlexSizeRule::kPreferred,
-                            /*adjust_height_for_width=*/true))
-                    .SetHorizontalAlignment(
-                        gfx::HorizontalAlignment::ALIGN_TO_HEAD))
-            .AddChild(
-                views::Builder<views::ImageView>()
-                    .SetHorizontalAlignment(
-                        views::ImageView::Alignment::kCenter)
-                    .SetHorizontalAlignment(
-                        views::ImageView::Alignment::kCenter)
-                    .SetImageSize(gfx::Size(constants::kQrCodeImageSize,
-                                            constants::kQrCodeImageSize))
-                    .SetPreferredSize(gfx::Size(constants::kQrCodeImageSize,
-                                                constants::kQrCodeImageSize) +
-                                      gfx::Size(constants::kQrCodeMargin,
-                                                constants::kQrCodeMargin))
-                    .SetProperty(views::kElementIdentifierKey,
-                                 IOSPromoPasswordBubble::kQRCodeView)
-                    .SetVisible(true)
-                    .SetBackground(views::CreateRoundedRectBackground(
-                        SK_ColorWHITE,
-                        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                            views::Emphasis::kHigh),
-                        2)))
-            .SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse);
+  request->render_module_style = qrcode_generator::mojom::ModuleStyle::CIRCLES;
+  request->render_locator_style =
+      qrcode_generator::mojom::LocatorStyle::ROUNDED;
 
-    auto built_footer_view =
-        std::move(
-            footer_view.AddChild(footer_title_container)
-                .AddChild(footer_content_container)
-                .AddChild(views::Builder<views::BoxLayoutView>()
-                              .SetOrientation(
-                                  views::BoxLayout::Orientation::kHorizontal)
-                              .SetMainAxisAlignment(
-                                  views::BoxLayout::MainAxisAlignment::kStart)
-                              .AddChild(decline_button)))
-            .Build();
-
-    qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
-        qrcode_generator::mojom::GenerateQRCodeRequest::New();
-    request->data = std::string(constants::kQRCodeURL);
-    request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
-
-    request->render_module_style =
-        qrcode_generator::mojom::ModuleStyle::CIRCLES;
-    request->render_locator_style =
-        qrcode_generator::mojom::LocatorStyle::ROUNDED;
-
-    // Rationale for Unretained(): Closing the bubble destroys qr_code_service_
-    // so the callback will not run (see also the doc comment of
-    // QRImageGenerator::GenerateQRCode).
-    auto callback =
-        base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnQrCodeGenerated,
-                       base::Unretained(bubble_delegate));
-    bubble_delegate->GetQRCodeGenerator().GenerateQRCode(std::move(request),
-                                                         std::move(callback));
-    return built_footer_view;
-  } else {
-    NOTREACHED_NORETURN();
-  }
+  // Rationale for Unretained(): Closing the bubble destroys qr_code_service_
+  // so the callback will not run (see also the doc comment of
+  // QRImageGenerator::GenerateQRCode).
+  auto callback =
+      base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnQrCodeGenerated,
+                     base::Unretained(bubble_delegate));
+  bubble_delegate->GetQRCodeGenerator().GenerateQRCode(std::move(request),
+                                                       std::move(callback));
+  return built_footer_view;
 }
 
 // static
 void IOSPromoPasswordBubble::ShowBubble(views::View* anchor_view,
                                         PageActionIconView* highlighted_button,
-                                        PromoVariant variant,
                                         Browser* browser) {
   if (ios_promo_password_delegate_) {
     return;
@@ -373,7 +303,7 @@ void IOSPromoPasswordBubble::ShowBubble(views::View* anchor_view,
   ios_promo_password_delegate_ = promo_bubble.get();
 
   promo_bubble->SetHighlightedButton(highlighted_button);
-  promo_bubble->SetFootnoteView(CreateFooter(variant, bubble_delegate));
+  promo_bubble->SetFootnoteView(CreateFooter(bubble_delegate));
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(promo_bubble));

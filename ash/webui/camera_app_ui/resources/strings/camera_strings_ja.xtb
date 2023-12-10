@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> ページを削除</translation>
 <translation id="1113173431709655881">カメラモード</translation>
 <translation id="1153190633558910465">グリッド線をオフにする</translation>
-<translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> ページを削除しました</translation>
 <translation id="1258009455399840361">時計回りに 90 度回転</translation>
 <translation id="1417314334557041815">ページ <ph name="INDEX" /> を編集</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">動画を処理しています...</translation>
 <translation id="3789724198583203151">反時計回りに 90 度回転</translation>
 <translation id="3810838688059735925">動画</translation>
-<translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="4060608699153044055">デバイスの空き容量が不足しているため、録画できません。録画を開始するには、デバイスの空き容量を増やしてください。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">録画を一時停止</translation>
 <translation id="4121305183798804752">ドキュメントを検出しました</translation>
 <translation id="414641094616694804">このカメラでは解像度を変更できません</translation>
 <translation id="4176463684765177261">停止中</translation>
-<translation id="4269820728363426813">リンクアドレスをコピー</translation>
 <translation id="428234092390943511">ページのサムネイル</translation>
 <translation id="4349714250734879769">Chrome でフレームをスケーリング</translation>
 <translation id="4383571725254449280">パフォーマンス ログを印刷する</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">通常の動画を録画する</translation>
 <translation id="7748344063862150053">ドキュメントの右上の角</translation>
 <translation id="7933675232020478311">右下に移動しています</translation>
-<translation id="7983668134180549431">テキストが検出されました。</translation>
 <translation id="8079255378695216066">録画を開始できません</translation>
 <translation id="8120146556401698679">パン、チルト、ズーム</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">録画を開始できません</translation>
 <translation id="8880167521484863515">4 対 3</translation>
 <translation id="8903921497873541725">拡大する</translation>
+<translation id="8926890870105777777">ネットワーク「<ph name="WIFINAME" />」に参加</translation>
 <translation id="9045010116236796332">ドキュメントのすべての端をフレーム内に収めてください</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="906331135292332864">画像を処理しています...</translation>

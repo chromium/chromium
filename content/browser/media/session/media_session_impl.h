@@ -348,6 +348,10 @@ class MediaSessionImpl : public MediaSession,
 
   CONTENT_EXPORT bool HasImageCacheForTest(const GURL& image_url) const;
 
+  // Make sure that all observers have received any pending callbacks from us,
+  // that might otherwise be sitting in a message pipe somewhere.
+  void flush_observers_for_testing() { observers_.FlushForTesting(); }
+
  private:
   friend class content::WebContentsUserData<MediaSessionImpl>;
   friend class MediaSessionImplBrowserTest;

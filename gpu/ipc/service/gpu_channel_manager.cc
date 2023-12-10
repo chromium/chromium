@@ -379,7 +379,8 @@ GpuChannelManager::GpuChannelManager(
   DCHECK(scheduler);
 
   const bool enable_gr_shader_cache =
-      (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+      (gpu_feature_info_
+           .status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
        gpu::kGpuFeatureStatusEnabled);
   const bool disable_disk_cache =
       gpu_preferences_.disable_gpu_shader_disk_cache;
@@ -929,12 +930,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     context = nullptr;
   }
   if (!context) {
-    ContextCreationAttribs attribs_helper;
-    attribs_helper.context_type = features::UseGles2ForOopR()
-                                      ? gpu::CONTEXT_TYPE_OPENGLES2
-                                      : gpu::CONTEXT_TYPE_OPENGLES3;
-    gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
-        attribs_helper, use_passthrough_decoder);
+    gl::GLContextAttribs attribs =
+        gles2::GenerateGLContextAttribsForCompositor(use_passthrough_decoder);
 
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for

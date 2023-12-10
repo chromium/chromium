@@ -34,7 +34,13 @@ static msginfo msgtable[] = {
 #include "tools/ipc_fuzzer/message_lib/all_messages.h"
 };
 #define MSGTABLE_SIZE (sizeof(msgtable)/sizeof(msgtable[0]))
+
+#if !BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(ENABLE_PPAPI) && \
+    !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+static_assert(MSGTABLE_SIZE == 0, "There should be no messages");
+#else
 static_assert(MSGTABLE_SIZE, "check your headers for an extra semicolon");
+#endif
 
 static bool check_msgtable() {
   bool result = true;
@@ -51,7 +57,16 @@ static bool check_msgtable() {
 
 #if !BUILDFLAG(ENABLE_NACL)
   exemptions.push_back(NaClMsgStart);
+  exemptions.push_back(NaClHostMsgStart);
 #endif  // !BUILDFLAG(ENABLE_NACL)
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  exemptions.push_back(ExtensionMsgStart);
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
+#if !BUILDFLAG(ENABLE_PPAPI)
+  exemptions.push_back(PpapiMsgStart);
+#endif  // !BUILDFLAG(ENABLE_PPAPI)
 
 #if !BUILDFLAG(IS_ANDROID)
   exemptions.push_back(GinJavaBridgeMsgStart);

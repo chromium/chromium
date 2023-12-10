@@ -5,11 +5,13 @@
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
+#include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +20,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/models/simple_menu_model.h"
 
 namespace extensions {
 
@@ -50,13 +53,14 @@ class ContextMenuMatcherTest : public testing::Test {
   // Returns a test item with the given string ID for WebView.
   std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,
                                            int webview_embedder_process_id,
+                                           int webview_embedder_frame_id,
                                            int webview_instance_id,
                                            const std::string& string_id,
                                            bool visible) {
     const std::string& extension_id = MaybeGetExtensionId(extension);
-    MenuItem::Id id(
-        false, MenuItem::ExtensionKey(extension_id, webview_embedder_process_id,
-                                      webview_instance_id));
+    MenuItem::Id id(false, MenuItem::ExtensionKey(
+                               extension_id, webview_embedder_process_id,
+                               webview_embedder_frame_id, webview_instance_id));
     id.string_uid = string_id;
     return std::make_unique<MenuItem>(
         id, "test", false, visible, true, MenuItem::NORMAL,
@@ -194,17 +198,20 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsGroupTitle) {
 
 TEST_F(ContextMenuMatcherTest,
        AppendExtensionItemsGroupTitleWithNullExtension) {
-  const int fake_webview_embedder_process_id = 1;
-  const int fake_webview_instance_id = 1;
+  static constexpr int kFakeWebViewEmbedderPid = 1;
+  static constexpr int kFakeWebViewEmbedderFrameId = 1;
+  static constexpr int kFakeWebViewInstanceId = 1;
   // Add a parent item, with a visible child item.
   std::unique_ptr<MenuItem> parent =
-      CreateTestItem(/*extension=*/nullptr, fake_webview_embedder_process_id,
-                     fake_webview_instance_id, "parent", /*visible=*/true);
+      CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,
+                     kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
+                     "parent", /*visible=*/true);
   MenuItem::Id parent_id = parent->id();
   int parent_index = 0;
   std::unique_ptr<MenuItem> child =
-      CreateTestItem(/*extension=*/nullptr, fake_webview_embedder_process_id,
-                     fake_webview_instance_id, "child", /*visible=*/true);
+      CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,
+                     kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
+                     "child", /*visible=*/true);
   int child_index = 1;
   ASSERT_TRUE(
       manager_->AddContextItem(/*extension=*/nullptr, std::move(parent)));
@@ -221,9 +228,9 @@ TEST_F(ContextMenuMatcherTest,
   int index = 0;
   std::u16string group_title = u"test";
   extension_items->AppendExtensionItems(
-      MenuItem::ExtensionKey(/*extension_id=*/"",
-                             fake_webview_embedder_process_id,
-                             fake_webview_instance_id),
+      MenuItem::ExtensionKey(/*extension_id=*/"", kFakeWebViewEmbedderPid,
+                             kFakeWebViewEmbedderFrameId,
+                             kFakeWebViewInstanceId),
       /*selection_text=*/u"test", &index, /*is_action_menu=*/false,
       group_title);
 
@@ -284,6 +291,34 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemWithInvisibleSubmenu) {
       extension_items->ConvertToExtensionsCustomCommandId(child2_index)));
   EXPECT_FALSE(extension_items->IsCommandIdVisible(
       extension_items->ConvertToExtensionsCustomCommandId(child3_index)));
+}
+
+TEST_F(ContextMenuMatcherTest, GetIconFromMenuIconLoader) {
+  Extension* extension = AddExtension("test");
+
+  std::unique_ptr<MenuItem> item =
+      CreateTestItem(extension, "id", /*visible=*/true);
+  MenuItem::Id item_id = item->id();
+  auto menu_icon_loader = std::make_unique<TestExtensionMenuIconLoader>();
+  TestExtensionMenuIconLoader* extension_menu_icon_loader =
+      menu_icon_loader.get();
+
+  manager_->SetMenuIconLoader(item_id.extension_key,
+                              std::move(menu_icon_loader));
+  manager_->AddContextItem(extension, std::move(item));
+  EXPECT_EQ(1, extension_menu_icon_loader->load_icon_calls());
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(/*delegate=*/nullptr);
+  auto extension_items = std::make_unique<extensions::ContextMenuMatcher>(
+      profile_.get(), /*delegate=*/nullptr, menu_model.get(),
+      base::BindRepeating(MenuItemHasAnyContext));
+
+  // Add the items associated with the test extension.
+  int index = 0;
+  extension_items->AppendExtensionItems(MenuItem::ExtensionKey(extension->id()),
+                                        std::u16string(), &index,
+                                        /*is_action_menu=*/false);
+  EXPECT_EQ(1, extension_menu_icon_loader->get_icon_calls());
 }
 
 }  // namespace extensions

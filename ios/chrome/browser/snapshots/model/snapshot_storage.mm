@@ -153,10 +153,6 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
               object:nil];
 }
 
-- (CGFloat)snapshotScaleForDevice {
-  return [_fileManager snapshotScaleForDevice];
-}
-
 - (void)retrieveImageForSnapshotID:(SnapshotID)snapshotID
                           callback:(void (^)(UIImage*))callback {
   DCHECK(snapshotID.valid());
@@ -418,10 +414,6 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
 
 - (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID {
   return [_fileManager greyImagePathForSnapshotID:snapshotID];
-}
-
-- (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID {
-  return [_fileManager legacyImagePathForSnapshotID:snapshotID];
 }
 
 - (void)greyImageForSnapshotID:(SnapshotID)snapshotID

@@ -95,7 +95,8 @@ void FederatedProviderFetcher::OnWellKnownFetched(
 
   constexpr char kWellKnownFileStr[] = "well-known file";
 
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess &&
+      !IsFedCmWithoutWellKnownEnforcementEnabled()) {
     absl::optional<std::string> additional_console_error_message =
         webid::ComputeConsoleMessageForHttpResponseCode(kWellKnownFileStr,
                                                         status.response_code);

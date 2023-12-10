@@ -24,7 +24,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
     bool register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name_for_spkac,
-    const absl::optional<std::string>& signals) {
+    const std::optional<std::string>& signals) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
 

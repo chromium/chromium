@@ -60,6 +60,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.isValidIban = 0;
   expected.authenticateUserAndFlipMandatoryAuthToggle = 0;
   expected.getLocalCard = 0;
+  expected.bulkDeleteAllCvcs = 0;
   return expected;
 }
 

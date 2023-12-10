@@ -83,10 +83,14 @@ class WebTestRuntimeFlags {
   // named frame printed.
   DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(printing_frame)
 
-  // Width and height of the pages to print to. Set both to 0 in order to use
+  // Default page width and height when printing. Set both to 0 in order to use
   // the frame width / height.
   DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_width)
   DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_height)
+
+  // Default page margin size when printing. This default margin will apply to
+  // all four sides of the page.
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_margin)
 
   // If true, don't dump output until notifyDone is called.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(wait_until_done)

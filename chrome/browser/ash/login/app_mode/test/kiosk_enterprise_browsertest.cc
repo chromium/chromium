@@ -13,7 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
                             private_server.GetURL(kPrivateStoreUpdate).spec());
 
   // Meta should be able to be extracted from crx before launching.
-  KioskAppManager* manager = KioskAppManager::Get();
+  KioskChromeAppManager* manager = KioskChromeAppManager::Get();
   TestAppDataLoadWaiter waiter(manager, kTestEnterpriseKioskAppId,
                                std::string());
   waiter.WaitForAppData();

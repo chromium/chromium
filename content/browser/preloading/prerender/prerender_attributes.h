@@ -9,7 +9,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -24,7 +24,7 @@ namespace content {
 struct CONTENT_EXPORT PrerenderAttributes {
   PrerenderAttributes(
       const GURL& prerendering_url,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
       Referrer referrer,
@@ -54,7 +54,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   GURL prerendering_url;
 
-  PrerenderTriggerType trigger_type;
+  PreloadingTriggerType trigger_type;
 
   // Used for kEmbedder trigger type to avoid exposing information of embedders
   // to content/. Only used for metrics.

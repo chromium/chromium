@@ -12,6 +12,7 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
@@ -107,12 +108,15 @@ void PairerBrokerImpl::OnBleAddressRotation(scoped_refptr<Device> device) {
 void PairerBrokerImpl::EraseHandshakeAndFromPairers(
     scoped_refptr<Device> device) {
   // |fast_pair_pairers_| and its children objects depend on the handshake
-  // instance. Shut them down before destroying the handshake.
+  // instance. Shut them down before destroying the handshake. Also remove
+  // the GATT connection.
   pair_failure_counts_.erase(device->metadata_id());
   fast_pair_pairers_.erase(device->metadata_id());
   FastPairHandshakeLookup::GetInstance()->Erase(device);
   did_handshake_previously_complete_successfully_map_.insert_or_assign(
       device->metadata_id(), false);
+  FastPairGattServiceClientLookup::GetInstance()->Erase(
+      adapter_->GetDevice(device->ble_address()));
 }
 
 bool PairerBrokerImpl::IsPairing() {
@@ -187,9 +191,8 @@ void PairerBrokerImpl::CreateHandshake(scoped_refptr<Device> device) {
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
-void PairerBrokerImpl::OnHandshakeComplete(
-    scoped_refptr<Device> device,
-    absl::optional<PairFailure> failure) {
+void PairerBrokerImpl::OnHandshakeComplete(scoped_refptr<Device> device,
+                                           std::optional<PairFailure> failure) {
   if (failure.has_value()) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": Handshake failed with "
                                  << device << " because: " << failure.value();
@@ -378,7 +381,7 @@ void PairerBrokerImpl::OnFastPairProcedureComplete(
       (device->protocol() == Protocol::kFastPairInitial ||
        device->protocol() == Protocol::kFastPairRetroactive)) {
     for (auto& observer : observers_) {
-      observer.OnAccountKeyWrite(device, /*error=*/absl::nullopt);
+      observer.OnAccountKeyWrite(device, /*error=*/std::nullopt);
     }
   }
 

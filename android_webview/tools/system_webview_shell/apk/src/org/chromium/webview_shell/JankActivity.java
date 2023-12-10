@@ -21,20 +21,20 @@ public class JankActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setTitle(
-                getResources().getString(R.string.title_activity_jank));
+        getWindow().setTitle(getResources().getString(R.string.title_activity_jank));
         setContentView(R.layout.activity_webview);
 
         WebView webView = (WebView) findViewById(R.id.webview);
         CookieManager.setAcceptFileSchemeCookies(true);
 
-        webView.setWebViewClient(new WebViewClientCompat() {
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                return false;
-            }
-        });
+        webView.setWebViewClient(
+                new WebViewClientCompat() {
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                        return false;
+                    }
+                });
 
         String url = getUrlFromIntent(getIntent());
         webView.loadUrl(url);
@@ -43,5 +43,4 @@ public class JankActivity extends Activity {
     private static String getUrlFromIntent(Intent intent) {
         return intent != null ? intent.getDataString() : null;
     }
-
 }

@@ -1,11 +1,5 @@
 CONSOLE ERROR: [audit.js] this test requires the explicit comparison with the expected result when it runs with run_web_tests.py.
 This is a testharness.js-based test.
-[PASS] # AUDIT TASK RUNNER STARTED.
-[PASS] Executing "basic-failure"
-[PASS] Executing "numerical-failures"
-[PASS] Executing "load-file-in-should"
-[PASS] Audit report
-[PASS] > [basic-failure] Testing basic assertion failures.
 [FAIL] X Setting foo to bar incorrectly threw ReferenceError: "bar is not defined".
   assert_true: expected true got false
 [FAIL] X function() {\n              let foo = 0;\n            } did not throw an exception.
@@ -46,7 +40,6 @@ This is a testharness.js-based test.
   assert_true: expected true got false
 [FAIL] < [basic-failure] 19 out of 19 assertions were failed.
   assert_true: expected true got false
-[PASS] > [numerical-failures] Testing numerical assertion failures.
 [FAIL] X 0 is not close to 0.1 within a relative error of 0 (RelErr=1). Got 0.
   assert_true: expected true got false
 [FAIL] X The measured decibel is not close to 62 within a relative error of 0.01 (RelErr=0.04838709677419355). Got 59.
@@ -75,7 +68,6 @@ This is a testharness.js-based test.
   assert_true: expected true got false
 [FAIL] < [numerical-failures] 13 out of 13 assertions were failed.
   assert_true: expected true got false
-[PASS] > [load-file-in-should] Testing the failure handling of Audit.loadFileFromUrl().
 [FAIL] X Loading non-existent file within should().beResolved() rejected incorrectly with loadFile: Network failure when loading non-existent-audio-file.wav.. Got Promise.
   assert_true: expected true got false
 [FAIL] < [load-file-in-should] 1 out of 1 assertions were failed.

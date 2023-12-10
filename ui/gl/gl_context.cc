@@ -139,6 +139,11 @@ void GLContext::RemoveObserver(GLContextObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+bool GLContext::CanShareTexturesWithContext(GLContext* other_context) {
+  return other_context && (this == other_context ||
+                           share_group_ == other_context->share_group());
+}
+
 GLApi* GLContext::CreateGLApi(DriverGL* driver) {
   real_gl_api_ = new RealGLApi;
   real_gl_api_->SetDisabledExtensions(disabled_gl_extensions_);
@@ -210,6 +215,10 @@ void GLContext::DirtyVirtualContextState() {
 
 #if defined(USE_EGL)
 GLDisplayEGL* GLContext::GetGLDisplayEGL() {
+  return nullptr;
+}
+
+GLContextEGL* GLContext::AsGLContextEGL() {
   return nullptr;
 }
 #endif  // USE_EGL

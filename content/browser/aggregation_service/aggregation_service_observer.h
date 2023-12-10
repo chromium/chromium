@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_OBSERVER_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_OBSERVER_H_
 
+#include <optional>
+
 #include "base/observer_list_types.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -38,12 +39,12 @@ class AggregationServiceObserver : public base::CheckedObserver {
 
   // Called when a report has been handled, i.e. attempted to be assembled and
   // sent, regardless of success. `report_handled_time` indicates when the
-  // report has been handled. `id` should be `absl::nullopt` iff the request was
+  // report has been handled. `id` should be `std::nullopt` iff the request was
   // not stored/scheduled.
   virtual void OnReportHandled(
       const AggregatableReportRequest& request,
-      absl::optional<AggregationServiceStorage::RequestId> id,
-      const absl::optional<AggregatableReport>& report,
+      std::optional<AggregationServiceStorage::RequestId> id,
+      const std::optional<AggregatableReport>& report,
       base::Time report_handled_time,
       ReportStatus status) {}
 };

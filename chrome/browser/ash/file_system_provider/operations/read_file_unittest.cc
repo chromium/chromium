@@ -89,7 +89,7 @@ class FileSystemProviderOperationsReadFileTest : public testing::Test {
         kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
         base::FilePath(), false /* configurable */, true /* watchable */,
         extensions::SOURCE_FILE, IconSet());
-    io_buffer_ = base::MakeRefCounted<net::IOBuffer>(kOffset + kLength);
+    io_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kOffset + kLength);
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -120,14 +120,14 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  ReadFileRequestedOptions options;
-  ASSERT_TRUE(
-      ReadFileRequestedOptions::Populate(options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFileHandle, options.open_request_id);
-  EXPECT_EQ(kOffset, static_cast<double>(options.offset));
-  EXPECT_EQ(kLength, options.length);
+  auto options =
+      ReadFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFileHandle, options->open_request_id);
+  EXPECT_EQ(kOffset, static_cast<double>(options->offset));
+  EXPECT_EQ(kLength, options->length);
 }
 
 TEST_F(FileSystemProviderOperationsReadFileTest, Execute_NoListener) {
@@ -167,7 +167,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   list.Append(has_more);
   list.Append(execution_time);
 
-  absl::optional<Params> params = Params::Create(std::move(list));
+  std::optional<Params> params = Params::Create(std::move(list));
   ASSERT_TRUE(params.has_value());
   RequestValue request_value =
       RequestValue::CreateForReadFileSuccess(std::move(*params));

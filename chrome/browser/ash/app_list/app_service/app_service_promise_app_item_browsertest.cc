@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,18 +17,21 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -41,6 +45,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -51,7 +56,7 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/models/menu_model.h"
 
 namespace apps {
@@ -73,7 +78,8 @@ bool IsItemPinned(const std::string& item_id) {
 }
 
 class AppServicePromiseAppItemBrowserTest
-    : public extensions::PlatformAppBrowserTest {
+    : public extensions::PlatformAppBrowserTest,
+      public PromiseAppRegistryCache::Observer {
  public:
   AppServicePromiseAppItemBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
@@ -111,6 +117,29 @@ class AppServicePromiseAppItemBrowserTest
     ASSERT_TRUE(client);
     client->UpdateProfile();
     cache_ = app_service_proxy()->PromiseAppRegistryCache();
+
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&AppServicePromiseAppItemBrowserTest::HandleRequest,
+                            base::Unretained(this)));
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        ash::switches::kAlmanacApiUrl, https_server_.GetURL("/").spec());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    // Mock a response to ensure that the test does not stay hanging for an
+    // Almanac response. It will be a failure response so the promise app will
+    // fall back to a placeholder icon.
+    if (base::Contains(request.relative_url, "v1/promise-app/")) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      response->set_content_type("application/x-protobuf");
+      response->set_content("");
+      return response;
+    }
+    return nullptr;
   }
 
   void TearDownOnMainThread() override {
@@ -123,15 +152,12 @@ class AppServicePromiseAppItemBrowserTest
 
   ChromeAppListModelUpdater* GetChromeAppListModelUpdater() {
     return static_cast<ChromeAppListModelUpdater*>(
-        app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-            ->GetModelUpdater());
+        app_list_syncable_service()->GetModelUpdater());
   }
 
   ChromeAppListItem* GetChromeAppListItem(const std::string& app_id) {
-    app_list::AppListSyncableService* app_list_syncable_service =
-        app_list::AppListSyncableServiceFactory::GetForProfile(profile());
     AppListModelUpdater* model_updater =
-        app_list_syncable_service->GetModelUpdater();
+        app_list_syncable_service()->GetModelUpdater();
     return model_updater->FindItem(app_id);
   }
 
@@ -143,6 +169,12 @@ class AppServicePromiseAppItemBrowserTest
 
   apps::AppServiceProxy* app_service_proxy() {
     return apps::AppServiceProxyFactory::GetForProfile(profile());
+  }
+
+  arc::FakeAppInstance* app_instance() { return app_instance_.get(); }
+
+  app_list::AppListSyncableService* app_list_syncable_service() {
+    return app_list::AppListSyncableServiceFactory::GetForProfile(profile());
   }
 
   void AddArcPackageWithApps(const std::string& package,
@@ -159,6 +191,38 @@ class AppServicePromiseAppItemBrowserTest
         /*last_backup_time=*/0, /*sync=*/false));
   }
 
+  // Set the number of updates we expect the Promise App Registry Cache to
+  // receive in the test.
+  void ExpectNumUpdates(int num_updates) {
+    expected_num_updates_ = num_updates;
+    current_num_updates_ = 0;
+    if (!obs_.IsObserving()) {
+      obs_.Observe(cache_);
+    }
+  }
+
+  void WaitForPromiseAppUpdates() {
+    if (expected_num_updates_ == current_num_updates_) {
+      return;
+    }
+    wait_run_loop_ = std::make_unique<base::RunLoop>();
+    wait_run_loop_->Run();
+  }
+
+  // apps::PromiseAppRegistryCache::Observer:
+  void OnPromiseAppUpdate(const PromiseAppUpdate& update) override {
+    current_num_updates_++;
+    if (wait_run_loop_ && wait_run_loop_->running() &&
+        expected_num_updates_ == current_num_updates_) {
+      wait_run_loop_->Quit();
+    }
+  }
+
+  void OnPromiseAppRegistryCacheWillBeDestroyed(
+      apps::PromiseAppRegistryCache* cache) override {
+    obs_.Reset();
+  }
+
  private:
   raw_ptr<apps::PromiseAppRegistryCache, DanglingUntriaged | ExperimentalAsh>
       cache_;
@@ -167,7 +231,18 @@ class AppServicePromiseAppItemBrowserTest
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 
+  base::ScopedObservation<PromiseAppRegistryCache,
+                          PromiseAppRegistryCache::Observer>
+      obs_{this};
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::RunLoop> wait_run_loop_;
+  net::EmbeddedTestServer https_server_;
+
+  // Tracks how many times we should expect OnPromiseAppUpdate to be called
+  // before proceeding with a test.
+  int expected_num_updates_;
+  int current_num_updates_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -176,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor =
       std::make_unique<syncer::FakeSyncChangeProcessor>();
   app_list::AppListSyncableService* app_list_syncable_service_ =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+      app_list_syncable_service();
   app_list_syncable_service_->MergeDataAndStartSyncing(
       syncer::APP_LIST, {},
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
@@ -342,12 +417,11 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
       app_id, "App Name", /*parent_id=*/std::string(),
       ordinal.ToInternalValue(), /*item_pin_ordinal=*/std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -367,10 +441,10 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
       FROM_HERE, syncer::SyncChange::ACTION_ADD,
       app_list::CreateAppRemoteData(
           app_id, "Test App", "", ordinal_after_sync.ToInternalValue(), "",
-          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
           kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->ProcessSyncChanges(base::Location(), change_list);
+  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
+                                                  change_list);
 
   // Verify the promise package position gets updaed by sync.
   item = GetChromeAppListItem(kTestPackageId);
@@ -404,10 +478,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       "different.app", "Other app", /*parent_id=*/std::string(),
       initial_ordinal.ToInternalValue(), /*item_pin_ordinal=*/std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP)));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -454,13 +527,12 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncParent) {
       app_id, "App name", kFolderItemId, item_ordinal.ToInternalValue(),
       /*item_pin_ordinal=*/std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString()));
 
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -480,10 +552,10 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncParent) {
       FROM_HERE, syncer::SyncChange::ACTION_ADD,
       app_list::CreateAppRemoteData(
           app_id, "App name", "", item_ordinal.ToInternalValue(), "",
-          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
           kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->ProcessSyncChanges(base::Location(), change_list);
+  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
+                                                  change_list);
 
   // Verify the promise package position gets updaed by sync.
   item = GetChromeAppListItem(kTestPackageId);
@@ -527,10 +599,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       other_app_ordinal.ToInternalValue(),
       /*item_pin_ordinal=*/std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   AddArcPackageWithApps(other_package, {other_app_activity});
@@ -642,12 +713,11 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       app_id, "App Name", /*parent_id=*/std::string(),
       ordinal.ToInternalValue(), pin_ordinal.ToInternalValue(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -697,12 +767,11 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       app_id_in_sync, "App Name", /*parent_id=*/std::string(),
       ordinal.ToInternalValue(), std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -756,10 +825,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
                        TargetItemSyncedWhileInstallingPromiseApp) {
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, syncer::SyncDataList(),
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -793,10 +861,10 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       FROM_HERE, syncer::SyncChange::ACTION_ADD,
       app_list::CreateAppRemoteData(
           app_id, "Test App", "", app_ordinal.ToInternalValue(), "",
-          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
           kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->ProcessSyncChanges(base::Location(), change_list);
+  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
+                                                  change_list);
   AddArcPackageWithApps(kTestPackageId.identifier(), {app_activity});
 
   // Promise app item should no longer exist in the model.
@@ -829,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
   ASSERT_TRUE(item);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
-  ASSERT_EQ(item->name(), "waiting…");
+  ASSERT_EQ(item->name(), "Waiting…");
   ASSERT_EQ(item->accessible_name(), "Long Name, waiting");
 
   // Update the promise app in the promise app registry cache.
@@ -840,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
   // Promise app item should have updated fields.
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
-  EXPECT_EQ(item->name(), "installing…");
+  EXPECT_EQ(item->name(), "Installing…");
   ASSERT_EQ(item->accessible_name(), "Long Name, installing");
 }
 
@@ -902,12 +970,11 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       ordinal.ToInternalValue(), pin_ordinal.ToInternalValue(),
       /*item_type=*/
       sync_pb::AppListSpecifics_AppListItemType_TYPE_REMOVE_DEFAULT_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
-  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
-      ->MergeDataAndStartSyncing(
-          syncer::APP_LIST, sync_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Register a promise app in the promise app registry cache.
@@ -934,6 +1001,118 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ASSERT_TRUE(app_item);
   EXPECT_EQ(promise_app_ordinal, app_item->position());
   EXPECT_TRUE(IsItemPinned(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, ContextMenu) {
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model.
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kNone,
+                            future.GetCallback());
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  // The context menu should only have the option to pin to shelf.
+  EXPECT_EQ(menu_model->GetItemCount(), 1u);
+  EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu_model->GetCommandIdAt(0), ash::CommandId::TOGGLE_PIN);
+}
+
+// Test the full promise icon lifecycle where promise icon changes are triggered
+// by ARC mojom updates.
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       SyncedArcAppPromiseIconLifecycleInLauncherAndShelf) {
+  // Test package details.
+  std::string package_name = "com.test.app";
+  const std::string app_name = "TestApp";
+  const std::string activity_name = "TestActivity";
+  const apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+  const std::string app_id =
+      ArcAppListPrefs::GetAppId(package_name, activity_name);
+
+  // Set Up: Add entry in sync data.
+  syncer::StringOrdinal launcher_ordinal =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  syncer::StringOrdinal shelf_ordinal = launcher_ordinal.CreateAfter();
+  syncer::SyncDataList sync_list;
+  sync_list.push_back((app_list::CreateAppRemoteData(
+      app_id, app_name, /*parent_id=*/std::string(),
+      launcher_ordinal.ToInternalValue(), shelf_ordinal.ToInternalValue(),
+      /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      /*is_user_pinned=*/true,
+      /*promise_package_id=*/package_id.ToString())));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  // Skip check for official API key.
+  app_service_proxy()->PromiseAppService()->SetSkipApiKeyCheckForTesting(true);
+
+  // Test:
+  // 1) Start the installation.
+  // Expect 2 updates: Promise app registration, then Almanac response update.
+  // Note: As the Almanac response is not mocked, the promise icon will fallback
+  // to using a placeholder image.
+  ExpectNumUpdates(/*num_updates=*/2);
+  app_instance()->SendInstallationStarted(package_name);
+  WaitForPromiseAppUpdates();
+
+  // Confirm that the promise icon gets generated with the correct label and
+  // icon in the positions indicated by the sync data.
+  ash::AppListItem* launcher_item = GetAppListItem(package_id.ToString());
+  ASSERT_TRUE(launcher_item);
+  EXPECT_EQ(launcher_item->name(), "Waiting…");
+  EXPECT_EQ(launcher_item->progress(), 0);
+  EXPECT_EQ(launcher_item->position(), launcher_ordinal);
+  EXPECT_TRUE(IsItemPinned(package_id.ToString()));
+  auto* shelf_controller = ChromeShelfController::instance();
+  const ash::ShelfItem* shelf_item =
+      shelf_controller->GetItem(ash::ShelfID(package_id.ToString()));
+  EXPECT_EQ(shelf_item->progress, 0);
+  EXPECT_EQ(app_list_syncable_service()->GetPinPosition(package_id.ToString()),
+            shelf_ordinal);
+
+  // 2) Send a progress update.
+  app_instance()->SendInstallationProgressChanged(package_name, 0.2);
+
+  // Confirm the promise icon fields.
+  launcher_item = GetAppListItem(package_id.ToString());
+  EXPECT_EQ(launcher_item->name(), "Installing…");
+  EXPECT_FLOAT_EQ(launcher_item->progress(), 0.2f);
+  EXPECT_EQ(launcher_item->position(), launcher_ordinal);
+  EXPECT_TRUE(IsItemPinned(package_id.ToString()));
+  EXPECT_EQ(app_list_syncable_service()->GetPinPosition(package_id.ToString()),
+            shelf_ordinal);
+  shelf_item = shelf_controller->GetItem(ash::ShelfID(package_id.ToString()));
+  EXPECT_FLOAT_EQ(shelf_item->progress, 0.2f);
+
+  // 3) Finish the installation.
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  arc::mojom::AppInfoPtr app_info = arc::mojom::AppInfo::New(
+      app_name, package_name, activity_name, /*sticky=*/false);
+  apps.emplace_back(std::move(app_info));
+  app_instance()->SendRefreshAppList(apps);
+
+  // Confirm that the promise icon no longer exists.
+  launcher_item = GetAppListItem(package_id.ToString());
+  EXPECT_FALSE(launcher_item);
+  EXPECT_FALSE(IsItemPinned(package_id.ToString()));
+
+  // Confirm that the installed app has replaced the promise icon in the correct
+  // Launcher and Shelf position.
+  ash::AppListItem* installed_launcher_item = GetAppListItem(app_id);
+  EXPECT_TRUE(installed_launcher_item);
+  EXPECT_EQ(installed_launcher_item->name(), app_name);
+  EXPECT_EQ(installed_launcher_item->position(), launcher_ordinal);
+  EXPECT_TRUE(IsItemPinned(app_id));
+  EXPECT_EQ(app_list_syncable_service()->GetPinPosition(app_id), shelf_ordinal);
 }
 
 }  // namespace apps

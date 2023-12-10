@@ -121,6 +121,8 @@ class JourneyLogger {
 
   // A new version of Event. Some basic-card/autofill related bits are
   // removed to free up more bits for new future payment methods.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: Event2
   enum class Event2 {
     // Initiated means the PaymentRequest object was constructed.
     kInitiated = 0,

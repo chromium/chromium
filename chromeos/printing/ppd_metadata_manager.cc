@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_config_cache.h"
 #include "ppd_metadata_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -801,7 +801,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // Called by GetPrinters().
   // Returns the known name for the Printers metadata named by
   // |manufacturer|.
-  absl::optional<std::string> GetPrintersMetadataName(
+  std::optional<std::string> GetPrintersMetadataName(
       base::StringPiece manufacturer) {
     PpdMetadataPathSpecifier manufacturers_path(
         PpdMetadataPathSpecifier::Type::kManufacturers, channel_);
@@ -811,14 +811,14 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     if (!cached_manufacturers_.contains(manufacturers_metadata_name)) {
       // This is likely a bug: we don't have the expected manufacturers
       // metadata.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const ParsedMetadataWithTimestamp<ParsedManufacturers>& manufacturers =
         cached_manufacturers_.at(manufacturers_metadata_name);
     if (!manufacturers.value.contains(manufacturer)) {
       // This is likely a bug: we don't know about this manufacturer.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     PpdMetadataPathSpecifier printers_path(
@@ -1012,8 +1012,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    absl::optional<ParsedUsbIndex> parsed =
-        ParseUsbIndex(fetch_result.contents);
+    std::optional<ParsedUsbIndex> parsed = ParseUsbIndex(fetch_result.contents);
     if (!parsed.has_value()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(cb), std::string()));
@@ -1070,7 +1069,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    const absl::optional<ParsedUsbVendorIdMap> parsed =
+    const std::optional<ParsedUsbVendorIdMap> parsed =
         ParseUsbVendorIdMap(fetch_result.contents);
     if (!parsed.has_value()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

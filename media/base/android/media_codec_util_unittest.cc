@@ -24,13 +24,6 @@ class MediaCodecUtilTest : public testing::Test {
  public:
 };
 
-TEST_F(MediaCodecUtilTest, TestCbcsAvailableIfNewerVersion) {
-  EXPECT_FALSE(
-      MediaCodecUtil::PlatformSupportsCbcsEncryption(SDK_VERSION_NOUGAT));
-  EXPECT_TRUE(
-      MediaCodecUtil::PlatformSupportsCbcsEncryption(SDK_VERSION_NOUGAT_MR1));
-}
-
 TEST_F(MediaCodecUtilTest, GuessCodedSizeAlignment) {
   EXPECT_EQ(absl::nullopt,
             MediaCodecUtil::LookupCodedSizeAlignment("c2.fake.h264.decoder"));

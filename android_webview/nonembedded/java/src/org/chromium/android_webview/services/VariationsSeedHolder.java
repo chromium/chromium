@@ -134,7 +134,7 @@ public class VariationsSeedHolder {
 
     @VisibleForTesting
     protected VariationsSeedHolder() {
-        mSeedThread = new HandlerThread(/*name=*/"seed_holder");
+        mSeedThread = new HandlerThread(/* name= */ "seed_holder");
         mSeedThread.start();
         mSeedHandler = new Handler(mSeedThread.getLooper());
     }
@@ -159,9 +159,7 @@ public class VariationsSeedHolder {
     // overridden by tests
     public void onWriteFinished() {}
 
-    /**
-     * A seed updater class tailored to update Variations seeds specifically for SafeMode scenarios
-     */
+    /** A seed updater class tailored to update Variations seeds specifically for SafeMode scenarios */
     private class SafeModeSeedUpdater {
         // Stores a list of requests to notify the requester, SafeModeVariationsSeedContentProvider,
         // as soon as the Variations Fast Fetch Mode seed is fresh, where fresh is considered to be

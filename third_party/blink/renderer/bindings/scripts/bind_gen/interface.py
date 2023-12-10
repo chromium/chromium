@@ -299,7 +299,7 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.extend([
         S("blink_property_name",
           ("const AtomicString& ${blink_property_name} = "
-           "ToCoreAtomicString(${v8_property_name});")),
+           "ToCoreAtomicString(${isolate}, ${v8_property_name});")),
         S("blink_property_index",
           ("const AtomicString& ${blink_property_index} = "
            "AtomicString::Number(${index});")),
@@ -459,8 +459,9 @@ def bind_callback_local_vars(code_node, cg_context):
                 "LocalDOMWindow* ${blink_receiver} = &UnsafeTo<LocalDOMWindow>("
                 "*${class_name}::ToWrappableUnsafe(${v8_receiver}));")
     else:
-        pattern = ("{_1}* ${blink_receiver} = "
-                   "${class_name}::ToWrappableUnsafe(${v8_receiver});")
+        pattern = (
+            "{_1}* ${blink_receiver} = "
+            "${class_name}::ToWrappableUnsafe(${isolate}, ${v8_receiver});")
         _1 = blink_class_name(cg_context.class_like)
         text = _format(pattern, _1=_1)
     local_vars.append(S("blink_receiver", text))
@@ -1098,7 +1099,8 @@ def make_log_activity(cg_context):
         _1 = "${script_state}->World().IsIsolatedWorld() && "
     cond = _format(pattern, _1=_1)
 
-    pattern = "${per_context_data}->ActivityLogger()->{_1}(\"{_2}.{_3}\"{_4});"
+    pattern = ("${per_context_data}->ActivityLogger()->{_1}(${script_state}, "
+               "\"{_2}.{_3}\"{_4});")
     _2 = cg_context.class_like.identifier
     _3 = cg_context.property_.identifier
     if cg_context.attribute_get:
@@ -1112,7 +1114,8 @@ def make_log_activity(cg_context):
         _4 = ", ${info}"
     body = _format(pattern, _1=_1, _2=_2, _3=_3, _4=_4)
 
-    pattern = ("// [LogActivity], [LogAllWorlds]\n" "if ({_1}) {{ {_2} }}")
+    pattern = ("// [LogActivity], [LogAllWorlds]\n"
+               "if (UNLIKELY({_1})) {{ {_2} }}")
     node = TextNode(_format(pattern, _1=cond, _2=body))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
@@ -6386,11 +6389,6 @@ const WrapperTypeInfo& {blink_class}::wrapper_type_info_ =
 static_assert(
     std::is_base_of<ActiveScriptWrappableBase, {blink_class}>::value,
     "{blink_class} does not inherit from ActiveScriptWrappable<> despite "
-    "the IDL has [ActiveScriptWrappable] extended attribute.");
-static_assert(
-    !std::is_same<decltype(&{blink_class}::HasPendingActivity),
-                  decltype(&ScriptWrappable::HasPendingActivity)>::value,
-    "{blink_class} is not overriding hasPendingActivity() despite "
     "the IDL has [ActiveScriptWrappable] extended attribute.");"""
     else:
         pattern = """\
@@ -6398,11 +6396,6 @@ static_assert(
 static_assert(
     !std::is_base_of<ActiveScriptWrappableBase, {blink_class}>::value,
     "{blink_class} inherits from ActiveScriptWrappable<> without "
-    "[ActiveScriptWrappable] extended attribute.");
-static_assert(
-    std::is_same<decltype(&{blink_class}::HasPendingActivity),
-                 decltype(&ScriptWrappable::HasPendingActivity)>::value,
-    "{blink_class} is overriding hasPendingActivity() without "
     "[ActiveScriptWrappable] extended attribute.");"""
     if class_like.is_interface:
         wrapper_type_info_def.append(F(pattern, blink_class=blink_class))

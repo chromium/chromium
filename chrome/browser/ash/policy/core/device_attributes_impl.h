@@ -42,7 +42,7 @@ class DeviceAttributesImpl : public DeviceAttributes {
 
   std::string GetDeviceAnnotatedLocation() const override;
 
-  absl::optional<std::string> GetDeviceHostname() const override;
+  std::optional<std::string> GetDeviceHostname() const override;
 
   std::string GetDirectoryApiID() const override;
 

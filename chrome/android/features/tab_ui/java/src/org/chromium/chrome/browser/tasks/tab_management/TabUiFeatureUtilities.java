@@ -13,12 +13,10 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/**
- * A class to handle the state of flags for tab_management.
- */
+/** A class to handle the state of flags for tab_management. */
 public class TabUiFeatureUtilities {
     private static final String TAG = "TabFeatureUtilities";
 
@@ -34,23 +32,6 @@ public class TabUiFeatureUtilities {
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
 
-    // Field trial parameter for disabling new tab button anchor for tab strip redesign.
-    private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
-    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM,
-                    true);
-
-    // Field trial parameter for disabling button style for tab strip redesign. This includes
-    // disabling NTB anchor and button bg style.
-    private static final String TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM = "disable_btn_style";
-    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM,
-                    true);
-
     // Field trial parameter for animation start timeout for new Android based shrink and expand
     // animations in TabSwitcherLayout.
     private static final String ANIMATION_START_TIMEOUT_MS_PARAM = "animation_start_timeout_ms";
@@ -60,45 +41,20 @@ public class TabUiFeatureUtilities {
                     ANIMATION_START_TIMEOUT_MS_PARAM,
                     300);
 
-    public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
-
-    public static final MutableFlagWithSafeDefault sAdvancedPeripheralsSupportTabStrip =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, false);
-
     // Cached and fixed values.
-    private static boolean sTabSelectionEditorLongPressEntryEnabled;
+    private static boolean sTabListEditorLongPressEntryEnabled;
     private static Boolean sIsTabToGtsAnimationEnabled;
 
-    /**
-     * Set whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
-     */
-    public static void setTabSelectionEditorLongPressEntryEnabledForTesting(boolean enabled) {
-        var oldValue = sTabSelectionEditorLongPressEntryEnabled;
-        sTabSelectionEditorLongPressEntryEnabled = enabled;
-        ResettersForTesting.register(() -> sTabSelectionEditorLongPressEntryEnabled = oldValue);
+    /** Set whether the longpress entry for TabListEditor is enabled. Currently only in tests. */
+    public static void setTabListEditorLongPressEntryEnabledForTesting(boolean enabled) {
+        var oldValue = sTabListEditorLongPressEntryEnabled;
+        sTabListEditorLongPressEntryEnabled = enabled;
+        ResettersForTesting.register(() -> sTabListEditorLongPressEntryEnabled = oldValue);
     }
 
-    /**
-     * @return Whether New tab button anchor for tab strip redesign is disabled.
-     */
-    public static boolean isTabStripNtbAnchorDisabled() {
-        return TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.getValue();
-    }
-
-    /**
-     * @return Whether button style for tab strip redesign is disabled.
-     */
-    public static boolean isTabStripButtonStyleDisabled() {
-        return TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.getValue();
-    }
-
-    /**
-     * Whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
-     */
-    public static boolean isTabSelectionEditorLongPressEntryEnabled() {
-        return sTabSelectionEditorLongPressEntryEnabled;
+    /** Whether the longpress entry for TabListEditor is enabled. Currently only in tests. */
+    public static boolean isTabListEditorLongPressEntryEnabled() {
+        return sTabListEditorLongPressEntryEnabled;
     }
 
     /**
@@ -128,10 +84,11 @@ public class TabUiFeatureUtilities {
                 sIsTabToGtsAnimationEnabled = false;
             } else {
                 Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
-                sIsTabToGtsAnimationEnabled = ChromeFeatureList.sTabToGTSAnimation.isEnabled()
-                        && SysUtils.amountOfPhysicalMemoryKB() / 1024
-                                >= ZOOMING_MIN_MEMORY.getValue()
-                        && !shouldUseListMode(context);
+                sIsTabToGtsAnimationEnabled =
+                        ChromeFeatureList.sTabToGTSAnimation.isEnabled()
+                                && SysUtils.amountOfPhysicalMemoryKB() / 1024
+                                        >= ZOOMING_MIN_MEMORY.getValue()
+                                && !shouldUseListMode(context);
             }
         }
         return sIsTabToGtsAnimationEnabled;
@@ -141,7 +98,8 @@ public class TabUiFeatureUtilities {
      * @return Whether the instant start is supported.
      */
     public static boolean supportInstantStart(boolean isTablet, Context context) {
-        return ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
+        return ChromeFeatureList.sInstantStart.isEnabled()
+                && !isTablet
                 && !SysUtils.isLowEndDevice();
     }
 
@@ -150,6 +108,9 @@ public class TabUiFeatureUtilities {
      * TODO(crbug.com/1485628) - merge both flags and use device property instead to differentiate.
      */
     public static boolean isTabDragEnabled() {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return false;
+        }
         // Both flags should not be enabled together.
         assert !(ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
                 && isTabDragAsWindowEnabled());

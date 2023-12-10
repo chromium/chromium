@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
@@ -68,51 +67,6 @@ bool InitTables(sql::Database* db) {
   return db->Execute(kTopSitesSql);
 }
 
-// Track various failure (and success) cases in recovery code.
-//
-// TODO(shess): The recovery code is complete, but by nature runs in challenging
-// circumstances, so errors will happen.  This histogram is intended to expose
-// the failures seen in the fleet.  Frequent failure cases can be explored more
-// deeply to see if the complexity to fix them is warranted.  Infrequent failure
-// cases can be resolved by marking the database unrecoverable (which will
-// delete the data).
-//
-// Based on the thumbnail_database.cc recovery code, FAILED_SCOPER should
-// dominate, followed distantly by FAILED_META, with few or no other failures.
-enum RecoveryEventType {
-  // Database successfully recovered.
-  RECOVERY_EVENT_RECOVERED = 0,
-
-  // Database successfully deprecated.
-  RECOVERY_EVENT_DEPRECATED,
-
-  // Sqlite.RecoveryEvent can usually be used to get more detail about the
-  // specific failure (see sql/recovery.cc).
-  OBSOLETE_RECOVERY_EVENT_FAILED_SCOPER,
-  RECOVERY_EVENT_FAILED_META_VERSION,
-  RECOVERY_EVENT_FAILED_META_WRONG_VERSION,
-  OBSOLETE_RECOVERY_EVENT_FAILED_META_INIT,
-  OBSOLETE_RECOVERY_EVENT_FAILED_SCHEMA_INIT,
-  OBSOLETE_RECOVERY_EVENT_FAILED_AUTORECOVER_THUMBNAILS,
-  RECOVERY_EVENT_FAILED_COMMIT,
-
-  // Track invariants resolved by FixTopSitesTable().
-  OBSOLETE_RECOVERY_EVENT_INVARIANT_RANK,
-  OBSOLETE_RECOVERY_EVENT_INVARIANT_REDIRECT,
-  RECOVERY_EVENT_INVARIANT_CONTIGUOUS,
-
-  // Track automated full-database recovery.
-  RECOVERY_EVENT_FAILED_AUTORECOVER,
-
-  // Always keep this at the end.
-  RECOVERY_EVENT_MAX,
-};
-
-void RecordRecoveryEvent(RecoveryEventType recovery_event) {
-  UMA_HISTOGRAM_ENUMERATION("History.TopSitesRecovery", recovery_event,
-                            RECOVERY_EVENT_MAX);
-}
-
 // Most corruption comes down to atomic updates between pages being broken
 // somehow.  This can result in either missing data, or overlapping data,
 // depending on the operation broken.  This table has large rows, which will use
@@ -136,11 +90,9 @@ void FixTopSitesTable(sql::Database* db, int version) {
 
   // Update any rows where `next_rank` doesn't match `url_rank`.
   int next_rank = 0;
-  bool adjusted = false;
   while (select_statement.Step()) {
     const int url_rank = select_statement.ColumnInt(0);
     if (url_rank != next_rank) {
-      adjusted = true;
       update_statement.Reset(true);
       update_statement.BindInt(0, next_rank);
       update_statement.BindInt64(1, select_statement.ColumnInt64(1));
@@ -148,8 +100,6 @@ void FixTopSitesTable(sql::Database* db, int version) {
     }
     ++next_rank;
   }
-  if (adjusted)
-    RecordRecoveryEvent(RECOVERY_EVENT_INVARIANT_CONTIGUOUS);
 }
 
 // Recover the database to the extent possible, then fixup any broken
@@ -161,7 +111,6 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   std::unique_ptr<sql::Recovery> recovery =
       sql::Recovery::BeginRecoverDatabase(db, db_path);
   if (!recovery) {
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_AUTORECOVER);
     return;
   }
 
@@ -173,14 +122,12 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   int version = 0;
   if (!recovery->SetupMeta() || !recovery->GetMetaVersionNumber(&version)) {
     sql::Recovery::Unrecoverable(std::move(recovery));
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_META_VERSION);
     return;
   }
 
   // In this case the next open will clear the database anyhow.
   if (version <= kDeprecatedVersionNumber) {
     sql::Recovery::Unrecoverable(std::move(recovery));
-    RecordRecoveryEvent(RECOVERY_EVENT_DEPRECATED);
     return;
   }
 
@@ -189,7 +136,6 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   // this may be too risky, because if future code was correlated with
   // corruption then rollback would be a sensible response.
   if (version > kVersionNumber) {
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_META_WRONG_VERSION);
     sql::Recovery::Rollback(std::move(recovery));
     return;
   }
@@ -197,15 +143,7 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   // TODO(shess): Inline this?
   FixTopSitesTable(recovery->db(), version);
 
-  if (!sql::Recovery::Recovered(std::move(recovery))) {
-    // TODO(shess): Very unclear what this failure would actually mean, and what
-    // should be done.  Add histograms to Recovered() implementation to get some
-    // insight.
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_COMMIT);
-    return;
-  }
-
-  RecordRecoveryEvent(RECOVERY_EVENT_RECOVERED);
+  std::ignore = sql::Recovery::Recovered(std::move(recovery));
 }
 
 }  // namespace
@@ -318,8 +256,8 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   const bool file_existed = base::PathExists(db_name);
 
   // Settings copied from FaviconDatabase.
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("TopSites");
   db_->set_error_callback(
       base::BindRepeating(&TopSitesDatabase::DatabaseErrorCallback,

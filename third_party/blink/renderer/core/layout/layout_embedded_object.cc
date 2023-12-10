@@ -94,8 +94,8 @@ void LayoutEmbeddedObject::PaintReplaced(
 void LayoutEmbeddedObject::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  ClearLayoutOverflow();
-  ClearSelfNeedsLayoutOverflowRecalc();
+  ClearScrollableOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
   ClearNeedsLayout();
 }
 

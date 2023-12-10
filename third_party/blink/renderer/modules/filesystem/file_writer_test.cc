@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/filesystem/file_writer_base.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -173,6 +173,7 @@ class FileWriterTest : public testing::Test {
     testable_writer_->Initialize(mock_path_as_kurl(), 10);
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<TestableFileWriter> testable_writer_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef ASH_METRICS_LOGIN_UNLOCK_THROUGHPUT_RECORDER_H_
 #define ASH_METRICS_LOGIN_UNLOCK_THROUGHPUT_RECORDER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -19,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
 
 namespace ui {
@@ -78,6 +78,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
 
   // This is called when list of ARC++ apps is updated.
   void OnArcAppListReady();
+
+  // This is called when cryptohome was successfully created/unlocked.
+  void OnAuthSuccess();
 
   // This is true if we need to report Ash.ArcAppInitialAppsInstallDuration
   // histogram in this session but it has not been reported yet.
@@ -138,6 +141,11 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
 
   void OnLoginAnimationFinishedTimerFired();
 
+  // We only want to initialize the slice name on certain expected events.
+  // If we miss these, it will ne names "Unordered" and we will know that
+  // we missed the expected event.
+  void EnsureTracingSliceNamed();
+
   UiMetricsRecorder ui_recorder_;
 
   // Set of window IDs ("restore_window_id") that could be restored but
@@ -191,7 +199,7 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // final.
   bool first_restored_window_created_ = false;
 
-  absl::optional<base::TimeTicks> arc_opt_in_time_;
+  std::optional<base::TimeTicks> arc_opt_in_time_;
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter>
       login_animation_throughput_reporter_;

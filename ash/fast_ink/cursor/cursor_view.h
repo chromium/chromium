@@ -6,11 +6,11 @@
 #define ASH_FAST_INK_CURSOR_CURSOR_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/fast_ink/fast_ink_view.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -80,18 +80,11 @@ class CursorView : public FastInkView,
   gfx::Rect damage_rect_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  using SetLocationCallback =
-      base::RepeatingCallback<void(const gfx::Point& location)>;
-
-  // `CursorController::CursorObserver::OnCursorLocationChanged` could
-  // be called on evdev thread. It uses this callback to post a call
-  // to `SetLocation` on UI thread.
-  SetLocationCallback set_location_callback_;
 
   // Timer for cursor's stationary status. The cursor gets into stationary state
   // after it is not moved for a certain period of time, which is tracked by
   // this timer.
-  absl::optional<base::RetainingOneShotTimer> stationary_timer_;
+  std::optional<base::RetainingOneShotTimer> stationary_timer_;
 
   // Timer for animated cursor drawing.
   base::RepeatingTimer animated_cursor_timer_;

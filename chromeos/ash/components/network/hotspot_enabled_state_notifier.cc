@@ -33,7 +33,7 @@ void HotspotEnabledStateNotifier::OnHotspotStatusChanged() {
     return;
   }
 
-  absl::optional<hotspot_config::mojom::DisableReason> disable_reason =
+  std::optional<hotspot_config::mojom::DisableReason> disable_reason =
       hotspot_state_handler_->GetDisableReason();
 
   if (!disable_reason) {

@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
@@ -146,6 +147,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // On Desktop, passwords currently require an opt-in for transport mode.
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
 
   PasswordRecipient recipient = {.user_id = kRecipientUserId,
                                  .public_key = GenerateRecipientPublicKey()};

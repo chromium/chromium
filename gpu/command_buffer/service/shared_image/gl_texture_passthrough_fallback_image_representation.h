@@ -24,7 +24,8 @@ class GLTexturePassthroughFallbackImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      gl::ProgressReporter* progress_reporter = nullptr);
+      gl::ProgressReporter* progress_reporter,
+      const GLFormatCaps& gl_format_caps);
   ~GLTexturePassthroughFallbackImageRepresentation() override;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(

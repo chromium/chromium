@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

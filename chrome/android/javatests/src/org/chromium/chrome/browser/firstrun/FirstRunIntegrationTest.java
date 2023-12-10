@@ -88,8 +88,10 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -144,6 +146,11 @@ public class FirstRunIntegrationTest {
 
     @Before
     public void setUp() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccountManagerFacadeProvider.setInstanceForTests(
+                            new AccountManagerFacadeImpl(new FakeAccountManagerDelegate()));
+                });
         MockitoAnnotations.initMocks(this);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);

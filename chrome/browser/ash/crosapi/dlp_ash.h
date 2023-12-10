@@ -50,6 +50,8 @@ class DlpAsh : public mojom::Dlp {
   // Callback to pass request to stop screen share to remote.
   void StopScreenShare(mojo::RemoteSetElementId id);
 
+  void OnDisconnect();
+
   mojo::ReceiverSet<mojom::Dlp> receivers_;
   mojo::RemoteSet<mojom::StateChangeDelegate> screen_share_remote_delegates_;
 

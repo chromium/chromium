@@ -26,10 +26,9 @@ class AlwaysTrigger : public TriggerPolicy {
 
 std::unique_ptr<TabOrganizationTrigger> MakeTestTrigger() {
   return std::make_unique<TabOrganizationTrigger>(
-      base::BindLambdaForTesting(
-          [](const TabStripModel* tab_strip_model) -> float {
-            return tab_strip_model->count();
-          }),
+      base::BindLambdaForTesting([](TabStripModel* tab_strip_model) -> float {
+        return tab_strip_model->count();
+      }),
       2.0f, std::make_unique<AlwaysTrigger>());
 }
 }  // namespace

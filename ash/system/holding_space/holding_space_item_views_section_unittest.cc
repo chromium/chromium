@@ -120,7 +120,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Verifies the items are ordered as expected.
 TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
-  const absl::optional<size_t> section_max_views =
+  const std::optional<size_t> section_max_views =
       GetHoldingSpaceSection(section_id())->max_visible_item_count;
 
   // Add a number of items.
@@ -184,7 +184,7 @@ TEST_P(HoldingSpaceItemViewsSectionTest, PartiallyInitializedItemsDontShow) {
 
 // Verifies that resetting a section allows it to be destroyed asynchronously.
 TEST_P(HoldingSpaceItemViewsSectionTest, ResetForAsyncDestruction) {
-  const absl::optional<size_t> section_max_views =
+  const std::optional<size_t> section_max_views =
       GetHoldingSpaceSection(section_id())->max_visible_item_count;
 
   // Add items to the section.

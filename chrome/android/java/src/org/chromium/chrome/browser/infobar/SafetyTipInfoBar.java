@@ -39,16 +39,34 @@ public class SafetyTipInfoBar extends ConfirmInfoBar {
      * @param description String to display below the "message" title.
      */
     @CalledByNative
-    private static ConfirmInfoBar create(int iconId, Bitmap iconBitmap, String message,
-            String linkText, String buttonOk, String buttonCancel, String description) {
+    private static ConfirmInfoBar create(
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String buttonOk,
+            String buttonCancel,
+            String description) {
         return new SafetyTipInfoBar(
                 iconId, 0, iconBitmap, message, linkText, buttonOk, buttonCancel, description);
     }
 
-    private SafetyTipInfoBar(int iconDrawableId, @ColorRes int iconTintId, Bitmap iconBitmap,
-            String message, String linkText, String primaryButtonText, String secondaryButtonText,
+    private SafetyTipInfoBar(
+            int iconDrawableId,
+            @ColorRes int iconTintId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String primaryButtonText,
+            String secondaryButtonText,
             String description) {
-        super(iconDrawableId, iconTintId, iconBitmap, message, null, primaryButtonText,
+        super(
+                iconDrawableId,
+                iconTintId,
+                iconBitmap,
+                message,
+                null,
+                primaryButtonText,
                 secondaryButtonText);
         mDescription = description;
         mLearnMoreLinkText = linkText;
@@ -61,8 +79,11 @@ public class SafetyTipInfoBar extends ConfirmInfoBar {
         SpannableStringBuilder descriptionMessage = new SpannableStringBuilder(mDescription);
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
-            link.setSpan(new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
-                    0, link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            link.setSpan(
+                    new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    0,
+                    link.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             descriptionMessage.append(" ").append(link);
         }
         layout.getMessageLayout().addDescription(descriptionMessage);

@@ -186,8 +186,8 @@ void TabHelper::SetReloadRequired(
       // it.
       content::WebContents* web_contents = GetVisibleWebContents();
       SitePermissionsHelper permissions_helper(profile_);
-      const extensions::ExtensionSet& extensions =
-          extensions::ExtensionRegistry::Get(profile_)->enabled_extensions();
+      const ExtensionSet& extensions =
+          ExtensionRegistry::Get(profile_)->enabled_extensions();
       reload_required_ = base::ranges::any_of(
           extensions, [&permissions_helper,
                        web_contents](scoped_refptr<const Extension> extension) {
@@ -404,9 +404,13 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsRenderFrameLive()) {
     SessionID id = sessions::SessionTabHelper::IdForTab(web_contents());
     CHECK(id.is_valid());
-    ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(render_frame_host)
-        ->SetTabId(id.id());
+    auto* local_frame =
+        ExtensionWebContentsObserver::GetForWebContents(web_contents())
+            ->GetLocalFrame(render_frame_host);
+    if (!local_frame) {
+      return;
+    }
+    local_frame->SetTabId(id.id());
   }
 }
 

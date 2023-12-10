@@ -12,6 +12,7 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
@@ -134,6 +135,62 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(pending_promises_);
   MediaStreamTrackImpl::Trace(visitor);
 }
+
+void BrowserCaptureMediaStreamTrack::SendWheel(
+    CapturedWheelAction* action,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  MediaStreamComponent* const component = Component();
+  if (!component) {
+    std::move(callback).Run(false, "Missing component.");
+    return;
+  }
+
+  MediaStreamSource* const source = component->Source();
+  if (!source) {
+    std::move(callback).Run(false, "Missing source.");
+    return;
+  }
+
+  // SendWheel() may only be called for video tracks.
+  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+
+  MediaStreamVideoSource* const native_source =
+      MediaStreamVideoSource::GetVideoSource(source);
+  if (!native_source) {
+    std::move(callback).Run(false, "Missing native source.");
+    return;
+  }
+
+  native_source->SendWheel(action, std::move(callback));
+}
+
+void BrowserCaptureMediaStreamTrack::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  MediaStreamComponent* const component = Component();
+  if (!component) {
+    std::move(callback).Run(false, "Missing component.");
+    return;
+  }
+
+  MediaStreamSource* const source = component->Source();
+  if (!source) {
+    std::move(callback).Run(false, "Missing source.");
+    return;
+  }
+
+  // GetZoomLevel() may only be called for video tracks.
+  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+
+  MediaStreamVideoSource* const native_source =
+      MediaStreamVideoSource::GetVideoSource(source);
+  if (!native_source) {
+    std::move(callback).Run(false, "Missing native source.");
+    return;
+  }
+
+  native_source->GetZoomLevel(std::move(callback));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
@@ -220,7 +277,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   DCHECK(component->Source());
   // We don't currently instantiate BrowserCaptureMediaStreamTrack for audio
   // tracks. If we do in the future, we'll have to raise an exception if
-  // cropTo() is called on a non-video track.
+  // cropTo() or restrictTo() are called on a non-video track.
   DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
 
   MediaStreamVideoSource* const native_source =

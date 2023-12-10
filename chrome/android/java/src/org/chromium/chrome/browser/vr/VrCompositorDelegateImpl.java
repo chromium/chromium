@@ -15,9 +15,7 @@ import org.chromium.components.webxr.VrCompositorDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Concrete, Chrome-specific implementation of VrCompositorDelegate interface.
- */
+/** Concrete, Chrome-specific implementation of VrCompositorDelegate interface. */
 public class VrCompositorDelegateImpl implements VrCompositorDelegate {
     private CompositorView mCompositorView;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -37,7 +35,12 @@ public class VrCompositorDelegateImpl implements VrCompositorDelegate {
 
     @Override
     public void openNewTab(LoadUrlParams url) {
-        mTabModelSelectorSupplier.get().openNewTab(
-                url, TabLaunchType.FROM_CHROME_UI, /*parent=*/null, /*incognito=*/false);
+        mTabModelSelectorSupplier
+                .get()
+                .openNewTab(
+                        url,
+                        TabLaunchType.FROM_CHROME_UI,
+                        /* parent= */ null,
+                        /* incognito= */ false);
     }
 }

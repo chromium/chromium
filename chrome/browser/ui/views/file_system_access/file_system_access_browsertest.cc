@@ -32,6 +32,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -208,6 +209,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug/1499052): Re-enable the test after fixing on Lacros.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
@@ -256,6 +259,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsFullscreen());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class FileSystemAccessBrowserSlowLoadTest : public FileSystemAccessBrowserTest {
  public:
@@ -370,6 +374,19 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
+  safe_browsing::FileTypePoliciesTestOverlay policies;
+  std::unique_ptr<safe_browsing::DownloadFileTypeConfig> file_type_config =
+      std::make_unique<safe_browsing::DownloadFileTypeConfig>();
+  auto* file_type = file_type_config->mutable_default_file_type();
+  file_type->set_uma_value(-1);
+  file_type->set_ping_setting(safe_browsing::DownloadFileType::FULL_PING);
+  auto* platform_settings = file_type->add_platform_settings();
+  platform_settings->set_danger_level(
+      safe_browsing::DownloadFileType::NOT_DANGEROUS);
+  platform_settings->set_auto_open_hint(
+      safe_browsing::DownloadFileType::ALLOW_AUTO_OPEN);
+  policies.SwapConfig(file_type_config);
+
   const std::string file_name("test.pdf");
   const base::FilePath test_file = temp_dir_.GetPath().AppendASCII(file_name);
 
@@ -873,6 +890,8 @@ class PersistedPermissionsFileSystemAccessBrowserTest
  public:
   PersistedPermissionsFileSystemAccessBrowserTest() {
     // Enable Persisted Permissions.
+    // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+    // flag after FSA Persistent Permissions feature launch.
     feature_list_.InitAndEnableFeature(
         features::kFileSystemAccessPersistentPermissions);
   }
@@ -1020,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 
-  absl::optional<
+  std::optional<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       result;
 
@@ -1030,8 +1049,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
       initial_rfh->GetGlobalId(),
       content::FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(
-          [](absl::optional<content::FileSystemAccessPermissionGrant::
-                                PermissionRequestOutcome>* result_out,
+          [](std::optional<content::FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome>* result_out,
              content::FileSystemAccessPermissionGrant::PermissionRequestOutcome
                  result) { *result_out = result; },
           base::Unretained(&result)));
@@ -1098,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 
-  absl::optional<
+  std::optional<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       result;
 
@@ -1107,8 +1126,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
       prerender_frame->GetGlobalId(),
       content::FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(
-          [](absl::optional<content::FileSystemAccessPermissionGrant::
-                                PermissionRequestOutcome>* result_out,
+          [](std::optional<content::FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome>* result_out,
              content::FileSystemAccessPermissionGrant::PermissionRequestOutcome
                  result) { *result_out = result; },
           base::Unretained(&result)));

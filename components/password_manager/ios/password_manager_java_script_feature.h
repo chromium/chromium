@@ -82,7 +82,7 @@ class PasswordManagerJavaScriptFeature : public web::JavaScriptFeature {
       const PasswordManagerJavaScriptFeature&) = delete;
 
   // web::JavaScriptFeature
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 

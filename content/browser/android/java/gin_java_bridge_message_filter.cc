@@ -181,13 +181,13 @@ scoped_refptr<GinJavaBridgeDispatcherHost> GinJavaBridgeMessageFilter::FindHost(
 
 void GinJavaBridgeMessageFilter::OnGetMethods(
     GinJavaBoundObject::ObjectID object_id,
-    std::set<std::string>* returned_method_names) {
+    std::vector<std::string>* returned_method_names) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
   scoped_refptr<GinJavaBridgeDispatcherHost> host = FindHost();
   if (host) {
     host->OnGetMethods(object_id, returned_method_names);
   } else {
-    *returned_method_names = std::set<std::string>();
+    *returned_method_names = std::vector<std::string>();
   }
 }
 

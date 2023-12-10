@@ -51,10 +51,12 @@ extern GuardedPageAllocator& GetMallocGpaForTesting();
 
 namespace {
 
-constexpr size_t kSamplingFrequency = 10;
-
-// Number of loop iterations required to definitely hit a sampled allocation.
-constexpr size_t kLoopIterations = kSamplingFrequency * 4;
+constexpr size_t kSamplingFrequency = 5;
+// Number of loop iterations required to hit a sampled allocation.
+// The probability of not hitting a sample allocation in kLoopIterations
+// is (1 - 1/kSamplingFrequency)^kLoopIterations. In this case that is
+// (4/5)^100 < 3*10^-10.
+constexpr size_t kLoopIterations = 100;
 
 constexpr int kSuccess = 0;
 constexpr int kFailure = 1;

@@ -33,9 +33,12 @@ IsKAnonymous(const StorageInterestGroup::KAnonymityData& data,
 // interest group updates.
 class CONTENT_EXPORT InterestGroupKAnonymityManager {
  public:
+  using GetKAnonymityServiceDelegateCallback =
+      base::RepeatingCallback<KAnonymityServiceDelegate*()>;
+
   InterestGroupKAnonymityManager(
       InterestGroupManagerImpl* interest_group_manager,
-      KAnonymityServiceDelegate* k_anonymity_service);
+      GetKAnonymityServiceDelegateCallback k_anonymity_service_callback);
   ~InterestGroupKAnonymityManager();
 
   // Requests the k-anonymity status of elements of the interest group that
@@ -82,7 +85,7 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   // database.
   raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
-  raw_ptr<KAnonymityServiceDelegate> k_anonymity_service_;
+  GetKAnonymityServiceDelegateCallback k_anonymity_service_callback_;
 
   // We keep track of joins in progress because the joins that haven't completed
   // are still marked as eligible but it would be incorrect to join them

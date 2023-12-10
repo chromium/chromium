@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 
 #include <fstream>
+#include <optional>
 #include <utility>
 
 #include "ash/shell.h"
@@ -19,7 +20,6 @@
 #include "base/values.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -107,7 +107,7 @@ void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
 
 bool DeviceCommandScreenshotJob::ParseCommandPayload(
     const std::string& command_payload) {
-  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
+  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root || !root->is_dict()) {
     return false;
   }

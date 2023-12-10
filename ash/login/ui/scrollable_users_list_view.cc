@@ -5,6 +5,7 @@
 #include "ash/login/ui/scrollable_users_list_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/login/ui/login_constants.h"
@@ -21,7 +22,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -218,7 +219,7 @@ ScrollableUsersListView::ScrollableUsersListView(
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   ensure_min_height->AddChildView(user_view_host_.get());
   SetContents(std::move(ensure_min_height));
-  SetBackgroundColor(absl::nullopt);
+  SetBackgroundColor(std::nullopt);
   SetDrawOverflowIndicator(false);
 
   auto vertical_scroll = std::make_unique<RoundedScrollBar>(false);
@@ -346,5 +347,8 @@ void ScrollableUsersListView::OnWallpaperBlurChanged() {
   gradient_params_ = GradientParams::BuildForStyle(display_style_, this);
   SchedulePaint();
 }
+
+BEGIN_METADATA(ScrollableUsersListView)
+END_METADATA
 
 }  // namespace ash

@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -31,6 +33,7 @@
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
 #include "services/device/public/mojom/input_service.mojom.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -89,11 +92,18 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   );
 
   dict->Set("testapi_isOobeInTabletMode",
-            TabletMode::Get()->InTabletMode() ||
+            display::Screen::GetScreen()->InTabletMode() ||
                 switches::ShouldOobeUseTabletModeFirstRun());
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !BUILDFLAG(GOOGLE_CHROME_BRANDING));
   dict->Set("testapi_isHPSEnabled", ash::features::IsQuickDimEnabled());
+  dict->Set("testapi_shouldSkipTouchpadScroll",
+            !features::IsOobeTouchpadScrollEnabled() ||
+                InputDeviceSettingsController::Get()
+                    ->GetConnectedTouchpads()
+                    .empty());
+  dict->Set("testapi_shouldSkipDisplaySize",
+            !features::IsOobeDisplaySizeEnabled());
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,

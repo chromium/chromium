@@ -39,6 +39,8 @@ OverviewGrid* GetOverviewGridForRoot(aura::Window* root);
 const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(
     int index);
 
+std::vector<aura::Window*> GetWindowsListInOverviewGrids();
+
 // Returns the OverviewItem associated with |window| if it exists.
 OverviewItemBase* GetOverviewItemForWindow(aura::Window* window);
 

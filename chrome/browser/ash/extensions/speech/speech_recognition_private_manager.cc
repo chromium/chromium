@@ -32,9 +32,9 @@ std::string GetExtensionIdFromKey(const std::string& key) {
   return key;
 }
 
-absl::optional<int> GetClientIdFromKey(const std::string& key) {
+std::optional<int> GetClientIdFromKey(const std::string& key) {
   int client_id = -1;
-  absl::optional<int> result;
+  std::optional<int> result;
   std::size_t pos = key.find('.');
   if (pos != std::string::npos) {
     // Extract the number to the right of the "."
@@ -128,8 +128,8 @@ SpeechRecognitionPrivateManager::GetFactory() {
 
 void SpeechRecognitionPrivateManager::HandleStart(
     const std::string& key,
-    absl::optional<std::string> locale,
-    absl::optional<bool> interim_results,
+    std::optional<std::string> locale,
+    std::optional<bool> interim_results,
     OnStartCallback callback) {
   GetSpeechRecognizer(key)->HandleStart(locale, interim_results,
                                         std::move(callback));
@@ -143,7 +143,7 @@ void SpeechRecognitionPrivateManager::HandleStop(const std::string& key,
 void SpeechRecognitionPrivateManager::HandleSpeechRecognitionStopped(
     const std::string& key) {
   std::string extension_id = GetExtensionIdFromKey(key);
-  absl::optional<int> client_id = GetClientIdFromKey(key);
+  std::optional<int> client_id = GetClientIdFromKey(key);
   EventRouter* event_router = EventRouter::Get(context_);
 
   base::Value::Dict return_dict;
@@ -165,7 +165,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionResult(
     const std::u16string& transcript,
     bool is_final) {
   std::string extension_id = GetExtensionIdFromKey(key);
-  absl::optional<int> client_id = GetClientIdFromKey(key);
+  std::optional<int> client_id = GetClientIdFromKey(key);
   EventRouter* event_router = EventRouter::Get(context_);
 
   api::speech_recognition_private::SpeechRecognitionResultEvent event;
@@ -186,7 +186,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionError(
     const std::string& key,
     const std::string& message) {
   std::string extension_id = GetExtensionIdFromKey(key);
-  absl::optional<int> client_id = GetClientIdFromKey(key);
+  std::optional<int> client_id = GetClientIdFromKey(key);
   EventRouter* event_router = EventRouter::Get(context_);
 
   api::speech_recognition_private::SpeechRecognitionErrorEvent event;
@@ -204,7 +204,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionError(
 
 std::string SpeechRecognitionPrivateManager::CreateKey(
     const std::string& extension_id,
-    absl::optional<int> client_id) {
+    std::optional<int> client_id) {
   if (!client_id.has_value())
     return extension_id;
 

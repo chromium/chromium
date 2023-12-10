@@ -39,13 +39,13 @@ class TestConfig : public WebUIConfig {
 
 TEST(WebUIConfigTest, AddAndRemoveChromeUrl) {
   auto& map = WebUIConfigMap::GetInstance();
-  size_t initial_size = map.GetSizeForTesting();
+  size_t initial_size = map.GetWebUIConfigList(nullptr).size();
 
   auto chrome_config = std::make_unique<TestConfig>("chrome", "foo");
   auto* chrome_config_ptr = chrome_config.get();
   map.AddWebUIConfig(std::move(chrome_config));
 
-  EXPECT_EQ(initial_size + 1, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size + 1, map.GetWebUIConfigList(nullptr).size());
 
   EXPECT_EQ(chrome_config_ptr,
             map.GetConfig(kBrowserContext, GURL(kChromeFoo)));
@@ -59,19 +59,19 @@ TEST(WebUIConfigTest, AddAndRemoveChromeUrl) {
 
   auto removed_config = map.RemoveConfig(GURL(kChromeFoo));
   EXPECT_EQ(removed_config.get(), chrome_config_ptr);
-  EXPECT_EQ(initial_size, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size, map.GetWebUIConfigList(nullptr).size());
 }
 
 TEST(WebUIConfigTest, AddAndRemoteChromeUntrustedUrl) {
   auto& map = WebUIConfigMap::GetInstance();
-  size_t initial_size = map.GetSizeForTesting();
+  size_t initial_size = map.GetWebUIConfigList(nullptr).size();
 
   auto untrusted_config =
       std::make_unique<TestConfig>("chrome-untrusted", "foo");
   auto* untrusted_config_ptr = untrusted_config.get();
   map.AddUntrustedWebUIConfig(std::move(untrusted_config));
 
-  EXPECT_EQ(initial_size + 1, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size + 1, map.GetWebUIConfigList(nullptr).size());
 
   EXPECT_EQ(untrusted_config_ptr,
             map.GetConfig(kBrowserContext, GURL(kChromeUntrustedFoo)));
@@ -85,11 +85,20 @@ TEST(WebUIConfigTest, AddAndRemoteChromeUntrustedUrl) {
 
   auto removed_config = map.RemoveConfig(GURL(kChromeUntrustedFoo));
   EXPECT_EQ(removed_config.get(), untrusted_config_ptr);
-  EXPECT_EQ(initial_size, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size, map.GetWebUIConfigList(nullptr).size());
 }
 
+class WebUiConfigDeathTest : public testing::Test,
+                             public ::testing::WithParamInterface<const char*> {
+ public:
+  WebUiConfigDeathTest() = default;
+  WebUiConfigDeathTest(const WebUiConfigDeathTest&) = delete;
+  WebUiConfigDeathTest& operator=(const WebUiConfigDeathTest&) = delete;
+  ~WebUiConfigDeathTest() override = default;
+};
+
 // Regression test for https://crbug.com/1464456.
-TEST(WebUIConfigTest, GetAndRemoveNonChromeUrls) {
+TEST_P(WebUiConfigDeathTest, GetAndRemoveNonChromeUrls) {
   auto& map = WebUIConfigMap::GetInstance();
 
   ScopedWebUIConfigRegistration chrome_config(
@@ -97,34 +106,23 @@ TEST(WebUIConfigTest, GetAndRemoveNonChromeUrls) {
   ScopedWebUIConfigRegistration untrusted_config(
       std::make_unique<TestConfig>("chrome-untrusted", "foo"));
 
-  // filesystem: URLs
-  const GURL file_system_chrome("filesystem:chrome://foo/external/file.txt");
-  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, file_system_chrome));
-  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(file_system_chrome), "");
-
-  const GURL file_system_chrome_untrusted(
-      "filesystem:chrome-untrusted://foo/external/file.txt");
-  EXPECT_EQ(nullptr,
-            map.GetConfig(kBrowserContext, file_system_chrome_untrusted));
-  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(file_system_chrome_untrusted), "");
-
-  // blob: URLs
-  const GURL blob_chrome("blob:chrome://foo/GUID");
-  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, blob_chrome));
-  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(blob_chrome), "");
-
-  const GURL blob_chrome_untrusted("blob:chrome-untrusted://foo/GUID");
-  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, blob_chrome_untrusted));
-  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(blob_chrome_untrusted), "");
-
-  // HTTP/HTTPS URLs
-  const GURL http("http://foo.com");
-  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, http));
-  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(http), "");
-
-  const GURL https("https://foo.com");
-  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, https));
-  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(https), "");
+  const GURL url(GetParam());
+  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, url));
+  EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(url), "");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebUiConfigDeathTest,
+    ::testing::Values(
+        // filesystem: URLs
+        "filesystem:chrome://foo/external/file.txt",
+        "filesystem:chrome-untrusted://foo/external/file.txt",
+        // blob: URLS
+        "blob:chrome://foo/GUID",
+        "blob:chrome-untrusted://foo/GUID",
+        // HTTP/HTTPS URLS
+        "http://foo.com",
+        "https://foo.com"));
 
 }  // namespace content

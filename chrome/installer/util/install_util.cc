@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -579,7 +580,7 @@ std::wstring InstallUtil::GetLongAppDescription() {
 }
 
 // static
-std::wstring InstallUtil::GuidToSquid(base::WStringPiece guid) {
+std::wstring InstallUtil::GuidToSquid(std::wstring_view guid) {
   std::wstring squid;
   squid.reserve(32);
   auto* input = guid.begin();

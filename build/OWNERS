@@ -1,5 +1,5 @@
 set noparent
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 agrieve@chromium.org
 brucedawson@chromium.org
@@ -17,7 +17,7 @@ file://tools/clang/scripts/OWNERS
 smaier@chromium.org
 wnwen@chromium.org
 
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 
 # Mac build changes:

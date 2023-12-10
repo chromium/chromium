@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ужас! Не успеа да се генерира приватен клуч со RSA по случаен избор.</translation>
 <translation id="1445572445564823378">Оваа наставка забавува <ph name="PRODUCT_NAME" />. Треба да ја оневозможите за да ја обновите изведбата на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL не е поддржан.</translation>
+<translation id="1610570795592207282">Не можеше да се вчита CSS „<ph name="RELATIVE_PATH" />“ за скрипта.</translation>
 <translation id="1803557475693955505">Не може да се вчита заднинската страница „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Не може да се декодира сликата: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Употребена е локализација, но default_locale не е наведен во манифестот.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Непознат производ <ph name="PRODUCT_ID" /> од продавачот <ph name="VENDOR_ID" /> (сериски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Преместувањето на датотеката crx не успеа. Проверете за да видите дали датотеката е во употреба.</translation>
 <translation id="3163201441334626963">Непознат производ <ph name="PRODUCT_ID" /> од продавачот <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Не може да се вчита css „<ph name="RELATIVE_PATH" />“ за скриптата на содржина.</translation>
 <translation id="3369521687965833290">Не може да се отпакува наставката. За безбедно отпакување наставки, мора да има патека до директориумот на вашиот профил што почнува со буква за погон и не содржи збирен јазол, вградлива точка или симболична врска. Не постои таква патека за вашиот профил.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> од продавачот <ph name="VENDOR_ID" /> (сериски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Влезната вредност за приватен клуч мора да биде важечка патека.</translation>
 <translation id="388442998277590542">Не може да се вчита страницата со опции „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Грешка при потпишување наставка.</translation>
-<translation id="39964277676607559">Не може да се вчита javascript „<ph name="RELATIVE_PATH" />“ за скрипта со содржина.</translation>
 <translation id="4115165561519362854">Администраторот на оваа машина бара <ph name="EXTENSION_NAME" /> да ја има верзијата <ph name="EXTENSION_VERSION" /> како минимум. Не може да се овозможи сѐ додека не се ажурира на таа верзија (или понова).</translation>
 <translation id="4233778200880751280">Не може да се вчита страницата „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Не успеа да издаде јавен клуч.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Не успеа да извезе јавен клуч.</translation>
 <translation id="5026754133087629784">Веб-приказ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Не може да ја пронајде апсолутната патека до директориумот за пакување.</translation>
+<translation id="5160071981665899014">Не можеше да се вчита JavaScript „<ph name="RELATIVE_PATH" />“ за скрипта.</translation>
 <translation id="5356315618422219272">Преглед на апликација: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Обликуваните прозорци не се поддржани.</translation>
 <translation id="5456409301717116725">Оваа наставка ја вклучува датотеката со клуч „<ph name="KEY_PATH" />“. Веројатно не сакате да го направите ова.</translation>

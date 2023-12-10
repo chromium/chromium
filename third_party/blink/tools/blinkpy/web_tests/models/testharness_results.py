@@ -57,7 +57,7 @@ _HARNESS_ERROR_FORMAT = ('harness_status.status = %s , '
 _HARNESS_ERROR_PATTERN = re.compile(
     re.escape(_HARNESS_ERROR_FORMAT) % ('(?P<status>.*)', '(?P<message>.*)'))
 _STATUS_UNION = '\s*(' + '|'.join(status.name for status in Status) + ')\s*'
-_SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(,{_STATUS_UNION})*\]')
+_SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(\s{_STATUS_UNION})*\] ')
 _MESSAGE_PREFIX = ' ' * 2
 # Threshold at which a "Found [N] tests; ..." line will be written.
 _COUNT_THRESHOLD = 50
@@ -66,7 +66,7 @@ _COUNT_THRESHOLD = 50
 @functools.lru_cache()
 def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
     # Leading and trailing white spaces are accepted.
-    raw_lines = iter(content_text.strip().splitlines())
+    raw_lines = iter(content_text.strip().split('\n'))
     next_line = next(raw_lines, None)
     lines = []
     while next_line is not None:
@@ -77,7 +77,10 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
             subtest = _unescape(line[subtest_match.end():])
             message = None
             if next_line and next_line.startswith(_MESSAGE_PREFIX):
-                message = _unescape(next_line)
+                # This removes both `_MESSAGE_PREFIX` boundary and any
+                # additional whitespace that was part of the message:
+                # https://github.com/web-platform-tests/wpt/blob/3aff5f1e12d6dc20e333b3f8ae589d86c1ddaedb/tools/wptrunner/wptrunner/testrunner.py#L704
+                message = _unescape(next_line.strip())
                 next_line = next(raw_lines, None)
             lines.append(
                 TestharnessLine(LineType.SUBTEST, statuses, message, subtest))
@@ -89,6 +92,8 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
         }
         assert len(
             maybe_type) <= 1, f'line types {maybe_type} are not prefix-free'
+        # Unknown content is allowed, as we may be attempting to parse a
+        # non-testharness.js baseline.
         if maybe_type:
             line_type = maybe_type.pop()
             message, statuses = line[len(line_type.value):], frozenset()
@@ -98,58 +103,12 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
                     message = maybe_match['message']
                     status_code = int(maybe_match['status'])
                     statuses = frozenset([Status(status_code)])
-            message = _unescape(message) if message else None
+            message = _unescape(message.lstrip()) if message else None
             lines.append(TestharnessLine(line_type, statuses, message))
     return lines
 
 
-def compact_test_output(lines: List[TestharnessLine]) -> List[TestharnessLine]:
-    """Returns a compact output for reflection test results.
-
-    The reflection tests contain a large number of tests.
-    This test output merges PASS lines to make baselines smaller.
-    """
-    def maybe_append_pass_line(compact_lines, prefix, subtest, passes):
-        if passes > 1:
-            compact_lines.append(
-                TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
-                                f'{prefix}: {passes} tests'))
-        elif passes == 1:
-            compact_lines.append(
-                TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
-                                subtest))
-
-    compact_lines = []
-    prev_prefix = None
-    prev_subtest = None
-    prev_passes = 0
-    for line in lines:
-        if (line.line_type != LineType.SUBTEST
-                or line.statuses != set([Status.PASS])
-                or ':' not in line.subtest):
-            maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
-                                   prev_passes)
-            prev_passes = 0
-            compact_lines.append(line)
-            continue
-
-        # We get a PASS subtest with ':' in test name
-        prefix, suffix = line.subtest.split(':', 1)
-        if prefix != prev_prefix:
-            maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
-                                   prev_passes)
-            prev_prefix, prev_subtest = prefix, line.subtest
-            prev_passes = 1
-        else:
-            prev_passes += 1
-
-    maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
-                           prev_passes)
-    return compact_lines
-
-
-def format_testharness_baseline(lines: List[TestharnessLine],
-                                do_compact: bool) -> str:
+def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
     """Format testharness.js results in the same way as [0].
 
     [0]: //third_party/blink/web_tests/resources/testharnessreport.js
@@ -168,17 +127,15 @@ def format_testharness_baseline(lines: List[TestharnessLine],
         except ValueError:
             pass
 
-    if do_compact:
-        lines = compact_test_output(lines)
-
     for line in lines:
         if line.line_type is LineType.SUBTEST:
             assert line.subtest and line.statuses, line
-            statuses = ', '.join(
-                sorted(status.name for status in line.statuses))
-            content += f'[{statuses}] {_escape(line.subtest)}\n'
-            if line.message:
-                content += f'{_MESSAGE_PREFIX}{_escape(line.message)}\n'
+            statuses = ' '.join(sorted(status.name
+                                       for status in line.statuses))
+            if statuses != 'PASS':
+                content += f'[{statuses}] {_escape(line.subtest)}\n'
+                if line.message:
+                    content += f'{_MESSAGE_PREFIX}{_escape(line.message)}\n'
         elif line.line_type is LineType.HARNESS_ERROR:
             (status, ) = line.statuses
             assert isinstance(status.value, int), line
@@ -196,23 +153,24 @@ def format_testharness_baseline(lines: List[TestharnessLine],
         if (line.line_type is LineType.TESTHARNESS_HEADER
                 and status_counts[Status.PASS] < total
                 and total >= _COUNT_THRESHOLD):
-            content += f'Found {total} tests; '
-            content += ', '.join(
-                f'{count} {status.name}'
-                for status, count in status_counts.items()) + '.\n'
+            content += 'Found '
+            content += ', '.join(f'{count} {status.name}'
+                                 for status, count in status_counts.items()
+                                 if status.name != 'PASS') + '.\n'
     return content
 
 
 def _parse_statuses(subtest_match: re.Match) -> FrozenSet[Status]:
-    start, end = len('['), subtest_match.end() - len(']')
+    start, end = len('['), subtest_match.end() - len('] ')
     return frozenset(Status[status.strip()]
-                     for status in subtest_match.string[start:end].split(','))
+                     for status in subtest_match.string[start:end].split())
 
 
 _UNESCAPE_SUBSTITUTIONS = {
     r'\n': '\n',
     r'\r': '\r',
     r'\0': '\0',
+    r'\\': '\\',
 }
 _ESCAPE_SUBSTITUTIONS = str.maketrans({
     unescaped: escaped
@@ -229,7 +187,7 @@ def _escape(s: str) -> str:
 
 def _unescape(s: str) -> str:
     return _UNESCAPE_PATTERN.sub(
-        lambda match: _UNESCAPE_SUBSTITUTIONS[match[0]], s.lstrip())
+        lambda match: _UNESCAPE_SUBSTITUTIONS[match[0]], s)
 
 
 def is_all_pass_test_result(content_text: str) -> bool:
@@ -264,18 +222,15 @@ def is_test_output_passing(content_text: str) -> bool:
     """Checks whether |content_text| is a passing testharness output.
 
     Under a relatively loose/accepting definition of passing
-    testharness output, we consider any output with at least one
-    PASS result and no FAIL result (or TIMEOUT or NOTRUN).
+    testharness output, we consider any output without FAIL result
+    (or TIMEOUT or NOTRUN).
     """
-    at_least_one_pass = False
     for line in parse_testharness_baseline(content_text):
         if line.line_type is LineType.HARNESS_ERROR or line.statuses - {
                 Status.PASS
         }:
             return False
-        if line.line_type is LineType.ALL_PASS or Status.PASS in line.statuses:
-            at_least_one_pass = True
-    return at_least_one_pass
+    return True
 
 
 def has_other_useful_output(content_text: str) -> bool:

@@ -3,7 +3,6 @@
 <translationbundle lang="en-GB">
 <translation id="1016765312371154165">Chrome didn't shut down correctly.</translation>
 <translation id="130631256467250065">Your changes will take effect the next time that you restart your device.</translation>
-<translation id="1555506416658437797">edit payment methods.</translation>
 <translation id="1635457557763038537">Your changes will take effect the next time that you relaunch Chrome.</translation>
 <translation id="2399868464369312507">Google Chrome is trying to edit payment methods.</translation>
 <translation id="2447485272386224171">Chrome is made possible by the <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open-source project and other <ph name="BEGIN_LINK_OSS" />open-source software<ph name="END_LINK_OSS" />.</translation>
@@ -12,7 +11,6 @@
 <translation id="3875312571075912821">Allow Chrome to access the network in your firewall or antivirus
           settings.</translation>
 <translation id="5005121315113832363">This page has been blocked by Chrome</translation>
-<translation id="585620188971323280">modify settings for filling payment methods.</translation>
 <translation id="6011049234605203654">Go to
           the Chrome menu &gt;
           <ph name="SETTINGS_TITLE" />

@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -53,8 +53,8 @@ void KioskAppUpdateService::Init(const std::string& app_id) {
     automatic_reboot_manager_->AddObserver(this);
   }
 
-  if (KioskAppManager::IsInitialized()) {
-    KioskAppManager::Get()->AddObserver(this);
+  if (KioskChromeAppManager::IsInitialized()) {
+    KioskChromeAppManager::Get()->AddObserver(this);
   }
 
   if (automatic_reboot_manager_->reboot_requested()) {
@@ -86,8 +86,8 @@ void KioskAppUpdateService::Shutdown() {
   if (service) {
     service->RemoveUpdateObserver(this);
   }
-  if (KioskAppManager::IsInitialized()) {
-    KioskAppManager::Get()->RemoveObserver(this);
+  if (KioskChromeAppManager::IsInitialized()) {
+    KioskChromeAppManager::Get()->RemoveObserver(this);
   }
   if (automatic_reboot_manager_) {
     automatic_reboot_manager_->RemoveObserver(this);
@@ -102,9 +102,9 @@ void KioskAppUpdateService::OnAppUpdateAvailable(
 
   // Clears cached app data so that it will be reloaded if update from app
   // does not finish in this run.
-  KioskAppManager::Get()->ClearAppData(app_id_);
-  KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
-                                                   extension);
+  KioskChromeAppManager::Get()->ClearAppData(app_id_);
+  KioskChromeAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
+                                                         extension);
 
   extensions::RuntimeEventRouter::DispatchOnRestartRequiredEvent(
       profile_, app_id_,

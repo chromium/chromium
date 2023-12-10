@@ -11,6 +11,7 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
@@ -188,7 +189,7 @@ bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
   // We can reference |ban_expire_time|'s value' directly since we check for
   // `kLongBan` beforehand, and |ban_expire_time| is expected to have a value in
   // all cases except `kLongBan`.
-  absl::optional<base::Time> ban_expire_time = it->second.second;
+  std::optional<base::Time> ban_expire_time = it->second.second;
   return (notification_state == DiscoveryNotificationDismissalState::kLongBan ||
           base::Time::Now() < ban_expire_time.value());
 }
@@ -314,6 +315,7 @@ void Mediator::CancelPairing() {
   // instance. Shut them down before destroying the handshakes.
   pairer_broker_->StopPairing();
   FastPairHandshakeLookup::GetInstance()->Clear();
+  FastPairGattServiceClientLookup::GetInstance()->Clear();
 
   // Don't modify the delegate's list when flag is disabled.
   if (!features::IsFastPairDevicesBluetoothSettingsEnabled()) {
@@ -378,7 +380,7 @@ void Mediator::OnPairFailure(scoped_refptr<Device> device,
 }
 
 void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
-                                 absl::optional<AccountKeyFailure> error) {
+                                 std::optional<AccountKeyFailure> error) {
   if (error.has_value()) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__ << ": Device=" << device << ",Error=" << error.value();
@@ -402,8 +404,8 @@ void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
                                                       device->protocol())] =
         std::make_pair(
             DiscoveryNotificationDismissalState::kDismissed,
-            absl::make_optional(base::Time::Now() +
-                                kDismissedDiscoveryNotificationBanTime));
+            std::make_optional(base::Time::Now() +
+                               kDismissedDiscoveryNotificationBanTime));
     return;
   }
 
@@ -414,15 +416,15 @@ void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
     case DiscoveryNotificationDismissalState::kDismissed:
       it->second = std::make_pair(
           DiscoveryNotificationDismissalState::kShortBan,
-          absl::make_optional(base::Time::Now() +
-                              kShortBanDiscoveryNotificationBanTime));
+          std::make_optional(base::Time::Now() +
+                             kShortBanDiscoveryNotificationBanTime));
       return;
     case DiscoveryNotificationDismissalState::kShortBan:
       // Since `IsDeviceBlockedForDiscoveryNotifications` has an explicit
-      // check for `kLongBan`, the timestamp is absl::nullopt. The `kLongBan`
+      // check for `kLongBan`, the timestamp is std::nullopt. The `kLongBan`
       // does not have an expiration timeout.
       it->second = std::make_pair(DiscoveryNotificationDismissalState::kLongBan,
-                                  absl::nullopt);
+                                  std::nullopt);
       return;
     case DiscoveryNotificationDismissalState::kLongBan:
       // If the device had the state `kLongBan`, it should have never been

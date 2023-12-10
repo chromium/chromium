@@ -13,10 +13,11 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -59,7 +60,7 @@ cc::ScrollSnapType GetPhysicalSnapType(const LayoutBox& snap_container) {
 // TODO(sunyunjia): Move the static functions to an anonymous namespace.
 
 // static
-void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
+bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(&snap_container);
   const auto* old_snap_container_data = scrollable_area->GetSnapContainerData();
@@ -72,11 +73,14 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     // Clear the old data if needed.
     if (old_snap_container_data) {
       snap_container.SetNeedsPaintPropertyUpdate();
-      scrollable_area->SetSnapContainerData(absl::nullopt);
-      scrollable_area->UpdateSnappedTargetsAndEnqueueSnapChanged();
+      scrollable_area->SetSnapChangingTargetData(absl::nullopt);
       scrollable_area->SetSnappedTargetData(absl::nullopt);
+      if (RuntimeEnabledFeatures::CSSSnapChangedEventEnabled()) {
+        scrollable_area->EnqueueSnapChangedEvent();
+      }
+      scrollable_area->SetSnapContainerData(absl::nullopt);
     }
-    return;
+    return false;
   }
 
   cc::SnapContainerData snap_container_data(snap_type);
@@ -93,7 +97,8 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // https://drafts.csswg.org/css-overflow-3/#scrollport. So we use the
   // LayoutRect of the padding box here. The coordinate is relative to the
   // container's border box.
-  PhysicalRect container_rect(snap_container.PhysicalPaddingBoxRect());
+  PhysicalRect container_rect(
+      snap_container.OverflowClipRect(PhysicalOffset()));
 
   const ComputedStyle* container_style = snap_container.Style();
   // The percentage of scroll-padding is different from that of normal
@@ -164,8 +169,9 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
       *old_snap_container_data != snap_container_data) {
     snap_container.SetNeedsPaintPropertyUpdate();
     scrollable_area->SetSnapContainerData(snap_container_data);
-    scrollable_area->SnapAfterLayout();
+    return true;
   }
+  return false;
 }
 
 // https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-align

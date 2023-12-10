@@ -82,6 +82,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private OneshotSupplierImpl<OmniboxSuggestionsDropdownAdapter> mAdapterSupplier =
             new OneshotSupplierImpl<>();
     private PreWarmingRecycledViewPool mRecycledViewPool;
+    private final boolean mForcePhoneStyleOmnibox;
 
     public AutocompleteCoordinator(
             @NonNull ViewGroup parent,
@@ -99,11 +100,13 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
-            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
+            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate,
+            boolean forcePhoneStyleOmnibox) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
         mContext = context;
+        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
 
         PropertyModel listModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
@@ -187,7 +190,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             public void inflate() {
                 OmniboxSuggestionsDropdown dropdown;
                 try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    dropdown = new OmniboxSuggestionsDropdown(context, mRecycledViewPool);
+                    dropdown =
+                            new OmniboxSuggestionsDropdown(
+                                    context, mRecycledViewPool, mForcePhoneStyleOmnibox);
                 }
 
                 dropdown.getViewGroup().setClipToPadding(false);
@@ -221,7 +226,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     private OmniboxSuggestionsDropdownAdapter createAdapter(ModelList listItems) {
-        BaseSuggestionViewBinder.resetCachedDimensions();
+        BaseSuggestionViewBinder.resetCachedResources();
         OmniboxSuggestionsDropdownAdapter adapter =
                 new OmniboxSuggestionsDropdownAdapter(listItems);
 

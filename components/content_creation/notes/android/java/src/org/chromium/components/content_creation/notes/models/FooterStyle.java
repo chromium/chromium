@@ -13,9 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
-/**
- * Model class for a template's text style.
- */
+/** Model class for a template's text style. */
 public class FooterStyle {
     public final @ColorInt int textColor;
     public final @ColorInt int logoColor;

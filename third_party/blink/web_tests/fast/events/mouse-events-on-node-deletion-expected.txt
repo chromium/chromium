@@ -8,8 +8,7 @@ outer received mouseout
 inner received mouseover
 inner received mouseenter
 removed inner
-TODO(crbug.com/276329): We are missing a mouseout here!
-TODO(crbug.com/276329): We are missing a mouseleave here!
+outer received mouseleave
 outer received mouseover
 outer received mouseenter
 PASS successfullyParsed is true

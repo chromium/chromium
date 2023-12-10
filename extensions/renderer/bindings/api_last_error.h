@@ -5,11 +5,10 @@
 #ifndef EXTENSIONS_RENDERER_BINDINGS_API_LAST_ERROR_H_
 #define EXTENSIONS_RENDERER_BINDINGS_API_LAST_ERROR_H_
 
+#include <optional>
 #include <string>
-
 #include "base/functional/callback.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -49,8 +48,8 @@ class APILastError {
 
   // Returns the message from the last error for the given |context| without
   // marking it as accessed. If the given context doesn't have an active error
-  // returns absl::nullopt.
-  absl::optional<std::string> GetErrorMessage(v8::Local<v8::Context> context);
+  // returns std::nullopt.
+  std::optional<std::string> GetErrorMessage(v8::Local<v8::Context> context);
 
   // Reports an unchecked error by logging it to the console. This is used when
   // an error occurs, and there is no way it could be checked.

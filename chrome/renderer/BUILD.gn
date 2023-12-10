@@ -143,12 +143,13 @@ static_library("renderer") {
     "//chrome/common/cart:mojo_bindings",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
-    "//chrome/renderer/companion/visual_search",
+    "//chrome/renderer/companion/visual_query",
     "//chrome/services/speech/buildflags",
     "//components/autofill/content/renderer",
     "//components/autofill/core/common:features",
     "//components/base32",
     "//components/cdm/renderer",
+    "//components/commerce/content/renderer",
     "//components/commerce/core:commerce_heuristics_data",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:heuristics_provider",
@@ -290,11 +291,8 @@ static_library("renderer") {
     deps += [
       "//components/pdf/common",
       "//components/pdf/renderer",
+      "//pdf:features",
     ]
-
-    if (is_linux || is_chromeos) {
-      deps += [ "//pdf:font_table_linux" ]
-    }
   }
 
   if (is_chromeos_ash) {
@@ -355,6 +353,7 @@ static_library("renderer") {
     ]
     deps += [
       "//chrome/common/extensions/api",
+      "//chrome/renderer/controlled_frame",
       "//components/guest_view/renderer",
       "//extensions:extensions_resources",
       "//extensions/common:mojom",

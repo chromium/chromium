@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -478,7 +479,10 @@ bool ServiceWorkerRegistrationObjectHost::CanServeRegistrationObjectHostMethods(
   std::vector<GURL> urls = {container_host_->url(), registration_->scope()};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
-    base::debug::Alias(&urls);
+    SCOPED_CRASH_KEY_STRING256("SWROH_CSROHM", "host_url",
+                               container_host_->url().spec());
+    SCOPED_CRASH_KEY_STRING256("SWROH_CSROHM", "reg_scope",
+                               registration_->scope().spec());
     receivers_.ReportBadMessage(
         ServiceWorkerConsts::kBadMessageImproperOrigins);
     return false;

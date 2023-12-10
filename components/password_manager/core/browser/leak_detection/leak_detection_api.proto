@@ -47,7 +47,7 @@ message LookupSingleLeakRequest {
 
   // The self-declared use case that the leak check is performed for.
   enum ClientUseCase {
-    reserved 1 to 4, 8 to 14;
+    reserved 1 to 4, 8 to 10, 12 to 14;
     CLIENT_USE_CASE_UNSPECIFIED = 0;
     // Leak checks done by Chrome during sign in to a website.
     CHROME_SIGN_IN_CHECK = 5;
@@ -57,6 +57,8 @@ message LookupSingleLeakRequest {
     // Leak checks done by Chrome for checking a bulk of passwords in On-device
     // Proactive Password Checkup.
     CHROME_SYNCED_ON_DEVICE_PROACTIVE_PASSWORD_CHECKUP = 7;
+    // Leak checks done for bulk checking synced passwords on iGA.
+    IGA_BULK_SYNCED_PASSWORDS_CHECK = 11;
     // Leak checks done by Chrome on password edit.
     CHROME_EDIT_CHECK = 15;
   }

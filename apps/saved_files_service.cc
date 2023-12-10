@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include <optional>
 #include "apps/saved_files_service_factory.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +26,6 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -105,7 +105,7 @@ void RemoveSavedFileEntry(ExtensionPrefs* prefs,
 // Clears all SavedFileEntry for the app from ExtensionPrefs.
 void ClearSavedFileEntries(ExtensionPrefs* prefs,
                            const std::string& extension_id) {
-  prefs->UpdateExtensionPref(extension_id, kFileEntries, absl::nullopt);
+  prefs->UpdateExtensionPref(extension_id, kFileEntries, std::nullopt);
 }
 
 // Returns all SavedFileEntries for the app.
@@ -127,13 +127,13 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
     const base::Value* path_value = file_entry->Find(kFileEntryPath);
     if (!path_value)
       continue;
-    absl::optional<base::FilePath> file_path =
+    std::optional<base::FilePath> file_path =
         base::ValueToFilePath(*path_value);
     if (!file_path)
       continue;
     bool is_directory =
         file_entry->FindBool(kFileEntryIsDirectory).value_or(false);
-    const absl::optional<int> sequence_number =
+    const std::optional<int> sequence_number =
         file_entry->FindInt(kFileEntrySequenceNumber);
     if (!sequence_number || sequence_number.value() == 0)
       continue;

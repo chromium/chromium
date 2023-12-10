@@ -34,6 +34,7 @@ testing/data/body-overflow-hidden.html
 testing/data/button.html
 testing/data/cancelTest.html
 testing/data/clipped-body.html
+testing/data/close-on-pagehide.html
 testing/data/composited_selection_bounds_basic.html
 testing/data/composited_selection_bounds_basic_rtl.html
 testing/data/composited_selection_bounds_detached_frame.html
@@ -82,6 +83,7 @@ testing/data/div_with_image.html
 testing/data/domfocusout_domfocusin_events.html
 testing/data/double_press_selection.html
 testing/data/dv-size.html
+testing/data/edit_context.html
 testing/data/editable_elements.html
 testing/data/email-form.html
 testing/data/enter_key_hint_default.html
@@ -452,6 +454,7 @@ testing/data/specify_size.html
 testing/data/speculation_rules/single_url_prefetch.json
 testing/data/speculation_rules/single_url_prefetch_invalid_no_vary_search_hint.json
 testing/data/speculation_rules/single_url_prefetch_not_a_string_no_vary_search_hint.json
+testing/data/speculation_rules/single_url_prefetch_relative.json
 testing/data/speedometer_saved_output.json
 testing/data/spell.html
 testing/data/sticky-position.html

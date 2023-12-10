@@ -32,18 +32,6 @@ typedef std::map<ServerFieldType, std::vector<AutofillDataModel::ValidityState>>
 typedef std::map<ServerFieldType, AutofillDataModel::ValidityState>
     ServerFieldTypeValidityStateMap;
 
-enum class DeprecatedFormControlType {
-  kEmpty = 0,
-  kOther = 1,
-  kText = 2,
-  kTextarea = 3,
-  kCheckbox = 4,
-  kRadio = 5,
-  kSelectOne = 6,
-  kSelectlist = 7,
-  kMaxValue = kSelectlist,
-};
-
 // Specifies if the Username First Flow vote has intermediate values.
 enum class IsMostRecentSingleUsernameCandidate {
   // Field is not part of Username First Flow.
@@ -98,7 +86,7 @@ class AutofillField : public FormFieldData {
   experimental_server_predictions() const {
     return experimental_server_predictions_;
   }
-  bool may_use_prefilled_placeholder() const {
+  std::optional<bool> may_use_prefilled_placeholder() const {
     return may_use_prefilled_placeholder_;
   }
   HtmlFieldType html_type() const { return html_type_; }
@@ -120,7 +108,8 @@ class AutofillField : public FormFieldData {
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction> predictions);
 
-  void set_may_use_prefilled_placeholder(bool may_use_prefilled_placeholder) {
+  void set_may_use_prefilled_placeholder(
+      std::optional<bool> may_use_prefilled_placeholder) {
     may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;
   }
   void set_possible_types(const ServerFieldTypeSet& possible_types) {
@@ -351,8 +340,14 @@ class AutofillField : public FormFieldData {
     return autofill_source_profile_guid_;
   }
 
-  // Use FormFieldData::form_control_type instead (crbug.com/1482526).
-  enum DeprecatedFormControlType FormControlType() const;
+  void set_autofilled_type(std::optional<ServerFieldType> autofilled_type) {
+    autofilled_type_ = std::move(autofilled_type);
+  }
+  std::optional<ServerFieldType> autofilled_type() const {
+    return autofilled_type_;
+  }
+
+  bool WasAutofilledWithFallback() const;
 
  private:
   explicit AutofillField(FieldSignature field_signature);
@@ -379,7 +374,9 @@ class AutofillField : public FormFieldData {
 
   // Whether the server-side classification believes that the field
   // may be pre-filled with a placeholder in the value attribute.
-  bool may_use_prefilled_placeholder_ = false;
+  // For autofillable types, `nullopt` indicates that there is no server-side
+  // classification. For PWM, `nullopt` and `false` are currently identical.
+  std::optional<bool> may_use_prefilled_placeholder_ = std::nullopt;
 
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.
@@ -496,8 +493,15 @@ class AutofillField : public FormFieldData {
   // filling. nullopt means the field wasn't autofilled.
   // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
-  // value.
+  // value. This is not tracked for fields filled with field by field filling.
   std::optional<std::string> autofill_source_profile_guid_;
+
+  // Denotes the type that was used to fill the field in its last autofill
+  // operation. This is different from `overall_type_` because in some cases
+  // Autofill might fallback to filling a classified field with a different type
+  // than the classified one, based on country-specific rules.
+  // This is not tracked for fields filled with field by field filling.
+  std::optional<ServerFieldType> autofilled_type_;
 };
 
 }  // namespace autofill

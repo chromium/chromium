@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Skratite ovaj tekst na <ph name="MAX_CHARACTERS" /> znak(ov)a ili manje (trenutno koristite <ph name="CURRENT_LENGTH" /> znak(ov)a).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedelja, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pesma</translation>
+<translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
 <translation id="2393030564806080191">Heksadecimalna vrednost boje</translation>
 <translation id="2398813069815436052">otvoren je dijalog.</translation>
 <translation id="245932805758469625">broj preostalih sekundi video snimka</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Produžite ovaj tekst na <ph name="MIN_CHARACTERS" /> znak(ov)a ili više (trenutno koristite <ph name="CURRENT_LENGTH" /> znak(ov)a).</translation>
 <translation id="383465348367842624">Deo pre „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Izađi iz celog ekrana</translation>
+<translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4103419683916926126">Milisekunde</translation>
 <translation id="4201051445878709314">Prikaži prethodni mesec</translation>
 <translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalji</translation>
+<translation id="4663373278480897665">Kamera je dozvoljena</translation>
 <translation id="4664250907885839816">Deo posle „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Reprodukuje se u režimu slike u slici</translation>
 <translation id="4748357248530471599">uključi/isključi ceo ekran bez oblasti izrezanog prikaza</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">preuzmi medije</translation>
 <translation id="698788488269350478">prošireno.</translation>
 <translation id="6989848892321993519">Produžite ovaj tekst na bar <ph name="MIN_CHARACTERS" /> znak(ov)a (trenutno koristite 1 znak).</translation>
+<translation id="7080893216867146095">Deljenje lokacije je dozvoljeno</translation>
 <translation id="709897737746224366">Izaberite zahtevani format.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7263440858009898357">Izaberite stavku sa liste.</translation>

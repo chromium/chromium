@@ -21,11 +21,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Java mirror of base/command_line.h.
- * Android applications don't have command line arguments. Instead, they're "simulated" by reading a
- * file at a specific location early during startup. Applications each define their own files, e.g.,
- * ContentShellApplication.COMMAND_LINE_FILE.
-**/
+ * Java mirror of base/command_line.h. Android applications don't have command line arguments.
+ * Instead, they're "simulated" by reading a file at a specific location early during startup.
+ * Applications each define their own files, e.g., ContentShellApplication.COMMAND_LINE_FILE.
+ */
 public abstract class CommandLine {
     // Public abstract interface, implemented in derived classes.
     // All these methods reflect their native-side counterparts.
@@ -54,9 +53,7 @@ public abstract class CommandLine {
         return TextUtils.isEmpty(value) ? defaultValue : value;
     }
 
-    /**
-     * Return a copy of all switches, along with their values.
-     */
+    /** Return a copy of all switches, along with their values. */
     public abstract Map getSwitches();
 
     /**
@@ -441,12 +438,19 @@ public abstract class CommandLine {
     @NativeMethods
     interface Natives {
         void init(String[] args);
+
         boolean hasSwitch(String switchString);
+
         String getSwitchValue(String switchString);
+
         String[] getSwitchesFlattened();
+
         void appendSwitch(String switchString);
+
         void appendSwitchWithValue(String switchString, String value);
+
         void appendSwitchesAndArguments(String[] array);
+
         void removeSwitch(String switchString);
     }
 }

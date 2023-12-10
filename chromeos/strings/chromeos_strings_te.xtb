@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1003363546227723021">మీ స్క్రీన్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ఫోటోలు, సమయం, వాతావరణం, మీడియా సమాచారాన్ని చూపించండి</translation>
 <translation id="1014750484722996375">డెస్క్‌లు</translation>
 <translation id="1018219910092211213">DNSను పరిష్కరించడం సాధ్యం కాదు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="1175951029573070619">మోస్తరుగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
+<translation id="1191518099344003522">APN ఎనేబుల్ చేయబడింది.</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1196959502276349371">వెర్షన్ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ప్లే చేయండి/పాజ్ చేయండి</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">బ్రౌజర్ హోమ్</translation>
 <translation id="1526389707933164996">స్క్రీన్ సేవర్ యానిమేషన్</translation>
 <translation id="152892567002884378">వాల్యూమ్ పెంచండి</translation>
+<translation id="1539242642795599947">APN అనే దానిని ఆటోమేటిక్ సెట్టింగ్ అని టైప్ చేసి అటాచ్ చేయండి.</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
 <translation id="1561927818299383735">బ్యాక్‌లైట్ రంగు</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">ChromeOS Flexను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="1856388568474281774">కింది వైపు బాణం</translation>
 <translation id="1858620243986915808">స్క్రీన్‌షాట్‌ను అటాచ్ చేయండి</translation>
+<translation id="1871413952174074704">APNలో <ph name="CHAR_LIMIT" /> అక్షరాలు కంటే ఎక్కువ ఉండకూడదు</translation>
 <translation id="1871569928317311284">ముదురు రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">డార్క్ మోడ్‌ను ఆఫ్ చేయండి</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
 <translation id="2873483161362553159">బ్రౌజర్ నావిగేషన్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
+<translation id="2875812231449496375">ఈ వాల్‌పేపర్‌తో ఉత్తమ ఫలితాలను పొందడం కోసం దీన్ని ఆన్ చేయండి. మీరు ఈ సెట్టింగ్‌ను ఏ సమయంలోనైనా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="2880569433548999039">క్లౌడ్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
 <translation id="3583278742022654445">సిగ్నల్ సామర్థ్యం బలహీనంగా ఉంది. Wi-Fi సిగ్నల్ సోర్స్‌కు కొద్దిగా దగ్గరగా వెళ్ళడానికి ట్రై చేయండి.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> అనేది <ph name="APN_NAME" />‌కు సంబంధించిన యూజర్-ఫ్రెండ్లీ పేరు.</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
 <translation id="3600339377155080675">స్క్రీన్ మిర్రర్</translation>
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
@@ -414,7 +420,7 @@
 <translation id="4170180284036919717">ఫోటో తీయండి</translation>
 <translation id="4170700058716978431">విఫలమైంది</translation>
 <translation id="4171077696775491955">బ్రైట్‌నెస్‌ను తగ్గిస్తుంది</translation>
-<translation id="4176463684765177261">ఆపివేయబడింది</translation>
+<translation id="4176463684765177261">డిజేబుల్ చేయబడింది</translation>
 <translation id="4176659219503619100">కంట్రోల్ ప్యానెల్</translation>
 <translation id="4185315616950253617">పైన ఉండే అడ్డు వరుసలోని కీలతో షార్ట్‌కట్‌ను క్రియేట్ చేయాలంటే, అందులో సెర్చ్ కీ కూడా ఉండాలి.</translation>
 <translation id="420283545744377356">స్క్రీన్ సేవర్‌ను ఆఫ్ చేయి</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> కీని నొక్కారు</translation>
 <translation id="4354430579665871434">కీ</translation>
-<translation id="435692326371619097">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం.</translation>
 <translation id="437294888293595148">అన్ని షార్ట్‌కట్‌లను రీసెట్ చేయండి</translation>
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">రిపోర్ట్‌ను దాచు</translation>
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">మీ స్క్రీన్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ఫోటోలు, సమయం, వాతావరణం, మీడియా సమాచారాన్ని చూపిస్తుంది.</translation>
 <translation id="5035083460461104704">రూపం రంగు</translation>
 <translation id="5038292761217083259">పలు రంగులు కలిగిన కీబోర్డ్</translation>
 <translation id="5039804452771397117">అనుమతించండి</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">పూర్తిగా</translation>
 <translation id="5142961317498132443">ప్రమాణీకరణ</translation>
+<translation id="5145081769226915336">డార్క్ మోడ్‌ను ఆటోమేటిక్‌గా ఆన్ చేయాలా?</translation>
 <translation id="5154917547274118687">మెమరీ</translation>
 <translation id="5160857336552977725">మీ <ph name="DEVICE_TYPE" />కు సైన్ ఇన్ చేయండి</translation>
 <translation id="5166918508782100047">క్విక్ ఆన్సర్స్‌కు సంబంధించిన సెట్టింగ్‌లు</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5757187557809630523">తర్వాతి ట్రాక్</translation>
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" />‌ను రీస్టార్ట్ చేసి, అప్‌డేట్ చేయడం</translation>
 <translation id="576835345334454681">డిస్‌ప్లే బ్రైట్‌నెస్‌ను పెంచండి</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">మీ పరికరం ఇంకా నెట్‌వర్క్‌కు కనెక్ట్ చేయబడలేదు. మీ మొబైల్ క్యారియర్ అనుకూల APNను సిఫార్సు చేస్తే, "+ కొత్త APN"ను ఎంచుకోవడం ద్వారా APN సమాచారాన్ని ఎంటర్ చేయండి</translation>
 <translation id="5972388717451707488">ఇంజిన్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5984145644188835034">ఆటోమేటిక్ వాల్‌పేపర్</translation>
+<translation id="6001235009374883388">APN అనేది అటాచ్ రకం.</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
 <translation id="6019566113895157499">కీ షార్ట్‌కట్‌లు</translation>
 <translation id="6034694447310538551">ఆటోమేటిక్ నెలవారీ రీసెట్‌ను ఎనేబుల్ చేయండి</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
 <translation id="7184043045742675738">మీ బటన్‌ను అనుకూలంగా మార్చడానికి ఏదైనా కీపై క్లిక్ చేయండి. మౌస్ లేదా బాణం కీలతో కీ స్థానాన్ని మార్చండి.</translation>
+<translation id="7212547870105584639">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
 <translation id="725133483556299729">ఈమెయిల్‌ను ఎంచుకోండి</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>
 <translation id="7297226631177386107">HTTPS వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="7297726121602187087">ముదురు ఆకుపచ్చ రంగు</translation>
+<translation id="7301262279595293068">ఈ అప్లికేషన్ అప్‌డేట్ అవుతున్నప్పుడు దయచేసి వేచి ఉండండి</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook సహాయ ఫోరమ్‌లో నిపుణులను సహాయం అడగండి</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">లేత గులాబీ రంగు</translation>
 <translation id="982713511914535780">డిస్‌ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="987264212798334818">సాధారణం</translation>
+<translation id="995062385528875723">ఉచ్చారణ అక్షరాలు, లాటిన్ యేతర వర్ణమాల లేదా చిహ్నాలను ఉపయోగించలేరు</translation>
 </translationbundle>

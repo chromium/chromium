@@ -355,8 +355,7 @@ void StyledLabel::ClickFirstLinkForTesting() {
 
 views::Link* StyledLabel::GetFirstLinkForTesting() {
   const auto it = base::ranges::find_if(children(), &IsViewClass<LinkFragment>);
-  DCHECK(it != children().cend());
-  return static_cast<views::Link*>(*it);
+  return (it == children().cend()) ? nullptr : static_cast<views::Link*>(*it);
 }
 
 int StyledLabel::StartX(int excess_space) const {
@@ -650,7 +649,7 @@ void StyledLabel::RemoveOrDeleteAllChildViews() {
   }
 }
 
-BEGIN_METADATA(StyledLabel, View)
+BEGIN_METADATA(StyledLabel)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, DefaultTextStyle)

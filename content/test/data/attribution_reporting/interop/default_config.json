@@ -56,6 +56,7 @@
   // A string that encodes either "inf" or a double greater than or equal to 0.
   // This controls the randomized response mechanism for event-level reports by
   // adjusting the flip probability.
+  // TODO(apaseltiner): Rename to max_settable_event_level_epsilon to match spec.
   "randomized_response_epsilon": "14",
 
   // Positive integer that controls how many event-level reports can be in the

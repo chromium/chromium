@@ -1,21 +1,15 @@
 This is a testharness.js-based test.
 [FAIL] .target > * 1
   assert_equals: \n<span data-offset-x="45"></span>\noffsetLeft expected 45 but got 30
-[PASS] .target > * 2
 [FAIL] .target > * 3
   assert_equals: \n<span data-offset-x="45"></span>\noffsetLeft expected 45 but got 90
-[PASS] .target > * 4
 [FAIL] .target > * 5
   assert_equals: \n<span data-offset-x="45"></span>\noffsetLeft expected 45 but got 30
-[PASS] .target > * 6
 [FAIL] .target > * 7
   assert_equals: \n<span data-offset-x="45"></span>\noffsetLeft expected 45 but got 65
-[PASS] .target > * 8
 [FAIL] .target > * 9
   assert_equals: \n<span data-offset-x="45"></span>\noffsetLeft expected 45 but got 90
-[PASS] .target > * 10
 [FAIL] .target > * 11
   assert_equals: \n<span data-offset-x="45"></span>\noffsetLeft expected 45 but got 65
-[PASS] .target > * 12
 Harness: the test ran to completion.
 

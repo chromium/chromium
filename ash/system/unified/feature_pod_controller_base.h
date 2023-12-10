@@ -16,7 +16,7 @@ class FeatureTile;
 
 // Base class for controllers of feature pod buttons.
 // To add a new feature pod button, implement this class, and add to the list in
-// UnifiedSystemTrayController::InitFeaturePods().
+// UnifiedSystemTrayController::InitFeatureTiles().
 class ASH_EXPORT FeaturePodControllerBase {
  public:
   virtual ~FeaturePodControllerBase() {}

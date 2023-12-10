@@ -1,0 +1,2006 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ActionInSuggestIntentResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid URI Syntax"/>
+  <int value="2" label="Activity not found"/>
+</enum>
+
+<enum name="AdaptiveToolbarRadioButtonState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Auto with new tab"/>
+  <int value="2" label="Auto with share"/>
+  <int value="3" label="Auto with voice"/>
+  <int value="4" label="New tab"/>
+  <int value="5" label="Share"/>
+  <int value="6" label="Voice"/>
+  <int value="7" label="Translate"/>
+  <int value="8" label="Auto with translate"/>
+  <int value="9" label="Add to bookmarks"/>
+  <int value="10" label="Auto with add to bookmarks"/>
+</enum>
+
+<enum name="Android.MemoryPressureNotification">
+  <int value="0" label="Unknown onTrimMemory() level"/>
+  <int value="1" label="TRIM_MEMORY_COMPLETE"/>
+  <int value="2" label="TRIM_MEMORY_MODERATE"/>
+  <int value="3" label="TRIM_MEMORY_BACKGROUND"/>
+  <int value="4" label="TRIM_MEMORY_UI_HIDDEN"/>
+  <int value="5" label="TRIM_MEMORY_RUNNING_CRITICAL"/>
+  <int value="6" label="TRIM_MEMORY_RUNNING_LOW"/>
+  <int value="7" label="TRIM_MEMORY_RUNNING_MODERATE"/>
+  <int value="8" label="onLowMemory()"/>
+</enum>
+
+<enum name="AndroidApiLevel">
+  <int value="16" label="JELLY_BEAN"/>
+  <int value="17" label="JELLY_BEAN_MR1"/>
+  <int value="18" label="JELLY_BEAN_MR2"/>
+  <int value="19" label="KITKAT"/>
+  <int value="20" label="KITKAT_WATCH"/>
+  <int value="21" label="LOLLIPOP"/>
+  <int value="22" label="LOLLIPOP_MR1"/>
+  <int value="23" label="M"/>
+  <int value="24" label="N"/>
+  <int value="25" label="N_MR1"/>
+  <int value="26" label="O"/>
+  <int value="27" label="O_MR1"/>
+  <int value="28" label="P"/>
+  <int value="29" label="Q"/>
+  <int value="30" label="R"/>
+</enum>
+
+<enum name="AndroidAutoDarkModeSettingsChangeSource">
+  <summary>See Android.DarkTheme.AutoDarkMode.SettingsChangeSource.*</summary>
+  <int value="0" label="Theme settings"/>
+  <int value="1" label="Site settings global"/>
+  <int value="2" label="App menu"/>
+  <int value="3" label="Site settings exception list"/>
+</enum>
+
+<enum name="AndroidDownloadFilterType">
+  <int value="0" label="All"/>
+  <int value="1" label="Page"/>
+  <int value="2" label="Video"/>
+  <int value="3" label="Audio"/>
+  <int value="4" label="Image"/>
+  <int value="5" label="Document"/>
+  <int value="6" label="Other"/>
+  <int value="7" label="Prefetched"/>
+</enum>
+
+<enum name="AndroidDownloadOpenSource">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="ANDROID_DOWNLOAD_MANAGER"/>
+  <int value="2" label="DOWNLOAD_HOME"/>
+  <int value="3" label="NOTIFICATION"/>
+  <int value="4" label="NEW_TAP_PAGE"/>
+  <int value="5" label="INFO_BAR"/>
+  <int value="6" label="SNACK_BAR"/>
+  <int value="7" label="AUTO_OPEN"/>
+  <int value="8" label="DOWNLOAD_PROGRESS_INFO_BAR"/>
+  <int value="9" label="MENU"/>
+  <int value="10" label="DINO_PAGE_OFFLINE_CONTENT"/>
+  <int value="11" label="OFFLINE_INDICATOR"/>
+  <int value="12" label="OFFLINE_CONTENT_NOTIFICATION"/>
+  <int value="13" label="DOWNLOAD_PROGRESS_MESSAGE"/>
+  <int value="14" label="DUPLICATE_DOWNLOAD_DIALOG"/>
+  <int value="15" label="EXTERNAL_APP"/>
+  <int value="16" label="NEW_DOWNLOAD_TAB_OPEN_BUTTON"/>
+</enum>
+
+<enum name="AndroidDragTargetType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Text"/>
+  <int value="2" label="Image"/>
+  <int value="3" label="Link"/>
+</enum>
+
+<enum name="AndroidKernelVersion">
+  <int value="131078" label="2.6"/>
+  <int value="196608" label="3.0"/>
+  <int value="196609" label="3.1"/>
+  <int value="196610" label="3.2"/>
+  <int value="196611" label="3.3"/>
+  <int value="196612" label="3.4"/>
+  <int value="196613" label="3.5"/>
+  <int value="196614" label="3.6"/>
+  <int value="196615" label="3.7"/>
+  <int value="196616" label="3.8"/>
+  <int value="196618" label="3.10"/>
+  <int value="196619" label="3.11"/>
+  <int value="196620" label="3.12"/>
+  <int value="196621" label="3.13"/>
+  <int value="196622" label="3.14"/>
+  <int value="196623" label="3.15"/>
+  <int value="196625" label="3.17"/>
+  <int value="196626" label="3.18"/>
+  <int value="196627" label="3.19"/>
+  <int value="262144" label="4.0"/>
+  <int value="262145" label="4.1"/>
+  <int value="262148" label="4.4"/>
+  <int value="262153" label="4.9"/>
+  <int value="262154" label="4.10"/>
+  <int value="262157" label="4.13"/>
+  <int value="262158" label="4.14"/>
+  <int value="262163" label="4.19"/>
+  <int value="327684" label="5.4"/>
+  <int value="327690" label="5.10"/>
+  <int value="327695" label="5.15"/>
+</enum>
+
+<enum name="AndroidRestoreResult">
+  <int value="0" label="No restore attempted"/>
+  <int value="1" label="Restore successful"/>
+  <int value="2" label="Failed: Chrome already run locally"/>
+  <int value="3" label="Failed: Chrome startup failed"/>
+  <int value="4" label="Failed: Cannot sign in as previous user"/>
+</enum>
+
+<enum name="AndroidSearchEngineChoiceEvents">
+  <summary>Events related to Search Engine Choice feature.</summary>
+  <int value="0" label="Snackbar shown"/>
+  <int value="1" label="Prompt followed"/>
+  <int value="2" label="Search engine changed"/>
+</enum>
+
+<enum name="AndroidSearchEngineChoiceEventsV2">
+  <summary>Events related to Search Engine Choice V2 feature.</summary>
+  <int value="0" label="Request received from play"/>
+  <int value="1"
+      label="User skipped (didn't complete) Search Engine Choice flow"/>
+  <int value="2" label="Play API returned empty list of providers"/>
+  <int value="3" label="User selected valid search provider"/>
+  <int value="4" label="Search engine metadata value was null"/>
+  <int value="5" label="Failed to parse search engine metadata JSON"/>
+  <int value="6"
+      label="Previous attempt to persist search engine metadata failed"/>
+  <int value="7" label="Request success"/>
+</enum>
+
+<enum name="AndroidSearchEngineLogoEvents">
+  <summary>Events related to Search Engine logo feature.</summary>
+  <int value="0" label="Fetch non-Google logo request"/>
+  <int value="1" label="Fetch failed, null logo url"/>
+  <int value="2" label="Fetch failed, favicon helper error"/>
+  <int value="3" label="Fetch failed, returned bitmap null"/>
+  <int value="4" label="Fetch success, cache hit"/>
+  <int value="5" label="Fetch from network success"/>
+</enum>
+
+<enum name="AndroidSeccompSandboxStatus">
+  <int value="0" label="Not Supported"/>
+  <int value="1" label="Detection Failed"/>
+  <int value="2" label="Feature Disabled"/>
+  <int value="3" label="Feature Enabled"/>
+  <int value="4" label="Sandbox Engaged"/>
+</enum>
+
+<enum name="AndroidThemeSettingsEntry">
+  <summary>See Android.DarkTheme.ThemeSettingsEntry.</summary>
+  <int value="0" label="Settings"/>
+  <int value="1" label="Auto dark mode message"/>
+</enum>
+
+<enum name="AndroidToolbarDropType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Chrome Text"/>
+  <int value="2" label="Text"/>
+  <int value="3" label="Chrome Link"/>
+  <int value="4" label="Chrome Image"/>
+</enum>
+
+<enum name="AndroidWebViewCrashCollectionState">
+  <int value="0" label="ENABLED_BY_COMMANDLINE">
+    Enabled by commandline. This doesn't check later cases (ex. user consent).
+  </int>
+  <int value="1" label="ENABLED_BY_FLAG_UI">
+    Enabled by the Flag UI, but not by CommandLine file. This doesn't check
+    later cases (ex. user consent).
+  </int>
+  <int value="2" label="ENABLED_BY_USER_CONSENT">
+    Enabled by user consent (not by commandline flags).
+  </int>
+  <int value="3" label="DISABLED_BY_USER_CONSENT">
+    Disabled because we're missing user consent. We were able to present the
+    user with an Intent to the settings app.
+  </int>
+  <int value="4" label="DISABLED_BY_USER_CONSENT_CANNOT_FIND_SETTINGS">
+    Disabled because we're missing user consent. We could not direct the user to
+    the settings app.
+  </int>
+  <int value="5" label="DISABLED_CANNOT_USE_GMS">
+    Disabled because we cannot use GMS APIs.
+  </int>
+</enum>
+
+<enum name="AndroidWebViewCrashInteraction">
+  <int value="0" label="FORCE_UPLOAD_BUTTON">
+    The user tapped the &quot;upload this crash report&quot; button.
+  </int>
+  <int value="1" label="FORCE_UPLOAD_NO_DIALOG">
+    The developer UI uploaded the crash report with no dialog because the user
+    met the criteria for crash uploads.
+  </int>
+  <int value="2" label="FORCE_UPLOAD_DIALOG_METERED_NETWORK">
+    The user was shown a dialog after tapping the upload button. The user
+    responded by uploading the crash report anyway.
+  </int>
+  <int value="3" label="FORCE_UPLOAD_DIALOG_CANCEL">
+    The user was shown a dialog after tapping the upload button. The user
+    responded by dismissing the dialog and did not upload the crash.
+  </int>
+  <int value="4" label="FILE_BUG_REPORT_BUTTON">
+    The user tapped the &quot;file bug report&quot; button.
+  </int>
+  <int value="5" label="FILE_BUG_REPORT_DIALOG_PROCEED">
+    The user was shown a dialog after tapping the &quot;file bug report&quot;
+    button. The user responded by proceeding to crbug.com.
+  </int>
+  <int value="6" label="FILE_BUG_REPORT_DIALOG_DISMISS">
+    The user was shown a dialog after tapping the &quot;file bug report&quot;
+    button. The user responded by dismissing the dialog and did not file a bug
+    report.
+  </int>
+  <int value="7" label="HIDE_CRASH_BUTTON">
+    The user tapped the &quot;hide crash&quot; button.
+  </int>
+</enum>
+
+<enum name="AndroidWebViewDevUiFragments">
+  <int value="0" label="HOME_FRAGMENT"/>
+  <int value="1" label="CRASHES_LIST_FRAGMENT"/>
+  <int value="2" label="FLAGS_FRAGMENT"/>
+  <int value="3" label="COMPONENTS_LIST_FRAGMENT"/>
+  <int value="4" label="SAFEMODE_FRAGMENT"/>
+</enum>
+
+<enum name="AndroidWebViewDevUiMenu">
+  <int value="0" label="Switch WebView provider"/>
+  <int value="1" label="Report a bug"/>
+  <int value="2" label="Check for updates"/>
+  <int value="3" label="Refresh the crash list"/>
+  <int value="4" label="About WebView DevTools"/>
+  <int value="5" label="Components"/>
+  <int value="6" label="Update the components"/>
+  <int value="7" label="SafeMode"/>
+</enum>
+
+<enum name="AndroidWebViewDevUiMetricsTransmission">
+  <int value="0" label="Success"/>
+  <int value="1" label="Malformed protobuf"/>
+  <int value="2" label="RemoteException"/>
+</enum>
+
+<enum name="AndroidWebViewMediaIntegrityApiStatus">
+  <int value="0" label="DISABLED"/>
+  <int value="1" label="ENABLED_WITHOUT_APP_IDENTITY"/>
+  <int value="2" label="ENABLED"/>
+</enum>
+
+<enum name="AndroidWebViewMediaIntegrityInvalidInteraction">
+  <int value="0" label="INVALID_PROVIDER_REQUEST"/>
+  <int value="1" label="INVALID_TOKEN_REQUEST"/>
+  <int value="2" label="CLOSED_PROVIDER_RESPONSE_PORT"/>
+  <int value="3" label="CLOUD_PROJECT_NUMBER_PARSE_ERROR"/>
+  <int value="4" label="TOKEN_REQUEST_MISSING_RESPONSE_PORT"/>
+</enum>
+
+<enum name="AndroidWebViewMediaIntegrityStatus">
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="UNKNOWN_ERROR"/>
+  <int value="2" label="API_NOT_AVAILABLE"/>
+  <int value="3" label="PLAY_STORE_NOT_FOUND"/>
+  <int value="4" label="NETWORK_ERROR"/>
+  <int value="5" label="APP_NOT_INSTALLED"/>
+  <int value="6" label="PLAY_SERVICES_NOT_FOUND"/>
+  <int value="7" label="APP_UID_MISMATCH"/>
+  <int value="8" label="TOO_MANY_REQUESTS"/>
+  <int value="9" label="CANNOT_BIND_TO_SERVICE"/>
+  <int value="10" label="GOOGLE_SERVER_UNAVAILABLE"/>
+  <int value="11" label="PLAY_STORE_VERSION_OUTDATED"/>
+  <int value="12" label="PLAY_SERVICES_VERSION_OUTDATED"/>
+  <int value="13" label="CLOUD_PROJECT_NUMBER_IS_INVALID"/>
+  <int value="14" label="REQUEST_HASH_TOO_LONG"/>
+  <int value="15" label="CLIENT_TRANSIENT_ERROR"/>
+  <int value="16" label="INTEGRITY_TOKEN_PROVIDER_INVALID"/>
+  <int value="17" label="INTERNAL_ERROR"/>
+</enum>
+
+<enum name="AndroidWebViewNonEmbeddedMetricsParsingLogResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Malformed protobuf"/>
+  <int value="2" label="IOException"/>
+</enum>
+
+<enum name="AndroidWebViewNonEmbeddedMetricsRetrieveMetricsTaskStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="ExecutionException"/>
+  <int value="2" label="InterruptionException"/>
+</enum>
+
+<enum name="AndroidWebViewRenderProcessGoneResult">
+  <int value="0" label="Java Exception thrown inside onRenderProcessGone()"/>
+  <int value="1" label="Renderer crash not handled"/>
+  <int value="2" label="Renderer kill (OOM or update) not handled"/>
+  <int value="3" label="Crash or kill was handled for all WebViews"/>
+  <int value="4" label="Renderer crash was handled for all WebViews"/>
+  <int value="5"
+      label="Renderer kill (OOM or update) was handled for all WebViews"/>
+</enum>
+
+<enum name="AndroidWebViewSafeModeActionName">
+  <int value="0" label="Delete Variations Seed"/>
+  <int value="1" label="Fast Variations Seed"/>
+  <int value="2" label="Noop"/>
+  <int value="3" label="Disable Android Autofill"/>
+  <int value="4" label="Disable Chrome Autocomplete"/>
+  <int value="5" label="Disable Origin Trials"/>
+  <int value="6" label="Disable Safe Browsing"/>
+  <int value="7" label="Reset Component Updater"/>
+</enum>
+
+<enum name="AndroidWebViewSafeModeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error (Java Exception)"/>
+  <int value="2" label="At least one action indiciates failure"/>
+  <int value="3" label="At least one action is unrecognized"/>
+</enum>
+
+<enum name="AndroidWebViewSingleOrMultiProcess">
+  <int value="0" label="SINGLE_PROCESS"/>
+  <int value="1" label="MULTI_PROCESS"/>
+</enum>
+
+<enum name="AndroidWebViewSupervisedUserUrlCheckResult">
+  <int value="0" label="ALLOWED_SITE_LOADED"/>
+  <int value="1" label="ALLOWED_SITE_DETECTED"/>
+  <int value="2" label="DISALLOWED_SITE_BLOCKED"/>
+  <int value="3" label="DISALLOWED_SITE_DETECTED"/>
+  <int value="4" label="TIMEOUT"/>
+  <int value="5" label="UNKNOWN_ERROR"/>
+</enum>
+
+<enum name="AndroidWebViewTextSelectionMenuOrdering">
+  <int value="0" label="Default"/>
+  <int value="1" label="Samsung"/>
+</enum>
+
+<enum name="AndroidXWebkitApiCall">
+  <int value="0" label="ADD_WEB_MESSAGE_LISTENER">
+    WebViewCompat#addWebMessageListener(WebView,String,List(String),WebMessageListener)
+  </int>
+  <int value="1" label="CLEAR_PROXY_OVERRIDE">
+    ProxyController#clearProxyOverride(Executor,Runnable)
+  </int>
+  <int value="2" label="GET_PROXY_CONTROLLER">
+    ProxyController#getInstance()
+  </int>
+  <int value="3" label="GET_SAFE_BROWSING_PRIVACY_POLICY_URL">
+    WebViewCompat#getSafeBrowsingPrivacyPolicyUrl()
+  </int>
+  <int value="4" label="GET_SERVICE_WORKER_CONTROLLER">
+    ServiceWorkerControllerCompat#getInstance()
+  </int>
+  <int value="5" label="GET_SERVICE_WORKER_WEB_SETTINGS">
+    ServiceWorkerControllerCompat#getServiceWorkerWebSettings()
+  </int>
+  <int value="6" label="GET_TRACING_CONTROLLER">
+    TracingController#getInstance()
+  </int>
+  <int value="7" label="GET_WEBCHROME_CLIENT">
+    WebViewCompat#getWebchromeClient(WebView)
+  </int>
+  <int value="8" label="GET_WEBVIEW_CLIENT">
+    WebViewCompat#getWebViewClient(WebView)
+  </int>
+  <int value="9" label="GET_WEBVIEW_RENDERER">
+    WebViewCompat#getWebViewRenderer(WebView)
+  </int>
+  <int value="10" label="GET_WEBVIEW_RENDERER_CLIENT">
+    WebViewCompat#getWebViewRenderProcessClient(WebView)
+  </int>
+  <int value="11" label="INIT_SAFE_BROWSING">
+    WebViewCompat#startSafeBrowsing(Context,ValueCallback(Boolean))
+  </int>
+  <int value="12" label="INSERT_VISUAL_STATE_CALLBACK">
+    WebViewCompat#postVisualStateCallback(WebView,long,VisualStateCallback)
+  </int>
+  <int value="13" label="IS_MULTI_PROCESS_ENABLED">
+    WebViewCompat#isMultiProcessEnabled()
+  </int>
+  <int value="14" label="JS_REPLY_POST_MESSAGE">
+    JsReplyProxy#postMessage(String)
+  </int>
+  <int value="15" label="POST_MESSAGE_TO_MAIN_FRAME">
+    WebViewCompat#postWebMessage(WebView,WebMessageCompat,Uri)
+  </int>
+  <int value="16" label="REMOVE_WEB_MESSAGE_LISTENER">
+    WebViewCompat#removeWebMessageListener(WebView,String)
+  </int>
+  <int value="17" label="SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS">
+    ServiceWorkerWebSettingsCompat#getAllowContentAccess()
+  </int>
+  <int value="18" label="SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS">
+    ServiceWorkerWebSettingsCompat#getAllowFileAccess()
+  </int>
+  <int value="19" label="SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS">
+    ServiceWorkerWebSettingsCompat#getBlockNetworkLoads()
+  </int>
+  <int value="20" label="SERVICE_WORKER_SETTINGS_GET_CACHE_MODE">
+    ServiceWorkerWebSettingsCompat#getCacheMode()
+  </int>
+  <int value="21" label="SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS">
+    ServiceWorkerWebSettingsCompat#setAllowContentAccess(boolean)
+  </int>
+  <int value="22" label="SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS">
+    ServiceWorkerWebSettingsCompat#setAllowFileAccess(boolean)
+  </int>
+  <int value="23" label="SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS">
+    ServiceWorkerWebSettingsCompat#setBlockNetworkLoads(boolean)
+  </int>
+  <int value="24" label="SERVICE_WORKER_SETTINGS_SET_CACHE_MODE">
+    ServiceWorkerWebSettingsCompat#setCacheMode(int)
+  </int>
+  <int value="25" label="SET_PROXY_OVERRIDE">
+    ProxyController#setProxyOverride(Executor,Runnable)
+  </int>
+  <int value="26" label="SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME">
+    WebViewCompat#setSafeBrowsingWhitelist(List(String),ValueCallback(Boolean))
+  </int>
+  <int value="27" label="SET_SERVICE_WORKER_CLIENT">
+    ServiceWorkerControllerCompat#setServiceWorkerClient(ServiceWorkerClientCompat)
+  </int>
+  <int value="28" label="SET_WEBVIEW_RENDERER_CLIENT">
+    WebViewCompat#setWebViewRenderProcessClient(WebView,WebViewRenderProcessClient)
+  </int>
+  <int value="29" label="TRACING_CONTROLLER_IS_TRACING">
+    TracingController#isTracing()
+  </int>
+  <int value="30" label="TRACING_CONTROLLER_START">
+    TracingController#start(TracingConfig)
+  </int>
+  <int value="31" label="TRACING_CONTROLLER_STOP">
+    TracingController#stop(OutputStream,Executor)
+  </int>
+  <int value="32" label="WEB_MESSAGE_GET_DATA">WebMessageCompat#getData()</int>
+  <int value="33" label="WEB_MESSAGE_GET_PORTS">
+    WebMessageCompat#getPorts()
+  </int>
+  <int value="34" label="WEB_MESSAGE_PORT_CLOSE">
+    WebMessagePortCompat#close()
+  </int>
+  <int value="35" label="WEB_MESSAGE_PORT_POST_MESSAGE">
+    WebMessagePortCompat#postMessage(WebMessageCompat)
+  </int>
+  <int value="36" label="WEB_MESSAGE_PORT_SET_CALLBACK">
+    WebMessagePortCompat#setCallback(WebMessageCallbackCompat)
+  </int>
+  <int value="37" label="WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER">
+    WebMessagePortCompat#setCallback(Handler,WebMessageCallbackCompat)
+  </int>
+  <int value="38" label="WEB_RESOURCE_REQUEST_IS_REDIRECT">
+    WebResourceRequestCompat#isRedirect(WebResourceRequest)
+  </int>
+  <int value="39" label="WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS">
+    WebSettingsCompat#getDisabledActionModeMenuItems(WebSettings)
+  </int>
+  <int value="40" label="WEB_SETTINGS_GET_FORCE_DARK">
+    WebSettingsCompat#getForceDark(WebSettings)
+  </int>
+  <int value="41" label="WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR">
+    WebSettingsCompat#getForceDarkStrategy(WebSettings)
+  </int>
+  <int value="42" label="WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER">
+    WebSettingsCompat#getOffscreenPreRaster(WebSettings)
+  </int>
+  <int value="43" label="WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED">
+    WebSettingsCompat#getSafeBrowsingEnabled(WebSettings)
+  </int>
+  <int value="44" label="WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE">
+    WebSettingsCompat#willSuppressErrorPage(WebSettings)
+  </int>
+  <int value="45" label="WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS">
+    WebSettingsCompat#setDisabledActionModeMenuItems(WebSettings,int)
+  </int>
+  <int value="46" label="WEB_SETTINGS_SET_FORCE_DARK">
+    WebSettingsCompat#setForceDark(WebSettings,int)
+  </int>
+  <int value="47" label="WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR">
+    WebSettingsCompat#setForceDarkStrategy(WebSettings,int)
+  </int>
+  <int value="48" label="WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER">
+    WebSettingsCompat#setOffscreenPreRaster(WebSettings,boolean)
+  </int>
+  <int value="49" label="WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED">
+    WebSettingsCompat#setSafeBrowsingEnabled(WebSettings,boolean)
+  </int>
+  <int value="50" label="WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE">
+    WebSettingsCompat#setWillSuppressErrorPage(WebSettings,boolean)
+  </int>
+  <int value="51" label="WEBVIEW_RENDERER_TERMINATE">
+    WebViewRenderProcess#terminate()
+  </int>
+  <int value="52" label="ADD_DOCUMENT_START_SCRIPT">
+    WebViewCompat#addDocumentStartJavaScript(String,String[])
+  </int>
+  <int value="53" label="REMOVE_DOCUMENT_START_SCRIPT">
+    ScriptReference#remove()
+  </int>
+  <int value="54" label="SET_SAFE_BROWSING_ALLOWLIST">
+    WebViewCompat#setSafeBrowsingAllowlist(Set(String),ValueCallback(Boolean))
+  </int>
+  <int value="55" label="SET_PROXY_OVERRIDE_REVERSE_BYPASS">
+    ProxyController#setProxyOverride(String[][],String[],Runnable,Executor,boolean);
+  </int>
+  <int value="56" label="WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE">
+    WebSettingsCompat#setRequestedWithHeaderMode(int) (deprecated)
+  </int>
+  <int value="57" label="WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE">
+    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderMode() (deprecated)
+  </int>
+  <int value="58"
+      label="SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE">
+    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode(int) (deprecated)
+  </int>
+  <int value="59"
+      label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE">
+    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode() (deprecated)
+  </int>
+  <int value="60" label="GET_VARIATIONS_HEADER">
+    WebViewCompat#getVariationsHeader()
+  </int>
+  <int value="61"
+      label="WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
+    WebSettingsCompat#setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean)
+  </int>
+  <int value="62"
+      label="WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
+    WebSettingsCompat#getEnterpriseAuthenticationAppLinkPolicyEnabled()
+  </int>
+  <int value="63" label="WEB_VIEW_COOKIE_MANAGER_GET_COOKIE_INFO">
+    CookieManagerCompat#getCookieInfo()
+  </int>
+  <int value="64" label="WEB_MESSAGE_GET_MESSAGE_PAYLOAD">
+    WebMessageCompat#getMessagePayload()
+  </int>
+  <int value="65" label="WEB_MESSAGE_PAYLOAD_GET_TYPE">
+    WebMessagePayload#getType();
+  </int>
+  <int value="66" label="WEB_MESSAGE_PAYLOAD_GET_AS_STRING">
+    WebMessagePayload#getAsString();
+  </int>
+  <int value="67" label="WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER">
+    WebMessagePayload#getAsArrayBuffer();
+  </int>
+  <int value="68"
+      label="WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    WebSettingsCompat#setRequestedWithHeaderOriginAllowList(Set(String)
+    allowedOriginRules)
+  </int>
+  <int value="69"
+      label="WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderOriginAllowList()
+  </int>
+  <int value="70"
+      label="SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList(Set(String)
+    allowedOriginRules)
+  </int>
+  <int value="71"
+      label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderOriginAllowList()
+  </int>
+  <int value="72" label="GET_IMAGE_DRAG_DROP_IMPLEMENTATION">
+    WebViewProviderFactory#getDropDataProviderImplementation()
+  </int>
+  <int value="73" label="RESTRICT_SENSITIVE_WEB_CONTENT">
+    WebSettingsCompat#enableRestrictSensitiveWebContent() (deprecated)
+  </int>
+  <int value="74" label="JS_REPLY_POST_MESSAGE_WITH_PAYLOAD">
+    JsReplyProxy#postMessageWithPayload(WebMessagePayload)
+  </int>
+  <int value="75" label="WEB_SETTINGS_SET_USER_AGENT_METADATA">
+    WebSettingsCompat#setUserAgentMetadataFromMap(Map(String, Object)
+    uaMetadataMap)
+  </int>
+  <int value="76" label="WEB_SETTINGS_GET_USER_AGENT_METADATA">
+    WebSettingsCompat#getUserAgentMetadataMap()
+  </int>
+  <int value="77" label="SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST">
+    ServiceWorkerClientCompat#shouldInterceptRequest()
+  </int>
+  <int value="78" label="WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED">
+    WebSettingsCompat#setAlgorithmicDarkeningAllowed()
+  </int>
+  <int value="79" label="WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED">
+    WebSettingsCompat#isAlgorithmicDarkeningAllowed()
+  </int>
+  <int value="80" label="CREATE_WEB_MESSAGE_CHANNEL">
+    WebViewCompat#createWebMessageChannel()
+  </int>
+  <int value="81" label="CREATE_WEBVIEW">WebViewCompat#createWebView()</int>
+  <int value="82" label="GET_STATICS">WebViewCompat#getStatics()</int>
+  <int value="83" label="GET_PROFILE_STORE">ProfileStore#getInstance()</int>
+  <int value="84" label="GET_OR_CREATE_PROFILE">
+    ProfileStore#getOrCreateProfile()
+  </int>
+  <int value="85" label="GET_PROFILE">ProfileStore#getProfile()</int>
+  <int value="86" label="GET_ALL_PROFILE_NAMES">
+    ProfileStore#getAllProfileNames()
+  </int>
+  <int value="87" label="DELETE_PROFILE">ProfileStore#deleteProfile()</int>
+  <int value="88" label="GET_PROFILE_NAME">Profile#getName()</int>
+  <int value="89" label="GET_PROFILE_COOKIE_MANAGER">
+    Profile#getCookieManager()
+  </int>
+  <int value="90" label="GET_PROFILE_WEB_STORAGE">Profile#getWebStorage()</int>
+  <int value="91" label="GET_PROFILE_GEO_LOCATION_PERMISSIONS">
+    Profile#getGeolocationPermissions()
+  </int>
+  <int value="92" label="GET_PROFILE_SERVICE_WORKER_CONTROLLER">
+    Profile#getServiceWorkerController()
+  </int>
+  <int value="93" label="SET_WEBVIEW_PROFILE">
+    WebViewCompat#setProfile(WebView, String)
+  </int>
+  <int value="94" label="GET_WEBVIEW_PROFILE">
+    WebViewCompat#getProfile(WebView)
+  </int>
+  <int value="95" label="SET_ATTRIBUTION_BEHAVIOR">
+    WebSettingsCompat.setAttributionBehavior(int)
+  </int>
+  <int value="96" label="GET_ATTRIBUTION_BEHAVIOR">
+    WebSettingsCompat.getAttributionBehavior(int)
+  </int>
+  <int value="97" label="GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS">
+    WebSettingsCompat#getWebViewMediaIntegrityApiStatus()
+  </int>
+  <int value="98" label="GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES">
+    WebSettingsCompat#getWebViewMediaIntegrityApiStatus()
+  </int>
+  <int value="99" label="SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS">
+    WebSettingsCompat#setWebViewMediaIntegrityApiStatus(int,Map(String,Integer))
+  </int>
+</enum>
+
+<enum name="AppPackageNameAllowlistParseStatus">
+  <int value="0" label="Allowlist is loaded successfully"/>
+  <int value="1" label="Used allowlist from cache"/>
+  <int value="2" label="Manifest is missing fileds"/>
+  <int value="3" label="Allowlist is expired"/>
+  <int value="4" label="Allowlist file is missing"/>
+  <int value="5" label="IO error"/>
+  <int value="6" label="Allowlist bloomfilter is malformatted"/>
+</enum>
+
+<enum name="AppPackageNameLoggingRuleStatus">
+  <int value="0" label="Not loaded and no cache"/>
+  <int value="1" label="Not loaded and using cached"/>
+  <int value="2" label="Loading new version failed and no cache"/>
+  <int value="3" label="Loading new version failed and using cached"/>
+  <int value="4" label="New version is loaded"/>
+  <int value="5" label="New version is the same as cached"/>
+</enum>
+
+<enum name="ArmCpuPart">
+  <summary>
+    Defines a subset of ARM CPU (implementer, part-number) pairs composed as a
+    20-bit number. This is a non-exhaustive enumeration. See
+    https://goto.google.com/cyqss for details.
+  </summary>
+  <int value="269319" label="ARM Cortex-A7"/>
+  <int value="269320" label="ARM Cortex-A8 *"/>
+  <int value="269321" label="ARM Cortex-A9 *"/>
+  <int value="269326" label="ARM Cortex-A17 *"/>
+  <int value="269327" label="ARM Cortex-A15 *"/>
+  <int value="269335" label="ARM Cortex-R7 *"/>
+  <int value="269336" label="ARM Cortex-R8 *"/>
+  <int value="269571" label="ARM Cortex-A53"/>
+  <int value="269573" label="ARM Cortex-A55"/>
+  <int value="269575" label="ARM Cortex-A57 *"/>
+  <int value="269576" label="ARM Cortex-A72 *"/>
+  <int value="269577" label="ARM Cortex-A73 *"/>
+  <int value="269578" label="ARM Cortex-A75 *"/>
+  <int value="269579" label="ARM Cortex-A76 *"/>
+  <int value="269580" label="ARM Neoverse N1 *"/>
+  <int value="269581" label="ARM Cortex-A77 *"/>
+  <int value="269633" label="ARM Cortex-A78 *"/>
+  <int value="269638" label="ARM Cortex-A510"/>
+  <int value="332305" label="Qualcomm Snapdragon 820 **"/>
+  <int value="333825" label="Qualcomm Kyro 260/280 Silver *"/>
+  <int value="333827" label="Qualcomm Kryo 385 Silver *"/>
+  <int value="333829" label="Qualcomm Kryo 485 Silver *"/>
+</enum>
+
+<enum name="AsyncTaskStatus">
+  <int value="0" label="PENDING">AsyncTask was not started when waited on.</int>
+  <int value="1" label="RUNNING">AsyncTask was running when waited on.</int>
+  <int value="2" label="FINISHED">AsyncTask is done.</int>
+</enum>
+
+<enum name="BackgroundTaskId">
+  <int value="-1" label="Not found"/>
+  <int value="0" label="Test task (should not appear)"/>
+  <int value="1" label="Omaha"/>
+  <int value="2" label="GCM Background Task"/>
+  <int value="3" label="Notification service task"/>
+  <int value="4" label="Webview minidump uploading task"/>
+  <int value="5" label="Chrome minidump uploading task"/>
+  <int value="6" label="Offlining pages task"/>
+  <int value="7" label="Offline page prefetch task"/>
+  <int value="8" label="Download service task"/>
+  <int value="9" label="Download cleanup task"/>
+  <int value="10" label="WebView variations task"/>
+  <int value="11" label="Offline content notification task"/>
+  <int value="12" label="WebAPK update task"/>
+  <int value="13" label="Download resumption task"/>
+  <int value="14" label="Feed refresh task"/>
+  <int value="15" label="Component update task"/>
+  <int value="16" label="Deprecated Explore Sites refresh task"/>
+  <int value="17" label="Explore Sites refresh task"/>
+  <int value="18" label="Download auto-resumption task"/>
+  <int value="19" label="One shot Background Sync wake up task"/>
+  <int value="20" label="Notification scheduler task"/>
+  <int value="21" label="Notification trigger task"/>
+  <int value="22" label="Periodic Background Sync wake up task"/>
+  <int value="23" label="Query Tile task"/>
+  <int value="24" label="Feedv2 refresh task"/>
+  <int value="25" label="Download later task"/>
+  <int value="27" label="WebView Component Updater schedule task"/>
+  <int value="28" label="Attribution Provider flush task"/>
+  <int value="29" label="Download auto-resumption unmetered task"/>
+  <int value="30" label="Download auto-resumption any network task"/>
+</enum>
+
+<enum name="BackPressConsumer">
+<!-- Append the new enumerator to the end. Add the label in the format
+  of "(value of BackPressHandler.Type) <Name of BackPressHandler.Type>".
+  It is okay the new value of enumerator is different from value of
+  BackPressHandler.Type.
+  -->
+
+  <int value="0" label="(00) TEXT_BUBBLE"/>
+  <int value="1" label="(01) VR_DELEGATE"/>
+  <int value="2" label="(02) AR_DELEGATE"/>
+  <int value="3" label="(03) SCENE_OVERLAY"/>
+  <int value="4" label="(06) START_SURFACE (with tab switcher if enabled)"/>
+  <int value="5" label="(10) SELECTION_POPUP"/>
+  <int value="6" label="(11) MANUAL_FILLING"/>
+  <int value="7" label="(09) FULLSCREEN"/>
+  <int value="8" label="(04) BOTTOM_SHEET"/>
+  <int value="9" label="(13) TAB_MODAL_HANDLER"/>
+  <int value="10" label="(08) TAB_SWITCHER (if Start surface is disabled)"/>
+  <int value="11" label="(14) CLOSE_WATCHER"/>
+  <int value="12" label="(17) TAB_HISTORY (and bottom controls)"/>
+  <int value="13" label="(18) TAB_RETURN_TO_CHROME_START_SURFACE"/>
+  <int value="14" label="(19) SHOW_READING_LIST"/>
+  <int value="15" label="(20) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="16" label="(15) FIND_TOOLBAR"/>
+  <int value="17" label="(12) LOCATION_BAR"/>
+  <int value="18" label="(02) XR_DELEGATE"/>
+  <int value="19" label="(05) PAGE_INSIGHTS_BOTTOM_SHEET"/>
+  <int value="20" label="(16) BOTTOM_CONTROLS"/>
+  <int value="21" label="(07) HUB"/>
+</enum>
+
+<enum name="ChildAppInfoError">
+  <int value="0" label="No error (app info matches)"/>
+  <int value="1" label="sourceDir mismatch"/>
+  <int value="2" label="sharedLibraryFiles mismatch"/>
+  <int value="3" label="RemoteException when calling getAppInfo()"/>
+</enum>
+
+<enum name="ChromeActivityType">
+  <int value="0" label="Tabbed Chrome"/>
+  <int value="1" label="Custom Tab"/>
+  <int value="2" label="Trusted Web Activity"/>
+  <int value="3" label="WebAPK"/>
+  <int value="4" label="Webapp (not WebAPK)"/>
+  <int value="5" label="Pre-First-Tab (Startup/Warmup)"/>
+</enum>
+
+<enum name="ChromeStartupDelegateFailureType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Service Missing"/>
+  <int value="2" label="Service Version Update Required"/>
+  <int value="3" label="Service Disabled"/>
+  <int value="4" label="Network Error"/>
+  <int value="5" label="Service Invalid"/>
+  <int value="6" label="Developer Error"/>
+  <int value="7" label="API Unavailable"/>
+</enum>
+
+<enum name="ChromeStartupDelegateResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Allow"/>
+  <int value="2" label="Disallow"/>
+</enum>
+
+<enum name="CommittedRequestedWithHeaderMode">
+  <int value="0" label="No header set"/>
+  <int value="1" label="App package name"/>
+  <int value="2" label="Constant string 'WebView'"/>
+  <int value="3" label="Header set by client code"/>
+</enum>
+
+<enum name="ContactsPickerDialogAction">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Contact(s) selected"/>
+</enum>
+
+<enum name="ContactsPickerProperties">
+  <int value="0" label="No properties"/>
+  <int value="1" label="Telephone numbers"/>
+  <int value="2" label="Emails"/>
+  <int value="3" label="Emails and Telephone numbers"/>
+  <int value="4" label="Names"/>
+  <int value="5" label="Names and Telephone numbers"/>
+  <int value="6" label="Names and Emails"/>
+  <int value="7" label="Names, Emails, and Telephone numbers"/>
+  <int value="13" label="Addresses, Names, and Telephone numbers"/>
+  <int value="15" label="Addresses, Names, Emails, and Telephone numbers"/>
+  <int value="21" label="Icons, Names, and Telephone numbers"/>
+  <int value="23" label="Icons, Names, Emails, and Telephone numbers"/>
+  <int value="31"
+      label="Icons, Addresses, Names, Emails, and Telephone numbers"/>
+</enum>
+
+<enum name="CpuAbiBitnessSupport">
+  <int value="0" label="Neither"/>
+  <int value="1" label="32-bit only"/>
+  <int value="2" label="64-bit only"/>
+  <int value="3" label="Both 32-bit and 64-bit"/>
+</enum>
+
+<enum name="DeviceAuthSource">
+  <int value="0" label="Password Manager"/>
+  <int value="1" label="Autofill"/>
+  <int value="2" label="Icognito"/>
+  <int value="3" label="Device Lock Page"/>
+</enum>
+
+<enum name="DeviceLockDialogAction">
+  <int value="0" label="Create device lock dialog shown"/>
+  <int value="1" label="Existing device lock dialog shown"/>
+  <int value="2" label="Create device lock clicked"/>
+  <int value="3" label="User understands clicked"/>
+  <int value="4" label="Go to OS settings clicked"/>
+  <int value="5" label="Use without an account clicked"/>
+  <int value="6" label="Dismiss clicked"/>
+</enum>
+
+<enum name="DownloadNotificationForegroundLifecycle">
+  <int value="0" label="START"/>
+  <int value="1" label="UPDATE"/>
+  <int value="2" label="STOP"/>
+</enum>
+
+<enum name="DownloadNotificationInteractions">
+  <int value="0" label="CLICKED"/>
+  <int value="1" label="OPEN"/>
+  <int value="2" label="CANCEL"/>
+  <int value="3" label="PAUSE"/>
+  <int value="4" label="RESUME"/>
+</enum>
+
+<enum name="DownloadNotificationServiceStopped">
+  <int value="0" label="STOPPED"/>
+  <int value="1" label="DESTROYED"/>
+  <int value="2" label="TASK_REMOVED"/>
+  <int value="3" label="LOW_MEMORY"/>
+  <int value="4" label="START_STICKY"/>
+</enum>
+
+<enum name="ExifOrientation">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Rotate 90"/>
+  <int value="2" label="Rotate 190"/>
+  <int value="3" label="Rotate 270"/>
+  <int value="4" label="Transpose"/>
+  <int value="5" label="Transverse"/>
+  <int value="6" label="Flip Horizontally"/>
+  <int value="7" label="Flip Vertically"/>
+  <int value="8" label="Undefined"/>
+</enum>
+
+<enum name="FeatureModuleAvailabilityStatus">
+  <int value="0" label="Requested">
+    Feature module has been requested but is not installed yet.
+  </int>
+  <int value="1" label="Installed Requested">
+    Feature module is installed after being requested.
+  </int>
+  <int value="2" label="Installed Unrequested">
+    Feature module is installed but has not been requested previously.
+  </int>
+</enum>
+
+<enum name="FeatureModuleInstallingStatus">
+  <int value="0" label="UnknownCode">Unknown update status.</int>
+  <int value="1" label="Requested">Module requested (on-demand).</int>
+  <int value="2" label="Pending">Module pending.</int>
+  <int value="3" label="Downloading">Module downloading.</int>
+  <int value="4" label="Downloaded">Module downloaded.</int>
+  <int value="5" label="Installing">Module installing.</int>
+  <int value="6" label="Installed">Module installed.</int>
+  <int value="7" label="Failed">Module request failed.</int>
+  <int value="8" label="Canceling">Module request canceling.</int>
+  <int value="9" label="Canceled">Module request canceled.</int>
+  <int value="10" label="RequiresUserConfirmation">
+    Module request requires user confirmation.
+  </int>
+  <int value="11" label="RequestedDeferred">Module requested (deferred).</int>
+</enum>
+
+<enum name="FeatureModuleInstallStatus">
+  <int value="0" label="Success">Installation succeeded.</int>
+  <int value="1" label="Failure (deprecated)">
+    (deprecated) Catch-all for install failures.
+  </int>
+  <int value="2" label="Request Error (deprecated)">
+    (deprecated) Catch-all for request failures.
+  </int>
+  <int value="3" label="Cancellation">The installation has been cancelled.</int>
+  <int value="4" label="Access Denied">
+    Download not permitted under current device circumstances (e.g. in
+    background).
+  </int>
+  <int value="5" label="Active Sessions Limit Exceeded">
+    Too many sessions are running for current app, existing sessions must be
+    resolved first.
+  </int>
+  <int value="6" label="API Not Available">
+    Split Install API is not available.
+  </int>
+  <int value="7" label="Incompatible with Existing Session">
+    Requested session contains modules from an existing active session and also
+    new modules.
+  </int>
+  <int value="8" label="Insufficient Storage">
+    Install failed due to insufficient storage.
+  </int>
+  <int value="9" label="Invalid Request">Request is otherwise invalid.</int>
+  <int value="10" label="Module Unavailable">
+    A requested module is not available (to this user/device, for the installed
+    apk).
+  </int>
+  <int value="11" label="Network Error">
+    Network error: unable to obtain split details
+  </int>
+  <int value="12" label="No Error"/>
+  <int value="13" label="Service Died">
+    Service handling split install has died.
+  </int>
+  <int value="14" label="Session Not Found">
+    Requested session is not found.
+  </int>
+  <int value="15" label="Splitcompat Copy Error">
+    Error in copying files for SplitCompat.
+  </int>
+  <int value="16" label="Splitcompat Emulation Error">
+    Error in SplitCompat emulation.
+  </int>
+  <int value="17" label="Splitcompat Verification Error">
+    Signature verification error when invoking SplitCompat.
+  </int>
+  <int value="18" label="Internal Error">
+    Unknown error processing split install.
+  </int>
+  <int value="19" label="Split Install Unknown Error">
+    Unmapped error processing split install error code.
+  </int>
+  <int value="20" label="Unknown Request Error">
+    Catch-all for unknown request failures.
+  </int>
+  <int value="21" label="No SplitCompat">SplitCompat has not been enabled.</int>
+</enum>
+
+<enum name="FrameJankStatus">
+  <int value="0" label="Janky"/>
+  <int value="1" label="NonJanky"/>
+</enum>
+
+<enum name="GmsShortVersionCode">
+  <summary>
+    Special buckets for the cases when GMS Core version can't be obtained or is
+    invalid, otherwise it would be the version numbers in YYWWV format where
+    23401 would mean 2023y40w stable release.
+  </summary>
+  <int value="0" label="GMS Core is not installed"/>
+  <int value="1" label="GMS Core version can't be parsed"/>
+  <int value="2" label="GMS Core version is out of valid range"/>
+</enum>
+
+<enum name="GridTabSwitcherThumbnailFetchingResult">
+  <summary>The result of thumbnail fetching in the Grid Tab Switcher.</summary>
+  <int value="0" label="Got JPEG thumbnail"/>
+  <int value="1" label="Got ETC1 thumbnail"/>
+  <int value="2" label="Got nothing"/>
+  <int value="3" label="Got different aspect ratio JPEG thumbnail"/>
+  <int value="4" label="Got JPEG thumbnail on refetch"/>
+</enum>
+
+<enum name="IncognitoReauthPromoActionType">
+  <int value="0" label="Promo accepted"/>
+  <int value="1" label="No thanks"/>
+  <int value="2" label="Promo expired"/>
+</enum>
+
+<enum name="IncognitoReauthToggleValueType">
+  <int value="0" label="Toggled off"/>
+  <int value="1" label="Toggled on"/>
+</enum>
+
+<enum name="InputDeviceSource">
+  <int value="0" label="Other"/>
+  <int value="1" label="Touchscreen"/>
+  <int value="2" label="Touchpad"/>
+  <int value="3" label="Mouse"/>
+  <int value="4" label="Stylus"/>
+</enum>
+
+<enum name="IntentUriNavigationResult">
+  <int value="0" label="Intent with an unused fallback URL was launched"/>
+  <int value="1" label="Intent fallback URL was used"/>
+  <int value="2" label="Intent with an unused fallback URL was blocked"/>
+  <int value="3" label="Intent with a fallback URL prompted the user"/>
+  <int value="4" label="Intent without a fallback URL was launched"/>
+  <int value="5" label="Intent without a fallback URL was blocked"/>
+  <int value="6" label="Intent without a fallback URL prompted the user"/>
+</enum>
+
+<enum name="LightTheme">
+  <int value="0" label="undefined"/>
+  <int value="1" label="no"/>
+  <int value="2" label="yes"/>
+</enum>
+
+<enum name="MainFrameIntentLaunch">
+  <int value="0" label="Not from external app, to intent scheme"/>
+  <int value="1" label="Not from external app, to custom scheme"/>
+  <int value="2" label="Not from external app, to supported scheme"/>
+  <int value="3" label="From external app, to intent scheme"/>
+  <int value="4" label="From external app, to custom scheme"/>
+  <int value="5" label="From external app, to supported scheme"/>
+</enum>
+
+<enum name="MatchResult">
+  <int value="0" label="Valid match"/>
+  <int value="1" label="Suggestion mismatch"/>
+  <int value="2" label="Result array size mismatch"/>
+  <int value="3" label="Native match dead (obsolete)"/>
+  <int value="4" label="Suggestion index out of bounds"/>
+</enum>
+
+<enum name="MediaPickerShown">
+  <int value="0" label="Chrome Media Picker"/>
+  <int value="1" label="Android Media Picker directly (ACTION_PICK_IMAGES)"/>
+  <int value="2" label="None (null delegate)"/>
+  <int value="3" label="Android Media Picker indirectly (ACTION_GET_CONTENT)"/>
+</enum>
+
+<enum name="MessageIdentifier">
+  <int value="0" label="InvalidMessage"/>
+  <int value="1" label="SavePassword"/>
+  <int value="2" label="UpdatePassword"/>
+  <int value="3" label="GeneratedPasswordSaved"/>
+  <int value="4" label="PopupBlocked"/>
+  <int value="5" label="SafetyTip"/>
+  <int value="6" label="SaveAddressProfile"/>
+  <int value="7" label="MerchantTrust"/>
+  <int value="8" label="AddToHomescreenIPH"/>
+  <int value="9" label="SendTabToSelf"/>
+  <int value="10" label="ReaderMode"/>
+  <int value="11" label="ChromeSurvey"/>
+  <int value="12" label="SaveCard"/>
+  <int value="13" label="NotificationBlocked"/>
+  <int value="14" label="PermissionUpdate"/>
+  <int value="15" label="AdsBlocked"/>
+  <int value="16" label="DownloadProgress"/>
+  <int value="17" label="SyncError"/>
+  <int value="18" label="SharedHighlighting"/>
+  <int value="19" label="NearOomReduction"/>
+  <int value="20" label="InstallableAmbientBadge"/>
+  <int value="21" label="AutoDarkWebContents"/>
+  <int value="22" label="TestMessage"/>
+  <int value="23" label="TailoredSecurityEnabled"/>
+  <int value="24" label="VrServicesUpgrade"/>
+  <int value="25" label="TailoredSecurityDisabled"/>
+  <int value="26" label="ArCoreUpgrade"/>
+  <int value="28" label="AboutThisSite"/>
+  <int value="29" label="Translate"/>
+  <int value="30" label="OfferNotification"/>
+  <int value="31" label="ExternalNavigation"/>
+  <int value="32" label="FramebustBlocked"/>
+  <int value="33" label="DesktopSiteGlobalDefaultOptOut"/>
+  <int value="34" label="DesktopSiteGlobalOptIn"/>
+  <int value="35" label="PasswordManagerError"/>
+  <int value="36" label="DownloadIncognitoWarning"/>
+  <int value="37" label="DEPRECATED: RestoreCustomTab"/>
+  <int value="38" label="DEPRECATED: UndoCustomTabRestoration"/>
+  <int value="39" label="CvcSave"/>
+  <int value="40" label="TrackingProtectionNotice"/>
+  <int value="41" label="DesktopSiteWindowSetting"/>
+</enum>
+
+<enum name="MinimizeAppAndCloseTabType">
+  <int value="0" label="App is minimized but current tab is not closed"/>
+  <int value="1" label="Current tab is closed but app is not minimized"/>
+  <int value="2" label="App is minimized and current tab is closed"/>
+</enum>
+
+<enum name="MissingDeviceLockDialogEvent">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Continue without a device lock"/>
+  <int value="2" label="Device lock restored"/>
+</enum>
+
+<enum name="MultipleUserProfilesState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Single user profile"/>
+  <int value="2" label="Multiple user profiles"/>
+</enum>
+
+<enum name="NavigationInterceptResult">
+  <int value="0" label="Created external intent"/>
+  <int value="1" label="Created external intent with tab clobbering"/>
+  <int value="2" label="Created async dialog for confirming external intent"/>
+  <int value="3" label="Navigation not intercepted"/>
+</enum>
+
+<enum name="NavigationInterceptScheme">
+  <int value="0" label="Not intercepted"/>
+  <int value="1" label="Unknown scheme"/>
+  <int value="2" label="Accepted scheme (eg. https)"/>
+  <int value="3" label="Intent scheme"/>
+  <int value="4" label="MDoc scheme"/>
+  <int value="5" label="openid4vp"/>
+</enum>
+
+<enum name="NightMode">
+  <int value="0" label="undefined"/>
+  <int value="1" label="on"/>
+  <int value="2" label="off"/>
+</enum>
+
+<enum name="NTPImpressionType">
+  <int value="0" label="regular NTP impression"/>
+  <int value="1" label="potential NTP impression - no open tab"/>
+</enum>
+
+<enum name="OmniboxFocusReason">
+  <int value="0" label="Omnibox tapped."/>
+  <int value="1" label="Omnibox long-pressed (obsolete)."/>
+  <int value="2" label="NTP omnibox tapped."/>
+  <int value="3" label="NTP omnibox long-pressed (from paste action)."/>
+  <int value="4" label="Accelerator tapped."/>
+  <int value="5" label="Tab switcher omnibox tapped (obsolete)."/>
+  <int value="6" label="Tasks surface fake box tapped."/>
+  <int value="7" label="Tasks surface fake box long pressed."/>
+  <int value="8" label="Default with hardware keyboard."/>
+  <int value="9" label="Search query."/>
+  <int value="10" label="Launched new incognito tab."/>
+  <int value="11" label="Menu or keyboard action."/>
+  <int value="12" label="Unfocus."/>
+  <int value="13" label="Query tiles NTP omnibox tapped."/>
+  <int value="14" label="Focus restored on fold configuration change."/>
+  <int value="15" label="Drag and drop on the omnibox."/>
+</enum>
+
+<enum name="OmniboxSuggestionUiType">
+  <int value="0" label="DEFAULT"/>
+  <int value="1" label="EDIT_URL_SUGGESTION"/>
+  <int value="2" label="ANSWER_SUGGESTION"/>
+  <int value="3" label="ENTITY_SUGGESTION"/>
+  <int value="4" label="TAIL_SUGGESTION"/>
+  <int value="5" label="CLIPBOARD_SUGGESTION"/>
+  <int value="6" label="HEADER"/>
+  <int value="7" label="TILE_NAVSUGGEST"/>
+  <int value="8" label="PEDAL_SUGGESTION"/>
+  <int value="9" label="DIVIDER_LINE"/>
+  <int value="10" label="QUERY_TILES"/>
+</enum>
+
+<enum name="PartnerCustomizationProviderDelegate">
+  <int value="0" label="None: default delegate inValid"/>
+  <int value="1" label="Phenotype config"/>
+  <int value="2" label="GService flag"/>
+  <int value="3" label="Preload APK"/>
+</enum>
+
+<enum name="PartnerCustomizationsHomepage">
+  <int value="0" label="NTP but unknown if correct"/>
+  <int value="1" label="NTP but should have been Partner Homepage"/>
+  <int value="2" label="NTP correctly"/>
+  <int value="3" label="Partner custom"/>
+  <int value="4" label="Other custom"/>
+</enum>
+
+<enum name="PartnerCustomizationUsage">
+  <int value="0" label="Homepage"/>
+  <int value="1" label="Bookmarks"/>
+  <int value="2" label="Incognito"/>
+</enum>
+
+<enum name="PartnerDelegateUnusedReason">
+  <int value="0" label="Phenotype: before Android Pie"/>
+  <int value="1" label="Phenotype: flag can't commit"/>
+  <int value="2" label="Phenotype: config empty"/>
+  <int value="3" label="GServices: get timestamp exception"/>
+  <int value="4" label="GServices: timestamp missing"/>
+  <int value="5" label="PreloadApk: can't resolve provider"/>
+  <int value="6" label="PreloadApk: not system provider"/>
+</enum>
+
+<enum name="PartnerTaskCompletion">
+  <int value="0" label="None valid"/>
+  <int value="1" label="Completed in time for tab creation"/>
+  <int value="2" label="Completed too late for tab creation"/>
+  <int value="3" label="Cancelled - timeout"/>
+  <int value="4" label="Exception thrown"/>
+  <int value="5" label="Task skipped"/>
+</enum>
+
+<enum name="PhotoPickerDialogAction">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Photo picked"/>
+  <int value="2" label="New photo"/>
+  <int value="3" label="Use Android picker"/>
+</enum>
+
+<enum name="PrimaryCpuAbiBitness">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="32-bit"/>
+  <int value="2" label="64-bit"/>
+</enum>
+
+<enum name="RefineActionUsage">
+  <int value="0" label="Not used"/>
+  <int value="1" label="Used on Search Suggestion in zero-prefix context"/>
+  <int value="2" label="Used on Search Suggestion in non-zero-prefix context"/>
+  <int value="3" label="Used on Search Suggestion in both contexts"/>
+</enum>
+
+<enum name="RestoreTabsOnFREDeviceRestoredFrom">
+  <int value="0" label="User restored tabs from the default selected device"/>
+  <int value="1"
+      label="User restored tabs from the non-default selected device"/>
+  <int value="2"
+      label="User restored tabs from the only synced device available"/>
+</enum>
+
+<enum name="RestoreTabsOnFREPromoShowResult">
+  <int value="0" label="Promo was shown"/>
+  <int value="1" label="Promo was not eligible to show"/>
+  <int value="2"
+      label="Either sync was not enabled, no tabs were synced or synced tabs
+             were not finished syncing"/>
+  <int value="3" label="Promo was not shown due to a null profile"/>
+</enum>
+
+<enum name="RestoreTabsOnFRERestoredTabsResult">
+  <int value="0" label="All tabs were restored"/>
+  <int value="1" label="A subset of tabs were restored"/>
+  <int value="2" label="No tabs were restored and promo was dismissed"/>
+</enum>
+
+<enum name="RestoreTabsOnFREResultAction">
+  <int value="0" label="Promo was accepted"/>
+  <int value="1" label="Promo was dismissed via scrim touch"/>
+  <int value="2" label="Promo was dismissed via backpress"/>
+  <int value="3" label="Promo was dismissed via swipe down"/>
+</enum>
+
+<enum name="SearchPrefetchTouchDownPrefetchResult">
+  <int value="0" label="Hit, last prefetch matches navigation"/>
+  <int value="1" label="Miss, last prefetch does not match navigation"/>
+  <int value="2" label="No prefetch"/>
+</enum>
+
+<enum name="SecondaryActivity">
+  <int value="0" label="Download"/>
+  <int value="1" label="Bookmark"/>
+  <int value="2" label="FirstRun"/>
+  <int value="3" label="LightWeightFirstRun"/>
+  <int value="4" label="History"/>
+  <int value="5" label="Settings"/>
+</enum>
+
+<enum name="SecureCookieAction">
+  <int value="0"
+      label="The provided URL was invalid, so no URL-modification was
+             performed"/>
+  <int value="1"
+      label="Cookie was already for an 'HTTPS' URL, so no URL-modification
+             was performed"/>
+  <int value="2"
+      label="Cookie data was formatted incorrectly, so no URL-modification
+             was performed"/>
+  <int value="3"
+      label="Cookie was not marked as 'Secure', so no URL-modification was
+             performed"/>
+  <int value="4"
+      label="The URL's scheme was fixed up to 'HTTPS' for backwards
+             compatibility (app targets &lt; Android R)"/>
+  <int value="5"
+      label="The cookie was rejected because it uses both 'HTTP' scheme and
+             'Secure' directive (app targets &gt;= Android R)"/>
+</enum>
+
+<enum name="SelectFileDialogContent">
+  <int value="0" label="Photo uploaded by MediaPicker (as per MIME type)"/>
+  <int value="1" label="Video uploaded by MediaPicker (as per MIME type)"/>
+  <int value="2" label="Other type uploaded by MediaPicker (as per MIME type)"/>
+  <int value="3" label="Photo uploaded by MediaPicker (as per extension)"/>
+  <int value="4" label="Video uploaded by MediaPicker (as per extension)"/>
+  <int value="5" label="Other type uploaded by MediaPicker (as per extension)"/>
+  <int value="6" label="Unable to determine type uploaded by MediaPicker"/>
+  <int value="7" label="Photo uploaded by external source (as per MIME type)"/>
+  <int value="8" label="Video uploaded by external source (as per MIME type)"/>
+  <int value="9"
+      label="Other type uploaded by external source (as per MIME type)"/>
+  <int value="10" label="Photo uploaded by external source (as per extension)"/>
+  <int value="11" label="Video uploaded by external source (as per extension)"/>
+  <int value="12"
+      label="Other type uploaded by external source (as per extension)"/>
+  <int value="13" label="Unable to determine type uploaded by external source"/>
+</enum>
+
+<enum name="SelectFileDialogScope">
+  <int value="0" label="Generic files"/>
+  <int value="1" label="Images"/>
+  <int value="2" label="Videos"/>
+  <int value="3" label="Images and videos"/>
+</enum>
+
+<enum name="SelectFileDialogUploadMethods">
+  <int value="0" label="Photo uploaded by MediaPicker"/>
+  <int value="1" label="Video uploaded by MediaPicker"/>
+  <int value="2" label="Other type uploaded by MediaPicker"/>
+  <int value="3" label="Unable to determine type uploaded by MediaPicker"/>
+  <int value="4" label="Photo uploaded by external source"/>
+  <int value="5" label="Video uploaded by external source"/>
+  <int value="6" label="Other type uploaded by external source"/>
+  <int value="7" label="Unable to determine type uploaded by external source"/>
+</enum>
+
+<enum name="SiteLayout">
+  <summary>See Android.RequestDesktopSite.Changed</summary>
+  <int value="0" label="Mobile"/>
+  <int value="1" label="Desktop"/>
+</enum>
+
+<enum name="SpareTabFinalStatus">
+  <int value="0" label="Tab Created Not Used"/>
+  <int value="1" label="Tab Creation In Progress"/>
+  <int value="2" label="Tab Used"/>
+  <int value="3" label="Tab Crashed"/>
+  <int value="4" label="Tab Destroyed"/>
+</enum>
+
+<enum name="StackingAnimationThreeStackedType">
+  <summary>
+    The scenarios of stacking animation when it is posisble to have 3 messages
+    on the screen.
+  </summary>
+  <int value="0"
+      label="HIGH_PRIORITY - A high-priority message is inserted to a full
+             container"/>
+  <int value="1"
+      label="IN_SEQUENCE - The front message is dismissed in a full container
+             and a 3rd message is incoming."/>
+</enum>
+
+<enum name="StackingAnimationType">
+  <summary>
+    The type of stacking animation when it is triggered. The type indicates the
+    relation between current displayed messages and incoming messages.
+  </summary>
+  <int value="0"
+      label="SHOW_ALL - 2 messages fill the empty message container"/>
+  <int value="1"
+      label="SHOW_FRONT_ONLY - 1 message fills the empty message container"/>
+  <int value="2"
+      label="REMOVE_FRONT_AND_SHOW_BACK - remove front and the back will be
+             brought to front"/>
+  <int value="3" label="REMOVE_ALL - remove 2 messages"/>
+  <int value="4" label="REMOVE_FRONT_ONLY - remove the only message"/>
+  <int value="5" label="REMOVE_BACK_ONLY - remove back message and keep front"/>
+  <int value="6" label="SHOW_BACK_ONLY - insert a new message at back"/>
+  <int value="7" label="INSERT_AT_FRONT - insert a new message at front"/>
+</enum>
+
+<enum name="StandbyBucket">
+  <int value="0" label="Active"/>
+  <int value="1" label="WorkingSet"/>
+  <int value="2" label="Frequent"/>
+  <int value="3" label="Rare"/>
+  <int value="4" label="Restricted"/>
+  <int value="5" label="Exempted"/>
+</enum>
+
+<enum name="SurveyDownloadResponseCodes2">
+  <summary>
+    Results when download survey response is available. Used by
+    Android.Survey.SurveyDownloadResponseCodes2.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Backend timeout"/>
+  <int value="2" label="Failed to fetch survey"/>
+  <int value="3" label="No available survey"/>
+  <int value="4" label="Trigger Id not set"/>
+  <int value="5" label="Unsupported Cronet engine"/>
+</enum>
+
+<enum name="SurveyFilteringResult">
+  <int value="0" label="Survey prompt already displayed"/>
+  <int value="1" label="Chrome Home enabled for less than one week [removed]"/>
+  <int value="2" label="Force Survey On command present"/>
+  <int value="3" label="User already sampled today"/>
+  <int value="4" label="Max number is missing"/>
+  <int value="5" label="Rolled a non-zero number"/>
+  <int value="6" label="User selected for survey"/>
+  <int value="7" label="Survey already exists [removed]"/>
+  <int value="8" label="First time user"/>
+  <int value="9" label="User prompted survey"/>
+  <int value="10" label="Other survey displayed recently"/>
+</enum>
+
+<enum name="SurveyPresentationStatusCode">
+  <summary>
+    Results when survey has been download and requested to be shown. Used by
+    Android.Survey.ShowSurveyStatus.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Account changed or signed out"/>
+  <int value="2" label="Survey container was invalid"/>
+  <int value="3" label="Survey data was unavailable"/>
+  <int value="4" label="Client activity was destroyed"/>
+  <int value="5" label="Client activity was finishing"/>
+  <int value="6" label="Client activity was invalid"/>
+  <int value="7" label="Survey completion style was invalid"/>
+  <int value="8" label="Survey prompt style was invalid"/>
+  <int value="9" label="Survey data type was invalid"/>
+  <int value="10" label="Survey payload was invalid"/>
+  <int value="11" label="Survey was already running"/>
+  <int value="12" label="Survey had expired"/>
+  <int value="13" label="Unknown reason for failure"/>
+</enum>
+
+<enum name="TabListEditorShareActionState">
+  <int value="0" label="UNKNOWN_SHARE_STATE"/>
+  <int value="1" label="SUCCESSFULLY_SHARED_TABS"/>
+  <int value="2" label="FAILED_SHARE_ALL_TABS_FILTERED"/>
+</enum>
+
+<enum name="ToolbarCaptureType">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="TOP"/>
+  <int value="2" label="BOTTOM"/>
+</enum>
+
+<enum name="ToolbarInMotionStage">
+  <int value="0" label="SUPPRESSION_ENABLED"/>
+  <int value="1" label="READINESS_CHECKED"/>
+</enum>
+
+<enum name="ToolbarSnapshotDifference">
+  <int value="0" label="NONE">
+    This value will not be reported, only other actaul differences will be
+    reported.
+  </int>
+  <int value="1" label="NULL"/>
+  <int value="2" label="TINT"/>
+  <int value="3" label="TAB_COUNT"/>
+  <int value="4" label="OPTIONAL_BUTTON"/>
+  <int value="5" label="VISUAL_STATE"/>
+  <int value="6" label="SECURITY_ICON"/>
+  <int value="7" label="SHOWING_UPDATE_BADGE"/>
+  <int value="8" label="PAINT_PREVIEW"/>
+  <int value="9" label="PROGRESS"/>
+  <int value="10" label="LOCATION_BAR_WIDTH"/>
+  <int value="11" label="URL_TEXT"/>
+  <int value="12" label="HOME_BUTTON"/>
+  <int value="13" label="TITLE_TEXT"/>
+  <int value="14" label="CCT_ANIMATION"/>
+  <int value="15" label="BOOKMARK_BUTTON"/>
+  <int value="16" label="BACK_BUTTON"/>
+  <int value="17" label="FORWARD_BUTTON"/>
+  <int value="18" label="RELOAD_BUTTON"/>
+  <int value="19" label="MINIMIZE_BUTTON"/>
+</enum>
+
+<enum name="TopToolbarAllowCaptureReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="FORCE_CAPTURE"/>
+  <int value="2" label="SNAPSHOT_DIFFERENCE"/>
+</enum>
+
+<enum name="TopToolbarBlockCaptureReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="TOOLBAR_OR_RESULT_NULL"/>
+  <int value="2" label="SUPER_NOT_DIRTY"/>
+  <int value="3" label="SNAPSHOT_SAME"/>
+  <int value="4" label="URL_BAR_HAS_FOCUS"/>
+  <int value="5" label="URL_BAR_FOCUS_IN_PROGRESS"/>
+  <int value="6" label="OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS"/>
+  <int value="7" label="STATUS_ICON_ANIMATION_IN_PROGRESS"/>
+  <int value="8" label="SCROLL_ABLATION"/>
+  <int value="9" label="BROWSER_CONTROLS_LOCKED"/>
+  <int value="10" label="TAB_SWITCHER_MODE"/>
+  <int value="11" label="COMPOSITOR_IN_MOTION"/>
+  <int value="12" label="NTP_Y_TRANSLATION"/>
+  <int value="13" label="FULLSCREEN"/>
+</enum>
+
+<enum name="UserAgentMetadataAvailableType">
+  <int value="0" label="System default user-agent client hints"/>
+  <int value="1" label="System default low entropy user-agent client hints"/>
+  <int value="2" label="User overridden user-agent client hints"/>
+</enum>
+
+<enum name="VersionCode">
+<!-- VersionCode values span the entire int, but fake an enum instead.
+  A numeric type involve percentiles which don't make sense here -->
+
+  <int value="0" label="Unknown"/>
+</enum>
+
+<enum name="WebViewApiCall">
+  <int value="0" label="addJavascriptInterface"/>
+  <int value="1" label="autofill"/>
+  <int value="2" label="canGoBack"/>
+  <int value="3" label="canGoBackOrForward"/>
+  <int value="4" label="canGoForward"/>
+  <int value="5" label="canZoomIn"/>
+  <int value="6" label="canZoomOut"/>
+  <int value="7" label="capturePicture"/>
+  <int value="8" label="clearCache"/>
+  <int value="9" label="clearFormData"/>
+  <int value="10" label="clearHistory"/>
+  <int value="11" label="clearMatches"/>
+  <int value="12" label="clearSslPreferences"/>
+  <int value="13" label="clearView"/>
+  <int value="14" label="copyBackForwardList"/>
+  <int value="15" label="createPrintDocumentAdapter"/>
+  <int value="16" label="createWebmessageChannel"/>
+  <int value="17" label="documentHasImages"/>
+  <int value="18" label="doesSupportFullscreen"/>
+  <int value="19" label="evaluateJavascript"/>
+  <int value="20" label="extractSmartClipData"/>
+  <int value="21" label="findNext"/>
+  <int value="22" label="getCertificate"/>
+  <int value="23" label="getContentHeight"/>
+  <int value="24" label="getContentWidth"/>
+  <int value="25" label="getFavicon"/>
+  <int value="26" label="getHitTestResult"/>
+  <int value="27" label="getHttpAuthUsernamePassword"/>
+  <int value="28" label="getOriginalUrl"/>
+  <int value="29" label="getProgress"/>
+  <int value="30" label="getScale"/>
+  <int value="31" label="getSettings"/>
+  <int value="32" label="getTextClassifier"/>
+  <int value="33" label="getTitle"/>
+  <int value="34" label="getUrl"/>
+  <int value="35" label="getWebchromeClient"/>
+  <int value="36" label="getWebviewClient"/>
+  <int value="37" label="goBack"/>
+  <int value="38" label="goBackOrForward"/>
+  <int value="39" label="goForward"/>
+  <int value="40" label="insertVisualStateCallback"/>
+  <int value="41" label="invokeZoomPicker"/>
+  <int value="42" label="isPaused"/>
+  <int value="43" label="isPrivateBrowsingEnabled"/>
+  <int value="44" label="loadData"/>
+  <int value="45" label="loadDataWithBaseUrl"/>
+  <int value="46" label="notifyFindDialogDismissed"/>
+  <int value="47" label="onPause"/>
+  <int value="48" label="onProvideAutofillVirtualStructure"/>
+  <int value="49" label="onResume"/>
+  <int value="50" label="overlayHorizontalScrollbar"/>
+  <int value="51" label="overlayVerticalScrollbar"/>
+  <int value="52" label="pageDown"/>
+  <int value="53" label="pageUp"/>
+  <int value="54" label="pauseTimers"/>
+  <int value="55" label="postMessageToMainFrame"/>
+  <int value="56" label="postUrl"/>
+  <int value="57" label="reload"/>
+  <int value="58" label="removeJavascriptInterface"/>
+  <int value="59" label="requestFocusNodeHref"/>
+  <int value="60" label="requestImageRef"/>
+  <int value="61" label="restoreState"/>
+  <int value="62" label="resumeTimers"/>
+  <int value="63" label="saveState"/>
+  <int value="64" label="setDownloadListener"/>
+  <int value="65" label="setFindListener"/>
+  <int value="66" label="setHorizontalScrollbarOverlay"/>
+  <int value="67" label="setHttpAuthUsernamePassword"/>
+  <int value="68" label="setInitialScale"/>
+  <int value="69" label="setNetworkAvailable"/>
+  <int value="70" label="setPictureListener"/>
+  <int value="71" label="setSmartClipResultHandler"/>
+  <int value="72" label="setTextClassifier"/>
+  <int value="73" label="setVerticalScrollbarOverlay"/>
+  <int value="74" label="setWebchromeClient"/>
+  <int value="75" label="setWebviewClient"/>
+  <int value="76" label="showFindDialog"/>
+  <int value="77" label="stopLoading"/>
+  <int value="78" label="WebViewDatabase.getHttpAuthUsernamePassword"/>
+  <int value="79" label="WebViewDatabase.clearFormData"/>
+  <int value="80" label="WebViewDatabase.clearHttpAuthUsernamePassword"/>
+  <int value="81" label="WebViewDatabase.clearUsernamePassword"/>
+  <int value="82" label="WebViewDatabase.hasFormData"/>
+  <int value="83" label="WebViewDatabase.hasHttpAuthUsernamePassword"/>
+  <int value="84" label="WebViewDatabase.hasUsernamePassword"/>
+  <int value="85" label="WebViewDatabase.setHttpAuthUsernamePassword"/>
+  <int value="86" label="CookieManager.acceptCookie"/>
+  <int value="87" label="CookieManager.acceptThirdPartyCookies"/>
+  <int value="88" label="CookieManager.flush"/>
+  <int value="89" label="CookieManager.getCookie"/>
+  <int value="90" label="CookieManager.hasCookies"/>
+  <int value="91" label="CookieManager.removeAllCookie"/>
+  <int value="92" label="CookieManager.removeAllCookies"/>
+  <int value="93" label="CookieManager.removeExpiredCookie"/>
+  <int value="94" label="CookieManager.removeSessionCookie"/>
+  <int value="95" label="CookieManager.removeSessionCookies"/>
+  <int value="96" label="CookieManager.setAcceptCookie"/>
+  <int value="97" label="CookieManager.setAcceptFileSchemeCookies"/>
+  <int value="98" label="CookieManager.setAcceptThirdPartyCookies"/>
+  <int value="99" label="CookieManager.setCookie"/>
+  <int value="100" label="WebStorage.deleteAllData"/>
+  <int value="101" label="WebStorage.deleteOrigin"/>
+  <int value="102" label="WebStorage.getOrigins"/>
+  <int value="103" label="WebStorage.getQuotaForOrigin"/>
+  <int value="104" label="WebStorage.getUsageForOrigin"/>
+  <int value="105" label="WebSettings.getAllowContentAccess"/>
+  <int value="106" label="WebSettings.getAllowFileAccess"/>
+  <int value="107" label="WebSettings.getAllowFileAccessFromFileURLs"/>
+  <int value="108" label="WebSettings.getAllowUniversalAccessFromFileURLs"/>
+  <int value="109" label="WebSettings.getBlockNetworkImage"/>
+  <int value="110" label="WebSettings.getBlockNetworkLoads"/>
+  <int value="111" label="WebSettings.getBuiltInZoomControls"/>
+  <int value="112" label="WebSettings.getCacheMode"/>
+  <int value="113" label="WebSettings.getCursiveFontFamily"/>
+  <int value="114" label="WebSettings.getDatabaseEnabled"/>
+  <int value="115" label="WebSettings.getDefaultFixedFontSize"/>
+  <int value="116" label="WebSettings.getDefaultFontSize"/>
+  <int value="117" label="WebSettings.getDefaultTextEncodingName"/>
+  <int value="118" label="WebSettings.getDisabledActionModeMenuItems"/>
+  <int value="119" label="WebSettings.getDisplayZoomControls"/>
+  <int value="120" label="WebSettings.getDomStorageEnabled"/>
+  <int value="121" label="WebSettings.getFantasyFontFamily"/>
+  <int value="122" label="WebSettings.getFixedFontFamily"/>
+  <int value="123" label="WebSettings.getForceDark"/>
+  <int value="124"
+      label="WebSettings.getJavaScriptCanOpenWindowsAutomatically"/>
+  <int value="125" label="WebSettings.getJavaScriptEnabled"/>
+  <int value="126" label="WebSettings.getLayoutAlgorithm"/>
+  <int value="127" label="WebSettings.getLoadWithOverviewMode"/>
+  <int value="128" label="WebSettings.getLoadsImagesAutomatically"/>
+  <int value="129" label="WebSettings.getMediaPlaybackRequiresUserGesture"/>
+  <int value="130" label="WebSettings.getMinimumFontSize"/>
+  <int value="131" label="WebSettings.getMinimumLogicalFontSize"/>
+  <int value="132" label="WebSettings.getMixedContentMode"/>
+  <int value="133" label="WebSettings.getOffscreenPreRaster"/>
+  <int value="134" label="WebSettings.getPluginState"/>
+  <int value="135" label="WebSettings.getSafeBrowsingEnabled"/>
+  <int value="136" label="WebSettings.getSansSerifFontFamily"/>
+  <int value="137" label="WebSettings.getSaveFormData"/>
+  <int value="138" label="WebSettings.getSerifFontFamily"/>
+  <int value="139" label="WebSettings.getStandardFontFamily"/>
+  <int value="140" label="WebSettings.getTextZoom"/>
+  <int value="141" label="WebSettings.getUseWideViewPort"/>
+  <int value="142" label="WebSettings.getUserAgentString"/>
+  <int value="143" label="WebSettings.setAllowContentAccess"/>
+  <int value="144" label="WebSettings.setAllowFileAccess"/>
+  <int value="145" label="WebSettings.setAllowFileAccessFromFileURLs"/>
+  <int value="146" label="WebSettings.setAllowUniversalAccessFromFileURLs"/>
+  <int value="147" label="WebSettings.setBlockNetworkImage"/>
+  <int value="148" label="WebSettings.setBlockNetworkLoads"/>
+  <int value="149" label="WebSettings.setBuiltInZoomControls"/>
+  <int value="150" label="WebSettings.setCacheMode"/>
+  <int value="151" label="WebSettings.setCursiveFontFamily"/>
+  <int value="152" label="WebSettings.setDatabaseEnabled"/>
+  <int value="153" label="WebSettings.setDefaultFixedFontSize"/>
+  <int value="154" label="WebSettings.setDefaultFontSize"/>
+  <int value="155" label="WebSettings.setDefaultTextEncodingName"/>
+  <int value="156" label="WebSettings.setDisabledActionModeMenuItems"/>
+  <int value="157" label="WebSettings.setDisplayZoomControls"/>
+  <int value="158" label="WebSettings.setDomStorageEnabled"/>
+  <int value="159" label="WebSettings.setFantasyFontFamily"/>
+  <int value="160" label="WebSettings.setFixedFontFamily"/>
+  <int value="161" label="WebSettings.setGeolocationEnabled"/>
+  <int value="162"
+      label="WebSettings.setJavaScriptCanOpenWindowsAutomatically"/>
+  <int value="163" label="WebSettings.setJavaScriptEnabled"/>
+  <int value="164" label="WebSettings.setLayoutAlgorithm"/>
+  <int value="165" label="WebSettings.setLoadWithOverviewMode"/>
+  <int value="166" label="WebSettings.setLoadsImagesAutomatically"/>
+  <int value="167" label="WebSettings.setMediaPlaybackRequiresUserGesture"/>
+  <int value="168" label="WebSettings.setMinimumFontSize"/>
+  <int value="169" label="WebSettings.setMinimumLogicalFontSize"/>
+  <int value="170" label="WebSettings.setMixedContentMode"/>
+  <int value="171" label="WebSettings.setNeedInitialFocus"/>
+  <int value="172" label="WebSettings.setOffscreenPreRaster"/>
+  <int value="173" label="WebSettings.setPluginState"/>
+  <int value="174" label="WebSettings.setSafeBrowsingEnabled"/>
+  <int value="175" label="WebSettings.setSansSerifFontFamily"/>
+  <int value="176" label="WebSettings.setSaveFormData"/>
+  <int value="177" label="WebSettings.setSerifFontFamily"/>
+  <int value="178" label="WebSettings.setStandardFontFamily"/>
+  <int value="179" label="WebSettings.setSupportMultipleWindows"/>
+  <int value="180" label="WebSettings.setSupportZoom"/>
+  <int value="181" label="WebSettings.setTextSize"/>
+  <int value="182" label="WebSettings.setTextZoom"/>
+  <int value="183" label="WebSettings.setUseWideViewPort"/>
+  <int value="184" label="WebSettings.setUserAgentString"/>
+  <int value="185" label="WebSettings.supportMultipleWindows"/>
+  <int value="186" label="WebSettings.supportZoom"/>
+  <int value="187" label="getRendererRequestedPriority"/>
+  <int value="188" label="getRendererPriorityWaivedWhenNotVisible"/>
+  <int value="189" label="setRendererPriorityPolicy"/>
+  <int value="190" label="loadUrl"/>
+  <int value="191" label="loadUrlAdditionalHeaders"/>
+  <int value="192" label="destroy"/>
+  <int value="193" label="saveWebArchive"/>
+  <int value="194" label="findAllAsync"/>
+  <int value="195" label="getWebViewRenderProcess"/>
+  <int value="196" label="setWebViewRenderProcessClient"/>
+  <int value="197" label="getWebViewRenderProcessClient"/>
+  <int value="198" label="flingScroll"/>
+  <int value="199" label="zoomIn"/>
+  <int value="200" label="zoomOut"/>
+  <int value="201" label="zoomBy"/>
+  <int value="202" label="onProvideContentCaptureStructure"/>
+  <int value="203" label="getAccessibilityNodeProvider"/>
+  <int value="204" label="onProvideVirtualStructure"/>
+  <int value="205" label="setOverScrollMode"/>
+  <int value="206" label="setScrollBarStyle"/>
+  <int value="207" label="setLayoutParams"/>
+  <int value="208" label="performLongClick"/>
+  <int value="209" label="requestFocus"/>
+  <int value="210" label="requestChildRectangleOnScreen"/>
+  <int value="211" label="setBackgroundColor"/>
+  <int value="212" label="setLayerType"/>
+  <int value="213" label="getHandler"/>
+  <int value="214" label="findFocus"/>
+  <int value="215" label="computeScroll"/>
+  <int value="216" label="setWebViewClient"/>
+  <int value="217" label="WebSettings.setUserAgent"/>
+  <int value="218" label="WebSettings.setForceDark"/>
+  <int value="219" label="WebSettings.setAlgorithmicDarkeningAllowed"/>
+  <int value="220" label="WebSettings.isAlgorithmicDarkeningAllowed"/>
+  <int value="221" label="CookieManager.allowFileSchemeCookies"/>
+</enum>
+
+<enum name="WebViewApiCallStatic">
+  <int value="0" label="findAddress"/>
+  <int value="1" label="getDefaultUserAgent"/>
+  <int value="2" label="setWebContentsDebuggingEnabled"/>
+  <int value="3" label="clearClientCertPreferences"/>
+  <int value="4" label="enableSlowWholeDocumentDraw"/>
+  <int value="5" label="getSafeBrowsingPrivacyPolicyUrl"/>
+</enum>
+
+<enum name="WebViewApiCallSystem">
+  <int value="0" label="onTouchEvent"/>
+  <int value="1" label="onDragEvent"/>
+  <int value="2" label="onCreateInputConnection"/>
+  <int value="3" label="onKeyMultiple"/>
+  <int value="4" label="onKeyDown"/>
+  <int value="5" label="onKeyUp"/>
+  <int value="6" label="onFocusChanged"/>
+  <int value="7" label="dispatchKeyEvent"/>
+  <int value="8" label="onHoverEvent"/>
+  <int value="9" label="onGenericMotionEvent"/>
+  <int value="10" label="onTrackballEvent"/>
+  <int value="11" label="onStartTemporaryDetach"/>
+  <int value="12" label="onFinishTemporaryDetach"/>
+  <int value="13" label="onCheckIsTextEditor"/>
+  <int value="14" label="onWindowFocusChanged"/>
+</enum>
+
+<enum name="WebViewCallbackType">
+  <int value="0" label="onReceivedLoginRequest"/>
+  <int value="1" label="onReceivedClientCertRequest"/>
+  <int value="2" label="onReceivedHttpAuthRequest"/>
+  <int value="3" label="onDownloadStart"/>
+  <int value="4" label="onPageStarted"/>
+  <int value="5" label="onPageFinished"/>
+  <int value="6" label="onLoadResource"/>
+  <int value="7" label="onPageCommitVisible"/>
+  <int value="8" label="shouldOverrideUrlLoading"/>
+  <int value="9" label="shouldInterceptRequest"/>
+  <int value="10" label="onReceivedError"/>
+  <int value="11" label="onSafeBrowsingHit"/>
+  <int value="12" label="onReceivedHttpError"/>
+  <int value="13" label="getVisitedHistory"/>
+  <int value="14" label="doUpdateVisitedHistory"/>
+  <int value="15" label="onProgressChanged"/>
+  <int value="16" label="onUnhandledKeyEvent"/>
+  <int value="17" label="onConsoleMessage"/>
+  <int value="18" label="onCreateWindow"/>
+  <int value="19" label="onCloseWindow"/>
+  <int value="20" label="onRequestFocus"/>
+  <int value="21" label="onReceivedTouchIconUrl"/>
+  <int value="22" label="onReceivedIcon"/>
+  <int value="23" label="onReceivedTitle"/>
+  <int value="24" label="shouldOverrideKeyEvent"/>
+  <int value="25" label="onGeolocationPermissionsShowPrompt"/>
+  <int value="26" label="onGeolocationPermissionsHidePrompt"/>
+  <int value="27" label="onPermissionRequest"/>
+  <int value="28" label="onPermissionRequestCanceled"/>
+  <int value="29" label="onJsAlert"/>
+  <int value="30" label="onJsBeforeUnload"/>
+  <int value="31" label="onJsConfirm"/>
+  <int value="32" label="onJsPrompt"/>
+  <int value="33" label="onReceivedSslError"/>
+  <int value="34" label="onFormResubmission"/>
+  <int value="35" label="onShowCustomView"/>
+  <int value="36" label="onHideCustomView"/>
+  <int value="37" label="getDefaultVideoPoster"/>
+  <int value="38" label="onRenderProcessGone"/>
+  <int value="39" label="onScaleChanged"/>
+</enum>
+
+<enum name="WebViewClientTypeEnum">
+  <int value="0" label="Regular WebViewClient"/>
+  <int value="1" label="WebViewClientCompat (via AndroidX)"/>
+</enum>
+
+<enum name="WebViewComponentUpdaterGetFilesResult">
+  <int value="0" label="Sucess"/>
+  <int value="1" label="Failed (component not installed)"/>
+  <int value="2" label="Failed (no versions)"/>
+  <int value="3" label="Failed (no file descriptors)"/>
+  <int value="4" label="Failed (error opening file descriptors)"/>
+  <int value="5" label="Failed (Component Updater SafeMode enabled)"/>
+</enum>
+
+<enum name="WebViewDrawAndSubmissionType">
+  <int value="0" label="No invalidate + no submission + same params"/>
+  <int value="1" label="Params changed"/>
+  <int value="2" label="Frame submitted"/>
+  <int value="3" label="Frame submitted + params changed"/>
+  <int value="4" label="Invalidate"/>
+  <int value="5" label="Invalidate + params changed"/>
+  <int value="6" label="Invalidate + frame submitted"/>
+  <int value="7" label="Invalidate + frame submitted + params changed"/>
+</enum>
+
+<enum name="WebViewForceDarkBehavior">
+  <int value="0" label="Force dark only"/>
+  <int value="1" label="Media query only"/>
+  <int value="2" label="Prefer media query over force dark"/>
+</enum>
+
+<enum name="WebViewForceDarkMode">
+  <int value="0" label="OS undefined, WebView off"/>
+  <int value="1" label="OS undefined, WebView auto"/>
+  <int value="2" label="OS undefined, WebView on"/>
+  <int value="3" label="OS no, WebView off"/>
+  <int value="4" label="OS no, WebView auto"/>
+  <int value="5" label="OS no, WebView on"/>
+  <int value="6" label="OS yes, WebView off"/>
+  <int value="7" label="OS yes, WebView auto"/>
+  <int value="8" label="OS yes, WebView on"/>
+</enum>
+
+<enum name="WebViewForceDarkMode2">
+  <int value="0" label="off"/>
+  <int value="1" label="auto"/>
+  <int value="2" label="on"/>
+</enum>
+
+<enum name="WebViewInDarkModeVsLightTheme">
+  <int value="0" label="WebView dark, light theme undefined"/>
+  <int value="1" label="WebView dark, light theme no"/>
+  <int value="2" label="WebView dark, light theme yes"/>
+  <int value="3" label="WebView light, light theme undefined"/>
+  <int value="4" label="WebView light, light theme no"/>
+  <int value="5" label="WebView light, light theme yes"/>
+</enum>
+
+<enum name="WebViewInDarkModeVsNightMode">
+  <int value="0" label="WebView dark, night mode undefined"/>
+  <int value="1" label="WebView dark, night mode on"/>
+  <int value="2" label="WebView dark, night mode off"/>
+  <int value="3" label="WebView light, night mode undefined"/>
+  <int value="4" label="WebView light, night mode on"/>
+  <int value="5" label="WebView light, night mode off"/>
+</enum>
+
+<enum name="WebViewMixedContentMode">
+  <int value="0" label="Always allow"/>
+  <int value="1" label="Never allow"/>
+  <int value="2" label="Compatibility Mode"/>
+</enum>
+
+<enum name="WebViewNightModeVsLightTheme">
+  <int value="0" label="Night mode undefined, light theme undefined"/>
+  <int value="1" label="Night mode undefined, light theme no"/>
+  <int value="2" label="Night mode undefined, light theme yes"/>
+  <int value="3" label="Night mode on, light theme undefined"/>
+  <int value="4" label="Night mode on, light theme no"/>
+  <int value="5" label="Night mode on, light theme yes"/>
+  <int value="6" label="Night mode off, light theme undefined"/>
+  <int value="7" label="Night mode off, light theme no"/>
+  <int value="8" label="Night mode off, light theme yes"/>
+</enum>
+
+<enum name="WebViewPrimaryTextLuminanceVsLightTheme">
+  <int value="0" label="Text undefined, light theme undefined"/>
+  <int value="1" label="Text undefined, light theme no"/>
+  <int value="2" label="Text undefined, light theme yes"/>
+  <int value="3" label="Text light, light theme undefined"/>
+  <int value="4" label="Text light, light theme no"/>
+  <int value="5" label="Text light, light theme yes"/>
+  <int value="6" label="Text dark, light theme undefined"/>
+  <int value="7" label="Text dark, light theme no"/>
+  <int value="8" label="Text dark, light theme yes"/>
+</enum>
+
+<enum name="WebViewPrimaryTextLuminanceVsNightMode">
+  <int value="0" label="Text undefined, night mode undefined"/>
+  <int value="1" label="Text undefined, night mode on"/>
+  <int value="2" label="Text undefined, night mode off"/>
+  <int value="3" label="Text light, night mode undefined"/>
+  <int value="4" label="Text light, night mode on"/>
+  <int value="5" label="Text light, night mode off"/>
+  <int value="6" label="Text dark, night mode undefined"/>
+  <int value="7" label="Text dark, night mode on"/>
+  <int value="8" label="Text dark, night mode off"/>
+</enum>
+
+<enum name="WebViewUrlScheme">
+  <int value="0" label="Empty URL"/>
+  <int value="1" label="Unknown scheme"/>
+  <int value="2" label="HTTP"/>
+  <int value="3" label="HTTPS"/>
+  <int value="4" label="File"/>
+  <int value="5" label="Ftp"/>
+  <int value="6" label="Data"/>
+  <int value="7" label="Javascript"/>
+  <int value="8" label="About"/>
+  <int value="9" label="Chrome"/>
+  <int value="10" label="Blob"/>
+  <int value="11" label="Content"/>
+  <int value="12" label="Intent"/>
+  <int value="13" label="android_asset or android_res"/>
+</enum>
+
+<enum name="WebViewVisibility">
+  <int value="0" label="Visible"/>
+  <int value="1" label="NotVisible"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

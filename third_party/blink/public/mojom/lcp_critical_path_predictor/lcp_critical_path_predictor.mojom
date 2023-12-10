@@ -11,7 +11,10 @@ import "url/mojom/url.mojom";
 interface LCPCriticalPathPredictorHost {
   // `lcp_element_locator` is a LCP ElementLocator information
   // serialized in proto3 binary format.
-  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator);
+  // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
+  //  LCPCriticalPathPredictorNavigationTimeHint.
+  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator,
+    uint32? predicted_lcp_index);
 
   // `lcp_influencer_scripts` contain the list of script URLs that affected
   // the LCP element.

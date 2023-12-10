@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />ನೇ ಪುಟವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1113173431709655881">ಕ್ಯಾಮರಾ ಮೋಡ್</translation>
 <translation id="1153190633558910465">ಗ್ರಿಡ್ ಆಫ್ ಮಾಡಿ</translation>
-<translation id="1175958423215084756">ಲಿಂಕ್ ಪತ್ತೆಯಾಗಿದೆ. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />ನೇ ಪುಟವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1258009455399840361">ಪ್ರದಕ್ಷಿಣಾಕಾರವಾಗಿ 90 ಡಿಗ್ರಿಗಳಷ್ಟು ತಿರುಗಿಸಿ</translation>
 <translation id="1417314334557041815">ಪುಟ <ph name="INDEX" /> ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ವೀಡಿಯೊ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3789724198583203151">ಅಪ್ರದಕ್ಷಿಣಾಕಾರವಾಗಿ 90 ಡಿಗ್ರಿಗಳಷ್ಟು ತಿರುಗಿಸಿ</translation>
 <translation id="3810838688059735925">ವೀಡಿಯೊ</translation>
-<translation id="3892148308691398805">ಪಠ್ಯ ನಕಲಿಸಿ</translation>
 <translation id="4060608699153044055">ಸಾಧನದಲ್ಲಿ ಕಡಿಮೆ ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ಇರುವ ಕಾರಣ ನೀವು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ರೆಕಾರ್ಡಿಂಗ್ ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="4121305183798804752">ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="414641094616694804">ಈ ಕ್ಯಾಮರಾ ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="428234092390943511">ಪುಟದ ಥಂಬ್‌ನೇಲ್</translation>
 <translation id="4349714250734879769">Chrome ನ ಫ್ರೇಮ್‌ಗಳನ್ನು ಸ್ಕೇಲ್ ಮಾಡಿ</translation>
 <translation id="4383571725254449280">ಕಾರ್ಯಕ್ಷಮತೆ ಲಾಗ್‌ಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">ಸಾಮಾನ್ಯ ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7748344063862150053">ಡಾಕ್ಯುಮೆಂಟ್ ಮೇಲಿನ ಬಲ ಮೂಲೆ</translation>
 <translation id="7933675232020478311">ಕೆಳಗೆ ಬಲ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
-<translation id="7983668134180549431">ಪಠ್ಯ ಪತ್ತೆಯಾಗಿದೆ.</translation>
 <translation id="8079255378695216066">ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8120146556401698679">ಪ್ಯಾನ್ ಮಾಡಿ ಟಿಲ್ಟ್ ಮಾಡಿ ಝೂಮ್ ಮಾಡಿ</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8880167521484863515">4 ರಿಂದ 3</translation>
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="9045010116236796332">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ</translation>
 <translation id="9045155556724273246">10 ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="906331135292332864">ಚಿತ್ರವನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>

@@ -14,7 +14,7 @@ var ADDRESS_LEVEL2 = 'Address level 2';
 var ADDRESS_LEVEL3 = 'Address level 3';
 var POSTAL_CODE = 'Postal code';
 var SORTING_CODE = 'Sorting code';
-var COUNTRY_CODE = 'US';
+var COUNTRY_CODE = 'DE';
 var PHONE = '1 123-123-1234';
 var EMAIL = 'johndoe@gmail.com';
 var CARD_NAME = 'CardName';
@@ -145,7 +145,7 @@ var availableTests = [
   },
 
   function getAddressComponents() {
-    var COUNTRY_CODE = 'US';
+    var COUNTRY_CODE = 'DE';
 
     var handler = function(components) {
       chrome.test.assertTrue(!!components.components);
@@ -330,7 +330,8 @@ var availableTests = [
         chrome.test.callbackPass(function(cardList) {
           chrome.test.assertEq([], cardList);
 
-          // Setup the callback that verifies that the card was correctly added.
+          // Set up the callback that verifies that the card was correctly
+          // added.
           chrome.test.listenOnce(
               chrome.autofillPrivate.onPersonalDataChanged,
               chrome.test.callbackPass(function(addressList, cardList) {
@@ -352,6 +353,49 @@ var availableTests = [
             expirationMonth: EXP_MONTH,
             expirationYear: EXP_YEAR,
             cvc: CVC
+          });
+        }));
+  },
+
+  function addNewCreditCardWithoutCvc() {
+    function filterCardProperties(cards) {
+      return cards.map(cards => {
+        var filteredCards = {};
+        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname',
+         'cvc']
+            .forEach(property => {
+              filteredCards[property] = cards[property];
+            });
+        return filteredCards;
+      });
+    }
+
+    chrome.autofillPrivate.getCreditCardList(
+        chrome.test.callbackPass(function(cardList) {
+          chrome.test.assertEq([], cardList);
+
+          // Set up the callback that verifies that the card was correctly
+          // added.
+          chrome.test.listenOnce(
+              chrome.autofillPrivate.onPersonalDataChanged,
+              chrome.test.callbackPass(function(addressList, cardList) {
+                chrome.test.assertEq(
+                    [{
+                      name: CARD_NAME,
+                      cardNumber: MASKED_NUMBER,
+                      expirationMonth: EXP_MONTH,
+                      expirationYear: EXP_YEAR,
+                      nickname: undefined,
+                      cvc: undefined
+                    }],
+                    filterCardProperties(cardList));
+              }));
+
+          chrome.autofillPrivate.saveCreditCard({
+            name: CARD_NAME,
+            cardNumber: NUMBER,
+            expirationMonth: EXP_MONTH,
+            expirationYear: EXP_YEAR
           });
         }));
   },
@@ -579,6 +623,12 @@ var availableTests = [
               }));
         }));
   },
+
+  function bulkDeleteAllCvcs() {
+    chrome.autofillPrivate.bulkDeleteAllCvcs();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -601,6 +651,7 @@ var TESTS_FOR_CONFIG = {
   'authenticateUserAndFlipMandatoryAuthToggle':
       ['authenticateUserAndFlipMandatoryAuthToggle'],
   'getLocalCard': ['addNewCreditCard', 'getLocalCard'],
+  'bulkDeleteAllCvcs': ['bulkDeleteAllCvcs'],
 };
 
 var testConfig = window.location.search.substring(1);

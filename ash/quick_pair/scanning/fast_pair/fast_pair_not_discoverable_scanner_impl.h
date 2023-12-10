@@ -80,9 +80,9 @@ class FastPairNotDiscoverableScannerImpl
  private:
   void OnAdvertisementParsed(
       const std::string& address,
-      const absl::optional<NotDiscoverableAdvertisement>& advertisement);
+      const std::optional<NotDiscoverableAdvertisement>& advertisement);
   void OnAccountKeyFilterCheckResult(const std::string& address,
-                                     absl::optional<PairingMetadata> metadata);
+                                     std::optional<PairingMetadata> metadata);
   void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
       const std::string& address,

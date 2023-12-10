@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "components/segmentation_platform/public/model_provider.h"

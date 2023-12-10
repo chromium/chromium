@@ -13,9 +13,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureCallbackDelegate.EntryManagerWrapper;
 import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * Delegate to handle Android S API calls for {@link ScrollCaptureManager}.
- */
+/** Delegate to handle Android S API calls for {@link ScrollCaptureManager}. */
 @RequiresApi(api = VERSION_CODES.S)
 public class ScrollCaptureManagerDelegateImpl implements ScrollCaptureManagerDelegate {
     private final ScrollCaptureCallbackImpl mScrollCaptureCallback;
@@ -41,8 +39,10 @@ public class ScrollCaptureManagerDelegateImpl implements ScrollCaptureManagerDel
 
     private void setScrollCaptureCallbackForView(
             View view, ScrollCaptureCallback scrollCaptureCallback) {
-        view.setScrollCaptureHint(scrollCaptureCallback != null ? View.SCROLL_CAPTURE_HINT_INCLUDE
-                                                                : View.SCROLL_CAPTURE_HINT_AUTO);
+        view.setScrollCaptureHint(
+                scrollCaptureCallback != null
+                        ? View.SCROLL_CAPTURE_HINT_INCLUDE
+                        : View.SCROLL_CAPTURE_HINT_AUTO);
         view.setScrollCaptureCallback(scrollCaptureCallback);
     }
 }

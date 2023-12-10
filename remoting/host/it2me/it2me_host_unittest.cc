@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -37,7 +39,6 @@
 #include "remoting/signaling/xmpp_log_to_server.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
@@ -220,7 +221,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   void OnStateChanged(It2MeHostState state, ErrorCode error_code) override;
 
   void SetPolicies(
-      std::initializer_list<std::pair<base::StringPiece, const base::Value&>>
+      std::initializer_list<std::pair<std::string_view, const base::Value&>>
           policies);
 
   void RunUntilStateChanged(It2MeHostState expected_state);
@@ -228,16 +229,16 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   void RunValidationCallback(const std::string& remote_jid);
 
   void StartHost();
-  void StartHost(absl::optional<ChromeOsEnterpriseParams> enterprise_params);
+  void StartHost(std::optional<ChromeOsEnterpriseParams> enterprise_params);
   void ShutdownHost();
 
-  static base::Value MakeList(std::initializer_list<base::StringPiece> values);
+  static base::Value MakeList(std::initializer_list<std::string_view> values);
 
   ChromotingHost* GetHost() { return it2me_host_->host_.get(); }
 
   // Configuration values used by StartHost();
-  absl::optional<ChromeOsEnterpriseParams> enterprise_params_;
-  absl::optional<std::string> authorized_helper_;
+  std::optional<ChromeOsEnterpriseParams> enterprise_params_;
+  std::optional<std::string> authorized_helper_;
 
   // Stores the last nat traversal policy value received.
   bool last_nat_traversal_enabled_value_ = false;
@@ -256,7 +257,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   raw_ptr<FakeIt2MeDialogFactory, AcrossTasksDanglingUntriaged>
       dialog_factory_ = nullptr;
 
-  absl::optional<base::Value::Dict> policies_;
+  std::optional<base::Value::Dict> policies_;
 
   scoped_refptr<It2MeHost> it2me_host_;
 
@@ -332,7 +333,7 @@ void It2MeHostTest::OnValidationComplete(base::OnceClosure resume_callback,
 }
 
 void It2MeHostTest::SetPolicies(
-    std::initializer_list<std::pair<base::StringPiece, const base::Value&>>
+    std::initializer_list<std::pair<std::string_view, const base::Value&>>
         policies) {
   policies_.emplace();
   for (const auto& policy : policies) {
@@ -417,7 +418,7 @@ void It2MeHostTest::StartHost() {
 }
 
 void It2MeHostTest::StartHost(
-    absl::optional<ChromeOsEnterpriseParams> enterprise_params) {
+    std::optional<ChromeOsEnterpriseParams> enterprise_params) {
   enterprise_params_ = enterprise_params;
   StartHost();
 }
@@ -475,7 +476,7 @@ void It2MeHostTest::ShutdownHost() {
 }
 
 base::Value It2MeHostTest::MakeList(
-    std::initializer_list<base::StringPiece> values) {
+    std::initializer_list<std::string_view> values) {
   base::Value::List result;
   for (const auto& value : values) {
     result.Append(value);
@@ -894,7 +895,7 @@ TEST_F(It2MeHostTest, ConnectRespectsTerminateUponInputParameter) {
 }
 
 TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
-  StartHost(/*enterprise_params=*/absl::nullopt);
+  StartHost(/*enterprise_params=*/std::nullopt);
 
   EXPECT_FALSE(GetHost()->desktop_environment_options().terminate_upon_input());
 }
@@ -906,7 +907,7 @@ TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
 }
 
 TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {
-  StartHost(/*enterprise_params=*/absl::nullopt);
+  StartHost(/*enterprise_params=*/std::nullopt);
 
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_curtaining());
 }
@@ -934,7 +935,7 @@ TEST_F(It2MeHostTest,
   SetPolicies({{policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer,
                 base::Value(true)}});
 
-  StartHost(/*enterprise_params=*/absl::nullopt);
+  StartHost(/*enterprise_params=*/std::nullopt);
 
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
 }
@@ -959,7 +960,7 @@ TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyNotSet) {
 }
 
 TEST_F(It2MeHostTest, EnableFileTransferDefaultsToFalse) {
-  StartHost(/*enterprise_params=*/absl::nullopt);
+  StartHost(/*enterprise_params=*/std::nullopt);
 
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
 }
@@ -1008,7 +1009,7 @@ TEST_F(
       {{policy::key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
         base::Value(false)}});
 
-  StartHost(/*enterprise_params=*/absl::nullopt);
+  StartHost(/*enterprise_params=*/std::nullopt);
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 }
 #endif

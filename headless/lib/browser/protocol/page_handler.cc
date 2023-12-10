@@ -8,8 +8,8 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#include <optional>
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace headless {
@@ -17,8 +17,8 @@ namespace protocol {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 template <typename T>
-absl::optional<T> OptionalFromMaybe(const Maybe<T>& maybe) {
-  return maybe.has_value() ? absl::optional<T>(maybe.value()) : absl::nullopt;
+std::optional<T> OptionalFromMaybe(const Maybe<T>& maybe) {
+  return maybe.has_value() ? std::optional<T>(maybe.value()) : std::nullopt;
 }
 #endif
 
@@ -54,6 +54,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
                              Maybe<bool> prefer_css_page_size,
                              Maybe<String> transfer_mode,
                              Maybe<bool> generate_tagged_pdf,
+                             Maybe<bool> generate_document_outline,
                              std::unique_ptr<PrintToPDFCallback> callback) {
   DCHECK(callback);
 
@@ -79,7 +80,8 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
           OptionalFromMaybe<std::string>(header_template),
           OptionalFromMaybe<std::string>(footer_template),
           OptionalFromMaybe<bool>(prefer_css_page_size),
-          OptionalFromMaybe<bool>(generate_tagged_pdf));
+          OptionalFromMaybe<bool>(generate_tagged_pdf),
+          OptionalFromMaybe<bool>(generate_document_outline));
   if (absl::holds_alternative<std::string>(print_pages_params)) {
     callback->sendFailure(
         Response::InvalidParams(absl::get<std::string>(print_pages_params)));

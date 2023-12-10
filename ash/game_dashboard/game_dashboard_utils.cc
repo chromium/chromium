@@ -30,17 +30,17 @@ ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
                                                       : flags & ~flag);
 }
 
-absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
+std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
   if (!IsArcWindow(window)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ArcGameControlsFlag flags = window->GetProperty(kArcGameControlsFlagsKey);
   CHECK(game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown));
 
   return game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kAvailable)
-             ? absl::make_optional<ArcGameControlsFlag>(flags)
-             : absl::nullopt;
+             ? std::make_optional<ArcGameControlsFlag>(flags)
+             : std::nullopt;
 }
 
 void UpdateGameControlsHintButtonToolTipText(views::Button* button,
@@ -63,6 +63,16 @@ void UpdateGameControlsHintButtonToolTipText(views::Button* button,
     tooltip_text_id = IDS_ASH_GAME_DASHBOARD_GC_TILE_TOOLTIPS_NOT_AVAILABLE;
   }
   button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
+}
+
+bool ShouldEnableGameDashboardButton(aura::Window* window) {
+  if (!IsArcWindow(window)) {
+    return true;
+  }
+
+  const auto flags = window->GetProperty(kArcGameControlsFlagsKey);
+  return IsFlagSet(flags, ArcGameControlsFlag::kKnown) &&
+         !IsFlagSet(flags, ArcGameControlsFlag::kEdit);
 }
 
 }  // namespace ash::game_dashboard_utils

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -65,6 +67,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
     private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver;
+    private final boolean mForcePhoneStyleOmnibox;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -213,11 +216,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(@NonNull Context context, RecycledViewPool recycledViewPool) {
+    public OmniboxSuggestionsDropdown(
+            @NonNull Context context,
+            RecycledViewPool recycledViewPool,
+            boolean forcePhoneStyleOmnibox) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
         setRecycledViewPool(recycledViewPool);
+        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         setId(R.id.omnibox_suggestions_dropdown);
 
         // By default RecyclerViews come with item animators.
@@ -247,13 +254,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 shouldShowModernizeVisualUpdate
                         ? context.getColor(incognitoBgColorRes)
                         : ChromeColors.getDefaultThemeColor(context, true);
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+        if (!mForcePhoneStyleOmnibox
+                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && context.getResources().getConfiguration().screenWidthDp
+                        >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
             setOutlineProvider(
                     new RoundedCornerOutlineProvider(
                             context.getResources()
                                     .getDimensionPixelSize(
-                                            R.dimen.omnibox_suggestion_bg_round_corner_radius)));
+                                            R.dimen
+                                                    .omnibox_suggestion_dropdown_round_corner_radius)));
             setClipToOutline(true);
         }
     }
@@ -519,6 +530,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // If our width has changed, we may have views in our pool that are now the wrong width.
             // Recycle them by calling swapAdapter() to avoid showing views of the wrong size.
             swapAdapter(mAdapter, true);
+            Configuration configuration = getContext().getResources().getConfiguration();
+            setClipToOutline(
+                    configuration.screenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
+            BaseSuggestionViewBinder.resetCachedResources();
         }
         if (isInLayout()) {
             // requestLayout doesn't behave predictably in the middle of a layout pass. Even if it

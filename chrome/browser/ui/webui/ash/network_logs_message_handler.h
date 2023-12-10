@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_LOGS_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_LOGS_MESSAGE_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -33,12 +33,12 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
   void OnStoreLogs(const base::Value::List& list);
   void OnWriteSystemLogs(const std::string& callback_id,
                          base::Value::Dict&& options,
-                         absl::optional<base::FilePath> syslogs_path);
+                         std::optional<base::FilePath> syslogs_path);
   void MaybeWriteDebugLogs(const std::string& callback_id,
                            base::Value::Dict&& options);
   void OnWriteDebugLogs(const std::string& callback_id,
                         base::Value::Dict&& options,
-                        absl::optional<base::FilePath> logs_path);
+                        std::optional<base::FilePath> logs_path);
   void MaybeWritePolicies(const std::string& callback_id,
                           base::Value::Dict&& options);
   void OnWritePolicies(const std::string& callback_id, bool result);

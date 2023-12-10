@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/chromecast_buildflags.h"
@@ -24,9 +25,9 @@
 #include "media/base/video_codecs.h"
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -135,15 +136,16 @@ WebEngineContentRendererClient::WebEngineContentRendererClient() = default;
 WebEngineContentRendererClient::~WebEngineContentRendererClient() = default;
 
 WebEngineRenderFrameObserver*
-WebEngineContentRendererClient::GetWebEngineRenderFrameObserverForRenderFrameId(
-    int render_frame_id) const {
-  auto iter = render_frame_id_to_observer_map_.find(render_frame_id);
-  DCHECK(iter != render_frame_id_to_observer_map_.end());
+WebEngineContentRendererClient::GetWebEngineRenderFrameObserverForFrameToken(
+    const blink::LocalFrameToken& frame_token) const {
+  auto iter = frame_token_to_observer_map_.find(frame_token);
+  DCHECK(iter != frame_token_to_observer_map_.end());
   return iter->second.get();
 }
 
-void WebEngineContentRendererClient::OnRenderFrameDeleted(int render_frame_id) {
-  size_t count = render_frame_id_to_observer_map_.erase(render_frame_id);
+void WebEngineContentRendererClient::OnRenderFrameDeleted(
+    const blink::LocalFrameToken& frame_token) {
+  size_t count = frame_token_to_observer_map_.erase(frame_token);
   DCHECK_EQ(count, 1u);
 }
 
@@ -165,14 +167,14 @@ void WebEngineContentRendererClient::RenderFrameCreated(
   // The objects' lifetimes are bound to the RenderFrame's lifetime.
   new on_load_script_injector::OnLoadScriptInjector(render_frame);
 
-  int render_frame_id = render_frame->GetRoutingID();
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
 
   auto render_frame_observer = std::make_unique<WebEngineRenderFrameObserver>(
       render_frame,
       base::BindOnce(&WebEngineContentRendererClient::OnRenderFrameDeleted,
                      base::Unretained(this)));
-  auto render_frame_observer_iter = render_frame_id_to_observer_map_.emplace(
-      render_frame_id, std::move(render_frame_observer));
+  auto render_frame_observer_iter = frame_token_to_observer_map_.emplace(
+      frame_token, std::move(render_frame_observer));
   DCHECK(render_frame_observer_iter.second);
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.

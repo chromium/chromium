@@ -7,13 +7,13 @@
 
 #include <string>
 
+#include <optional>
 #include "base/check_op.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
@@ -144,7 +144,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   friend class viz::SoftwareRenderer;
 
   const Type type_;
-  absl::optional<CropRect> crop_rect_;
+  std::optional<CropRect> crop_rect_;
   const bool has_discardable_images_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;

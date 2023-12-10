@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/media_preview/media_view_controller_base.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
@@ -20,11 +20,10 @@ class MediaViewControllerBaseTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
-    media_view_ = std::make_unique<MediaView>(/*is_subsection=*/false);
+    media_view_ = std::make_unique<MediaView>();
     controller_ = std::make_unique<MediaViewControllerBase>(
         *media_view_, /*needs_borders=*/true, /*model=*/nullptr,
-        combobox_selection_change_callback_.Get(), std::u16string(),
-        std::u16string());
+        source_change_callback_.Get(), std::u16string(), std::u16string());
   }
 
   void TearDown() override {
@@ -40,13 +39,9 @@ class MediaViewControllerBaseTest : public TestWithBrowserView {
     return controller_->no_device_connected_label_->GetVisible();
   }
 
-  void VerifyActiveDeviceID(const std::string& device_id) const {
-    EXPECT_EQ(controller_->active_device_id_, device_id);
-  }
-
   std::unique_ptr<MediaView> media_view_;
-  base::MockCallback<base::RepeatingClosure>
-      combobox_selection_change_callback_;
+  base::MockCallback<MediaViewControllerBase::SourceChangeCallback>
+      source_change_callback_;
   std::unique_ptr<MediaViewControllerBase> controller_;
 };
 
@@ -54,21 +49,11 @@ TEST_F(MediaViewControllerBaseTest, UpdateComboboxEnabledStateTest) {
   EXPECT_TRUE(IsNoDeviceLabelVisible());
   EXPECT_FALSE(IsComboboxEnabled());
 
-  EXPECT_CALL(combobox_selection_change_callback_, Run());
+  EXPECT_CALL(source_change_callback_, Run(testing::_))
+      .WillOnce(
+          [](std::optional<size_t> index) { EXPECT_EQ(std::nullopt, index); });
   controller_->AdjustComboboxEnabledState(/*has_devices=*/true);
 
   EXPECT_FALSE(IsNoDeviceLabelVisible());
   EXPECT_TRUE(IsComboboxEnabled());
-}
-
-TEST_F(MediaViewControllerBaseTest, UpdateActiveDeviceIdTest) {
-  VerifyActiveDeviceID(std::string());
-
-  constexpr char kActiveDeviceID[] = "device_id";
-
-  EXPECT_TRUE(controller_->UpdateActiveDeviceId(kActiveDeviceID));
-  VerifyActiveDeviceID(kActiveDeviceID);
-
-  EXPECT_FALSE(controller_->UpdateActiveDeviceId(kActiveDeviceID));
-  VerifyActiveDeviceID(kActiveDeviceID);
 }

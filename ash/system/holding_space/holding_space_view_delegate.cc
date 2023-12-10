@@ -34,6 +34,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/color/color_id.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/vector_icons.h"
@@ -147,11 +149,9 @@ HoldingSpaceViewDelegate::HoldingSpaceViewDelegate(
 
   // Multi-select is the only selection UI in tablet mode. Outside of tablet
   // mode, selection UI is based on the `selection_size_`.
-  selection_ui_ = TabletMode::Get()->InTabletMode()
+  selection_ui_ = display::Screen::GetScreen()->InTabletMode()
                       ? SelectionUi::kMultiSelect
                       : SelectionUi::kSingleSelect;
-
-  tablet_mode_observer_.Observe(TabletMode::Get());
 }
 
 HoldingSpaceViewDelegate::~HoldingSpaceViewDelegate() {
@@ -548,12 +548,12 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
   }
 }
 
-void HoldingSpaceViewDelegate::OnTabletModeStarted() {
-  UpdateSelectionUi();
-}
-
-void HoldingSpaceViewDelegate::OnTabletModeEnded() {
-  UpdateSelectionUi();
+void HoldingSpaceViewDelegate::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state == display::TabletState::kInClamshellMode ||
+      state == display::TabletState::kInTabletMode) {
+    UpdateSelectionUi();
+  }
 }
 
 ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
@@ -571,11 +571,11 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   // A value for `is_pinnable` will only be present if the `selection` contains
   // at least one holding space item which is *not* in-progress. In-progress
   // items are ignored with respect to pin-/unpin-ability.
-  absl::optional<bool> is_pinnable;
+  std::optional<bool> is_pinnable;
 
   // A value for `in_progress_commands` will only be present if the `selection`
   // does *not* contain any items which are complete.
-  absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+  std::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
       in_progress_commands;
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
@@ -597,7 +597,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
                       });
       }
     } else {
-      in_progress_commands = absl::nullopt;
+      in_progress_commands = std::nullopt;
       is_any_item_complete = true;
     }
 
@@ -779,7 +779,7 @@ void HoldingSpaceViewDelegate::SetSelectedRange(HoldingSpaceItemView* start,
 
 void HoldingSpaceViewDelegate::UpdateSelectionUi() {
   const SelectionUi selection_ui =
-      TabletMode::Get()->InTabletMode() || selection_size_ > 1u
+      display::Screen::GetScreen()->InTabletMode() || selection_size_ > 1u
           ? SelectionUi::kMultiSelect
           : SelectionUi::kSingleSelect;
 

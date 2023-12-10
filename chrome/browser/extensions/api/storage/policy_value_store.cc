@@ -101,6 +101,7 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
 
   if (!changes.empty()) {
     observer_->Run(extension_id_, StorageAreaNamespace::kManaged,
+                   /*session_access_level=*/absl::nullopt,
                    value_store::ValueStoreChange::ToValue(std::move(changes)));
   }
 }

@@ -115,9 +115,7 @@ VideoCaptureSettings::VideoCaptureSettings(
     const VideoTrackAdapterSettings& track_adapter_settings,
     absl::optional<double> min_frame_rate,
     absl::optional<double> max_frame_rate,
-    absl::optional<double> pan,
-    absl::optional<double> tilt,
-    absl::optional<double> zoom)
+    absl::optional<ImageCaptureDeviceSettings> image_capture_device_settings)
     : failed_constraint_name_(nullptr),
       device_id_(std::move(device_id)),
       capture_params_(capture_params),
@@ -125,9 +123,7 @@ VideoCaptureSettings::VideoCaptureSettings(
       track_adapter_settings_(track_adapter_settings),
       min_frame_rate_(min_frame_rate),
       max_frame_rate_(max_frame_rate),
-      pan_(pan),
-      tilt_(tilt),
-      zoom_(zoom) {
+      image_capture_device_settings_(image_capture_device_settings) {
   DCHECK(!min_frame_rate ||
          *min_frame_rate_ <= capture_params.requested_format.frame_rate);
   DCHECK(!track_adapter_settings.target_size() ||

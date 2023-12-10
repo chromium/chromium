@@ -8,10 +8,8 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.RequiresApi;
 import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.EvaluationResultSizeLimitExceededException;
 import androidx.javascriptengine.FileDescriptorIOException;
@@ -35,7 +33,6 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,8 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation test for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@RequiresApi(Build.VERSION_CODES.O)
 @OnlyRunIn(SINGLE_PROCESS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
@@ -300,7 +295,6 @@ public class JsSandboxServiceTest {
                     "Enable it back once we have a WebView version to see if the feature is"
                             + " actually supported in that version")
     public void testFeatureDetection() throws Throwable {
-        Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(
                         ContextUtils.getApplicationContext());
@@ -694,7 +688,7 @@ public class JsSandboxServiceTest {
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
 
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code1);
-            ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavaScriptAsync(code2);
+            jsIsolate.evaluateJavaScriptAsync(code2);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(expected, result);
@@ -741,8 +735,6 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testPromiseEvaluationThrow() throws Throwable {
-        final String provideString = "Hello World";
-        final byte[] bytes = provideString.getBytes(StandardCharsets.US_ASCII);
         final String code =
                 ""
                         + "android.consumeNamedDataAsArrayBuffer(\"id-1\").catch((error) => {"
@@ -809,8 +801,7 @@ public class JsSandboxServiceTest {
             // thrown instead.
             jsIsolate.close();
             try {
-                ListenableFuture<String> postCloseResultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(code);
+                jsIsolate.evaluateJavaScriptAsync(code);
                 Assert.fail("Should have thrown.");
             } catch (IllegalStateException e) {
                 // Expected
@@ -962,7 +953,7 @@ public class JsSandboxServiceTest {
 
                 // Check reject
                 try {
-                    String badPromiseResult = badPromiseFuture.get(5, TimeUnit.SECONDS);
+                    badPromiseFuture.get(5, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown");
                 } catch (ExecutionException e) {
                     if (!(e.getCause() instanceof EvaluationFailedException)) {

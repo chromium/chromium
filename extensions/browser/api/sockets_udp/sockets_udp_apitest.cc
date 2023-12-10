@@ -5,6 +5,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/sockets_udp/sockets_udp_api.h"
 #include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
 #include "extensions/browser/api_test_utils.h"
@@ -38,13 +39,13 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpCreateGood) {
   socket_create_function->set_extension(empty_extension.get());
   socket_create_function->set_has_callback(true);
 
-  absl::optional<base::Value> result(
+  std::optional<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
           socket_create_function.get(), "[]", browser_context()));
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
-  absl::optional<int> socket_id = result->GetDict().FindInt("socketId");
+  std::optional<int> socket_id = result->GetDict().FindInt("socketId");
   ASSERT_TRUE(socket_id);
   ASSERT_GT(*socket_id, 0);
 }
@@ -61,7 +62,9 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpCreateGood) {
 IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, MAYBE_SocketsUdpExtension) {
   TestUdpEchoServer udp_echo_server;
   net::HostPortPair host_port_pair;
-  ASSERT_TRUE(udp_echo_server.Start(&host_port_pair));
+  ASSERT_TRUE(udp_echo_server.Start(
+      browser_context()->GetDefaultStoragePartition()->GetNetworkContext(),
+      &host_port_pair));
 
   int port = host_port_pair.port();
   ASSERT_TRUE(port > 0);

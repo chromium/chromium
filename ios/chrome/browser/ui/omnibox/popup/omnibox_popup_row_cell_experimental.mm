@@ -143,6 +143,8 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
+    _separator.backgroundColor =
+        [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
 
     self.backgroundColor = UIColor.clearColor;
 
@@ -170,6 +172,11 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 
 #pragma mark - UITableViewCell
 
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+  [super setSelected:selected animated:animated];
+  [self setupWithCurrentData];
+}
+
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
   [super setHighlighted:highlighted animated:animated];
 
@@ -177,7 +184,6 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
   self.textTruncatingLabel.textColor = textColor;
   self.detailTruncatingLabel.textColor = textColor;
   self.detailAnswerLabel.textColor = textColor;
-
   self.leadingIconView.highlighted = highlighted;
   self.trailingButton.tintColor =
       highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
@@ -371,14 +377,15 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 - (void)setupWithCurrentData {
   id<AutocompleteSuggestion> suggestion = self.suggestion;
 
-  self.separator.backgroundColor =
-      self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                     : [UIColor.blackColor colorWithAlphaComponent:0.12];
-
+  // Highlighting elements of a cell can be updated when the cell is selected or
+  // highlighted. Checking both properties ensures that the cell is properly
+  // highlighted until the navigation is complete upon cell selection.
+  bool allowHighlight = self.selected || self.highlighted;
   self.textTruncatingLabel.attributedText =
-      self.highlighted
+      allowHighlight
           ? [self highlightedAttributedStringWithString:suggestion.text]
           : suggestion.text;
+
   if (suggestion.isWrapping) {
     [self logNumberOfLinesSearchSuggestions:self.textTruncatingLabel
                                                 .attributedText];
@@ -418,7 +425,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
   }
   [self updateTextConstraints:suggestion.isWrapping];
 
-  self.leadingIconView.highlighted = self.highlighted;
+  self.leadingIconView.highlighted = allowHighlight;
   self.trailingButton.tintColor =
       self.highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
 }

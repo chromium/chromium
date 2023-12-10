@@ -90,7 +90,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
   Document& document = page->GetDocument();
   StyleEngine& engine = document.GetStyleEngine();
-  document.body()->setInnerHTML(
+  document.documentElement()->setInnerHTML(
       StripStyleTags(WTF::String(*dict.FindString("html"))),
       ASSERT_NO_EXCEPTION);
 

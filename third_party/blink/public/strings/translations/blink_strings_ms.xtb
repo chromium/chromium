@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Sila pendekkan teks ini menjadi <ph name="MAX_CHARACTERS" /> aksara atau kurang (anda kini menggunakan <ph name="CURRENT_LENGTH" /> aksara).</translation>
 <translation id="2247351761944213033">Minggu <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Lagu <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera dan mikrofon dibenarkan</translation>
 <translation id="2393030564806080191">Nilai warna perenambelasan</translation>
 <translation id="2398813069815436052">dialog dibuka.</translation>
 <translation id="245932805758469625">bilangan saat baki video</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Sila panjangkan teks ini kepada <ph name="MIN_CHARACTERS" /> aksara atau lebih (anda sedang menggunakan <ph name="CURRENT_LENGTH" /> aksara).</translation>
 <translation id="383465348367842624">Bahagian yang diikuti oleh '<ph name="ATSIGN" />' tidak boleh mengandungi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Keluar dari skrin penuh</translation>
+<translation id="4031179711345676612">Mikrofon dibenarkan</translation>
 <translation id="4103419683916926126">Milisaat</translation>
 <translation id="4201051445878709314">Tunjukkan bulan sebelumnya</translation>
 <translation id="4360991593054037559">Sila masukkan nilai yang sah. Dua nilai sah yang terdekat ialah <ph name="VALID_VALUE_LOW" /> dan <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Butiran</translation>
+<translation id="4663373278480897665">Kamera dibenarkan</translation>
 <translation id="4664250907885839816">Bahagian selepas '<ph name="ATSIGN" />' tidak boleh mengandungi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Memainkan video dalam gambar dalam gambar</translation>
 <translation id="4748357248530471599">togol skrin penuh potongan paparan</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">muat turun media</translation>
 <translation id="698788488269350478">dikembangkan.</translation>
 <translation id="6989848892321993519">Sila panjangkan teks ini kepada <ph name="MIN_CHARACTERS" /> aksara atau lebih (anda sedang menggunakan 1 aksara).</translation>
+<translation id="7080893216867146095">Perkongsian lokasi dibenarkan</translation>
 <translation id="709897737746224366">Sila padankan dengan format yang diminta.</translation>
 <translation id="7102274145889307184">lokasi semasa</translation>
 <translation id="7263440858009898357">Sila pilih item dalam senarai.</translation>

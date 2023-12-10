@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_mode/certificate_manager_dialog.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
@@ -355,13 +354,9 @@ void ErrorScreen::OnOffTheRecordAuthSuccess() {
   RestartChrome(command_line, RestartChromeReason::kGuest);
 }
 
-void ErrorScreen::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  LOG(FATAL);
-}
-
-void ErrorScreen::OnPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
+void ErrorScreen::OnOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   LOG(FATAL);
 }
 

@@ -12,6 +12,7 @@ import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/audio_processing.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "sandbox/policy/mojom/context.mojom";
 
 // Mutes a group of AudioOutputStreams while at least one binding to an instance
 // exists. Once the last binding is dropped, all streams in the group are
@@ -25,6 +26,9 @@ interface LocalMuter {};
 //
 // The client must keep the connection to the factory while streams are
 // running.
+// Note: requires kPrivilegedUtility (rather than kBrowser) as the speech
+// recognition service & libassistant call these directly.
+[RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface AudioStreamFactory {
   // Creates an AudioInputStream and returns the AudioDataPipe it writes data to
   // and a bool indicating whether the stream is initially muted. |data_pipe| is

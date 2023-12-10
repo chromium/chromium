@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

@@ -28,8 +28,7 @@ public class TypeOfflineItemFilter extends OfflineItemFilter {
     // OfflineItemFilter implementation.
     @Override
     protected boolean isFilteredOut(OfflineItem item) {
-        @Filters.FilterType
-        int type = Filters.fromOfflineItem(item);
+        @Filters.FilterType int type = Filters.fromOfflineItem(item);
 
         // Prefetched articles are not subject to the FilterType.NONE section.  We have to prune
         // those out unless the filter matches exactly.

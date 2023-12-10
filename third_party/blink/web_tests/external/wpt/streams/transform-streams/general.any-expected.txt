@@ -1,30 +1,5 @@
 This is a testharness.js-based test.
-[PASS] TransformStream can be constructed with a transform function
-[PASS] TransformStream can be constructed with no transform function
-[PASS] TransformStream writable starts in the writable state
-[PASS] Identity TransformStream: can read from readable what is put into writable
-[PASS] Uppercaser sync TransformStream: can read from readable transformed version of what is put into writable
-[PASS] Uppercaser-doubler sync TransformStream: can read both chunks put into the readable
-[PASS] Uppercaser async TransformStream: can read from readable transformed version of what is put into writable
-[PASS] Uppercaser-doubler async TransformStream: can read both chunks put into the readable
-[PASS] TransformStream: by default, closing the writable closes the readable (when there are no queued writes)
-[PASS] TransformStream: by default, closing the writable waits for transforms to finish before closing both
-[PASS] TransformStream: by default, closing the writable closes the readable after sync enqueues and async done
-[PASS] TransformStream: by default, closing the writable closes the readable after async enqueues and async done
-[PASS] Transform stream should call transformer methods as methods
-[PASS] methods should not not have .apply() or .call() called
-[PASS] TransformStream start, transform, and flush should be strictly ordered
-[PASS] it should be possible to call transform() synchronously
-[PASS] closing the writable should close the readable when there are no queued chunks, even with backpressure
-[PASS] enqueue() should throw after controller.terminate()
-[PASS] enqueue() should throw after readable.cancel()
-[PASS] controller.terminate() should do nothing the second time it is called
 [FAIL] terminate() should abort writable immediately after readable.cancel()
   promise_rejects_js: closed should reject with TypeError function "function() { throw e }" threw object "[object Object]" ("cancelReason") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] terminate() should do nothing after readable.cancel() resolves
-[PASS] start() should not be called twice
-[PASS] specifying a defined readableType should throw
-[PASS] specifying a defined writableType should throw
-[PASS] Subclassing TransformStream should work
 Harness: the test ran to completion.
 

@@ -38,6 +38,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
@@ -353,7 +354,7 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   // In production, these 3 font managers must match.
   // They don't match in unit tests or in single process mode.
   SkFontMgr* static_font_mgr = static_font_manager_;
-  SkFontMgr* skia_default_font_mgr = SkFontMgr::RefDefault().get();
+  SkFontMgr* skia_default_font_mgr = skia::DefaultFontMgr().get();
   base::debug::Alias(&font_mgr);
   base::debug::Alias(&static_font_mgr);
   base::debug::Alias(&skia_default_font_mgr);

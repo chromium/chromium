@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">Tidak selamat</translation>
 <translation id="1075079914415273530">Pertanian &amp; perhutanan</translation>
 <translation id="1075364221219156102">Gunakan Kunci Laluan</translation>
+<translation id="1078033282564106222">Pilihan nombor bangunan dipilih</translation>
 <translation id="1080116354587839789">Muat ikut lebar</translation>
 <translation id="1081061862829655580">Dulang 19</translation>
 <translation id="1089439967362294234">Tukar Kata Laluan</translation>
@@ -75,6 +76,7 @@
 <translation id="1142713751288681188">Jenis kertas</translation>
 <translation id="1142846828089312304">Sekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="1147769322402934017">Imej galeri dalam talian</translation>
+<translation id="1149617035358809955">sahkan identiti anda supaya maklumat pembayaran anda boleh diisi</translation>
 <translation id="1150565364351027703">Cermin mata hitam</translation>
 <translation id="1150979032973867961">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh sistem pengendalian komputer anda. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="1151972924205500581">Kata laluan diperlukan</translation>
@@ -85,6 +87,7 @@
 <translation id="11635448457105324">Butang urus alamat, aktifkan untuk menambahkan dan mengurus alamat dalam tetapan Chrome</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1165174597379888365">Halaman dilawati</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Tiada}=1{Daripada 1 laman (anda akan kekal dilog masuk ke Google Account anda)}other{Daripada # laman (anda akan kekal dilog masuk ke Google Account anda)}}</translation>
 <translation id="1165852471352757509">Dokumentari &amp; bukan fiksyen TV</translation>
 <translation id="1174644974616730562">Sampul Cina #1</translation>
 <translation id="1174723505405632867">Adakah anda mahu membenarkan <ph name="EMBEDDED_URL" /> menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" />?
@@ -93,6 +96,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1175364870820465910">&amp;Cetak...</translation>
 <translation id="1175393348063009671">Foto (Kusam)</translation>
 <translation id="1175875016430184367">Tiga kokot kanan</translation>
+<translation id="1177548198167638471">Jangan Tanya Lagi</translation>
 <translation id="1177802847690410663">Penyemak imbas web</translation>
 <translation id="1177863135347784049">Tersuai</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -113,6 +117,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1206967143813997005">Tandatangan awal tidak sah</translation>
 <translation id="1209206284964581585">Sorok sementara</translation>
 <translation id="121201262018556460">Anda cuba untuk mencapai <ph name="DOMAIN" /> , tetapi pelayan memberi sijil yang mengandungi kunci yang lemah, Penyerang mungkin telah merosakkan kunci peribadi dan pelayan tersebut mungkin bukan pelayan yang anda jangkakan (anda mungkin berkomunikasi dengan penyerang).</translation>
+<translation id="1212527389003717329">Muat turun dimulakan. Untuk melihat muat turun tersebut, tekan dan tahan |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Keselamatan Sistem</translation>
 <translation id="1222060260947439312">Dulang Kanan</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -283,6 +288,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1521655867290435174">Helaian Google</translation>
 <translation id="1524669537550112617">Sewaan Berperabot</translation>
 <translation id="1527263332363067270">Menunggu sambungan...</translation>
+<translation id="1528311629279578926">Sambungan telah disekat kerana sambungan tersebut dimulakan oleh halaman umum untuk menyambung kepada peranti atau pelayan pada rangkaian peribadi anda. Muatkan semula halaman ini untuk membenarkan sambungan.</translation>
 <translation id="1529789484829130889">Dulang 8</translation>
 <translation id="1530707389502320859">Tapak yang baru sahaja anda cuba lawati kelihatan seperti tapak palsu. Penyerang kadangkala meniru tapak dengan melakukan perubahan kecil yang sukar untuk dikesan pada URL.</translation>
 <translation id="1532118530259321453">Halaman ini menyatakan</translation>
@@ -304,6 +310,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 
           &lt;p&gt;Sila laraskan tarikh dan masa daripada bahagian &lt;strong&gt;Umum&lt;/strong&gt; bagi apl &lt;strong&gt;Tetapan&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Pentadbir anda akan memulakan semula peranti anda pada <ph name="DATE" /> jam <ph name="TIME" /></translation>
+<translation id="1564634006476980707">Skema HTTPS yang disyorkan untuk URL carian: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Maklumat rangkaian seperti alamat, konfigurasi antara muka dan kualiti sambungan</translation>
 <translation id="1567040042588613346">Dasar ini berfungsi seperti yang diharapkan tetapi nilai yang sama ditetapkan di tempat lain dan digantikan oleh dasar ini.</translation>
 <translation id="1567405528131216114">Tambah <ph name="TOPIC" /></translation>
@@ -323,7 +330,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1593359183944365958">270 darjah</translation>
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="1596296697375291157">Filem ngeri, jenayah &amp; misteri</translation>
-<translation id="1597473228022844713">Anda menjejaki produk ini. Halaman ini disimpan dalam <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Kunci laluan daripada Windows Hello</translation>
 <translation id="1599199147673445968">Kad baharu? <ph name="BEGIN_LINK" />Masukkan Butiran Kad<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Main permainan Dino Run dalam Chrome</translation>
@@ -343,7 +349,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1633941398432788136">Perancangan Acara</translation>
 <translation id="1634828734222219955">Jumlah</translation>
 <translation id="163669211644121865">Persediaan &amp; perancangan cukai</translation>
-<translation id="1638780421120290329">Tidak dapat menyimpan kad</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1640180200866533862">Dasar pengguna</translation>
 <translation id="1640244768702815859">Cuba <ph name="BEGIN_LINK" />lawat laman utama tapak<ph name="END_LINK" />.</translation>
@@ -354,6 +359,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1645368109819982629">Protokol tidak disokong</translation>
 <translation id="1650602712345345441">Urus tetapan Chrome anda</translation>
 <translation id="1652415888492971589">JIS B8</translation>
+<translation id="1652862280638399816">Untuk menggunakan Password Manager dengan macOS Keychain, lancarkan semula Chromium dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="1656024727720460136">Chrome meringkaskan halaman ini untuk memudahkan pembacaan. Chrome mengambil halaman asal melalui sambungan selamat.</translation>
 <translation id="1656489000284462475">Pengambilan</translation>
 <translation id="1658111267661135323">TV &amp; Video</translation>
@@ -372,6 +378,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Chrome mengautopadam topik yang disimpan melebihi 4 minggu. Jika anda terus membuat penyemakan imbas, topik mungkin dipaparkan semula pada senarai. Anda juga boleh menyekat topik yang anda tidak mahu Chrome kongsikan dengan laman dan mematikan topik iklan pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="1697532407822776718">Anda telah bersedia!</translation>
 <translation id="1699651774646344471">Kini anda boleh menggunakan alamat daripada Google Account anda</translation>
+<translation id="1700542542921501212">Anda boleh menggunakan <ph name="SEARCH_ENGINE_NAME" /> untuk membuat carian web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Surat</translation>
 <translation id="1706625117072057435">Tahap zum</translation>
@@ -408,6 +415,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mengingati topik yang anda minati semasa anda membuat penyemakan imbas. Label topik dipratakrifkan dan merangkumi perkara seperti Seni &amp; Hiburan, Beli-belah dan Sukan. Kemudian, laman yang anda lawati boleh meminta Chrome beberapa topik anda (tetapi bukan sejarah penyemakan imbas anda) untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="1746113442205726301">Anjakan Y imej</translation>
 <translation id="1746531169546376413">0 darjah</translation>
+<translation id="1751544761369730824">Padamkan laman <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Peti mel 8</translation>
 <translation id="1753068535428855445">Dating &amp; peribadi</translation>
 <translation id="1753706481035618306">Nombor halaman</translation>
@@ -516,6 +524,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1997484222658892567"><ph name="URL" /> mahu menyimpan data bersaiz besar pada komputer setempat anda secara kekal</translation>
 <translation id="1997774360448418989">Kertas (Nipis)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dan 1 lagi}other{dan # lagi}}</translation>
+<translation id="2001469757375372617">Ada yang tidak kena. Perubahan anda tidak disimpan.</translation>
 <translation id="2003709556000175978">Tetapkan semula kata laluan anda sekarang</translation>
 <translation id="2003775180883135320">Empat tebukan atas</translation>
 <translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
@@ -532,6 +541,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2025891858974379949">Kandungan tidak selamat</translation>
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Menyemak proksi dan tembok api<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Pintasan tidak boleh sama dengan kata kunci penyedia carian lalai yang ditakrifkan oleh <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Simpan juga</translation>
 <translation id="2035400064145347639">Panduan perjalanan &amp; kisah perjalanan</translation>
 <translation id="2036514476578229158">Anda meminta untuk melawat laman ini. Ibu bapa anda boleh membalas dalam Family Link.</translation>
@@ -656,6 +666,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2262243747453050782">Ralat HTTP</translation>
 <translation id="226481340855943334">Keturunan &amp; genealogi</translation>
 <translation id="2265192657948645752">Pekerjaan Runcit</translation>
+<translation id="2265356434276802347">Dasar ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri yang ditampilkan.</translation>
 <translation id="2267047181501709434">Mengesahkan identiti anda...</translation>
 <translation id="2268743667444073169">Drama TV</translation>
 <translation id="2270484714375784793">Nombor telefon</translation>
@@ -682,7 +693,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2324604504973636700">Kelengkapan rumah</translation>
 <translation id="2328651992442742497">Dibenarkan (lalai)</translation>
 <translation id="2328955282645810595">Peralatan Berkuasa &amp; Pembinaan</translation>
-<translation id="2329473609445770916">Laman ini mentakrifkan minat yang boleh digunakan oleh laman lain untuk memaparkan iklan kepada anda</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Tetapan dikawal oleh pentadbir anda</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> mahu digandingkan</translation>
@@ -720,6 +730,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2395840535409704129">Sukan Air</translation>
 <translation id="2396249848217231973">&amp;Buat asal pemadaman</translation>
 <translation id="2397836504670957718">Komputer Riba &amp; notebook</translation>
+<translation id="2399868464369312507">Google Chrome sedang cuba mengedit kaedah pembayaran.</translation>
 <translation id="2400600116338235695">Boleh meminta untuk menyambung kepada port bersiri</translation>
 <translation id="2404884497378469141">Cuba salin semula fail anda</translation>
 <translation id="2413155254802890957">Lama</translation>
@@ -732,6 +743,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2448295565072560657">Persisian yang dilampirkan pada peranti ini semasa anda log masuk</translation>
 <translation id="2450021089947420533">Perjalanan</translation>
 <translation id="2456755709261364512">Bateri anda perlu dicas melebihi <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2462599289530201834">Cari <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Isi</translation>
 <translation id="2465688316154986572">Kokot</translation>
 <translation id="2465914000209955735">Urus fail yang telah anda muat turun dalam Chrome</translation>
@@ -776,6 +788,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2544546346215446551">Pentadbir anda memulakan semula peranti</translation>
 <translation id="2544644783021658368">Satu dokumen</translation>
 <translation id="254524874071906077">Tetapkan Chrome sebagai Penyemak Imbas Lalai</translation>
+<translation id="2545721997179863249">Pilihan pengisian semua maklumat telah dipilih</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
 <translation id="2547466893236767989">Reka bentuk &amp; pembangunan web</translation>
 <translation id="254947805923345898">Nilai dasar tidak sah.</translation>
@@ -815,6 +828,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
             <ph name="LIST_ITEM" />Kuki dan data laman
             <ph name="LIST_ITEM" />Maklumat yang dimasukkan dalam borang
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Masukkan</translation>
 <translation id="2625385379895617796">Jam anda lebih awal</translation>
 <translation id="262745152991669301">Boleh meminta untuk menyambung kepada peranti USB</translation>
 <translation id="2629325967560697240">Untuk mendapatkan tahap keselamatan tertinggi Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />hidupkan perlindungan dipertingkatkan<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -869,6 +883,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2722622039067384533">Perabot Ruang Tamu</translation>
 <translation id="2723669454293168317">Jalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="2725492561136085792">Tekan Enter untuk mengaktifkan tindakan ini.</translation>
+<translation id="2725927759457695883">Isi nama penuh</translation>
 <translation id="2726001110728089263">Dulang Sisi</translation>
 <translation id="2728127805433021124">Sijil pelayan ditandatangani menggunakan algoritma tandatangan yang lemah.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Jalankan Diagnostik Sambungan<ph name="END_LINK" /></translation>
@@ -903,6 +918,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2814184336982254349">PDF ini tidak boleh diakses. Tekan cari tambah m untuk buka menu konteks dan hidupkan "ekstrak teks daripada PDF"</translation>
 <translation id="2818338148457093657">Perkhidmatan Kecantikan &amp; Spa</translation>
 <translation id="2820957248982571256">Mengimbas…</translation>
+<translation id="2824549017793319782">Pilih untuk menaip carian anda terus dalam bar alamat</translation>
 <translation id="2824775600643448204">Bar alamat dan carian</translation>
 <translation id="2826760142808435982">Sambungan disulitkan dan disahkan menggunakan <ph name="CIPHER" /> dan menggunakan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="2835170189407361413">Kosongkan borang</translation>
@@ -984,6 +1000,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2991174974383378012">Berkongsi dengan Tapak Web</translation>
 <translation id="299122504639061328">Urus enjin carian lalai dan carian laman anda</translation>
 <translation id="2991571918955627853">Anda tidak boleh melawati <ph name="SITE" /> sekarang kerana laman web ini menggunakan HSTS. Ralat dan serangan rangkaian biasanya sementara. Oleh sebab itu, halaman ini mungkin akan berfungsi semula kemudian.</translation>
+<translation id="2991865971341174470">Sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan oleh Chrome.</translation>
 <translation id="2995517112308048736">Saiz fail:</translation>
 <translation id="299990983510665749">Kereta hatchback</translation>
 <translation id="3002501248619246229">Semak media dulang input</translation>
@@ -1046,7 +1063,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3140646734028448730">Perkhidmatan Perniagaan</translation>
 <translation id="3141093262818886744">Buka juga</translation>
 <translation id="3141641372357166056">Tiada keputusan persetujuan</translation>
-<translation id="3142736425087361223">Chrome memerlukan <ph name="PERMISSION" /> anda untuk digunakan pada <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">Dasar ujian telah digunakan. Semak dan tetapkan semula dasar pada chrome://policy/test. Dasar pentadbir tidak akan digunakan.</translation>
 <translation id="3145945101586104090">Gagal menyahkod balasan</translation>
 <translation id="3150653042067488994">Ralat pelayan sementara</translation>
@@ -1054,6 +1070,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3154506275960390542">Halaman ini mengandungi borang yang mungkin tidak diserahkan secara selamat. Data yang dihantar boleh dilihat oleh orang lain semasa dihantar atau boleh diubah suai oleh penyerang untuk mengubah data yang diterima oleh pelayan.</translation>
 <translation id="3154987252551138431">Kesilapan telah berlaku semasa menggunakan Kongsi Berdekatan</translation>
 <translation id="315504272643575312">Akaun anda diurus oleh <ph name="MANAGER" />.</translation>
+<translation id="3155163173539279776">Lancarkan Semula Chromium</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158539265159265653">Cakera</translation>
 <translation id="3162559335345991374">Wi-Fi yang anda gunakan mungkin memerlukan anda untuk melawat halaman log masuknya.</translation>
@@ -1078,6 +1095,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pada <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Boleh meminta untuk mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
+<translation id="3203025201812691413">URL tidak boleh kosong</translation>
 <translation id="320323717674993345">Batal Pembayaran</translation>
 <translation id="3203366800380907218">Daripada web</translation>
 <translation id="3207960819495026254">Ditandai halaman</translation>
@@ -1104,12 +1122,12 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menyesuaikan rupa penyemak imbas anda</translation>
 <translation id="3240791268468473923">Bukti kelayakan pembayaran selamat tiada helaian bukti kelayakan yang sepadan dibuka</translation>
 <translation id="324180406144491771">Pautan “<ph name="HOST_NAME" />” disekat</translation>
-<translation id="3248611290851046188">Laman ini mentakrifkan minat yang boleh digunakan oleh laman lain untuk memaparkan iklan kepada anda. Laman ini juga mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="3249151924975132674">Pinjaman pelajar &amp; pembiayaan kolej</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Pengiklanan &amp; pemasaran</translation>
 <translation id="3252772880526154546">Seni bina</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
+<translation id="3255926992597692024">Chromium sedang cuba mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="3256863843508922226">Persaraan &amp; pencen</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="3261488570342242926">Ketahui tentang kad maya</translation>
@@ -1146,6 +1164,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3325027355611702542">Pekhemah &amp; RV</translation>
 <translation id="3329013043687509092">Ketepuan</translation>
 <translation id="3333762389743153920">Tidak layak untuk kad maya</translation>
+<translation id="3336044043987989409">Tekan butang muat semula untuk membenarkan sambungan kepada peranti atau pelayan pada rangkaian peribadi anda.</translation>
 <translation id="3338095232262050444">Selamat</translation>
 <translation id="333839153442689579">Latihan Berjeda Berkeamatan Tinggi</translation>
 <translation id="3339440062908617027">Berlari &amp; berjalan</translation>
@@ -1228,6 +1247,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3484560055331845446">Anda mungkin akan kehilangan akses kepada Akaun Google anda. Chrome mengesyorkan supaya anda menukar kata laluan sekarang. Anda akan diminta untuk log masuk.</translation>
 <translation id="3484861421501147767">Peringatan: Kod promosi yang disimpan tersedia</translation>
 <translation id="3487845404393360112">Dulang 4</translation>
+<translation id="3492199565975299728">Jalan</translation>
 <translation id="3493660662684070951">Trak, Van &amp; SUV</translation>
 <translation id="3495081129428749620">Cari dalam halaman
     <ph name="PAGE_TITLE" /></translation>
@@ -1271,6 +1291,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
 <translation id="3575168918110434329">A4x7</translation>
+<translation id="3575589330755445706">Pilihan nama jalan dipilih</translation>
 <translation id="3576616784287504635">Halaman terbenam di <ph name="SITE" /> menyatakan</translation>
 <translation id="3577473026931028326">Kesilapan telah berlaku. Cuba lagi.</translation>
 <translation id="3577902790357386792">Gimnastik</translation>
@@ -1301,7 +1322,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3630155396527302611">Jika apl telah disenaraikan sebagai atur cara yang dibenarkan untuk mengakses
       rangkaian, cuba alihkannya keluar daripada senarai dan tambahkannya  
       semula.</translation>
-<translation id="3630426379756188722">Butang Cari Peranti Saya, aktifkan untuk mengakses Cari Peranti Saya dalam Google Account</translation>
+<translation id="3630426379756188722">Butang Find My Device, aktifkan untuk mengakses Find My Device dalam Google Account</translation>
 <translation id="3630699740441428070">Pentadbir peranti ini telah mengkonfigurasikan sambungan rangkaian anda yang mungkin membolehkan mereka melihat trafik rangkaian anda, termasuk laman web yang anda lawat.</translation>
 <translation id="3631244953324577188">Biometrik</translation>
 <translation id="3632503704576938756">Perkongsian skrin disambung semula</translation>
@@ -1335,6 +1356,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3678914302246317895">Masukkan kod pengesahan <ph name="OTP_LENGTH" /> angka</translation>
 <translation id="3681007416295224113">Maklumat sijil</translation>
 <translation id="3681421644246505351">Chrome mengingati topik yang diminati berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
+<translation id="3689867156802445220">Nombor bangunan</translation>
 <translation id="3693327506115126094">Pilih cara anda akan mengesahkan itu anda</translation>
 <translation id="3698629142018988477">Butang buat laman, aktifkan untuk membuat laman baharu dalam Google Sites dengan pantas</translation>
 <translation id="3701325639446035885">Jualan Tiket Acara</translation>
@@ -1359,6 +1381,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3723663469265383848">Semasa pengemaskinian, anda tidak dapat menggunakan peranti anda hingga 10 minit.</translation>
 <translation id="372429172604983730">Aplikasi yang boleh menyebabkan ralat ini termasuk antivirus, tembok api dan perisian penapisan web atau proksi.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat pembentangan Google baharu dalam Slides dengan pantas</translation>
+<translation id="3727850735097852673">Untuk menggunakan Google Password Manager dengan macOS Keychain, lancarkan semula Chrome dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="3733139489341305600">Kenderaan autonomi</translation>
 <translation id="3736520371357197498">Jika anda memahami risiko terhadap keselamatan anda, anda boleh <ph name="BEGIN_LINK" />melawati laman web yang tidak selamat ini<ph name="END_LINK" /> sebelum program berbahaya dialih keluar.</translation>
 <translation id="3736739313435669994">Anda menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="LINK" />.</translation>
@@ -1401,6 +1424,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3807270098669886186">Pembekal khidmat telefon</translation>
 <translation id="3807366285948165054">Anjakan X imej</translation>
 <translation id="3807873520724684969">Kandungan berbahaya disekat.</translation>
+<translation id="3810770279996899697">Password Manager memerlukan akses kepada MacOS Keychain</translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3812398568375898177">Kemaskinian ini penting kerana meningkatkan prestasi apl Android pada ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
@@ -1494,6 +1518,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">URL kemaskinian untuk sambungan dengan ID "<ph name="EXTENSION_ID" />" tidak sah atau menggunakan skema yang tidak disokong. Skema yang disokong ialah: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dan <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Anda dapat menggunakan alamat ini merentas produk Google</translation>
+<translation id="4050599136622776556">Chromium sedang cuba mengedit kaedah pembayaran.</translation>
 <translation id="405399507749852140">Dapatkan makluman sekiranya harga jatuh pada mana-mana laman</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Benarkan Google membantu anda mencari diskaun untuk troli anda</translation>
@@ -1566,7 +1591,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4177501066905053472">Topik iklan</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Nyahjejak harga</translation>
-<translation id="4194250254487269611">Kad anda tidak dapat disimpan sekarang</translation>
+<translation id="4191334393248735295">Panjang</translation>
 <translation id="4195459680867822611">Butang lihat petua Chrome, aktifkan untuk mengetahui tentang ciri Chrome</translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4196861286325780578">&amp;Buat semula pindahkan</translation>
@@ -1616,6 +1641,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Kemeja-T</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255487295905690262">Anda akan mendapat makluman e-mel jika harga turun pada mana-mana laman.</translation>
 <translation id="425582637250725228">Perubahan yang anda buat mungkin tidak disimpan.</translation>
 <translation id="4258748452823770588">Tandatangan tidak elok</translation>
 <translation id="4261046003697461417">Dokumen yang dilindungi tidak boleh dianotasikan</translation>
@@ -1693,6 +1719,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4386413576162606861">Permainan lakon peranan</translation>
 <translation id="4390472908992056574">Bertepi</translation>
 <translation id="4393632246160856858">Produk penjagaan kuku</translation>
+<translation id="4397059608630092079">Sentiasa Buat Pengesahan Apabila Menggunakan Autolengkap</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4406896451731180161">hasil carian</translation>
 <translation id="4408413947728134509">Kuki <ph name="NUM_COOKIES" /></translation>
@@ -1704,7 +1731,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4424024547088906515">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chrome. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
 <translation id="4425173294238317796">Helaian pengesahan kunci laluan</translation>
 <translation id="4425750422187370446">Pakaian Olahraga</translation>
-<translation id="4428065317363009941">Pemperibadian iklan</translation>
 <translation id="443121186588148776">Port siri</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tidak menerima sijil log masuk anda atau sijil log masuk mungkin tidak diberikan.</translation>
 <translation id="4432792777822557199">Halaman dalam <ph name="SOURCE_LANGUAGE" /> akan diterjemahkan kepada <ph name="TARGET_LANGUAGE" /> bermula dari sekarang</translation>
@@ -1736,7 +1762,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4506176782989081258">Ralat pengesahan: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Menghubungi pentadbir sistem</translation>
 <translation id="450710068430902550">Berkongsi dengan Pentadbir</translation>
-<translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menterjemahkan halaman ini dengan Google Terjemah</translation>
+<translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menterjemahkan halaman ini dengan Google Translate</translation>
 <translation id="4514308731478712184">Matikan Perjalanan</translation>
 <translation id="4515275063822566619">Kad dan alamat adalah daripada Chrome dan Akaun Google anda (<ph name="ACCOUNT_EMAIL" />). Anda boleh mengurus kad dan alamat ini dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4519245469315452746">Peranti anda terganggu semasa proses pengemaskinian.</translation>
@@ -1894,6 +1920,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat Google Sheet baharu dengan pantas</translation>
 <translation id="4825507807291741242">Berkuasa</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
+<translation id="4827283332383516812">Padamkan kad</translation>
 <translation id="4831993743164297314">Kertas Penetap Imej</translation>
 <translation id="483241715238664915">Hidupkan amaran</translation>
 <translation id="4834250788637067901">Kaedah pembayaran, tawaran dan alamat yang menggunakan Google Pay</translation>
@@ -1928,6 +1955,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4888600795924685526">Kajian bahasa asing</translation>
 <translation id="4890070067176768718">Pentadbir anda telah membenarkan <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Belakang</translation>
+<translation id="4895019427244614047">Padamkan alamat</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpik</translation>
 <translation id="4900217275619098670">Gulungan Kesembilan</translation>
@@ -1963,6 +1991,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4960068118612257147">Anda boleh membuat perubahan dalam tetapan privasi iklan Chrome</translation>
 <translation id="4960203958361543136">Pilih Enjin Carian Anda</translation>
 <translation id="4964505745997821360">Insurans kesihatan</translation>
+<translation id="4967366744630699583">Edit alamat</translation>
 <translation id="4968522289500246572">Apl ini direka bentuk untuk peranti mudah alih dan mungkin tidak dapat diubah saiz dengan betul. Apl ini mungkin mengalami isu atau dimulakan semula.</translation>
 <translation id="4968665849807487749">Boleh meminta untuk mengurus tetingkap pada semua paparan anda</translation>
 <translation id="4969341057194253438">Padamkan rakaman</translation>
@@ -1997,7 +2026,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5023310440958281426">Semak dasar pentadbir anda</translation>
 <translation id="5030338702439866405">Dikeluarkan Oleh</translation>
 <translation id="503069730517007720">Sijil akar bagi "<ph name="SOFTWARE_NAME" />" diperlukan tetapi tidak dipasang. Pentadbir IT anda harus melihat arahan konfigurasi "<ph name="SOFTWARE_NAME" />" untuk menyelesaikan masalah ini. <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="5031870354684148875">Perihal Google Terjemah</translation>
+<translation id="5031870354684148875">Perihal Google Translate</translation>
 <translation id="503498442187459473"><ph name="HOST" /> mahu menggunakan kamera dan mikrofon anda</translation>
 <translation id="5035135400558156732">Berkebun</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2183,7 +2212,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="540969355065856584">Pelayan ini tidak dapat membuktikan bahawa pelayan adalah <ph name="DOMAIN" />; sijil keselamatan pelayan tidak sah pada masa ini. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>
 <translation id="5411462078004183575">Pilihan Harga Murah</translation>
 <translation id="5412040515238827314">Format tidak sah: Menjangkakan senarai pola.</translation>
-<translation id="5412236728747081950">Laman ini mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Petak 4</translation>
 <translation id="5414446060143308245">Semakan diperlukan sebelum memindahkan</translation>
@@ -2220,6 +2248,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     <ph name="LINE_BREAK" />
     Cuba hubungi pentadbir sistem anda.</translation>
 <translation id="549333378215107354">Saiz 3</translation>
+<translation id="550365051221576010">Isi semua maklumat</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Penanda halaman terurus</translation>
 <translation id="5510481203689988000">Tetapan ini dikawal dalam tetapan Kuki.</translation>
@@ -2281,7 +2310,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5610142619324316209">Menyemak sambungan</translation>
 <translation id="5610807607761827392">Anda boleh mengurus kad dan alamat dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
-<translation id="561165882404867731">Terjemahkan halaman ini dengan Google Terjemah</translation>
+<translation id="561165882404867731">Terjemahkan halaman ini dengan Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> mahu menggunakan lokasi komputer anda</translation>
 <translation id="561669346091975195">Rancangan TV cereka sains &amp; fantasi</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> telah terlalu kerap mengubah hala anda.</translation>
@@ -2305,6 +2334,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5651323159439184939">Suapan Traktor</translation>
 <translation id="5653432653077411130">Bekalan air &amp; rawatan</translation>
 <translation id="5654927323611874862">ID Laporan Ranap Sistem yang Dimuat Naik</translation>
+<translation id="5654965123204121933">URL tidak termasuk rentetan penggantian <ph name="SEARCH_TERMS_REPLACEMENT" /> yang diperlukan: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mel</translation>
 <translation id="5660122698869360728">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik.</translation>
 <translation id="5663955426505430495">Pentadbir peranti ini telah memasang sambungan bagi fungsi tambahan. Sambungan mempunyai akses kepada sesetengah data anda.</translation>
@@ -2366,6 +2396,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5785756445106461925">Selain itu, halaman ini mengandungi sumber lain yang tidak selamat. Sumber ini boleh dilihat oleh orang lain semasa dalam transit dan boleh diubah oleh penyerang untuk menukar penampilan halaman.</translation>
 <translation id="5786044859038896871">Adakah anda ingin mengisi maklumat kad anda?</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793317771769868848">Kaedah pembayaran ini akan dipadamkan daripada peranti ini</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Tiada}=1{data log masuk untuk 1 akaun}other{data log masuk untuk # akaun}}</translation>
 <translation id="5800727402210090597">Pembaikan &amp; Perkhidmatan Telefon Mudah Alih</translation>
 <translation id="580241730938216256">Mulakan pengemaskinian</translation>
@@ -2594,6 +2625,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6272088941196661550">Sambung semula perjalanan anda untuk melihat aktiviti yang berkaitan dalam sejarah Chrome anda</translation>
 <translation id="6272383483618007430">Kemas Kini Google</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk memaparkan kursor anda</translation>
+<translation id="628016388715774955">Pilihan pengisian alamat penuh telah dipilih</translation>
 <translation id="6280223929691119688">Tidak dapat menghantar ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284517535531159884">Jenis Benih Variasi</translation>
@@ -2633,6 +2665,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}}</translation>
 <translation id="6355392890578844978">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6358088212770985041">edit kaedah pembayaran</translation>
 <translation id="6358450015545214790">Apakah maksudnya?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Lihat log</translation>
@@ -2766,7 +2799,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6613866251791999074">Ketahui lebih lanjut tentang enjin carian anda dalam Chrome</translation>
 <translation id="6615297766614333076">Petak 2</translation>
 <translation id="6624427990725312378">Maklumat Hubungan</translation>
-<translation id="6627727261837091711">Tunjukkan butiran pemeribadian iklan</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Carian</translation>
 <translation id="6629652037942826935">Perjalanan Mewah</translation>
 <translation id="6630043285902923878">Mencari peranti USB...</translation>
@@ -2841,6 +2873,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6767985426384634228">Kemas Kini Alamat?</translation>
 <translation id="6770747695101757579">Keras (Kapas)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6779348349813025131">Google Password Manager memerlukan akses kepada MacOS Keychain</translation>
 <translation id="6784045420901191374">Pinjaman komersil</translation>
 <translation id="6785990323398321538">Anda boleh menukar enjin carian anda pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="6786145470008421571">Sampul 6 x 9 inci</translation>
@@ -2860,6 +2893,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6807791860691150411">Pendidikan</translation>
 <translation id="681021252041861472">Medan Diperlukan</translation>
 <translation id="6810899417690483278">ID Penyesuaian</translation>
+<translation id="681459028290894216">Isi alamat penuh</translation>
 <translation id="6816109178681043245">Barangan Sukan</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">port bersiri</translation>
@@ -2966,7 +3000,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6999480632062519056">Arahan Kecergasan &amp; Latihan Peribadi</translation>
 <translation id="6999969238895751684">Industri hiburan</translation>
 <translation id="7003278537452757231">Ambal &amp; Permaidani</translation>
-<translation id="7003335073762455340">Anda menjejaki produk ini. Halaman ini disimpan dalam <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Tab Terbaharu</translation>
 <translation id="7004583254764674281">Gunakan Windows Hello untuk mengesahkan kad dengan lebih cepat</translation>
 <translation id="7006930604109697472">Hantar sahaja</translation>
@@ -2981,6 +3014,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7023162328967545559">Amaran pentadbir</translation>
 <translation id="7024932305105294144">Chrome mengandungi ciri keselamatan terbina dalam untuk melindungi anda semasa menyemak imbas – seperti Penyemakan Imbas Selamat Google yang <ph name="BEGIN_LINK" />baru-baru ini menemukan pancingan data<ph name="END_LINK" /> pada laman yang cuba anda lawati. Laman pancingan data berpura-pura menjadi laman lain untuk memperdaya anda.<ph name="NEW_LINE" />Kadangkala, laman yang biasanya selamat juga terjejas disebabkan penyerang. <ph name="BEGIN_ERROR_LINK" />Beritahu kami<ph name="END_ERROR_LINK" /> jika anda fikir terdapat kesilapan dan laman ini tidak mendatangkan bahaya.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
+<translation id="7030164307377592766">mengubah suai tetapan untuk pengisian kaedah pembayaran</translation>
 <translation id="7030436163253143341">Sijil tidak sah</translation>
 <translation id="7031646650991750659">Apl Google Play yang telah anda pasang</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus tetapan privasi Google Account anda</translation>
@@ -3022,7 +3056,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7108819624672055576">Dibenarkan oleh sambungan</translation>
 <translation id="7109510814665441393">Permainan Pemanduan &amp; Perlumbaan</translation>
 <translation id="7110116949943042888">Pekerjaan Sementara &amp; Bermusim</translation>
-<translation id="7110553203952632623">Anda akan mendapat makluman e-mel jika harga turun pada mana-mana laman</translation>
 <translation id="7111012039238467737">(Sah)</translation>
 <translation id="7111507312244504964">Pemeriksaan &amp; Penilaian Hartanah</translation>
 <translation id="7112327784801341716">Maklumat yang dipaparkan telah lapuk? Hubungi bank anda untuk mengemas kini maklumat.</translation>
@@ -3045,10 +3078,12 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}}</translation>
 <translation id="7153618581592392745">Gandaria</translation>
 <translation id="7156870133441232244">Pelayan harus dikemas kini kepada TLS 1.2 atau yang lebih baharu.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan <ph name="FEATURE_NAME" />, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan <ph name="FEATURE_NAME" />, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
 <translation id="7160999678034985039">Sila simpan kerja anda dan mulakan pengemaskinian apabila anda sudah bersedia.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Salin fail sulit?}other{Salin fail sulit?}}</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7174545416324379297">Digabungkan</translation>
+<translation id="7175097078723125014">Pilihan pengeditan alamat telah dipilih</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}other{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}}</translation>
 <translation id="7179323680825933600">Simpan dan Lengkapkan Kaedah Pembayaran</translation>
 <translation id="7180611975245234373">Muat semula</translation>
@@ -3140,7 +3175,6 @@ Butiran tambahan:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Pengendali pembayaran</translation>
 <translation id="7367985555340314048">Topik yang diminati adalah berdasarkan sejarah penyemakan imbas anda baru-baru ini dan digunakan oleh laman untuk memaparkan iklan yang diperibadikan kepada anda</translation>
-<translation id="7368169244533796604">Padamkan laman</translation>
 <translation id="7372526636730851647">Foto (Berkilat)</translation>
 <translation id="7372973238305370288">hasil carian</translation>
 <translation id="7374461526650987610">Pengendali protokol</translation>
@@ -3182,6 +3216,7 @@ Butiran tambahan:
 <translation id="7421067045979951561">pengendali protokol</translation>
 <translation id="7422347648202898039">Label (Keselamatan)</translation>
 <translation id="7423283032694727565">Butang urus kuki, aktifkan untuk mengurus pilihan kuki anda dalam tetapan Chrome</translation>
+<translation id="7424421098814895617">Pilihan pemadaman alamat telah dipilih</translation>
 <translation id="7427366580982928791">Keselamatan internet kanak-kanak</translation>
 <translation id="7429429656042611765">Eksekutif</translation>
 <translation id="7432774160230062882">Sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan oleh Chromium.</translation>
@@ -3275,7 +3310,6 @@ Butiran tambahan:
 <translation id="7574998639136359461">Peralatan Sukan Musim Sejuk</translation>
 <translation id="7575207903026901870">Alih keluar butang Cadangan, tekan Enter untuk mengalih keluar cadangan ini</translation>
 <translation id="7575887283389198269">Telefon Mudah Alih</translation>
-<translation id="7577900504646297215">Urus minat</translation>
 <translation id="7578104083680115302">Bayar dengan cepat di tapak dan apl merentas peranti menggunakan kad yang telah disimpan dengan Google.</translation>
 <translation id="7579442726219254162">Pembolehubah "<ph name="VARIABLE" />" tidak diketahui dalam konfigurasi terurus bagi "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Anjakan Y sisi 2 imej</translation>
@@ -3359,6 +3393,7 @@ Butiran tambahan:
 <translation id="7706689436519265630">Fail yang anda salin atau alihkan dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail itu mungkin diimbas untuk mencari data sensitif atau perisian hasad dan mungkin disimpan berdasarkan dasar syarikat.</translation>
 <translation id="7709911732293795808">Insurans</translation>
 <translation id="7714404809393719981">Foto (Separa Kilat)</translation>
+<translation id="7714424966701020172">Pilihan pengisian nama penuh telah dipilih</translation>
 <translation id="7714464543167945231">Sijil</translation>
 <translation id="7716147886133743102">Disekat oleh pentadbir anda</translation>
 <translation id="7716375162095500223">Belum dimuat naik, atau diabaikan</translation>
@@ -3447,7 +3482,6 @@ Butiran tambahan:
 <translation id="79338296614623784">Masukkan nombor telefon yang sah</translation>
 <translation id="7934414805353235750"><ph name="URL" /> mahu memainkan kandungan yang dilindungi. Identiti peranti anda akan disahkan oleh Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7936775433939783906">Sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan oleh Google Chrome.</translation>
 <translation id="7937163678541954811">CVC kad ini akan disulitkan dan disimpan pada peranti anda untuk semak keluar yang lebih pantas</translation>
 <translation id="7937554595067888181">Tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sijil pelayan masih belum sah.</translation>
@@ -3524,7 +3558,6 @@ Butiran tambahan:
 <translation id="8058009102480785916">Pengeluaran makanan</translation>
 <translation id="8058603697124206642">Tidak diperlukan</translation>
 <translation id="8063875539456488183">Simpan dan jejak harga</translation>
-<translation id="8064892030280197386">sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan.</translation>
 <translation id="8066225060526005217">Diurus oleh tetapan kuki</translation>
 <translation id="8067872629359326442">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chromium boleh membantu. Untuk menukar kata laluan anda dan memaklumi Google bahawa akaun anda mungkin berisiko, klik Lindungi Akaun.</translation>
 <translation id="8070439594494267500">Ikon apl</translation>
@@ -3565,7 +3598,6 @@ Butiran tambahan:
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>
 <translation id="8135546115396015134">kekunci kiri</translation>
-<translation id="8144303576836498784">Ada yang tidak kena. Perubahan anda tidak disimpan</translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer anda dalam mod tidur.</translation>
 <translation id="8150722005171944719">Fail di <ph name="URL" /> tidak boleh dibaca.  Fail mungkin telah dialih keluar, dipindahkan atau kebenaran fail mungkin menghalang akses.</translation>
@@ -3750,6 +3782,7 @@ Butiran tambahan:
 <translation id="8490137692873530638">Petak 10</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> mengambil masa terlalu lama untuk bertindak balas.</translation>
+<translation id="8502972004418241366">Untuk menggunakan <ph name="PERMISSION" /> anda pada laman ini, anda perlu memberikan akses kepada Chrome</translation>
 <translation id="8503559462189395349">Kata Laluan Chrome</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8504928302600319133">Perkakasan Komputer</translation>
@@ -3777,6 +3810,7 @@ Butiran tambahan:
 <translation id="8542014550340843547">Tiga kokot bawah</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Anda boleh <ph name="BEGIN_ERROR_LINK" />laporkan masalah pengesanan<ph name="END_ERROR_LINK" /> atau jika anda memahami risikonya kepada keselamatan anda, <ph name="BEGIN_LINK" />lawati tapak yang tidak selamat ini<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome sedang cuba mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="8544303911974837265">Poliester</translation>
 <translation id="854548366864113872">Pilihan Harga Mahal</translation>
 <translation id="8546254312340305428">Berikan sebab untuk memuat naik fail (diperlukan)</translation>
@@ -3791,6 +3825,7 @@ Butiran tambahan:
 <translation id="8555010941760982128">Gunakan kod ini semasa semak keluar</translation>
 <translation id="8556297087315686325">Pemantauan &amp; Pengurusan Rangkaian</translation>
 <translation id="8557066899867184262">CVC terletak di belakang kad anda.</translation>
+<translation id="8557412555245662180">Ketahui lebih lanjut tentang Perlindungan Penjejakan</translation>
 <translation id="8558347880669160417">Kamera dan mikrofon dibenarkan pada masa ini</translation>
 <translation id="8559762987265718583">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa peranti anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
 <translation id="8564182942834072828">Dokumen berasingan/Salinan berasingan</translation>
@@ -3799,6 +3834,7 @@ Butiran tambahan:
 <translation id="8576310925653847813">Sistem teater rumah</translation>
 <translation id="8577192028579836704">Semua pilihan biasanya <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Kad maya tidak tersedia</translation>
+<translation id="8581064022803799721">Halaman ini disimpan dalam <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Peralatan Skuasy &amp; Bola Raket</translation>
 <translation id="858637041960032120">Tambah no. tel.
 </translation>
@@ -3839,6 +3875,7 @@ Butiran tambahan:
 <translation id="8687429322371626002">Peranti dan akaun anda diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tersedia</translation>
 <translation id="868922510921656628">Halaman setiap set</translation>
+<translation id="8693639060656817812">Ketahui lebih lanjut tentang ketersediaan Perlindungan Penjejakan</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699041776323235191">Peranti HID</translation>
 <translation id="8699985386408839112">Sampul Kaku 1</translation>
@@ -3946,6 +3983,7 @@ Butiran tambahan:
 <translation id="8903921497873541725">Zum masuk</translation>
 <translation id="890493561996401738">Alih keluar butang Cadangan, tekan Enter untuk mengalih keluar, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8914504000324227558">Lancarkan semula Chrome</translation>
 <translation id="8918062451146297192">CVC untuk kad maya</translation>
 <translation id="8919740778133505789">Kereta Sport</translation>
 <translation id="8919895429178014996">Sembunyikan semua item</translation>
@@ -4096,6 +4134,7 @@ Butiran tambahan:
 <translation id="9207861905230894330">Gagal menambahkan artikel.</translation>
 <translation id="9213433120051936369">Sesuaikan rupa</translation>
 <translation id="9215416866750762878">Satu aplikasi menghalang Chrome daripada menyambung ke tapak ini dengan selamat</translation>
+<translation id="92178312226016010">Anda menjejaki produk ini.</translation>
 <translation id="9218430445555521422">Tetapkan sebagai lalai</translation>
 <translation id="9219103736887031265">Imej</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>

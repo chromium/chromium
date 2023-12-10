@@ -6,10 +6,10 @@
 #define NET_BASE_FEATURES_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
@@ -176,7 +176,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey);
 // Creates a <double key + is_cross_site> NetworkIsolationKey which is used
 // to partition the HTTP cache. This key will have the following properties:
 // `top_frame_site_` -> the schemeful site of the top level page.
-// `frame_site_` -> absl::nullopt.
+// `frame_site_` -> std::nullopt.
 // `is_cross_site_` -> a boolean indicating whether the frame site is
 // schemefully cross-site from the top-level site.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableCrossSiteFlagNetworkIsolationKey);
@@ -412,6 +412,14 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyProxyListMinFetchInterval;
 
+// Overrides the ProxyA hostname normally set by the proxylist fetch.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyProxyAHostnameOverride;
+
+// Overrides the ProxyB hostname normally set by the proxylist fetch.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyProxyBHostnameOverride;
+
 // Controls whether IP Protection _proxying_ is bypassed by not including any
 // of the proxies in the proxy list. This supports experimental comparison of
 // connections that _would_ have been proxied, but were not.
@@ -420,6 +428,14 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
 // Controls whether the BlindSignAuth library used by IP Protection should use
 // the privacy pass token format.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass;
+
+// The PSK added to connections to proxyB with `Proxy-Authorization: Preshared
+// $PSK`.
+NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;
+
+// If true, use the `proxy_chains` provided by Phosphor. Otherwise, use the
+// `first_hop_hostnames` (and thus always single-proxy chains).
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseProxyChains;
 
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
@@ -469,6 +485,20 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
+
+// Enables using the new ALPS codepoint to negotiate application settings for
+// HTTP2.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointHttp2);
+
+// Enables using the new ALPS codepoint to negotiate application settings for
+// QUIC.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointQUIC);
+
+// Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
+// RFC 9111.
+// TODO(https://crbug.com/853508): Remove after the bug fix will go well for a
+// while on stable channels.
+NET_EXPORT BASE_DECLARE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired);
 
 }  // namespace net::features
 

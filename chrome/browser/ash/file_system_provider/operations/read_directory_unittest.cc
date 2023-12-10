@@ -94,7 +94,7 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  absl::optional<Params> params = Params::Create(parsed_json->GetList());
+  std::optional<Params> params = Params::Create(parsed_json->GetList());
   ASSERT_TRUE(params.has_value());
   *result = RequestValue::CreateForReadDirectorySuccess(std::move(*params));
   ASSERT_TRUE(result->is_valid());
@@ -141,12 +141,12 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  ReadDirectoryRequestedOptions options;
-  ASSERT_TRUE(ReadDirectoryRequestedOptions::Populate(
-      options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kDirectoryPath, options.directory_path);
+  auto options =
+      ReadDirectoryRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kDirectoryPath, options->directory_path);
 }
 
 TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute_NoListener) {

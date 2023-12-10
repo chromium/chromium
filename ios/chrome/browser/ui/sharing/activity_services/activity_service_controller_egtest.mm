@@ -91,12 +91,10 @@
 
 // Verifies that Tools Menu > Share Chrome brings up the "share sheet".
 - (void)testShareChromeApp {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGreyUI openToolsMenu];
-    [ChromeEarlGreyUI
-        tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];
-    [ChromeEarlGrey verifyActivitySheetVisible];
-  }
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];
+  [ChromeEarlGrey verifyActivitySheetVisible];
 }
 
 @end

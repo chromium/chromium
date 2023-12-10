@@ -113,7 +113,7 @@ class PasswordManager : public PasswordManagerInterface {
                               autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
                               const std::u16string& field_value) override;
-  void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver) override;
+  void OnPasswordNoLongerGenerated() override;
   void OnPasswordFormRemoved(
       PasswordManagerDriver* driver,
       const autofill::FieldDataManager& field_data_manager,
@@ -233,7 +233,7 @@ class PasswordManager : public PasswordManagerInterface {
   bool IsFormManagerPendingPasswordUpdate() const;
 
   // Returns the submitted PasswordForm if there exists one.
-  absl::optional<PasswordForm> GetSubmittedCredentials();
+  std::optional<PasswordForm> GetSubmittedCredentials();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -325,7 +325,7 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Finds FormPredictions for a form containing field identified by |field_id|
   // and |driver_id|.
-  absl::optional<FormPredictions> FindPredictionsForField(
+  std::optional<FormPredictions> FindPredictionsForField(
       autofill::FieldRendererId field_id,
       int driver_id);
 

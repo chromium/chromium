@@ -11,7 +11,7 @@ import "components/metrics/structured/mojom/event.mojom";
 [Stable, Uuid="b557009a-c8b8-4bac-8055-3334c52f6dd6"]
 interface StructuredMetricsService {
   // Tries to record all |events|. Events sent over will be validated to ensure
-  // they are registered in //tools/metrics/structured/structured.xml. Any event
-  // that is not valid will be ignored.
+  // they are registered in //tools/metrics/structured/sync/structured.xml. Any
+  // event that is not valid will be ignored.
   Record@0(array<metrics.structured.mojom.Event> events);
 };

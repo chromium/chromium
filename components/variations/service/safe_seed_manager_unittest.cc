@@ -15,7 +15,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
-#include "components/variations/service/safe_seed_manager_interface.h"
+#include "components/variations/service/safe_seed_manager_base.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"

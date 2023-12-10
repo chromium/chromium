@@ -62,10 +62,7 @@ class EventWaiter final : public PreviewTestHelper::Waiter,
 }  // namespace
 
 ScopedPreviewFeatureList::ScopedPreviewFeatureList() {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kLinkPreview,
-                            blink::features::kLinkPreviewNavigation},
-      /*disabled_features=*/{});
+  feature_list_.InitAndEnableFeature(blink::features::kLinkPreview);
 }
 
 PreviewTestHelper::PreviewTestHelper(const content::WebContents::Getter& fn)

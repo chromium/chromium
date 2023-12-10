@@ -87,6 +87,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4195557071150719219">Näytä Chromiumin viimeaikaiset välilehdet</translation>
 <translation id="4408912345039114853">Suorita Chromiumin turvatarkistus</translation>
 <translation id="4432744876818348753">Saat eniten irti Chromiumista kirjautumalla sisään.</translation>
+<translation id="4498832288620833153">Lisää URL-osoitteet Chromiumin lukulistalle.</translation>
 <translation id="452436063477828504">Varmista, että voit aina käyttää Chromium-dataa Google-tilillä</translation>
 <translation id="4555020257205549924">Kun tämä ominaisuus on käytössä, Chromium tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google Kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Avaa maksutapojen asetussivun Chromiumissa.</translation>
@@ -107,6 +108,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="5048795749726991615">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="5076601183701536878">Poista Chromiumin selausdata</translation>
 <translation id="5131565040785979529">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolla olet kirjautuneena sisään ja sitä, miten Chromiumia käytetään.</translation>
+<translation id="5146749061471423558">Lisää kirjanmerkkejä Chromiumiin</translation>
 <translation id="5171868502429358653">Kirjaudu Chromiumiin</translation>
 <translation id="5213683223491576284">Avaa Salasanat Chromiumissa.</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
@@ -114,6 +116,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 
         Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="5308226104666789935">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
+<translation id="5311557153294205270">Lisää syötetyt URL-osoitteet kirjanmerkkeihin Chromiumissa.</translation>
 <translation id="5396916991083608703">Valitaanko Chromium oletukseksi?</translation>
 <translation id="5453478652154926037">Chromium ei voi tarkistaa salasanojasi.</translation>
 <translation id="5521125884468363740">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
@@ -165,7 +168,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="6911341667534646387">Jatka Chromium-datan käyttöä Google-tilillä</translation>
 <translation id="7006920032187763988">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPadisi sovelluksissa.</translation>
 <translation id="7018284295775193585">Chromiumin päivitys ei onnistu</translation>
-<translation id="7025471822960602362">Seuraa havaittuja paketteja Chromiumissa</translation>
 <translation id="7045244423563602563">Tee Chromiumista näköisesi</translation>
 <translation id="7055269218854630176">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromiumin käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="7099326575020694068">Chromium ei voi käyttää kameraa jaetussa näkymässä.</translation>
@@ -195,6 +197,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7928628054454574139">Avaa Chromium, kun napautat linkkejä muissa sovelluksissa</translation>
 <translation id="7931842119211730154">Lukitse incognito-välilehdet, kun suljet Chromiumin</translation>
 <translation id="7934404985878918282">Näytä Chromiumin lukulista</translation>
+<translation id="7971753607796745700">Lisää lukulistakohde Chromiumiin</translation>
 <translation id="7980860476903281594">Chromium jakaa sijaintisi sallimillesi sivustoille.</translation>
 <translation id="7995166854192397899">Ehdotukset perustuvat selaustoimintaasi muilla laitteillasi. Jos haluat saada ehdotuksia, kirjaudu Chromiumiin kaikilla laitteillasi.</translation>
 <translation id="800195749539500647">Paras hyöty Chromiumista</translation>

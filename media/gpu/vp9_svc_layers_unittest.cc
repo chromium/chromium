@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
@@ -25,142 +26,118 @@ namespace {
 constexpr gfx::Size kDefaultEncodeSize(1280, 720);
 constexpr int kSpatialLayerResolutionDenom[] = {4, 2, 1};
 
-std::vector<VP9SVCLayers::SpatialLayer> GetDefaultSVCLayers(
-    size_t num_spatial_layers,
-    size_t num_temporal_layers) {
-  std::vector<VP9SVCLayers::SpatialLayer> spatial_layers;
-  for (uint8_t i = 0; i < num_spatial_layers; ++i) {
-    VP9SVCLayers::SpatialLayer spatial_layer;
-    const int denom = kSpatialLayerResolutionDenom[i];
-    spatial_layer.width = kDefaultEncodeSize.width() / denom;
-    spatial_layer.height = kDefaultEncodeSize.height() / denom;
-    spatial_layer.num_of_temporal_layers = num_temporal_layers;
-    spatial_layers.push_back(spatial_layer);
-  }
-  return spatial_layers;
+gfx::Size GetDefaultSVCResolution(size_t spatial_index) {
+  const int denom = kSpatialLayerResolutionDenom[spatial_index];
+  return gfx::Size(kDefaultEncodeSize.width() / denom,
+                   kDefaultEncodeSize.height() / denom);
 }
 
 std::vector<gfx::Size> GetDefaultSVCResolutions(size_t num_spatial_layers) {
-  std::vector<gfx::Size> spatial_layer_resolutions;
+  std::vector<gfx::Size> spatial_layer_resolutions(num_spatial_layers);
   for (size_t i = 0; i < num_spatial_layers; ++i) {
-    const int denom = kSpatialLayerResolutionDenom[i];
-    spatial_layer_resolutions.emplace_back(
-        gfx::Size(kDefaultEncodeSize.width() / denom,
-                  kDefaultEncodeSize.height() / denom));
+    spatial_layer_resolutions[i] = GetDefaultSVCResolution(i);
   }
   return spatial_layer_resolutions;
 }
-}  // namespace
 
-class VP9SVCLayersTest
-    : public ::testing::TestWithParam<
-          ::testing::tuple<size_t, size_t, SVCInterLayerPredMode>> {
- public:
-  VP9SVCLayersTest() = default;
-  ~VP9SVCLayersTest() = default;
-
- protected:
-  void VerifykSVCRefFrames(
-      const Vp9FrameHeader& frame_hdr,
-      const Vp9Metadata& metadata,
-      const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
-      const Vp9ReferenceFrameVector& ref_frames,
-      const size_t num_spatial_layers,
-      const bool first_frame_in_spatial_layer);
-
-  void VerifySmodeRefFrames(
-      const Vp9FrameHeader& frame_hdr,
-      const Vp9Metadata& metadata,
-      const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
-      const Vp9ReferenceFrameVector& ref_frames,
-      const size_t num_spatial_layers,
-      const size_t num_temporal_layers,
-      const bool first_frame_in_spatial_layer);
-
-  void VerifyStructure(bool first_frame_in_spatial_layer,
-                       size_t num_temporal_layers,
-                       size_t num_spatial_layers,
-                       const Vp9Metadata& metadata);
-
-  void VerifyActiveLayer(const VP9SVCLayers& svc_layers,
-                         size_t expected_begin,
-                         size_t expected_end) {
-    EXPECT_EQ(svc_layers.begin_active_layer_, expected_begin);
-    EXPECT_EQ(svc_layers.end_active_layer_, expected_end);
-  }
-
- private:
-  std::vector<uint8_t> temporal_indices_[VP9SVCLayers::kMaxSpatialLayers];
-  uint8_t spatial_index_;
-};
-
-void VP9SVCLayersTest::VerifyStructure(bool first_frame_in_spatial_layer,
-                                       size_t num_temporal_layers,
-                                       size_t num_spatial_layers,
-                                       const Vp9Metadata& metadata) {
-  const uint8_t temporal_index = metadata.temporal_idx;
-  const uint8_t spatial_index = metadata.spatial_idx;
-  // Spatial index monotonically increases modulo |num_spatial_layers|.
-  if (!first_frame_in_spatial_layer || spatial_index != 0u) {
-    EXPECT_EQ((spatial_index_ + 1) % num_spatial_layers, spatial_index);
-  }
-
-  spatial_index_ = spatial_index;
-  auto& temporal_indices = temporal_indices_[spatial_index];
-  if (first_frame_in_spatial_layer) {
-    temporal_indices.clear();
-    temporal_indices.push_back(temporal_index);
-    return;
-  }
-  EXPECT_FALSE(temporal_indices.empty());
-  if (num_temporal_layers > 1)
-    EXPECT_NE(temporal_indices.back(), temporal_index);
-  else
-    EXPECT_EQ(temporal_indices.back(), temporal_index);
-  temporal_indices.push_back(temporal_index);
-  if (spatial_index != num_spatial_layers - 1)
-    return;
-  // Check if the temporal layer structures in all spatial layers are identical.
-  // Spatial index monotonically increases module |num_spatial_layers|.
-  for (size_t i = 0; i < num_spatial_layers - 1; ++i)
-    EXPECT_EQ(temporal_indices_[i], temporal_indices_[i + 1]);
-  constexpr size_t kTemporalLayerCycle = 4u;
-  constexpr size_t kSVCLayerCycle = kTemporalLayerCycle;
-  if (temporal_indices.size() % kSVCLayerCycle == 0) {
-    std::vector<size_t> count(num_temporal_layers, 0u);
-    for (const uint8_t index : temporal_indices) {
-      ASSERT_LE(index, num_temporal_layers);
-      count[index]++;
-    }
-    // The number of frames in a higher temporal layer is not less than one in a
-    // lower temporal layer.
-    EXPECT_TRUE(std::is_sorted(count.begin(), count.end()));
-  }
+VP9SVCLayers::Config GetDefaultSVCLayers2Config(
+    size_t num_spatial_layers,
+    size_t num_temporal_layers,
+    SVCInterLayerPredMode inter_layer_pred) {
+  const auto& spatial_layer_resolutions =
+      GetDefaultSVCResolutions(num_spatial_layers);
+  return VP9SVCLayers::Config(spatial_layer_resolutions,
+                              /*begin_active_layer=*/0,
+                              spatial_layer_resolutions.size(),
+                              num_temporal_layers, inter_layer_pred);
 }
 
-void VP9SVCLayersTest::VerifykSVCRefFrames(
-    const Vp9FrameHeader& frame_hdr,
+uint8_t GetTemporalIndex(size_t num_temporal_layers, size_t frame_num) {
+  constexpr uint8_t kTemporalIndices[][4] = {
+      {0, 0, 0, 0},
+      {0, 1, 0, 1},
+      {0, 2, 1, 2},
+  };
+  CHECK(1 <= num_temporal_layers && num_temporal_layers <= 3);
+  return kTemporalIndices[num_temporal_layers - 1][frame_num % 4];
+}
+
+struct Vp9MetadataAndFrameNum {
+  constexpr static size_t kInvalidFrameNum = std::numeric_limits<size_t>::max();
+
+  Vp9MetadataAndFrameNum() : frame_num(kInvalidFrameNum) {}
+  Vp9MetadataAndFrameNum(size_t frame_num, const Vp9Metadata& metadata)
+      : frame_num(frame_num), metadata(metadata) {}
+
+  bool is_valid() const { return frame_num != kInvalidFrameNum; }
+
+  size_t frame_num = 0;
+  Vp9Metadata metadata;
+};
+
+void VerifyReferenceFrame(const Vp9Metadata& metadata,
+                          size_t frame_num,
+                          const Vp9MetadataAndFrameNum& ref_frame,
+                          SVCInterLayerPredMode inter_layer_pred) {
+  ASSERT_TRUE(ref_frame.is_valid());
+  const Vp9Metadata& ref_metadata = ref_frame.metadata;
+  const uint8_t ref_spatial_index = ref_metadata.spatial_idx;
+  // In key picture, upper spatial layers must refer the lower spatial layer.
+  // Or referenced frames must be in the same spatial layer.
+  if (frame_num == 0 && inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic) {
+    EXPECT_EQ(ref_spatial_index, metadata.spatial_idx - 1);
+    EXPECT_TRUE(metadata.p_diffs.empty());
+  } else {
+    EXPECT_EQ(ref_spatial_index, metadata.spatial_idx);
+
+    const std::vector<uint8_t> expected_p_diffs = {
+        base::checked_cast<uint8_t>(frame_num - ref_frame.frame_num)};
+    EXPECT_EQ(metadata.p_diffs, expected_p_diffs);
+  }
+
+  const size_t ref_temporal_index = ref_metadata.temporal_idx;
+  EXPECT_LE(ref_temporal_index, metadata.temporal_idx);
+
+  EXPECT_EQ(metadata.temporal_up_switch, ref_metadata.temporal_idx == 0);
+}
+
+void VerifykSVCFrame(
+    const VP9SVCLayers::PictureParam& picture_param,
     const Vp9Metadata& metadata,
-    const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
-    const Vp9ReferenceFrameVector& ref_frames,
-    const size_t num_spatial_layers,
-    const bool first_frame_in_spatial_layer) {
+    const std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames>& ref_frames,
+    size_t frame_num,
+    size_t num_spatial_layers,
+    size_t expected_begin_active_layer,
+    size_t expected_end_active_layer) {
   const uint8_t temporal_index = metadata.temporal_idx;
   const uint8_t spatial_index = metadata.spatial_idx;
-  if (frame_hdr.IsKeyframe()) {
-    EXPECT_EQ(frame_hdr.refresh_frame_flags, 0xff);
-    EXPECT_FALSE(base::Contains(ref_frames_used, true));
-    EXPECT_TRUE(first_frame_in_spatial_layer);
-    EXPECT_EQ(temporal_index, 0u);
-    EXPECT_EQ(spatial_index, 0u);
+
+  EXPECT_EQ(picture_param.key_frame, frame_num == 0 && spatial_index == 0);
+
+  if (picture_param.key_frame) {
+    EXPECT_EQ(spatial_index, 0);
+    EXPECT_EQ(temporal_index, 0);
+    EXPECT_FALSE(metadata.inter_pic_predicted);
+    EXPECT_TRUE(metadata.temporal_up_switch);
     EXPECT_EQ(metadata.referenced_by_upper_spatial_layers,
               num_spatial_layers > 1);
     EXPECT_FALSE(metadata.reference_lower_spatial_layers);
-    EXPECT_TRUE(metadata.p_diffs.empty());
+    EXPECT_EQ(metadata.end_of_picture, spatial_index == num_spatial_layers - 1);
     EXPECT_EQ(metadata.spatial_layer_resolutions,
               GetDefaultSVCResolutions(num_spatial_layers));
+    EXPECT_EQ(metadata.begin_active_spatial_layer_index,
+              expected_begin_active_layer);
+    EXPECT_EQ(metadata.end_active_spatial_layer_index,
+              expected_end_active_layer);
+    EXPECT_TRUE(metadata.p_diffs.empty());
+
+    EXPECT_EQ(picture_param.frame_size, GetDefaultSVCResolution(spatial_index));
+    EXPECT_EQ(picture_param.refresh_frame_flags, 0xff);
+    EXPECT_TRUE(picture_param.reference_frame_indices.empty());
     return;
   }
+
+  EXPECT_EQ(picture_param.frame_size, GetDefaultSVCResolution(spatial_index));
 
   // Six slots at most in the reference pool are used in spatial/temporal layer
   // encoding. Additionally, non-keyframe must reference some frames.
@@ -169,13 +146,11 @@ void VP9SVCLayersTest::VerifykSVCRefFrames(
   // 2. otherwise the frame doesn't reference other spatial layers and thus
   // references only one frame in the same spatial layer based on the current
   // reference pattern.
-  constexpr std::array<bool, kVp9NumRefsPerFrame> kExpectedRefFramesUsed = {
-      true, false, false};
-  EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b111111u), 0u);
-  EXPECT_EQ(ref_frames_used, kExpectedRefFramesUsed);
+  EXPECT_EQ(picture_param.refresh_frame_flags & ~(0b111111u), 0u);
+  ASSERT_EQ(picture_param.reference_frame_indices.size(), 1u);
   EXPECT_EQ(metadata.inter_pic_predicted, !metadata.p_diffs.empty());
-  EXPECT_EQ(metadata.inter_pic_predicted, !first_frame_in_spatial_layer);
-  if (first_frame_in_spatial_layer) {
+  EXPECT_EQ(metadata.inter_pic_predicted, frame_num != 0);
+  if (frame_num == 0) {
     EXPECT_TRUE(metadata.reference_lower_spatial_layers);
     EXPECT_EQ(metadata.referenced_by_upper_spatial_layers,
               spatial_index + 1 != num_spatial_layers);
@@ -184,121 +159,198 @@ void VP9SVCLayersTest::VerifykSVCRefFrames(
     EXPECT_FALSE(metadata.reference_lower_spatial_layers);
   }
 
+  EXPECT_TRUE(metadata.spatial_layer_resolutions.empty());
+
   // Check that the current frame doesn't reference upper layer frames.
-  const uint8_t index = frame_hdr.ref_frame_idx[0];
-  scoped_refptr<VP9Picture> ref_frame = ref_frames.GetFrame(index);
-  ASSERT_TRUE(!!ref_frame);
-  const auto& ref_metadata = ref_frame->metadata_for_encoding;
-  ASSERT_TRUE(ref_metadata.has_value());
-  const size_t ref_temporal_index = ref_metadata->temporal_idx;
-  EXPECT_LE(ref_temporal_index, temporal_index);
-  const uint8_t ref_spatial_index = ref_metadata->spatial_idx;
-  EXPECT_LE(ref_spatial_index, spatial_index);
-  // In key picture, upper spatial layers must refer the lower spatial layer.
-  // Or referenced frames must be in the same spatial layer.
-  if (first_frame_in_spatial_layer) {
-    EXPECT_EQ(ref_spatial_index, spatial_index - 1);
-  } else {
-    EXPECT_EQ(ref_spatial_index, spatial_index);
-  }
+  VerifyReferenceFrame(metadata, frame_num,
+                       ref_frames[picture_param.reference_frame_indices[0]],
+                       SVCInterLayerPredMode::kOnKeyPic);
 }
 
-void VP9SVCLayersTest::VerifySmodeRefFrames(
-    const Vp9FrameHeader& frame_hdr,
+void VerifySmodeFrame(
+    const VP9SVCLayers::PictureParam& picture_param,
     const Vp9Metadata& metadata,
-    const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
-    const Vp9ReferenceFrameVector& ref_frames,
-    const size_t num_spatial_layers,
-    const size_t num_temporal_layers,
-    const bool first_frame_in_spatial_layer) {
+    const std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames>& ref_frames,
+    size_t frame_num,
+    size_t num_spatial_layers,
+    size_t expected_begin_active_layer,
+    size_t expected_end_active_layer) {
   const uint8_t temporal_index = metadata.temporal_idx;
   const uint8_t spatial_index = metadata.spatial_idx;
-  EXPECT_EQ(first_frame_in_spatial_layer, frame_hdr.IsKeyframe());
-  if (frame_hdr.IsKeyframe()) {
-    if (spatial_index == 0) {
-      EXPECT_EQ(frame_hdr.refresh_frame_flags, 0xff);
-    } else {
-      EXPECT_EQ(frame_hdr.refresh_frame_flags, (0x1 << (spatial_index * 2)));
-    }
-    EXPECT_FALSE(base::Contains(ref_frames_used, true));
+  EXPECT_EQ(picture_param.key_frame, frame_num == 0);
+
+  if (picture_param.key_frame) {
     EXPECT_EQ(temporal_index, 0u);
+    EXPECT_FALSE(metadata.inter_pic_predicted);
+    EXPECT_TRUE(metadata.temporal_up_switch);
     EXPECT_FALSE(metadata.referenced_by_upper_spatial_layers);
     EXPECT_FALSE(metadata.reference_lower_spatial_layers);
-    EXPECT_TRUE(metadata.p_diffs.empty());
-    EXPECT_FALSE(metadata.inter_pic_predicted);
     EXPECT_EQ(metadata.spatial_layer_resolutions,
               GetDefaultSVCResolutions(num_spatial_layers));
+    EXPECT_EQ(metadata.begin_active_spatial_layer_index,
+              expected_begin_active_layer);
+    EXPECT_EQ(metadata.end_active_spatial_layer_index,
+              expected_end_active_layer);
+    EXPECT_TRUE(metadata.p_diffs.empty());
+
+    EXPECT_EQ(picture_param.frame_size, GetDefaultSVCResolution(spatial_index));
+    if (spatial_index == 0) {
+      EXPECT_EQ(picture_param.refresh_frame_flags, 0xff);
+    } else {
+      EXPECT_EQ(picture_param.refresh_frame_flags,
+                (0x1 << (spatial_index * 2)));
+    }
+    EXPECT_TRUE(picture_param.reference_frame_indices.empty());
     return;
   }
 
-  constexpr std::array<bool, kVp9NumRefsPerFrame> kExpectedRefFramesUsed = {
-      true, false, false};
+  EXPECT_EQ(picture_param.frame_size, GetDefaultSVCResolution(spatial_index));
+  EXPECT_EQ(picture_param.refresh_frame_flags & ~(0b111111u), 0u);
+  EXPECT_EQ(picture_param.reference_frame_indices.size(), 1u);
 
-  EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b111111u), 0u);
-  EXPECT_EQ(ref_frames_used, kExpectedRefFramesUsed);
-  EXPECT_FALSE(metadata.p_diffs.empty());
   EXPECT_TRUE(metadata.inter_pic_predicted);
   EXPECT_FALSE(metadata.referenced_by_upper_spatial_layers);
   EXPECT_FALSE(metadata.reference_lower_spatial_layers);
+  EXPECT_TRUE(metadata.spatial_layer_resolutions.empty());
 
   // Check that the current frame doesn't reference upper layer frames.
-  const uint8_t index = frame_hdr.ref_frame_idx[0];
-  scoped_refptr<VP9Picture> ref_frame = ref_frames.GetFrame(index);
-  ASSERT_TRUE(!!ref_frame);
-  const auto& ref_metadata = ref_frame->metadata_for_encoding;
-  ASSERT_TRUE(ref_metadata.has_value());
-  const size_t ref_temporal_index = ref_metadata->temporal_idx;
-  EXPECT_LE(ref_temporal_index, temporal_index);
-  const uint8_t ref_spatial_index = ref_metadata->spatial_idx;
-  EXPECT_EQ(ref_spatial_index, spatial_index);
+  VerifyReferenceFrame(metadata, frame_num,
+                       ref_frames[picture_param.reference_frame_indices[0]],
+                       SVCInterLayerPredMode::kOff);
 }
+}  // namespace
 
-TEST_P(VP9SVCLayersTest, ) {
+class VP9SVCLayersTest
+    : public ::testing::TestWithParam<
+          ::testing::tuple<size_t, size_t, SVCInterLayerPredMode>> {};
+
+TEST_P(VP9SVCLayersTest, VerifyMetadata) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
 
-  const std::vector<VP9SVCLayers::SpatialLayer> spatial_layers =
-      GetDefaultSVCLayers(num_spatial_layers, num_temporal_layers);
-  VP9SVCLayers svc_layers(spatial_layers, inter_layer_pred_mode);
+  const VP9SVCLayers::Config config = GetDefaultSVCLayers2Config(
+      num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
+  VP9SVCLayers svc_layers(config);
 
-  constexpr size_t kNumFramesToEncode = 32;
-  Vp9ReferenceFrameVector ref_frames;
-  constexpr size_t kKeyFrameInterval = 10;
-  for (size_t frame_num = 0; frame_num < kNumFramesToEncode; ++frame_num) {
-    bool first_frame_in_spatial_layer = false;
-    // True iff the picture in the bottom spatial layer is key frame.
+  constexpr size_t kNumFramesToEncode = 100;
+  std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames> ref_frames;
+  constexpr size_t kKeyFrameInterval = 17;
+  for (size_t i = 0; i < kNumFramesToEncode; ++i) {
+    bool key_svc_frame = i % kKeyFrameInterval == 0;
+    if (key_svc_frame) {
+      svc_layers.Reset();
+    }
     for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
-      scoped_refptr<VP9Picture> picture(new VP9Picture);
-      picture->frame_hdr = std::make_unique<Vp9FrameHeader>();
-      const bool keyframe = svc_layers.UpdateEncodeJob(
-          /*is_key_frame_requested=*/false, kKeyFrameInterval);
-      picture->frame_hdr->frame_type =
-          keyframe ? Vp9FrameHeader::KEYFRAME : Vp9FrameHeader::INTERFRAME;
-      if (keyframe) {
-        first_frame_in_spatial_layer = true;
+      bool key_frame = false;
+      size_t frame_num = svc_layers.frame_num();
+      if (frame_num == 0) {
+        if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
+          key_frame = sid == 0;
+        } else {
+          key_frame = true;
+        }
       }
 
-      std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
-      svc_layers.FillUsedRefFramesAndMetadata(picture.get(), &ref_frames_used);
-      ASSERT_TRUE(picture->metadata_for_encoding.has_value());
+      EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
+      VP9SVCLayers::PictureParam picture_param;
+      Vp9Metadata metadata;
+      svc_layers.GetPictureParamAndMetadata(picture_param, metadata);
+
+      EXPECT_EQ(svc_layers.spatial_idx(), metadata.spatial_idx);
+      EXPECT_EQ(svc_layers.spatial_idx(), sid);
+
+      EXPECT_EQ(GetTemporalIndex(num_temporal_layers, frame_num),
+                metadata.temporal_idx);
+
       if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
-        VerifykSVCRefFrames(*picture->frame_hdr,
-                            *picture->metadata_for_encoding, ref_frames_used,
-                            ref_frames, num_spatial_layers,
-                            first_frame_in_spatial_layer);
+        VerifykSVCFrame(picture_param, metadata, ref_frames, frame_num,
+                        config.active_spatial_layer_resolutions.size(),
+                        config.begin_active_layer, config.end_active_layer);
       } else {
-        CHECK_EQ(inter_layer_pred_mode, SVCInterLayerPredMode::kOff);
-        VerifySmodeRefFrames(*picture->frame_hdr,
-                             *picture->metadata_for_encoding, ref_frames_used,
-                             ref_frames, num_spatial_layers,
-                             num_temporal_layers, first_frame_in_spatial_layer);
+        VerifySmodeFrame(picture_param, metadata, ref_frames, frame_num,
+                         config.active_spatial_layer_resolutions.size(),
+                         config.begin_active_layer, config.end_active_layer);
       }
-      VerifyStructure(first_frame_in_spatial_layer, num_temporal_layers,
-                      num_spatial_layers, *picture->metadata_for_encoding);
 
-      ref_frames.Refresh(picture);
+      for (size_t j = 0; j < kVp9NumRefFrames; ++j) {
+        if (picture_param.refresh_frame_flags & (1 << j)) {
+          ref_frames[j] = Vp9MetadataAndFrameNum{frame_num, metadata};
+        }
+      }
+
+      svc_layers.PostEncode(picture_param.refresh_frame_flags);
+    }
+  }
+}
+
+TEST_P(VP9SVCLayersTest, VerifyMetadataMultipleTimes) {
+  const size_t num_spatial_layers = ::testing::get<0>(GetParam());
+  const size_t num_temporal_layers = ::testing::get<1>(GetParam());
+  const SVCInterLayerPredMode inter_layer_pred_mode =
+      ::testing::get<2>(GetParam());
+
+  const VP9SVCLayers::Config config = GetDefaultSVCLayers2Config(
+      num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
+  VP9SVCLayers svc_layers(config);
+
+  constexpr size_t kNumFramesToEncode = 100;
+  std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames> ref_frames;
+  constexpr size_t kKeyFrameInterval = 17;
+  constexpr size_t kReacquireInterval = 23;
+  size_t frame_count = 0;
+  for (size_t i = 0; i < kNumFramesToEncode; ++i) {
+    bool key_svc_frame = i % kKeyFrameInterval == 0;
+    if (key_svc_frame) {
+      svc_layers.Reset();
+    }
+    for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
+      const bool reaquire = frame_count % kReacquireInterval;
+      frame_count++;
+      const size_t call_get_times = 1 + reaquire;
+      for (size_t j = 0; j < call_get_times; j++) {
+        bool key_frame = false;
+        size_t frame_num = svc_layers.frame_num();
+        if (frame_num == 0) {
+          if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
+            key_frame = sid == 0;
+          } else {
+            key_frame = true;
+          }
+        }
+
+        EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
+        VP9SVCLayers::PictureParam picture_param;
+        Vp9Metadata metadata;
+        svc_layers.GetPictureParamAndMetadata(picture_param, metadata);
+
+        EXPECT_EQ(svc_layers.spatial_idx(), metadata.spatial_idx);
+        EXPECT_EQ(svc_layers.spatial_idx(), sid);
+
+        EXPECT_EQ(GetTemporalIndex(num_temporal_layers, frame_num),
+                  metadata.temporal_idx);
+
+        if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
+          VerifykSVCFrame(picture_param, metadata, ref_frames, frame_num,
+                          config.active_spatial_layer_resolutions.size(),
+                          config.begin_active_layer, config.end_active_layer);
+        } else {
+          VerifySmodeFrame(picture_param, metadata, ref_frames, frame_num,
+                           config.active_spatial_layer_resolutions.size(),
+                           config.begin_active_layer, config.end_active_layer);
+        }
+
+        if (j == call_get_times - 1) {
+          for (size_t k = 0; k < kVp9NumRefFrames; ++k) {
+            if (picture_param.refresh_frame_flags & (1 << k)) {
+              ref_frames[k] = Vp9MetadataAndFrameNum{frame_num, metadata};
+            }
+          }
+
+          svc_layers.PostEncode(picture_param.refresh_frame_flags);
+        }
+      }
     }
   }
 }
@@ -322,203 +374,4 @@ INSTANTIATE_TEST_SUITE_P(
                       std::make_tuple(3, 1, SVCInterLayerPredMode::kOff),
                       std::make_tuple(3, 2, SVCInterLayerPredMode::kOff),
                       std::make_tuple(3, 3, SVCInterLayerPredMode::kOff)));
-
-class VP9SVCLayersUpdateActiveLayerTest : public VP9SVCLayersTest {};
-
-// This test verifies the bitrate check in MaybeUpdateActiveLayer().
-TEST_P(VP9SVCLayersUpdateActiveLayerTest, MaybeUpdateActiveLayer) {
-  constexpr size_t kNumSpatialLayers = VP9SVCLayers::kMaxSpatialLayers;
-  constexpr static size_t kNumTemporalLayers =
-      VP9SVCLayers::kMaxSupportedTemporalLayers;
-  const SVCInterLayerPredMode inter_layer_pred_mode =
-      ::testing::get<2>(GetParam());
-  const std::vector<VP9SVCLayers::SpatialLayer> spatial_layers =
-      GetDefaultSVCLayers(kNumSpatialLayers, kNumTemporalLayers);
-  VP9SVCLayers svc_layers(spatial_layers, inter_layer_pred_mode);
-  const std::vector<gfx::Size> kSpatialLayerResolutions =
-      svc_layers.active_spatial_layer_resolutions();
-
-  uint32_t layer_rate = 1u;
-  VideoBitrateAllocation allocation;
-  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
-         ++tid) {
-      allocation.SetBitrate(sid, tid, layer_rate++);
-    }
-  }
-  // MaybeUpdateActiveLayer() returns false because the given allocation has
-  // non-zero bitrate at higher layers than |kNumSpatialLayers| and
-  // |kNumTemporalLayers|.
-  DCHECK_LT(kNumSpatialLayers, VideoBitrateAllocation::kMaxSpatialLayers);
-  DCHECK_LT(kNumTemporalLayers, VideoBitrateAllocation::kMaxTemporalLayers);
-  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
-  VerifyActiveLayer(svc_layers, 0, 3);
-
-  // Set unsupported temporal layer bitrate to 0.
-  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
-    for (size_t tid = kNumTemporalLayers;
-         tid < VideoBitrateAllocation::kMaxTemporalLayers; ++tid) {
-      allocation.SetBitrate(sid, tid, 0u);
-    }
-  }
-  // MaybeUpdateActiveLayer() returns false because the given allocation has
-  // non-zero bitrate at higher spatial layers than |kNumSpatialLayers|.
-  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
-  VerifyActiveLayer(svc_layers, 0, 3);
-
-  // Set unsupported spatial layer bitrate to 0.
-  for (size_t sid = kNumSpatialLayers;
-       sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
-         ++tid) {
-      allocation.SetBitrate(sid, tid, 0u);
-    }
-  }
-  // L3T3 encoding.
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&allocation));
-  EXPECT_EQ(svc_layers.active_spatial_layer_resolutions(),
-            kSpatialLayerResolutions);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
-  VerifyActiveLayer(svc_layers, 0, 3);
-
-  // Set lower temporal layer bitrate to zero, e.g. {0, 2, 3}.
-  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 0u);
-  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
-  VerifyActiveLayer(svc_layers, 0, 3);
-
-  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 1u);
-
-  // Set the bitrate of top temporal layer in SL2 to 0, e.g. {1, 2, 0}.
-  // This is invalid because the bitrates of other SL0 and SL1 is not zero. This
-  // means the number of temporal layers are different among spatial layers.
-  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/2, 0u);
-  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
-  VerifyActiveLayer(svc_layers, 0, 3);
-  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/2, 3u);
-
-  // Deactivate SL0 and SL1 and verify the new bitrate allocation.
-  constexpr int kNumDeactivatedLowerSpatialLayer = 2;
-  VideoBitrateAllocation new_allocation = allocation;
-  for (size_t sid = 0; sid < kNumDeactivatedLowerSpatialLayer; ++sid) {
-    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid)
-      new_allocation.SetBitrate(sid, tid, 0u);
-  }
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
-  EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
-              ::testing::ElementsAre(kSpatialLayerResolutions[2]));
-  VerifyActiveLayer(svc_layers, 2, 3);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
-  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
-      if (sid + kNumDeactivatedLowerSpatialLayer <
-          VideoBitrateAllocation::kMaxSpatialLayers)
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid),
-                  allocation.GetBitrateBps(
-                      sid + kNumDeactivatedLowerSpatialLayer, tid));
-      else
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0u);
-    }
-  }
-
-  // Deactivate SL2 and verify the new bitrate allocation.
-  new_allocation = allocation;
-  for (size_t tid = 0; tid < kNumTemporalLayers; ++tid)
-    new_allocation.SetBitrate(/*spatial_index=*/2, tid, 0u);
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
-  EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
-              ::testing::ElementsAre(kSpatialLayerResolutions[0],
-                                     kSpatialLayerResolutions[1]));
-  VerifyActiveLayer(svc_layers, 0, 2);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
-  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
-      if (sid < 2) {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid),
-                  allocation.GetBitrateBps(sid, tid));
-      } else {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0u);
-      }
-    }
-  }
-  // L3T3 encoding.
-  new_allocation = allocation;
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
-  EXPECT_EQ(svc_layers.active_spatial_layer_resolutions(),
-            kSpatialLayerResolutions);
-  VerifyActiveLayer(svc_layers, 0, 3);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
-
-  // L3T3 -> L1T1 by deactivating SL1 and SL2.
-  new_allocation = VideoBitrateAllocation();
-  new_allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 1u);
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
-  EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
-              ::testing::ElementsAre(kSpatialLayerResolutions[0]));
-  VerifyActiveLayer(svc_layers, 0, 1);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), 1u);
-  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
-      if (sid == 0 && tid == 0) {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 1u);
-      } else {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0u);
-      }
-    }
-  }
-  // L1T1 -> L2T3 by deactivating SL0.
-  new_allocation = VideoBitrateAllocation();
-  for (size_t sid = 1; sid < 3; sid++) {
-    for (size_t tid = 0; tid < 3; tid++) {
-      new_allocation.SetBitrate(/*spatial_index=*/sid, /*temporal_index=*/tid,
-                                allocation.GetBitrateBps(sid, tid));
-    }
-  }
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
-  EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
-              ::testing::ElementsAre(kSpatialLayerResolutions[1],
-                                     kSpatialLayerResolutions[2]));
-  VerifyActiveLayer(svc_layers, 1, 3);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), 3u);
-  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
-      if (sid < 2 && tid < 3) {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid),
-                  allocation.GetBitrateBps(sid + 1, tid));
-      } else {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0u);
-      }
-    }
-  }
-  // L2T3 -> L3T2
-  new_allocation = VideoBitrateAllocation();
-  for (size_t sid = 0; sid < 3; sid++) {
-    for (size_t tid = 0; tid < 2; tid++) {
-      new_allocation.SetBitrate(/*spatial_index=*/sid, /*temporal_index=*/tid,
-                                allocation.GetBitrateBps(sid, tid));
-    }
-  }
-  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
-  EXPECT_EQ(svc_layers.active_spatial_layer_resolutions(),
-            kSpatialLayerResolutions);
-  VerifyActiveLayer(svc_layers, 0, 3);
-  EXPECT_EQ(svc_layers.num_temporal_layers(), 2u);
-  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
-      if (sid < 3 && tid < 2) {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid),
-                  allocation.GetBitrateBps(sid, tid));
-      } else {
-        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0u);
-      }
-    }
-  }
-}
-
-// Pass invalid spatial and temporal layers as won't use it.
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    VP9SVCLayersUpdateActiveLayerTest,
-    ::testing::Values(
-        std::make_tuple(-1, -1, SVCInterLayerPredMode::kOff),
-        std::make_tuple(-1, -1, SVCInterLayerPredMode::kOnKeyPic)));
 }  // namespace media

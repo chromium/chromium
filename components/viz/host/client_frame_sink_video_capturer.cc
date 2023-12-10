@@ -286,6 +286,18 @@ void ClientFrameSinkVideoCapturer::Overlay::SetBounds(
   overlay_->SetBounds(bounds_);
 }
 
+void ClientFrameSinkVideoCapturer::Overlay::OnCapturedMouseEvent(
+    const gfx::Point& coordinates) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!client_capturer_) {
+    return;
+  }
+
+  // TODO(crbug.com/1444712): Transmit the coordinates to the client_capturer_.
+  NOTIMPLEMENTED();
+}
+
 void ClientFrameSinkVideoCapturer::Overlay::DisconnectPermanently() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

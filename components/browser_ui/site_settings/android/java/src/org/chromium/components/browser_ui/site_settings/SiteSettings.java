@@ -54,7 +54,8 @@ public class SiteSettings extends BaseSiteSettingsFragment
         }
 
         // Remove unsupported settings categories.
-        for (@SiteSettingsCategory.Type int type = 0; type < SiteSettingsCategory.Type.NUM_ENTRIES;
+        for (@SiteSettingsCategory.Type int type = 0;
+                type < SiteSettingsCategory.Type.NUM_ENTRIES;
                 type++) {
             if (!getSiteSettingsDelegate().isCategoryVisible(type)) {
                 getPreferenceScreen().removePreference(findPreference(type));
@@ -90,36 +91,39 @@ public class SiteSettings extends BaseSiteSettingsFragment
             } else if (prefCategory == Type.THIRD_PARTY_COOKIES) {
                 checked = cookieControlsMode != CookieControlsMode.BLOCK_THIRD_PARTY;
             } else if (requiresTriStateSetting) {
-                setting = WebsitePreferenceBridge.getDefaultContentSetting(
-                        browserContextHandle, contentType);
+                setting =
+                        WebsitePreferenceBridge.getDefaultContentSetting(
+                                browserContextHandle, contentType);
             } else {
-                checked = WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, contentType);
+                checked =
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                browserContextHandle, contentType);
             }
 
-            p.setTitle(ContentSettingsResources.getTitleForCategory(
-                    prefCategory, getSiteSettingsDelegate()));
+            p.setTitle(
+                    ContentSettingsResources.getTitleForCategory(
+                            prefCategory, getSiteSettingsDelegate()));
 
             p.setOnPreferenceClickListener(this);
 
-            if ((Type.CAMERA == prefCategory || Type.MICROPHONE == prefCategory
-                        || Type.NOTIFICATIONS == prefCategory
-                        || Type.AUGMENTED_REALITY == prefCategory)
-                    && SiteSettingsCategory
-                               .createFromType(getSiteSettingsDelegate().getBrowserContextHandle(),
-                                       prefCategory)
-                               .showPermissionBlockedMessage(getContext())) {
+            if ((Type.CAMERA == prefCategory
+                            || Type.MICROPHONE == prefCategory
+                            || Type.NOTIFICATIONS == prefCategory
+                            || Type.AUGMENTED_REALITY == prefCategory)
+                    && SiteSettingsCategory.createFromType(
+                                    getSiteSettingsDelegate().getBrowserContextHandle(),
+                                    prefCategory)
+                            .showPermissionBlockedMessage(getContext())) {
                 // Show 'disabled' message when permission is not granted in Android.
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, false));
-            } else if (Type.COOKIES == prefCategory && checked
-                    && cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
-                p.setSummary(ContentSettingsResources.getCookieAllowedExceptThirdPartySummary());
             } else if (Type.SITE_DATA == prefCategory) {
                 p.setSummary(ContentSettingsResources.getSiteDataListSummary(checked));
             } else if (Type.THIRD_PARTY_COOKIES == prefCategory) {
-                p.setSummary(ContentSettingsResources.getThirdPartyCookieListSummary(
-                        cookieControlsMode));
-            } else if (Type.DEVICE_LOCATION == prefCategory && checked
+                p.setSummary(
+                        ContentSettingsResources.getThirdPartyCookieListSummary(
+                                cookieControlsMode));
+            } else if (Type.DEVICE_LOCATION == prefCategory
+                    && checked
                     && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
                 p.setSummary(ContentSettingsResources.getGeolocationAllowedSummary());
             } else if (Type.CLIPBOARD == prefCategory && !checked) {
@@ -142,8 +146,11 @@ public class SiteSettings extends BaseSiteSettingsFragment
             }
 
             if (prefCategory != Type.THIRD_PARTY_COOKIES) {
-                p.setIcon(SettingsUtils.getTintedIcon(getContext(),
-                        ContentSettingsResources.getIcon(contentType, getSiteSettingsDelegate())));
+                p.setIcon(
+                        SettingsUtils.getTintedIcon(
+                                getContext(),
+                                ContentSettingsResources.getIcon(
+                                        contentType, getSiteSettingsDelegate())));
             }
         }
 
@@ -177,10 +184,12 @@ public class SiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        preference.getExtras().putString(
-                SingleCategorySettings.EXTRA_CATEGORY, preference.getKey());
-        preference.getExtras().putString(
-                SingleCategorySettings.EXTRA_TITLE, preference.getTitle().toString());
+        preference
+                .getExtras()
+                .putString(SingleCategorySettings.EXTRA_CATEGORY, preference.getKey());
+        preference
+                .getExtras()
+                .putString(SingleCategorySettings.EXTRA_TITLE, preference.getTitle().toString());
         return false;
     }
 }

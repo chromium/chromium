@@ -88,11 +88,16 @@ class ExtensionWebContentsObserver
       content::RenderFrameHost* render_frame_host,
       bool verify_url) const;
 
-  // Returns mojom::LocalFrame* corresponding |render_frame_host|. It emplaces
+  // Returns mojom::LocalFrame* corresponding `render_frame_host`. It emplaces
   // AssociatedRemote<mojom::LocalFrame> to |local_frame_map_| if the map
-  // doesn't have it. Note that it could return nullptr if |render_frame_host|
-  // is not live.
+  // doesn't have it. Note that it could return nullptr if `render_frame_host`
+  // is not live or `render_frame_host` does not immediately belong to the
+  // associated `WebContents`.
   mojom::LocalFrame* GetLocalFrame(content::RenderFrameHost* render_frame_host);
+
+  // Similar to `GetLocalFrame` but will not return nullptr, will crash.
+  mojom::LocalFrame& GetLocalFrameChecked(
+      content::RenderFrameHost* render_frame_host);
 
   // Tells the receiver to start listening to window ID changes from the
   // supplied SessionTabHelper. This method is public to allow the code that

@@ -254,8 +254,17 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_street_location(),
         ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.mutable_address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    s.Set(specifics.mutable_address_apt(), ADDRESS_HOME_APT);
+    s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
+    s.Set(specifics.mutable_address_apt_type(), ADDRESS_HOME_APT_TYPE);
+  }
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    s.Set(specifics.mutable_address_overflow(), ADDRESS_HOME_OVERFLOW);
+  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
@@ -264,6 +273,21 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
           features::kAutofillEnableSupportForBetweenStreets)) {
     s.Set(specifics.mutable_address_between_streets(),
           ADDRESS_HOME_BETWEEN_STREETS);
+    s.Set(specifics.mutable_address_between_streets_1(),
+          ADDRESS_HOME_BETWEEN_STREETS_1);
+    s.Set(specifics.mutable_address_between_streets_2(),
+          ADDRESS_HOME_BETWEEN_STREETS_2);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    s.Set(specifics.mutable_address_between_streets_or_landmark(),
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    s.Set(specifics.mutable_address_overflow_and_landmark(),
+          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
@@ -367,8 +391,17 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_thoroughfare_number(), ADDRESS_HOME_HOUSE_NUMBER);
   s.Set(specifics.address_street_location(), ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    s.Set(specifics.address_apt(), ADDRESS_HOME_APT);
+    s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
+    s.Set(specifics.address_apt_type(), ADDRESS_HOME_APT_TYPE);
+  }
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    s.Set(specifics.address_overflow(), ADDRESS_HOME_OVERFLOW);
+  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
@@ -376,6 +409,20 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
+    s.Set(specifics.address_between_streets_1(),
+          ADDRESS_HOME_BETWEEN_STREETS_1);
+    s.Set(specifics.address_between_streets_2(),
+          ADDRESS_HOME_BETWEEN_STREETS_2);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    s.Set(specifics.address_between_streets_or_landmark(),
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    s.Set(specifics.address_overflow_and_landmark(),
+          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
@@ -420,126 +467,118 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_name_honorific())) {
     trimmed_specifics.clear_name_honorific();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_first())) {
     trimmed_specifics.clear_name_first();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_middle())) {
     trimmed_specifics.clear_name_middle();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_last())) {
     trimmed_specifics.clear_name_last();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_last_first())) {
     trimmed_specifics.clear_name_last_first();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_last_conjunction())) {
     trimmed_specifics.clear_name_last_conjunction();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_last_second())) {
     trimmed_specifics.clear_name_last_second();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_full())) {
     trimmed_specifics.clear_name_full();
   }
-
   if (d.Delete(trimmed_specifics.mutable_name_full_with_honorific())) {
     trimmed_specifics.clear_name_full_with_honorific();
   }
-
   // Delete address-related values and statuses.;
   if (d.Delete(trimmed_specifics.mutable_address_city())) {
     trimmed_specifics.clear_address_city();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_state())) {
     trimmed_specifics.clear_address_state();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_zip())) {
     trimmed_specifics.clear_address_zip();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_country())) {
     trimmed_specifics.clear_address_country();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_street_address())) {
     trimmed_specifics.clear_address_street_address();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_sorting_code())) {
     trimmed_specifics.clear_address_sorting_code();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_dependent_locality())) {
     trimmed_specifics.clear_address_dependent_locality();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_thoroughfare_name())) {
     trimmed_specifics.clear_address_thoroughfare_name();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_thoroughfare_number())) {
     trimmed_specifics.clear_address_thoroughfare_number();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_street_location())) {
     trimmed_specifics.clear_address_street_location();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_subpremise_name())) {
     trimmed_specifics.clear_address_subpremise_name();
   }
-
+  if (d.Delete(trimmed_specifics.mutable_address_apt())) {
+    trimmed_specifics.clear_address_apt();
+  }
   if (d.Delete(trimmed_specifics.mutable_address_apt_num())) {
     trimmed_specifics.clear_address_apt_num();
   }
-
+  if (d.Delete(trimmed_specifics.mutable_address_apt_type())) {
+    trimmed_specifics.clear_address_apt_type();
+  }
   if (d.Delete(trimmed_specifics.mutable_address_floor())) {
     trimmed_specifics.clear_address_floor();
   }
-
+  if (d.Delete(trimmed_specifics.mutable_address_overflow())) {
+    trimmed_specifics.clear_address_overflow();
+  }
   if (d.Delete(trimmed_specifics.mutable_address_landmark())) {
     trimmed_specifics.clear_address_landmark();
   }
-
   if (d.Delete(trimmed_specifics.mutable_address_between_streets())) {
     trimmed_specifics.clear_address_between_streets();
   }
-
+  if (d.Delete(trimmed_specifics.mutable_address_between_streets_1())) {
+    trimmed_specifics.clear_address_between_streets_1();
+  }
+  if (d.Delete(trimmed_specifics.mutable_address_between_streets_2())) {
+    trimmed_specifics.clear_address_between_streets_2();
+  }
   if (d.Delete(trimmed_specifics.mutable_address_admin_level_2())) {
     trimmed_specifics.clear_address_admin_level_2();
   }
-
+  if (d.Delete(
+          trimmed_specifics.mutable_address_between_streets_or_landmark())) {
+    trimmed_specifics.clear_address_between_streets_or_landmark();
+  }
+  if (d.Delete(trimmed_specifics.mutable_address_overflow_and_landmark())) {
+    trimmed_specifics.clear_address_overflow_and_landmark();
+  }
   // Delete email, phone and company values and statuses.
   if (d.Delete(trimmed_specifics.mutable_email_address())) {
     trimmed_specifics.clear_email_address();
   }
-
   if (d.Delete(trimmed_specifics.mutable_company_name())) {
     trimmed_specifics.clear_company_name();
   }
-
   if (d.Delete(trimmed_specifics.mutable_phone_home_whole_number())) {
     trimmed_specifics.clear_phone_home_whole_number();
   }
-
   // Delete birthdate-related values and statuses.
   if (d.Delete(trimmed_specifics.mutable_birthdate_day())) {
     trimmed_specifics.clear_birthdate_day();
   }
-
   if (d.Delete(trimmed_specifics.mutable_birthdate_month())) {
     trimmed_specifics.clear_birthdate_month();
   }
-
   if (d.Delete(trimmed_specifics.mutable_birthdate_year())) {
     trimmed_specifics.clear_birthdate_year();
   }

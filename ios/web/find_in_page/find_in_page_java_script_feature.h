@@ -5,11 +5,12 @@
 #ifndef IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_JAVA_SCRIPT_FEATURE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
@@ -33,14 +34,14 @@ class FindInPageJavaScriptFeature : public JavaScriptFeature {
   // necessary before match count is available.
   bool Search(WebFrame* frame,
               const std::string& query,
-              base::OnceCallback<void(absl::optional<int>)> callback);
+              base::OnceCallback<void(std::optional<int>)> callback);
 
   // Continues an ongoing search started with `Search` which hasn't yet
   // completed. `callback` returns the number of search results found or
   // `kFindInPagePending` if more calls to `Pump` are necessary before match
   // count is available.
   void Pump(WebFrame* frame,
-            base::OnceCallback<void(absl::optional<int>)> callback);
+            base::OnceCallback<void(std::optional<int>)> callback);
 
   // Selects the given match at `index` in `frame`. `callback` is called with
   // the dictionary value results from the selection.
@@ -58,7 +59,7 @@ class FindInPageJavaScriptFeature : public JavaScriptFeature {
   // Processes the JavaScript `result` to extract the match count and send it
   // to `callback`.
   void ProcessSearchResult(
-      base::OnceCallback<void(const absl::optional<int>)> callback,
+      base::OnceCallback<void(const std::optional<int>)> callback,
       const base::Value* result);
 
   FindInPageJavaScriptFeature();

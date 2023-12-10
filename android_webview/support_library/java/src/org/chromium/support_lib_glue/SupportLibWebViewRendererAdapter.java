@@ -19,8 +19,8 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
  * Once created, instances are kept alive by the peer AwRendererProcess.
  */
 @Lifetime.Renderer
-class SupportLibWebViewRendererAdapter
-        extends IsomorphicAdapter implements WebViewRendererBoundaryInterface {
+class SupportLibWebViewRendererAdapter extends IsomorphicAdapter
+        implements WebViewRendererBoundaryInterface {
     private AwRenderProcess mRenderer;
 
     SupportLibWebViewRendererAdapter(AwRenderProcess renderer) {
@@ -35,7 +35,7 @@ class SupportLibWebViewRendererAdapter
     @Override
     public boolean terminate() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.WEBVIEW_RENDERER_TERMINATE")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEBVIEW_RENDERER_TERMINATE")) {
             recordApiCall(ApiCall.WEBVIEW_RENDERER_TERMINATE);
             return mRenderer.terminate();
         }

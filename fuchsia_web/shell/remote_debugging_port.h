@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_SHELL_REMOTE_DEBUGGING_PORT_H_
 #define FUCHSIA_WEB_SHELL_REMOTE_DEBUGGING_PORT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 extern const char kRemoteDebuggingPortSwitch[];
 
@@ -19,7 +19,7 @@ class CommandLine;
 // port switch. If |command_line| contains the appropriate switch, returns the
 // remote debugging port specified in the |command_line| or nullopt on parsing
 // failure.
-absl::optional<uint16_t> GetRemoteDebuggingPort(
+std::optional<uint16_t> GetRemoteDebuggingPort(
     const base::CommandLine& command_line);
 
 #endif  // FUCHSIA_WEB_SHELL_REMOTE_DEBUGGING_PORT_H_

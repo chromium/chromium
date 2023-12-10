@@ -168,7 +168,7 @@ void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (visible_quad_rect.IsEmpty())
     return;
 
-  absl::optional<gfx::Rect> clip_rect_opt;
+  std::optional<gfx::Rect> clip_rect_opt;
   if (is_clipped()) {
     clip_rect_opt = clip_rect();
   }

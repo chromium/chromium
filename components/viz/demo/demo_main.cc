@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_OZONE)
   base::CommandLine command_line(argc, argv);
   auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       command_line.GetSwitchValueASCII(switches::kEnableFeatures),
       command_line.GetSwitchValueASCII(switches::kDisableFeatures));
   base::FeatureList::SetInstance(std::move(feature_list));

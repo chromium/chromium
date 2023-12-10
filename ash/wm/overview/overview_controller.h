@@ -121,27 +121,23 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     delayed_animation_task_delay_ = delta;
   }
 
-  // Gets the windows list that are shown in the overview windows grids if the
-  // overview mode is active for testing.
-  std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
+  // Returns true if it's possible to enter overview mode in the current
+  // configuration. This can be false at certain times, such as when the lock
+  // screen is visible we can't overview mode.
+  bool CanEnterOverview() const;
 
  private:
   friend class SavedDeskTest;
-
-  void set_disable_app_id_check_for_saved_desks(bool val) {
-    disable_app_id_check_for_saved_desks_ = val;
-  }
 
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.
   void ToggleOverview(
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
-  // Returns true if it's possible to enter or exit overview mode in the current
-  // configuration. This can be false at certain times, such as when the lock
-  // screen is visible we can't overview mode.
-  bool CanEnterOverview();
-  bool CanEndOverview(OverviewEnterExitType type);
+  // Returns true if it's possible to exit overview mode in the current
+  // configuration. This can be false at certain times, such as when the divider
+  // or desks are animating.
+  bool CanEndOverview(OverviewEnterExitType type) const;
 
   void OnStartingAnimationComplete(bool canceled);
   void OnEndingAnimationComplete(bool canceled);

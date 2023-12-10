@@ -324,6 +324,7 @@ IntersectionObserver* IntersectionObserver::Create(
 
 IntersectionObserver* IntersectionObserver::Create(
     const Vector<Length>& margin,
+    const Vector<Length>& scroll_margin,
     const Vector<float>& thresholds,
     Document* document,
     EventCallback callback,
@@ -342,10 +343,9 @@ IntersectionObserver* IntersectionObserver::Create(
           document->GetExecutionContext(), std::move(callback), ukm_metric_id,
           behavior, needs_initial_observation_with_detached_target);
   return MakeGarbageCollected<IntersectionObserver>(
-      *intersection_observer_delegate, nullptr, margin,
-      /* scroll_margin */ Vector<Length>(), thresholds, semantics, delay,
-      track_visibility, always_report_root_bounds, margin_target,
-      use_overflow_clip_edge);
+      *intersection_observer_delegate, nullptr, margin, scroll_margin,
+      thresholds, semantics, delay, track_visibility, always_report_root_bounds,
+      margin_target, use_overflow_clip_edge);
 }
 
 IntersectionObserver::IntersectionObserver(
@@ -449,7 +449,8 @@ void IntersectionObserver::observe(Element* target,
             (use_overflow_clip_edge_
                  ? IntersectionObservation::kUseOverflowClipEdge
                  : 0),
-        monotonic_time, root_geometry);
+        IntersectionGeometry::kInfiniteScrollDelta, monotonic_time,
+        root_geometry);
   }
 }
 
@@ -515,45 +516,45 @@ DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
       ->MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
 }
 
-bool IntersectionObserver::HasRootMargin() const {
-  if (margin_target_ == kApplyMarginToTarget) {
-    return false;
-  }
-  CHECK_EQ(margin_.size(), 4u);
-  return !margin_[0].IsZero() || !margin_[1].IsZero() || !margin_[2].IsZero() ||
-         !margin_[3].IsZero();
-}
-
 int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
-    absl::optional<base::TimeTicks>& monotonic_time) {
+    absl::optional<base::TimeTicks>& monotonic_time,
+    gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
   DCHECK(!RootIsImplicit());
   if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
-    return 0;
-
-  // If we're processing post-layout deliveries only and we're not a post-layout
-  // delivery observer, then return early. Likewise, return if we need to
-  // compute non-post-layout-delivery observations but the observer behavior is
-  // post-layout.
-  bool post_layout_delivery_only =
-      flags & IntersectionObservation::kPostLayoutDeliveryOnly;
-  bool is_post_layout_delivery_observer =
-      GetDeliveryBehavior() ==
-      IntersectionObserver::kDeliverDuringPostLayoutSteps;
-  if (post_layout_delivery_only != is_post_layout_delivery_observer)
     return 0;
 
   if (use_overflow_clip_edge_)
     flags |= IntersectionObservation::kUseOverflowClipEdge;
 
   absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
-  // TODO(szager): Is this copy necessary?
-  HeapVector<Member<IntersectionObservation>> observations_to_process(
-      observations_);
   int64_t result = 0;
-  for (auto& observation : observations_to_process) {
-    result +=
-        observation->ComputeIntersection(flags, monotonic_time, root_geometry);
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    for (auto& observation : observations_) {
+      result += observation->ComputeIntersection(
+          flags, accumulated_scroll_delta_since_last_update, monotonic_time,
+          root_geometry);
+    }
+  } else {
+    // If we're processing post-layout deliveries only and we're not a
+    // post-layout delivery observer, then return early. Likewise, return if we
+    // need to compute non-post-layout-delivery observations but the observer
+    // behavior is post-layout.
+    bool post_layout_delivery_only =
+        flags & IntersectionObservation::kPostLayoutDeliveryOnly;
+    bool is_post_layout_delivery_observer =
+        GetDeliveryBehavior() ==
+        IntersectionObserver::kDeliverDuringPostLayoutSteps;
+    if (post_layout_delivery_only != is_post_layout_delivery_observer) {
+      return 0;
+    }
+    // TODO(szager): Is this copy necessary?
+    HeapVector<Member<IntersectionObservation>> observations_to_process(
+        observations_);
+    for (auto& observation : observations_to_process) {
+      result += observation->ComputeIntersection(flags, gfx::Vector2dF(),
+                                                 monotonic_time, root_geometry);
+    }
   }
   return result;
 }

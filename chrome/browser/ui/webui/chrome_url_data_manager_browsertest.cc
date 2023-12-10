@@ -202,7 +202,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 #else
     enabled_features.push_back(kForYouFre);
 #endif
-    enabled_features.push_back(media::kUseMediaHistoryStore);
     feature_list_.InitWithFeatures(enabled_features, {});
   }
 
@@ -332,7 +331,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://local-state",
     "chrome://management",
     "chrome://media-engagement",
-    "chrome://media-history",
     "chrome://media-internals",
     "chrome://media-router-internals",
     "chrome://metrics-internals",
@@ -354,7 +352,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://privacy-sandbox-dialog/?debug",
     "chrome://process-internals",
     "chrome://quota-internals",
-    "chrome-untrusted://read-anything-side-panel.top-chrome",
     "chrome://read-later.top-chrome",
     "chrome://reset-password",
     "chrome://safe-browsing",
@@ -427,7 +424,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://emoji-picker",
     "chrome://family-link-user-internals",
     "chrome://file-manager",
-    "chrome://guest-os-installer",
     "chrome://help-app",
     "chrome://linux-proxy-config",
     "chrome://manage-mirrorsync",

@@ -13,13 +13,14 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -127,30 +128,30 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
                                  SnapViewType type,
                                  float snap_ratio) {
   chromeos::OrientationType orientation = GetSnapDisplayOrientation(display);
-  enum class SnapPosition { kLeft, kRight, kBottom, kTop, kInvalid };
-  SnapPosition position = SnapPosition::kInvalid;
+  enum class SnapRegion { kLeft, kRight, kBottom, kTop, kInvalid };
+  SnapRegion snap_region = SnapRegion::kInvalid;
   const bool is_primary_snap = type == SnapViewType::kPrimary;
   bool is_horizontal = true;
 
-  // Find the actual position of window should be snapped to based on
-  // |orientation| and |type|
+  // Find the actual snap position that the `window` should be snapped to based
+  // on `orientation` and `type`.
   switch (orientation) {
     case chromeos::OrientationType::kLandscapePrimary:
-      position = is_primary_snap ? SnapPosition::kLeft : SnapPosition::kRight;
+      snap_region = is_primary_snap ? SnapRegion::kLeft : SnapRegion::kRight;
       break;
     case chromeos::OrientationType::kLandscapeSecondary:
-      position = is_primary_snap ? SnapPosition::kRight : SnapPosition::kLeft;
+      snap_region = is_primary_snap ? SnapRegion::kRight : SnapRegion::kLeft;
       break;
     case chromeos::OrientationType::kPortraitPrimary:
-      position = is_primary_snap ? SnapPosition::kTop : SnapPosition::kBottom;
+      snap_region = is_primary_snap ? SnapRegion::kTop : SnapRegion::kBottom;
       is_horizontal = false;
       break;
     case chromeos::OrientationType::kPortraitSecondary:
-      position = is_primary_snap ? SnapPosition::kBottom : SnapPosition::kTop;
+      snap_region = is_primary_snap ? SnapRegion::kBottom : SnapRegion::kTop;
       is_horizontal = false;
       break;
     default:
-      position = SnapPosition::kInvalid;
+      snap_region = SnapRegion::kInvalid;
       NOTREACHED();
       break;
   }
@@ -177,28 +178,37 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       axis_length = preferred_size->width();
     if (!is_horizontal && preferred_size->height() > 0)
       axis_length = preferred_size->height();
+  } else if (window == WindowRestoreController::Get()->to_be_snapped_window()) {
+    // Edit `axis_length` if window restore is currently restoring a snapped
+    // window; take into account the snap percentage saved by the window.
+    app_restore::WindowInfo* window_info =
+        window->GetProperty(app_restore::kWindowInfoKey);
+    if (window_info && window_info->snap_percentage) {
+      const int snap_percentage = *window_info->snap_percentage;
+      axis_length = snap_percentage * work_area_axis_length / 100;
+    }
   }
 
   // Set the size of such side and the window position based on a given snap
   // position.
-  switch (position) {
-    case SnapPosition::kLeft:
+  switch (snap_region) {
+    case SnapRegion::kLeft:
       snap_bounds.set_width(axis_length);
       break;
-    case SnapPosition::kRight:
+    case SnapRegion::kRight:
       snap_bounds.set_width(axis_length);
       // Snap to the right.
       snap_bounds.set_x(work_area.right() - axis_length);
       break;
-    case SnapPosition::kTop:
+    case SnapRegion::kTop:
       snap_bounds.set_height(axis_length);
       break;
-    case SnapPosition::kBottom:
+    case SnapRegion::kBottom:
       snap_bounds.set_height(axis_length);
       // Snap to the bottom.
       snap_bounds.set_y(work_area.bottom() - axis_length);
       break;
-    case SnapPosition::kInvalid:
+    case SnapRegion::kInvalid:
       NOTREACHED();
       break;
   }
@@ -210,8 +220,7 @@ chromeos::OrientationType GetSnapDisplayOrientation(
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
   // `SplitViewController::GetSnappedWindowBoundsInScreen()`.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  DCHECK(!tablet_mode_controller || !tablet_mode_controller->InTabletMode());
+  DCHECK(!display::Screen::GetScreen()->InTabletMode());
 
   const display::Display::Rotation& rotation =
       Shell::Get()

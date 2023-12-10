@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 52 tests; 34 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] idl_test setup
-[PASS] idl_test validation
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSPViolationReportBody interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSPViolationReportBody" expected property "CSPViolationReportBody" missing
 [FAIL] CSPViolationReportBody interface object length
@@ -38,37 +36,5 @@ Found 52 tests; 34 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "CSPViolationReportBody" expected property "CSPViolationReportBody" missing
 [FAIL] CSPViolationReportBody interface: attribute columnNumber
   assert_own_property: self does not have own property "CSPViolationReportBody" expected property "CSPViolationReportBody" missing
-[PASS] SecurityPolicyViolationEvent interface: existence and properties of interface object
-[PASS] SecurityPolicyViolationEvent interface object length
-[PASS] SecurityPolicyViolationEvent interface object name
-[PASS] SecurityPolicyViolationEvent interface: existence and properties of interface prototype object
-[PASS] SecurityPolicyViolationEvent interface: existence and properties of interface prototype object's "constructor" property
-[PASS] SecurityPolicyViolationEvent interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] SecurityPolicyViolationEvent interface: attribute documentURI
-[PASS] SecurityPolicyViolationEvent interface: attribute referrer
-[PASS] SecurityPolicyViolationEvent interface: attribute blockedURI
-[PASS] SecurityPolicyViolationEvent interface: attribute effectiveDirective
-[PASS] SecurityPolicyViolationEvent interface: attribute violatedDirective
-[PASS] SecurityPolicyViolationEvent interface: attribute originalPolicy
-[PASS] SecurityPolicyViolationEvent interface: attribute sourceFile
-[PASS] SecurityPolicyViolationEvent interface: attribute sample
-[PASS] SecurityPolicyViolationEvent interface: attribute disposition
-[PASS] SecurityPolicyViolationEvent interface: attribute statusCode
-[PASS] SecurityPolicyViolationEvent interface: attribute lineNumber
-[PASS] SecurityPolicyViolationEvent interface: attribute columnNumber
-[PASS] SecurityPolicyViolationEvent must be primary interface of new SecurityPolicyViolationEvent("securitypolicyviolation")
-[PASS] Stringification of new SecurityPolicyViolationEvent("securitypolicyviolation")
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "documentURI" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "referrer" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "blockedURI" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "effectiveDirective" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "violatedDirective" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "originalPolicy" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "sourceFile" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "sample" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "disposition" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "statusCode" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "lineNumber" with the proper type
-[PASS] SecurityPolicyViolationEvent interface: new SecurityPolicyViolationEvent("securitypolicyviolation") must inherit property "columnNumber" with the proper type
 Harness: the test ran to completion.
 

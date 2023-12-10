@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View.OnClickListener;
 
@@ -31,7 +32,7 @@ public class CardPreference extends TextMessagePreference {
     /** Constructor for inflating from XML. */
     public CardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.preference_card_view);
+        setLayoutResource(R.layout.card_preference);
         setSelectable(false);
     }
 
@@ -43,6 +44,7 @@ public class CardPreference extends TextMessagePreference {
         mCloseIcon = (ChromeImageView) holder.findViewById(R.id.close_icon);
 
         mDescriptionView.setText(mSummary);
+        mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
         mIcon.setImageDrawable(mIconDrawable);
         mCloseIcon.setVisibility(mCloseIconVisibility);
         mCloseIcon.setOnClickListener(mOnCloseClickListener);

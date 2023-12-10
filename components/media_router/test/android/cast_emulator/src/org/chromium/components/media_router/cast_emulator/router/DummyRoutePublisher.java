@@ -66,10 +66,11 @@ public final class DummyRoutePublisher implements RoutePublisher {
                         .addControlFilters(controlFilters)
                         .build();
 
-        MediaRouteProviderDescriptor providerDescriptor = new MediaRouteProviderDescriptor.Builder()
-                                                                  .addRoute(testRouteDescriptor1)
-                                                                  .addRoute(testRouteDescriptor2)
-                                                                  .build();
+        MediaRouteProviderDescriptor providerDescriptor =
+                new MediaRouteProviderDescriptor.Builder()
+                        .addRoute(testRouteDescriptor1)
+                        .addRoute(testRouteDescriptor2)
+                        .build();
         mProvider.setDescriptor(providerDescriptor);
     }
 

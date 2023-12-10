@@ -10,17 +10,9 @@ examples.
 Chrome has a [multi-process
 architecture](https://www.chromium.org/developers/design-documents/multi-process-architecture)
 and each process is heavily multi-threaded. In this document we will go over the
-basic threading system shared by each process. The main goal is to keep the main
-thread (a.k.a. "UI" thread in the browser process) and IO thread (each process's
-thread for receiving
-[IPC](https://en.wikipedia.org/wiki/Inter-process_communication))
-responsive.  This means offloading any blocking I/O or other expensive
-operations to other threads. Our approach is to use message passing as the way
-of communicating between threads. We discourage locking and thread-safe objects.
-Instead, objects live on only one (often virtual -- we'll get to that later!)
-thread and we pass messages between those threads for communication. Absent
-external requirements about latency or workload, Chrome attempts to be a [highly
-concurrent, but not necessarily
+basic threading system shared by each process. Our primary goal is to keep the
+browser highly responsive. Absent external requirements about latency or
+workload, Chrome attempts to be a [highly concurrent, but not necessarily
 parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.),
 system.
 
@@ -30,6 +22,32 @@ found
 
 This documentation assumes familiarity with computer science
 [threading concepts](https://en.wikipedia.org/wiki/Thread_(computing)).
+
+### Quick start guide
+
+ * Do not perform expensive computation or blocking IO on the main thread
+   (a.k.a. “UI” thread in the browser process) or IO thread (each
+   process's thread for receiving IPC). A busy UI / IO thread can cause
+   user-visible latency, so prefer running that work on the
+   [thread pool](#direct-posting-to-the-thread-pool).
+ * Always avoid reading/writing to the same place in memory from separate
+   threads or sequences. This will lead to
+   [data races](https://en.wikipedia.org/wiki/Race_condition#Data_race)!
+   Prefer passing messages across sequences instead. Alternatives to message
+   passing like using locks is discouraged.
+ * To prevent accidental data races, prefer for most classes to be used
+   exclusively on a single sequence. You should use utilities like
+   [SEQUENCE_CHECKER](https://source.chromium.org/chromium/chromium/src/+/main:base/sequence_checker.h)
+   or [base::SequenceBound](https://source.chromium.org/chromium/chromium/src/+/main:base/threading/sequence_bound.h)
+   to help enforce this constraint.
+ * If you need to orchestrate multiple objects that live on different
+   sequences, be careful about object lifetimes. For example,
+   using [base::Unretained](https://source.chromium.org/chromium/chromium/src/+/main:base/functional/bind.h;l=169;drc=ef1375f2c9fffa0d9cd664b43b0035c09fb70e99)
+   in posted tasks can often lead to use-after-free bugs without careful
+   analysis of object lifetimes. Consider whether you need to use
+   [weak pointers](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/weak_ptr.h)
+   or [scoped refptrs](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/scoped_refptr.h)
+   instead.
 
 ### Nomenclature
 

@@ -23,21 +23,21 @@ public class NewTabPageScrollView extends ScrollView {
 
     private GestureDetector mGestureDetector;
 
-    /**
-     * Constructor needed to inflate from XML.
-     */
+    /** Constructor needed to inflate from XML. */
     public NewTabPageScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mGestureDetector = new GestureDetector(
-                getContext(), new GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public boolean onSingleTapUp(MotionEvent e) {
-                        boolean retVal = super.onSingleTapUp(e);
-                        requestFocus();
-                        return retVal;
-                    }
-                });
+        mGestureDetector =
+                new GestureDetector(
+                        getContext(),
+                        new GestureDetector.SimpleOnGestureListener() {
+                            @Override
+                            public boolean onSingleTapUp(MotionEvent e) {
+                                boolean retVal = super.onSingleTapUp(e);
+                                requestFocus();
+                                return retVal;
+                            }
+                        });
     }
 
     @Override

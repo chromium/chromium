@@ -53,7 +53,8 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
 int ScrollbarThemeFluent::ScrollbarThickness(
     float scale_from_dip,
     EScrollbarWidth scrollbar_width) const {
-  return base::ClampRound(scrollbar_track_thickness_ * scale_from_dip);
+  return base::ClampRound(scrollbar_track_thickness_ *
+                          Proportion(scrollbar_width) * scale_from_dip);
 }
 
 gfx::Rect ScrollbarThemeFluent::ThumbRect(const Scrollbar& scrollbar) {
@@ -91,16 +92,18 @@ gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
   // track, buttons should take all the available space.
   if (scrollbar.Orientation() == kVerticalScrollbar) {
     const int button_width = scrollbar.Width();
-    const int desired_button_height =
-        base::ClampRound(scrollbar_button_length_ * scrollbar.ScaleFromDIP());
+    const int desired_button_height = base::ClampRound(
+        scrollbar_button_length_ * Proportion(scrollbar.CSSScrollbarWidth()) *
+        scrollbar.ScaleFromDIP());
     const int button_height = scrollbar.Height() < 2 * desired_button_height
                                   ? scrollbar.Height() / 2
                                   : desired_button_height;
     return gfx::Size(button_width, button_height);
   } else {
     const int button_height = scrollbar.Height();
-    const int desired_button_width =
-        base::ClampRound(scrollbar_button_length_ * scrollbar.ScaleFromDIP());
+    const int desired_button_width = base::ClampRound(
+        scrollbar_button_length_ * Proportion(scrollbar.CSSScrollbarWidth()) *
+        scrollbar.ScaleFromDIP());
     const int button_width = scrollbar.Width() < 2 * desired_button_width
                                  ? scrollbar.Width() / 2
                                  : desired_button_width;
@@ -131,7 +134,8 @@ int ScrollbarThemeFluent::ThumbThickness(
   // even to have equal thumb offsets from both sides so the thumb can remain
   // in the middle of the track. Subtract one pixel if the difference is odd.
   const int thumb_thickness =
-      base::ClampRound(scrollbar_thumb_thickness_ * scale_from_dip);
+      base::ClampRound(scrollbar_thumb_thickness_ *
+                       Proportion(scrollbar_width) * scale_from_dip);
   const int scrollbar_thickness =
       ScrollbarThickness(scale_from_dip, scrollbar_width);
   return thumb_thickness - ((scrollbar_thickness - thumb_thickness) % 2);

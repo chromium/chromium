@@ -26,7 +26,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
-import org.chromium.ui.display.DisplayUtil;
 
 /** Unit tests for {@link ChromeBaseAppCompatActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -74,10 +73,11 @@ public class ChromeBaseAppCompatActivityUnitTest {
         config.smallestScreenWidthDp = 0;
         ChromeBaseAppCompatActivity.applyOverridesForAutomotive(mContext, config);
 
-        float automotiveScaleUpFactor = DisplayUtil.getUiScalingFactorForAutomotive();
+        float automotiveScaleUpFactor =
+                (float) DisplayMetrics.DENSITY_220 / (float) MOCK_REAL_DISPLAY_DENSITY_DPI;
         assertEquals(
                 "Density dpi should be scaled up from the real display metric " + "on automotive.",
-                (int) (MOCK_REAL_DISPLAY_DENSITY_DPI * automotiveScaleUpFactor),
+                DisplayMetrics.DENSITY_220,
                 config.densityDpi);
         assertEquals(
                 "Screen width in density pixels should be scaled down from the "

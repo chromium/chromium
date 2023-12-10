@@ -155,9 +155,7 @@ bool SqliteDatabaseTransaction::Commit() {
 
 PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(
     const base::FilePath& database_dir)
-    : db_(sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 4096,
-                               .cache_size = 128}),
+    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}),
       database_path_(database_dir.Append(kDatabaseName)) {
   sync_db_ =
       std::make_unique<PowerBookmarkSyncMetadataDatabase>(&db_, &meta_table_);

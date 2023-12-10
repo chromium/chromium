@@ -1534,4 +1534,39 @@ TEST_F(RenderFrameHostImplTest, LoadedWithCacheControlNoStoreHeader) {
   ASSERT_FALSE(main_test_rfh()->LoadedWithCacheControlNoStoreHeader());
 }
 
+class MediaStreamCaptureObserver : public WebContentsObserver {
+ public:
+  explicit MediaStreamCaptureObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  MOCK_METHOD(void,
+              OnFrameIsCapturingMediaStreamChanged,
+              (RenderFrameHost*, bool),
+              (override));
+};
+
+TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
+  testing::StrictMock<MediaStreamCaptureObserver> observer(contents());
+
+  TestRenderFrameHost* main_rfh = contents()->GetPrimaryMainFrame();
+
+  // Calling OnMediaStreamAdded for the first time will cause a notification.
+  EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, true));
+  main_rfh->OnMediaStreamAdded();
+
+  // Calling it again will not result in a notification (verified by the
+  // StrictMock).
+  main_rfh->OnMediaStreamAdded();
+
+  // Calling OnMediaStreamRemoved to cancel out one of the OnMediaStreamAdded
+  // calls. Overall, the frame is still capturing at least one media stream so
+  // there is no notifications.
+  main_rfh->OnMediaStreamRemoved();
+
+  // Cancelling the first OnMediaStreamAdded call. This changes the state of the
+  // frame and thus cause a notification.
+  EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, false));
+  main_rfh->OnMediaStreamRemoved();
+}
+
 }  // namespace content

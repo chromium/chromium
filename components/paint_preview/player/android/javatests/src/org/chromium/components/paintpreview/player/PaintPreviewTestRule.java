@@ -12,9 +12,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
-/**
- * Loads native and initializes the browser process for Paint Preview instrumentation tests.
- */
+/** Loads native and initializes the browser process for Paint Preview instrumentation tests. */
 public class PaintPreviewTestRule implements TestRule {
     /**
      * {@link AccountManagerFacadeProvider#getInstance()} is called in the browser initialization

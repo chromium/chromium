@@ -13,7 +13,8 @@ namespace viz {
 enum class RendererType {
   kSkiaGL,
   kSkiaVk,
-  kSkiaGraphite,
+  kSkiaGraphiteDawn,
+  kSkiaGraphiteMetal,
   kSoftware,
 };
 

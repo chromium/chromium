@@ -169,11 +169,13 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 
   // Test page should only load if testing is enabled and the profile is not
   // managed by cloud.
-  if (policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
+  const bool allow_policy_test_page =
+      policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
                                             chrome::GetChannel()) &&
       !policy::ManagementServiceFactory::GetForProfile(profile)
            ->HasManagementAuthority(
-               policy::EnterpriseManagementAuthority::CLOUD)) {
+               policy::EnterpriseManagementAuthority::CLOUD);
+  if (allow_policy_test_page) {
     // Localized strings for chrome://policy/test.
     static constexpr webui::LocalizedString kPolicyTestStrings[] = {
         {"testTitle", IDS_POLICY_TEST_TITLE},
@@ -242,6 +244,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     source->AddLocalizedStrings(kPolicyTestTypes);
   }
 
+  source->AddString("acceptedPaths",
+                    allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
   webui::SetupWebUIDataSource(
       source, base::make_span(kPolicyResources, kPolicyResourcesSize),
       IDR_POLICY_POLICY_HTML);

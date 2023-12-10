@@ -216,6 +216,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadRealloc,        /* realloc_function */
     &BadFree,           /* free_function */
     nullptr,            /* get_size_estimate_function */
+    nullptr,            /* good_size_function */
     nullptr,            /* claimed_address_function */
     nullptr,            /* batch_malloc_function */
     nullptr,            /* batch_free_function */
@@ -348,9 +349,9 @@ NOINLINE static std::unique_ptr<StackBuffer> CopyCurrentStackAndRewritePointers(
 }
 
 template <size_t Depth>
-NOINLINE void ExpectStackFramePointers(const void** frames,
-                                       size_t max_depth,
-                                       bool copy_stack) {
+NOINLINE NOOPT void ExpectStackFramePointers(const void** frames,
+                                             size_t max_depth,
+                                             bool copy_stack) {
 code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.
@@ -366,9 +367,9 @@ code_end:
 }
 
 template <>
-NOINLINE void ExpectStackFramePointers<1>(const void** frames,
-                                          size_t max_depth,
-                                          bool copy_stack) {
+NOINLINE NOOPT void ExpectStackFramePointers<1>(const void** frames,
+                                                size_t max_depth,
+                                                bool copy_stack) {
 code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.

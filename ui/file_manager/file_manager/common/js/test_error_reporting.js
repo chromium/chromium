@@ -4,7 +4,7 @@
 
 /**
  * Asserts that promise gets rejected.
- * @param {Promise<void>} promise
+ * @param {Promise<*>} promise
  */
 export async function assertRejected(promise) {
   let triggeredError = false;
@@ -37,6 +37,9 @@ export function reportPromise(promise, callback) {
       });
 }
 
+/** Logs after the testFunction has run >3x (100ms each sleep). */
+const LOG_INTERVAL = 300;
+
 /**
  * Waits until testFunction becomes true.
  * @param {function(): boolean} testFunction A function which is tested.
@@ -44,7 +47,19 @@ export function reportPromise(promise, callback) {
  *     becomes true.
  */
 export async function waitUntil(testFunction) {
+  const stack = new Error().stack;
+  let logTime = Date.now() + LOG_INTERVAL;
+  let logged = false;
   while (!testFunction()) {
+    if (Date.now() > logTime) {
+      console.warn(`>>> waitUntil():\nWaiting for ${
+          testFunction.toString()}\n-----\nFrom: ${stack}`);
+      logged = true;
+      logTime += LOG_INTERVAL;
+    }
     await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  if (logged) {
+    console.warn('<<< waitUntil() ended successfully.');
   }
 }

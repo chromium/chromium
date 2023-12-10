@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_AUTOFILL_HANDLER_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_AUTOFILL_HANDLER_H_
 
-#include "base/scoped_observation.h"
 #include "chrome/browser/devtools/protocol/autofill.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
+#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
@@ -63,8 +63,6 @@ class AutofillHandler : public protocol::Autofill::Backend,
       absl::variant<const autofill::AutofillProfile*,
                     const autofill::CreditCard*> profile_or_credit_card)
       override;
-  // Called when the manager is destroyed and used to reset the observer.
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
 
   // Returns the driver for the outermost frame, not the one that created the
   // `DevToolsAgentHost` and iniated the session.
@@ -73,9 +71,10 @@ class AutofillHandler : public protocol::Autofill::Backend,
   const std::string target_id_;
   bool enabled_ = false;
   std::unique_ptr<protocol::Autofill::Frontend> frontend_;
-  base::ScopedObservation<autofill::AutofillManager,
-                          autofill::AutofillManager::Observer>
-      observation_{this};
+  // Observes `AutofillManager`s of the `WebContents` that hosts the devtools
+  // instance.
+  autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
+      this};
   base::WeakPtrFactory<AutofillHandler> weak_ptr_factory_{this};
 };
 

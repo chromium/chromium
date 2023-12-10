@@ -33,7 +33,8 @@ public class ImageTile {
     public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof ImageTile)) return false;
         ImageTile other = (ImageTile) obj;
-        return TextUtils.equals(id, other.id) && TextUtils.equals(displayTitle, other.displayTitle)
+        return TextUtils.equals(id, other.id)
+                && TextUtils.equals(displayTitle, other.displayTitle)
                 && TextUtils.equals(accessibilityText, other.accessibilityText);
     }
 }

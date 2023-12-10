@@ -37,8 +37,7 @@ public class ListMenuItemViewBinder {
         ImageView startIcon = view.findViewById(R.id.menu_item_icon);
         ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
         if (propertyKey == ListMenuItemProperties.TITLE_ID) {
-            @StringRes
-            int titleId = model.get(ListMenuItemProperties.TITLE_ID);
+            @StringRes int titleId = model.get(ListMenuItemProperties.TITLE_ID);
             if (titleId != 0) {
                 textView.setText(titleId);
             }
@@ -83,7 +82,8 @@ public class ListMenuItemViewBinder {
         } else if (propertyKey == ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN) {
             if (startIcon.getVisibility() != View.VISIBLE) {
                 // Update the "hidden" visibility type as needed.
-                hideStartIcon(startIcon,
+                hideStartIcon(
+                        startIcon,
                         model.get(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN));
             }
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
@@ -124,8 +124,11 @@ public class ListMenuItemViewBinder {
         }
     }
 
-    private static void setStartIcon(ImageView startIcon, ImageView endIcon,
-            @Nullable Drawable drawable, boolean keepStartIconSpacing) {
+    private static void setStartIcon(
+            ImageView startIcon,
+            ImageView endIcon,
+            @Nullable Drawable drawable,
+            boolean keepStartIconSpacing) {
         if (drawable != null) {
             startIcon.setImageDrawable(drawable);
             startIcon.setVisibility(View.VISIBLE);
@@ -135,8 +138,11 @@ public class ListMenuItemViewBinder {
         }
     }
 
-    private static void setEndIcon(ImageView startIcon, ImageView endIcon,
-            @Nullable Drawable drawable, boolean keepStartIconSpacing) {
+    private static void setEndIcon(
+            ImageView startIcon,
+            ImageView endIcon,
+            @Nullable Drawable drawable,
+            boolean keepStartIconSpacing) {
         if (drawable != null) {
             // Move to the end.
             endIcon.setImageDrawable(drawable);

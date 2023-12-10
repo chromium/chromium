@@ -131,14 +131,18 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   void OnDragOffer(std::unique_ptr<WaylandDataOffer> offer) override;
   void OnDragEnter(WaylandWindow* window,
                    const gfx::PointF& location,
+                   base::TimeTicks timestamp,
                    uint32_t serial) override;
-  void OnDragMotion(const gfx::PointF& location) override;
-  void OnDragLeave() override;
-  void OnDragDrop() override;
+  void OnDragMotion(const gfx::PointF& location,
+                    base::TimeTicks timestamp) override;
+  void OnDragLeave(base::TimeTicks timestamp) override;
+  void OnDragDrop(base::TimeTicks timestamp) override;
   const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate
-  void OnDataSourceFinish(WaylandDataSource* source, bool completed) override;
+  void OnDataSourceFinish(WaylandDataSource* source,
+                          base::TimeTicks timestamp,
+                          bool completed) override;
   void OnDataSourceSend(WaylandDataSource* source,
                         const std::string& mime_type,
                         std::string* contents) override;
@@ -155,7 +159,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   void HandleMotionEvent(LocatedEvent* event);
   // Handles the mouse button release (i.e: drop). Dispatches the required
   // events and resets the internal state.
-  void HandleDropAndResetState();
+  void HandleDropAndResetState(base::TimeTicks timestamp);
   // Registers as the top level PlatformEvent dispatcher and runs a nested
   // RunLoop, which blocks until the DnD session finishes.
   void RunLoop();

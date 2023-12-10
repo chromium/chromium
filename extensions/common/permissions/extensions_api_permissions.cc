@@ -117,6 +117,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagInternal |
          APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagRequiresManagementUIWarning},
+    {APIPermissionID::kOdfsConfigPrivate, "odfsConfigPrivate",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kOffscreen, "offscreen",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPower, "power",

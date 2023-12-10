@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Mangyaring paikliin ang tekstong ito ng <ph name="MAX_CHARACTERS" /> (na) character o mas mababa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
 <translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
 <translation id="2393030564806080191">Hexadecimal na value ng kulay</translation>
 <translation id="2398813069815436052">nabuksan ang dialog.</translation>
 <translation id="245932805758469625">bilang ng mga segundong natitira sa video</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Pakihabaan ang text na ito hanggang <ph name="MIN_CHARACTERS" /> (na) character o higit pa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
 <translation id="383465348367842624">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi bago ang '<ph name="ATSIGN" />.'</translation>
 <translation id="3846214748874656680">Lumabas sa fullscreen</translation>
+<translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4103419683916926126">Milliseconds</translation>
 <translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
 <translation id="4360991593054037559">Mangyaring maglagay ng isang wastong value. Ang dalawang pinakamalapit na wastong value ay <ph name="VALID_VALUE_LOW" /> at <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Mga Detalye</translation>
+<translation id="4663373278480897665">Pinapayagan ang camera</translation>
 <translation id="4664250907885839816">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi pagkatapos ng '<ph name="ATSIGN" />.'</translation>
 <translation id="4718048029184481307">Nagpe-play sa picture-in-picture</translation>
 <translation id="4748357248530471599">i-toggle ang fullscreen ng cutout ng display</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">i-download ang media</translation>
 <translation id="698788488269350478">na-expand.</translation>
 <translation id="6989848892321993519">Pakidagdagan ang text na ito nang hanggang <ph name="MIN_CHARACTERS" /> (na) character o higit pa (kasalukuyan kang gumagamit ng 1 character).</translation>
+<translation id="7080893216867146095">Pinapayagan ang pag-share ng lokasyon</translation>
 <translation id="709897737746224366">Pakitugma ang hiniling na format.</translation>
 <translation id="7102274145889307184">kasalukuyang lokasyon</translation>
 <translation id="7263440858009898357">Mangyaring pumili ng item sa listahan.</translation>

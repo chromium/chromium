@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_section.h"
 
+#include <optional>
 #include <sstream>
 
 #include "ash/webui/settings/public/constants/routes.mojom-shared.h"
 #include "base/containers/contains.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -25,8 +25,8 @@ FakeOsSettingsSection::FakeOsSettingsSection(mojom::Section section)
 FakeOsSettingsSection::~FakeOsSettingsSection() = default;
 
 void FakeOsSettingsSection::AddSubpageAndSetting(
-    absl::optional<chromeos::settings::mojom::Subpage> subpage,
-    absl::optional<chromeos::settings::mojom::Setting> setting) {
+    std::optional<chromeos::settings::mojom::Subpage> subpage,
+    std::optional<chromeos::settings::mojom::Setting> setting) {
   if (subpage) {
     if (!base::Contains(subpages_, subpage.value())) {
       // This is a new `subpage` and settings on this subpage.

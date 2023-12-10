@@ -50,15 +50,16 @@ public interface ProcessScopeDependencyProvider {
      */
     public interface FeatureStateProvider {
         boolean isFeatureActive(String featureName);
+
         boolean getBooleanParameterValue(
                 String featureName, String paramName, boolean defaultValue);
+
         int getIntegerParameterValue(String featureName, String paramName, int defaultValue);
+
         double getDoubleParameterValue(String featureName, String paramName, double defaultValue);
     }
 
-    /**
-     * Returns the FeatureStateProvider.
-     */
+    /** Returns the FeatureStateProvider. */
     default FeatureStateProvider getFeatureStateProvider() {
         return new FeatureStateProvider() {
             @Override
@@ -92,9 +93,7 @@ public interface ProcessScopeDependencyProvider {
     /** @see {Log.w} */
     default void logWarning(String tag, String messageTemplate, Object... args) {}
 
-    /**
-     * Returns an ImageFetchClient. ImageFetchClient should only be used for fetching images.
-     */
+    /** Returns an ImageFetchClient. ImageFetchClient should only be used for fetching images. */
     default @Nullable ImageFetchClient getImageFetchClient() {
         return null;
     }
@@ -184,14 +183,13 @@ public interface ProcessScopeDependencyProvider {
      */
     default void reportVisibilityLoggingEnabled(boolean enabled) {}
 
-    /**
-     * Must return true to enable ReliabilityLoggingTestUtil.
-     */
+    /** Must return true to enable ReliabilityLoggingTestUtil. */
     default boolean enableAppFlowDebugging() {
         return false;
     }
 
     /** @return the Color provider. */
+    @Deprecated
     default ColorProvider getColorProvider() {
         return null;
     }

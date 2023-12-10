@@ -26,6 +26,8 @@ class EmbedderRootsHandler;
 
 namespace blink {
 
+class BlinkGCMemoryDumpProvider;
+
 using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
                                               v8::EmbedderGraph*,
                                               void*);
@@ -116,6 +118,8 @@ class PLATFORM_EXPORT ThreadState final {
   v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
   bool forced_scheduled_gc_for_testing_ = false;
+
+  friend class BlinkGCMemoryDumpProvider;
 };
 
 // static

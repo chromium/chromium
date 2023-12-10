@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ ArrayBufferContents TransferArrayBufferForSpan(
     v8::Isolate* isolate) {
   // Before transferring anything, we check that all the arraybuffers in the
   // list are transferable and there are no duplicates.
-  WTF::HashSet<Member<DOMArrayBuffer>> seen_buffers;
+  HeapHashSet<Member<DOMArrayBuffer>> seen_buffers;
   for (const Member<DOMArrayBuffer>& array_buffer : transfer_list) {
     if (!array_buffer) {
       continue;

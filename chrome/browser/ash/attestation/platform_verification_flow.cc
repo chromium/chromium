@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -37,7 +38,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::attestation {
 
@@ -241,7 +241,7 @@ void PlatformVerificationFlow::GetCertificate(
       /*request_origin=*/context->data.service_id,
       /*force_new_key=*/force_new_key,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/key_name, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/key_name, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(certificate_callback));
 }
 
@@ -333,7 +333,7 @@ void PlatformVerificationFlow::OnChallengeReady(
         /*force_new_key=*/true,  // force_new_key
         /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
         /*key_name=*/key_name,
-        /*profile_specific_data=*/absl::nullopt,
+        /*profile_specific_data=*/std::nullopt,
         /*callback=*/std::move(renew_callback));
   }
 }

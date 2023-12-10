@@ -10,9 +10,7 @@ import android.os.Bundle;
 
 import org.chromium.base.Log;
 
-/**
- * Android app that uses WebView for UI Testing.
- */
+/** Android app that uses WebView for UI Testing. */
 public class WebViewUiTestActivity extends Activity {
 
     private static final String TAG = "WebViewUiTest";
@@ -28,8 +26,7 @@ public class WebViewUiTestActivity extends Activity {
 
         parseArgumentsFromIntent(getIntent());
         if (mLayout != null) {
-            setContentView(getResources().getIdentifier(
-                    mLayout, "layout", getPackageName()));
+            setContentView(getResources().getIdentifier(mLayout, "layout", getPackageName()));
         } else {
             Log.e(TAG, "Must specify activity layout via intent argument.");
         }

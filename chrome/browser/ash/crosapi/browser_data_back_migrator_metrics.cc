@@ -79,7 +79,7 @@ void RecordNumberOfLacrosSecondaryProfiles(
 }
 
 void RecordBackwardMigrationTimeDelta(
-    absl::optional<base::Time> forward_migration_completion_time) {
+    std::optional<base::Time> forward_migration_completion_time) {
   if (!forward_migration_completion_time.has_value()) {
     VLOG(1) << "Forward migration completion time not found.";
     return;
@@ -94,7 +94,7 @@ void RecordBackwardMigrationTimeDelta(
 }
 
 void RecordBackwardMigrationPrecededByForwardMigration(
-    absl::optional<base::Time> forward_migration_completion_time) {
+    std::optional<base::Time> forward_migration_completion_time) {
   bool is_backward_migration_preceded_by_forward_migration =
       forward_migration_completion_time.has_value();
 

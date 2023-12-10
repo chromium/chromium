@@ -19,8 +19,7 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
  * This task calls NotificationTriggerScheduler::triggerNotifications after loading native code.
  */
 public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
-    @VisibleForTesting
-    protected static final String KEY_TIMESTAMP = "Timestamp";
+    @VisibleForTesting protected static final String KEY_TIMESTAMP = "Timestamp";
 
     /** Indicates whether we should reschedule this task if it gets stopped. */
     private boolean mShouldReschedule = true;
@@ -30,10 +29,12 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.NOTIFICATION_TRIGGER_JOB_ID;
         // Check if we need to continue by waking up native or this trigger got handled already.
-        mShouldReschedule = NotificationTriggerScheduler.getInstance().checkAndResetTrigger(
-                taskParameters.getExtras().getLong(KEY_TIMESTAMP));
-        return mShouldReschedule ? StartBeforeNativeResult.LOAD_NATIVE
-                                 : StartBeforeNativeResult.DONE;
+        mShouldReschedule =
+                NotificationTriggerScheduler.getInstance()
+                        .checkAndResetTrigger(taskParameters.getExtras().getLong(KEY_TIMESTAMP));
+        return mShouldReschedule
+                ? StartBeforeNativeResult.LOAD_NATIVE
+                : StartBeforeNativeResult.DONE;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
      * might still continue to run after this has been called.
      */
     public static void cancel() {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), TaskIds.NOTIFICATION_TRIGGER_JOB_ID);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(ContextUtils.getApplicationContext(), TaskIds.NOTIFICATION_TRIGGER_JOB_ID);
     }
 }

@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Manages the interactions with the find toolbar.
- */
+/** Manages the interactions with the find toolbar. */
 public class FindToolbarManager {
     private FindToolbar mFindToolbar;
     private final ViewStub mFindToolbarStub;
@@ -35,8 +33,11 @@ public class FindToolbarManager {
      *         {@link FindToolbar}.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
      */
-    public FindToolbarManager(ViewStub findToolbarStub, TabModelSelector tabModelSelector,
-            WindowAndroid windowAndroid, ActionMode.Callback callback,
+    public FindToolbarManager(
+            ViewStub findToolbarStub,
+            TabModelSelector tabModelSelector,
+            WindowAndroid windowAndroid,
+            ActionMode.Callback callback,
             BackPressManager backPressManager) {
         mFindToolbarStub = findToolbarStub;
         mTabModelSelector = tabModelSelector;
@@ -53,9 +54,7 @@ public class FindToolbarManager {
         return mFindToolbar != null && mFindToolbar.getVisibility() == View.VISIBLE;
     }
 
-    /**
-     * Hides the toolbar and clears the selection on the screen.
-     */
+    /** Hides the toolbar and clears the selection on the screen. */
     public void hideToolbar() {
         hideToolbar(true);
     }
@@ -81,21 +80,22 @@ public class FindToolbarManager {
             mFindToolbar.setTabModelSelector(mTabModelSelector);
             mFindToolbar.setWindowAndroid(mWindowAndroid);
             mFindToolbar.setActionModeCallbackForTextEdit(mCallback);
-            mFindToolbar.setObserver(new FindToolbarObserver() {
-                @Override
-                public void onFindToolbarShown() {
-                    for (FindToolbarObserver observer : mObservers) {
-                        observer.onFindToolbarShown();
-                    }
-                }
+            mFindToolbar.setObserver(
+                    new FindToolbarObserver() {
+                        @Override
+                        public void onFindToolbarShown() {
+                            for (FindToolbarObserver observer : mObservers) {
+                                observer.onFindToolbarShown();
+                            }
+                        }
 
-                @Override
-                public void onFindToolbarHidden() {
-                    for (FindToolbarObserver observer : mObservers) {
-                        observer.onFindToolbarHidden();
-                    }
-                }
-            });
+                        @Override
+                        public void onFindToolbarHidden() {
+                            for (FindToolbarObserver observer : mObservers) {
+                                observer.onFindToolbarHidden();
+                            }
+                        }
+                    });
         }
         if (mBackPressManager != null && BackPressManager.isEnabled()) {
             if (mBackPressManager.has(BackPressHandler.Type.FIND_TOOLBAR)) {
@@ -106,24 +106,18 @@ public class FindToolbarManager {
         mFindToolbar.activate();
     }
 
-    /**
-     * Sets the find query text string.
-     */
+    /** Sets the find query text string. */
     public void setFindQuery(String findText) {
         assert mFindToolbar != null;
         mFindToolbar.setFindQuery(findText);
     }
 
-    /**
-     * Add an observer for find in page changes.
-     */
+    /** Add an observer for find in page changes. */
     public void addObserver(FindToolbarObserver observer) {
         mObservers.addObserver(observer);
     }
 
-    /**
-     * Remove an observer for find in page changes.
-     */
+    /** Remove an observer for find in page changes. */
     public void removeObserver(FindToolbarObserver observer) {
         mObservers.removeObserver(observer);
     }

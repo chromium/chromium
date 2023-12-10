@@ -63,11 +63,13 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 
   primary_view_ = AddChildView(std::move(primary_view));
   security_view_ = AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-      /*delegate=*/this, navigation_handler, bubble_delegate,
-      download::IsDownloadBubbleV2Enabled(browser->profile())));
+      /*delegate=*/this, navigation_handler, bubble_delegate));
 
   // Starts on the primary page.
   ShowPrimaryPage();
+
+  bubble_delegate->SetInitiallyFocusedView(
+      primary_view_->GetInitiallyFocusedView());
 }
 
 DownloadBubbleContentsView::~DownloadBubbleContentsView() {
@@ -85,7 +87,7 @@ DownloadBubbleRowView* DownloadBubbleContentsView::GetPrimaryViewRowForTesting(
 }
 
 DownloadBubbleRowView* DownloadBubbleContentsView::ShowPrimaryPage(
-    absl::optional<offline_items_collection::ContentId> id) {
+    std::optional<offline_items_collection::ContentId> id) {
   CHECK(!id || *id != ContentId());
   security_view_->SetVisible(false);
   security_view_->Reset();
@@ -156,6 +158,8 @@ void DownloadBubbleContentsView::ProcessDeepScanPress(
     const ContentId& id,
     base::optional_ref<const std::string> password) {
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    LogDeepScanEvent(model->GetDownloadItem(),
+                     safe_browsing::DeepScanEvent::kPromptAccepted);
     safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
         model->GetDownloadItem(), password);
   }

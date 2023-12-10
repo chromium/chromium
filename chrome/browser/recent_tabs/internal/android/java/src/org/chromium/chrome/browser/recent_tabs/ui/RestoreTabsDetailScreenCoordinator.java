@@ -32,6 +32,7 @@ public class RestoreTabsDetailScreenCoordinator {
     public interface Delegate {
         /** The user clicked on the select/deselect all tabs item. */
         void onChangeSelectionStateForAllTabs();
+
         /** The user clicked on restoring all selected tabs. */
         void onSelectedTabsChosen();
     }
@@ -39,31 +40,39 @@ public class RestoreTabsDetailScreenCoordinator {
     public RestoreTabsDetailScreenCoordinator(
             Context context, View view, PropertyModel model, Profile profile) {
         mFaviconHelper = new FaviconHelper();
-        BindContext bindContext = new BindContext(new DefaultFaviconHelper(),
-                FaviconUtils.createCircularIconGenerator(context), mFaviconHelper, profile);
+        BindContext bindContext =
+                new BindContext(
+                        new DefaultFaviconHelper(),
+                        FaviconUtils.createCircularIconGenerator(context),
+                        mFaviconHelper,
+                        profile);
 
         mRecyclerView = view.findViewById(R.id.restore_tabs_detail_screen_recycler_view);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(
-                new RestoreTabsDetailItemDecoration(context.getResources().getDimensionPixelSize(
-                        R.dimen.restore_tabs_detail_sheet_spacing_vertical)));
+                new RestoreTabsDetailItemDecoration(
+                        context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.restore_tabs_detail_sheet_spacing_vertical)));
 
-        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(
-                    View v, int l, int t, int r, int b, int oL, int oT, int oR, int oB) {
-                if (mRecyclerView.canScrollVertically(RECYLCER_VIEW_DIRECTION_UP)
-                        || mRecyclerView.canScrollVertically(RECYLCER_VIEW_DIRECTION_DOWN)) {
-                    view.findViewById(R.id.restore_tabs_bottom_toolbar_divider)
-                            .setVisibility(View.VISIBLE);
-                } else {
-                    view.findViewById(R.id.restore_tabs_bottom_toolbar_divider)
-                            .setVisibility(View.GONE);
-                }
-            }
-        });
+        mRecyclerView.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v, int l, int t, int r, int b, int oL, int oT, int oR, int oB) {
+                        if (mRecyclerView.canScrollVertically(RECYLCER_VIEW_DIRECTION_UP)
+                                || mRecyclerView.canScrollVertically(
+                                        RECYLCER_VIEW_DIRECTION_DOWN)) {
+                            view.findViewById(R.id.restore_tabs_bottom_toolbar_divider)
+                                    .setVisibility(View.VISIBLE);
+                        } else {
+                            view.findViewById(R.id.restore_tabs_bottom_toolbar_divider)
+                                    .setVisibility(View.GONE);
+                        }
+                    }
+                });
 
         RestoreTabsDetailScreenViewBinder.ViewHolder viewHolder =
                 new RestoreTabsDetailScreenViewBinder.ViewHolder(view, bindContext);

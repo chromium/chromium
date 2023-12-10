@@ -4,16 +4,27 @@
 
 #include "content/browser/renderer_host/cookie_utils.h"
 
+#include <cstddef>
+#include <ostream>
+#include <string>
+
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -175,6 +186,7 @@ void RecordSchemefulContextDowngradeUKM(
   }
 }
 
+// LINT.IfChange(should_report_dev_tools)
 bool ShouldReportDevToolsIssueForStatus(
     const net::CookieInclusionStatus& status) {
   return status.ShouldWarn() ||
@@ -186,9 +198,23 @@ bool ShouldReportDevToolsIssueForStatus(
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
 }
+// LINT.ThenChange(//content/browser/renderer_host/cookie_utils.cc:should_report_legacy_tech_report)
 
-// Logs cookie warnings to DevTools Issues Panel and logs events to UseCounters
-// and UKM for a single cookie-accessed event. Does not log to the JS console.
+// LINT.IfChange(should_report_legacy_tech_report)
+bool ShouldReportLegacyTechIssueForStatus(
+    const net::CookieInclusionStatus& status) {
+  return status.HasExclusionReason(
+             net::CookieInclusionStatus::
+                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+         status.HasWarningReason(
+             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+}
+// LINT.ThenChange(//content/browser/renderer_host/cookie_utils.cc:should_report_dev_tools)
+
+// Logs cookie issues to DevTools Issues Panel and logs events to UseCounters
+// and UKM for a single cookie-accessed event.
 // TODO(crbug.com/977040): Remove when no longer needed.
 void EmitCookieWarningsAndMetricsOnce(
     RenderFrameHostImpl* rfh,
@@ -224,6 +250,19 @@ void EmitCookieWarningsAndMetricsOnce(
               ? blink::mojom::CookieOperation::kReadCookie
               : blink::mojom::CookieOperation::kSetCookie,
           cookie_details->devtools_request_id);
+    }
+
+    // Log to the JS console if there is cookie affected by 3PCD.
+    if (status.HasExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+      root_frame_host->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "Blocked third-party cookie. Learn more in the Issues tab.");
+    } else if (status.HasWarningReason(
+                   net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+      root_frame_host->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "Third-party cookie will be blocked. Learn more in the Issues tab.");
     }
 
     if (cookie->access_result.status.ShouldWarn()) {
@@ -381,20 +420,93 @@ void EmitCookieWarningsAndMetricsOnce(
   }
 }
 
+// Logs cookie issues to Legacy Technology Report.
+void ReportLegacyTechEvent(
+    RenderFrameHostImpl* render_frame_host,
+    NavigationRequest* navigation_request,
+    const network::mojom::CookieAccessDetailsPtr& cookie_details) {
+  if (!base::FeatureList::IsEnabled(
+          features::kLegacyTechReportEnableCookieIssueReports)) {
+    return;
+  }
+  CHECK(render_frame_host);
+
+  for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
+       cookie_details->cookie_list) {
+    const net::CookieInclusionStatus& status = cookie->access_result.status;
+    if (ShouldReportLegacyTechIssueForStatus(status) &&
+        cookie->cookie_or_line->is_cookie()) {
+      std::string type;
+      if (status.HasExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
+          status.HasExclusionReason(
+              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+        type = "ThirdPartyCookieAccessError";
+      } else if (status.HasWarningReason(
+                     net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+        type = "ThirdPartyCookieAccessWarning";
+      } else {
+        DLOG(ERROR) << "Unexpected call of ReportLegacyTechEvent.";
+      }
+
+      GURL url = render_frame_host->GetOutermostMainFrameOrEmbedder()
+                     ->GetLastCommittedURL();
+      GURL frame_url = render_frame_host->GetLastCommittedURL();
+      if (navigation_request != nullptr) {
+        if (!navigation_request->frame_tree_node()
+                 ->GetParentOrOuterDocumentOrEmbedder()) {
+          url = navigation_request->GetURL();
+          frame_url = navigation_request->GetURL();
+        } else {
+          frame_url = navigation_request->GetURL();
+        }
+      }
+
+      LegacyTechCookieIssueDetails cookie_issue_details = {
+          cookie_details->url.spec(),
+          cookie->cookie_or_line->get_cookie().Name(),
+          cookie->cookie_or_line->get_cookie().Domain(),
+          cookie->cookie_or_line->get_cookie().Path(),
+          cookie_details->type == CookieAccessDetails::Type::kChange
+              ? LegacyTechCookieIssueDetails::AccessOperation::kWrite
+              : LegacyTechCookieIssueDetails::AccessOperation::kRead};
+
+      GetContentClient()->browser()->ReportLegacyTechEvent(
+          render_frame_host, type, url, frame_url, /*filename=*/"", /*line=*/0,
+          /*column=*/0, cookie_issue_details);
+    }
+  }
+}
+
 }  // namespace
 
 void SplitCookiesIntoAllowedAndBlocked(
     const network::mojom::CookieAccessDetailsPtr& cookie_details,
     CookieAccessDetails* allowed,
     CookieAccessDetails* blocked) {
-  *allowed =
-      CookieAccessDetails({cookie_details->type,
-                           cookie_details->url,
-                           cookie_details->site_for_cookies.RepresentativeUrl(),
-                           {},
-                           cookie_details->count,
-                           /* blocked_by_policy=*/false,
-                           cookie_details->is_ad_tagged});
+  // For some cases `site_for_cookies` representative url is empty when
+  // OnCookieAccess is triggered for a third party. For example iframe third
+  // party accesses cookies when TPCD Metadata allows third party cookie access.
+  //
+  // Make `first_party_url` considering both `top_frame_origin` and
+  // `site_for_cookies` which is similar with GetFirstPartyURL() in
+  // components/content_settings/core/common/cookie_settings_base.h.
+  // If the `top_frame_origin` is non-opaque, it is chosen; otherwise, the
+  // `site_for_cookies` representative url is used.
+  const GURL first_party_url =
+      cookie_details->top_frame_origin.opaque()
+          ? cookie_details->site_for_cookies.RepresentativeUrl()
+          : cookie_details->top_frame_origin.GetURL();
+
+  *allowed = CookieAccessDetails({cookie_details->type,
+                                  cookie_details->url,
+                                  first_party_url,
+                                  {},
+                                  cookie_details->count,
+                                  /* blocked_by_policy=*/false,
+                                  cookie_details->is_ad_tagged,
+                                  cookie_details->cookie_setting_overrides});
   int allowed_count = base::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
@@ -405,14 +517,14 @@ void SplitCookiesIntoAllowedAndBlocked(
       });
   allowed->cookie_list.reserve(allowed_count);
 
-  *blocked =
-      CookieAccessDetails({cookie_details->type,
-                           cookie_details->url,
-                           cookie_details->site_for_cookies.RepresentativeUrl(),
-                           {},
-                           cookie_details->count,
-                           /* blocked_by_policy=*/true,
-                           cookie_details->is_ad_tagged});
+  *blocked = CookieAccessDetails({cookie_details->type,
+                                  cookie_details->url,
+                                  first_party_url,
+                                  {},
+                                  cookie_details->count,
+                                  /* blocked_by_policy=*/true,
+                                  cookie_details->is_ad_tagged,
+                                  cookie_details->cookie_setting_overrides});
   int blocked_count = base::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
@@ -436,7 +548,9 @@ void SplitCookiesIntoAllowedAndBlocked(
 
 void EmitCookieWarningsAndMetrics(
     RenderFrameHostImpl* rfh,
+    NavigationRequest* navigation_request,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
+  ReportLegacyTechEvent(rfh, navigation_request, cookie_details);
   for (size_t i = 0; i < cookie_details->count; ++i) {
     EmitCookieWarningsAndMetricsOnce(rfh, cookie_details);
   }

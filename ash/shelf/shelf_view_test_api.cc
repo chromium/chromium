@@ -159,7 +159,7 @@ void ShelfViewTestAPI::SetShelfContextMenuCallback(
   shelf_view_->context_menu_shown_callback_ = std::move(closure);
 }
 
-absl::optional<size_t> ShelfViewTestAPI::GetSeparatorIndex() const {
+std::optional<size_t> ShelfViewTestAPI::GetSeparatorIndex() const {
   return shelf_view_->separator_index_;
 }
 
@@ -167,15 +167,11 @@ bool ShelfViewTestAPI::IsSeparatorVisible() const {
   return shelf_view_->separator_->GetVisible();
 }
 
-ui::LayerTreeOwner* ShelfViewTestAPI::GetPendingPromiseLayerForId(
-    const std::string& promise_app_id) {
+bool ShelfViewTestAPI::HasPendingPromiseAppRemoval(
+    const std::string& promise_app_id) const {
   auto found = shelf_view_->pending_promise_apps_removals_.find(promise_app_id);
 
-  if (found == shelf_view_->pending_promise_apps_removals_.end()) {
-    return nullptr;
-  }
-
-  return found->second.get();
+  return found != shelf_view_->pending_promise_apps_removals_.end();
 }
 
 }  // namespace ash

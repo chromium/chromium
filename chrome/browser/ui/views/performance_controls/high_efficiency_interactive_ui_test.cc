@@ -199,7 +199,10 @@ class HighEfficiencyDiscardPolicyInteractiveTest
 
   auto PressKeyboard() {
     return Do(base::BindLambdaForTesting([=]() {
+      // Send multiple key presses to reduce flakiness.
       ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                                  false, false, false));
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_B, false,
                                                   false, false, false));
     }));
   }
@@ -262,11 +265,10 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));
 }
 
-// Check that a form in the background but was interacted by the user
+// Check that a form in the background but was interacted with by the user
 // won't be discarded
-// TODO(crbug.com/1415833): Re-enable this test
 IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
-                       DISABLED_TabWithFormNotDiscarded) {
+                       TabWithFormNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIsFocused);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputValueIsUpated);
   const DeepQuery input_text_box = {"#value"};
@@ -274,19 +276,20 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   StateChange input_is_focused;
   input_is_focused.event = kInputIsFocused;
   input_is_focused.where = input_text_box;
-  input_is_focused.type = StateChange::Type::kConditionTrue;
+  input_is_focused.type = StateChange::Type::kExistsAndConditionTrue;
   input_is_focused.test_function =
       "(el) => { return el === document.activeElement; }";
 
   StateChange input_value_updated;
   input_value_updated.event = kInputValueIsUpated;
   input_value_updated.where = input_text_box;
-  input_value_updated.type = StateChange::Type::kConditionTrue;
-  input_value_updated.test_function = "(el) => { return el.value === 'a'; }";
+  input_value_updated.type = StateChange::Type::kExistsAndConditionTrue;
+  input_value_updated.test_function = "(el) => { return !!el.value; }";
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/form_search.html")),
+      WaitForWebContentsReady(kFirstTabContents, GetURL("/form_search.html")),
 
       // Move focus off of the omnibox
       MoveMouseTo(kFirstTabContents, input_text_box), ClickMouse(),

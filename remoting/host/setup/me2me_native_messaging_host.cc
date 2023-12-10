@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,7 +31,6 @@
 #include "remoting/host/native_messaging/log_message_handler.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/protocol/pairing_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/elevated_native_messaging_host.h"
@@ -54,12 +54,12 @@ const char* kSupportedFeatures[] = {
 
 // Helper to extract the "config" part of a message as a base::Value::Dict.
 // Returns nullptr on failure, and logs an error message.
-absl::optional<base::Value::Dict> ConfigDictionaryFromMessage(
+std::optional<base::Value::Dict> ConfigDictionaryFromMessage(
     base::Value::Dict message) {
   if (base::Value::Dict* config_dict = message.FindDict("config")) {
     return std::move(*config_dict);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -92,7 +92,7 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   base::Value::Dict response;
-  absl::optional<base::Value> message_value = base::JSONReader::Read(message);
+  std::optional<base::Value> message_value = base::JSONReader::Read(message);
   if (!message_value || !message_value->is_dict()) {
     OnError("Received a message that's not a dictionary.");
     return;
@@ -293,7 +293,7 @@ void Me2MeNativeMessagingHost::ProcessUpdateDaemonConfig(
     }
   }
 
-  absl::optional<base::Value::Dict> config_dict =
+  std::optional<base::Value::Dict> config_dict =
       ConfigDictionaryFromMessage(std::move(message));
   if (!config_dict) {
     OnError("'config' dictionary not found");
@@ -360,13 +360,13 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(base::Value::Dict message,
     }
   }
 
-  absl::optional<bool> consent = message.FindBool("consent");
+  std::optional<bool> consent = message.FindBool("consent");
   if (!consent) {
     OnError("'consent' not found.");
     return;
   }
 
-  absl::optional<base::Value::Dict> config_dict =
+  std::optional<base::Value::Dict> config_dict =
       ConfigDictionaryFromMessage(std::move(message));
   if (!config_dict) {
     OnError("'config' dictionary not found");
@@ -481,7 +481,7 @@ void Me2MeNativeMessagingHost::ProcessIt2mePermissionCheck(
 
 void Me2MeNativeMessagingHost::SendConfigResponse(
     base::Value::Dict response,
-    absl::optional<base::Value::Dict> config) {
+    std::optional<base::Value::Dict> config) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (config) {

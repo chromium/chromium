@@ -46,17 +46,17 @@ class FakeConnection : public Connection {
                          HandshakeSuccessCallback callback) override;
   void RequestWifiCredentials(RequestWifiCredentialsCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
-  void RequestAccountInfo(base::OnceClosure callback) override;
+  void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void RequestAccountTransferAssertion(
       const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
 
   bool WasHandshakeInitiated();
-  void SendWifiCredentials(absl::optional<mojom::WifiCredentials> credentials);
-  void VerifyUser(absl::optional<mojom::UserVerificationResponse> response);
-  void SendAccountInfo();
+  void SendWifiCredentials(std::optional<mojom::WifiCredentials> credentials);
+  void VerifyUser(std::optional<mojom::UserVerificationResponse> response);
+  void SendAccountInfo(std::string email);
   void SendAccountTransferAssertionInfo(
-      absl::optional<FidoAssertionInfo> assertion_info);
+      std::optional<FidoAssertionInfo> assertion_info);
   void HandleHandshakeResult(bool success);
 
   void set_phone_instance_id(std::string phone_instance_id) {
@@ -71,7 +71,7 @@ class FakeConnection : public Connection {
   HandshakeSuccessCallback handshake_success_callback_;
   RequestWifiCredentialsCallback wifi_credentials_callback_;
   AwaitUserVerificationCallback await_user_verification_callback_;
-  base::OnceClosure request_account_info_callback_;
+  RequestAccountInfoCallback request_account_info_callback_;
   RequestAccountTransferAssertionCallback
       request_account_transfer_assertion_callback_;
 

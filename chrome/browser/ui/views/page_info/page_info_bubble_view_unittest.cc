@@ -217,6 +217,13 @@ class PageInfoBubbleViewTestApi {
     return GetPermissionToggleRowAt(index)->state_label_;
   }
 
+  std::u16string GetTrackingProtectionSubpageTitle() {
+    navigation_handler()->OpenCookiesPage();
+    auto* title_label = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
+    return static_cast<views::Label*>(title_label)->GetText();
+  }
+
   // Returns the text shown on the view.
   std::u16string GetTextOnView(views::View* view) {
     EXPECT_TRUE(view);
@@ -250,6 +257,22 @@ class PageInfoBubbleViewTestApi {
   std::u16string GetSecuritySummaryText() {
     EXPECT_TRUE(security_summary_label());
     return static_cast<views::StyledLabel*>(security_summary_label())
+        ->GetText();
+  }
+
+  std::u16string GetTrackingProtectionButtonTitleText() {
+    auto* button = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+    return static_cast<RichHoverButton*>(button)
+        ->GetTitleViewForTesting()
+        ->GetText();
+  }
+
+  std::u16string GetTrackingProtectionButtonSubTitleText() {
+    auto* button = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+    return static_cast<RichHoverButton*>(button)
+        ->GetSubTitleViewForTesting()
         ->GetText();
   }
 
@@ -335,8 +358,8 @@ class PageInfoBubbleViewTestApi {
   gfx::NativeWindow parent_;
   raw_ptr<content::WebContents> web_contents_;
   base::RunLoop run_loop_;
-  absl::optional<bool> reload_prompt_;
-  absl::optional<views::Widget::ClosedReason> closed_reason_;
+  std::optional<bool> reload_prompt_;
+  std::optional<views::Widget::ClosedReason> closed_reason_;
 };
 
 }  // namespace test
@@ -406,19 +429,19 @@ class ScopedWebContentsTestHelper {
 
 class PageInfoBubbleViewTest : public testing::Test {
  public:
-  explicit PageInfoBubbleViewTest(bool off_the_record = false) {
-    web_contents_helper_ =
-        std::make_unique<ScopedWebContentsTestHelper>(off_the_record);
-    views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
-        std::make_unique<ChromeTestViewsDelegate<>>());
-  }
-
+  PageInfoBubbleViewTest() = default;
   PageInfoBubbleViewTest(const PageInfoBubbleViewTest& chip) = delete;
   PageInfoBubbleViewTest& operator=(const PageInfoBubbleViewTest& chip) =
       delete;
 
   // testing::Test:
   void SetUp() override {
+    if (!web_contents_helper_) {
+      web_contents_helper_ =
+          std::make_unique<ScopedWebContentsTestHelper>(false);
+    }
+    views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
+        std::make_unique<ChromeTestViewsDelegate<>>());
     views::Widget::InitParams parent_params;
     parent_params.context = views_helper_->GetContext();
     parent_window_ = new views::Widget();
@@ -573,8 +596,9 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
  public:
-  PageInfoBubbleViewOffTheRecordTest()
-      : PageInfoBubbleViewTest(/*off_the_record=*/true) {}
+  PageInfoBubbleViewOffTheRecordTest() {
+    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(true);
+  }
 };
 
 // Test resetting blocked in Incognito permission.
@@ -1131,130 +1155,128 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
             api_->GetCertificateButtonSubtitleText());
 }
 
-namespace {
-class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
+class PageInfoBubbleViewCookies3pcdButtonTest
+    : public PageInfoBubbleViewTest,
+      public testing::WithParamInterface<bool> {
  public:
-  PageInfoBubbleViewCookiesSubpageTest() {
-    feature_list.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {content_settings::features::kUserBypassUI});
+  PageInfoBubbleViewCookies3pcdButtonTest() {
+    feature_list_.InitAndEnableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+    web_contents_helper_ =
+        std::make_unique<ScopedWebContentsTestHelper>(GetParam());
   }
 
-  void SetUp() override {
-    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
-        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            web_contents_helper_->profile(),
-            base::BindRepeating(&BuildMockPrivacySandboxService)));
-
-    PageInfoBubbleViewTest::SetUp();
-  }
-  void ExpectViewContainsText(views::View* view, const std::u16string& text) {
-    EXPECT_TRUE(view);
-    EXPECT_THAT(base::UTF16ToUTF8(api_->GetTextOnView(view)),
-                ::testing::HasSubstr(base::UTF16ToUTF8(text)));
+ protected:
+  void NavigateToPage(content::WebContents* web_contents,
+                      const std::string& url) {
+    web_contents->GetController().LoadURL(GURL(url), content::Referrer(),
+                                          ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
+                                          std::string());
+    content::RenderFrameHostTester::CommitPendingLoad(
+        &web_contents->GetController());
   }
 
-  MockPrivacySandboxService* mock_privacy_sandbox_service() {
-    return mock_privacy_sandbox_service_.get();
+  void CreateCookieExceptionForSite(const std::string& pattern) {
+    auto top_level_domain_pattern = ContentSettingsPattern::FromString(pattern);
+    HostContentSettingsMapFactory::GetForProfile(
+        web_contents_helper_->profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                       top_level_domain_pattern,
+                                       ContentSettingsType::COOKIES,
+                                       ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
  private:
-  base::test::ScopedFeatureList feature_list;
-  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-}  // namespace
+TEST_P(PageInfoBubbleViewCookies3pcdButtonTest,
+       DisplaysTrackingProtectionButtonLabelsWhen3pcLimited) {
+  EXPECT_EQ(api_->GetTrackingProtectionButtonTitleText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME));
+  // 3PC are blocked in incognito even if limited in regular profile
+  EXPECT_EQ(
+      api_->GetTrackingProtectionButtonSubTitleText(),
+      l10n_util::GetStringUTF16(
+          GetParam()
+              ? IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED
+              : IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED));
+}
 
-// Test that texts on buttons are correct and there is no more views than
-// necessary.
-TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
-  base::HistogramTester histogram_tester;
-  // Create fake cookie information.
-  PageInfoUI::CookiesNewInfo cookie_info;
-  cookie_info.blocked_third_party_sites_count = 10;
-  cookie_info.allowed_third_party_sites_count = 1;
-  cookie_info.allowed_sites_count = 3;
-  cookie_info.status = CookieControlsStatus::kEnabled;
-  cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
-  size_t kExpectedChildren = 3;
-  const std::u16string owner_name = u"example_owner";
-  cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};
+TEST_P(PageInfoBubbleViewCookies3pcdButtonTest,
+       DisplaysTrackingProtectionButtonLabelsWhen3pcBlocked) {
+  // Block all 3PC
+  web_contents_helper_->profile()->GetPrefs()->SetBoolean(
+      prefs::kBlockAll3pcToggleEnabled, true);
+  // Rerender with the new pref set
+  api_->CreateView();
 
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    // The initial `SetCookieInfo` call coming from `OpenCookiesPage` through
-    // the `PageInfo` constructor synchronously has an empty
-    // `cookie_info.fps_info` which causes a persistent false state for FPS info
-    // and consequently persisting incorrect histogram reports in this test.
-    // Mocking the call into `GetFirstPartySetOwnerForDisplay` resolves this by
-    // overriding the `owner_name` for synchronous init call to `SetCookieInfo`.
-    EXPECT_CALL(*mock_privacy_sandbox_service(),
-                GetFirstPartySetOwnerForDisplay(_))
-        .Times(1)
-        .WillOnce(Return(owner_name));
+  EXPECT_EQ(api_->GetTrackingProtectionButtonTitleText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME));
+  EXPECT_EQ(
+      api_->GetTrackingProtectionButtonSubTitleText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED));
+}
+
+TEST_P(
+    PageInfoBubbleViewCookies3pcdButtonTest,
+    DisplaysTrackingProtectionButtonLabelsWhenCookiesAllowedViaSiteException) {
+  // Add a new cookies site exception for kUrl.
+  CreateCookieExceptionForSite(std::string("[*.]example.com"));
+  // Navigate to a page with the new site exception and rerender.
+  NavigateToPage(web_contents_helper_->web_contents(), kUrl);
+  api_->CreateView();
+
+  EXPECT_EQ(api_->GetTrackingProtectionButtonTitleText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME));
+  EXPECT_EQ(
+      api_->GetTrackingProtectionButtonSubTitleText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewCookies3pcdButtonTest,
+                         /*is_otr*/ testing::Bool());
+
+class PageInfoBubbleViewTrackingProtectionSubpageTitleTest
+    : public PageInfoBubbleViewTest,
+      public testing::WithParamInterface<
+          testing::tuple<CookieControlsStatus,
+                         CookieBlocking3pcdStatus,
+                         /*is_otr*/ bool>> {
+ public:
+  PageInfoBubbleViewTrackingProtectionSubpageTitleTest() {
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd}, {});
+    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(
+        testing::get<2>(GetParam()));
   }
 
-  // Open cookies subpage to get the buttons.
-  api_->navigation_handler()->OpenCookiesPage();
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
-  // Update the number of blocked and allowed sites and fps information.
+TEST_P(PageInfoBubbleViewTrackingProtectionSubpageTitleTest,
+       DisplaysTrackingProtectionTitle) {
+  PageInfoUI::CookiesNewInfo cookie_info;
+  cookie_info.status = testing::get<0>(GetParam());
+  cookie_info.blocking_status = testing::get<1>(GetParam());
   api_->SetCookieInfo(cookie_info);
-
-  auto* cookies_buttons_container = api_->cookies_buttons_container_view();
-  // The button that gets hidden and reappears should be the same one.
-  auto* fps_button = api_->fps_button();
-  auto* blocking_third_party_cookies_row =
-      api_->blocking_third_party_cookies_row();
-
-  EXPECT_TRUE(cookies_buttons_container);
-  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-
-  ExpectViewContainsText(api_->cookies_dialog_button(),
-                         l10n_util::GetPluralStringFUTF16(
-                             IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
-                             cookie_info.allowed_sites_count));
-  ExpectViewContainsText(
-      fps_button, l10n_util::GetStringFUTF16(IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE,
-                                             owner_name));
-  ExpectViewContainsText(
-      fps_button, l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TITLE));
-  ExpectViewContainsText(api_->blocking_third_party_cookies_subtitle(),
-                         l10n_util::GetPluralStringFUTF16(
-                             IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
-                             cookie_info.blocked_third_party_sites_count));
-
-  EXPECT_TRUE(blocking_third_party_cookies_row->GetVisible());
-  EXPECT_TRUE(fps_button->GetVisible());
-  EXPECT_TRUE(api_->cookies_dialog_button()->GetVisible());
-  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
-                                     false, 0);
-  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
-                                     true, 1);
-
-  // Check if buttons get hidden when permission changes.
-  cookie_info.status = CookieControlsStatus::kDisabled;
-  cookie_info.fps_info = {};
-  api_->SetCookieInfo(cookie_info);
-  EXPECT_FALSE(blocking_third_party_cookies_row->GetVisible());
-  EXPECT_FALSE(fps_button->GetVisible());
-  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-  // Check the histogram count is not increased on permission changes
-  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
-                                     false, 0);
-  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
-                                     true, 1);
-
-  // Check if buttons reappear when permission changes.
-  cookie_info.status = CookieControlsStatus::kDisabledForSite;
-  cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};
-  api_->SetCookieInfo(cookie_info);
-  EXPECT_TRUE(blocking_third_party_cookies_row->GetVisible());
-  EXPECT_TRUE(fps_button->GetVisible());
-  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-  // Check the histogram count is not increased on permission changes
-  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
-                                     false, 0);
-  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
-                                     true, 1);
+  EXPECT_EQ(api_->GetTrackingProtectionSubpageTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageInfoBubbleViewTrackingProtectionSubpageTitleTest,
+    testing::Combine(testing::Values(CookieControlsStatus::kEnabled,
+                                     CookieControlsStatus::kDisabledForSite),
+                     testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
+                                     CookieBlocking3pcdStatus::kAll),
+                     /*is_otr*/ testing::Bool()));

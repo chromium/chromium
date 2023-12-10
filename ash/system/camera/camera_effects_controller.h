@@ -65,6 +65,14 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     kMaxValue = kMaximum
   };
 
+  // Information of a single background image file used in the ui.
+  struct BackgroundImageInfo {
+    base::Time creation_time;
+    base::Time last_accessed;
+    std::string basename;
+    std::string jpeg_bytes;
+  };
+
   CameraEffectsController();
 
   CameraEffectsController(const CameraEffectsController&) = delete;
@@ -84,13 +92,34 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // Called inside ash/ash_prefs.cc to register related prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Sets an image as the camera background.
+  // The `relative_path` is relative to `camera_background_img_dir_` and the
+  // file has to exist for the effect to work.
+  void SetBackgroundImage(const base::FilePath& relative_path);
+
+  // Saves the `jpeg_bytes` as an image file and apply that as camera
+  // background.
+  void SetBackgroundImageFromContent(std::string&& jpeg_bytes);
+
+  // Removes `basename` from the camera background directory; remove background
+  // effect if the same file is used as camera background right now.
+  void RemoveBackgroundImage(const base::FilePath& basename);
+
+  // Gets `number_of_images` recently used camera background images, and calls
+  // the `callback` on the returned list.
+  void GetRecentlyUsedBackgroundImages(
+      const int number_of_images,
+      base::OnceCallback<void(const std::vector<BackgroundImageInfo>&)>
+          callback);
+
   // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  std::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override;
+                                std::optional<int> state) override;
   void RecordMetricsForSetValueEffectOnClick(VcEffectId effect_id,
                                              int state_value) const override;
   void RecordMetricsForSetValueEffectOnStartup(VcEffectId effect_id,
@@ -104,6 +133,16 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     in_testing_mode_ = in_testing_mode;
   }
 
+  void set_camera_background_img_dir_for_testing(
+      const base::FilePath& camera_background_img_dir) {
+    camera_background_img_dir_ = camera_background_img_dir;
+  }
+
+  void set_camera_background_run_dir_for_testing(
+      const base::FilePath& camera_background_run_dir) {
+    camera_background_run_dir_ = camera_background_run_dir;
+  }
+
  private:
   // AutozoomObserver:
   void OnAutozoomControlEnabledChanged(bool enabled) override;
@@ -113,7 +152,17 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   cros::mojom::SegmentationModel GetSegmentationModelType();
 
   // SetCameraEffects camera effects with `config`.
-  void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
+  void SetCameraEffects(cros::mojom::EffectsConfigPtr config,
+                        bool is_initialization);
+
+  // Called only after copying background images to
+  // `camera_background_run_dir_`. If `copy_succeeded`, then `new_config` will
+  // be applied. If `copy_succeeded` is false, but `is_initialization`, then we
+  // will still apply other effects except background replace.
+  void OnCopyBackgroundImageFileComplete(
+      cros::mojom::EffectsConfigPtr new_config,
+      bool is_initialization,
+      bool copy_succeeded);
 
   // Constructs EffectsConfigPtr from prefs.
   cros::mojom::EffectsConfigPtr GetEffectsConfigFromPref();
@@ -132,9 +181,19 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
                                       int state_value,
                                       int string_id);
 
+  // A helper for easier binding.
+  void SetCameraEffectsInCameraHalDispatcherImpl(
+      cros::mojom::EffectsConfigPtr config);
+
   // Used to bypass the CameraHalDispatcherImpl::SetCameraEffects for
   // testing purpose.
   bool in_testing_mode_ = false;
+
+  // Directory that stores the camera background images.
+  base::FilePath camera_background_img_dir_;
+
+  // Directory that stores the background images for the camera module to use.
+  base::FilePath camera_background_run_dir_;
 
   // Used for pref registration.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -142,6 +201,9 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // This task runner is used to ensure `current_effects_` is always accessed
   // from the same thread.
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
+  // This task runner is used to run io work.
+  const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   // Records current effects that is applied to camera hal server.
   cros::mojom::EffectsConfigPtr current_effects_;

@@ -58,8 +58,10 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
     return !!flow_manager_->GetPromptControllerForTest();
   }
 
-  AutofillProfile profile_;
-  AutofillProfile original_profile_;
+  AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
+  AutofillProfile original_profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   std::unique_ptr<SaveUpdateAddressProfileFlowManager> flow_manager_;
 };
 

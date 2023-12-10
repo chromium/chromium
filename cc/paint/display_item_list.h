@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/rtree.h"
@@ -19,7 +20,6 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -136,7 +136,7 @@ class CC_PAINT_EXPORT DisplayItemList
   // rasterized at the intrinsic size of the image), return the intrinsic size
   // of the image and whether or not to use nearest neighbor filtering when
   // scaling the layer.
-  absl::optional<DirectlyCompositedImageResult>
+  std::optional<DirectlyCompositedImageResult>
   GetDirectlyCompositedImageResult() const;
 
   int num_slow_paths_up_to_min_for_MSAA() const {
@@ -230,7 +230,7 @@ class CC_PAINT_EXPORT DisplayItemList
 
   void GenerateDiscardableImagesMetadata() const;
 
-  mutable absl::optional<DiscardableImageMap> image_map_
+  mutable std::optional<DiscardableImageMap> image_map_
       GUARDED_BY_CONTEXT(image_generation_lock_);
   mutable base::Lock image_generation_lock_;
 

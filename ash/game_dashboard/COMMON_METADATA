@@ -7,7 +7,7 @@
 #   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 buganizer: {
-  component_id: 1281163 # ChromeOS > Software > ARC++ > App/Dev/Gaming Experiences > Gaming
+  component_id: 1373988 # ChromeOS > Software > ARC++ > Gaming
 }
 
-team_email: "arc-app-dev@google.com"
+team_email: "arc-gaming@google.com"

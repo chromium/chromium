@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/parse_number.h"
 #include "net/base/tracing.h"
 #include "net/http/http_byte_range.h"
@@ -1380,6 +1381,18 @@ bool HttpResponseHeaders::GetTimeValuedHeader(const std::string& name,
   std::string value;
   if (!EnumerateHeader(nullptr, name, &value))
     return false;
+
+  // In case of parsing the Expires header value, an invalid string 0 should be
+  // treated as expired according to the RFC 9111 section 5.3 as below:
+  //
+  // > A cache recipient MUST interpret invalid date formats, especially the
+  // > value "0", as representing a time in the past (i.e., "already expired").
+  if (base::FeatureList::IsEnabled(
+          features::kTreatHTTPExpiresHeaderValueZeroAsExpired) &&
+      name == "Expires" && value == "0") {
+    *result = Time::Min();
+    return true;
+  }
 
   // When parsing HTTP dates it's beneficial to default to GMT because:
   // 1. RFC2616 3.3.1 says times should always be specified in GMT

@@ -32,6 +32,9 @@ class LoginUIPrefController {
   // Apply "owner.touchpad.enable_tap_to_click" preference on the login screen.
   void UpdateTapToClickEnabled();
 
+  // Apply "ash.device.geolocation_allowed" preference on the login screen.
+  void UpdateGeolocationUsageAllowed();
+
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<LoginUIPrefController> weak_factory_{this};

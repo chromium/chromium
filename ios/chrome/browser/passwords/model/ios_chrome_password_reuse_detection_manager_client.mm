@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"

@@ -65,7 +65,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   // `item_id` with the page title found in the primary user profile's browsing
   // history, if any.
   void OnHistoryQueryComplete(const base::UnguessableToken& item_id,
-                              absl::optional<std::u16string> maybe_title);
+                              std::optional<std::u16string> maybe_title);
 
   // Sets `item`'s rendered HTML preview if one is cached; otherwise, ensures
   // that `item` is associated with an asynchronous `ImageModelRequest`.

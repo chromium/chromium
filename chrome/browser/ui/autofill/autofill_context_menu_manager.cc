@@ -191,13 +191,12 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) {
-    ExecuteFallbackForAutocompleteUnrecognizedCommand(manager);
+    ExecuteFallbackForAddressesCommand(manager);
     return;
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) {
-    // TODO(crbug.com/1493361): Render payments suggestions.
-    NOTIMPLEMENTED();
+    ExecuteFallbackForPaymentsCommand(manager);
     return;
   }
 }
@@ -220,9 +219,8 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
           LoadTriggerFormAndFieldLogs(manager, frame_token, params_)));
 }
 
-void AutofillContextMenuManager::
-    ExecuteFallbackForAutocompleteUnrecognizedCommand(
-        AutofillManager& manager) {
+void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
+    AutofillManager& manager) {
   auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
   if (!ShouldAddAddressManualFallbackForAutocompleteUnrecognized(driver)) {
     // Do nothing if the target field is not on address form field with
@@ -245,6 +243,15 @@ void AutofillContextMenuManager::
       .ContextMenuEntryAccepted(
           /*address_field_has_ac_unrecognized=*/field
               ->ShouldSuppressSuggestionsAndFillingByDefault());
+}
+
+void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
+    AutofillManager& manager) {
+  auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
+  driver.browser_events().RendererShouldTriggerSuggestions(
+      FieldGlobalId(driver.GetFrameToken(),
+                    FieldRendererId(params_.field_renderer_id)),
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
 }
 
 void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(

@@ -39,7 +39,7 @@ std::string GetChromeMilestone() {
 }
 
 std::string GetFullHardwareClass() {
-  const absl::optional<base::StringPiece> full_hardware_class =
+  const std::optional<base::StringPiece> full_hardware_class =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kHardwareClassKey);
 

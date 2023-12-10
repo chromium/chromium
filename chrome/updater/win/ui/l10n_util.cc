@@ -55,24 +55,22 @@ std::wstring GetLocalizedString(UINT base_message_id,
   return std::wstring();
 }
 
-std::wstring GetLocalizedString(UINT base_message_id) {
-  return GetLocalizedString(base_message_id, GetPreferredLanguage());
-}
-
 std::wstring GetLocalizedStringF(UINT base_message_id,
-                                 const std::wstring& replacement) {
+                                 const std::wstring& replacement,
+                                 const std::wstring& lang) {
   return GetLocalizedStringF(base_message_id,
-                             std::vector<std::wstring>{replacement});
+                             std::vector<std::wstring>{replacement}, lang);
 }
 
 std::wstring GetLocalizedStringF(UINT base_message_id,
-                                 std::vector<std::wstring> replacements) {
+                                 std::vector<std::wstring> replacements,
+                                 const std::wstring& lang) {
   // Replacements start at index 1 because the implementation of
   // ReplaceStringPlaceholders does i+1, so the first placeholder would be `$1`.
   // A `$0` is considered an invalid placeholder.
   replacements.insert(replacements.begin(), {});
-  return base::ReplaceStringPlaceholders(GetLocalizedString(base_message_id),
-                                         replacements, nullptr);
+  return base::ReplaceStringPlaceholders(
+      GetLocalizedString(base_message_id, lang), replacements, nullptr);
 }
 
 std::wstring GetLocalizedErrorString(DWORD exit_code) {

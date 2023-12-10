@@ -101,7 +101,7 @@ PrinterProviderInternalReportPrintResultFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintResultFunction::Run() {
-  absl::optional<internal_api::ReportPrintResult::Params> params =
+  std::optional<internal_api::ReportPrintResult::Params> params =
       internal_api::ReportPrintResult::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -119,7 +119,7 @@ PrinterProviderInternalReportPrinterCapabilityFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
-  absl::optional<internal_api::ReportPrinterCapability::Params> params =
+  std::optional<internal_api::ReportPrinterCapability::Params> params =
       internal_api::ReportPrinterCapability::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -145,7 +145,7 @@ PrinterProviderInternalReportPrintersFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintersFunction::Run() {
-  absl::optional<internal_api::ReportPrinters::Params> params =
+  std::optional<internal_api::ReportPrinters::Params> params =
       internal_api::ReportPrinters::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -172,7 +172,7 @@ PrinterProviderInternalGetPrintDataFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalGetPrintDataFunction::Run() {
-  absl::optional<internal_api::GetPrintData::Params> params =
+  std::optional<internal_api::GetPrintData::Params> params =
       internal_api::GetPrintData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -220,7 +220,7 @@ PrinterProviderInternalReportUsbPrinterInfoFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportUsbPrinterInfoFunction::Run() {
-  absl::optional<internal_api::ReportUsbPrinterInfo::Params> params =
+  std::optional<internal_api::ReportUsbPrinterInfo::Params> params =
       internal_api::ReportUsbPrinterInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

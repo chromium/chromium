@@ -63,8 +63,8 @@ public abstract class BaseSessionController {
 
     public void requestSessionLaunch() {
         mRouteCreationInfo = mProvider.getPendingCreateRouteRequestInfo();
-        CastUtils.getCastContext().setReceiverApplicationId(
-                mRouteCreationInfo.getMediaSource().getApplicationId());
+        CastUtils.getCastContext()
+                .setReceiverApplicationId(mRouteCreationInfo.getMediaSource().getApplicationId());
 
         // When the user clicks a route on the MediaRouteChooserDialog, we intercept the click event
         // and do not select the route. Instead the route selection is postponed to here. This will
@@ -125,8 +125,10 @@ public abstract class BaseSessionController {
     private void updateRemoteMediaClient(String message) {
         if (!isConnected()) return;
 
-        mCastSession.getRemoteMediaClient().onMessageReceived(
-                mCastSession.getCastDevice(), CastSessionUtil.MEDIA_NAMESPACE, message);
+        mCastSession
+                .getRemoteMediaClient()
+                .onMessageReceived(
+                        mCastSession.getCastDevice(), CastSessionUtil.MEDIA_NAMESPACE, message);
     }
 
     /** Attaches the controller to the current {@link CastSession}. */
@@ -168,9 +170,13 @@ public abstract class BaseSessionController {
      * interested in.
      */
     protected void onMessageReceived(CastDevice castDevice, String namespace, String message) {
-        Log.d(TAG,
-                "Received message from Cast device: namespace=\"" + namespace + "\" message=\""
-                        + message + "\"");
+        Log.d(
+                TAG,
+                "Received message from Cast device: namespace=\""
+                        + namespace
+                        + "\" message=\""
+                        + message
+                        + "\"");
         if (CastSessionUtil.MEDIA_NAMESPACE.equals(namespace)) {
             updateRemoteMediaClient(message);
         }

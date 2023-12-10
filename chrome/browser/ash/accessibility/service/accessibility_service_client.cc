@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"
 #include "chrome/browser/ash/accessibility/service/tts_client_impl.h"
+#include "chrome/browser/ash/accessibility/service/user_input_impl.h"
 #include "chrome/browser/ash/accessibility/service/user_interface_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_context.h"
@@ -79,6 +80,11 @@ void AccessibilityServiceClient::BindSpeechRecognition(
 void AccessibilityServiceClient::BindTts(
     mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) {
   tts_client_->Bind(std::move(tts_receiver));
+}
+
+void AccessibilityServiceClient::BindUserInput(
+    mojo::PendingReceiver<ax::mojom::UserInput> ui_receiver) {
+  user_input_client_->Bind(std::move(ui_receiver));
 }
 
 void AccessibilityServiceClient::BindUserInterface(
@@ -156,9 +162,10 @@ void AccessibilityServiceClient::Reset() {
   autoclick_client_.reset();
   file_loader_.reset();
   automation_client_.reset();
+  devtools_agent_hosts_.clear();
   speech_recognition_impl_.reset();
   tts_client_.reset();
-  devtools_agent_hosts_.clear();
+  user_input_client_.reset();
   user_interface_client_.reset();
 }
 
@@ -222,6 +229,7 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
   automation_client_ = std::make_unique<AutomationClientImpl>();
   speech_recognition_impl_ = std::make_unique<SpeechRecognitionImpl>(profile_);
   tts_client_ = std::make_unique<TtsClientImpl>(profile_);
+  user_input_client_ = std::make_unique<UserInputImpl>();
   user_interface_client_ = std::make_unique<UserInterfaceImpl>();
 
   // Bind the AXServiceClient before enabling features.

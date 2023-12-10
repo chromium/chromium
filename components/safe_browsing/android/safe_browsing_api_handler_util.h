@@ -64,11 +64,12 @@ enum class SafeBrowsingApiLookupResult {
 // values are changed.
 enum class SafeBrowsingJavaThreatType {
   NO_THREAT = 0,
+  SOCIAL_ENGINEERING = 2,
   UNWANTED_SOFTWARE = 3,
   POTENTIALLY_HARMFUL_APPLICATION = 4,
-  SOCIAL_ENGINEERING = 5,
-  SUBRESOURCE_FILTER = 13,
-  BILLING = 15
+  BILLING = 15,
+  ABUSIVE_EXPERIENCE_VIOLATION = 20,
+  BETTER_ADS_VIOLATION = 21
 };
 
 // Must match the definition in SafeBrowsing::ThreatAttribute in SafeBrowsing
@@ -93,7 +94,8 @@ enum class SafeBrowsingJavaResponseStatus {
   SUCCESS_FALLBACK_REAL_TIME_TIMEOUT = 2,
   SUCCESS_FALLBACK_REAL_TIME_THROTTLED = 3,
   FAILURE_NETWORK_UNAVAILABLE = 4,
-  FAILURE_BLOCK_LIST_UNAVAILABLE = 5
+  FAILURE_BLOCK_LIST_UNAVAILABLE = 5,
+  FAILURE_INVALID_URL = 6
 };
 
 // The result logged when validating the response from SafeBrowsing API.
@@ -132,6 +134,12 @@ enum class UmaRemoteCallResult {
 UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
                                          SBThreatType* worst_threat,
                                          ThreatMetadata* metadata);
+
+// Translates |threat_type| and |threat_attributes| from the Safe Browsing API
+// into ThreatMetadata.
+ThreatMetadata GetThreatMetadataFromSafeBrowsingApi(
+    SafeBrowsingJavaThreatType threat_type,
+    const std::vector<int>& threat_attributes);
 
 }  // namespace safe_browsing
 

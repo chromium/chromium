@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> хуудсыг устгах</translation>
 <translation id="1113173431709655881">Камерын горим</translation>
 <translation id="1153190633558910465">Хүснэгтлэхийг унтраах</translation>
-<translation id="1175958423215084756">Холбоос илэрсэн. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> хуудсыг устгасан</translation>
 <translation id="1258009455399840361">Цагийн зүүний дагуу 90 хэм эргүүлэх</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> хуудсыг засах</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Видеог боловсруулж байна...</translation>
 <translation id="3789724198583203151">Цагийн зүүний эсрэг 90 хэм эргүүлэх</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="4060608699153044055">Төхөөрөмжийн хадгалах сангийн зай бага байгаа тул та бичлэг хийх боломжгүй. Бичлэг хийж эхлэхийн тулд та төхөөрөмждөө сул зай гаргах хэрэгтэй.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MП</translation>
 <translation id="4118525110028899586">Бичлэгийг түр зогсоох</translation>
 <translation id="4121305183798804752">Документ илэрлээ</translation>
 <translation id="414641094616694804">Энэ камерын нягтралыг өөрчлөх боломжгүй</translation>
 <translation id="4176463684765177261">Хаасан</translation>
-<translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
 <translation id="428234092390943511">Хуудасны өнгөц зураг</translation>
 <translation id="4349714250734879769">Chrome-р фреймийн хэмжээг тохируулах</translation>
 <translation id="4383571725254449280">Хэвлэх гүйцэтгэлийн логууд</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Энгийн видео бичих</translation>
 <translation id="7748344063862150053">Документын баруун дээд булан</translation>
 <translation id="7933675232020478311">Баруун доош зөөж байна</translation>
-<translation id="7983668134180549431">Текст илэрсэн.</translation>
 <translation id="8079255378695216066">Бичлэгийг эхлүүлэх боломжгүй</translation>
 <translation id="8120146556401698679">Чиглүүлэгч хазайлгалт томруулалт</translation>
 <translation id="8131740175452115882">Батлах</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Бичиж эхлэх боломжгүй байна</translation>
 <translation id="8880167521484863515">4-ийг харьцах нь 3</translation>
 <translation id="8903921497873541725">Томруулж харах</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" сүлжээнд нэгдэх</translation>
 <translation id="9045010116236796332">Документын бүх ирмэгийг хүрээнд байрлуулна уу</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Зургийг боловсруулж байна...</translation>

@@ -23,17 +23,21 @@ class JsResultHandler implements JsResultReceiver, JsPromptResultReceiver {
 
     @Override
     public void confirm(final String promptResult) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mBridge != null) mBridge.confirmJsResult(mId, promptResult);
-            mBridge = null;
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mBridge != null) mBridge.confirmJsResult(mId, promptResult);
+                    mBridge = null;
+                });
     }
 
     @Override
     public void cancel() {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mBridge != null) mBridge.cancelJsResult(mId);
-            mBridge = null;
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mBridge != null) mBridge.cancelJsResult(mId);
+                    mBridge = null;
+                });
     }
 }

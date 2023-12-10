@@ -18,9 +18,9 @@ DlpDragDropNotifier::DlpDragDropNotifier() = default;
 DlpDragDropNotifier::~DlpDragDropNotifier() = default;
 
 void DlpDragDropNotifier::NotifyBlockedAction(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
-  DCHECK(data_src);
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
@@ -30,10 +30,10 @@ void DlpDragDropNotifier::NotifyBlockedAction(
 }
 
 void DlpDragDropNotifier::WarnOnDrop(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
-  DCHECK(data_src);
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
@@ -41,10 +41,10 @@ void DlpDragDropNotifier::WarnOnDrop(
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 
-  auto proceed_cb = base::BindRepeating(&DlpDragDropNotifier::ProceedPressed,
-                                        base::Unretained(this));
-  auto cancel_cb = base::BindRepeating(&DlpDragDropNotifier::CancelPressed,
-                                       base::Unretained(this));
+  auto proceed_cb = base::BindOnce(&DlpDragDropNotifier::ProceedPressed,
+                                   base::Unretained(this));
+  auto cancel_cb = base::BindOnce(&DlpDragDropNotifier::CancelPressed,
+                                  base::Unretained(this));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),

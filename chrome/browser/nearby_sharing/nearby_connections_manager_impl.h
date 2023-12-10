@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTIONS_MANAGER_IMPL_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTIONS_MANAGER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 
 #include <memory>
@@ -18,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,7 +28,9 @@ class NearbyConnectionsManagerImpl
     : public NearbyConnectionsManager,
       public nearby::connections::mojom::EndpointDiscoveryListener,
       public nearby::connections::mojom::ConnectionLifecycleListener,
-      public nearby::connections::mojom::PayloadListener {
+      public nearby::connections::mojom::PayloadListener,
+      public nearby::connections::mojom::ConnectionListenerV3,
+      public nearby::connections::mojom::PayloadListenerV3 {
  public:
   NearbyConnectionsManagerImpl(
       ash::nearby::NearbyProcessManager* process_manager,
@@ -76,6 +78,12 @@ class NearbyConnectionsManagerImpl
       base::WeakPtr<BandwidthUpgradeListener> listener) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
+  void ConnectV3(ash::nearby::presence::NearbyPresenceService::PresenceDevice
+                     remote_presence_device,
+                 DataUsage data_usage,
+                 NearbyConnectionCallback callback) override;
+  void DisconnectV3(ash::nearby::presence::NearbyPresenceService::PresenceDevice
+                        remote_presence_device) override;
 
  private:
   using AdvertisingOptions = nearby::connections::mojom::AdvertisingOptions;
@@ -95,6 +103,12 @@ class NearbyConnectionsManagerImpl
   using PayloadStatus = nearby::connections::mojom::PayloadStatus;
   using PayloadTransferUpdatePtr =
       nearby::connections::mojom::PayloadTransferUpdatePtr;
+  using NearbyPresenceService = ash::nearby::presence::NearbyPresenceService;
+  using ConnectionListenerV3 = nearby::connections::mojom::ConnectionListenerV3;
+  using PresenceDevicePtr = ash::nearby::presence::mojom::PresenceDevicePtr;
+  using InitialConnectionInfoV3Ptr =
+      nearby::connections::mojom::InitialConnectionInfoV3Ptr;
+  using PayloadListenerV3 = nearby::connections::mojom::PayloadListenerV3;
   using Status = nearby::connections::mojom::Status;
   using Medium = nearby::connections::mojom::Medium;
 
@@ -122,9 +136,18 @@ class NearbyConnectionsManagerImpl
   void OnPayloadTransferUpdate(const std::string& endpoint_id,
                                PayloadTransferUpdatePtr update) override;
 
+  // ConnectionListenerV3:
+  void OnConnectionInitiated(PresenceDevicePtr remote_device,
+                             InitialConnectionInfoV3Ptr info) override;
+  void OnDisconnected(PresenceDevicePtr remote_device) override;
+
   void OnConnectionTimedOut(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
+  void OnConnectionRequestedV3(
+      ash::nearby::presence::NearbyPresenceService::PresenceDevice
+          remote_presence_device,
+      ConnectionsStatus status);
   void OnNearbyProcessStopped(
       ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
@@ -180,6 +203,8 @@ class NearbyConnectionsManagerImpl
   mojo::ReceiverSet<ConnectionLifecycleListener>
       connection_lifecycle_listeners_;
   mojo::ReceiverSet<PayloadListener> payload_listeners_;
+  mojo::ReceiverSet<ConnectionListenerV3> connection_listener_v3s_;
+  mojo::ReceiverSet<PayloadListenerV3> payload_listener_v3s_;
 
   base::WeakPtrFactory<NearbyConnectionsManagerImpl> weak_ptr_factory_{this};
 };

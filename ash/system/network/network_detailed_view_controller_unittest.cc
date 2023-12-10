@@ -61,6 +61,7 @@ constexpr char kNetworkConnectionDetails[] =
 
 const std::string kNetworkTechnologyWiFi = "WiFi";
 const std::string kNetworkTechnologyMobile = "Mobile";
+const std::string kNetworkTechnologyCellular = "Cellular";
 
 class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
  public:
@@ -78,6 +79,7 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
     return false;
   }
   void ShowMobileSetupDialog(const std::string& network_id) override {}
+  void ShowCarrierUnlockNotification() override {}
   void ShowCarrierAccountDetail(const std::string& network_id) override {}
   void ShowPortalSignin(const std::string& network_id,
                         NetworkConnect::Source source) override {
@@ -587,6 +589,9 @@ TEST_F(NetworkDetailedViewControllerTest, WifiStateChange) {
 }
 
 TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kInstantHotspotRebrand);
+
   AddCellularDevice();
 
   CheckNetworkTypeToggledHistogramBuckets(
@@ -665,6 +670,70 @@ TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
 
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            GetTechnologyState(NetworkTypePattern::Tether()));
+}
+
+TEST_F(NetworkDetailedViewControllerTest, MobileToggleDoesntAffectTether) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kInstantHotspotRebrand);
+
+  AddCellularDevice();
+  AddTetherDevice();
+
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyCellular,
+      /*new_state=*/false, /*count=*/0u,
+      /*total_count=*/0u);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            GetTechnologyState(NetworkTypePattern::Cellular()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            GetTechnologyState(NetworkTypePattern::Tether()));
+
+  // Toggle should only control Cellular device, not Tether device.
+  ToggleMobileState(/*new_state=*/false);
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyCellular,
+      /*new_state=*/false, /*count=*/1u,
+      /*total_count=*/1u);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            GetTechnologyState(NetworkTypePattern::Cellular()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            GetTechnologyState(NetworkTypePattern::Tether()));
+}
+
+TEST_F(NetworkDetailedViewControllerTest, MobileToggleDoesntAffectBluetooth) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kInstantHotspotRebrand);
+
+  AddCellularDevice();
+  AddTetherDevice();
+
+  // When Tether is uninitialized and Bluetooth is disabled, toggling Mobile on
+  // should NOT enable Bluetooth with the Instant Hotspot Rebrand flag enabled.
+  SetTetherTechnologyState(
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
+  SetBluetoothAdapterState(BluetoothSystemState::kDisabled);
+
+  ToggleMobileState(/*new_state=*/true);
+  EXPECT_EQ(BluetoothSystemState::kDisabled, GetBluetoothAdapterState());
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
+            GetTechnologyState(NetworkTypePattern::Tether()));
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyCellular,
+      /*new_state=*/true, /*count=*/1u,
+      /*total_count=*/1u);
+
+  // Simulate Bluetooth adapter being enabled. Note that when testing Bluetooth
+  // will be set to kEnabling and needs to be manually changed to kEnabled using
+  // adapter state. Disabling cellular will NOT change the Bluetooth or Tether
+  // state to available.
+  SetTetherTechnologyState(
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+
+  ToggleMobileState(/*new_state=*/false);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
             GetTechnologyState(NetworkTypePattern::Tether()));
 }
 

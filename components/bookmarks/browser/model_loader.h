@@ -29,6 +29,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
  public:
   using LoadCallback =
       base::OnceCallback<void(std::unique_ptr<BookmarkLoadDetails>)>;
+
   // Creates the ModelLoader, and schedules loading on a backend task runner.
   // |callback| is run once loading completes (on the main thread).
   static scoped_refptr<ModelLoader> Create(
@@ -48,6 +49,10 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   HistoryBookmarkModel* history_bookmark_model() {
     return history_bookmark_model_.get();
   }
+
+  // Test-only factory function that creates a ModelLoader() that is initially
+  // loaded.
+  static scoped_refptr<ModelLoader> CreateForTest(BookmarkLoadDetails* details);
 
  private:
   friend class base::RefCountedThreadSafe<ModelLoader>;

@@ -33,8 +33,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   viz::SurfaceId surface_id(kArbitraryFrameSinkId, kArbitraryLocalSurfaceId);
-  surface_layer_impl->SetRange(viz::SurfaceRange(absl::nullopt, surface_id),
-                               absl::nullopt);
+  surface_layer_impl->SetRange(viz::SurfaceRange(std::nullopt, surface_id),
+                               std::nullopt);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -120,7 +120,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   // viz::SurfaceInfo.
   {
     AppendQuadsData data;
-    surface_layer_impl->SetRange(viz::SurfaceRange(absl::nullopt, surface_id1),
+    surface_layer_impl->SetRange(viz::SurfaceRange(std::nullopt, surface_id1),
                                  0u);
     surface_layer_impl->AppendQuads(render_pass.get(), &data);
     // The primary viz::SurfaceInfo should be added to activation_dependencies.
@@ -164,7 +164,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
 
   EXPECT_EQ(surface_id1, surface_draw_quad2->surface_range.end());
   EXPECT_EQ(SkColors::kBlue, surface_draw_quad2->default_background_color);
-  EXPECT_EQ(absl::nullopt, surface_draw_quad2->surface_range.start());
+  EXPECT_EQ(std::nullopt, surface_draw_quad2->surface_range.start());
 
   EXPECT_EQ(surface_id1, surface_draw_quad3->surface_range.end());
   EXPECT_EQ(SkColors::kBlue, surface_draw_quad3->default_background_color);
@@ -202,7 +202,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
   surface_layer_impl2->SetBounds(layer_size);
   surface_layer_impl2->SetDrawsContent(true);
   surface_layer_impl2->SetRange(viz::SurfaceRange(surface_id1, surface_id2),
-                                absl::nullopt);
+                                std::nullopt);
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;

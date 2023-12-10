@@ -5,6 +5,7 @@
 #include "sandbox/win/src/target_process.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_util.h"
@@ -35,7 +36,7 @@ TEST_F(TargetProcessTest, FilterEnvironment) {
                             '\0', 'C', '=', '4',  '\0', '\0'};
 
   // Empty filter should filter everything.
-  std::vector<base::WStringPiece> to_keep;
+  std::vector<std::wstring_view> to_keep;
   auto res = TargetProcess::FilterEnvironment(empty, to_keep);
   ExpectEnvironmentBlock({}, res);
 

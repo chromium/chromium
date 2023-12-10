@@ -181,6 +181,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
     return static_cast<BluetoothAdapterFloss*>(adapter_);
   }
 
+  // Methods for fetching device properties.
+  void FetchRemoteType(base::OnceClosure callback);
+  void FetchRemoteClass(base::OnceClosure callback);
+  void FetchRemoteAppearance(base::OnceClosure callback);
+  void FetchRemoteUuids(base::OnceClosure callback);
+  void FetchRemoteVendorProductInfo(base::OnceClosure callback);
+
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
@@ -203,12 +210,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void TriggerConnectCallback(
       absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
 
-  void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
-  void OnGetRemoteClass(DBusResult<uint32_t> ret);
-  void OnGetRemoteAppearance(DBusResult<uint16_t> ret);
+  void OnGetRemoteType(base::OnceClosure callback,
+                       DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
+  void OnGetRemoteClass(base::OnceClosure callback, DBusResult<uint32_t> ret);
+  void OnGetRemoteAppearance(base::OnceClosure callback,
+                             DBusResult<uint16_t> ret);
   void OnGetRemoteVendorProductInfo(
+      base::OnceClosure callback,
       DBusResult<FlossAdapterClient::VendorProductInfo> ret);
-  void OnGetRemoteUuids(DBusResult<UUIDList> ret);
+  void OnGetRemoteUuids(base::OnceClosure callback, DBusResult<UUIDList> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
                                       ErrorCallback error_callback,

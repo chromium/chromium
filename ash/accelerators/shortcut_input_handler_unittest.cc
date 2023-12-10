@@ -23,13 +23,29 @@ class TestObserver : public ShortcutInputHandler::Observer {
   void OnShortcutInputEventReleased(const mojom::KeyEvent& key_event) override {
     ++num_input_events_released_;
   }
+  void OnPrerewrittenShortcutInputEventPressed(
+      const mojom::KeyEvent& key_event) override {
+    ++num_prerewritten_input_events_pressed_;
+  }
+  void OnPrerewrittenShortcutInputEventReleased(
+      const mojom::KeyEvent& key_event) override {
+    ++num_prerewritten_input_events_released_;
+  }
 
   int num_input_events_pressed() { return num_input_events_pressed_; }
   int num_input_events_released() { return num_input_events_released_; }
+  int num_prerewritten_input_events_pressed() {
+    return num_prerewritten_input_events_pressed_;
+  }
+  int num_prerewritten_input_events_released() {
+    return num_prerewritten_input_events_released_;
+  }
 
  private:
   int num_input_events_pressed_ = 0;
   int num_input_events_released_ = 0;
+  int num_prerewritten_input_events_pressed_ = 0;
+  int num_prerewritten_input_events_released_ = 0;
 };
 
 }  // namespace
@@ -65,6 +81,30 @@ TEST_F(ShortcutInputHandlerTest, ObserverTest) {
   shortcut_input_handler_->OnEvent(&released_event);
   EXPECT_EQ(1, observer_->num_input_events_pressed());
   EXPECT_EQ(1, observer_->num_input_events_released());
+
+  ui::KeyEvent prewritten_pressed_event(ui::ET_KEY_PRESSED, ui::VKEY_1,
+                                        ui::EF_NONE);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(prewritten_pressed_event);
+  EXPECT_EQ(1, observer_->num_prerewritten_input_events_pressed());
+  EXPECT_EQ(0, observer_->num_prerewritten_input_events_released());
+
+  ui::KeyEvent prewritten_released_event(ui::ET_KEY_RELEASED, ui::VKEY_1,
+                                         ui::EF_NONE);
+  shortcut_input_handler_->OnPrerewriteKeyInputEvent(prewritten_released_event);
+  EXPECT_EQ(1, observer_->num_prerewritten_input_events_pressed());
+  EXPECT_EQ(1, observer_->num_prerewritten_input_events_released());
+}
+
+TEST_F(ShortcutInputHandlerTest, ConsumeTest) {
+  ui::KeyEvent pressed_event(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
+  shortcut_input_handler_->OnEvent(&pressed_event);
+  EXPECT_FALSE(pressed_event.stopped_propagation());
+
+  shortcut_input_handler_->SetShouldConsumeKeyEvents(
+      /*should_consume_key_events=*/true);
+  ui::KeyEvent released_event(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE);
+  shortcut_input_handler_->OnEvent(&released_event);
+  EXPECT_TRUE(released_event.stopped_propagation());
 }
 
 }  // namespace ash

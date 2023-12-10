@@ -77,16 +77,16 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  WriteFileRequestedOptions options;
-  ASSERT_TRUE(WriteFileRequestedOptions::Populate(options_as_value->GetDict(),
-                                                  options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFileHandle, options.open_request_id);
-  EXPECT_EQ(kOffset, static_cast<double>(options.offset));
+  auto options =
+      WriteFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFileHandle, options->open_request_id);
+  EXPECT_EQ(kOffset, static_cast<double>(options->offset));
   std::string write_data(kWriteData);
   EXPECT_EQ(std::vector<uint8_t>(write_data.begin(), write_data.end()),
-            options.data);
+            options->data);
 }
 
 TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {

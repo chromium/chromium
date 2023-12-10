@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "services/network/attribution/attribution_verification_mediator.h"
@@ -31,7 +32,7 @@ enum TimeSpan {
 void RecordTiming(TimeSpan time_span, bool is_success, base::TimeDelta delta) {
   // These must stay in sync with the corresponding histogram suffixes in
   // histograms.xml.
-  base::StringPiece time_span_string;
+  std::string_view time_span_string;
   switch (time_span) {
     case kGetKeyCommitment:
       time_span_string = "GetKeyCommitment";
@@ -52,7 +53,7 @@ void RecordTiming(TimeSpan time_span, bool is_success, base::TimeDelta delta) {
       time_span_string = "Total";
       break;
   }
-  base::StringPiece outcome_string = is_success ? "Success" : "Failure";
+  std::string_view outcome_string = is_success ? "Success" : "Failure";
 
   base::UmaHistogramTimes(
       base::JoinString({"Conversions.ReportVerification.Duration",

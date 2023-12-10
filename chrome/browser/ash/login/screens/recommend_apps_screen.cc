@@ -31,12 +31,12 @@ enum class RecommendAppsScreenAction {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. This should be kept in sync with
   // RecommendAppsScreenAction in enums.xml.
-  SKIPPED = 0,
-  RETRIED = 1,
-  SELECTED_NONE = 2,
-  APP_SELECTED = 3,
+  kSkipped = 0,
+  kRetried = 1,
+  kSelectedNone = 2,
+  kAppSelected = 3,
 
-  kMaxValue = APP_SELECTED
+  kMaxValue = kAppSelected
 };
 
 void RecordUmaSelectedRecommendedPercentage(
@@ -60,13 +60,13 @@ void RecordUmaScreenAction(RecommendAppsScreenAction action) {
 // static
 std::string RecommendAppsScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::SELECTED:
+    case Result::kSelected:
       return "Selected";
-    case Result::SKIPPED:
+    case Result::kSkipped:
       return "Skipped";
-    case Result::LOAD_ERROR:
+    case Result::kLoadError:
       return "LoadError";
-    case Result::NOT_APPLICABLE:
+    case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -82,8 +82,8 @@ RecommendAppsScreen::RecommendAppsScreen(
 RecommendAppsScreen::~RecommendAppsScreen() = default;
 
 void RecommendAppsScreen::OnSkip() {
-  RecordUmaScreenAction(RecommendAppsScreenAction::SKIPPED);
-  exit_callback_.Run(Result::SKIPPED);
+  RecordUmaScreenAction(RecommendAppsScreenAction::kSkipped);
+  exit_callback_.Run(Result::kSkipped);
 }
 
 void RecommendAppsScreen::OnInstall(base::Value::List apps) {
@@ -95,7 +95,7 @@ void RecommendAppsScreen::OnInstall(base::Value::List apps) {
   RecordUmaUserSelectionAppCount(selected_app_count);
   RecordUmaSelectedRecommendedPercentage(selected_recommended_percentage);
 
-  RecordUmaScreenAction(RecommendAppsScreenAction::APP_SELECTED);
+  RecordUmaScreenAction(RecommendAppsScreenAction::kAppSelected);
   pref_service_->SetList(arc::prefs::kArcFastAppReinstallPackages,
                          std::move(apps));
 
@@ -107,7 +107,7 @@ void RecommendAppsScreen::OnInstall(base::Value::List apps) {
     LOG(ERROR)
         << "Cannot complete Fast App Reinstall flow. Starter is not available.";
   }
-  exit_callback_.Run(Result::SELECTED);
+  exit_callback_.Run(Result::kSelected);
 }
 
 bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
@@ -117,14 +117,14 @@ bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!arc::IsArcPlayStoreEnabledForProfile(profile)) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
 
   bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
   bool is_child_account = user_manager->IsLoggedInAsChildUser();
   if (is_managed_account || is_child_account || skip_for_testing_) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
   return false;
@@ -198,13 +198,13 @@ void RecommendAppsScreen::UnpackResultAndShow(
 void RecommendAppsScreen::OnLoadError() {
   if (is_hidden())
     return;
-  exit_callback_.Run(Result::LOAD_ERROR);
+  exit_callback_.Run(Result::kLoadError);
 }
 
 void RecommendAppsScreen::OnParseResponseError() {
   if (view_)
     view_->OnParseResponseError();
-  exit_callback_.Run(Result::SKIPPED);
+  exit_callback_.Run(Result::kSkipped);
 }
 
 void RecommendAppsScreen::OnUserAction(const base::Value::List& args) {

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -16,7 +17,6 @@
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
 #include "crypto/scoped_test_nss_db.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace kcer {
 
@@ -49,8 +49,8 @@ class TokenHolder {
 };
 
 // Compares two KerPermissions, returns true if they are equal.
-bool KeyPermissionsEqual(const absl::optional<chaps::KeyPermissions>& a,
-                         const absl::optional<chaps::KeyPermissions>& b);
+bool KeyPermissionsEqual(const std::optional<chaps::KeyPermissions>& a,
+                         const std::optional<chaps::KeyPermissions>& b);
 
 // Verifies `signature` created with `signing_scheme` and the public key from
 // `spki` for `data_to_sign`. By default (with `strict` == true) only returns

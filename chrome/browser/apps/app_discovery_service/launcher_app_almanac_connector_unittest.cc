@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -17,7 +19,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 namespace {
@@ -70,7 +71,7 @@ TEST_F(LauncherAppAlmanacConnectorTest, GetAppsSuccess) {
       LauncherAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<absl::optional<proto::LauncherAppResponse>>
+  base::test::TestFuture<std::optional<proto::LauncherAppResponse>>
       observed_response;
   server_connector_.GetApps(device_info_, test_shared_loader_factory_,
                             observed_response.GetCallback());
@@ -81,7 +82,7 @@ TEST_F(LauncherAppAlmanacConnectorTest, GetAppsSuccess) {
 TEST_F(LauncherAppAlmanacConnectorTest, GetAppsEmptyResponse) {
   url_loader_factory_.AddResponse(
       LauncherAppAlmanacConnector::GetServerUrl().spec(), "");
-  base::test::TestFuture<absl::optional<proto::LauncherAppResponse>> response;
+  base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
   server_connector_.GetApps(device_info_, test_shared_loader_factory_,
                             response.GetCallback());
   ASSERT_TRUE(response.Get().has_value());
@@ -93,7 +94,7 @@ TEST_F(LauncherAppAlmanacConnectorTest, GetAppsError) {
       LauncherAppAlmanacConnector::GetServerUrl().spec(),
       /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<absl::optional<proto::LauncherAppResponse>> response;
+  base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
   server_connector_.GetApps(device_info_, test_shared_loader_factory_,
                             response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
@@ -106,7 +107,7 @@ TEST_F(LauncherAppAlmanacConnectorTest, GetAppsNetworkError) {
       /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
 
-  base::test::TestFuture<absl::optional<proto::LauncherAppResponse>> response;
+  base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
   server_connector_.GetApps(device_info_, test_shared_loader_factory_,
                             response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());

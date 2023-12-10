@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
@@ -31,7 +32,7 @@ base::FilePath ResolveSourceRootRelativePath(const char* relative_path) {
     return base::FilePath();
   }
 
-  for (const base::StringPiece& component : base::SplitStringPiece(
+  for (const std::string_view& component : base::SplitStringPiece(
            relative_path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     if (!component.empty())
       path = path.AppendASCII(component);

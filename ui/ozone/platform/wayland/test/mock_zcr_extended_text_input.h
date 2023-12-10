@@ -55,4 +55,4 @@ class MockZcrExtendedTextInput : public ServerObject {
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZCR_EXTENDED_TEXT_INPUT_H_

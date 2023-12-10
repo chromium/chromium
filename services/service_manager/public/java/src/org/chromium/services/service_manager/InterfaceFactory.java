@@ -12,8 +12,6 @@ import org.chromium.mojo.bindings.Interface;
  * @param <I> the mojo interface
  */
 public interface InterfaceFactory<I extends Interface> {
-    /**
-     * Returns an implementation of the mojo interface.
-     */
+    /** Returns an implementation of the mojo interface. */
     I createImpl();
 }

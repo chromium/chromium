@@ -1,21 +1,12 @@
 This is a testharness.js-based test.
-[PASS] getParameters should return RTCRtpEncodingParameters with all required fields
-[PASS] addTransceiver(audio) with undefined sendEncodings should have default encoding parameter with active set to true
 [FAIL] addTransceiver(video) with undefined sendEncodings should have default encoding parameter with active set to true and scaleResolutionDownBy set to 1
   assert_equals: expected (number) 1 but got (undefined) undefined
-[PASS] addTransceiver(audio) with empty list sendEncodings should have default encoding parameter with active set to true
 [FAIL] addTransceiver(video) with empty list sendEncodings should have default encoding parameter with active set to true and scaleResolutionDownBy set to 1
   assert_equals: expected (number) 1 but got (undefined) undefined
 [FAIL] addTransceiver(video) should auto-set scaleResolutionDownBy to 1 when some encodings have it, but not all
   assert_equals: expected (number) 1 but got (undefined) undefined
 [FAIL] addTransceiver should auto-set scaleResolutionDownBy to powers of 2 (descending) when absent
   assert_equals: expected (number) 2 but got (undefined) undefined
-[PASS] addTransceiver with a ridiculous number of encodings should truncate the list
-[PASS] addTransceiver(audio) with multiple encodings should result in one encoding with no properties other than active
-[PASS] addTransceiver(audio) should remove valid scaleResolutionDownBy
-[PASS] addTransceiver(audio) should remove invalid scaleResolutionDownBy
-[PASS] setParameters with scaleResolutionDownBy on an audio sender should succeed, but remove the scaleResolutionDownBy
-[PASS] setParameters with an invalid scaleResolutionDownBy on an audio sender should succeed, but remove the scaleResolutionDownBy
 [FAIL] addTransceiver with duplicate rid and multiple encodings throws TypeError
   assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: "foo"}, {rid: "foo"}] })" did not throw
 [FAIL] addTransceiver with missing rid and multiple encodings throws TypeError
@@ -24,34 +15,9 @@ This is a testharness.js-based test.
   assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: ""}] })" did not throw
 [FAIL] addTransceiver with invalid rid characters throws TypeError
   assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: "foo-bar"}] })" threw object "InvalidAccessError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': Invalid RID value provided." ("InvalidAccessError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] addTransceiver with rid longer than 255 characters throws TypeError
-[PASS] addTransceiver with scaleResolutionDownBy < 1 throws RangeError
-[PASS] sender.getParameters() should return sendEncodings set by addTransceiver()
-[PASS] sender.setParameters() with added encodings should reject with InvalidModificationError
-[PASS] sender.setParameters() with removed encodings should reject with InvalidModificationError
-[PASS] sender.setParameters() with reordered encodings should reject with InvalidModificationError
-[PASS] sender.setParameters() with encodings unset should reject with TypeError
-[PASS] sender.setParameters() with empty encodings should reject with InvalidModificationError (video)
-[PASS] sender.setParameters() with empty encodings should reject with InvalidModificationError (audio)
-[PASS] setParameters() with modified encoding.rid field should reject with InvalidModificationError
 [FAIL] setParameters() with encoding.scaleResolutionDownBy field set to less than 1.0 should reject with RangeError
   promise_rejects_js: function "function() { throw e }" threw object "InvalidStateError: getParameters() needs to be called before setParameters()." ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
 [FAIL] setParameters() with missing encoding.scaleResolutionDownBy field should succeed, and set the value back to 1
   assert_equals: expected (number) 1 but got (undefined) undefined
-[PASS] setParameters() with encoding.scaleResolutionDownBy field set to greater than 1.0 should succeed
-[PASS] setParameters() with encoding.active false->true should succeed (video) with RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active false->true should succeed (video) without RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active true->false should succeed (video) with RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active true->false should succeed (video) without RTCRtpTransceiverInit
-[PASS] setParameters() with modified encoding.maxBitrate should succeed (video) with RTCRtpTransceiverInit
-[PASS] setParameters() with modified encoding.maxBitrate should succeed (video) without RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active false->true should succeed (audio) with RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active false->true should succeed (audio) without RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active true->false should succeed (audio) with RTCRtpTransceiverInit
-[PASS] setParameters() with encoding.active true->false should succeed (audio) without RTCRtpTransceiverInit
-[PASS] setParameters() with modified encoding.maxBitrate should succeed (audio) with RTCRtpTransceiverInit
-[PASS] setParameters() with modified encoding.maxBitrate should succeed (audio) without RTCRtpTransceiverInit
-[PASS] setParameters() with modified encoding.scaleResolutionDownBy should succeed with RTCRtpTransceiverInit
-[PASS] setParameters() with modified encoding.scaleResolutionDownBy should succeed without RTCRtpTransceiverInit
 Harness: the test ran to completion.
 

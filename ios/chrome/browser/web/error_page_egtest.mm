@@ -174,7 +174,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Restore the session but with the page no longer loading.
   self.serverRespondsWithContent = NO;
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
   [ChromeEarlGrey waitForWebStateContainingText:GetErrorMessage()];
 
   GREYAssertEqual(1, [ChromeEarlGrey navigationBackListItemsCount],

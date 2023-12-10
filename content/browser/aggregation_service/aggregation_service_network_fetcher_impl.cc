@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_network_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -152,7 +152,7 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_in_progress_.erase(it);
 
-  absl::optional<int> http_response_code;
+  std::optional<int> http_response_code;
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
     http_response_code = loader->ResponseInfo()->headers->response_code();
 
@@ -218,8 +218,6 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
       base::BindOnce(&AggregationServiceNetworkFetcherImpl::OnJsonParse,
                      weak_factory_.GetWeakPtr(), url, std::move(callback),
                      std::move(response_time), std::move(expiry_time)));
-
-  // TODO(crbug.com/1232599): Add performance metrics for key fetching.
 }
 
 void AggregationServiceNetworkFetcherImpl::OnJsonParse(
@@ -262,7 +260,7 @@ void AggregationServiceNetworkFetcherImpl::OnError(
     LOG(ERROR) << error_msg;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void AggregationServiceNetworkFetcherImpl::RecordFetchStatus(

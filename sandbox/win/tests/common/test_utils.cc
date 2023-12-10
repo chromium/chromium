@@ -80,7 +80,7 @@ bool DeleteReparsePoint(HANDLE source) {
 
 bool IsSidInDacl(const base::win::AccessControlList& dacl,
                  bool allowed,
-                 absl::optional<ACCESS_MASK> mask,
+                 std::optional<ACCESS_MASK> mask,
                  const base::win::Sid& sid) {
   DWORD ace_type = allowed ? ACCESS_ALLOWED_ACE_TYPE : ACCESS_DENIED_ACE_TYPE;
   PACL pacl = dacl.get();

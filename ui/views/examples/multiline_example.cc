@@ -43,8 +43,9 @@ gfx::Range ClampRange(gfx::Range range, size_t max) {
 
 // A Label with a clamped preferred width to demonstrate wrapping.
 class PreferredSizeLabel : public Label {
+  METADATA_HEADER(PreferredSizeLabel, Label)
+
  public:
-  METADATA_HEADER(PreferredSizeLabel);
   PreferredSizeLabel() = default;
 
   PreferredSizeLabel(const PreferredSizeLabel&) = delete;
@@ -60,15 +61,16 @@ class PreferredSizeLabel : public Label {
   }
 };
 
-BEGIN_METADATA(PreferredSizeLabel, Label)
+BEGIN_METADATA(PreferredSizeLabel)
 END_METADATA
 
 }  // namespace
 
 // A simple View that hosts a RenderText object.
 class MultilineExample::RenderTextView : public View {
+  METADATA_HEADER(RenderTextView, View)
+
  public:
-  METADATA_HEADER(RenderTextView);
   RenderTextView() : render_text_(gfx::RenderText::CreateRenderText()) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     render_text_->SetMultiline(true);

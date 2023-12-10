@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * Java implementation of PrivacySandboxBridge for testing.
- */
+/** Java implementation of PrivacySandboxBridge for testing. */
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private boolean mIsPrivacySandboxEnabled = true;
     private boolean mIsPrivacySandboxRestricted /* = false*/;
@@ -195,4 +193,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public boolean getLastTopicsToggleValue() {
         return mLastTopicsToggleValue;
     }
+
+    @Override
+    public void setAllPrivacySandboxAllowedForTesting() {}
 }

@@ -73,7 +73,7 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
       AffiliatedRealmsCallback result_callback) override;
 
   void InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<PasswordForm>> forms,
+      LoginsResult forms,
       base::OnceCallback<void(LoginsResultOrError)> result_callback) override;
 };
 

@@ -123,6 +123,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
@@ -491,7 +492,8 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
                       ExceptionState&) override {
     DCHECK(internal_sink_);
     internal_sink_->Append(
-        ToCoreString(chunk.V8Value()
+        ToCoreString(script_state->GetIsolate(),
+                     chunk.V8Value()
                          ->ToString(script_state->GetContext())
                          .ToLocalChecked())
             .Utf8());
@@ -617,6 +619,12 @@ TestWritableStreamSink::Optimizer::PerformInProcessOptimization(
   return sink;
 }
 
+void OnLCPPredicted(ScriptPromiseResolver* resolver,
+                    const Element& lcp_element) {
+  const ElementLocator locator = element_locator::OfElement(lcp_element);
+  resolver->Resolve(element_locator::ToStringForTesting(locator));
+}
+
 }  // namespace
 
 static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
@@ -735,7 +743,8 @@ GCObservation* Internals::observeGC(ScriptValue script_value,
     return nullptr;
   }
 
-  return MakeGarbageCollected<GCObservation>(observed_value);
+  return MakeGarbageCollected<GCObservation>(script_value.GetIsolate(),
+                                             observed_value);
 }
 
 unsigned Internals::updateStyleAndReturnAffectedElementCount(
@@ -4014,6 +4023,17 @@ void Internals::setBackForwardCacheRestorationBufferSize(unsigned int maxSize) {
 Vector<String> Internals::getCreatorScripts(HTMLImageElement* img) {
   DCHECK(img);
   return Vector<String>(img->creator_scripts());
+}
+
+ScriptPromise Internals::LCPPrediction(ScriptState* script_state,
+                                       Document* document) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  document->AddLCPPredictedCallback(
+      WTF::BindOnce(&OnLCPPredicted, WrapPersistent(resolver)));
+  return promise;
 }
 
 }  // namespace blink

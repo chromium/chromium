@@ -148,8 +148,6 @@ bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
   if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;
   }
-  base::UmaHistogramBoolean("SafeBrowsing.RT.CannotCheckInvalidUrl",
-                            !url.is_valid());
   return CanGetReputationOfUrl(url);
 }
 
@@ -200,12 +198,14 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
 // static
 void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     ReferrerChain* referrer_chain,
-    double min_allowed_timestamp,
+    base::Time min_allowed_timestamp,
     bool should_remove_subresource_url) {
+  double min_allowed_timestamp_seconds =
+      min_allowed_timestamp.InSecondsFSinceUnixEpoch();
   for (ReferrerChainEntry& entry : *referrer_chain) {
     // Remove URLs in the entry if the referrer chain is collected
     // before the min_timestamp.
-    if (entry.navigation_time_msec() < min_allowed_timestamp) {
+    if (entry.navigation_time_msec() < min_allowed_timestamp_seconds) {
       entry.clear_url();
       entry.clear_main_frame_url();
       entry.clear_referrer_url();

@@ -29,12 +29,12 @@ namespace base {
 class OsValidationTest : public ::testing::Test {
  protected:
   // ::testing::Test:
-  static void SetUpTestCase() {
+  static void SetUpTestSuite() {
     temp_dir_ = std::make_unique<ScopedTempDir>().release();
     ASSERT_TRUE(temp_dir_->CreateUniqueTempDir());
   }
 
-  static void TearDownTestCase() {
+  static void TearDownTestSuite() {
     // Explicitly delete the dir to catch any deletion errors.
     ASSERT_TRUE(temp_dir_->Delete());
     auto temp_dir = base::WrapUnique(temp_dir_);

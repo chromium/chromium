@@ -43,9 +43,13 @@ public class StringUtils {
             }
         }
 
-        builder.append(DateUtils.formatDateTime(context, date.getTime(),
-                DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_ABBREV_MONTH
-                        | DateUtils.FORMAT_SHOW_YEAR));
+        builder.append(
+                DateUtils.formatDateTime(
+                        context,
+                        date.getTime(),
+                        DateUtils.FORMAT_ABBREV_WEEKDAY
+                                | DateUtils.FORMAT_ABBREV_MONTH
+                                | DateUtils.FORMAT_SHOW_YEAR));
 
         return builder;
     }

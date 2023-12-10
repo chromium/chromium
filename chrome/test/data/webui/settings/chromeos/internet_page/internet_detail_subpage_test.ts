@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {CellularRoamingToggleButtonElement, NetworkProxySectionElement, PasspointRemoveDialogElement, SettingsInternetDetailPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, InternetPageBrowserProxyImpl, Router, routes, settingMojom, SettingsToggleButtonElement, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import {CrDialogElement, InternetPageBrowserProxyImpl, LocalizedLinkElement, Router, routes, settingMojom, SettingsToggleButtonElement, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -17,7 +17,7 @@ import {NetworkNameserversElement} from 'chrome://resources/ash/common/network/n
 import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnState, DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedOpenVPNProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxyMode, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -165,6 +165,7 @@ suite('<settings-internet-detail-subpage>', () => {
       type: NetworkType.kCellular,
       managedNetworkAvailable: false,
       serial: undefined,
+      isCarrierLocked: false,
     };
   }
 
@@ -1136,6 +1137,87 @@ suite('<settings-internet-detail-subpage>', () => {
       assertFalse(connectButton.disabled);
     });
 
+    test('carrier locked subtext when carrier locked', async () => {
+      const TEST_ICCID = '11111111111111111';
+      loadTimeData.overrideValues({
+        isCellularCarrierLockEnabled: true,
+      });
+      init();
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+      mojoApi.setDeviceStateForTest({
+        ...getDefaultDeviceStateProps(),
+        deviceState: DeviceStateType.kEnabled,
+        simLockStatus: {
+          lockEnabled: true,
+          lockType: 'network-pin',
+          retriesLeft: 0,
+        },
+        simInfos: [{
+          iccid: TEST_ICCID,
+          isPrimary: true,
+          slotId: 0,
+          eid: '',
+        }],
+      });
+
+      const cellularNetwork =
+          getManagedProperties(NetworkType.kCellular, 'cellular');
+      cellularNetwork.connectable = false;
+      cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
+      cellularNetwork.typeProperties.cellular!.simLocked = true;
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
+
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      await flushTasks();
+      const carrierLockedText =
+          internetDetailPage.shadowRoot!.querySelector<LocalizedLinkElement>(
+              '#carrierLockedNoticeLink');
+      assertTrue(!!carrierLockedText);
+      assertEquals(
+          internetDetailPage.i18nAdvanced('networkCarrierLocked').toString(),
+          carrierLockedText.localizedString.toString());
+    });
+
+    test(
+        'carrier locked subtext not displayed when carrier lock disabled',
+        async () => {
+          const TEST_ICCID = '11111111111111111';
+          loadTimeData.overrideValues({
+            isCellularCarrierLockEnabled: false,
+          });
+          init();
+          mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+          mojoApi.setDeviceStateForTest({
+            ...getDefaultDeviceStateProps(),
+            deviceState: DeviceStateType.kEnabled,
+            simLockStatus: {
+              lockEnabled: true,
+              lockType: 'network-pin',
+              retriesLeft: 0,
+            },
+            simInfos: [{
+              iccid: TEST_ICCID,
+              isPrimary: true,
+              slotId: 0,
+              eid: '',
+            }],
+          });
+
+          const cellularNetwork =
+              getManagedProperties(NetworkType.kCellular, 'cellular');
+          cellularNetwork.connectable = false;
+          cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
+          cellularNetwork.typeProperties.cellular!.simLocked = true;
+          mojoApi.setManagedPropertiesForTest(cellularNetwork);
+
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          await flushTasks();
+          const carrierLockedText = internetDetailPage.shadowRoot!
+                                        .querySelector<LocalizedLinkElement>(
+                                            '#carrierLockedNoticeLink');
+          assertNull(carrierLockedText);
+        });
+
     test(
         'Connect button disabled when not connectable and locked', async () => {
           init();
@@ -1874,6 +1956,16 @@ suite('<settings-internet-detail-subpage>', () => {
           await flushTasks();
           assertTrue(!!getApn());
           assertEquals(name, getApn()!.textContent!.trim());
+          assertFalse(getCrLink()!.hasAttribute('warning'));
+
+          // Adding a restricted connectivity state should cause the sublabel to
+          // be a warning.
+          cellularNetwork.portalState = PortalState.kNoInternet;
+          cellularNetwork.connectionState = ConnectionStateType.kPortal;
+          mojoApi.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          await flushTasks();
+          assertTrue(getCrLink()!.hasAttribute('warning'));
         } else {
           assertNull(getApn());
         }

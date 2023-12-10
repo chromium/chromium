@@ -318,14 +318,14 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     public void testSyncRowSummaryWhenNoDataTypeSynced() {
+        CoreAccountInfo account = mSyncTestRule.addTestAccount();
         final SyncService syncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get);
+        SigninTestUtil.signinAndEnableSync(account, syncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     syncService.setSelectedTypes(false, new HashSet<>());
                 });
-        CoreAccountInfo account = mSyncTestRule.addTestAccount();
-        SigninTestUtil.signinAndEnableSync(account, syncService);
 
         launchSettingsActivity();
 

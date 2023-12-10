@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from '../../../common/js/ui.js';
-
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getRequiredElement} from 'chrome://resources/ash/common/util.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+
+import {decorate} from '../../../common/js/cr_ui.js';
 
 import {Splitter} from './splitter.js';
 

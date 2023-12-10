@@ -6,9 +6,9 @@
 #define ASH_WM_OVERVIEW_SCOPED_OVERVIEW_ANIMATION_SETTINGS_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/wm/overview/overview_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 
 namespace aura {
@@ -50,7 +50,7 @@ class ScopedOverviewAnimationSettings {
   std::unique_ptr<ui::ScopedLayerAnimationSettings> animation_settings_;
 
   // Report smoothness of close animation.
-  absl::optional<ui::AnimationThroughputReporter> close_reporter_;
+  std::optional<ui::AnimationThroughputReporter> close_reporter_;
 };
 
 }  // namespace ash

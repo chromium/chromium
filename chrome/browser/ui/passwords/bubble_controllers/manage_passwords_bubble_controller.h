@@ -77,11 +77,11 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   bool UsernameExists(const std::u16string& username);
 
   void set_currently_selected_password(
-      const absl::optional<password_manager::PasswordForm>& password) {
+      const std::optional<password_manager::PasswordForm>& password) {
     currently_selected_password_ = password;
   }
 
-  absl::optional<password_manager::PasswordForm>
+  std::optional<password_manager::PasswordForm>
   get_currently_selected_password() {
     return currently_selected_password_;
   }
@@ -118,7 +118,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   // If not set, the bubble displays the list of all credentials stored for the
   // current domain. When set, the bubble displays the password details of the
   // currently selected password.
-  absl::optional<password_manager::PasswordForm> currently_selected_password_;
+  std::optional<password_manager::PasswordForm> currently_selected_password_;
 
   base::WeakPtrFactory<ManagePasswordsBubbleController> weak_ptr_factory_{this};
 };

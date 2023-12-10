@@ -56,9 +56,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                                     public SessionObserver,
                                     public ui::SimpleMenuModel::Delegate,
                                     public views::WidgetObserver {
- public:
-  METADATA_HEADER(HoldingSpaceTray);
+  METADATA_HEADER(HoldingSpaceTray, TrayBackgroundView)
 
+ public:
   explicit HoldingSpaceTray(Shelf* shelf);
   HoldingSpaceTray(const HoldingSpaceTray& other) = delete;
   HoldingSpaceTray& operator=(const HoldingSpaceTray& other) = delete;
@@ -236,7 +236,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // Whether the user is currently dragging data which can be dropped on the
   // tray as part of a drag-and-drop to pin action. Note that this value is only
   // present while a drag is in progress and the holding space tray is visible.
-  absl::optional<bool> can_drop_to_pin_;
+  std::optional<bool> can_drop_to_pin_;
 
   // Whether the user performed a drag-and-drop to pin action. Note that this
   // flag is set only within the scope of a drop release event sequence. It is

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_interaction_delegate.h"
 

@@ -6,7 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_REGION_H_
 
 #include <sys/uio.h>
+
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <vector>
 
@@ -14,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace memory {
@@ -115,9 +116,9 @@ struct COMPONENT_EXPORT(USERSPACE_SWAP) RegionOverlap {
 
   RegionOverlap(const RegionOverlap&);
 
-  absl::optional<Region> before;
-  absl::optional<Region> intersection;
-  absl::optional<Region> after;
+  std::optional<Region> before;
+  std::optional<Region> intersection;
+  std::optional<Region> after;
 };
 
 }  // namespace userspace_swap

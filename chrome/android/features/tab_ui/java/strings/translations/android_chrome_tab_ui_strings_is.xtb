@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
+<translation id="1155815720264022949">Viltu loka gömlum flipum?</translation>
 <translation id="1215127405478249895">Yfirfara flipa</translation>
 <translation id="125153950246128346">Ýttu til að sjá annan flipa</translation>
 <translation id="1499635324672558517">Loka öllum huliðsflipum?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Hætta að sýna á öllum skjánum</translation>
 <translation id="5076161749301278626">Skoða umsagnir um verslun?</translation>
 <translation id="5082793167783849073">Berðu síður saman á fljótlegan hátt með því að búa til hóp. Haltu fingri á tengli til að byrja.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Þú ert með <ph name="TABS_COUNT_ONE" /> flipa sem þú hefur ekki notað nýlega}one{Þú ert með <ph name="TABS_COUNT_MANY" /> flipa sem þú hefur ekki notað nýlega}other{Þú ert með <ph name="TABS_COUNT_MANY" /> flipa sem þú hefur ekki notað nýlega}}</translation>
 <translation id="5339733443032484186">Síðasti flipi</translation>
 <translation id="5490235265819901748">Flipahópur stækkaður</translation>
 <translation id="5494920125229734069">Velja allt</translation>
+<translation id="5545379293264651575">Loka án yfirferðar</translation>
 <translation id="5556417849629758491">Skoða upplýsingar um verslun, valkostir eru ofarlega á skjánum</translation>
 <translation id="5558362125926932819">Loka flipahópi með <ph name="NUMBER_OF_TABS" /> flipum</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> flipar sameinaðir.</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Færa flipa til hægri</translation>
 <translation id="7966321538264951561">Hunsa tillögurnar.</translation>
 <translation id="8029301326595421733">Upplýsingar um þessa verslun opnaðar á öllum skjánum</translation>
-<translation id="814503310257431685">Sjá allt</translation>
 <translation id="8205266828577616993">Færa flipa upp</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Loka <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Loka <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
 <translation id="8398929769197326728">Ný mappa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

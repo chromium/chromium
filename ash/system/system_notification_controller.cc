@@ -58,7 +58,9 @@ SystemNotificationController::SystemNotificationController()
   if (features::IsHotspotEnabled()) {
     hotspot_notifier_ = std::make_unique<ash::HotspotNotifier>();
   }
-  if (features::IsPrivacyIndicatorsEnabled()) {
+
+  // Privacy indicator is only enabled when Video Conference is disabled.
+  if (!features::IsVideoConferenceEnabled()) {
     privacy_indicators_controller_ =
         std::make_unique<PrivacyIndicatorsController>();
   }

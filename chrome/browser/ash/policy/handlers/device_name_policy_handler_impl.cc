@@ -78,12 +78,12 @@ DeviceNamePolicyHandlerImpl::GetDeviceNamePolicy() const {
   return device_name_policy_;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 DeviceNamePolicyHandlerImpl::GetHostnameChosenByAdministrator() const {
   if (GetDeviceNamePolicy() == DeviceNamePolicy::kPolicyHostnameChosenByAdmin) {
     return hostname_;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DeviceNamePolicyHandlerImpl::DefaultNetworkChanged(

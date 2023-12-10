@@ -59,8 +59,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
       chromeos::DBusMethodCallback<int> callback) override;
   void GetNumberOfInputStreamsWithPermission(
       chromeos::DBusMethodCallback<ClientTypeToInputStreamCount>) override;
-  void GetDeprioritizeBtWbsMic(
-      chromeos::DBusMethodCallback<bool> callback) override;
   void GetSpeakOnMuteDetectionEnabled(
       chromeos::DBusMethodCallback<bool> callback) override;
   void SetOutputNodeVolume(uint64_t node_id, int32_t volume) override;

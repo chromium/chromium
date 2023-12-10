@@ -170,8 +170,17 @@ IN_PROC_BROWSER_TEST_P(PolicyTestPageVisibilityTest,
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(GetProfile()),
       GetProfileManagement());
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  const bool show_test_page = GetExpectedValue();
+  EXPECT_EQ(show_test_page,
+            content::NavigateToURL(web_contents(),
+                                   GURL(chrome::kChromeUIPolicyTestURL)));
+  if (show_test_page) {
+    EXPECT_EQ(web_contents()->GetVisibleURL(),
+              GURL(chrome::kChromeUIPolicyTestURL));
+  } else {
+    EXPECT_EQ(web_contents()->GetVisibleURL(),
+              GURL(chrome::kChromeUIPolicyURL));
+  }
   VerifyTestPageVisibility(GetExpectedValue());
 }
 
@@ -188,19 +197,11 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
         policy::features::kEnablePolicyTestPage, true);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    base::StringPiece test_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-
-    if (base::StartsWith(test_name, "PRE_")) {
-      // Expect a browser relaunch late in browser shutdown.
-      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
-          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
-      EXPECT_CALL(*mock_relaunch_callback_, Run);
-      relaunch_chrome_override_ =
-          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
-              mock_relaunch_callback_->Get());
+    if (policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                              chrome::GetChannel())) {
+      SetUpRelaunchChromeOverrideForPRETests();
     }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   }
   PolicyTestHandlerTest(const PolicyTestHandlerTest&) = delete;
   PolicyTestHandlerTest& operator=(const PolicyTestHandlerTest&) = delete;
@@ -217,6 +218,36 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
     handler->set_web_ui_for_test(web_ui());
     handler->RegisterMessages();
     return handler;
+  }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  void SetUpRelaunchChromeOverrideForPRETests() {
+    base::StringPiece test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (base::StartsWith(test_name, "PRE_")) {
+      // Expect a browser relaunch late in browser shutdown.
+      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
+          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
+      EXPECT_CALL(*mock_relaunch_callback_, Run);
+      relaunch_chrome_override_ =
+          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
+              mock_relaunch_callback_->Get());
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+  /* Helper methods for executing JS strings. */
+  content::EvalJsResult GetNumberOfRows() {
+    const std::string getNumRowsJs =
+        R"(
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelectorAll('policy-test-row')
+            .length;
+        )";
+    return content::EvalJs(web_contents(), getNumRowsJs);
   }
 
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
@@ -251,6 +282,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
       {"level": 1,"scope": 1,"source": 2,
       "name": "CloudReportingEnabled","value": true}
       ])";
+  const std::string revertAppliedPoliciesButtonDisabledJs =
+      R"(
+        document
+          .querySelector('#revert-applied-policies')
+          .disabled;
+      )";
 
   base::Value::List list_args;
 
@@ -258,9 +295,27 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
   list_args.Append(jsonString);
   list_args.Append("{}");
 
+  // Open chrome://policy/test for the first time
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), revertAppliedPoliciesButtonDisabledJs),
+      true);
+
   web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
 
   base::RunLoop().RunUntilIdle();
+
+  // Navigate away and re-open chrome://policy/test for the first time
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIChromeURLsURL)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 2);
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), revertAppliedPoliciesButtonDisabledJs),
+      false);
 
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
@@ -308,6 +363,16 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
   web_ui()->HandleReceivedMessage("revertLocalTestPolicies", list_args);
 
   base::RunLoop().RunUntilIdle();
+
+  // Navigate away and re-open chrome://policy/test for the first time
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIChromeURLsURL)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), revertAppliedPoliciesButtonDisabledJs),
+      true);
 
   policy_map = &policy_service->GetPolicies(chrome_namespace);
   ASSERT_TRUE(policy_map);
@@ -404,6 +469,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
                        PRE_ApplyTestPoliciesAfterRestart) {
+  if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                             chrome::GetChannel())) {
+    GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
+  }
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
   policy::PolicyService* policy_service =
@@ -460,6 +529,14 @@ class PolicyTestHandlerTestDisabledByPolicy : public PolicyTestHandlerTest {
                    policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
 
     provider_.UpdateChromePolicy(policy_map);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    // `PolicyTestHandlerTest` only sets up relaunch chrome override if policy
+    // testing is enabled, but these tests require it unconditionally.
+    if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                               chrome::GetChannel())) {
+      SetUpRelaunchChromeOverrideForPRETests();
+    }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   }
 
   PolicyTestHandlerTestDisabledByPolicy(

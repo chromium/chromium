@@ -1,4 +1,5 @@
 README.md
+cache
 four-colors-h264-bt601-rotate-180.mp4
 four-colors-h264-bt601-rotate-270.mp4
 four-colors-h264-bt601-rotate-90.mp4

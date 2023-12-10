@@ -48,8 +48,13 @@ public class HistoryClustersBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Promise<HistoryClustersResult> queryClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
-        HistoryClustersBridgeJni.get().queryClusters(mNativeBridge, this, query,
-                (HistoryClustersResult result) -> fulfillIfNotRejected(returnedPromise, result));
+        HistoryClustersBridgeJni.get()
+                .queryClusters(
+                        mNativeBridge,
+                        this,
+                        query,
+                        (HistoryClustersResult result) ->
+                                fulfillIfNotRejected(returnedPromise, result));
         return returnedPromise;
     }
 
@@ -57,8 +62,13 @@ public class HistoryClustersBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Promise<HistoryClustersResult> loadMoreClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
-        HistoryClustersBridgeJni.get().loadMoreClusters(mNativeBridge, this, query,
-                (HistoryClustersResult result) -> fulfillIfNotRejected(returnedPromise, result));
+        HistoryClustersBridgeJni.get()
+                .loadMoreClusters(
+                        mNativeBridge,
+                        this,
+                        query,
+                        (HistoryClustersResult result) ->
+                                fulfillIfNotRejected(returnedPromise, result));
         return returnedPromise;
     }
 
@@ -79,8 +89,12 @@ public class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static HistoryClustersResult buildClusterResult(HistoryCluster[] clusters,
-            String[] uniqueRawLabels, int[] labelCounts, String query, boolean canLoadMore,
+    static HistoryClustersResult buildClusterResult(
+            HistoryCluster[] clusters,
+            String[] uniqueRawLabels,
+            int[] labelCounts,
+            String query,
+            boolean canLoadMore,
             boolean isContinuation) {
         assert uniqueRawLabels.length == labelCounts.length;
         LinkedHashMap<String, Integer> labelCountsMap = new LinkedHashMap<>();
@@ -94,8 +108,13 @@ public class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static HistoryCluster buildCluster(ClusterVisit[] visits, String label, String rawLabel,
-            int[] labelMatchStarts, int[] labelMatchEnds, long timestamp,
+    static HistoryCluster buildCluster(
+            ClusterVisit[] visits,
+            String label,
+            String rawLabel,
+            int[] labelMatchStarts,
+            int[] labelMatchEnds,
+            long timestamp,
             String[] relatedSearches) {
         List<ClusterVisit> clusterVisitList = Arrays.asList(visits);
 
@@ -112,9 +131,18 @@ public class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static ClusterVisit buildClusterVisit(float score, GURL normalizedUrl, String urlForDisplay,
-            String title, int[] titleMatchStarts, int[] titleMatchEnds, int[] urlMatchStarts,
-            int[] urlMatchEnds, GURL rawUrl, long timestamp, long[] duplicateVisitTimestamps,
+    static ClusterVisit buildClusterVisit(
+            float score,
+            GURL normalizedUrl,
+            String urlForDisplay,
+            String title,
+            int[] titleMatchStarts,
+            int[] titleMatchEnds,
+            int[] urlMatchStarts,
+            int[] urlMatchEnds,
+            GURL rawUrl,
+            long timestamp,
+            long[] duplicateVisitTimestamps,
             GURL[] duplicateVisitUrls) {
         assert titleMatchStarts.length == titleMatchEnds.length;
         assert urlMatchStarts.length == urlMatchEnds.length;
@@ -135,20 +163,37 @@ public class HistoryClustersBridge {
         List<ClusterVisit.DuplicateVisit> duplicateVisits =
                 new ArrayList<>(duplicateVisitTimestamps.length);
         for (int i = 0; i < duplicateVisitTimestamps.length; i++) {
-            duplicateVisits.add(new ClusterVisit.DuplicateVisit(
-                    duplicateVisitTimestamps[i], duplicateVisitUrls[i]));
+            duplicateVisits.add(
+                    new ClusterVisit.DuplicateVisit(
+                            duplicateVisitTimestamps[i], duplicateVisitUrls[i]));
         }
 
-        return new ClusterVisit(score, normalizedUrl, title, urlForDisplay, titleMatchPositions,
-                urlMatchPositions, rawUrl, timestamp, duplicateVisits);
+        return new ClusterVisit(
+                score,
+                normalizedUrl,
+                title,
+                urlForDisplay,
+                titleMatchPositions,
+                urlMatchPositions,
+                rawUrl,
+                timestamp,
+                duplicateVisits);
     }
 
     @NativeMethods
     interface Natives {
         HistoryClustersBridge getForProfile(Profile profile);
-        void queryClusters(long nativeHistoryClustersBridge, HistoryClustersBridge caller,
-                String query, Callback<HistoryClustersResult> callback);
-        void loadMoreClusters(long nativeHistoryClustersBridge, HistoryClustersBridge caller,
-                String query, Callback<HistoryClustersResult> callback);
+
+        void queryClusters(
+                long nativeHistoryClustersBridge,
+                HistoryClustersBridge caller,
+                String query,
+                Callback<HistoryClustersResult> callback);
+
+        void loadMoreClusters(
+                long nativeHistoryClustersBridge,
+                HistoryClustersBridge caller,
+                String query,
+                Callback<HistoryClustersResult> callback);
     }
 }

@@ -206,7 +206,10 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
 }
 
 void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {
-  RecordNetworkTypeToggled(NetworkType::kMobile, new_state);
+  RecordNetworkTypeToggled(features::IsInstantHotspotRebrandEnabled()
+                               ? NetworkType::kCellular
+                               : NetworkType::kMobile,
+                           new_state);
 
   const DeviceStateType cellular_state =
       model_->GetDeviceState(NetworkType::kCellular);
@@ -214,6 +217,10 @@ void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {
   // When Cellular is available, the toggle controls Cellular enabled state.
   if (cellular_state != DeviceStateType::kUnavailable) {
     model_->SetNetworkTypeEnabledState(NetworkType::kCellular, new_state);
+    return;
+  }
+
+  if (features::IsInstantHotspotRebrandEnabled()) {
     return;
   }
 

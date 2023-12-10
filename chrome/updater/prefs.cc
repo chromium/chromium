@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -153,7 +153,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
     return nullptr;
   }
 
-  const absl::optional<base::FilePath> global_prefs_dir =
+  const std::optional<base::FilePath> global_prefs_dir =
       GetInstallDirectory(scope);
   if (!global_prefs_dir || !base::CreateDirectory(*global_prefs_dir)) {
     return nullptr;
@@ -180,7 +180,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
 
 scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   VLOG(2) << __func__;
-  const absl::optional<base::FilePath> local_prefs_dir =
+  const std::optional<base::FilePath> local_prefs_dir =
       GetVersionedInstallDirectory(scope);
   if (!local_prefs_dir || !base::CreateDirectory(*local_prefs_dir)) {
     return nullptr;

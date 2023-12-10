@@ -1,7 +1,9 @@
 Name: itoa
 URL: https://crates.io/crates/itoa
 Description: Fast integer primitive to string conversion
-Version: 1.0.1
-Security Critical: no
+Version: 1.0.9
+Security Critical: yes
 Shipped: yes
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/itoa-1.0.9/LICENSE-APACHE
+Revision: 81c115b833792b698cbac1af2d37d707c6a641ee

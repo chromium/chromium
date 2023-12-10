@@ -16,6 +16,9 @@
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/check.h"
+#include "base/json/values_util.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -199,13 +202,18 @@ base::Value::Dict ConvertSettingsToDict(
 }
 
 void UpdateButtonRemappingDictPref(PrefService* pref_service,
-                                   const mojom::Mouse& mouse) {
+                                   const mojom::Mouse& mouse,
+                                   const base::Time time_stamp) {
   const mojom::MouseSettings& settings = *mouse.settings;
   base::Value::List button_remappings = ConvertButtonRemappingArrayToList(
       settings.button_remappings, mouse.customization_restriction);
   base::Value::Dict button_remappings_dict =
       pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref).Clone();
   button_remappings_dict.Set(mouse.device_key, std::move(button_remappings));
+  const auto time_stamp_path =
+      base::StrCat({prefs::kLastUpdatedKey, ".", mouse.device_key});
+  button_remappings_dict.SetByDottedPath(time_stamp_path,
+                                         base::TimeToValue(time_stamp));
   pref_service->SetDict(std::string(prefs::kMouseButtonRemappingsDictPref),
                         std::move(button_remappings_dict));
 }
@@ -216,6 +224,7 @@ void UpdateMouseSettingsImpl(
     const mojom::Mouse& mouse,
     const ForceMouseSettingPersistence& force_persistence) {
   DCHECK(mouse.settings);
+  const base::Time time_stamp = base::Time::Now();
   base::Value::Dict devices_dict =
       pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
   base::Value::Dict* existing_settings_dict =
@@ -223,6 +232,8 @@ void UpdateMouseSettingsImpl(
 
   base::Value::Dict settings_dict = ConvertSettingsToDict(
       mouse, mouse_policies, force_persistence, existing_settings_dict);
+
+  settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
   // If an old settings dict already exists for the device, merge the updated
   // settings into the old settings. Otherwise, insert the dict at
   // `mouse.device_key`.
@@ -236,7 +247,7 @@ void UpdateMouseSettingsImpl(
                         std::move(devices_dict));
 
   if (features::IsPeripheralCustomizationEnabled()) {
-    UpdateButtonRemappingDictPref(pref_service, mouse);
+    UpdateButtonRemappingDictPref(pref_service, mouse, time_stamp);
   }
 }
 
@@ -402,7 +413,7 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
   user_manager::KnownUser(local_state)
       .SetPath(
           account_id, pref_name,
-          absl::make_optional<base::Value>(ConvertSettingsToDict(
+          std::make_optional<base::Value>(ConvertSettingsToDict(
               mouse, mouse_policies, /*force_persistence=*/{}, settings_dict)));
 
   if (features::IsPeripheralCustomizationEnabled()) {
@@ -411,7 +422,7 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
     user_manager::KnownUser(local_state)
         .SetPath(
             account_id, button_remapping_list_pref,
-            absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+            std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
                 mouse.settings->button_remappings,
                 mouse.customization_restriction)));
   }

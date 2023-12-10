@@ -19,13 +19,30 @@ GridSizingTree GridSizingTree::CopyForFragmentation() const {
 }
 
 scoped_refptr<const GridLayoutTree> GridSizingTree::FinalizeTree() const {
-  auto layout_tree = base::MakeRefCounted<GridLayoutTree>(tree_data_.size());
+  Vector<GridLayoutTree::GridTreeNode, 16> layout_tree_data;
 
+  layout_tree_data.ReserveInitialCapacity(tree_data_.size());
   for (const auto& grid_tree_node : tree_data_) {
-    layout_tree->Append(grid_tree_node->layout_data,
-                        grid_tree_node->subtree_size);
+    layout_tree_data.emplace_back(grid_tree_node->layout_data,
+                                  grid_tree_node->subtree_size);
   }
-  return layout_tree;
+
+  for (wtf_size_t i = layout_tree_data.size(); i; --i) {
+    auto& subtree_data = layout_tree_data[i - 1];
+
+    if (subtree_data.has_unresolved_geometry) {
+      continue;
+    }
+
+    const wtf_size_t next_subtree_index = i + subtree_data.subtree_size - 1;
+    for (wtf_size_t j = i;
+         !subtree_data.has_unresolved_geometry && j < next_subtree_index;
+         j += layout_tree_data[j].subtree_size) {
+      subtree_data.has_unresolved_geometry =
+          layout_tree_data[j].has_unresolved_geometry;
+    }
+  }
+  return base::MakeRefCounted<GridLayoutTree>(std::move(layout_tree_data));
 }
 
 GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingData(

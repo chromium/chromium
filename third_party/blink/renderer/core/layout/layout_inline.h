@@ -153,6 +153,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
   PhysicalRect PhysicalLinesBoundingBox() const;
+  PhysicalRect LinesVisualOverflowBoundingBox() const;
   PhysicalRect VisualOverflowRect() const final;
 
   bool HasInlineFragments() const final;
@@ -163,7 +164,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const override;
+                       OutlineType) const override;
 
   bool AlwaysCreateLineBoxes() const {
     NOT_DESTROYED();
@@ -176,7 +177,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     SetAlwaysCreateLineBoxesForLayoutInline(always_create_line_boxes);
   }
 
-  // True if this inline box should force creation of NGPhysicalBoxFragment.
+  // True if this inline box should force creation of PhysicalBoxFragment.
   bool ShouldCreateBoxFragment() const {
     NOT_DESTROYED();
     return AlwaysCreateLineBoxesForLayoutInline() &&
@@ -270,10 +271,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PhysicalRect CulledInlineVisualOverflowBoundingBox() const;
 
-  // For VisualOverflowRect() only, to get bounding box of visual overflow of
-  // line boxes.
-  PhysicalRect LinesVisualOverflowBoundingBox() const;
-
   // PhysicalRectCollector should be like a function:
   // void (const PhysicalRect&).
   template <typename PhysicalRectCollector>
@@ -320,12 +317,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
       VisualRectFlags = kDefaultVisualRectFlags) const final;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
-
-  gfx::Rect BorderBoundingBox() const final {
-    NOT_DESTROYED();
-    gfx::Rect bounding_box = ToEnclosingRect(PhysicalLinesBoundingBox());
-    return gfx::Rect(bounding_box.size());
-  }
 
   void DirtyLinesFromChangedChild(LayoutObject*) final;
 

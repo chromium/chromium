@@ -30,12 +30,13 @@ suite('<settings-cups-printers>', () => {
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
+    await flushTasks();
 
     // Simulate internet connection.
     wifi = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
     wifi.connectionState = ConnectionStateType.kOnline;
-
-    await flushTasks();
+    page.onActiveNetworksChanged([wifi]);
+    return Promise.resolve();
   }
 
   setup(async () => {
@@ -83,7 +84,7 @@ suite('<settings-cups-printers>', () => {
   });
 
   // Verify the Nearby printers section can be properly opened and closed.
-  test.skip('CollapsibleNearbyPrinterSection', () => {
+  test('CollapsibleNearbyPrinterSection', () => {
     // The Add printer section above the Nearby printers section should be
     // hidden.
     assertFalse(
@@ -127,7 +128,7 @@ suite('<settings-cups-printers>', () => {
 
   // Verify the Nearby printers section starts open when there are no saved
   // printers or open when there's more than one saved printer.
-  test.skip('CollapsibleNearbyPrinterSectionSavedPrinters', async () => {
+  test('CollapsibleNearbyPrinterSectionSavedPrinters', async () => {
     // Simulate no saved printers and expect the section to be open.
     cupsPrintersBrowserProxy.printerList = {printerList: []};
     resetPage();

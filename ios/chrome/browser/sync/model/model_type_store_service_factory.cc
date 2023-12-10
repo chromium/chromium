@@ -38,7 +38,7 @@ ModelTypeStoreServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<syncer::ModelTypeStoreServiceImpl>(
-      browser_state->GetStatePath());
+      browser_state->GetStatePath(), browser_state->GetPrefs());
 }
 
 web::BrowserState* ModelTypeStoreServiceFactory::GetBrowserStateToUse(

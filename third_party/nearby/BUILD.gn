@@ -1059,6 +1059,12 @@ proto_library("connections_enums_proto") {
   proto_out_dir = "third_party/nearby"
 }
 
+proto_library("sharing_enums_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/proto/sharing_enums.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
 # src/internal/proto/analytics
 proto_library("connections_log_proto") {
   proto_in_dir = "src"
@@ -1100,6 +1106,83 @@ proto_library("offline_wire_formats_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/connections/implementation/proto/offline_wire_formats.proto" ]
   proto_out_dir = "third_party/nearby"
+}
+
+# src/sharing/proto
+proto_library("encrypted_metadata_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/encrypted_metadata.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("enums_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/enums.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("field_mask_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/field_mask.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("settings_observer_data_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/settings_observer_data.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("timestamp_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/timestamp.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("rpc_resources_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/rpc_resources.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":timestamp_proto" ]
+  link_deps = [ ":timestamp_proto" ]
+}
+
+proto_library("wire_format_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/wire_format.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":sharing_enums_proto" ]
+  link_deps = [ ":sharing_enums_proto" ]
+}
+
+proto_library("device_rpc_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/device_rpc.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [
+    ":field_mask_proto",
+    ":rpc_resources_proto",
+  ]
+  link_deps = [
+    ":field_mask_proto",
+    ":rpc_resources_proto",
+  ]
+}
+
+proto_library("contact_rpc_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/contact_rpc.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":rpc_resources_proto" ]
+  link_deps = [ ":rpc_resources_proto" ]
+}
+
+proto_library("certificate_rpc_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/certificate_rpc.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":rpc_resources_proto" ]
+  link_deps = [ ":rpc_resources_proto" ]
 }
 
 # src/presence/proto

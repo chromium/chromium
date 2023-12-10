@@ -26,9 +26,7 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.dragdrop.DropDataProviderUtils;
 
-/**
- * Delegate for browser related functions used by Drag and Drop.
- */
+/** Delegate for browser related functions used by Drag and Drop. */
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
@@ -36,8 +34,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public static final String[] SUPPORTED_MIME_TYPES = {CHROME_MIMETYPE_TAB};
 
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
-    @VisibleForTesting
-    static final String PARAM_DROP_IN_CHROME = "DropInChrome";
+    @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
 
     private final Context mContext;
     private final boolean mSupportDropInChrome;
@@ -48,14 +45,21 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
      */
     public ChromeDragAndDropBrowserDelegate(Context context) {
         mContext = context;
-        mSupportDropInChrome = ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
+        mSupportDropInChrome =
+                ContentFeatureMap.getInstance()
+                        .getFieldTrialParamByFeatureAsBoolean(
+                                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
+                                PARAM_DROP_IN_CHROME,
+                                false);
         mSupportAnimatedImageDragShadow =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW);
 
-        int delay = ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
-                DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
+        int delay =
+                ContentFeatureMap.getInstance()
+                        .getFieldTrialParamByFeatureAsInt(
+                                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
+                                PARAM_CLEAR_CACHE_DELAYED_MS,
+                                DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
         DropDataProviderUtils.setClearCachedDataIntervalMs(delay);
     }
 
@@ -84,8 +88,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public Intent createLinkIntent(String urlString) {
         Intent intent = null;
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            intent = DragAndDropLauncherActivity.getLinkLauncherIntent(
-                    mContext, urlString, /*windowId=*/null);
+            intent =
+                    DragAndDropLauncherActivity.getLinkLauncherIntent(
+                            mContext,
+                            urlString,
+                            MultiWindowUtils.getInstanceIdForLinkIntent(
+                                    ContextUtils.activityFromContext(mContext)));
         }
         return intent;
     }

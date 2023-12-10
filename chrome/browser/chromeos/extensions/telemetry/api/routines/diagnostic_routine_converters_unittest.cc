@@ -123,6 +123,26 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   EXPECT_EQ(*result.has_passed, kHasPassed);
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     FanRoutineFinishedInfo) {
+  auto input = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+  input->passed_fan_ids = {0};
+  input->failed_fan_ids = {1};
+  input->fan_count_status =
+      crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
   auto input = crosapi::TelemetryDiagnosticMemtesterResult::New();
   input->passed_items = {

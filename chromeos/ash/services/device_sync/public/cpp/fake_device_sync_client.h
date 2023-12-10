@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -138,7 +138,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
       mojom::NetworkRequestResult result_code,
-      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      std::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           device_activity_status);
   void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 
@@ -147,7 +147,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   }
 
   void set_local_device_metadata(
-      absl::optional<multidevice::RemoteDeviceRef> local_device_metadata) {
+      std::optional<multidevice::RemoteDeviceRef> local_device_metadata) {
     local_device_metadata_ = local_device_metadata;
   }
 
@@ -165,8 +165,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   void GetGroupPrivateKeyStatus(
       mojom::DeviceSync::GetGroupPrivateKeyStatusCallback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
-  absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
-      override;
+  std::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata() override;
   void SetSoftwareFeatureState(
       const std::string public_key,
       multidevice::SoftwareFeature software_feature,
@@ -190,7 +189,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   void GetDebugInfo(mojom::DeviceSync::GetDebugInfoCallback callback) override;
 
   multidevice::RemoteDeviceRefList synced_devices_;
-  absl::optional<multidevice::RemoteDeviceRef> local_device_metadata_;
+  std::optional<multidevice::RemoteDeviceRef> local_device_metadata_;
 
   base::circular_deque<mojom::DeviceSync::ForceEnrollmentNowCallback>
       force_enrollment_now_callback_queue_;

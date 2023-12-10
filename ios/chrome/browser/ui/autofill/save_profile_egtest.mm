@@ -8,7 +8,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
@@ -94,8 +94,6 @@ BOOL WaitForKeyboardToAppear() {
   AppLaunchConfiguration config;
 
   if ([self isRunningTest:@selector(testUserData_MigrationToAccount)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAccountProfileStorage);
     config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }

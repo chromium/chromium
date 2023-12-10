@@ -44,7 +44,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns "About this site" info for the active page.
-  absl::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
+  std::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
 
   // Handles opening the "More about this page" URL in a new tab.
   void OpenMoreAboutThisPageUrl(const GURL& url, const ui::Event& event);
@@ -58,20 +58,17 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // extra details to the user concerning the granted permission.
   std::u16string GetPermissionDetail(ContentSettingsType type);
 
-  // Opens Privacy Sandbox's "Ad Personalzation" settings page.
-  // TODO(crbug.com/1378703): Remove after the feature is launched.
-  void ShowPrivacySandboxAdPersonalization();
-
   // Opens Privacy Sandbox settings page.
   void ShowPrivacySandboxSettings();
 
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
+  void OpenSiteSettingsFileSystem() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) override;
-  absl::optional<content::PermissionResult> GetEmbargoResult(
+  std::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) override;
 
   bool IsTrackingProtection3pcdEnabled() override;

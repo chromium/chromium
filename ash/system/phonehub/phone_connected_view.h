@@ -10,6 +10,7 @@
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ class QuickActionsView;
 // A view of the Phone Hub panel, displaying phone status and utility actions
 // such as phone status, task continuation, etc.
 class PhoneConnectedView : public PhoneHubContentView {
+  METADATA_HEADER(PhoneConnectedView, PhoneHubContentView)
+
  public:
   explicit PhoneConnectedView(phonehub::PhoneHubManager* phone_hub_manager);
   ~PhoneConnectedView() override;

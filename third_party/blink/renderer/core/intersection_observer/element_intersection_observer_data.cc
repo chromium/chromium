@@ -66,7 +66,9 @@ bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
   absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags, monotonic_time, root_geometry);
+    entry.value->ComputeIntersection(flags,
+                                     IntersectionGeometry::kInfiniteScrollDelta,
+                                     monotonic_time, root_geometry);
   }
   return needs_occlusion_tracking;
 }

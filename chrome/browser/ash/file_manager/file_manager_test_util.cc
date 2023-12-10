@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -100,6 +101,35 @@ void FolderInMyFiles::Refresh() {
             });
 }
 
+std::vector<storage::FileSystemURL> CopyTestFilesIntoMyFiles(
+    Profile* profile,
+    std::vector<std::string> file_names) {
+  FolderInMyFiles folder(profile);
+  base::FilePath test_data_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+
+  for (const auto& file_name : file_names) {
+    base::FilePath file_path =
+        test_data_path.AppendASCII("chromeos/file_manager/" + file_name);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::PathExists(file_path));
+    }
+    // Copy the file into My Files.
+    folder.Add({file_path});
+  }
+
+  std::vector<storage::FileSystemURL> files;
+  for (const auto& path_in_my_files : folder.files()) {
+    GURL url;
+    CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
+        profile, path_in_my_files, util::GetFileManagerURL(), &url));
+    auto* file_system_context = util::GetFileManagerFileSystemContext(profile);
+    files.push_back(file_system_context->CrackURLInFirstPartyContext(url));
+  }
+  return files;
+}
+
 void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   CHECK(profile);
 
@@ -158,6 +188,15 @@ scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
 
 base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
     Profile* profile) {
+  return InstallFileSystemProviderChromeApp(
+      profile, base::BindOnce(&InstallTestingChromeApp, profile)
+                   .Then(base::BindOnce(
+                       [](scoped_refptr<const extensions::Extension>) {})));
+}
+
+base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
+    Profile* profile,
+    base::OnceCallback<void(const char*)> install_fn) {
   static constexpr char kFileSystemProviderFilesystemId[] =
       "test-image-provider-fs";
   base::RunLoop run_loop;
@@ -170,8 +209,7 @@ base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
 
   file_manager::test::VolumeWaiter waiter(profile_with_volume_manager_events,
                                           run_loop.QuitClosure());
-  auto extension = InstallTestingChromeApp(
-      profile, "extensions/api_test/file_browser/image_provider");
+  std::move(install_fn).Run("extensions/api_test/file_browser/image_provider");
   run_loop.Run();
 
   auto* volume_manager =
@@ -227,7 +265,7 @@ void AddFakeAppWithIntentFilters(
     const std::string& app_id,
     std::vector<apps::IntentFilterPtr> intent_filters,
     apps::AppType app_type,
-    absl::optional<bool> handles_intents,
+    std::optional<bool> handles_intents,
     apps::AppServiceProxy* app_service_proxy) {
   std::vector<apps::AppPtr> apps;
   auto app = std::make_unique<apps::App>(app_type, app_id);
@@ -245,7 +283,7 @@ void AddFakeWebApp(const std::string& app_id,
                    const std::string& mime_type,
                    const std::string& file_extension,
                    const std::string& activity_label,
-                   absl::optional<bool> handles_intents,
+                   std::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy) {
   std::vector<apps::IntentFilterPtr> filters;
   filters.push_back(apps_util::MakeFileFilterForView(mime_type, file_extension,
@@ -362,7 +400,7 @@ FakeProvidedFileSystemOneDrive::GetActions(
     std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
     return ash::file_system_provider::AbortCallback();
   }
-  // Otherwise, return |kODFSSampleUrl|.
+  // Otherwise, return `kODFSSampleUrl`.
   actions.push_back({ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
 
   std::move(callback).Run(actions, base::File::FILE_OK);
@@ -388,10 +426,29 @@ FakeExtensionProviderOneDrive::CreateProvidedFileSystem(
   return fake_provided_file_system;
 }
 
+bool FakeExtensionProviderOneDrive::RequestMount(
+    Profile* profile,
+    ash::file_system_provider::RequestMountCallback callback) {
+  if (request_mount_impl_) {
+    std::move(request_mount_impl_).Run(std::move(callback));
+    return true;
+  }
+  return ash::file_system_provider::FakeExtensionProvider::RequestMount(
+      profile, std::move(callback));
+}
+
+void FakeExtensionProviderOneDrive::SetRequestMountImpl(
+    base::OnceCallback<void(ash::file_system_provider::RequestMountCallback)>
+        callback) {
+  request_mount_impl_ = std::move(callback);
+}
+
 FakeExtensionProviderOneDrive::FakeExtensionProviderOneDrive(
     const extensions::ExtensionId& extension_id,
     const ash::file_system_provider::Capabilities& capabilities)
     : FakeExtensionProvider(extension_id, capabilities) {}
+
+FakeExtensionProviderOneDrive::~FakeExtensionProviderOneDrive() = default;
 
 FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
     Profile* profile) {
@@ -416,6 +473,16 @@ FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
                                          file_systems[0].file_system_id()));
 
   return provided_file_system;
+}
+
+FakeExtensionProviderOneDrive* GetFakeProviderOneDrive(Profile* profile) {
+  ash::file_system_provider::Service* service =
+      ash::file_system_provider::Service::Get(profile);
+  ash::file_system_provider::ProviderId provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          extension_misc::kODFSExtensionId);
+  return static_cast<FakeExtensionProviderOneDrive*>(
+      service->GetProvider(provider_id));
 }
 
 FakeProvidedFileSystemOneDrive::~FakeProvidedFileSystemOneDrive() = default;

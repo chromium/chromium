@@ -6,13 +6,13 @@
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 
 #include <list>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace ui {
@@ -114,7 +114,7 @@ enum class ReorderType {
 
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
-ASH_EXPORT absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
+ASH_EXPORT std::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data);
 
 // Returns true if `data` contains the specified `format`.

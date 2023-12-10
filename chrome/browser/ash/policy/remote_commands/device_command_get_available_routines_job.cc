@@ -71,7 +71,7 @@ void DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived(
     SYSLOG(ERROR) << "No routines received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback),
-                                  ResultType::kFailure, absl::nullopt));
+                                  ResultType::kFailure, std::nullopt));
     return;
   }
 

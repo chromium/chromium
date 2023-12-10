@@ -136,7 +136,6 @@ class MockSyncService : public SyncService {
               GetAllNodesForDebugging,
               (base::OnceCallback<void(base::Value::List)> callback),
               (override));
-  MOCK_METHOD(bool, IsSyncFeatureConsideredRequested, (), (const override));
   MOCK_METHOD(ModelTypeDownloadStatus,
               GetDownloadStatusFor,
               (ModelType type),
@@ -147,7 +146,7 @@ class MockSyncService : public SyncService {
               (const override));
   MOCK_METHOD(void,
               GetTypesWithUnsyncedData,
-              (base::OnceCallback<void(ModelTypeSet)>),
+              (ModelTypeSet, base::OnceCallback<void(ModelTypeSet)>),
               (const override));
   MOCK_METHOD(
       void,

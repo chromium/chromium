@@ -30,8 +30,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -68,7 +68,7 @@ void InvokeCallbacksForSuspectedChanges(
 }  // namespace
 
 PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
-    : backend_(std::move(backend)) {}
+    : backend_(std::move(backend)), construction_time_(base::Time::Now()) {}
 
 void PasswordStore::Init(
     PrefService* prefs,
@@ -283,6 +283,8 @@ void PasswordStore::GetAutofillableLogins(
   backend_->GetAutofillableLoginsAsync(base::BindOnce(
       &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
       base::RetainedRef(this)));
+  UmaHistogramMediumTimes("PasswordManager.GetAutofillableLogins.TimeSinceInit",
+                          base::Time::Now() - construction_time_);
 }
 
 void PasswordStore::GetAllLogins(
@@ -295,6 +297,8 @@ void PasswordStore::GetAllLogins(
   backend_->GetAllLoginsAsync(base::BindOnce(
       &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
       base::RetainedRef(this)));
+  UmaHistogramMediumTimes("PasswordManager.GetAllLogins.TimeSinceInit",
+                          base::Time::Now() - construction_time_);
 }
 
 void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -309,6 +313,10 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
       base::RetainedRef(this));
   backend_->GetAllLoginsWithAffiliationAndBrandingAsync(
       std::move(consumer_reply));
+  UmaHistogramMediumTimes(
+      "PasswordManager.GetAllLoginsWithAffiliationAndBrandingInformation."
+      "TimeSinceInit",
+      base::Time::Now() - construction_time_);
 }
 
 SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
@@ -387,7 +395,7 @@ void PasswordStore::OnInitCompleted(bool success) {
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
     LoginsChangedTrigger logins_changed_trigger,
-    absl::optional<PasswordStoreChangeList> changes) {
+    std::optional<PasswordStoreChangeList> changes) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   // Don't propagate reference to this store after its shutdown. No caller
@@ -445,7 +453,7 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   std::vector<PasswordForm> retained_logins;
   retained_logins.reserve(absl::get<LoginsResult>(result).size());
   for (auto& login : absl::get<LoginsResult>(result)) {
-    retained_logins.push_back(std::move(*login));
+    retained_logins.push_back(std::move(login));
   }
 
   for (auto& observer : observers_) {
@@ -465,9 +473,8 @@ void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {
   }
 }
 
-void PasswordStore::UnblocklistInternal(
-    base::OnceClosure completion,
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
+void PasswordStore::UnblocklistInternal(base::OnceClosure completion,
+                                        std::vector<PasswordForm> forms) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     return;  // Once the shutdown started, ignore new requests.
@@ -476,8 +483,8 @@ void PasswordStore::UnblocklistInternal(
 
   std::vector<PasswordForm> forms_to_remove;
   for (auto& form : forms) {
-    if (form->blocked_by_user) {
-      forms_to_remove.push_back(std::move(*form));
+    if (form.blocked_by_user) {
+      forms_to_remove.push_back(std::move(form));
     }
   }
 

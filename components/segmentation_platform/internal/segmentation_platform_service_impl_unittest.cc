@@ -32,7 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -70,10 +70,10 @@ class SegmentationPlatformServiceImplTest
     }
     SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
     LocalStateHelper::GetInstance().Initialize(&prefs_);
-    ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
     auto ukm_database = std::make_unique<NiceMock<MockUkmDatabase>>();
+    ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
     static_cast<UkmDataManagerImpl*>(ukm_data_manager_.get())
         ->InitializeForTesting(std::move(ukm_database), ukm_observer_.get());
   }
@@ -113,7 +113,8 @@ class SegmentationPlatformServiceImplTest
     model_provider_data_.default_provider_metadata
         [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER] = metadata;
     EXPECT_CALL(model_provider, ExecuteModelWithInput(_, _))
-        .WillRepeatedly(RunOnceCallback<1>(ModelProvider::Response(1, 1)));
+        .WillRepeatedly(
+            RunOnceCallbackRepeatedly<1>(ModelProvider::Response(1, 1)));
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -275,9 +276,9 @@ class SegmentationPlatformServiceImplTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockServiceProxyObserver observer_;
-  std::unique_ptr<UkmDataManager> ukm_data_manager_;
   std::unique_ptr<ukm::TestUkmRecorder> ukm_recorder_;
   std::unique_ptr<UkmObserver> ukm_observer_;
+  std::unique_ptr<UkmDataManager> ukm_data_manager_;
   TestingPrefServiceSimple prefs_;
 };
 

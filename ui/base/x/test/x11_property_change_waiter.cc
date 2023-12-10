@@ -9,30 +9,34 @@
 #include "base/run_loop.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
 
 X11PropertyChangeWaiter::X11PropertyChangeWaiter(x11::Window window,
                                                  const char* property)
-    : x_window_(window), property_(property), wait_(true) {
+    : connection_(x11::Connection::Get()),
+      x_window_(window),
+      property_(property),
+      wait_(true) {
   // Ensure that we are listening to PropertyNotify events for |window|. This
   // is not the case for windows which were not created by X11Window.
-  x_window_events_ = std::make_unique<x11::XScopedEventSelector>(
-      x_window_, x11::EventMask::PropertyChange);
+  x_window_events_ =
+      connection_->ScopedSelectEvent(x_window_, x11::EventMask::PropertyChange);
 
-  x11::Connection::Get()->AddEventObserver(this);
+  connection_->AddEventObserver(this);
 }
 
 X11PropertyChangeWaiter::~X11PropertyChangeWaiter() {
-  x11::Connection::Get()->RemoveEventObserver(this);
+  connection_->RemoveEventObserver(this);
 }
 
 void X11PropertyChangeWaiter::Wait() {
-  if (!wait_)
+  if (!wait_) {
     return;
+  }
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
@@ -52,8 +56,9 @@ void X11PropertyChangeWaiter::OnEvent(const x11::Event& x11_event) {
   }
 
   wait_ = false;
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 }  // namespace ui

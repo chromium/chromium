@@ -31,29 +31,6 @@ namespace blink {
 
 namespace {
 
-int GetLazyImageLoadingViewportDistanceThresholdPx(const Document& document) {
-  const Settings* settings = document.GetSettings();
-  if (!settings)
-    return 0;
-
-  switch (GetNetworkStateNotifier().EffectiveType()) {
-    case WebEffectiveConnectionType::kTypeUnknown:
-      return settings->GetLazyImageLoadingDistanceThresholdPxUnknown();
-    case WebEffectiveConnectionType::kTypeOffline:
-      return settings->GetLazyImageLoadingDistanceThresholdPxOffline();
-    case WebEffectiveConnectionType::kTypeSlow2G:
-      return settings->GetLazyImageLoadingDistanceThresholdPxSlow2G();
-    case WebEffectiveConnectionType::kType2G:
-      return settings->GetLazyImageLoadingDistanceThresholdPx2G();
-    case WebEffectiveConnectionType::kType3G:
-      return settings->GetLazyImageLoadingDistanceThresholdPx3G();
-    case WebEffectiveConnectionType::kType4G:
-      return settings->GetLazyImageLoadingDistanceThresholdPx4G();
-  }
-  NOTREACHED();
-  return 0;
-}
-
 // Returns if the element or its ancestors are invisible, due to their style or
 // attribute or due to themselves not connected to the main document tree.
 bool IsElementInInvisibleSubTree(const Element& element) {
@@ -146,17 +123,39 @@ bool IsDescendantOrSameDocument(Document& subject, Document& root) {
 
 }  // namespace
 
-LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
-  use_viewport_distance_threshold_ =
-      !RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled() ||
-      root_document.LoadEventFinished();
-}
+LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {}
 
 void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
                                                         Element* element) {
   if (!lazy_load_intersection_observer_) {
-    CreateLazyLoadIntersectionObserver(root_document);
+    int margin = GetLazyLoadingImageMarginPx(*root_document);
+    if (RuntimeEnabledFeatures::LazyLoadScrollMarginEnabled()) {
+      lazy_load_intersection_observer_ = IntersectionObserver::Create(
+          /* (root) margin */ {Length::Fixed(0)},
+          /* scroll_margin */
+          {/* top & bottom */ Length::Fixed(margin),
+           /* right & left */ Length::Fixed(margin / 2)},
+          /* thresholds */ {std::numeric_limits<float>::min()},
+          /* document */ root_document,
+          /* callback */
+          WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+                             WrapWeakPersistent(this)),
+          /* ukm_metric_id */
+          LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+    } else {
+      lazy_load_intersection_observer_ = IntersectionObserver::Create(
+          /* (root) margin */ {Length::Fixed(margin)},
+          /* scroll_margin */ {Length::Fixed(0)},
+          /* thresholds */ {std::numeric_limits<float>::min()},
+          /* document */ root_document,
+          /* callback */
+          WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+                             WrapWeakPersistent(this)),
+          /* ukm_metric_id */
+          LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+    }
   }
+
   lazy_load_intersection_observer_->observe(element);
 }
 
@@ -245,16 +244,21 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
   }
   if (!visibility_metrics_observer_) {
     visibility_metrics_observer_ = IntersectionObserver::Create(
-        {}, {std::numeric_limits<float>::min()}, root_document,
+        /* (root) margin */ Vector<Length>(),
+        /* scroll_margin */ Vector<Length>(),
+        /* thresholds */ {std::numeric_limits<float>::min()},
+        /* document */ root_document,
+        /* callback */
         WTF::BindRepeating(&LazyLoadImageObserver::OnVisibilityChanged,
                            WrapWeakPersistent(this)),
+        /* ukm_metric_id */
         LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
-        IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-        IntersectionObserver::kFractionOfTarget,
+        /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+        /* semantics */ IntersectionObserver::kFractionOfTarget,
         /* delay */ 0,
         /* track_visibility */ false,
         /* always_report_root_bounds */ false,
-        IntersectionObserver::kApplyMarginToRoot,
+        /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
         /* use_overflow_clip_edge */ false,
         /* needs_initial_observation_with_detached_target */ false);
   }
@@ -326,50 +330,35 @@ void LazyLoadImageObserver::OnVisibilityChanged(
   }
 }
 
-void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
-  if (!RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled()) {
-    return;
-  }
-  if (use_viewport_distance_threshold_) {
-    return;
-  }
-
-  use_viewport_distance_threshold_ = true;
-
-  if (lazy_load_intersection_observer_) {
-    // Intersection observer doesn't support dynamic margin changes so we just
-    // create a new one.
-    CreateLazyLoadIntersectionObserver(root_document);
-  }
-}
-
-void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
-    Document* root_document) {
-  int viewport_threshold =
-      use_viewport_distance_threshold_
-          ? GetLazyImageLoadingViewportDistanceThresholdPx(*root_document)
-          : 0;
-  IntersectionObserver* new_observer = IntersectionObserver::Create(
-      {Length::Fixed(viewport_threshold)}, {std::numeric_limits<float>::min()},
-      root_document,
-      WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                         WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
-
-  if (lazy_load_intersection_observer_) {
-    for (const IntersectionObservation* observation :
-         lazy_load_intersection_observer_->Observations()) {
-      new_observer->observe(observation->Target());
-    }
-    lazy_load_intersection_observer_->disconnect();
-  }
-
-  lazy_load_intersection_observer_ = new_observer;
-}
-
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_intersection_observer_);
   visitor->Trace(visibility_metrics_observer_);
+}
+
+int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
+    const Document& document) {
+  const Settings* settings = document.GetSettings();
+  if (!settings) {
+    return 0;
+  }
+
+  switch (GetNetworkStateNotifier().EffectiveType()) {
+    case WebEffectiveConnectionType::kTypeUnknown:
+      return settings->GetLazyLoadingImageMarginPxUnknown();
+    case WebEffectiveConnectionType::kTypeOffline:
+      return settings->GetLazyLoadingImageMarginPxOffline();
+    case WebEffectiveConnectionType::kTypeSlow2G:
+      return settings->GetLazyLoadingImageMarginPxSlow2G();
+    case WebEffectiveConnectionType::kType2G:
+      return settings->GetLazyLoadingImageMarginPx2G();
+    case WebEffectiveConnectionType::kType3G:
+      return settings->GetLazyLoadingImageMarginPx3G();
+    case WebEffectiveConnectionType::kType4G:
+      return settings->GetLazyLoadingImageMarginPx4G();
+    default:
+      NOTREACHED();
+      return 0;
+  }
 }
 
 }  // namespace blink

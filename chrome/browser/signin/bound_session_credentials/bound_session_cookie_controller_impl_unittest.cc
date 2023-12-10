@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -674,6 +675,57 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
           base::Bucket(BoundSessionCookieControllerImpl::
                            ResumeBlockedRequestsTrigger::kTimeout,
                        /*count=*/1)));
+
+  ResetBoundSessionCookieController();
+  histogram_tester()->ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout", 1,
+      1);
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, SuccessiveRequestTimeout) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
+  size_t successive_timeout = 5;
+  for (size_t i = 0; i < successive_timeout; i++) {
+    base::test::TestFuture<void> future;
+    bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+        future.GetCallback());
+    ASSERT_FALSE(future.IsReady());
+    task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+    ASSERT_TRUE(future.IsReady());
+  }
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  ASSERT_TRUE(CompletePendingRefreshRequestIfAny());
+  histogram_tester()->ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout", 5,
+      1);
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, SuccessiveRequestTimeoutReset) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
+  base::test::TestFuture<void> future;
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+  ASSERT_TRUE(future.IsReady());
+
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  ASSERT_TRUE(CompletePendingRefreshRequestIfAny());
+  histogram_tester()->ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout", 1,
+      1);
+
+  task_environment()->FastForwardBy(base::Minutes(10));
+  ASSERT_FALSE(AreAllCookiesFresh());
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+  ResetBoundSessionCookieController();
+  histogram_tester()->ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout", 1,
+      2);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,

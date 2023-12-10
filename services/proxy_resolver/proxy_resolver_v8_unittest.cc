@@ -184,8 +184,8 @@ TEST_F(ProxyResolverV8Test, Basic) {
     int result = resolver().GetProxyForURL(GURL("http://query.com/path"),
                                            &proxy_info, bindings());
     EXPECT_THAT(result, IsOk());
-    EXPECT_EQ("http.query.com.path.query.com:80",
-              ProxyServerToProxyUri(proxy_info.proxy_server()));
+    EXPECT_EQ("[http.query.com.path.query.com:80]",
+              proxy_info.proxy_chain().ToDebugString());
   }
   {
     net::ProxyInfo proxy_info;
@@ -194,8 +194,8 @@ TEST_F(ProxyResolverV8Test, Basic) {
     EXPECT_THAT(result, IsOk());
     // Note that FindProxyForURL(url, host) does not expect |host| to contain
     // the port number.
-    EXPECT_EQ("ftp.query.com.90.path.query.com:80",
-              ProxyServerToProxyUri(proxy_info.proxy_server()));
+    EXPECT_EQ("[ftp.query.com.90.path.query.com:80]",
+              proxy_info.proxy_chain().ToDebugString());
 
     EXPECT_EQ(0U, bindings()->alerts.size());
     EXPECT_EQ(0U, bindings()->errors.size());
@@ -265,8 +265,8 @@ TEST_F(ProxyResolverV8Test, SideEffects) {
     int result = resolver().GetProxyForURL(GURL("http://www.google.com"),
                                            &proxy_info, bindings());
     EXPECT_THAT(result, IsOk());
-    EXPECT_EQ(base::StringPrintf("sideffect_%d:80", i),
-              ProxyServerToProxyUri(proxy_info.proxy_server()));
+    EXPECT_EQ(base::StringPrintf("[sideffect_%d:80]", i),
+              proxy_info.proxy_chain().ToDebugString());
   }
 
   // Reload the script -- the javascript environment should be reset, hence
@@ -278,8 +278,8 @@ TEST_F(ProxyResolverV8Test, SideEffects) {
     int result = resolver().GetProxyForURL(GURL("http://www.google.com"),
                                            &proxy_info, bindings());
     EXPECT_THAT(result, IsOk());
-    EXPECT_EQ(base::StringPrintf("sideffect_%d:80", i),
-              ProxyServerToProxyUri(proxy_info.proxy_server()));
+    EXPECT_EQ(base::StringPrintf("[sideffect_%d:80]", i),
+              proxy_info.proxy_chain().ToDebugString());
   }
 }
 
@@ -360,7 +360,7 @@ TEST_F(ProxyResolverV8Test, JavascriptLibrary) {
   EXPECT_THAT(bindings()->errors, IsEmpty());
 
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ("success:80", ProxyServerToProxyUri(proxy_info.proxy_server()));
+  EXPECT_EQ("[success:80]", proxy_info.proxy_chain().ToDebugString());
 }
 
 // Test marshalling/un-marshalling of values between C++/V8.
@@ -417,7 +417,7 @@ TEST_F(ProxyResolverV8Test, BindingCalledDuringInitialization) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_FALSE(proxy_info.is_direct());
-  EXPECT_EQ("127.0.0.1:80", ProxyServerToProxyUri(proxy_info.proxy_server()));
+  EXPECT_EQ("[127.0.0.1:80]", proxy_info.proxy_chain().ToDebugString());
 
   // Check that no other bindings were called.
   EXPECT_EQ(0U, bindings()->errors.size());
@@ -440,7 +440,7 @@ TEST_F(ProxyResolverV8Test, EndsWithCommentNoNewline) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_FALSE(proxy_info.is_direct());
-  EXPECT_EQ("success:80", ProxyServerToProxyUri(proxy_info.proxy_server()));
+  EXPECT_EQ("[success:80]", proxy_info.proxy_chain().ToDebugString());
 }
 
 // Try loading a PAC script that ends with a statement and has no terminal
@@ -456,7 +456,7 @@ TEST_F(ProxyResolverV8Test, EndsWithStatementNoNewline) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_FALSE(proxy_info.is_direct());
-  EXPECT_EQ("success:3", ProxyServerToProxyUri(proxy_info.proxy_server()));
+  EXPECT_EQ("[success:3]", proxy_info.proxy_chain().ToDebugString());
 }
 
 // Test the return values from myIpAddress(), myIpAddressEx(), dnsResolve(),
@@ -472,7 +472,7 @@ TEST_F(ProxyResolverV8Test, DNSResolutionFailure) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_FALSE(proxy_info.is_direct());
-  EXPECT_EQ("success:80", ProxyServerToProxyUri(proxy_info.proxy_server()));
+  EXPECT_EQ("[success:80]", proxy_info.proxy_chain().ToDebugString());
 }
 
 TEST_F(ProxyResolverV8Test, DNSResolutionOfInternationDomainName) {
@@ -551,7 +551,7 @@ TEST_F(ProxyResolverV8Test, Terminate) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_EQ(0u, bindings()->errors.size());
-  EXPECT_EQ("kittens:88", ProxyServerToProxyUri(proxy_info.proxy_server()));
+  EXPECT_EQ("[kittens:88]", proxy_info.proxy_chain().ToDebugString());
 }
 
 }  // namespace

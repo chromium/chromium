@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "media/gpu/av1_picture.h"
+
 #include <memory>
+
+#include "base/memory/scoped_refptr.h"
 
 namespace media {
 AV1Picture::AV1Picture() = default;
@@ -25,6 +28,7 @@ scoped_refptr<AV1Picture> AV1Picture::Duplicate() {
 }
 
 scoped_refptr<AV1Picture> AV1Picture::CreateDuplicate() {
-  return nullptr;
+  return base::MakeRefCounted<AV1Picture>();
 }
+
 }  // namespace media

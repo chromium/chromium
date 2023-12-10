@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread_checker.h"
 
@@ -37,6 +38,10 @@ class MetricsServicesManagerClient;
 // client) and VariationsService.
 class MetricsServicesManager {
  public:
+  using OnDidStartLoadingCb = base::RepeatingClosure;
+  using OnDidStopLoadingCb = base::RepeatingClosure;
+  using OnRendererUnresponsiveCb = base::RepeatingClosure;
+
   // Creates the MetricsServicesManager with the given client.
   explicit MetricsServicesManager(
       std::unique_ptr<MetricsServicesManagerClient> client);
@@ -65,8 +70,14 @@ class MetricsServicesManager {
   // Returns the VariationsService, creating it if it hasn't been created yet.
   variations::VariationsService* GetVariationsService();
 
-  // Called when loading state changed.
-  void LoadingStateChanged(bool is_loading);
+  // Returns an |OnDidStartLoadingCb| callback.
+  OnDidStartLoadingCb GetOnDidStartLoadingCb();
+
+  // Returns an |OnDidStopLoadingCb| callback.
+  OnDidStopLoadingCb GetOnDidStopLoadingCb();
+
+  // Returns an |OnRendererUnresponsiveCb| callback.
+  OnRendererUnresponsiveCb GetOnRendererUnresponsiveCb();
 
   // Updates the managed services when permissions for uploading metrics change.
   void UpdateUploadPermissions(bool may_upload);
@@ -104,6 +115,13 @@ class MetricsServicesManager {
                          bool current_consent_given,
                          bool current_may_upload);
 
+  // Called when loading state changed.
+  void LoadingStateChanged(bool is_loading);
+
+  // Used by |GetOnRendererUnresponsiveCb| to construct the callback that will
+  // be run by |MetricsServicesWebContentsObserver|.
+  void OnRendererUnresponsive();
+
   // The client passed in from the embedder.
   const std::unique_ptr<MetricsServicesManagerClient> client_;
 
@@ -124,6 +142,8 @@ class MetricsServicesManager {
 
   // The VariationsService, for server-side experiments infrastructure.
   std::unique_ptr<variations::VariationsService> variations_service_;
+
+  base::WeakPtrFactory<MetricsServicesManager> weak_ptr_factory_{this};
 };
 
 }  // namespace metrics_services_manager

@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_BASE_TEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -66,7 +67,7 @@ class KioskBaseTest : public OobeBaseTest {
   ~KioskBaseTest() override;
 
  protected:
-  static KioskAppManager::ConsumerKioskAutoLaunchStatus
+  static KioskChromeAppManager::ConsumerKioskAutoLaunchStatus
   GetConsumerKioskModeStatus();
 
   // Waits for window width to change. Listens to a 'size_change' message sent
@@ -117,8 +118,6 @@ class KioskBaseTest : public OobeBaseTest {
 
   void WaitForAppLaunchSuccess();
 
-  void RunAppLaunchNetworkDownTest();
-
   void SimulateNetworkOnline();
 
   void SimulateNetworkOffline();
@@ -130,6 +129,7 @@ class KioskBaseTest : public OobeBaseTest {
                   const std::string& version = "1.0.0",
                   const std::string& crx_file = "");
 
+  KioskApp test_kiosk_app() const;
   const std::string& test_app_id() const { return test_app_id_; }
   const std::string& test_app_version() const { return test_app_version_; }
   const std::string& test_crx_file() const { return test_crx_file_; }

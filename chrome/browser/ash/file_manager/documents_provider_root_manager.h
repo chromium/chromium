@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_DOCUMENTS_PROVIDER_ROOT_MANAGER_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_DOCUMENTS_PROVIDER_ROOT_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -112,7 +112,7 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   void RequestGetRoots();
 
   // Called when retrieving available roots from ARC container is done.
-  void OnGetRoots(absl::optional<std::vector<arc::mojom::RootPtr>> maybe_roots);
+  void OnGetRoots(std::optional<std::vector<arc::mojom::RootPtr>> maybe_roots);
 
   // Updates this class's internal list of available roots.
   void UpdateRoots(std::vector<RootInfo> roots);

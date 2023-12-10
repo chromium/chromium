@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,11 +48,7 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
   ~HotspotFeaturePodControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kHotspot, features::kQsRevamp}, {});
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
+    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     AshTestBase::SetUp();
 
     // Spin the runloop to have HotspotInfoCache finish querying the hotspot
@@ -66,8 +63,6 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     hotspot_feature_tile_.reset();
     hotspot_feature_pod_controller_.reset();
     AshTestBase::TearDown();
-
-    cros_hotspot_config_test_helper_.reset();
   }
 
   void CreateHotspotFeatureTile() {
@@ -87,7 +82,7 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     hotspot_info->state = state;
     hotspot_info->allow_status = allow_status;
     hotspot_info->client_count = client_count;
-    cros_hotspot_config_test_helper_->SetFakeHotspotInfo(
+    ash_test_helper()->cros_hotspot_config_test_helper()->SetFakeHotspotInfo(
         std::move(hotspot_info));
     // Spin the runloop to observe the hotspot info change.
     base::RunLoop().RunUntilIdle();
@@ -131,8 +126,6 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
-      cros_hotspot_config_test_helper_;
   std::unique_ptr<HotspotFeaturePodController> hotspot_feature_pod_controller_;
   std::unique_ptr<FeatureTile> hotspot_feature_tile_;
 };

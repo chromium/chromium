@@ -46,6 +46,10 @@ class WebappRegistry {
   // installed WebAPK.
   virtual std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>>
   GetWebApkSpecifics() const;
+
+  // Sets an Android Shared Preference bit to indicate that there are WebAPKs
+  // that need to be restored from Sync on Chrome's 2nd run.
+  virtual void SetNeedsPwaRestore();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_

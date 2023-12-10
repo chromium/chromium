@@ -17,12 +17,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
-/**
- * Controls the behaviour of the Preload privacy guide page.
- */
+/** Controls the behaviour of the Preload privacy guide page. */
 public class PreloadFragment extends PrivacyGuideBasePage
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
-                   RadioGroup.OnCheckedChangeListener {
+                RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mDisabledPreloading;
     private RadioButtonWithDescriptionAndAuxButton mStandardPreloading;
     private BottomSheetController mBottomSheetController;
@@ -49,8 +47,7 @@ public class PreloadFragment extends PrivacyGuideBasePage
     }
 
     private void initialRadioButtonConfig() {
-        @PreloadPagesState
-        int preloadPagesState = PreloadPagesSettingsBridge.getState();
+        @PreloadPagesState int preloadPagesState = PreloadPagesSettingsBridge.getState();
         switch (preloadPagesState) {
             case (PreloadPagesState.STANDARD_PRELOADING):
                 mStandardPreloading.setChecked(true);

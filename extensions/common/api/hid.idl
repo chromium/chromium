@@ -102,6 +102,7 @@ namespace hid {
 
     // Receive the next input report from the device.
     // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625"]
     static void receive(long connectionId,
                         ReceiveCallback callback);
 

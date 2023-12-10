@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.autofillPrivate</code> API to add, remove, or update
 // autofill data from the settings UI.
-[modernised_enums]
 namespace autofillPrivate {
   // Subset of properties from the user account (signin component, AccountInfo).
   dictionary AccountInfo {
@@ -13,7 +12,8 @@ namespace autofillPrivate {
     boolean isEligibleForAddressAccountStorage;
   };
 
-  // Fields used as part of an address.
+  // A copy of ServerFieldType from
+  // chrome/common/extensions/api/autofill_private.idl
   enum ServerFieldType {
     NO_SERVER_DATA,
     UNKNOWN_TYPE,
@@ -109,6 +109,7 @@ namespace autofillPrivate {
     SINGLE_USERNAME_FORGOT_PASSWORD,
     ADDRESS_HOME_APT,
     ADDRESS_HOME_APT_TYPE,
+    SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
     MAX_VALID_FIELD_TYPE
   };
 
@@ -391,6 +392,11 @@ namespace autofillPrivate {
     // (biometric or screen lock), false otherwise.
     [supportsPromises] static void checkIfDeviceAuthAvailable(
         CheckForDeviceAuthCallback callback);
+
+    // Bulk delete all the CVCs (server and local) from the local webdata
+    // database. For server CVCs, this will also clear them from the Chrome
+    // sync server and thus other devices.
+    static void bulkDeleteAllCvcs();
   };
 
   interface Events {

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -34,6 +35,8 @@ void KioskTroubleshootingController::PolicyChanged() {
   // If the policy value is changed from enabled to disabled, exit the kiosk
   // session.
   if (!AreKioskTroubleshootingToolsEnabled()) {
+    LOG(WARNING)
+        << "Troubleshooting tools were disabled, ending kiosk session.";
     std::move(shutdown_kiosk_browser_session_callback_).Run();
   }
   // Policy is enabled now, no action needed.

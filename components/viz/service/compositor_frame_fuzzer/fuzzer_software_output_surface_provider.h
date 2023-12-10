@@ -38,6 +38,8 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
       DisplayCompositorMemoryAndTaskController* gpu_dependency,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
+  gpu::SharedImageManager* GetSharedImageManager() override;
+  gpu::SyncPointManager* GetSyncPointManager() override;
 
  private:
   absl::optional<base::FilePath> png_dir_path_;

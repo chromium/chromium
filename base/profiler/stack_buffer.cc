@@ -4,12 +4,14 @@
 
 #include "base/profiler/stack_buffer.h"
 
-#include "base/bits.h"
+#include <bit>
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include <sys/mman.h>
 
 #include <ostream>
 
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/page_size.h"
@@ -62,7 +64,7 @@ StackBuffer::StackBuffer(size_t buffer_size)
     : size_(buffer_size),
       buffer_(static_cast<uintptr_t*>(
           AlignedAlloc(size_, kPlatformStackAlignment))) {
-  static_assert(bits::IsPowerOfTwo(kPlatformStackAlignment));
+  static_assert(std::has_single_bit(kPlatformStackAlignment));
 }
 #endif  // !#if BUILDFLAG(IS_CHROMEOS)
 

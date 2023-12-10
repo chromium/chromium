@@ -232,8 +232,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   Vector<cc::Layer*> SynthesizedClipLayersForTesting() const;
 
-  void ClearPropertyTreeChangedState();
-
   size_t ApproximateUnsharedMemoryUsage() const;
 
   // Invalidates the scrollbar layer. Returns true if the scrollbar layer is

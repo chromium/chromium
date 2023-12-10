@@ -16,13 +16,13 @@
 #include "base/run_loop.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 
-absl::optional<int> RelaunchForWebInstanceHostIfParent(
+std::optional<int> RelaunchForWebInstanceHostIfParent(
     base::StringPiece relative_component_url,
     const base::CommandLine& command_line) {
   // Nothing to do if running from the context of a relaunched process.
   static constexpr char kNoRelaunch[] = "no-relaunch";
   if (command_line.HasSwitch(kNoRelaunch)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto realm_builder = component_testing::RealmBuilder::CreateFromRelativeUrl(

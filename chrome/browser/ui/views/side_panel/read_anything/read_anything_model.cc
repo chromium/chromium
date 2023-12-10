@@ -210,6 +210,9 @@ void ReadAnythingFontModel::SetDefaultLanguage(const std::string& lang) {
   if (base::Contains(kLanguagesSupportedByStixTwoText, lang)) {
     font_choices_.emplace_back(u"STIX Two Text");
   }
+  if (base::Contains(kLanguagesSupportedByAndika, lang)) {
+    font_choices_.emplace_back(u"Andika");
+  }
   font_choices_.shrink_to_fit();
 }
 
@@ -224,11 +227,11 @@ size_t ReadAnythingFontModel::GetFontNameIndex(std::string font_name) {
 
 // ui::Combobox needs a default option to show whenever Read Anything is
 // reopened in the same browser window.
-absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndex() const {
+std::optional<size_t> ReadAnythingFontModel::GetDefaultIndex() const {
   return selected_index_;
 }
 
-absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndexForTesting() {
+std::optional<size_t> ReadAnythingFontModel::GetDefaultIndexForTesting() {
   return selected_index_;
 }
 
@@ -254,17 +257,17 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
   return base::UTF16ToUTF8(font_choices_[index]);
 }
 
-absl::optional<ui::ColorId>
+std::optional<ui::ColorId>
 ReadAnythingFontModel::GetDropdownForegroundColorIdAt(size_t index) const {
   return foreground_color_id_;
 }
 
-absl::optional<ui::ColorId>
+std::optional<ui::ColorId>
 ReadAnythingFontModel::GetDropdownBackgroundColorIdAt(size_t index) const {
   return background_color_id_;
 }
 
-absl::optional<ui::ColorId>
+std::optional<ui::ColorId>
 ReadAnythingFontModel::GetDropdownSelectedBackgroundColorIdAt(
     size_t index) const {
   return selected_color_id_;

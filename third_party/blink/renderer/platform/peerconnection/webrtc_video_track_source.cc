@@ -11,6 +11,7 @@
 #include "base/types/optional_util.h"
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -211,9 +212,16 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   if (frame_adaptation_params.should_drop_frame)
     return;
 
-  const int64_t translated_camera_time_us =
-      timestamp_aligner_.TranslateTimestamp(frame->timestamp().InMicroseconds(),
-                                            now_us);
+  // timestamp_aligner_ is always updated, even if the result is unused, because
+  // it might happen that some frames don't have the `capture_begin_time`
+  // timestamp. In that case the aligner's result will be used, but for it to
+  // work it has to be updated on all samples.
+  int64_t timestamp_us = timestamp_aligner_.TranslateTimestamp(
+      frame->timestamp().InMicroseconds(), now_us);
+  if (base::FeatureList::IsEnabled(features::kWebRtcUseCaptureBeginTimestamp) &&
+      frame->metadata().capture_begin_time.has_value()) {
+    timestamp_us = frame->metadata().capture_begin_time->ToInternalValue();
+  }
 
   absl::optional<webrtc::Timestamp> capture_time_identifier;
   // Set |capture_time_identifier| only when frame->timestamp() is a valid
@@ -273,9 +281,9 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // The soft-applied cropping will be taken into account by the remainder
   // of the pipeline.
   if (video_frame->natural_size() == video_frame->visible_rect().size()) {
-    DeliverFrame(
-        std::move(video_frame), base::OptionalToPtr(accumulated_update_rect_),
-        translated_camera_time_us, capture_time_identifier, reference_time);
+    DeliverFrame(std::move(video_frame),
+                 base::OptionalToPtr(accumulated_update_rect_), timestamp_us,
+                 capture_time_identifier, reference_time);
     return;
   }
 
@@ -285,9 +293,9 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
         video_frame->natural_size());
   }
 
-  DeliverFrame(
-      std::move(video_frame), base::OptionalToPtr(accumulated_update_rect_),
-      translated_camera_time_us, capture_time_identifier, reference_time);
+  DeliverFrame(std::move(video_frame),
+               base::OptionalToPtr(accumulated_update_rect_), timestamp_us,
+               capture_time_identifier, reference_time);
 }
 
 void WebRtcVideoTrackSource::OnNotifyFrameDropped() {

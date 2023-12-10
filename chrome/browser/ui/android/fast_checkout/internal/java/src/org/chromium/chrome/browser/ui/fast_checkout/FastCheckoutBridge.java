@@ -23,7 +23,9 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
     private long mNativeFastCheckoutBridge;
     private final FastCheckoutComponent mFastCheckoutComponent;
 
-    private FastCheckoutBridge(long nativeBridge, WindowAndroid windowAndroid,
+    private FastCheckoutBridge(
+            long nativeBridge,
+            WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeFastCheckoutBridge = nativeBridge;
         mFastCheckoutComponent = new FastCheckoutCoordinator();
@@ -47,7 +49,9 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
     }
 
     @CalledByNative
-    private static void setAutofillProfile(FastCheckoutAutofillProfile[] profiles, int index,
+    private static void setAutofillProfile(
+            FastCheckoutAutofillProfile[] profiles,
+            int index,
             FastCheckoutAutofillProfile profile) {
         profiles[index] = profile;
     }
@@ -85,8 +89,8 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
     public void onOptionsSelected(
             FastCheckoutAutofillProfile profile, FastCheckoutCreditCard creditCard) {
         if (mNativeFastCheckoutBridge != 0) {
-            FastCheckoutBridgeJni.get().onOptionsSelected(
-                    mNativeFastCheckoutBridge, profile, creditCard);
+            FastCheckoutBridgeJni.get()
+                    .onOptionsSelected(mNativeFastCheckoutBridge, profile, creditCard);
         }
     }
 
@@ -106,10 +110,15 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
 
     @NativeMethods
     interface Natives {
-        void onOptionsSelected(long nativeFastCheckoutViewImpl, FastCheckoutAutofillProfile profile,
+        void onOptionsSelected(
+                long nativeFastCheckoutViewImpl,
+                FastCheckoutAutofillProfile profile,
                 FastCheckoutCreditCard creditCard);
+
         void onDismiss(long nativeFastCheckoutViewImpl);
+
         void openAutofillProfileSettings(long nativeFastCheckoutViewImpl);
+
         void openCreditCardSettings(long nativeFastCheckoutViewImpl);
     }
 }

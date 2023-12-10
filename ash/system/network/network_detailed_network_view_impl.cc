@@ -15,10 +15,10 @@
 #include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_view.h"
-#include "ash/system/network/network_list_mobile_header_view_impl.h"
+#include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_tether_hosts_header_view.h"
-#include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -162,7 +162,7 @@ NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
                                      kBetweenContainerMargins);
   }
   return wifi_top_container_->AddChildView(
-      std::make_unique<NetworkListWifiHeaderViewImpl>(/*delegate=*/this));
+      std::make_unique<NetworkListWifiHeaderView>(/*delegate=*/this));
 }
 
 NetworkListMobileHeaderView*
@@ -174,7 +174,7 @@ NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
     mobile_top_container_->SetBorderInsets(kTopContainerBorder);
   }
   return mobile_top_container_->AddChildView(
-      std::make_unique<NetworkListMobileHeaderViewImpl>(/*delegate=*/this));
+      std::make_unique<NetworkListMobileHeaderView>(/*delegate=*/this));
 }
 
 NetworkListTetherHostsHeaderView*

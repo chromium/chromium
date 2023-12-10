@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">‏عذرًا! تعذّر إنشاء ملف خاص RSA عشوائي.</translation>
 <translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>
+<translation id="1610570795592207282">‏تعذَّر تحميل ملف css (صفحات الأنماط المتتالية) '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
 <translation id="1803557475693955505">تعذر تحميل صفحة الخلفية '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">تعذر فك ترميز الصورة: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏تم استخدام التعريب، ولكن لم يتم تحديد default_locale في البيان.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏تعذّر استبدال ملف crx. تحقق ما إذا كان قيد الاستخدام.</translation>
 <translation id="3163201441334626963">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد‬ <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">‏تعذر تحميل ملف css (أوراق الأنماط المتتالية) '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى.</translation>
 <translation id="3369521687965833290">لا يمكن فك ضغط الإضافة. لفك ضغط الإضافة بشكل آمن، يجب أن يكون هناك مسار إلى دليل ملفك الشخصي، ويبدأ بحرف محرك أقراص ولا يحتوي على وصلة أو نقطة تثبيت أو رابط رمزي. ليس هناك مثل هذا المسار لملفك الشخصي.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">يجب أن تكون قيمة الإدخال للمفتاح الخاص مسارًا صالحًا.</translation>
 <translation id="388442998277590542">تعذر تحميل صفحة الخيارات "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">حدث خطأ أثناء التوقيع على الإضافة.</translation>
-<translation id="39964277676607559">‏تعذر تحميل JavaScript '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى.</translation>
 <translation id="4115165561519362854">يطلب مشرف هذا الجهاز <ph name="EXTENSION_NAME" /> الحصول على الحد الأدنى لإصدار <ph name="EXTENSION_VERSION" />. ولا يمكن تمكينه حتى يتم تحديثه إلى هذا الإصدار (أو أعلى).</translation>
 <translation id="4233778200880751280">تعذر تحميل حول الصفحة "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">تعذّر تصدير المفتاح العام.</translation>
 <translation id="5026754133087629784">عرض الويب: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">لا يمكن العثور على المسار المطلق للدليل للحزمة.</translation>
+<translation id="5160071981665899014">‏تعذَّر تحميل ملف JavaScript '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
 <translation id="5356315618422219272">عرض التطبيق: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">النوافذ ذات الأشكال غير متوافقة.</translation>
 <translation id="5456409301717116725">تتضمن هذه الإضافة ملف المفتاح '<ph name="KEY_PATH" />'. ربما لا تريد إجراء ذلك.</translation>

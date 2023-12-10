@@ -133,12 +133,12 @@ void LoadAndLocalizeResources(const Extension& extension,
     if (!localize_file) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(callback), std::move(data), absl::nullopt));
+          base::BindOnce(std::move(callback), std::move(data), std::nullopt));
     } else {
       auto callback_adapter =
           [](LoadAndLocalizeResourcesCallback callback,
              std::vector<std::unique_ptr<std::string>> data) {
-            std::move(callback).Run(std::move(data), absl::nullopt);
+            std::move(callback).Run(std::move(data), std::nullopt);
           };
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,

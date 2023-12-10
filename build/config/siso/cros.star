@@ -77,6 +77,7 @@ def __step_config(ctx, step_config):
             step_config["rules"].extend([
                 {
                     "name": "clang-cros/cxx",
+                    "action": "(.*_)?cxx",
                     "command_prefix": "../../build/cros_cache/chrome-sdk/",
                     "remote": True,
                     "handler": "cros_compiler",
@@ -85,6 +86,7 @@ def __step_config(ctx, step_config):
                 },
                 {
                     "name": "clang-cros/cc",
+                    "action": "(.*_)?cc",
                     "command_prefix": "../../build/cros_cache/chrome-sdk/",
                     "remote": True,
                     "handler": "cros_compiler",

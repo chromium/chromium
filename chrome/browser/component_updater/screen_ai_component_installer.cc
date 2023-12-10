@@ -85,9 +85,7 @@ bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
     return false;
   }
 
-  // Check the file iterator heuristic to find the library in the sandbox
-  // returns the same directory as `install_dir`.
-  return screen_ai::GetLatestComponentBinaryPath().DirName() == install_dir;
+  return screen_ai::ScreenAIInstallState::VerifyLibraryAvailablity(install_dir);
 }
 
 base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
@@ -96,8 +94,7 @@ base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 // static
 std::string ScreenAIComponentInstallerPolicy::GetOmahaId() {
-  return crx_file::id_util::GenerateIdFromHash(
-      kScreenAIPublicKeySHA256, std::size(kScreenAIPublicKeySHA256));
+  return crx_file::id_util::GenerateIdFromHash(kScreenAIPublicKeySHA256);
 }
 
 void ScreenAIComponentInstallerPolicy::GetHash(
@@ -117,15 +114,14 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 
 // static
 void ScreenAIComponentInstallerPolicy::DeleteComponent() {
-  base::FilePath component_binary_path =
-      screen_ai::GetLatestComponentBinaryPath();
-
-  if (!component_binary_path.empty()) {
-    base::DeletePathRecursively(component_binary_path.DirName());
-    screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
-        /*install=*/false,
-        /*successful=*/true);
+  if (screen_ai::GetLatestComponentBinaryPath().empty()) {
+    return;
   }
+
+  base::DeletePathRecursively(screen_ai::GetComponentDir());
+  screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
+      /*install=*/false,
+      /*successful=*/true);
 }
 
 void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,

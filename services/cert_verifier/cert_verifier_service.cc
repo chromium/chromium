@@ -82,16 +82,20 @@ void ReconnectURLLoaderFactory(
 
 CertVerifierServiceImpl::CertVerifierServiceImpl(
     std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier,
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
-    scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher)
-    : verifier_(std::move(verifier)),
-      receiver_(this, std::move(receiver)),
+    scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher,
+    net::CertVerifyProc::InstanceParams instance_params)
+    : instance_params_(std::move(instance_params)),
+      verifier_(std::move(verifier)),
+      service_receiver_(this, std::move(service_receiver)),
+      updater_receiver_(this, std::move(updater_receiver)),
       client_(std::move(client)),
       cert_net_fetcher_(std::move(cert_net_fetcher)) {
   // base::Unretained is safe because |this| owns |receiver_|, so deleting
   // |this| will prevent |receiver_| from calling this callback.
-  receiver_.set_disconnect_handler(
+  service_receiver_.set_disconnect_handler(
       base::BindRepeating(&CertVerifierServiceImpl::OnDisconnectFromService,
                           base::Unretained(this)));
   verifier_->AddObserver(this);
@@ -126,6 +130,18 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
   }
 }
 
+void CertVerifierServiceImpl::UpdateAdditionalCertificates(
+    mojom::AdditionalCertificatesPtr additional_certificates) {
+  instance_params_.additional_trust_anchors =
+      additional_certificates->trust_anchors;
+  instance_params_.additional_untrusted_authorities =
+      additional_certificates->all_certificates;
+
+  verifier_->UpdateVerifyProcData(cert_net_fetcher_,
+                                  service_factory_impl_->get_impl_params(),
+                                  instance_params_);
+}
+
 void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
     base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
         service_factory_impl) {
@@ -133,8 +149,9 @@ void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
 }
 
 void CertVerifierServiceImpl::UpdateVerifierData(
-    const net::CertVerifyProcFactory::ImplParams& impl_params) {
-  verifier_->UpdateVerifyProcData(cert_net_fetcher_, impl_params);
+    const net::CertVerifyProc::ImplParams& impl_params) {
+  verifier_->UpdateVerifyProcData(cert_net_fetcher_, impl_params,
+                                  instance_params_);
 }
 
 void CertVerifierServiceImpl::Verify(

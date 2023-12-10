@@ -37,7 +37,7 @@ class CrostiniDiskTest : public testing::Test {
   std::unique_ptr<CrostiniDiskInfo> OnListVmDisksWithResult(
       const char* vm_name,
       int64_t free_space,
-      absl::optional<vm_tools::concierge::ListVmDisksResponse>
+      std::optional<vm_tools::concierge::ListVmDisksResponse>
           list_disks_response) {
     std::unique_ptr<CrostiniDiskInfo> result;
     auto store = base::BindLambdaForTesting(
@@ -112,7 +112,7 @@ TEST_F(CrostiniDiskTest, NonResizeableDiskReturnsEarly) {
 }
 
 TEST_F(CrostiniDiskTest, CallbackGetsEmptyInfoOnError) {
-  auto disk_info_nullopt = OnListVmDisksWithResult("vm_name", 0, absl::nullopt);
+  auto disk_info_nullopt = OnListVmDisksWithResult("vm_name", 0, std::nullopt);
   EXPECT_FALSE(disk_info_nullopt);
 
   vm_tools::concierge::ListVmDisksResponse failure_response;

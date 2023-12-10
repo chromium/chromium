@@ -5,9 +5,10 @@
 #ifndef ASH_QUICK_PAIR_PAIRING_FAKE_RETROACTIVE_PAIRING_DETECTOR_H_
 #define ASH_QUICK_PAIR_PAIRING_FAKE_RETROACTIVE_PAIRING_DETECTOR_H_
 
+#include <optional>
+
 #include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {

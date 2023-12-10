@@ -11,7 +11,7 @@ import type {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {isTree, isTreeItem} from '../../widgets/xf_tree_util.js';
 
-import {decorate} from './ui.js';
+import {DecoratableElement} from './cr_ui.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`
@@ -118,10 +118,22 @@ export function queryRequiredElement(
  * @param type Type used to decorate.
  */
 export function queryDecoratedElement<T>(
-    query: string, type: {new (...args: any): T}): T {
+    query: string, type: DecoratableElement<T>): T {
   const element = queryRequiredElement(query);
-  decorate(element, type);
+  legacyDecorate(element, type);
   return element as any as T;
+}
+
+/**
+ * Decorates elements as an instance of a class.
+ * @param constr The constructor/class to decorate with. The `constr` needs to
+ *     have a `decorate` method.
+ */
+export function legacyDecorate<T>(
+    element: HTMLElement, constr: DecoratableElement<T>) {
+  if (!(element instanceof constr)) {
+    constr.decorate(element);
+  }
 }
 
 /**
@@ -167,7 +179,6 @@ class UserDomError extends DOMError {
   /**
    * @param name Error name for the file error.
    * @param {string=} message Optional message for this error.
-   * @suppress {checkTypes} Closure externs for DOMError doesn't have
    * constructor with 1 arg.
    */
   constructor(name: string, message?: string) {

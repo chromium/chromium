@@ -14,9 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.feed.followmanagement.FollowManagementCoordinator;
 
-/**
- * Activity for managing feed and webfeed settings on the new tab page.
- */
+/** Activity for managing feed and webfeed settings on the new tab page. */
 public class FollowManagementActivity extends SnackbarActivity {
     private static final String TAG = "FollowMActivity";
 

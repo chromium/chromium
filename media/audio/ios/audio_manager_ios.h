@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "media/audio/apple/audio_io_stream_client.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/mac/audio_auhal_mac.h"
@@ -21,7 +22,6 @@
 namespace media {
 
 class AUHALStream;
-class AudioSessionManagerIOS;
 
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
@@ -78,10 +78,17 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
 
+  // Hardware information
+  double HardwareSampleRate();
+  double HardwareIOBufferDuration();
+  double HardwareLatency(bool is_input);
+  long GetDeviceChannels(bool is_input);
+
   // Gain
   float GetInputGain();
   bool SetInputGain(float volume);
   bool IsInputMuted();
+  bool IsInputGainSettable();
 
  protected:
   AudioParameters GetPreferredOutputStreamParameters(
@@ -89,8 +96,6 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
       const AudioParameters& input_params) override;
 
  private:
-  std::unique_ptr<AudioSessionManagerIOS> audio_session_manager_;
-
   // Tracks all constructed input and output streams.
   std::list<AUHALStream*> output_streams_;
   std::list<AudioInputStream*> basic_input_streams_;

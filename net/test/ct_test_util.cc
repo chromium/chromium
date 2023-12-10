@@ -374,7 +374,7 @@ std::string CreateConsistencyProofJsonString(
 std::string GetSCTListForTesting() {
   const std::string sct = ct::GetTestSignedCertificateTimestamp();
   std::string sct_list;
-  ct::EncodeSCTListForTesting(sct, &sct_list);
+  ct::EncodeSCTListForTesting({sct}, &sct_list);
   return sct_list;
 }
 
@@ -386,7 +386,7 @@ std::string GetSCTListWithInvalidSCT() {
   sct[15] = 't';
 
   std::string sct_list;
-  ct::EncodeSCTListForTesting(sct, &sct_list);
+  ct::EncodeSCTListForTesting({sct}, &sct_list);
   return sct_list;
 }
 

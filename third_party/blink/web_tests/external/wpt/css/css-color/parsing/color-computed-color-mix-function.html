@@ -55,6 +55,7 @@
     fuzzy_test_computed_color(`color-mix(in hsl shorter hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))`, `color(srgb 0.75 0.333333 0.25)`);
     fuzzy_test_computed_color(`color-mix(in hsl shorter hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))`, `color(srgb 0.75 0.25 0.333333)`);
     fuzzy_test_computed_color(`color-mix(in hsl shorter hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))`, `color(srgb 0.75 0.25 0.333333)`);
+    fuzzy_test_computed_color(`color-mix(in hsl shorter hue, hsl(60deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.75 0.75 0.25)`);
 
     fuzzy_test_computed_color(`color-mix(in hsl longer hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.25 0.333333 0.75)`);
     fuzzy_test_computed_color(`color-mix(in hsl longer hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))`, `color(srgb 0.25 0.333333 0.75)`);
@@ -62,6 +63,7 @@
     fuzzy_test_computed_color(`color-mix(in hsl longer hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))`, `color(srgb 0.25 0.666667 0.75)`);
     fuzzy_test_computed_color(`color-mix(in hsl longer hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))`, `color(srgb 0.25 0.75 0.666667)`);
     fuzzy_test_computed_color(`color-mix(in hsl longer hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))`, `color(srgb 0.25 0.75 0.666667)`);
+    fuzzy_test_computed_color(`color-mix(in hsl longer hue, hsl(60deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.25 0.25 0.75)`);
 
     fuzzy_test_computed_color(`color-mix(in hsl increasing hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.75 0.666667 0.25)`);
     fuzzy_test_computed_color(`color-mix(in hsl increasing hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))`, `color(srgb 0.25 0.333333 0.75)`);
@@ -69,6 +71,7 @@
     fuzzy_test_computed_color(`color-mix(in hsl increasing hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))`, `color(srgb 0.75 0.333333 0.25)`);
     fuzzy_test_computed_color(`color-mix(in hsl increasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))`, `color(srgb 0.25 0.75 0.666667)`);
     fuzzy_test_computed_color(`color-mix(in hsl increasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))`, `color(srgb 0.75 0.25 0.333333)`);
+    fuzzy_test_computed_color(`color-mix(in hsl increasing hue, hsl(60deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.75 0.75 0.25)`);
 
     fuzzy_test_computed_color(`color-mix(in hsl decreasing hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.25 0.333333 0.75)`);
     fuzzy_test_computed_color(`color-mix(in hsl decreasing hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))`, `color(srgb 0.75 0.666667 0.25)`);
@@ -76,6 +79,7 @@
     fuzzy_test_computed_color(`color-mix(in hsl decreasing hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))`, `color(srgb 0.25 0.666667 0.75)`);
     fuzzy_test_computed_color(`color-mix(in hsl decreasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))`, `color(srgb 0.75 0.25 0.333333)`);
     fuzzy_test_computed_color(`color-mix(in hsl decreasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))`, `color(srgb 0.25 0.75 0.666667)`);
+    fuzzy_test_computed_color(`color-mix(in hsl decreasing hue, hsl(60deg 50% 50%), hsl(60deg 50% 50%))`, `color(srgb 0.75 0.75 0.25)`);
 
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(none none none), hsl(none none none))`, `color(srgb 0 0 0)`);
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(none none none), hsl(30deg 40% 80%))`, `color(srgb 0.88 0.8 0.72)`);
@@ -250,6 +254,8 @@
     fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(0.5 0.5 none / none))`, `lch(0.5 0.5 30 / 0.25)`);
     fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(none none none / 0.5))`, `lch(0.1 0.2 30 / 0.5)`);
     fuzzy_test_computed_color(`color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(0.5 none none / 0.5))`, `lch(0.5 0.2 30 / 0.5)`);
+    // Achromatic colors should have powerless hues. https://www.w3.org/TR/css-color-4/#lab-to-lch
+    fuzzy_test_computed_color(`color-mix(in lch, lab(50 0 0), black)`, `lch(25 0 none)`);
 
     // oklch()
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 0.2 30deg), oklch(0.5 0.6 70deg))`, `oklch(0.3 0.4 50)`);
@@ -328,6 +334,8 @@
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(0.5 0.5 none / none))`, `oklch(0.5 0.5 30 / 0.25)`);
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(none none none / 0.5))`, `oklch(0.1 0.2 30 / 0.5)`);
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(0.5 none none / 0.5))`, `oklch(0.5 0.2 30 / 0.5)`);
+    // Achromatic colors should have powerless hues. https://www.w3.org/TR/css-color-4/#lab-to-lch
+    fuzzy_test_computed_color(`color-mix(in oklch, oklab(0.5 0 0), black)`, `oklch(0.25 0 none)`);
 
     // lab()
     fuzzy_test_computed_color(`color-mix(in lab, lab(10 20 30), lab(50 60 70))`, `lab(30 40 50)`);

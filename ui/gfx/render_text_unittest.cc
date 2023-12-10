@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
@@ -1955,10 +1954,8 @@ INSTANTIATE_TEST_SUITE_P(ItemizeTextToRunsEmoji,
 
 struct ElideTextTestOptions {
   const ElideBehavior elide_behavior;
-  const bool use_early_eliding = false;
 };
 
-const bool kUseEarlyEliding = true;
 const bool kForceNoWhitespaceElision = false;
 const bool kForceWhitespaceElision = true;
 
@@ -1993,11 +1990,6 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
   SetGlyphWidth(kGlyphWidth);
 
   const ElideTextTestOptions options = std::get<0>(GetParam());
-  base::test::ScopedFeatureList scoped_feature_list;
-  if (options.use_early_eliding) {
-    scoped_feature_list.InitAndEnableFeature(kRenderTextEarlyEliding);
-  }
-
   const ElideTextCase param = std::get<1>(GetParam());
   const std::u16string text = param.text;
   const std::u16string display_text = param.display_text;
@@ -2175,14 +2167,6 @@ INSTANTIATE_TEST_SUITE_P(
     ElideTail,
     RenderTextTestWithElideTextCase,
     testing::Combine(testing::Values(ElideTextTestOptions{ELIDE_TAIL}),
-                     testing::ValuesIn(kElideTailTextCases)),
-    RenderTextTestWithElideTextCase::ParamInfoToString);
-
-INSTANTIATE_TEST_SUITE_P(
-    EarlyElideTail,
-    RenderTextTestWithElideTextCase,
-    testing::Combine(testing::Values(ElideTextTestOptions{ELIDE_TAIL,
-                                                          kUseEarlyEliding}),
                      testing::ValuesIn(kElideTailTextCases)),
     RenderTextTestWithElideTextCase::ParamInfoToString);
 
@@ -7807,21 +7791,21 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_LTR) {
       SelectionModel(kWordTwoStartIndex, CURSOR_FORWARD), false);
 
   DecoratedText decorated_word;
-  Point baseline_point;
+  Rect rect;
 
   {
     SCOPED_TRACE(base::StringPrintf("Query to the left of text bounds"));
-    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(-5, cursor_y), &decorated_word, &baseline_point));
+    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(Point(-5, cursor_y),
+                                                      &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-    EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
   }
   {
     SCOPED_TRACE(base::StringPrintf("Query to the right of text bounds"));
-    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(105, cursor_y), &decorated_word, &baseline_point));
+    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(Point(105, cursor_y),
+                                                      &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-    EXPECT_TRUE(left_glyph_word_2.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_2.Contains(rect.origin()));
   }
 
   for (size_t i = 0; i < render_text->text().length(); i++) {
@@ -7831,15 +7815,15 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_LTR) {
         render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), false)
             .origin();
 
-    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(query, &decorated_word,
-                                                      &baseline_point));
+    EXPECT_TRUE(
+        render_text->GetWordLookupDataAtPoint(query, &decorated_word, &rect));
 
     if (i < kWordTwoStartIndex) {
       VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-      EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+      EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
     } else {
       VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-      EXPECT_TRUE(left_glyph_word_2.Contains(baseline_point));
+      EXPECT_TRUE(left_glyph_word_2.Contains(rect.origin()));
     }
   }
 }
@@ -7890,21 +7874,21 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
       SelectionModel(kWordTwoStartIndex, CURSOR_FORWARD), false);
 
   DecoratedText decorated_word;
-  Point baseline_point;
+  Rect rect;
 
   {
     SCOPED_TRACE(base::StringPrintf("Query to the left of text bounds"));
-    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(-5, cursor_y), &decorated_word, &baseline_point));
+    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(Point(-5, cursor_y),
+                                                      &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-    EXPECT_TRUE(left_glyph_word_2.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_2.Contains(rect.origin()));
   }
   {
     SCOPED_TRACE(base::StringPrintf("Query to the right of text bounds"));
-    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(105, cursor_y), &decorated_word, &baseline_point));
+    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(Point(105, cursor_y),
+                                                      &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-    EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
   }
 
   for (size_t i = 0; i < render_text->text().length(); i++) {
@@ -7916,14 +7900,14 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
         render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), false)
             .top_right();
 
-    EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(query, &decorated_word,
-                                                      &baseline_point));
+    EXPECT_TRUE(
+        render_text->GetWordLookupDataAtPoint(query, &decorated_word, &rect));
     if (i < kWordTwoStartIndex) {
       VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-      EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+      EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
     } else {
       VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-      EXPECT_TRUE(left_glyph_word_2.Contains(baseline_point));
+      EXPECT_TRUE(left_glyph_word_2.Contains(rect.origin()));
     }
   }
 }
@@ -7975,34 +7959,34 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_Multiline) {
       GetSubstringBoundsUnion(Range(kWordThreeIndex, kWordThreeIndex + 1));
 
   DecoratedText decorated_word;
-  Point baseline_point;
+  Rect rect;
   {
     // Query to the left of the first line.
     EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(-5, GetCursorYForTesting(0)), &decorated_word, &baseline_point));
+        Point(-5, GetCursorYForTesting(0)), &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-    EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
   }
   {
     // Query on the second line.
     EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(5, GetCursorYForTesting(1)), &decorated_word, &baseline_point));
+        Point(5, GetCursorYForTesting(1)), &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-    EXPECT_TRUE(left_glyph_word_2.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_2.Contains(rect.origin()));
   }
   {
     // Query at the center point of the character 'c'.
     EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        left_glyph_word_3.CenterPoint(), &decorated_word, &baseline_point));
+        left_glyph_word_3.CenterPoint(), &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_3, decorated_word);
-    EXPECT_TRUE(left_glyph_word_3.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_3.Contains(rect.origin()));
   }
   {
     // Query to the right of the third line.
     EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(
-        Point(505, GetCursorYForTesting(2)), &decorated_word, &baseline_point));
+        Point(505, GetCursorYForTesting(2)), &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_3, decorated_word);
-    EXPECT_TRUE(left_glyph_word_3.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_3.Contains(rect.origin()));
   }
 }
 
@@ -8012,27 +7996,27 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_Return) {
   render_text->SetText(u"...");
 
   DecoratedText decorated_word;
-  Point baseline_point;
+  Rect rect;
 
   // False should be returned, when the text does not contain any word.
   Point query =
       render_text->GetCursorBounds(SelectionModel(0, CURSOR_FORWARD), false)
           .origin();
-  EXPECT_FALSE(render_text->GetWordLookupDataAtPoint(query, &decorated_word,
-                                                     &baseline_point));
+  EXPECT_FALSE(
+      render_text->GetWordLookupDataAtPoint(query, &decorated_word, &rect));
 
   render_text->SetText(u"abc");
   query = render_text->GetCursorBounds(SelectionModel(0, CURSOR_FORWARD), false)
               .origin();
-  EXPECT_TRUE(render_text->GetWordLookupDataAtPoint(query, &decorated_word,
-                                                    &baseline_point));
+  EXPECT_TRUE(
+      render_text->GetWordLookupDataAtPoint(query, &decorated_word, &rect));
 
   // False should be returned for obscured text.
   render_text->SetObscured(true);
   query = render_text->GetCursorBounds(SelectionModel(0, CURSOR_FORWARD), false)
               .origin();
-  EXPECT_FALSE(render_text->GetWordLookupDataAtPoint(query, &decorated_word,
-                                                     &baseline_point));
+  EXPECT_FALSE(
+      render_text->GetWordLookupDataAtPoint(query, &decorated_word, &rect));
 }
 
 // Test that GetLookupDataAtPoint behaves correctly when the range spans lines.
@@ -8079,27 +8063,73 @@ TEST_F(RenderTextTest, GetLookupDataAtRange_Multiline) {
       Font::Weight::NORMAL, UNDERLINE_MASK));
 
   DecoratedText decorated_word;
-  Point baseline_point;
+  Rect rect;
   {
     // Query for the range of the first word.
-    EXPECT_TRUE(render_text->GetLookupDataForRange(
-        kWordOneRange, &decorated_word, &baseline_point));
+    EXPECT_TRUE(render_text->GetLookupDataForRange(kWordOneRange,
+                                                   &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-    EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
   }
   {
     // Query for the range of the second word.
-    EXPECT_TRUE(render_text->GetLookupDataForRange(
-        kWordTwoRange, &decorated_word, &baseline_point));
+    EXPECT_TRUE(render_text->GetLookupDataForRange(kWordTwoRange,
+                                                   &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-    EXPECT_TRUE(left_glyph_word_2.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_2.Contains(rect.origin()));
   }
   {
     // Query the entire text range.
-    EXPECT_TRUE(render_text->GetLookupDataForRange(kTextRange, &decorated_word,
-                                                   &baseline_point));
+    EXPECT_TRUE(
+        render_text->GetLookupDataForRange(kTextRange, &decorated_word, &rect));
     VerifyDecoratedWordsAreEqual(expected_entire_text, decorated_word);
-    EXPECT_TRUE(left_glyph_word_1.Contains(baseline_point));
+    EXPECT_TRUE(left_glyph_word_1.Contains(rect.origin()));
+  }
+}
+
+// Test that GetLookupDataForRange returns the expected sizes for each range.
+TEST_F(RenderTextTest, GetLookupDataAtRange_Size) {
+  const char16_t kText[] = u"a\U0001F44D\uFE0Fb";
+  const size_t kGlyphCount = 3;
+  constexpr Range kRange1 = Range(0, 1);  // Range of character 'a'.
+  constexpr Range kRange2 = Range(1, 4);  // Range of the middle glyph.
+  constexpr Range kRange3 = Range(4, 5);  // Range of character 'b'.
+  constexpr Range kRange4 = Range(0, 5);  // Range of the entire text.
+
+  const int kGlyphWidth = 6;
+  const int kGlyphHeight = 10;
+  SetGlyphWidth(kGlyphWidth);
+  SetGlyphHeight(kGlyphHeight);
+  RenderText* render_text = GetRenderText();
+  render_text->SetDisplayRect(Rect(500, 500));
+  render_text->SetText(kText);
+
+  Size expected_size_1 = Size(kGlyphWidth, kGlyphHeight);
+  Size expected_size_2 = Size(kGlyphWidth, kGlyphHeight);
+  Size expected_size_3 = Size(kGlyphWidth, kGlyphHeight);
+  Size expected_size_4 = Size(kGlyphWidth * kGlyphCount, kGlyphHeight);
+
+  DecoratedText decorated_word;
+  Rect rect;
+  {
+    EXPECT_TRUE(
+        render_text->GetLookupDataForRange(kRange1, &decorated_word, &rect));
+    EXPECT_EQ(expected_size_1, rect.size());
+  }
+  {
+    EXPECT_TRUE(
+        render_text->GetLookupDataForRange(kRange2, &decorated_word, &rect));
+    EXPECT_EQ(expected_size_2, rect.size());
+  }
+  {
+    EXPECT_TRUE(
+        render_text->GetLookupDataForRange(kRange3, &decorated_word, &rect));
+    EXPECT_EQ(expected_size_3, rect.size());
+  }
+  {
+    EXPECT_TRUE(
+        render_text->GetLookupDataForRange(kRange4, &decorated_word, &rect));
+    EXPECT_EQ(expected_size_4, rect.size());
   }
 }
 
@@ -8689,25 +8719,25 @@ TEST_F(RenderTextTest, GetLookupDataForRange_Obscured) {
                               Font::Weight::NORMAL, UNDERLINE_MASK));
 
     DecoratedText decorated_word;
-    Point baseline_point;
+    Rect rect;
 
     // Validation for the first word, u"a".
     EXPECT_TRUE(render_text->GetLookupDataForRange(kWordRange1, &decorated_word,
-                                                   &baseline_point));
+                                                   &rect));
     VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
-    EXPECT_EQ(baseline_point, Point(0, 5));
+    EXPECT_EQ(rect.origin(), Point(0, 5));
 
     // Validation for the middle word, u"\U0001F44D\uFE0F" (thumbs up emoji).
     EXPECT_TRUE(render_text->GetLookupDataForRange(kWordRange2, &decorated_word,
-                                                   &baseline_point));
+                                                   &rect));
     VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
-    EXPECT_EQ(baseline_point, Point(5, 5));
+    EXPECT_EQ(rect.origin(), Point(5, 5));
 
     // Validation for the last word, u"b".
     EXPECT_TRUE(render_text->GetLookupDataForRange(kWordRange3, &decorated_word,
-                                                   &baseline_point));
+                                                   &rect));
     VerifyDecoratedWordsAreEqual(expected_word_3, decorated_word);
-    EXPECT_EQ(baseline_point, Point(10, 5));
+    EXPECT_EQ(rect.origin(), Point(10, 5));
   };
 
   render_text->SetObscured(false);

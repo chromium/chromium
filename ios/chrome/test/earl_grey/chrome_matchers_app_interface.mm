@@ -8,7 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
@@ -55,6 +57,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
@@ -189,6 +192,26 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   };
   NSString* descriptionString =
       [NSString stringWithFormat:@"Images matching image named %@", imageName];
+  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
+    [description appendText:descriptionString];
+  };
+  id<GREYMatcher> imageMatcher =
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe];
+  return imageMatcher;
+}
+
++ (id<GREYMatcher>)imageViewWithCustomSymbolNamed:(NSString*)symbolName
+                                        pointSize:(CGFloat)pointSize {
+  UIImage* expectedImage =
+      CustomSymbolTemplateWithPointSize(symbolName, pointSize);
+  GREYMatchesBlock matches = ^BOOL(UIImageView* imageView) {
+    return ui::test::uiimage_utils::UIImagesAreEqual(expectedImage,
+                                                     imageView.image);
+  };
+  NSString* descriptionString = [NSString
+      stringWithFormat:@"Images matching custom symbol named %@ of size %f",
+                       symbolName, pointSize];
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
     [description appendText:descriptionString];
   };
@@ -574,7 +597,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)omniboxPopupRow {
-  return grey_kindOfClassName(@"OmniboxPopupRowCell");
+  if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements)) {
+    return grey_kindOfClassName(@"OmniboxPopupRowCellExperimental");
+  } else {
+    return grey_kindOfClassName(@"OmniboxPopupRowCell");
+  }
 }
 
 + (id<GREYMatcher>)omniboxPopupRowWithString:(NSString*)string {
@@ -602,6 +629,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)secondarySignInButton {
   return grey_allOf(grey_accessibilityID(kSigninPromoSecondaryButtonId),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)identityChooserScrim {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_TOOLBAR_CLOSE_MENU)];
+}
+
++ (id<GREYMatcher>)fakeFakeAddAccountScreenCancelButton {
+  return grey_allOf(grey_buttonTitle(@"Cancel"), grey_sufficientlyVisible(),
+                    nil);
 }
 
 + (id<GREYMatcher>)settingsAccountButton {
@@ -689,6 +726,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kGoogleServicesSettingsViewIdentifier);
 }
 
++ (id<GREYMatcher>)settingsNavigationBar {
+  return grey_allOf(
+      grey_kindOfClass([UINavigationBar class]),
+      grey_accessibilityID(
+          password_manager::kSettingsNavigationBarAccessibilityID),
+      nil);
+}
+
 + (id<GREYMatcher>)settingsMenuBackButton:(NSString*)buttonTitle {
   return grey_allOf(
       grey_anyOf(grey_accessibilityLabel(buttonTitle),
@@ -700,8 +745,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)settingsMenuBackButton {
   UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
-      SubviewWithAccessibilityIdentifier(@"SettingNavigationBar",
-                                         GetAnyKeyWindow()));
+      SubviewWithAccessibilityIdentifier(
+          password_manager::kSettingsNavigationBarAccessibilityID,
+          GetAnyKeyWindow()));
   return
       [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
@@ -709,8 +755,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)settingsMenuBackButtonInWindowWithNumber:(int)windowNumber {
   UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(
-          @"SettingNavigationBar", WindowWithAccessibilityIdentifier([NSString
-                                       stringWithFormat:@"%d", windowNumber])));
+          password_manager::kSettingsNavigationBarAccessibilityID,
+          WindowWithAccessibilityIdentifier(
+              [NSString stringWithFormat:@"%d", windowNumber])));
   return
       [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
@@ -727,6 +774,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)settingsMenuPasswordsButton {
   return grey_accessibilityID(kSettingsPasswordsCellId);
+}
+
++ (id<GREYMatcher>)settingsMenuSafetyCheckButton {
+  return grey_accessibilityID(kSettingsSafetyCheckCellId);
 }
 
 // TODO(crbug.com/1021752): Remove this stub.
@@ -1019,7 +1070,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsPasswordSearchMatcher {
-  return grey_accessibilityID(kPasswordsSearchBarId);
+  return grey_accessibilityID(kPasswordsSearchBarID);
 }
 
 + (id<GREYMatcher>)settingsProfileMatcher {
@@ -1118,7 +1169,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)passwordsTableViewMatcher {
-  return grey_accessibilityID(kPasswordsTableViewId);
+  return grey_accessibilityID(kPasswordsTableViewID);
 }
 
 + (id<GREYMatcher>)defaultBrowserSettingsTableViewMatcher {

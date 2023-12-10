@@ -24,6 +24,9 @@ def CheckChange(input_api, output_api):
                 'data/dom_distiller/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/feed/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/fenced_frames/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
@@ -31,6 +34,9 @@ def CheckChange(input_api, output_api):
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
                 'data/language/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/offline_pages/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
                 'data/paint_preview/unit_tests_bundle_data')
@@ -42,6 +48,9 @@ def CheckChange(input_api, output_api):
                 'data/performance_manager/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api, 'data/history/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/safe_browsing/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
                 'data/service_worker/unit_tests_bundle_data')

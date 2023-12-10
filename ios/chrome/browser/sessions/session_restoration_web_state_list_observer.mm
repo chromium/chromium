@@ -48,6 +48,7 @@ void SessionRestorationWebStateListObserver::ClearDirty() {
   dirty_web_states_.clear();
   detached_web_states_.clear();
   inserted_web_states_.clear();
+  discarded_web_states_.clear();
 }
 
 #pragma mark - WebStateListObserver
@@ -128,7 +129,7 @@ void SessionRestorationWebStateListObserver::DetachWebState(
   // If the WebState has been inserted and marked for adoption, but detached
   // before it could be adopted, then it should still be listed as detached
   // from the original WebStateList. In that case, do not mark it orphaned
-  // here (the state won't be accessible from the WebStateList).
+  // here (the state won't be accessible from this WebStateList).
   //
   // Otherwise, list it as orphaned unless it is closed and or serializable
   // (as the WebStateList where it is inserted can just serialize it to get
@@ -139,6 +140,10 @@ void SessionRestorationWebStateListObserver::DetachWebState(
   } else if (!is_closing && !CanSerializeWebState(detached_web_state)) {
     detached_web_states_.insert(identifier);
   }
+
+  // In all cases, record the WebState as discarded. This allows the client
+  // to clear any cached state it may have been keeping for the WebState.
+  discarded_web_states_.insert(identifier);
 
   // Stop observing the detached WebState. If it is inserted in another
   // Browser, its state will be observed there.

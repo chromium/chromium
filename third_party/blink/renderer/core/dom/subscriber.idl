@@ -7,8 +7,11 @@
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Subscriber {
   void next(any result);
-  void complete();
   [CallWith=ScriptState] void error(any error);
-  readonly attribute AbortSignal? signal;
+  [CallWith=ScriptState] void complete();
+  void addTeardown(VoidFunction teardown);
+
+  readonly attribute boolean active;
+  readonly attribute AbortSignal signal;
 };
 

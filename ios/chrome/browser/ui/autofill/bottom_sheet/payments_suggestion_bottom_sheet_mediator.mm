@@ -14,10 +14,10 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -317,6 +317,7 @@
   // so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:nil
+                      minorValue:nil
               displayDescription:nil
                             icon:nil
                      popupItemId:autofill::PopupItemId::kCreditCardEntry
@@ -425,12 +426,13 @@
   }
 
   // Otherwise, try to get the default card icon
-  std::string icon = creditCard->CardIconStringForAutofillSuggestion();
-  return icon.empty() ? nil
-                      : ui::ResourceBundle::GetSharedInstance()
-                            .GetNativeImageNamed(
-                                autofill::CreditCard::IconResourceId(icon))
-                            .ToUIImage();
+  autofill::Suggestion::Icon icon = creditCard->CardIconForAutofillSuggestion();
+  return icon == autofill::Suggestion::Icon::kNoIcon
+             ? nil
+             : ui::ResourceBundle::GetSharedInstance()
+                   .GetNativeImageNamed(
+                       autofill::CreditCard::IconResourceId(icon))
+                   .ToUIImage();
 }
 
 @end

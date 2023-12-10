@@ -236,7 +236,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   bool search_engine_is_google_ = false;
 
   // The id of the item whose icon update is in progress.
-  absl::optional<std::string> item_with_icon_update_;
+  std::optional<std::string> item_with_icon_update_;
 
   // Set when sort is triggered and reset when exiting the temporary sort
   // status.

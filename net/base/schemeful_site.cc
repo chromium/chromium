@@ -97,11 +97,11 @@ bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
   return true;
 }
 
-absl::optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
+std::optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
     const url::Origin& origin) {
   ObtainASiteResult result = ObtainASite(origin);
   if (!result.used_registerable_domain)
-    return absl::nullopt;
+    return std::nullopt;
   return SchemefulSite(std::move(result));
 }
 
@@ -158,27 +158,27 @@ bool SchemefulSite::operator<(const SchemefulSite& other) const {
 }
 
 // static
-absl::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
+std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     base::PassKey<NetworkAnonymizationKey>,
     const std::string& value) {
   return DeserializeWithNonce(value);
 }
 
 // static
-absl::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
+std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     const std::string& value) {
-  absl::optional<url::Origin> result = url::Origin::Deserialize(value);
+  std::optional<url::Origin> result = url::Origin::Deserialize(value);
   if (!result)
-    return absl::nullopt;
+    return std::nullopt;
   return SchemefulSite(result.value());
 }
 
-absl::optional<std::string> SchemefulSite::SerializeWithNonce(
+std::optional<std::string> SchemefulSite::SerializeWithNonce(
     base::PassKey<NetworkAnonymizationKey>) {
   return SerializeWithNonce();
 }
 
-absl::optional<std::string> SchemefulSite::SerializeWithNonce() {
+std::optional<std::string> SchemefulSite::SerializeWithNonce() {
   return site_as_origin_.SerializeWithNonceAndInitIfNeeded();
 }
 

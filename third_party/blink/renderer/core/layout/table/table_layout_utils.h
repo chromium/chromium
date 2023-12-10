@@ -12,13 +12,14 @@
 
 namespace blink {
 
-class NGBlockNode;
-class NGBoxFragment;
-class NGBoxFragmentBuilder;
-class NGConstraintSpaceBuilder;
+class BlockNode;
+class BoxFragmentBuilder;
+class ConstraintSpaceBuilder;
+class LogicalBoxFragment;
 class TableBorders;
 class TableNode;
-enum class NGCacheSlot;
+enum class BlockContentAlignment;
+enum class LayoutResultCacheSlot;
 struct TableColumnLocation;
 
 // Table size distribution algorithms.
@@ -42,7 +43,7 @@ CellBlockSizeData ComputeCellBlockSize(
 // creating the constraint-space for table-cells as consistent as possible.
 void SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
-    const NGBlockNode cell,
+    const BlockNode cell,
     const BoxStrut& cell_borders,
     const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
@@ -52,21 +53,21 @@ void SetupTableCellConstraintSpaceBuilder(
     bool is_initial_block_size_indefinite,
     bool is_restricted_block_size_table,
     bool has_collapsed_borders,
-    NGCacheSlot,
-    NGConstraintSpaceBuilder*);
+    LayoutResultCacheSlot,
+    ConstraintSpaceBuilder*);
 
 wtf_size_t ComputeMaximumNonMergeableColumnCount(
-    const HeapVector<NGBlockNode>& columns,
+    const HeapVector<BlockNode>& columns,
     bool is_fixed_layout);
 
 scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
-    const NGBlockNode& table,
+    const BlockNode& table,
     const TableGroupedChildren&,
     const TableBorders& table_borders,
     const BoxStrut& border_padding);
 
 void ComputeSectionMinimumRowBlockSizes(
-    const NGBlockNode& section,
+    const BlockNode& section,
     const LayoutUnit cell_percentage_resolution_inline_size,
     const bool is_table_block_size_specified,
     const Vector<TableColumnLocation>& column_locations,
@@ -80,7 +81,7 @@ void ComputeSectionMinimumRowBlockSizes(
 
 // Performs any final adjustments for table-cells at the end of layout.
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
-                             NGBoxFragmentBuilder*);
+                             BoxFragmentBuilder*);
 
 // ColspanCellTabulator keeps track of columns occupied by colspanned cells
 // when traversing rows in a section. It is used to compute cell's actual
@@ -101,7 +102,7 @@ class ColspanCellTabulator {
   unsigned CurrentColumn() { return current_column_; }
   void StartRow();
   void FindNextFreeColumn();
-  void ProcessCell(const NGBlockNode& cell);
+  void ProcessCell(const BlockNode& cell);
   void EndRow();
 
   struct Cell {
@@ -125,8 +126,8 @@ class ColspanCellTabulator {
 // or bottom content edge of non-baseline-aligned cells.
 class RowBaselineTabulator {
  public:
-  void ProcessCell(const NGBoxFragment& fragment,
-                   EVerticalAlign align,
+  void ProcessCell(const LogicalBoxFragment& fragment,
+                   BlockContentAlignment align,
                    bool is_rowspanned,
                    bool descendant_depends_on_percentage_block_size);
 

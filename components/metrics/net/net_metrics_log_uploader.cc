@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -45,7 +46,8 @@ constexpr char kNoUploadUrlsReasonMsg[] =
     "No server upload URLs specified. Will not attempt to retransmit.";
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
-    const metrics::MetricsLogUploader::MetricServiceType& service_type) {
+    const metrics::MetricsLogUploader::MetricServiceType& service_type,
+    const metrics::LogMetadata& log_metadata) {
   // The code in this function should remain so that we won't need a default
   // case that does not have meaningful annotation.
   // Structured Metrics is an UMA consented metric service.
@@ -85,6 +87,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         })");
   }
   DCHECK_EQ(service_type, metrics::MetricsLogUploader::UKM);
+
+  // TODO(b/308003806) Create an annotation for AppKM.
+
   return net::DefineNetworkTrafficAnnotation("metrics_report_ukm", R"(
       semantics {
         sender: "Metrics UKM Log Uploader"
@@ -248,6 +253,7 @@ NetMetricsLogUploader::NetMetricsLogUploader(
 NetMetricsLogUploader::~NetMetricsLogUploader() = default;
 
 void NetMetricsLogUploader::UploadLog(const std::string& compressed_log_data,
+                                      const LogMetadata& log_metadata,
                                       const std::string& log_hash,
                                       const std::string& log_signature,
                                       const ReportingInfo& reporting_info) {
@@ -258,16 +264,17 @@ void NetMetricsLogUploader::UploadLog(const std::string& compressed_log_data,
       reporting_info.last_error_code() != 0 &&
       reporting_info.last_attempt_was_https() &&
       !insecure_server_url_.is_empty()) {
-    UploadLogToURL(compressed_log_data, log_hash, log_signature, reporting_info,
-                   insecure_server_url_);
+    UploadLogToURL(compressed_log_data, log_metadata, log_hash, log_signature,
+                   reporting_info, insecure_server_url_);
     return;
   }
-  UploadLogToURL(compressed_log_data, log_hash, log_signature, reporting_info,
-                 server_url_);
+  UploadLogToURL(compressed_log_data, log_metadata, log_hash, log_signature,
+                 reporting_info, server_url_);
 }
 
 void NetMetricsLogUploader::UploadLogToURL(
     const std::string& compressed_log_data,
+    const LogMetadata& log_metadata,
     const std::string& log_hash,
     const std::string& log_signature,
     const ReportingInfo& reporting_info,
@@ -332,7 +339,7 @@ void NetMetricsLogUploader::UploadLogToURL(
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      GetNetworkTrafficAnnotation(service_type_);
+      GetNetworkTrafficAnnotation(service_type_, log_metadata);
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 

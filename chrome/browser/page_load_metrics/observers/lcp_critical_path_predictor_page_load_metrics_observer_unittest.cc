@@ -12,6 +12,7 @@
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -80,6 +81,10 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     predictors::PredictorInitializer initializer(
         loading_predictor->resource_prefetch_predictor());
     initializer.WaitUntilInitialized();
+
+    max_lcpp_histogram_buckets_ = base::GetFieldTrialParamByFeatureAsInt(
+        features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
+        10);
   }
 
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
@@ -94,10 +99,20 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     hint.lcp_element_locators = {"foo"};
     navigation->GetNavigationHandle()->SetLCPPNavigationHint(hint);
   }
+
   void SetMockLcpElementLocator(
       GURL url,
-      const std::string& mock_element_locator = "foo") {
-    lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator);
+      const std::string& mock_element_locator = "foo",
+      absl::optional<uint32_t> mock_predicted_index = absl::nullopt) {
+    lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator,
+                                               mock_predicted_index);
+  }
+
+  void ExpectNoHistogram(const char* name,
+                         const base::Location& location = FROM_HERE) {
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(name),
+                base::BucketsAre())
+        << location.ToString();
   }
 
   void ConfirmResult(GURL url,
@@ -121,10 +136,9 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
         internal::kHistogramLCPPLargestContentfulPaint, expected_count,
         location);
 
-    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                    internal::kHistogramLCPPPredictSuccess),
-                base::BucketsAre())
-        << location.ToString();
+    ExpectNoHistogram(internal::kHistogramLCPPPredictResult, location);
+    ExpectNoHistogram(internal::kHistogramLCPPPredictHitIndex, location);
+    ExpectNoHistogram(internal::kHistogramLCPPActualLCPIndex, location);
   }
 
   void NavigationWithLCPPHint(GURL url, bool provide_lcpp_hint) {
@@ -175,9 +189,50 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
                   /*learn_lcpp=*/false, /*record_uma=*/activate);
   }
 
+  static const uint32_t kNotFound = static_cast<uint32_t>(-1);
+
+  void TestLCPPrediction(std::vector<uint32_t> predicted_lcp_indexes,
+                         internal::LCPPPredictResult expect) {
+    const GURL main_frame_url("https://test.example");
+    // Let predictor learn pseudo("lcp_previous") LCP locator
+    predictors::ResourcePrefetchPredictor* predictor =
+        predictors::LoadingPredictorFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
+            ->resource_prefetch_predictor();
+    CHECK(predictor);
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.lcp_element_locator = "lcp_previous";
+    predictor->LearnLcpp(main_frame_url.host(), lcpp_data_inputs);
+
+    // Predict LCP with the learned result.
+    NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);
+    for (auto index : predicted_lcp_indexes) {
+      SetMockLcpElementLocator(
+          main_frame_url, "lcp_actual",
+          index == kNotFound ? absl::nullopt : absl::optional<uint32_t>(index));
+    }
+    tester()->NavigateToUntrackedUrl();
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                    internal::kHistogramLCPPPredictResult),
+                base::BucketsAre(base::Bucket(expect, 1)));
+  }
+
+  void ExpectLCPHistogram(const char* name,
+                          uint32_t value,
+                          const base::Location& location = FROM_HERE) {
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(name),
+                base::BucketsAre(base::Bucket(
+                    value + internal::kLCPIndexHistogramOffset, 1)))
+        << location.ToString();
+  }
+
+  int NotFound() { return max_lcpp_histogram_buckets_; }
+
+ private:
   page_load_metrics::mojom::PageLoadTiming timing_;
   std::map<GURL, LcpCriticalPathPredictorPageLoadMetricsObserver*>
       lcpp_observers_;
+  int max_lcpp_histogram_buckets_;
 };
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
@@ -201,40 +256,41 @@ TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPSuccess) {
-  const GURL main_frame_url("https://test.example");
-  const bool provide_lcpp_hint = true;
-  // Navigate main and reload to learn lcpp.
-  NavigationWithLCPPHint(main_frame_url, provide_lcpp_hint);
-  SetMockLcpElementLocator(main_frame_url);
-  // Predict LCP with the learned result.
-  NavigationWithLCPPHint(main_frame_url, provide_lcpp_hint);
-  SetMockLcpElementLocator(main_frame_url);
-  tester()->NavigateToUntrackedUrl();
-  // Expect hit.
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  internal::kHistogramLCPPPredictSuccess),
-              base::BucketsAre(base::Bucket(true, 1)));
+  TestLCPPrediction({0u}, internal::LCPPPredictResult::kSuccess);
+  ExpectLCPHistogram(internal::kHistogramLCPPPredictHitIndex, 0u);
+  ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, 0u);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
+       PredictLCPSuccess2) {
+  TestLCPPrediction({kNotFound, 0u}, internal::LCPPPredictResult::kSuccess);
+  ExpectLCPHistogram(internal::kHistogramLCPPPredictHitIndex, 0u);
+  ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, 0u);
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed) {
-  const GURL main_frame_url("https://test.example");
-  // Let predictor learn pseudo("lcp_previous") LCP locator different from
-  // "actual" LCP locator (which is also pseudo or "lcp_actual" in test BTW.)
-  predictors::ResourcePrefetchPredictor* predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
-          ->resource_prefetch_predictor();
-  CHECK(predictor);
-  predictors::LcppDataInputs lcpp_data_inputs;
-  lcpp_data_inputs.lcp_element_locator = "lcp_previous";
-  predictor->LearnLcpp(main_frame_url.host(), lcpp_data_inputs);
+  TestLCPPrediction({kNotFound}, internal::LCPPPredictResult::kFailureNoHit);
+  ExpectNoHistogram(internal::kHistogramLCPPPredictHitIndex);
+  ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, NotFound());
+}
 
-  // Predict LCP with the learned result.
-  NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);
-  SetMockLcpElementLocator(main_frame_url, "lcp_actual");
-  tester()->NavigateToUntrackedUrl();
-  // Expect failed.
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  internal::kHistogramLCPPPredictSuccess),
-              base::BucketsAre(base::Bucket(false, 1)));
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed2) {
+  TestLCPPrediction({0u, kNotFound},
+                    internal::LCPPPredictResult::kFailureActuallyUnrecordedLCP);
+  ExpectNoHistogram(internal::kHistogramLCPPPredictHitIndex);
+  ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, NotFound());
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed3) {
+  TestLCPPrediction(
+      {0u, 0u}, internal::LCPPPredictResult::kFailureActuallySameButLaterLCP);
+  ExpectNoHistogram(internal::kHistogramLCPPPredictHitIndex);
+  ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, 0u);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed4) {
+  TestLCPPrediction({0u, 1u},
+                    internal::LCPPPredictResult::kFailureActuallySecondaryLCP);
+  ExpectNoHistogram(internal::kHistogramLCPPPredictHitIndex);
+  ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, 1u);
 }

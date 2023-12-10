@@ -19,6 +19,7 @@
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -32,6 +33,8 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -125,7 +128,7 @@ bool InOverviewSession() {
 aura::Window* GetBottomMostSnappedWindowForDeskContainer(
     aura::Window* desk_container) {
   DCHECK(desks_util::IsDeskContainer(desk_container));
-  DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  DCHECK(display::Screen::GetScreen()->InTabletMode());
 
   // For the active desk, only use the windows snapped in SplitViewController if
   // SplitView mode is active.
@@ -210,15 +213,11 @@ BackdropController::BackdropController(aura::Window* container)
   shell->overview_controller()->AddObserver(this);
   shell->accessibility_controller()->AddObserver(this);
   shell->wallpaper_controller()->AddObserver(this);
-  shell->tablet_mode_controller()->AddObserver(this);
 }
 
 BackdropController::~BackdropController() {
   window_backdrop_observations_.RemoveAllObservations();
   auto* shell = Shell::Get();
-  // Shell destroys the TabletModeController before destroying all root windows.
-  if (shell->tablet_mode_controller())
-    shell->tablet_mode_controller()->RemoveObserver(this);
   shell->accessibility_controller()->RemoveObserver(this);
   shell->wallpaper_controller()->RemoveObserver(this);
   if (shell->overview_controller())
@@ -255,13 +254,6 @@ void BackdropController::OnWindowStackingChanged(aura::Window* window) {
     UpdateBackdrop();
 }
 
-void BackdropController::OnDisplayMetricsChanged() {
-  // Display changes such as rotation, device scale factor, ... etc. don't
-  // affect the visibility or availability of the backdrop. They may however
-  // affect its bounds. So just layout.
-  MaybeUpdateLayout();
-}
-
 void BackdropController::OnPostWindowStateTypeChange(aura::Window* window) {
   // When `window` is snapped and about to be put into overview, the backdrop
   // can remain behind the window. We will hide the backdrop early to prevent it
@@ -275,6 +267,17 @@ void BackdropController::OnPostWindowStateTypeChange(aura::Window* window) {
 
   if (DoesWindowCauseBackdropUpdates(window))
     UpdateBackdrop();
+}
+
+void BackdropController::OnDisplayMetricsChanged() {
+  // Display changes such as rotation, device scale factor, ... etc. don't
+  // affect the visibility or availability of the backdrop. They may however
+  // affect its bounds. So just layout.
+  MaybeUpdateLayout();
+}
+
+void BackdropController::OnTabletModeChanged() {
+  UpdateBackdrop();
 }
 
 void BackdropController::OnDeskContentChanged() {
@@ -381,14 +384,6 @@ void BackdropController::OnWallpaperPreviewStarted() {
   }
 }
 
-void BackdropController::OnTabletModeStarted() {
-  UpdateBackdrop();
-}
-
-void BackdropController::OnTabletModeEnded() {
-  UpdateBackdrop();
-}
-
 void BackdropController::OnWindowBackdropPropertyChanged(aura::Window* window) {
   if (DoesWindowCauseBackdropUpdates(window))
     UpdateBackdrop();
@@ -486,33 +481,41 @@ void BackdropController::UpdateAccessibilityMode() {
 
 bool BackdropController::WindowShouldHaveBackdrop(aura::Window* window) {
   WindowBackdrop* window_backdrop = WindowBackdrop::Get(window);
-  if (window_backdrop->temporarily_disabled())
+  if (window_backdrop->temporarily_disabled()) {
     return false;
+  }
 
   WindowBackdrop::BackdropMode backdrop_mode = window_backdrop->mode();
-  if (backdrop_mode == WindowBackdrop::BackdropMode::kEnabled)
+  if (backdrop_mode == WindowBackdrop::BackdropMode::kEnabled) {
     return true;
-  if (backdrop_mode == WindowBackdrop::BackdropMode::kDisabled)
+  }
+  if (backdrop_mode == WindowBackdrop::BackdropMode::kDisabled) {
     return false;
+  }
 
-  if (!desks_util::IsDeskContainer(container_))
+  if (!desks_util::IsDeskContainer(container_)) {
     return false;
+  }
 
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   // Don't show the backdrop in tablet mode for PIP windows.
   auto* state = WindowState::Get(window);
-  if (state->IsPip())
+  if (state->IsPip()) {
     return false;
+  }
 
-  if (!state->IsSnapped())
+  if (!state->IsSnapped()) {
     return true;
+  }
 
   auto* bottom_most_snapped_window =
       GetBottomMostSnappedWindowForDeskContainer(container_);
-  if (!bottom_most_snapped_window)
+  if (!bottom_most_snapped_window) {
     return true;
+  }
   return window == bottom_most_snapped_window;
 }
 
@@ -610,12 +613,13 @@ gfx::Rect BackdropController::GetBackdropBounds() {
   SplitViewController::State state = split_view_controller->state();
   DCHECK(state == SplitViewController::State::kPrimarySnapped ||
          state == SplitViewController::State::kSecondarySnapped);
-  SplitViewController::SnapPosition snap_position =
+  SnapPosition snap_position =
       (state == SplitViewController::State::kPrimarySnapped)
-          ? SplitViewController::SnapPosition::kPrimary
-          : SplitViewController::SnapPosition::kSecondary;
+          ? SnapPosition::kPrimary
+          : SnapPosition::kSecondary;
   return split_view_controller->GetSnappedWindowBoundsInScreen(
-      snap_position, /*window_for_minimum_size=*/nullptr);
+      snap_position, /*window_for_minimum_size=*/nullptr,
+      chromeos::kDefaultSnapRatio);
 }
 
 void BackdropController::Layout() {

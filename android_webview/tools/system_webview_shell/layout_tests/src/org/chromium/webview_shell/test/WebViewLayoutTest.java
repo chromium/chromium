@@ -347,12 +347,12 @@ public class WebViewLayoutTest {
                     errorMessage.append(
                             String.format(
                                     "\n"
-                                        + "At least one of the properties of the Blink interface"
-                                        + " \"%s\" is not exposed in WebView.\n"
-                                        + "Add them to the list of properties not exposed for the"
-                                        + " \"%s\" interface in\n"
-                                        + "%s\n"
-                                        + "to resolve this error\n",
+                                            + "At least one of the properties of the Blink interface"
+                                            + " \"%s\" is not exposed in WebView.\n"
+                                            + "Add them to the list of properties not exposed for the"
+                                            + " \"%s\" interface in\n"
+                                            + "%s\n"
+                                            + "to resolve this error\n",
                                     blinkInterface,
                                     blinkInterface,
                                     NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));

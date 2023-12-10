@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] AbsoluteOrientationSensor: unfocused sensors in cross-origin frames are not updated
+  promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
+Harness: the test ran to completion.

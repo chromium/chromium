@@ -14,6 +14,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  constexpr size_t kMaxInputSize = 100 * 1000;
+  if (size > kMaxInputSize) {
+    // To avoid spurious timeout and out-of-memory fuzz reports.
+    return 0;
+  }
+
   absl::optional<base::Value> value = base::JSONReader::Read(
       base::StringPiece(reinterpret_cast<const char*>(data), size));
   if (!value)

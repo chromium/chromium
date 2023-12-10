@@ -108,8 +108,9 @@ class MockUsbDelegate : public UsbDelegate {
   MOCK_METHOD2(GetDeviceInfo,
                const device::mojom::UsbDeviceInfo*(BrowserContext*,
                                                    const std::string& guid));
-  MOCK_METHOD3(HasDevicePermission,
+  MOCK_METHOD4(HasDevicePermission,
                bool(BrowserContext*,
+                    RenderFrameHost*,
                     const url::Origin&,
                     const device::mojom::UsbDeviceInfo&));
   MOCK_METHOD2(GetDevices,

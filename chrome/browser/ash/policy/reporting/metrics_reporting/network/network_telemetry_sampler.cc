@@ -187,7 +187,7 @@ void NetworkTelemetrySampler::CollectNetworksStates(
   ::ash::NetworkStateHandler::NetworkStateList network_state_list =
       GetNetworkStateList();
   if (network_state_list.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -274,7 +274,7 @@ void NetworkTelemetrySampler::CollectNetworksStates(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace reporting

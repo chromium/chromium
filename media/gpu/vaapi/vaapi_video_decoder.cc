@@ -446,8 +446,34 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       SetState(State::kWaitingForProtected);
       // If we have lost our protected HW session, it should be recoverable, so
       // indicate that we have lost our decoder state so it can be reloaded.
-      if (decoder_delegate_->HasInitiatedProtectedRecovery())
+      if (decoder_delegate_->HasInitiatedProtectedRecovery()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        // We only do the VAContext recreation for Chrome playback because there
+        // is no mechanism in ARC to re-seek so we would end up using invalid
+        // reference frames.
+        CHECK(cdm_context_ref_);
+        if (!cdm_context_ref_->GetCdmContext()
+                 ->GetChromeOsCdmContext()
+                 ->UsingArcCdm()) {
+          // The VA-API requires surfaces to outlive the contexts using them.
+          // Fortunately, if we got here, any context should have already been
+          // destroyed.
+          CHECK(!!vaapi_wrapper_);
+          CHECK(!vaapi_wrapper_->HasContext());
+          allocated_va_surfaces_.clear();
+          const gfx::Size decoder_pic_size = decoder_->GetPicSize();
+          if (decoder_pic_size.IsEmpty()) {
+            SetErrorState("|decoder_| returned an empty picture size");
+            return;
+          }
+          if (!vaapi_wrapper_->CreateContext(decoder_pic_size)) {
+            SetErrorState("failed creating VAContext");
+            return;
+          }
+        }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         waiting_cb_.Run(WaitingReason::kDecoderStateLost);
+      }
       break;
   }
 }

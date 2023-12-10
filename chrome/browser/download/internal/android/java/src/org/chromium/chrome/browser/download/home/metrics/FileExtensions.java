@@ -26,8 +26,23 @@ public final class FileExtensions {
     /** A list of enumerated file extensions. */
     // These statics are used for UMA logging. Please update the AndroidDownloadFilterType enum in
     // histograms.xml if these change.
-    @IntDef({Type.OTHER, Type.APK, Type.CSV, Type.DOC, Type.DOCX, Type.EXE, Type.PDF, Type.PPT,
-            Type.PPTX, Type.PSD, Type.RTF, Type.TXT, Type.XLS, Type.XLSX, Type.ZIP})
+    @IntDef({
+        Type.OTHER,
+        Type.APK,
+        Type.CSV,
+        Type.DOC,
+        Type.DOCX,
+        Type.EXE,
+        Type.PDF,
+        Type.PPT,
+        Type.PPTX,
+        Type.PSD,
+        Type.RTF,
+        Type.TXT,
+        Type.XLS,
+        Type.XLSX,
+        Type.ZIP
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         int OTHER = 0;
@@ -49,6 +64,7 @@ public final class FileExtensions {
     }
 
     private static final Map<String, Integer> EXTENSIONS_MAP;
+
     static {
         Map<String, Integer> extensions = new HashMap<>();
         extensions.put("apk", Type.APK);

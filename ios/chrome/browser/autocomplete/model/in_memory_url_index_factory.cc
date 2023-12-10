@@ -12,7 +12,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

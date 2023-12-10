@@ -50,4 +50,4 @@ class MojomDevToolsAgentHost : public DevToolsAgentHostImpl {
 };
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_DEVTOOLS_MOJOM_DEVTOOLS_AGENT_HOST_H_

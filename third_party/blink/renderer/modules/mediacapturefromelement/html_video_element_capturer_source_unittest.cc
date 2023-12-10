@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using base::test::RunOnceClosure;
@@ -157,6 +158,7 @@ class HTMLVideoElementCapturerSourceTest : public testing::TestWithParam<bool> {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockWebMediaPlayer> web_media_player_;
   std::unique_ptr<HtmlVideoElementCapturerSource> html_video_capturer_;
 };

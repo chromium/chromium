@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -166,12 +167,11 @@ public class ChromeBackupAgentTest {
     }
 
     /**
-     * Test method for {@link ChromeBackupAgent#onBackup} testing first backup
-     *
+     * Test method for {@link ChromeBackupAgent#onBackup} testing first backup with a syncing
+     * account.
      */
     @Test
-    @SuppressWarnings("unchecked")
-    public void testOnBackup_firstBackup() throws IOException, ClassNotFoundException {
+    public void testOnBackup_firstBackup_syncing() throws IOException, ClassNotFoundException {
         // Mock the backup data.
         BackupDataOutput backupData = mock(BackupDataOutput.class);
 
@@ -209,18 +209,24 @@ public class ChromeBackupAgentTest {
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData)
                 .writeEntityHeader(
-                        "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY,
+                        "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
                         unameBytes.length);
         verify(backupData).writeEntityData(unameBytes, unameBytes.length);
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
+                        uidBytes.length);
+        verify(backupData).writeEntityData(uidBytes, uidBytes.length);
 
         verify(backupData, times(0))
                 .writeEntityHeader(eq("AndroidDefault." + PREFERENCE_KEY_NOT_BACKED_UP), anyInt());
 
-        // Check that the state was saved correctly
+        // Check that the state was saved correctly.
         try (ObjectInputStream newStateStream =
                 new ObjectInputStream(new FileInputStream(stateFile))) {
             ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-            assertThat(names.size(), equalTo(6));
+            assertThat(names.size(), equalTo(7));
             assertThat(names, hasItem("native.pref1"));
             assertThat(
                     names,
@@ -242,11 +248,113 @@ public class ChromeBackupAgentTest {
                                     + ChromePreferenceKeys
                                             .PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER));
             assertThat(
+                    names, hasItem("AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY));
+            assertThat(
                     names,
-                    hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY));
+                    hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
             ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-            assertThat(values.size(), equalTo(6));
+            assertThat(values.size(), equalTo(7));
             assertThat(values, hasItem(unameBytes));
+            assertThat(values, hasItem(uidBytes));
+            assertThat(values, hasItem(new byte[] {0}));
+            assertThat(values, hasItem(new byte[] {1}));
+
+            // Make sure that there are no extra objects.
+            assertThat(newStateStream.available(), equalTo(0));
+        }
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onBackup} testing first backup with a signed-in only
+     * user.
+     */
+    @Test
+    public void testOnBackup_firstBackup_signedInNotSyncing()
+            throws IOException, ClassNotFoundException {
+        // Mock the backup data.
+        BackupDataOutput backupData = mock(BackupDataOutput.class);
+
+        // Set up some preferences to back up.
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        setUpTestPrefs(prefs);
+        doReturn(null).when(mIdentityManagerMock).getPrimaryAccountInfo(ConsentLevel.SYNC);
+
+        File stateFile = mTempDir.newFile();
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(stateFile, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            // Run the test function.
+            mAgent.onBackup(null, backupData, newState);
+        }
+
+        // Check that the right things were written to the backup
+        verify(backupData).writeEntityHeader("native.pref1", 1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, 1);
+        verify(backupData, times(2)).writeEntityData(new byte[] {1}, 1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault."
+                                + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
+                        1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault."
+                                + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                        1);
+        verify(backupData, times(3)).writeEntityData(new byte[] {0}, 1);
+        byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
+        verify(backupData, times(0))
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
+                        unameBytes.length);
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
+                        uidBytes.length);
+        verify(backupData).writeEntityData(uidBytes, uidBytes.length);
+
+        verify(backupData, times(0))
+                .writeEntityHeader(eq("AndroidDefault." + PREFERENCE_KEY_NOT_BACKED_UP), anyInt());
+
+        // Check that the state was saved correctly
+        try (ObjectInputStream newStateStream =
+                new ObjectInputStream(new FileInputStream(stateFile))) {
+            ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
+            assertThat(names.size(), equalTo(7));
+            assertThat(names, hasItem("native.pref1"));
+            assertThat(
+                    names,
+                    hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
+            assertThat(
+                    names,
+                    hasItem(
+                            "AndroidDefault."
+                                    + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED));
+            assertThat(
+                    names,
+                    hasItem(
+                            "AndroidDefault."
+                                    + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE));
+            assertThat(
+                    names,
+                    hasItem(
+                            "AndroidDefault."
+                                    + ChromePreferenceKeys
+                                            .PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER));
+            assertThat(
+                    names, hasItem("AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY));
+            assertThat(
+                    names,
+                    hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
+            ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
+            assertThat(values.size(), equalTo(7));
+            assertThat(values, not(hasItem(unameBytes)));
+            assertThat(values, hasItem(uidBytes));
             assertThat(values, hasItem(new byte[] {0}));
             assertThat(values, hasItem(new byte[] {1}));
 
@@ -275,8 +383,8 @@ public class ChromeBackupAgentTest {
         }
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(6)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(6)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
 
         File stateFile2 = mTempDir.newFile();
         try (ParcelFileDescriptor oldState =
@@ -325,8 +433,8 @@ public class ChromeBackupAgentTest {
             mAgent.onBackup(null, backupData, newState);
         }
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(6)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(6)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
 
         // Change some data.
         SharedPreferences.Editor editor = prefs.edit();
@@ -346,8 +454,8 @@ public class ChromeBackupAgentTest {
         }
 
         // Check that the second backup wrote something.
-        verify(backupData, times(6)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(6)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
 
         // the two state files should contain different data (although the names are unchanged).
         try (ObjectInputStream oldStateStream =
@@ -409,10 +517,12 @@ public class ChromeBackupAgentTest {
             "native.pref2",
             "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
             "AndroidDefault.junk",
-            "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY
+            "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
+            "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
         };
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
-        final byte[][] values = {{0}, {1}, {1}, {23, 42}, unameBytes};
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        final byte[][] values = {{0}, {1}, {1}, {23, 42}, unameBytes, uidBytes};
         when(backupData.getKey())
                 .thenAnswer(
                         new Answer<String>() {
@@ -457,7 +567,7 @@ public class ChromeBackupAgentTest {
 
                             @Override
                             public Boolean answer(InvocationOnMock invocation) {
-                                return mPos++ < 5;
+                                return mPos++ < 6;
                             }
                         });
         return backupData;
@@ -482,6 +592,7 @@ public class ChromeBackupAgentTest {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
         assertFalse(prefs.contains("junk"));
+        assertFalse(prefs.contains(ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
         verify(mChromeBackupAgentJniMock)
                 .setBoolBackupPrefs(
                         mAgent, new String[] {"pref1", "pref2"}, new boolean[] {false, true});

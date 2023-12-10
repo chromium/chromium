@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Additional data required for publishing and handling a merchant trust signals message.
- */
+/** Additional data required for publishing and handling a merchant trust signals message. */
 class MerchantTrustMessageContext {
     private final WebContents mWebContents;
     private final NavigationHandle mNavigationHandle;
@@ -58,7 +56,10 @@ class MerchantTrustMessageContext {
 
     /* Checks whether or not the context is valid. */
     boolean isValid() {
-        return mWebContents != null && !mWebContents.isDestroyed() && mNavigationHandle != null
-                && mNavigationHandle.getUrl() != null && !mNavigationHandle.getUrl().isEmpty();
+        return mWebContents != null
+                && !mWebContents.isDestroyed()
+                && mNavigationHandle != null
+                && mNavigationHandle.getUrl() != null
+                && !mNavigationHandle.getUrl().isEmpty();
     }
 }

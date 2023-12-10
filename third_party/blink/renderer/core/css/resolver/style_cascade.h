@@ -151,6 +151,19 @@ class CORE_EXPORT StyleCascade {
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> GetCascadedValues()
       const;
 
+  // Resolves a single CSSValue in the context of some StyleResolverState.
+  //
+  // This is intended for use by the Inspector Agent.
+  //
+  // The function is primarily useful for eliminating var()/env() references.
+  // It will also handle other kinds of resolution (e.g. eliminate 'revert'),
+  // but note that the specified declaration will appear alone and uncontested
+  // in a temporary StyleCascade, so e.g. 'revert' always becomes 'unset',
+  // as there is nothing else to revert to.
+  static const CSSValue* Resolve(StyleResolverState&,
+                                 const CSSPropertyName&,
+                                 const CSSValue&);
+
  private:
   friend class TestCascade;
 
@@ -403,6 +416,17 @@ class CORE_EXPORT StyleCascade {
   // Marks a CSSProperty as having a reference to a custom property. Needed to
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
+
+  // Declarations originating from @try rules are treated as revert-layer
+  // if we're not out-of-flow positioned. Since such declarations exist
+  // in a separate layer, this has the effect of @try-originating rules
+  // applying *conditionally* based on the positioning.
+  //
+  // This behavior is needed because we speculatively add the the try set
+  // to the cascade, and rely on out-of-flow layout to correct us later.
+  // However, if we *stop* being out-of-flow positioned, that correction
+  // never happens.
+  bool TreatAsRevertLayer(CascadePriority) const;
 
   const Document& GetDocument() const;
   const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);

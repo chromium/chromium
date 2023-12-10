@@ -12,7 +12,6 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/version_info/channel.h"
-#include "components/version_info/version_info.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -80,6 +79,10 @@ class VariationsServiceClient {
   // This is a no-op on platforms that do not support multiple profiles.
   virtual void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) = 0;
+
+  // Registers the group membership of the limited entropy synthetic trial.
+  // TODO(crbug.com/1508150): Remove once the trial has wrapped up.
+  void RegisterLimitedEntropySyntheticTrial(std::string_view group_name);
 
  private:
   // Gets the channel of the embedder. But all variations callers should use

@@ -9,21 +9,20 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -173,21 +172,21 @@ class SimpleFeature : public Feature {
     return extension_types_;
   }
   const std::vector<Platform>& platforms() const { return platforms_; }
-  const absl::optional<std::vector<Context>>& contexts() const {
+  const std::optional<std::vector<Context>>& contexts() const {
     return contexts_;
   }
   const std::vector<std::string>& dependencies() const { return dependencies_; }
-  const absl::optional<version_info::Channel> channel() const {
+  const std::optional<version_info::Channel> channel() const {
     return channel_;
   }
-  const absl::optional<Location> location() const { return location_; }
-  const absl::optional<int> min_manifest_version() const {
+  const std::optional<Location> location() const { return location_; }
+  const std::optional<int> min_manifest_version() const {
     return min_manifest_version_;
   }
-  const absl::optional<int> max_manifest_version() const {
+  const std::optional<int> max_manifest_version() const {
     return max_manifest_version_;
   }
-  const absl::optional<std::string>& command_line_switch() const {
+  const std::optional<std::string>& command_line_switch() const {
     return command_line_switch_;
   }
   bool component_extensions_auto_granted() const {
@@ -301,20 +300,20 @@ class SimpleFeature : public Feature {
   std::vector<std::string> dependencies_;
   std::vector<Manifest::Type> extension_types_;
   std::vector<mojom::FeatureSessionType> session_types_;
-  absl::optional<std::vector<Context>> contexts_;
+  std::optional<std::vector<Context>> contexts_;
   std::vector<Platform> platforms_;
   URLPatternSet matches_;
 
-  absl::optional<Location> location_;
-  absl::optional<int> min_manifest_version_;
-  absl::optional<int> max_manifest_version_;
-  absl::optional<std::string> command_line_switch_;
-  absl::optional<std::string> feature_flag_;
-  absl::optional<version_info::Channel> channel_;
+  std::optional<Location> location_;
+  std::optional<int> min_manifest_version_;
+  std::optional<int> max_manifest_version_;
+  std::optional<std::string> command_line_switch_;
+  std::optional<std::string> feature_flag_;
+  std::optional<version_info::Channel> channel_;
   // Whether to ignore channel-based restrictions (such as because the user has
   // enabled experimental extension APIs). Note: this is lazily calculated, and
   // then cached.
-  mutable absl::optional<bool> ignore_channel_;
+  mutable std::optional<bool> ignore_channel_;
 
   // If set and the feature needs to be overridden, this is the handler used
   // to perform the override availability check.

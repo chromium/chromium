@@ -207,7 +207,7 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
     // changed events.
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
-            [](DictationButtonTray* tray) -> absl::optional<float> {
+            [](DictationButtonTray* tray) -> std::optional<float> {
               // If download is in-progress, return the progress as a decimal.
               // Otherwise, the progress indicator shouldn't be painted.
               const int progress = tray->download_progress();

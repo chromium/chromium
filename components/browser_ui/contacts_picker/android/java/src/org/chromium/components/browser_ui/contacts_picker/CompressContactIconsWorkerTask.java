@@ -18,9 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-/**
- * A worker task to retrieve images for contacts.
- */
+/** A worker task to retrieve images for contacts. */
 public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
     private ContentResolver mContentResolver;
     private Set<String> mNoIconIds;
@@ -30,13 +28,9 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
 
     public static boolean sDisableForTesting;
 
-    /**
-     * An interface to use to communicate back the results to the client.
-     */
+    /** An interface to use to communicate back the results to the client. */
     public interface CompressContactIconsCallback {
-        /**
-         * @param selectedContacts The list of selected contacts with their icons.
-         */
+        /** @param selectedContacts The list of selected contacts with their icons. */
         void iconsCompressed(List<ContactDetails> selectedContacts);
     }
 
@@ -46,9 +40,11 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
      * @param selectedContacts The list of contacts selected by the user.
      * @param callback The callback to return the results to.
      */
-    public CompressContactIconsWorkerTask(ContentResolver contentResolver,
+    public CompressContactIconsWorkerTask(
+            ContentResolver contentResolver,
             PickerCategoryView.ContactsBitmapCache bitmapCache,
-            List<ContactDetails> selectedContacts, CompressContactIconsCallback callback) {
+            List<ContactDetails> selectedContacts,
+            CompressContactIconsCallback callback) {
         mContentResolver = contentResolver;
         mNoIconIds = bitmapCache.noIconIds;
         mBitmaps = new HashMap<>();
@@ -77,8 +73,9 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
                 if (drawable != null && drawable instanceof BitmapDrawable) {
                     icon = ((BitmapDrawable) drawable).getBitmap();
                 } else if (!contact.isSelf()) {
-                    icon = new FetchIconWorkerTask(contact.getId(), mContentResolver, null)
-                                   .doInBackground();
+                    icon =
+                            new FetchIconWorkerTask(contact.getId(), mContentResolver, null)
+                                    .doInBackground();
                 }
             }
 
@@ -100,6 +97,7 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
 
     /**
      * Communicates the results back to the client. Called on the UI thread.
+     *
      * @param result Unused Void variable.
      */
     @Override

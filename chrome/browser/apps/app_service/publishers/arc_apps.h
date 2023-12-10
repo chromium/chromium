@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -36,13 +37,13 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -121,6 +122,8 @@ class ArcApps : public KeyedService,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
+  void SetAppLocale(const std::string& app_id,
+                    const std::string& locale_tag) override;
 
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
@@ -160,11 +163,12 @@ class ArcApps : public KeyedService,
   void OnInstallationActiveChanged(const std::string& package_name,
                                    bool active) override;
   void OnInstallationFinished(const std::string& package_name,
-                              bool success) override;
+                              bool success,
+                              bool is_launchable_app) override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
-      const absl::optional<std::string>& package_name) override;
+      const std::optional<std::string>& package_name) override;
   void OnArcSupportedLinksChanged(
       const std::vector<arc::mojom::SupportedLinksPackagePtr>& added,
       const std::vector<arc::mojom::SupportedLinksPackagePtr>& removed,
@@ -215,10 +219,19 @@ class ArcApps : public KeyedService,
 
   // Bound by |arc_app_shortcuts_request_|'s OnGetAppShortcutItems method.
   void OnGetAppShortcutItems(
-      const base::TimeTicks start_time,
       MenuItems menu_items,
       base::OnceCallback<void(MenuItems)> callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
+
+  // Observes DisabledSystemFeaturesList policy.
+  void ObserveDisabledSystemFeaturesPolicy();
+
+  // Triggered when DisabledSystemFeaturesList policy changes.
+  void OnDisableListPolicyChanged();
+
+  // Returns true if the app is suspended.
+  bool IsAppSuspended(const std::string& app_id,
+                      const ArcAppListPrefs::AppInfo& app_info);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
@@ -259,6 +272,10 @@ class ArcApps : public KeyedService,
       instance_registry_observation_{this};
 
   bool settings_app_is_active_ = false;
+
+  bool settings_app_is_disabled_ = false;
+
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   base::WeakPtrFactory<ArcApps> weak_ptr_factory_{this};
 };

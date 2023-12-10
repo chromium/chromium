@@ -15,8 +15,9 @@
 namespace reporting {
 
 // Helper class for memory buffer allocation, with memory availability
-// controlled by resource manager. Memory is not initialized.
-// Not thread-safe, must be only used sequentially.
+// controlled by resource manager. Calling `Allocate` would not initialize
+// memory or preserve any existing data in the buffer. Not thread-safe, must be
+// only used sequentially.
 class ResourceManagedBuffer {
  public:
   explicit ResourceManagedBuffer(

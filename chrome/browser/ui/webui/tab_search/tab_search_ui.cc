@@ -10,6 +10,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -57,6 +59,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
       {"expandRecentlyClosed", IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED},
       {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
+      {"audioRecording", IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT},
+      {"videoRecording", IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT},
       {"mediaTabs", IDS_TAB_SEARCH_MEDIA_TABS},
       {"noResultsFound", IDS_TAB_SEARCH_NO_RESULTS_FOUND},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
@@ -70,31 +74,49 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       // Tab organization UI strings
       {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
       {"dismiss", IDS_TAB_ORGANIZATION_DISMISS},
-      {"failureBodyGeneric", IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC},
-      {"failureBodyGrouping", IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING},
+      {"failureBodyGenericPreLink",
+       IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK},
+      {"failureBodyGroupingPreLink",
+       IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK},
+      {"failureBodyGenericLink",
+       IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_LINK},
+      {"failureBodyGroupingLink",
+       IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_LINK},
+      {"failureBodyGenericPostLink",
+       IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_POST_LINK},
+      {"failureBodyGroupingPostLink",
+       IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK},
       {"failureTitleGeneric", IDS_TAB_ORGANIZATION_FAILURE_TITLE_GENERIC},
       {"failureTitleGrouping", IDS_TAB_ORGANIZATION_FAILURE_TITLE_GROUPING},
       {"inProgressTitle", IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE},
+      {"learnMore", IDS_TAB_ORGANIZATION_LEARN_MORE},
       {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
       {"notStartedBodyFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE},
+      {"notStartedBodySignedOut",
+       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT},
+      {"notStartedBodySyncPaused",
+       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SYNC_PAUSED},
       {"notStartedBodyUnsynced",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED},
       {"notStartedBodyUnsyncedHistory",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED_HISTORY},
       {"notStartedButton", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON},
+      {"notStartedButtonFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE},
+      {"notStartedButtonSyncPaused",
+       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED},
       {"notStartedButtonUnsynced",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED},
       {"notStartedButtonUnsyncedHistory",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY},
-      {"notStartedButtonSyncPaused",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED},
       {"notStartedTitle", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE},
       {"notStartedTitleFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE},
       {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
-      {"tipTitle", IDS_TAB_ORGANIZATION_TIP_TITLE},
-      {"tipBody", IDS_TAB_ORGANIZATION_TIP_BODY},
       {"tipAction", IDS_TAB_ORGANIZATION_TIP_ACTION},
+      {"tipBody", IDS_TAB_ORGANIZATION_TIP_BODY},
+      {"tipTitle", IDS_TAB_ORGANIZATION_TIP_TITLE},
+      {"thumbsDown", IDS_THUMBS_DOWN},
+      {"thumbsUp", IDS_THUMBS_UP},
   };
   webui::SetupChromeRefresh2023(source);
   source->AddLocalizedStrings(kStrings);
@@ -115,8 +137,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddDouble(
       "searchThreshold",
       std::clamp<double>(features::kTabSearchSearchThreshold.Get(),
-                          features::kTabSearchSearchThresholdMin,
-                          features::kTabSearchSearchThresholdMax));
+                         features::kTabSearchSearchThresholdMin,
+                         features::kTabSearchSearchThresholdMax));
   source->AddDouble("searchTitleWeight", features::kTabSearchTitleWeight.Get());
   source->AddDouble("searchHostnameWeight",
                     features::kTabSearchHostnameWeight.Get());
@@ -131,7 +153,16 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       "recentlyClosedDefaultItemDisplayCount",
       features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
 
-  source->AddBoolean("tabOrganizationEnabled", features::IsTabOrganization());
+  bool tab_organization_enabled = false;
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
+    const auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(profile);
+    if (tab_organization_service) {
+      tab_organization_enabled = true;
+    }
+  }
+  source->AddBoolean("tabOrganizationEnabled", tab_organization_enabled);
+
   source->AddInteger("tabIndex", TabIndex());
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
 

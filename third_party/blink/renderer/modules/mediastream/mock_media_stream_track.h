@@ -123,6 +123,12 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MOCK_CONST_METHOD1(TransferAllowed, bool(String&));
 
 #if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD2(SendWheel,
+               void(CapturedWheelAction*,
+                    base::OnceCallback<void(bool, const String&)>));
+  MOCK_METHOD1(
+      GetZoomLevel,
+      void(base::OnceCallback<void(absl::optional<int>, const String&)>));
   MOCK_METHOD0(CloseFocusWindowOfOpportunity, void());
 #endif
 

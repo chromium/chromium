@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_BASE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -29,10 +29,17 @@ class CORE_EXPORT LayoutRubyBase final : public LayoutNGBlockFlow {
   void MoveChildren(LayoutRubyBase& to_base,
                     LayoutObject* before_child = nullptr);
 
+  // Returns true if this object was created for a RubyText without a
+  // corresponding RubyBase.
+  bool IsPlaceholder() const;
+  void SetPlaceholder();
+
  private:
   void MoveInlineChildrenTo(LayoutRubyBase& to_base,
                             LayoutObject* before_child);
   void MoveBlockChildrenTo(LayoutRubyBase& to_base, LayoutObject* before_child);
+
+  bool is_placeholder_ = false;
 };
 
 template <>

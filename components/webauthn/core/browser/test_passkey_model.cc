@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -80,6 +81,36 @@ TestPasskeyModel::GetPasskeysForRelyingPartyId(const std::string& rp_id) const {
   return passkey_model_utils::FilterShadowedCredentials(passkeys);
 }
 
+sync_pb::WebauthnCredentialSpecifics TestPasskeyModel::CreatePasskey(
+    std::string_view rp_id,
+    const UserEntity& user_entity,
+    base::span<const uint8_t> trusted_vault_key,
+    int32_t trusted_vault_key_version,
+    std::vector<uint8_t>* public_key_spki_der_out) {
+  auto [specifics, public_key_spki_der] =
+      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+          rp_id, user_entity, trusted_vault_key, trusted_vault_key_version);
+
+  AddShadowedCredentialIdsToNewPasskey(specifics);
+  credentials_.push_back(specifics);
+
+  NotifyPasskeysChanged(
+      {PasskeyModelChange(PasskeyModelChange::ChangeType::ADD, specifics)});
+
+  if (public_key_spki_der_out != nullptr) {
+    *public_key_spki_der_out = std::move(public_key_spki_der);
+  }
+  return specifics;
+}
+
+void TestPasskeyModel::CreatePasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  AddShadowedCredentialIdsToNewPasskey(passkey);
+  credentials_.push_back(passkey);
+  NotifyPasskeysChanged(
+      {PasskeyModelChange(PasskeyModelChange::ChangeType::ADD, passkey)});
+}
+
 std::string TestPasskeyModel::AddNewPasskeyForTesting(
     sync_pb::WebauthnCredentialSpecifics passkey) {
   credentials_.push_back(passkey);
@@ -123,6 +154,17 @@ void TestPasskeyModel::NotifyPasskeysChanged(
     const std::vector<PasskeyModelChange>& changes) {
   for (auto& observer : observers_) {
     observer.OnPasskeysChanged(changes);
+  }
+}
+
+void TestPasskeyModel::AddShadowedCredentialIdsToNewPasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  for (const auto& existing_passkey : credentials_) {
+    if (existing_passkey.rp_id() == passkey.rp_id() &&
+        existing_passkey.user_id() == passkey.user_id()) {
+      passkey.add_newly_shadowed_credential_ids(
+          existing_passkey.credential_id());
+    }
   }
 }
 

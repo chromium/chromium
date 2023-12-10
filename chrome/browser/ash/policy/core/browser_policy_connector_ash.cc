@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -48,7 +50,7 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 #include "chrome/browser/ash/policy/remote_commands/affiliated_remote_commands_invalidator.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
@@ -119,6 +121,8 @@ BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
 BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
   DCHECK(ash::InstallAttributes::IsInitialized());
 
+  crd_admin_session_controller_ = std::make_unique<CrdAdminSessionController>();
+
   // DBusThreadManager or DeviceSettingsService may be
   // uninitialized on unit tests.
   if (ash::DBusThreadManager::IsInitialized() &&
@@ -139,9 +143,6 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
             base::BindRepeating(&GetChromePolicyDetails),
             CreateBackgroundTaskRunner(), device_policy_external_data_path,
             device_cloud_policy_store.get());
-
-    crd_admin_session_controller_ =
-        std::make_unique<CrdAdminSessionController>();
 
     device_cloud_policy_manager_ = new DeviceCloudPolicyManagerAsh(
         std::move(device_cloud_policy_store), std::move(external_data_manager),
@@ -286,8 +287,16 @@ void BrowserPolicyConnectorAsh::Init(
           std::make_unique<ScheduledTaskExecutorImpl>(
               DeviceScheduledRebootHandler::kRebootTimerTag),
           reboot_notifications_scheduler_.get());
+}
 
-  crd_admin_session_controller_->Init(local_state);
+void BrowserPolicyConnectorAsh::OnBrowserStarted() {
+  ChromeBrowserPolicyConnector::OnBrowserStarted();
+
+  // `ash::Shell` is not available when `BrowserPolicyConnectorAsh::Init` is
+  // invoked, so we must delay this initialization until now.
+  crd_admin_session_controller_->Init(
+      local_state_,
+      CHECK_DEREF(ash::Shell::Get()).security_curtain_controller());
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {
@@ -301,6 +310,10 @@ void BrowserPolicyConnectorAsh::PreShutdown() {
   if (affiliated_invalidation_service_provider_) {
     affiliated_invalidation_service_provider_->Shutdown();
   }
+
+  // This controller depends on the `SecurityCurtainController` which will be
+  // destroyed before `BrowserPolicyConnectorAsh::Shutdown` is invoked.
+  crd_admin_session_controller_->Shutdown();
 }
 
 void BrowserPolicyConnectorAsh::Shutdown() {

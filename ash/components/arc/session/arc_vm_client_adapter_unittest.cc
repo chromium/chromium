@@ -370,7 +370,7 @@ class ArcVmClientAdapterTest : public testing::Test,
     GetTestConciergeClient()->set_start_vm_response(start_vm_response);
 
     // Reset to the original behavior.
-    SetArcVmBootNotificationServerFdForTesting(absl::nullopt);
+    SetArcVmBootNotificationServerFdForTesting(std::nullopt);
 
     const std::string abstract_addr(GenerateAbstractAddress());
     boot_server_ = std::make_unique<TestArcVmBootNotificationServer>();
@@ -596,10 +596,10 @@ class ArcVmClientAdapterTest : public testing::Test,
   base::RunLoop* run_loop() { return run_loop_.get(); }
   ArcClientAdapter* adapter() { return adapter_.get(); }
 
-  const absl::optional<bool>& is_system_shutdown() const {
+  const std::optional<bool>& is_system_shutdown() const {
     return is_system_shutdown_;
   }
-  void reset_is_system_shutdown() { is_system_shutdown_ = absl::nullopt; }
+  void reset_is_system_shutdown() { is_system_shutdown_ = std::nullopt; }
   TestConciergeClient* GetTestConciergeClient() {
     return static_cast<TestConciergeClient*>(ash::ConciergeClient::Get());
   }
@@ -638,7 +638,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<ArcClientAdapter> adapter_;
-  absl::optional<bool> is_system_shutdown_;
+  std::optional<bool> is_system_shutdown_;
 
   content::BrowserTaskEnvironment browser_task_environment_;
   base::ScopedTempDir dir_;
@@ -1158,7 +1158,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopExistingVmFailure) {
 
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopExistingVmFailureEmptyReply) {
   // Inject failure.
-  GetTestConciergeClient()->set_stop_vm_response(absl::nullopt);
+  GetTestConciergeClient()->set_stop_vm_response(std::nullopt);
 
   StartMiniArcWithParams(false, {});
 
@@ -1193,7 +1193,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmFailure) {
 
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmFailureEmptyReply) {
   // Inject failure to StartArcVm(). This emulates D-Bus timeout situations.
-  GetTestConciergeClient()->set_start_vm_response(absl::nullopt);
+  GetTestConciergeClient()->set_start_vm_response(std::nullopt);
 
   StartMiniArcWithParams(false, {});
 
@@ -1524,7 +1524,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_Disabled) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskimageResponseEmpty) {
   // CreateDiskImage() returns an empty response.
-  GetTestConciergeClient()->set_create_disk_image_response(absl::nullopt);
+  GetTestConciergeClient()->set_create_disk_image_response(std::nullopt);
 
   // StartArcVm should NOT be called.
   StartParams start_params(GetPopulatedStartParams());
@@ -1688,7 +1688,7 @@ TEST_F(ArcVmClientAdapterTest, ArcErofsImagesEnabled) {
 
 // Tests that the binary translation type is set to None when no library is
 // enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNone) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNone) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
@@ -1699,7 +1699,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNone) {
 
 // Tests that the binary translation type is set to Houdini when only 32-bit
 // Houdini library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeHoudini) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1712,7 +1712,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini) {
 
 // Tests that the binary translation type is set to Houdini when only 64-bit
 // Houdini library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini64) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeHoudini64) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini64"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1725,7 +1725,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini64) {
 
 // Tests that the binary translation type is set to NDK translation when only
 // 32-bit NDK translation library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNdkTranslation) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-ndk-translation"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1738,7 +1738,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation) {
 
 // Tests that the binary translation type is set to NDK translation when only
 // 64-bit NDK translation library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation64) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNdkTranslation64) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-ndk-translation64"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1752,7 +1752,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation64) {
 // Tests that the binary translation type is set to NDK translation when both
 // Houdini and NDK translation libraries are enabled by USE flags, and the
 // parameter start_params.native_bridge_experiment is set to true.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNativeBridgeExperiment) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNativeBridgeExperiment) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini", "--enable-ndk-translation"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1767,7 +1767,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNativeBridgeExperiment) {
 // Tests that the binary translation type is set to Houdini when both Houdini
 // and NDK translation libraries are enabled by USE flags, and the parameter
 // start_params.native_bridge_experiment is set to false.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNoNativeBridgeExperiment) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNoNativeBridgeExperiment) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini", "--enable-ndk-translation"});
   StartParams start_params(GetPopulatedStartParams());
@@ -2246,7 +2246,7 @@ TEST_F(ArcVmClientAdapterTest, OnConnectionReady_ArcVmCompleteBootFailure) {
   UpgradeArc(true);
 
   // Inject the failure.
-  absl::optional<vm_tools::concierge::ArcVmCompleteBootResponse> response;
+  std::optional<vm_tools::concierge::ArcVmCompleteBootResponse> response;
   response.emplace();
   response->set_result(
       vm_tools::concierge::ArcVmCompleteBootResult::BAD_REQUEST);
@@ -2267,7 +2267,7 @@ TEST_F(ArcVmClientAdapterTest,
   UpgradeArc(true);
 
   // Inject the failure.
-  GetTestConciergeClient()->set_arcvm_complete_boot_response(absl::nullopt);
+  GetTestConciergeClient()->set_arcvm_complete_boot_response(std::nullopt);
 
   // This calls ArcVmClientAdapter::OnConnectionReady().
   arc_bridge_service()->app()->SetInstance(app_instance());
@@ -2378,6 +2378,14 @@ TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Disabled) {
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.mini_instance_request().enable_privacy_hub_for_chrome());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSwitchToKeymint_Default) {
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().arc_switch_to_keymint());
 }
 
 // Test that the value of swappiness is default value when kGuestZram is
@@ -2733,6 +2741,20 @@ TEST_F(ArcVmClientAdapterTest, ArcEnableNotificationRefreshTrue) {
   EXPECT_TRUE(request.mini_instance_request().enable_notifications_refresh());
 }
 
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedIn) {
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.arc_signed_in = true;
+  StartMiniArcWithParams(true, std::move(start_params));
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.mini_instance_request().arc_signed_in());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedInDisabled) {
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().arc_signed_in());
+}
+
 TEST_F(ArcVmClientAdapterTest, ArcPriorityAppLmkDelayDisabled) {
   StartMiniArc();
   UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
@@ -2827,6 +2849,37 @@ TEST_F(ArcVmClientAdapterTest, ForcePostBootDexOpEnabledArcR) {
   UpgradeArcWithParams(true, std::move(upgrade_params));
   EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
                               "ro.boot.force_post_boot_dexopt"));
+}
+
+TEST_F(ArcVmClientAdapterTest, DefaultDexOptCacheSetup) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_tts_cache = false;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
+                              "ro.boot.skip_dexopt_cache"));
+}
+
+TEST_F(ArcVmClientAdapterTest, SkipDexOptCacheSetupArcT) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=33", base::Time::Now());
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_dexopt_cache = true;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.skip_dexopt_cache=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, SkipDexOptCacheSetupArcR) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=30", base::Time::Now());
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_dexopt_cache = true;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
+                              "ro.boot.skip_dexopt_cache"));
 }
 
 }  // namespace

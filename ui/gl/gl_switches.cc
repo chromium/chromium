@@ -291,6 +291,11 @@ BASE_FEATURE(kVulkanFromANGLE,
              "VulkanFromANGLE",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable ANGLE's debug layer.
+BASE_FEATURE(kANGLEDebugLayer,
+             "ANGLEDebugLayer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDefaultANGLEVulkan() {
 #if defined(MEMORY_SANITIZER)
   return false;

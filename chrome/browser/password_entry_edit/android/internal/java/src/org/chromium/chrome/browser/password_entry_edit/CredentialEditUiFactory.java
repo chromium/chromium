@@ -8,9 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 
-/**
- * Use {@link #create()} to instantiate a {@link CredentialEditCoordinator}.
- */
+/** Use {@link #create()} to instantiate a {@link CredentialEditCoordinator}. */
 public class CredentialEditUiFactory {
     /**
      * The factory used to create components that connect to the {@link CredentialEditFragmentView}
@@ -22,30 +20,34 @@ public class CredentialEditUiFactory {
          *
          * @param helpAndFeedbackLauncher launcher for the help center page.
          */
-        void create(CredentialEntryFragmentViewBase fragmentView,
+        void create(
+                CredentialEntryFragmentViewBase fragmentView,
                 HelpAndFeedbackLauncher helpAndFeedbackLauncher);
     }
 
     private CredentialEditUiFactory() {}
 
-    private static CreationStrategy sCreationStrategy = (fragmentView, helpAndFeedbackLauncher) -> {
-        CredentialEditBridge bridge = CredentialEditBridge.get();
-        if (bridge == null) {
-            // There is no backend to talk to, so the UI shouldn't be shown.
-            fragmentView.dismiss();
-            return;
-        }
+    private static CreationStrategy sCreationStrategy =
+            (fragmentView, helpAndFeedbackLauncher) -> {
+                CredentialEditBridge bridge = CredentialEditBridge.get();
+                if (bridge == null) {
+                    // There is no backend to talk to, so the UI shouldn't be shown.
+                    fragmentView.dismiss();
+                    return;
+                }
 
-        bridge.initialize(new CredentialEditCoordinator(
-                fragmentView, bridge, bridge, helpAndFeedbackLauncher));
-    };
+                bridge.initialize(
+                        new CredentialEditCoordinator(
+                                fragmentView, bridge, bridge, helpAndFeedbackLauncher));
+            };
 
     /**
      * Creates the credential edit UI
      *
      * @param fragmentView the view which will be managed by the coordinator.
      */
-    public static void create(CredentialEntryFragmentViewBase fragmentView,
+    public static void create(
+            CredentialEntryFragmentViewBase fragmentView,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         sCreationStrategy.create(fragmentView, helpAndFeedbackLauncher);
     }

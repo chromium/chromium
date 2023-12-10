@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 
 class PrefService;
 namespace web {

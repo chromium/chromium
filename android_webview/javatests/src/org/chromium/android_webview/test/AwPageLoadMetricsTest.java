@@ -36,8 +36,7 @@ import java.util.concurrent.Callable;
 public class AwPageLoadMetricsTest extends AwParameterizedTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;

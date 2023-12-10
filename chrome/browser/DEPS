@@ -38,6 +38,7 @@ include_rules = [
   "+chromeos",
   "+components/about_ui",
   "+components/account_id",
+  "+components/allocation_recorder",
   "+components/app_constants/constants.h",
   "+components/federated_learning",
   # TODO(b/129295708): Remove after move is complete.
@@ -441,7 +442,6 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/metrics_mojo_service.h",
   "+services/metrics/public",
-  "+services/network/cert_verifier_with_trust_anchors.h",
   "+services/network/network_service.h",
   "+services/network/public",
   "+services/network/test",
@@ -603,6 +603,9 @@ specific_include_rules = {
   ],
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",
+  ],
+  "permission_element_browsertest.cc": [
+    "+chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h",
   ],
   "browsing_data_model_browsertest.cc" : [
     "+components/services/storage/shared_storage/shared_storage_manager.h",

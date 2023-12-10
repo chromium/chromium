@@ -55,7 +55,6 @@ public class UsbNotificationManagerTest {
             };
 
     private class FakeService {}
-    ;
 
     private UsbNotificationManager mManager;
     private boolean mServiceStopped;

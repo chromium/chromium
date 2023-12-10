@@ -78,12 +78,4 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [
-      "js_translate_web_frame_manager_unittest.mm",
-      "translate_controller_unittest.mm",
-    ]
-  }
 }

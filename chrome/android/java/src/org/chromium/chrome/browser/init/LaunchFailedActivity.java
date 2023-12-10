@@ -35,12 +35,14 @@ public class LaunchFailedActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.update_needed))
-                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                });
+                .setPositiveButton(
+                        getString(R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                finish();
+                            }
+                        });
         builder.create().show();
     }
 }

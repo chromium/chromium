@@ -49,6 +49,8 @@ constexpr char kMicrophoneMuteHistogramName[] =
     "Ash.VideoConferenceTray.MicrophoneMuteButton.Click";
 constexpr char kStopScreenShareHistogramName[] =
     "Ash.VideoConferenceTray.StopScreenShareButton.Click";
+constexpr char kTrayBackgroundViewHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.Pressed";
 
 constexpr base::TimeDelta kGetMediaAppsDelayTime = base::Milliseconds(100);
 
@@ -110,7 +112,7 @@ class VideoConferenceTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
+        {features::kVideoConference, features::kVcStopAllScreenShare,
          features::kCameraEffectsSupportedByHardware},
         {});
 
@@ -262,6 +264,25 @@ TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray());
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
   EXPECT_FALSE(toggle_bubble_button()->toggled());
+}
+
+// Makes sure metrics are recorded for the video conference tray or any nested
+// button being pressed.
+TEST_F(VideoConferenceTrayTest, TrayPressedMetrics) {
+  base::HistogramTester histogram_tester;
+  SetTrayAndButtonsVisible();
+
+  LeftClickOn(toggle_bubble_button());
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 1);
+
+  LeftClickOn(camera_icon());
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 2);
+
+  LeftClickOn(audio_icon());
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 3);
+
+  LeftClickOn(screen_share_icon());
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 4);
 }
 
 // Tests that tapping directly on the VideoConferenceTray (not the child toggle

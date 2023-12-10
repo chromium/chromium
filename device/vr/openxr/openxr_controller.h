@@ -12,8 +12,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "device/gamepad/public/cpp/gamepad.h"
+#include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -41,32 +44,29 @@ class OpenXrController {
       XrSession session,
       const OpenXRPathHelper* path_helper,
       const OpenXrExtensionHelper& extension_helper,
+      bool hand_input_enabled,
       std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings);
 
   XrActionSet action_set() const { return action_set_; }
-  uint32_t GetId() const;
-  device::mojom::XRHandedness GetHandness() const;
-  OpenXrInteractionProfileType interaction_profile() const {
-    return interaction_profile_;
-  }
 
   mojom::XRInputSourceDescriptionPtr GetDescription(
       XrTime predicted_display_time);
 
   absl::optional<GamepadButton> GetButton(OpenXrButtonType type) const;
-  std::vector<double> GetAxis(OpenXrAxisType type) const;
+  absl::optional<Gamepad> GetWebXRGamepad() const;
 
   absl::optional<gfx::Transform> GetMojoFromGripTransform(
       XrTime predicted_display_time,
       XrSpace local_space,
       bool* emulated_position) const;
 
+  mojom::XRHandTrackingDataPtr GetHandTrackingData();
+
+  // Specifically update just the interaction profile. Will not update any other
+  // data.
   XrResult UpdateInteractionProfile();
 
-  // Hand Tracking
-  mojom::XRHandTrackingDataPtr GetHandTrackingData(
-      XrSpace base_space,
-      XrTime predicted_display_time);
+  XrResult Update(XrSpace base_space, XrTime predicted_display_time);
 
  private:
   XrResult InitializeControllerActions();
@@ -94,14 +94,14 @@ class OpenXrController {
       XrAction action,
       std::string binding_string) const;
 
-  absl::optional<gfx::Transform> GetPointerFromGripTransform(
+  bool IsCurrentProfileFromHandTracker() const;
+
+  absl::optional<gfx::Transform> GetGripFromPointerTransform(
       XrTime predicted_display_time) const;
 
-  absl::optional<gfx::Transform> GetTransformFromSpaces(
-      XrTime predicted_display_time,
-      XrSpace target,
-      XrSpace origin,
-      bool* emulated_position) const;
+  mojom::XRHandedness GetHandness() const;
+  std::vector<double> GetAxis(OpenXrAxisType type) const;
+  absl::optional<Gamepad> GetXrStandardGamepad() const;
 
   template <typename T>
   XrResult QueryState(XrAction action, T* action_state) const {
@@ -151,19 +151,20 @@ class OpenXrController {
     return xrGetActionStatePose(session_, &get_info, action_state);
   }
 
-  device::mojom::XRInputSourceDescriptionPtr description_;
+  mojom::XRInputSourceDescriptionPtr description_;
 
   OpenXrHandednessType type_;
   XrInstance instance_;
   XrSession session_;
-  XrHandTrackerEXT hand_tracker_{XR_NULL_HANDLE};
   XrActionSet action_set_;
   XrAction grip_pose_action_;
   XrSpace grip_pose_space_;
   XrAction pointer_pose_action_;
   XrSpace pointer_pose_space_;
 
-  OpenXrInteractionProfileType interaction_profile_;
+  std::unique_ptr<OpenXrHandTracker> hand_tracker_;
+
+  mojom::OpenXrInteractionProfileType interaction_profile_;
 
   std::unordered_map<OpenXrButtonType,
                      std::unordered_map<OpenXrButtonActionType, XrAction>>
@@ -172,6 +173,7 @@ class OpenXrController {
 
   raw_ptr<const OpenXRPathHelper, DanglingUntriaged> path_helper_;
   raw_ptr<const OpenXrExtensionHelper> extension_helper_;
+  bool hand_joints_enabled_ = false;
 };
 
 }  // namespace device

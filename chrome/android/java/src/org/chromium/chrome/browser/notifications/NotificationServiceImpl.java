@@ -19,6 +19,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.webapps.WebappsUtils;
 
 /**
  * The Notification service receives intents fired as responses to user actions issued on Android
@@ -45,17 +46,19 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                     (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             PersistableBundle extras = NotificationJobServiceImpl.getJobExtrasFromIntent(intent);
             putJobScheduledTimeInExtras(extras);
-            JobInfo job = new JobInfo
-                                  .Builder(TaskIds.NOTIFICATION_SERVICE_JOB_ID,
-                                          new ComponentName(context, NotificationJobService.class))
-                                  .setExtras(extras)
-                                  .setOverrideDeadline(0)
-                                  .build();
+            JobInfo job =
+                    new JobInfo.Builder(
+                                    TaskIds.NOTIFICATION_SERVICE_JOB_ID,
+                                    new ComponentName(context, NotificationJobService.class))
+                            .setExtras(extras)
+                            .setOverrideDeadline(0)
+                            .build();
             scheduler.schedule(job);
         }
 
         private static void putJobScheduledTimeInExtras(PersistableBundle extras) {
-            extras.putLong(NotificationConstants.EXTRA_JOB_SCHEDULED_TIME_MS,
+            extras.putLong(
+                    NotificationConstants.EXTRA_JOB_SCHEDULED_TIME_MS,
                     SystemClock.elapsedRealtime());
         }
     }
@@ -73,7 +76,17 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             return;
         }
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { dispatchIntentOnUIThread(intent); });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    dispatchIntentOnUIThread(intent);
+                });
+
+        PostTask.runOrPostTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    WebappsUtils.prepareIsRequestPinShortcutSupported();
+                });
     }
 
     /**

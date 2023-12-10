@@ -97,6 +97,8 @@ source_set("formats") {
       "mp4/aac.h",
       "mp4/avc.cc",
       "mp4/avc.h",
+      "mp4/dolby_vision.cc",
+      "mp4/dolby_vision.h",
       "mp4/h264_annex_b_to_avc_bitstream_converter.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter.h",
       "mp4/mp4_status.h",
@@ -128,13 +130,6 @@ source_set("formats") {
     }
   }
 
-  if (proprietary_codecs && enable_platform_dolby_vision) {
-    sources += [
-      "mp4/dolby_vision.cc",
-      "mp4/dolby_vision.h",
-    ]
-  }
-
   if (enable_platform_dts_audio) {
     sources += [
       "dts/dts_stream_parser.cc",
@@ -154,6 +149,13 @@ source_set("formats") {
       "mp4/ac3.h",
       "mp4/eac3.cc",
       "mp4/eac3.h",
+    ]
+  }
+
+  if (enable_platform_ac4_audio) {
+    sources += [
+      "mp4/ac4.cc",
+      "mp4/ac4.h",
     ]
   }
 
@@ -215,8 +217,10 @@ source_set("formats") {
     "hls/playlist.h",
     "hls/playlist_common.cc",
     "hls/playlist_common.h",
-    "hls/rendition_selector.cc",
-    "hls/rendition_selector.h",
+    "hls/rendition_manager.cc",
+    "hls/rendition_manager.h",
+    "hls/segment_stream.cc",
+    "hls/segment_stream.h",
     "hls/source_string.cc",
     "hls/source_string.h",
     "hls/tag_name.cc",
@@ -304,6 +308,7 @@ source_set("unit_tests") {
       "mp4/aac_unittest.cc",
       "mp4/avc_unittest.cc",
       "mp4/box_reader_unittest.cc",
+      "mp4/dolby_vision_unittest.cc",
       "mp4/es_descriptor_unittest.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter_unittest.cc",
       "mp4/mp4_stream_parser_unittest.cc",
@@ -329,6 +334,10 @@ source_set("unit_tests") {
       ]
     }
 
+    if (enable_platform_ac4_audio) {
+      sources += [ "mp4/ac4_unittest.cc" ]
+    }
+
     if (enable_mse_mpeg2ts_stream_parser) {
       sources += [
         "mp2t/es_adapter_video_unittest.cc",
@@ -338,10 +347,6 @@ source_set("unit_tests") {
         "mp2t/mp2t_stream_parser_unittest.cc",
         "mp2t/timestamp_unroller_unittest.cc",
       ]
-    }
-
-    if (enable_platform_dolby_vision) {
-      sources += [ "mp4/dolby_vision_unittest.cc" ]
     }
 
     if (enable_platform_hevc) {
@@ -366,7 +371,8 @@ source_set("unit_tests") {
     "hls/multivariant_playlist_unittest.cc",
     "hls/playlist_test_builder.h",
     "hls/playlist_unittest.cc",
-    "hls/rendition_selector_unittest.cc",
+    "hls/rendition_manager_unittest.cc",
+    "hls/segment_stream_unittest.cc",
     "hls/tags_unittest.cc",
     "hls/test_util.h",
     "hls/types_unittest.cc",

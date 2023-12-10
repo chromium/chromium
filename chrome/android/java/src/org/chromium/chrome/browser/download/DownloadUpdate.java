@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -155,9 +155,7 @@ public final class DownloadUpdate {
         return mPendingState;
     }
 
-    /**
-     * Helper class for building the DownloadUpdate object.
-     */
+    /** Helper class for building the DownloadUpdate object. */
     public static class Builder {
         private ContentId mContentId;
         private String mFileName;

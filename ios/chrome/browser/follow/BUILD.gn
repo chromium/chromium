@@ -4,76 +4,12 @@
 
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
-source_set("javascript_feature") {
-  sources = [
-    "follow_java_script_feature.h",
-    "follow_java_script_feature.mm",
-  ]
-  deps = [
-    ":rss_link_js",
-    ":service",
-    "//ios/chrome/browser/ui/follow",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-    "//net",
-  ]
-}
-
-source_set("utils") {
-  sources = [
-    "follow_util.h",
-    "follow_util.mm",
-  ]
-  deps = [
-    ":enums",
-    "//components/prefs",
-    "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/signin",
-    "//ios/web/public",
-    "//url",
-  ]
-}
-
 source_set("enums") {
   sources = [
     "follow_action_state.h",
     "followed_web_site_state.h",
   ]
   deps = []
-}
-
-source_set("tab_helper") {
-  sources = [
-    "follow_iph_presenter.h",
-    "follow_menu_updater.h",
-    "follow_tab_helper.h",
-    "follow_tab_helper.mm",
-  ]
-  deps = [
-    ":feature_flags",
-    ":javascript_feature",
-    ":service",
-    ":service_factory",
-    "//base",
-    "//components/feature_engagement/public",
-    "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/follow:enums",
-    "//ios/chrome/browser/follow:utils",
-    "//ios/chrome/browser/history",
-    "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/url",
-    "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/signin",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-    "//ui/base",
-  ]
 }
 
 source_set("service") {
@@ -93,85 +29,4 @@ source_set("service") {
     "//base",
     "//components/keyed_service/core",
   ]
-}
-
-source_set("service_factory") {
-  sources = [
-    "follow_service_factory.h",
-    "follow_service_factory.mm",
-  ]
-  deps = [
-    ":service",
-    "//base",
-    "//components/keyed_service/ios",
-    "//components/pref_registry:pref_registry",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/public/provider/chrome/browser/follow:follow_api",
-  ]
-}
-
-source_set("browser_agent") {
-  sources = [
-    "follow_browser_agent.h",
-    "follow_browser_agent.mm",
-    "follow_browser_agent_observer_bridge.h",
-    "follow_browser_agent_observer_bridge.mm",
-    "follow_browser_agent_observing.h",
-  ]
-  deps = [
-    "//base",
-    "//components/feed/core/shared_prefs:feed_shared_prefs",
-    "//components/prefs",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/discover_feed:discover_feed",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
-    "//ios/chrome/browser/follow:service",
-    "//ios/chrome/browser/follow:service_factory",
-    "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/ntp/metrics",
-    "//ios/chrome/browser/ui/ntp/metrics:constants",
-    "//ui/base",
-  ]
-}
-
-source_set("feature_flags") {
-  sources = [
-    "follow_features.h",
-    "follow_features.mm",
-  ]
-
-  deps = [ "//base" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "follow_java_script_feature_unittest.mm",
-    "follow_util_unittest.mm",
-  ]
-  deps = [
-    ":javascript_feature",
-    ":utils",
-    "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/web:web_internal",
-    "//ios/web/public/test",
-    "//testing/gtest",
-  ]
-}
-
-optimize_ts("rss_link_js") {
-  visibility = [ ":javascript_feature" ]
-
-  sources = [ "resources/rss_link.ts" ]
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }

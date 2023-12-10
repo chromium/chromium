@@ -31,9 +31,12 @@ enum class ActionType {
   kClearDownloadHistory,
   kClearHostedAppData,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
+  kCloseTabs,
+  kSignOut,
+#else
   kClearSiteSettings,
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   kReloadPages,
   kShowBubble,  // Not an IdleTimeoutAction value. Added as a side-effect.
 };

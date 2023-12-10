@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 namespace {
@@ -243,24 +242,11 @@ void FakeDeviceManagementService::SendJobOKNow(
 }
 
 FakeJobConfiguration::FakeJobConfiguration(
-    DeviceManagementService* service,
-    JobType type,
-    const std::string& client_id,
-    bool critical,
-    DMAuth auth_data,
-    absl::optional<std::string> oauth_token,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    DMServerJobConfiguration::CreateParams params,
     FakeCallback callback,
     RetryCallback retry_callback,
     RetryCallback should_retry_callback)
-    : DMServerJobConfiguration(service,
-                               type,
-                               client_id,
-                               critical,
-                               std::move(auth_data),
-                               oauth_token,
-                               url_loader_factory,
-                               base::DoNothing()),
+    : DMServerJobConfiguration(std::move(params)),
       should_retry_response_(DeviceManagementService::Job::NO_RETRY),
       callback_(std::move(callback)),
       retry_callback_(retry_callback),

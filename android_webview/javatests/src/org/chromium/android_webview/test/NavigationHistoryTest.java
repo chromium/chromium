@@ -27,14 +27,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
-/**
- * Navigation history tests.
- */
+/** Navigation history tests. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class NavigationHistoryTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String PAGE_1_PATH = "/page1.html";
     private static final String PAGE_1_TITLE = "Page 1 Title";

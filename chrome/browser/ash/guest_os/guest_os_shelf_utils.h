@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_SHELF_UTILS_H_
 
 #include <string>
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -68,8 +67,6 @@ AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
       anchored_to_shelf_(nudge_data.anchored_to_shelf),
       click_callback_(std::move(nudge_data.click_callback)),
       dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
-  DCHECK(features::IsSystemNudgeV2Enabled());
-
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());

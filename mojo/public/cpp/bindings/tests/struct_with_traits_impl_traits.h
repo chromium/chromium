@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/tests/struct_with_traits_impl.h"
 #include "mojo/public/interfaces/bindings/tests/struct_with_traits.mojom.h"
@@ -59,7 +59,7 @@ struct StructTraits<test::StructWithTraitsDataView,
     return value.get_uint64();
   }
 
-  static base::StringPiece f_string(const test::StructWithTraitsImpl& value) {
+  static std::string_view f_string(const test::StructWithTraitsImpl& value) {
     return value.get_string_as_string_piece();
   }
 

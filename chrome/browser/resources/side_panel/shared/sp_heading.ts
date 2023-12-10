@@ -32,7 +32,7 @@ export class SpHeading extends PolymerElement {
       compact: {
         type: Boolean,
         reflectToAttribute: true,
-        valuse: false,
+        value: false,
       },
 
       backButtonAriaLabel: String,

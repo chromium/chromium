@@ -36,7 +36,7 @@ class VolumeMap {
 
   float DbFSToVolume(float db);
 
-  void LoadVolumeMap(absl::optional<base::Value::Dict> cast_audio_config);
+  void LoadVolumeMap(std::optional<base::Value::Dict> cast_audio_config);
 
  private:
   struct LevelToDb {

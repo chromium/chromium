@@ -473,10 +473,6 @@ void TestGLES2Interface::set_max_texture_size(int size) {
   test_capabilities_.max_texture_size = size;
 }
 
-void TestGLES2Interface::set_supports_oop_raster(bool support) {
-  test_capabilities_.supports_oop_raster = support;
-}
-
 void TestGLES2Interface::set_supports_gpu_memory_buffer_format(
     gfx::BufferFormat format,
     bool support) {

@@ -39,8 +39,8 @@ class FakeDeviceOperationHandler : public DeviceOperationHandler {
       const std::string& device_id) const override;
   void RecordUserInitiatedReconnectionMetrics(
       const device::BluetoothTransport transport,
-      absl::optional<base::Time> reconnection_attempt_start,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+      std::optional<base::Time> reconnection_attempt_start,
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
       const override {}
 
   size_t perform_connect_call_count_ = 0;

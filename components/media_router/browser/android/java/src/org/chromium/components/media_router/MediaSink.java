@@ -10,9 +10,7 @@ import androidx.mediarouter.media.MediaRouter.RouteInfo;
 
 import com.google.android.gms.cast.CastDevice;
 
-/**
- * A common descriptor of a device that can present some URI.
- */
+/** A common descriptor of a device that can present some URI. */
 public class MediaSink {
     private static final String CAST_SINK_URN_PREFIX = "urn:x-org.chromium:media:sink:cast-";
     private final String mId;
@@ -31,23 +29,17 @@ public class MediaSink {
         mDevice = device;
     }
 
-    /**
-     * @return The unique identifier of the sink.
-     */
+    /** @return The unique identifier of the sink. */
     public String getId() {
         return mId;
     }
 
-    /**
-     * @return The user friendly name of the sink.
-     */
+    /** @return The user friendly name of the sink. */
     public String getName() {
         return mName;
     }
 
-    /**
-     * @return The valid URN representing the sink.
-     */
+    /** @return The valid URN representing the sink. */
     public String getUrn() {
         return CAST_SINK_URN_PREFIX + getId();
     }

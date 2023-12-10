@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
@@ -25,18 +24,18 @@ class RecentSourceTest : public testing::Test {
 };
 
 TEST_F(RecentSourceTest, NeverIsLate) {
-  RecentSource::Params params(nullptr, GURL(u""), 100, "", base::Time::Max(),
+  RecentSource::Params params(nullptr, GURL(u""), "", base::Time::Max(),
                               base::TimeTicks::Max(),
-                              RecentSource::FileType::kAll, base::DoNothing());
+                              RecentSource::FileType::kAll);
   EXPECT_FALSE(params.IsLate());
   task_environment_.FastForwardBy(base::Hours(99));
   EXPECT_FALSE(params.IsLate());
 }
 
 TEST_F(RecentSourceTest, IsLate) {
-  RecentSource::Params params(nullptr, GURL(u""), 100, "", base::Time::Max(),
+  RecentSource::Params params(nullptr, GURL(u""), "", base::Time::Max(),
                               base::TimeTicks::Now() + base::Milliseconds(1000),
-                              RecentSource::FileType::kAll, base::DoNothing());
+                              RecentSource::FileType::kAll);
   EXPECT_FALSE(params.IsLate());
   task_environment_.FastForwardBy(base::Milliseconds(999));
   EXPECT_FALSE(params.IsLate());

@@ -49,9 +49,15 @@ public class InsecureDownloadDialogBridge {
             return;
         }
 
-        new InsecureDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                (accepted) -> { onConfirmed(callbackId, accepted); });
+        new InsecureDownloadDialog()
+                .show(
+                        activity,
+                        ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                        fileName,
+                        totalBytes,
+                        (accepted) -> {
+                            onConfirmed(callbackId, accepted);
+                        });
     }
 
     @CalledByNative
@@ -60,8 +66,8 @@ public class InsecureDownloadDialogBridge {
     }
 
     private void onConfirmed(long callbackId, boolean accepted) {
-        InsecureDownloadDialogBridgeJni.get().onConfirmed(
-                mNativeInsecureDownloadDialogBridge, callbackId, accepted);
+        InsecureDownloadDialogBridgeJni.get()
+                .onConfirmed(mNativeInsecureDownloadDialogBridge, callbackId, accepted);
     }
 
     @NativeMethods

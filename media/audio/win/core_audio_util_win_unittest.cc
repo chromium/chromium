@@ -466,8 +466,7 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
                                        eRender, eConsole);
   EXPECT_TRUE(client.Get());
   format.Format.nSamplesPerSec = format.Format.nSamplesPerSec + 1;
-  EXPECT_FALSE(CoreAudioUtil::IsFormatSupported(
-      client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
+  EXPECT_FALSE(CoreAudioUtil::IsFormatSupported(client.Get(), &format));
   hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                            &endpoint_buffer_size, NULL);
   EXPECT_TRUE(FAILED(hr));
@@ -483,8 +482,7 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
   EXPECT_TRUE(client.Get());
   EXPECT_TRUE(
       SUCCEEDED(CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format)));
-  EXPECT_TRUE(CoreAudioUtil::IsFormatSupported(
-      client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
+  EXPECT_TRUE(CoreAudioUtil::IsFormatSupported(client.Get(), &format));
   hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format,
                                            event_handle.Get(), 0,
                                            &endpoint_buffer_size, NULL);

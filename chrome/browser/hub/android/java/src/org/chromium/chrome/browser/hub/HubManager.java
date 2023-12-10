@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
  * HubManagerFactory}.
  */
 public interface HubManager {
+    /** Destroys the {@link HubManager}, it cannot be used again. */
+    public void destroy();
+
     /** Returns the {@link PaneManager} for interacting with {@link Pane}s. */
     public @NonNull PaneManager getPaneManager();
 

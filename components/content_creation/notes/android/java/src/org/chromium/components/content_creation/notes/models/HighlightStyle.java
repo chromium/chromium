@@ -4,9 +4,7 @@
 
 package org.chromium.components.content_creation.notes.models;
 
-/**
- * Enum with values corresponding to the C++ HighlightStyle enum class.
- */
+/** Enum with values corresponding to the C++ HighlightStyle enum class. */
 public enum HighlightStyle {
     NONE,
     FULL,

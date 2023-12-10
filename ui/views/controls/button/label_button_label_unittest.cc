@@ -57,9 +57,9 @@ class LabelButtonLabelTest : public ViewsTestBase {
     widget_ = CreateTestWidget();
     widget_->GetNativeTheme()->set_use_dark_colors(false);
 
-    label_ = widget_->SetContentsView(
+    widget_->SetContentsView(
         std::make_unique<TestLabel>(&last_color_, &last_color_id_));
-    label_->SetAutoColorReadabilityEnabled(false);
+    label()->SetAutoColorReadabilityEnabled(false);
   }
 
   void TearDown() override {
@@ -73,11 +73,14 @@ class LabelButtonLabelTest : public ViewsTestBase {
     native_theme->NotifyOnNativeThemeUpdated();
   }
 
+  TestLabel* label() {
+    return static_cast<TestLabel*>(widget_->GetContentsView());
+  }
+
  protected:
   SkColor last_color_ = gfx::kPlaceholderColor;
   absl::optional<ui::ColorId> last_color_id_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TestLabel, DanglingUntriaged> label_;
 };
 
 // Test that LabelButtonLabel reacts properly to themed and overridden colors.
@@ -85,38 +88,38 @@ TEST_F(LabelButtonLabelTest, Colors) {
   // First one comes from the default theme. This check ensures the SK_ColorRED
   // placeholder initializers were replaced.
   SkColor default_theme_enabled_color =
-      label_->GetColorProvider()->GetColor(ui::kColorLabelForeground);
+      label()->GetColorProvider()->GetColor(ui::kColorLabelForeground);
   EXPECT_EQ(default_theme_enabled_color, last_color_);
 
-  label_->SetEnabled(false);
+  label()->SetEnabled(false);
   SkColor default_theme_disabled_color =
-      label_->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
+      label()->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
   EXPECT_EQ(default_theme_disabled_color, last_color_);
 
   SetUseDarkColors(true);
 
   SkColor dark_theme_disabled_color =
-      label_->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
+      label()->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
   EXPECT_NE(default_theme_disabled_color, dark_theme_disabled_color);
   EXPECT_EQ(dark_theme_disabled_color, last_color_);
 
-  label_->SetEnabled(true);
+  label()->SetEnabled(true);
   SkColor dark_theme_enabled_color =
-      label_->GetColorProvider()->GetColor(ui::kColorLabelForeground);
+      label()->GetColorProvider()->GetColor(ui::kColorLabelForeground);
   EXPECT_NE(default_theme_enabled_color, dark_theme_enabled_color);
   EXPECT_EQ(dark_theme_enabled_color, last_color_);
 
   // Override the theme for the disabled color.
-  label_->SetDisabledColor(SK_ColorRED);
+  label()->SetDisabledColor(SK_ColorRED);
   EXPECT_NE(SK_ColorRED, dark_theme_disabled_color);
 
   // Still enabled, so not RED yet.
   EXPECT_EQ(dark_theme_enabled_color, last_color_);
 
-  label_->SetEnabled(false);
+  label()->SetEnabled(false);
   EXPECT_EQ(SK_ColorRED, last_color_);
 
-  label_->SetDisabledColor(SK_ColorMAGENTA);
+  label()->SetDisabledColor(SK_ColorMAGENTA);
   EXPECT_EQ(SK_ColorMAGENTA, last_color_);
 
   // Disabled still overridden after a theme change.
@@ -124,13 +127,13 @@ TEST_F(LabelButtonLabelTest, Colors) {
   EXPECT_EQ(SK_ColorMAGENTA, last_color_);
 
   // The enabled color still gets its value from the theme.
-  label_->SetEnabled(true);
+  label()->SetEnabled(true);
   EXPECT_EQ(default_theme_enabled_color, last_color_);
 
-  label_->SetEnabledColor(SK_ColorYELLOW);
-  label_->SetDisabledColor(SK_ColorCYAN);
+  label()->SetEnabledColor(SK_ColorYELLOW);
+  label()->SetDisabledColor(SK_ColorCYAN);
   EXPECT_EQ(SK_ColorYELLOW, last_color_);
-  label_->SetEnabled(false);
+  label()->SetEnabled(false);
   EXPECT_EQ(SK_ColorCYAN, last_color_);
 }
 
@@ -141,26 +144,26 @@ TEST_F(LabelButtonLabelTest, ColorIds) {
   EXPECT_TRUE(last_color_id_.has_value());
 
   // Override the theme for the enabled color.
-  label_->SetEnabledColorId(ui::kColorAccent);
+  label()->SetEnabledColorId(ui::kColorAccent);
   EXPECT_EQ(last_color_id_.value(), ui::kColorAccent);
   EXPECT_EQ(last_color_,
-            label_->GetColorProvider()->GetColor(ui::kColorAccent));
+            label()->GetColorProvider()->GetColor(ui::kColorAccent));
 
-  label_->SetEnabled(false);
-  label_->SetDisabledColorId(ui::kColorBadgeBackground);
+  label()->SetEnabled(false);
+  label()->SetDisabledColorId(ui::kColorBadgeBackground);
   EXPECT_EQ(last_color_id_.value(), ui::kColorBadgeBackground);
   EXPECT_EQ(last_color_,
-            label_->GetColorProvider()->GetColor(ui::kColorBadgeBackground));
+            label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));
 
   // Still overridden after a theme change.
   SetUseDarkColors(false);
   EXPECT_EQ(last_color_id_.value(), ui::kColorBadgeBackground);
   EXPECT_EQ(last_color_,
-            label_->GetColorProvider()->GetColor(ui::kColorBadgeBackground));
-  label_->SetEnabled(true);
+            label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));
+  label()->SetEnabled(true);
   EXPECT_EQ(last_color_id_.value(), ui::kColorAccent);
   EXPECT_EQ(last_color_,
-            label_->GetColorProvider()->GetColor(ui::kColorAccent));
+            label()->GetColorProvider()->GetColor(ui::kColorAccent));
 }
 
 }  // namespace views

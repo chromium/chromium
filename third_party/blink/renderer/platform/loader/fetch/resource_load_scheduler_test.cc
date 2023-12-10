@@ -791,8 +791,7 @@ TEST_F(ResourceLoadSchedulerTest, ConsiderNetworkStateInTigtMode) {
   Scheduler()->Request(client2, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLow, 5 /* intra_priority */,
                        &id2);
-  Scheduler()->SetConnectionInfo(id2,
-                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  Scheduler()->SetConnectionInfo(id2, net::HttpConnectionInfo::kHTTP2);
   EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
 
   EXPECT_TRUE(client1->WasRun());
@@ -846,8 +845,7 @@ TEST_F(ResourceLoadSchedulerTest,
   Scheduler()->Request(client2, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLow, 5 /* intra_priority */,
                        &id2);
-  Scheduler()->SetConnectionInfo(id2,
-                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  Scheduler()->SetConnectionInfo(id2, net::HttpConnectionInfo::kHTTP2);
 
   // This request will not run, because we are experiencing a slow connection.
   MockClient* client3 = MakeGarbageCollected<MockClient>();
@@ -855,8 +853,7 @@ TEST_F(ResourceLoadSchedulerTest,
   Scheduler()->Request(client3, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLow, 5 /* intra_priority */,
                        &id3);
-  Scheduler()->SetConnectionInfo(id3,
-                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  Scheduler()->SetConnectionInfo(id3, net::HttpConnectionInfo::kHTTP2);
 
   EXPECT_TRUE(client1->WasRun());
   EXPECT_TRUE(client2->WasRun());

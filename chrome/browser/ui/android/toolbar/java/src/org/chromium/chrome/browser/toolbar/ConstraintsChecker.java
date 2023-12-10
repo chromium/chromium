@@ -18,20 +18,19 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  * and then tells the {@link ViewResourceAdapter} to generate a resource.
  */
 public class ConstraintsChecker implements Callback<Integer> {
-    @NonNull
-    private final ViewResourceAdapter mViewResourceAdapter;
-    @NonNull
-    private final ObservableSupplier<Integer> mConstraintsSupplier;
-    @NonNull
-    private final Handler mHandler;
+    @NonNull private final ViewResourceAdapter mViewResourceAdapter;
+    @NonNull private final ObservableSupplier<Integer> mConstraintsSupplier;
+    @NonNull private final Handler mHandler;
 
     /**
      * @param viewResourceAdapter The target to notify when a capture is needed.
      * @param constraintsSupplier The underlying supplier for the state of constraints.
      * @param looper Message loop to post deferred tasks to.
      */
-    public ConstraintsChecker(@NonNull ViewResourceAdapter viewResourceAdapter,
-            @NonNull ObservableSupplier<Integer> constraintsSupplier, @NonNull Looper looper) {
+    public ConstraintsChecker(
+            @NonNull ViewResourceAdapter viewResourceAdapter,
+            @NonNull ObservableSupplier<Integer> constraintsSupplier,
+            @NonNull Looper looper) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
         mHandler = new Handler(looper);

@@ -367,23 +367,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void PrerenderWebContentsCreated(
       WebContents* prerender_web_contents) {}
 
-  // Notifies the embedder that a new WebContents has been created to contain
-  // the contents of a portal.
-  virtual void PortalWebContentsCreated(WebContents* portal_web_contents) {}
-
-  // Notifies the embedder that an existing WebContents that it manages (e.g., a
-  // browser tab) has become the contents of a portal.
-  //
-  // During portal activation, WebContentsDelegate::ActivatePortalWebContents
-  // will be called to release the delegate's management of a WebContents.
-  // Shortly afterward, the portal will assume ownership of the contents and
-  // call this function to indicate that this is complete, passing the
-  // swapped-out contents as |portal_web_contents|.
-  //
-  // Implementations will likely want to apply changes analogous to those they
-  // would apply to a new WebContents in PortalWebContentsCreated.
-  virtual void WebContentsBecamePortal(WebContents* portal_web_contents) {}
-
   // Notification that one of the frames in the WebContents is hung. |source| is
   // the WebContents that is hung, and |render_widget_host| is the
   // RenderWidgetHost that, while routing events to it, discovered the hang.
@@ -458,10 +441,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
   virtual bool CanUseWindowingControls(RenderFrameHost* requesting_frame);
 
-  // Sends the resizable boolean set via `window.setResizable(bool)` API to
-  // `BrowserView`. Passing std::nullopt will reset the resizable state to the
-  // default.
-  virtual void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {}
+  // Notifies `BrowserView` about the resizable boolean having been set vith
+  // `window.setResizable(bool)` API.
+  virtual void OnCanResizeFromWebAPIChanged() {}
   // Returns the overall resizability of the `BrowserView` when considering
   // both the value set by the AWC API and browser's "native" resizability.
   virtual bool GetCanResize();
@@ -589,15 +571,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // this does not query the user. |type| must be MEDIA_DEVICE_AUDIO_CAPTURE
   // or MEDIA_DEVICE_VIDEO_CAPTURE.
   virtual bool CheckMediaAccessPermission(RenderFrameHost* render_frame_host,
-                                          const GURL& security_origin,
+                                          const url::Origin& security_origin,
                                           blink::mojom::MediaStreamType type);
-
-  // Returns the ID of the default device for the given media device |type|.
-  // If the returned value is an empty string, it means that there is no
-  // default device for the given |type|.
-  virtual std::string GetDefaultMediaDeviceID(
-      WebContents* web_contents,
-      blink::mojom::MediaStreamType type);
 
   // Returns the human-readable name for title in Media Controls.
   // If the returned value is an empty string, it means that there is no
@@ -745,19 +720,13 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents);
 
-  // Requests the delegate to replace |predecessor_contents| with
-  // |portal_contents| in the container that holds |predecessor_contents|. If
-  // the delegate successfully replaces |predecessor_contents|, the return
-  // parameter passes ownership of |predecessor_contents|. Otherwise,
-  // |portal_contents| is returned.
-  virtual std::unique_ptr<WebContents> ActivatePortalWebContents(
-      WebContents* predecessor_contents,
-      std::unique_ptr<WebContents> portal_contents);
-
   // If |old_contents| is being inspected by a DevTools window, it updates the
   // window to inspect |new_contents| instead and calls |callback| after it
   // finishes asynchronously. If no window is present, or no update is
   // necessary, |callback| is run synchronously (immediately on the same stack).
+  //
+  // TODO(crbug.com/1498140): This has no remaining call sites and can be
+  // removed.
   virtual void UpdateInspectedWebContentsIfNecessary(
       WebContents* old_contents,
       WebContents* new_contents,

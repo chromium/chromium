@@ -370,8 +370,7 @@ class RasterBufferProviderPerfTest
         raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
-                &gpu_memory_buffer_manager_, compositor_context_provider_.get(),
-                raster_caps);
+                compositor_context_provider_.get(), raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();

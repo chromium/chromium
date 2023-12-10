@@ -32,7 +32,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -155,8 +154,7 @@ class AttributionAggregatableReportGoldenLatestVersionTest
                      "AttributionReport::AggregatableAttributionData::kVersion,"
                      " actual output for "
                   << report_file << " is:\n"
-                  << SerializeAttributionJson(report.ReportBody(),
-                                              /*pretty_print=*/true);
+                  << report.ReportBody();
               run_loop.Quit();
             }));
 
@@ -455,6 +453,23 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
        .cleartext_payloads_file = "report_8_cleartext_payloads.json"},
       {.report =
            ReportBuilder(
+               AttributionInfoBuilder().Build(),
+               SourceBuilder(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
+                   .BuildStored())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
+               .SetReportTime(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
+               .SetSourceRegistrationTimeConfig(
+                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                       kExclude)
+               .SetTriggerContextId("example")
+               .BuildAggregatableAttribution(),
+       .report_file = "report_9.json",
+       .cleartext_payloads_file = "report_9_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
                AttributionInfoBuilder().SetDebugKey(456).Build(),
                SourceBuilder(
                    base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
@@ -576,6 +591,24 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      .BuildNullAggregatable(),
        .report_file = "report_gcp_8.json",
        .cleartext_payloads_file = "report_gcp_8_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
+               AttributionInfoBuilder().Build(),
+               SourceBuilder(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
+                   .BuildStored())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
+               .SetReportTime(
+                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
+               .SetSourceRegistrationTimeConfig(
+                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                       kExclude)
+               .SetTriggerContextId("example")
+               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+               .BuildAggregatableAttribution(),
+       .report_file = "report_gcp_9.json",
+       .cleartext_payloads_file = "report_gcp_9_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_COUNTDOWN_VIEW_H_
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
@@ -25,6 +26,8 @@ class PillButton;
 // is included. This view's parent needs to call `UpdateUI()` to first populate
 // the UI before it is shown for the first time, and on timer tick.
 class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
+  METADATA_HEADER(FocusModeCountdownView, views::FlexLayoutView)
+
  public:
   FocusModeCountdownView(bool include_end_button);
   FocusModeCountdownView(const FocusModeCountdownView&) = delete;
@@ -37,6 +40,7 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
 
  private:
   friend class FocusModeCountdownViewTest;
+
   // The main timer label, displays the amount of time left in the focus
   // session.
   raw_ptr<views::Label, ExperimentalAsh> time_remaining_label_ = nullptr;

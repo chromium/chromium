@@ -397,7 +397,7 @@ bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(true, reason, absl::nullopt);
+  layer_tree_host_->OnDeferCommitsChanged(true, reason, std::nullopt);
   return true;
 }
 
@@ -882,7 +882,7 @@ DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
     draw_result = host_impl_->PrepareToDraw(frame);
     draw_frame = draw_result == DrawResult::kSuccess;
     if (draw_frame) {
-      if (absl::optional<LayerTreeHostImpl::SubmitInfo> submit_info =
+      if (std::optional<LayerTreeHostImpl::SubmitInfo> submit_info =
               host_impl_->DrawLayers(frame)) {
         if (scheduler_on_impl_thread_) {
           // Drawing implies we submitted a frame to the LayerTreeFrameSink.

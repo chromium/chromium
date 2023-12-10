@@ -12,6 +12,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/country_codes/country_codes.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -69,10 +70,18 @@ TEST_F(SearchEngineChoiceServiceTest, HandleLearnMoreLinkClicked) {
       1);
 
   search_engine_choice_service->NotifyLearnMoreLinkClicked(
-      SearchEngineChoiceService::EntryPoint::kProfilePicker);
+      SearchEngineChoiceService::EntryPoint::kFirstRunExperience);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed,
+      1);
+
+  search_engine_choice_service->NotifyLearnMoreLinkClicked(
+      SearchEngineChoiceService::EntryPoint::kProfileCreation);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationLearnMoreDisplayed,
       1);
 }
 
@@ -89,5 +98,33 @@ TEST_F(SearchEngineChoiceServiceTest, CanShowDialog) {
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::kFeatureSuppressed,
+      1);
+}
+
+TEST_F(SearchEngineChoiceServiceTest, NotifyChoiceMade) {
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+
+  search_engine_choice_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::google.id,
+      SearchEngineChoiceService::EntryPoint::kDialog);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
+
+  search_engine_choice_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::google.id,
+      SearchEngineChoiceService::EntryPoint::kFirstRunExperience);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
+
+  search_engine_choice_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::google.id,
+      SearchEngineChoiceService::EntryPoint::kProfileCreation);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationDefaultWasSet,
       1);
 }

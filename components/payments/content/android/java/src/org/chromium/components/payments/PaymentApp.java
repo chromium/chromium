@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * The base class for a single payment app, e.g., a payment handler.
- */
+/** The base class for a single payment app, e.g., a payment handler. */
 public abstract class PaymentApp extends EditableOption {
     /** Arbitrarily chosen maximum length of a payment app name. */
     private static final int APP_NAME_ELIDE_LENGTH = 64;
@@ -38,9 +36,7 @@ public abstract class PaymentApp extends EditableOption {
      */
     protected boolean mHaveRequestedAutofillData;
 
-    /**
-     * The interface for the requester of payment details from the app.
-     */
+    /** The interface for the requester of payment details from the app. */
     public interface InstrumentDetailsCallback {
         /**
          * Called after retrieving payment details.
@@ -134,30 +130,22 @@ public abstract class PaymentApp extends EditableOption {
         return getInstrumentMethodNames().contains(method);
     }
 
-    /**
-     * @return Whether the app can collect and return shipping address.
-     */
+    /** @return Whether the app can collect and return shipping address. */
     public boolean handlesShippingAddress() {
         return false;
     }
 
-    /**
-     * @return Whether the app can collect and return payer's name.
-     */
+    /** @return Whether the app can collect and return payer's name. */
     public boolean handlesPayerName() {
         return false;
     }
 
-    /**
-     * @return Whether the app can collect and return payer's email.
-     */
+    /** @return Whether the app can collect and return payer's email. */
     public boolean handlesPayerEmail() {
         return false;
     }
 
-    /**
-     * @return Whether the app can collect and return payer's phone.
-     */
+    /** @return Whether the app can collect and return payer's phone. */
     public boolean handlesPayerPhone() {
         return false;
     }
@@ -204,11 +192,19 @@ public abstract class PaymentApp extends EditableOption {
      * @param shippingOptions  The shipping options of the PaymentRequest.
      * @param callback         The object that will receive the payment details.
      */
-    public void invokePaymentApp(String id, String merchantName, String origin, String iframeOrigin,
-            @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
-            PaymentItem total, List<PaymentItem> displayItems,
-            Map<String, PaymentDetailsModifier> modifiers, PaymentOptions paymentOptions,
-            List<PaymentShippingOption> shippingOptions, InstrumentDetailsCallback callback) {}
+    public void invokePaymentApp(
+            String id,
+            String merchantName,
+            String origin,
+            String iframeOrigin,
+            @Nullable byte[][] certificateChain,
+            Map<String, PaymentMethodData> methodDataMap,
+            PaymentItem total,
+            List<PaymentItem> displayItems,
+            Map<String, PaymentDetailsModifier> modifiers,
+            PaymentOptions paymentOptions,
+            List<PaymentShippingOption> shippingOptions,
+            InstrumentDetailsCallback callback) {}
 
     /**
      * Update the payment information in response to payment method, shipping address, or shipping
@@ -239,12 +235,14 @@ public abstract class PaymentApp extends EditableOption {
      * @param callback The callback to return abort result.
      */
     public void abortPaymentApp(AbortCallback callback) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                callback.onInstrumentAbortResult(false);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onInstrumentAbortResult(false);
+                    }
+                });
     }
 
     /** Cleans up any resources held by the payment app. For example, closes server connections. */
@@ -268,9 +266,7 @@ public abstract class PaymentApp extends EditableOption {
         return null;
     }
 
-    /**
-     * @return The ukm source id assigned to the payment app.
-     */
+    /** @return The ukm source id assigned to the payment app. */
     public long getUkmSourceId() {
         return 0;
     }

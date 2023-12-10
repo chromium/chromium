@@ -42,6 +42,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/layout/absolute_utils.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
@@ -49,20 +51,19 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
@@ -142,8 +143,14 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
   // children as blocks.
   // So, if our children are currently inline and a block child has to be
   // inserted, we move all our inline children into anonymous block boxes.
+  const bool child_is_inline_level =
+      RuntimeEnabledFeatures::RubyInlinifyEnabled()
+          ? (new_child->IsInline() ||
+             (LayoutObject::RequiresAnonymousTableWrappers(new_child) &&
+              LayoutTable::ShouldCreateInlineAnonymous(*this)))
+          : new_child->IsInline();
   bool child_is_block_level =
-      !new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned();
+      !child_is_inline_level && !new_child->IsFloatingOrOutOfFlowPositioned();
 
   if (ChildrenInline()) {
     if (child_is_block_level) {
@@ -173,7 +180,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
       return;
     }
 
-    // LayoutNGOutsideListMarker is out-of-flow for the tree building purpose,
+    // LayoutOutsideListMarker is out-of-flow for the tree building purpose,
     // and that is not inline level, but IsInline().
     if (new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) {
       // No suitable existing anonymous box - create a new one.
@@ -477,7 +484,7 @@ static void GetInlineRun(LayoutObject* start,
   // Start by skipping as many non-inlines as we can.
   LayoutObject* curr = start;
 
-  // LayoutNGOutsideListMarker is out-of-flow for the tree building purpose.
+  // LayoutOutsideListMarker is out-of-flow for the tree building purpose.
   // Skip here because it's the first child.
   if (curr && curr->IsLayoutOutsideListMarker()) {
     curr = curr->NextSibling();
@@ -704,7 +711,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   if (fragments.IsEmpty()) {
     return;
   }
-  for (const NGPhysicalBoxFragment& fragment : fragments) {
+  for (const PhysicalBoxFragment& fragment : fragments) {
     InlineCursor first_line(fragment);
     if (!first_line) {
       continue;

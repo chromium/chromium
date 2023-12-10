@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
+
 namespace optimization_guide {
 
 // The type of annotation that is being done on the given input.
@@ -29,6 +31,7 @@ enum class AnnotationType {
   kTextEmbedding,
 };
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string AnnotationTypeToString(AnnotationType type);
 
 }  // namespace optimization_guide

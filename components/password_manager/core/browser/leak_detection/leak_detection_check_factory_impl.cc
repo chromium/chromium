@@ -17,13 +17,13 @@
 namespace password_manager {
 namespace {
 
-// Returns |absl::nullopt| for |signed_in_user|, as in this case authentication
+// Returns |std::nullopt| for |signed_in_user|, as in this case authentication
 // happens via access token. Otherwise returns API key for an appropriate
 // |channel|.
-absl::optional<std::string> GetAPIKey(bool signed_in_user,
-                                      version_info::Channel channel) {
+std::optional<std::string> GetAPIKey(bool signed_in_user,
+                                     version_info::Channel channel) {
   if (signed_in_user) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (channel == version_info::Channel::STABLE) {

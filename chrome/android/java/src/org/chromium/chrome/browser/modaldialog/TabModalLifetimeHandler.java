@@ -39,31 +39,36 @@ import org.chromium.url.GURL;
  * Class responsible for handling dismissal of a tab modal dialog on user actions outside the tab
  * modal dialog.
  */
-public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObserver,
-                                                ModalDialogManagerObserver, BackPressHandler {
+public class TabModalLifetimeHandler
+        implements NativeInitObserver,
+                DestroyObserver,
+                ModalDialogManagerObserver,
+                BackPressHandler {
     /** The observer to dismiss all dialogs when the attached tab is not interactable. */
-    private final TabObserver mTabObserver = new EmptyTabObserver() {
-        @Override
-        public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-            updateSuspensionState();
-        }
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                    updateSuspensionState();
+                }
 
-        @Override
-        public void onDestroyed(Tab tab) {
-            if (mActiveTab == tab) {
-                mManager.dismissDialogsOfType(
-                        ModalDialogType.TAB, DialogDismissalCause.TAB_DESTROYED);
-                mActiveTab = null;
-            }
-        }
+                @Override
+                public void onDestroyed(Tab tab) {
+                    if (mActiveTab == tab) {
+                        mManager.dismissDialogsOfType(
+                                ModalDialogType.TAB, DialogDismissalCause.TAB_DESTROYED);
+                        mActiveTab = null;
+                    }
+                }
 
-        @Override
-        public void onPageLoadStarted(Tab tab, GURL url) {
-            if (mActiveTab == tab) {
-                mManager.dismissDialogsOfType(ModalDialogType.TAB, DialogDismissalCause.NAVIGATE);
-            }
-        }
-    };
+                @Override
+                public void onPageLoadStarted(Tab tab, GURL url) {
+                    if (mActiveTab == tab) {
+                        mManager.dismissDialogsOfType(
+                                ModalDialogType.TAB, DialogDismissalCause.NAVIGATE);
+                    }
+                }
+            };
 
     private Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -102,8 +107,10 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
      * @param backPressManager The {@link BackPressManager} which can register {@link
      *                         BackPressHandler}.
      */
-    public TabModalLifetimeHandler(Activity activity,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher, ModalDialogManager manager,
+    public TabModalLifetimeHandler(
+            Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            ModalDialogManager manager,
             Supplier<ComposedBrowserControlsVisibilityDelegate> appVisibilityDelegateSupplier,
             Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
             Supplier<ToolbarManager> toolbarManagerSupplier,
@@ -142,9 +149,7 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         if (mPresenter.getDialogModel() != null) mPresenter.updateContainerHierarchy(!hasFocus);
     }
 
-    /**
-     * Handle a back press event.
-     */
+    /** Handle a back press event. */
     public boolean onBackPressed() {
         if (!shouldInterceptBackPress()) return false;
         mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
@@ -179,26 +184,34 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         assert mBrowserControlsVisibilityManagerSupplier.hasValue();
         assert mFullscreenManagerSupplier.hasValue();
-        mPresenter = new ChromeTabModalPresenter(mActivity, mTabObscuringHandlerSupplier,
-                mToolbarManagerSupplier, mContextualSearchManagerSupplier,
-                mFullscreenManagerSupplier.get(), mBrowserControlsVisibilityManagerSupplier.get(),
-                tabModelSelector);
+        mPresenter =
+                new ChromeTabModalPresenter(
+                        mActivity,
+                        mTabObscuringHandlerSupplier,
+                        mToolbarManagerSupplier,
+                        mContextualSearchManagerSupplier,
+                        mFullscreenManagerSupplier.get(),
+                        mBrowserControlsVisibilityManagerSupplier.get(),
+                        tabModelSelector);
         assert mAppVisibilityDelegateSupplier.hasValue();
-        mAppVisibilityDelegateSupplier.get().addDelegate(
-                mPresenter.getBrowserControlsVisibilityDelegate());
+        mAppVisibilityDelegateSupplier
+                .get()
+                .addDelegate(mPresenter.getBrowserControlsVisibilityDelegate());
         mManager.registerPresenter(mPresenter, ModalDialogType.TAB);
 
         handleTabChanged(tabModelSelector.getCurrentTab());
-        mTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                handleTabChanged(tab);
-            }
-        };
+        mTabModelObserver =
+                new TabModelSelectorTabModelObserver(tabModelSelector) {
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        handleTabChanged(tab);
+                    }
+                };
     }
 
     private boolean shouldInterceptBackPress() {
-        return mPresenter != null && mPresenter.getDialogModel() != null
+        return mPresenter != null
+                && mPresenter.getDialogModel() != null
                 && mTabModalSuspendedToken == TokenHolder.INVALID_TOKEN;
     }
 

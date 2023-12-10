@@ -9,9 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * This annotation can be used to scale a specific test timeout.
- */
+/** This annotation can be used to scale a specific test timeout. */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TimeoutScale {

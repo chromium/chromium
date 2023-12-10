@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="my">
+<translation id="1220509181886849806">သိမ်းထားသောစကားဝှက် သုံးမလား။</translation>
+<translation id="1435940442311036198">အခြားစက်တစ်ခုတွင် လျှို့ဝှက်ကီးသုံးရန်</translation>
+<translation id="1717486229951421299">ထိလိုက်သည့်အခါ ဖြည့်ရန်အတွက် အထောက်အထားများ၏ စာရင်းကို မြင်ကွင်းတစ်ဝက်ဖြင့်ထားသည်။</translation>
+<translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
+<translation id="2364266287022099258">သိမ်းထားသည့် လျှို့ဝှက်ကီး သုံးမလား။</translation>
+<translation id="3399357656427473483">ထိလိုက်သည့်အခါ ဖြည့်ရန်အတွက် အထောက်အထားများ၏ စာရင်း</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> သို့ သင်လက်မှတ်ထိုးဝင်ပါမည်</translation>
+<translation id="3950820424414687140">ဝင်ရောက်</translation>
+<translation id="4553044860350038560">နောက်ထပ်လျှို့ဝှက်ကီးများ</translation>
+<translation id="4598345735110653698">လျှို့ဝှက်ကီးများ စီမံရန်</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> အတွက် စကားဝှက်</translation>
+<translation id="4907224763885298217">ဖန်သားပြင်လော့ခ်သုံးပါ</translation>
+<translation id="5012523644916800014">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်</translation>
+<translation id="5441504010984421144">ထိလိုက်သည့်အခါ ဖြည့်ရန်အတွက် အထောက်အထားများ၏ စာရင်းကို မြင်ကွင်းအပြည့်ဖြင့်ထားသည်။</translation>
+<translation id="5591247451101092906">သိမ်းထားသည့် စကားဝှက် (သို့) လျှို့ဝှက်ကီး သုံးမလား။</translation>
+<translation id="5624120631404540903">စကားဝှက်များကို စီမံကွပ်ကဲရန်</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> အတွက် လျှို့ဝှက်ကီး။ သင့်ဖန်သားပြင်လော့ခ် သုံးပါ</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ဤဝဘ်ဆိုက်အတွက် စကားဝှက်အသစ်}other{ဤဝဘ်ဆိုက်အတွက် စကားဝှက်အသစ်များ}}</translation>
+<translation id="7286867818472074330">လျှို့ဝှက်ကီး ရွေးရန်</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />၊ <ph name="ITEMS_TOTAL" /> အနက် <ph name="ITEM_POSITION" />။</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> အတွက် စကားဝှက်များ ရရှိထားသည်</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> သည် <ph name="SITE_NAME" /> အတွက် စကားဝှက်ကို သင့်အားမျှဝေထားသည်</translation>
+<translation id="8891372124884726271">အထောက်အထားစာရင်းကို ပိတ်ထားသည်။</translation>
+</translationbundle>

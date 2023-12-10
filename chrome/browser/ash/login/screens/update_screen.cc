@@ -100,6 +100,8 @@ std::string UpdateScreen::GetResultString(Result result) {
       return BaseScreen::kNotApplicable;
     case Result::UPDATE_OPT_OUT_INFO_SHOWN:
       return "UpdateNotRequired_OptOutInfo";
+    case Result::UPDATE_CHECK_TIMEOUT:
+      return "UpdateCheckTimeout";
   }
 }
 
@@ -459,7 +461,7 @@ void UpdateScreen::SetUpdateStatusMessage(int percent,
 void UpdateScreen::UpdateBatteryWarningVisibility() {
   if (!view_)
     return;
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;

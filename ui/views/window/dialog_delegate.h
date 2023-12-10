@@ -409,8 +409,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 // DialogDelegateView has unusual lifetime semantics that you can avoid dealing
 // with, and your class will be smaller.
 class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
+  METADATA_HEADER(DialogDelegateView, View)
+
  public:
-  METADATA_HEADER(DialogDelegateView);
   DialogDelegateView();
   DialogDelegateView(const DialogDelegateView&) = delete;
   DialogDelegateView& operator=(const DialogDelegateView&) = delete;

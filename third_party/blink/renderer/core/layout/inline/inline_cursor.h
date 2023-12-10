@@ -26,15 +26,15 @@ class FragmentItems;
 class InlineBackwardCursor;
 class InlineBreakToken;
 class InlineCursor;
+class InlinePaintContext;
 class LayoutBlockFlow;
 class LayoutInline;
 class LayoutObject;
 class LayoutUnit;
-class NGInlinePaintContext;
-class NGPhysicalBoxFragment;
 class Node;
+class PhysicalBoxFragment;
 class ShapeResultView;
-enum class NGStyleVariant;
+enum class StyleVariant;
 struct LayoutSelectionStatus;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -106,14 +106,14 @@ class CORE_EXPORT InlineCursorPosition {
   bool IsHiddenForPaint() const { return item_->IsHiddenForPaint(); }
 
   // |ComputedStyle| and related functions.
-  NGStyleVariant StyleVariant() const { return item_->StyleVariant(); }
+  StyleVariant GetStyleVariant() const { return item_->GetStyleVariant(); }
   bool UsesFirstLineStyle() const {
-    return StyleVariant() == NGStyleVariant::kFirstLine;
+    return GetStyleVariant() == StyleVariant::kFirstLine;
   }
   const ComputedStyle& Style() const { return item_->Style(); }
 
   // Functions to get corresponding objects for this position.
-  const NGPhysicalBoxFragment* BoxFragment() const {
+  const PhysicalBoxFragment* BoxFragment() const {
     return item_->BoxFragment();
   }
   const LayoutObject* GetLayoutObject() const {
@@ -152,13 +152,15 @@ class CORE_EXPORT InlineCursorPosition {
 
   // InkOverflow of itself, including contents if they contribute to the ink
   // overflow of this object (e.g. when not clipped,) in the local coordinate.
-  const PhysicalRect InkOverflow() const { return item_->InkOverflow(); }
-  const PhysicalRect SelfInkOverflow() const {
-    return item_->SelfInkOverflow();
+  const PhysicalRect InkOverflowRect() const {
+    return item_->InkOverflowRect();
+  }
+  const PhysicalRect SelfInkOverflowRect() const {
+    return item_->SelfInkOverflowRect();
   }
 
   void RecalcInkOverflow(const InlineCursor& cursor,
-                         NGInlinePaintContext* inline_context) const;
+                         InlinePaintContext* inline_context) const;
 
   // Returns start/end of offset in text content of current text fragment.
   // It is error when this cursor doesn't point to text fragment.
@@ -238,8 +240,8 @@ class CORE_EXPORT InlineCursor {
   using ItemsSpan = FragmentItems::Span;
 
   explicit InlineCursor(const LayoutBlockFlow& block_flow);
-  explicit InlineCursor(const NGPhysicalBoxFragment& box_fragment);
-  InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+  explicit InlineCursor(const PhysicalBoxFragment& box_fragment);
+  InlineCursor(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& items);
   explicit InlineCursor(const InlineBackwardCursor& backward_cursor);
   InlineCursor(const InlineCursor& other) = default;
@@ -264,8 +266,8 @@ class CORE_EXPORT InlineCursor {
     return *fragment_items_;
   }
 
-  // Returns the |NGPhysicalBoxFragment| that owns |Items|.
-  const NGPhysicalBoxFragment& ContainerFragment() const {
+  // Returns the |PhysicalBoxFragment| that owns |Items|.
+  const PhysicalBoxFragment& ContainerFragment() const {
     DCHECK(root_box_fragment_);
     return *root_box_fragment_;
   }
@@ -371,7 +373,7 @@ class CORE_EXPORT InlineCursor {
   // offset, and snaps to the nearest line in the block direction.
   PositionWithAffinity PositionForPointInInlineFormattingContext(
       const PhysicalOffset& point,
-      const NGPhysicalBoxFragment& container);
+      const PhysicalBoxFragment& container);
   // Find the |Position| in the line box |Current()| points to. This variation
   // ignores the block offset, and snaps to the nearest item in inline
   // direction.
@@ -569,7 +571,7 @@ class CORE_EXPORT InlineCursor {
 #endif
 
  private:
-  InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+  InlineCursor(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& fragment_items,
                ItemsSpan items);
 
@@ -599,9 +601,9 @@ class CORE_EXPORT InlineCursor {
   // Move the cursor position to the first fragment in tree.
   void MoveToFirst();
 
-  void SetRoot(const NGPhysicalBoxFragment& box_fragment,
+  void SetRoot(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& items);
-  void SetRoot(const NGPhysicalBoxFragment& box_fragment,
+  void SetRoot(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& fragment_items,
                ItemsSpan items);
   void SetRoot(const LayoutBlockFlow& block_flow);
@@ -666,7 +668,7 @@ class CORE_EXPORT InlineCursor {
 
   ItemsSpan items_;
   const FragmentItems* fragment_items_ = nullptr;
-  const NGPhysicalBoxFragment* root_box_fragment_ = nullptr;
+  const PhysicalBoxFragment* root_box_fragment_ = nullptr;
 
   CulledInlineTraversal culled_inline_;
 
@@ -700,7 +702,7 @@ class CORE_EXPORT InlineBackwardCursor {
 
   void MoveToPreviousSibling();
 
-  const NGPhysicalBoxFragment& ContainerFragment() const {
+  const PhysicalBoxFragment& ContainerFragment() const {
     return cursor_.ContainerFragment();
   }
 

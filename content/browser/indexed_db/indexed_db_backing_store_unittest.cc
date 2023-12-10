@@ -306,7 +306,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     file_system_access_context_->Clone(
         fsa_context.InitWithNewPipeAndPassReceiver());
 
-    idb_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    idb_context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
         std::move(blob_storage_context), std::move(fsa_context),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -383,13 +383,12 @@ class IndexedDBBackingStoreTest : public testing::Test {
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
 
-      for (const auto& bucket_id : factory->GetOpenBuckets()) {
+      for (const auto& bucket_id : factory->GetOpenBucketIdsForTesting()) {
         base::RunLoop loop;
-        IndexedDBBucketContext* per_bucket_factory =
-            factory->GetBucketContext(bucket_id);
-
-        auto* leveldb_state =
-            per_bucket_factory->backing_store()->db()->leveldb_state();
+        auto* leveldb_state = factory->GetBucketContextForTesting(bucket_id)
+                                  ->backing_store()
+                                  ->db()
+                                  ->leveldb_state();
 
         base::WaitableEvent leveldb_close_event;
         base::WaitableEventWatcher event_watcher;
@@ -455,7 +454,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   std::unique_ptr<MockFileSystemAccessContext> file_system_access_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<IndexedDBContextImpl> idb_context_;
+  std::unique_ptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestIDBFactory> idb_factory_;
   raw_ptr<PartitionedLockManager> lock_manager_ = nullptr;
 

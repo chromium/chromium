@@ -176,7 +176,7 @@ public class AndroidStylusWritingHandlerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "InputMethod.StylusHandwriting.Triggered", StylusApiOption.Api.ANDROID);
-        mHandler.requestStartStylusWriting(null);
+        mHandler.requestStartStylusWriting();
         histogramWatcher.assertExpected();
     }
 

@@ -4,20 +4,22 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -28,11 +30,40 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Creates suggestion for a single username form.
+FormSuggestion* SuggestionForSingleUsernameForm() {
+  return [FormSuggestion
+             suggestionWithValue:@"foo"
+              displayDescription:nil
+                            icon:nil
+                     popupItemId:autofill::PopupItemId::kAutocompleteEntry
+               backendIdentifier:nil
+                  requiresReauth:NO
+      acceptanceA11yAnnouncement:nil
+                        metadata:{.is_single_username_form = true}];
+}
+
+// Gets the primary action label localized string for password fill.
+NSString* PrimaryActionLabelForPasswordFill() {
+  return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
+}
+
+// Gets the primary action label localized string for password fill.
+NSString* PrimaryActionLabelForUsernameFill() {
+  return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE);
+}
+
+}  // namespace
 
 // Expose the internal disconnect function for testing purposes
 @interface PasswordSuggestionBottomSheetMediator ()
@@ -219,22 +250,31 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
                 chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
-        initWithWebStateList:web_state_list_.get()
-               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                 chrome_browser_state_.get())
-                 prefService:prefs_.get()
-                      params:params_
-                reauthModule:nil
-                         URL:URL()
-        profilePasswordStore:store_
-        accountPasswordStore:nullptr];
+          initWithWebStateList:web_state_list_.get()
+                 faviconLoader:IOSChromeFaviconLoaderFactory::
+                                   GetForBrowserState(
+                                       chrome_browser_state_.get())
+                   prefService:prefs_.get()
+                        params:params_
+                  reauthModule:nil
+                           URL:URL()
+          profilePasswordStore:store_
+          accountPasswordStore:nullptr
+        sharedURLLoaderFactory:nullptr];
   }
 
-  void CreateMediatorWithSuggestions() {
-    suggestion_providers_ =
-        @[ [PasswordSuggestionBottomSheetMediatorTestSuggestionProvider
-            providerWithSuggestions] ];
+  // Creates the bottom sheet mediator with custom suggestions `providers`.
+  void CreateMediatorWithSuggestions(
+      NSArray<id<FormSuggestionProvider>>* providers) {
+    suggestion_providers_ = providers;
     CreateMediator();
+  }
+
+  // Creates the bottom sheet mediator with the default suggestions providers.
+  void CreateMediatorWithDefaultSuggestions() {
+    CreateMediatorWithSuggestions(
+        @[ [PasswordSuggestionBottomSheetMediatorTestSuggestionProvider
+            providerWithSuggestions] ]);
   }
 
   GURL URL() { return GURL("http://foo.com"); }
@@ -261,7 +301,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, Init) {
 // Tests consumer when no suggestion is available.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest, NoSuggestion) {
   CreateMediator();
-  EXPECT_TRUE(mediator_);
+  ASSERT_TRUE(mediator_);
 
   OCMExpect([consumer_ dismiss]);
   [mediator_ setConsumer:consumer_];
@@ -270,18 +310,69 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, NoSuggestion) {
 
 // Tests consumer when suggestions are available.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
-  CreateMediatorWithSuggestions();
-  EXPECT_TRUE(mediator_);
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
 
   OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
                             andDomain:[OCMArg isNotNil]]);
+  OCMExpect(
+      [consumer_ setPrimaryActionString:PrimaryActionLabelForPasswordFill()]);
+
+  [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests setting the consumer when suggestions are available for a single
+// username form and the feature is disabled.
+TEST_F(PasswordSuggestionBottomSheetMediatorTest,
+       WithSuggestions_ForSingleUsernameForm_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  id<FormSuggestionProvider> provider =
+      [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
+          initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];
+
+  CreateMediatorWithSuggestions(@[ provider ]);
+  ASSERT_TRUE(mediator_);
+
+  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
+                            andDomain:[OCMArg isNotNil]]);
+  [[consumer_ expect]
+      setPrimaryActionString:PrimaryActionLabelForPasswordFill()];
+
+  [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests setting the consumer when suggestions are available for a single
+// username form and the feature is enabled.
+TEST_F(PasswordSuggestionBottomSheetMediatorTest,
+       WithSuggestions_ForSingleUsernameForm_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  id<FormSuggestionProvider> provider =
+      [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
+          initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];
+
+  CreateMediatorWithSuggestions(@[ provider ]);
+  ASSERT_TRUE(mediator_);
+
+  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
+                            andDomain:[OCMArg isNotNil]]);
+  [[consumer_ expect]
+      setPrimaryActionString:PrimaryActionLabelForUsernameFill()];
+
   [mediator_ setConsumer:consumer_];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
-  CreateMediatorWithSuggestions();
-  EXPECT_TRUE(mediator_);
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
 
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 0);
@@ -304,8 +395,8 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
 }
 
 TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
-  CreateMediatorWithSuggestions();
-  EXPECT_TRUE(mediator_);
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
 
   password_manager::CredentialUIEntry expectedCredential;
   expectedCredential.username = u"test1";
@@ -325,7 +416,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
               popupItemId:autofill::PopupItemId::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
-  absl::optional<password_manager::CredentialUIEntry> credential =
+  std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
   EXPECT_TRUE(credential.has_value());
   EXPECT_EQ(credential.value(), expectedCredential);
@@ -333,8 +424,8 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
 
 TEST_F(PasswordSuggestionBottomSheetMediatorTest,
        SuggestionUsernameWithoutSuffix) {
-  CreateMediatorWithSuggestions();
-  EXPECT_TRUE(mediator_);
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
 
   password_manager::CredentialUIEntry expectedCredential;
   expectedCredential.username = u"test1";
@@ -352,7 +443,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
               popupItemId:autofill::PopupItemId::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
-  absl::optional<password_manager::CredentialUIEntry> credential =
+  std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
   EXPECT_TRUE(credential.has_value());
   EXPECT_EQ(credential.value(), expectedCredential);
@@ -363,7 +454,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
 // cause a crash in the process, so this test ensures they're executed.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest,
        CleansUpWhenWebStateListDestroyed) {
-  CreateMediatorWithSuggestions();
+  CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);
   [mediator_ setConsumer:consumer_];
 

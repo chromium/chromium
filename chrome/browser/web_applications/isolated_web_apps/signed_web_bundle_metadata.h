@@ -38,9 +38,20 @@ class SignedWebBundleMetadata {
                      const IsolatedWebAppLocation& location,
                      SignedWebBundleMetadataCallback callback);
 
+  static SignedWebBundleMetadata CreateForTesting(
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
+      const std::u16string& app_name,
+      const base::Version& version,
+      const IconBitmaps& icons);
+
   ~SignedWebBundleMetadata();
   SignedWebBundleMetadata(const SignedWebBundleMetadata&);
   SignedWebBundleMetadata& operator=(const SignedWebBundleMetadata&);
+
+  const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
+
+  const IsolatedWebAppLocation& location() const { return location_; }
 
   const webapps::AppId& app_id() const { return url_info_.app_id(); }
 
@@ -50,10 +61,17 @@ class SignedWebBundleMetadata {
 
   const IconBitmaps& icons() const { return icons_; }
 
+  bool operator==(const SignedWebBundleMetadata& other) const;
+
  private:
-  SignedWebBundleMetadata(const WebAppInstallInfo& install_info,
-                          const IsolatedWebAppUrlInfo& url_info);
+  SignedWebBundleMetadata(const IsolatedWebAppUrlInfo& url_info,
+                          const IsolatedWebAppLocation& location,
+                          const std::u16string& app_name,
+                          const base::Version& version,
+                          const IconBitmaps& icons);
+
   IsolatedWebAppUrlInfo url_info_;
+  IsolatedWebAppLocation location_;
   std::u16string app_name_;
   base::Version version_;
   IconBitmaps icons_;

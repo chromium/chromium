@@ -158,7 +158,7 @@ void SamlChallengeKeyHandler::BuildChallengeResponse() {
       decoded_challenge_, /*register_key=*/false,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name_for_spkac=*/"",
-      /*signals=*/absl::nullopt);
+      /*signals=*/std::nullopt);
 }
 
 base::TimeDelta SamlChallengeKeyHandler::GetTpmResponseTimeout() const {

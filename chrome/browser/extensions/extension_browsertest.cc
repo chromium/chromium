@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_message_bubble_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_paths.h"
@@ -378,10 +377,6 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
 
-  // We don't want any warning bubbles for, e.g., unpacked extensions.
-  ExtensionMessageBubbleFactory::set_override_for_tests(
-      ExtensionMessageBubbleFactory::OVERRIDE_DISABLED);
-
   if (!ShouldEnableContentVerification()) {
     ignore_content_verification_ =
         std::make_unique<ScopedIgnoreContentVerifierForTest>();
@@ -421,8 +416,6 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
 }
 
 void ExtensionBrowserTest::TearDownOnMainThread() {
-  ExtensionMessageBubbleFactory::set_override_for_tests(
-      ExtensionMessageBubbleFactory::NO_OVERRIDE);
   SetExtensionProtocolTestHandler(nullptr);
   registry_observation_.Reset();
 }
@@ -858,9 +851,10 @@ std::string ExtensionBrowserTest::ExecuteScriptInBackgroundPageDeprecated(
 
 bool ExtensionBrowserTest::ExecuteScriptInBackgroundPageNoWait(
     const std::string& extension_id,
-    const std::string& script) {
+    const std::string& script,
+    browsertest_util::ScriptUserActivation script_user_activation) {
   return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension_id, script);
+      profile(), extension_id, script, script_user_activation);
 }
 
 content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext() {

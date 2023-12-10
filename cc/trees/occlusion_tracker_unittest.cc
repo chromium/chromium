@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer.h"
@@ -26,6 +27,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/single_thread_proxy.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,6 +103,8 @@ class OcclusionTrackerTest : public testing::Test {
                                         animation_host_.get(),
                                         LayerListSettings())),
         next_layer_impl_id_(1) {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAllowUndamagedNonrootRenderPassToSkip);
     host_->CreateFakeLayerTreeHostImpl();
     host_->host_impl()->InitializeFrameSink(layer_tree_frame_sink_.get());
   }
@@ -316,6 +320,7 @@ class OcclusionTrackerTest : public testing::Test {
   std::unique_ptr<FakeLayerTreeHost> host_;
   std::unique_ptr<EffectTreeLayerListIterator> layer_iterator_;
   int next_layer_impl_id_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #define RUN_TEST_IMPL_THREAD_OPAQUE_LAYERS(ClassName)          \

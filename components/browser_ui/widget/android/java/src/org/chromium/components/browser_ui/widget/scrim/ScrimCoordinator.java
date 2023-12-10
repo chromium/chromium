@@ -31,9 +31,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ScrimCoordinator {
     /** The duration for the scrim animation. */
     private static final int ANIM_DURATION_MS = 300;
-    /**
-     * A delegate to expose functionality that changes the scrim over the system UI.
-     */
+
+    /** A delegate to expose functionality that changes the scrim over the system UI. */
     public interface SystemUiScrimDelegate {
         /**
          * Pass the current scrim color to the relevant system UI elements.
@@ -69,9 +68,7 @@ public class ScrimCoordinator {
         boolean onTouchEvent(MotionEvent event);
     }
 
-    /**
-     * A supplier of new {@link ScrimView}s to use when {@link #showScrim(PropertyModel)} is called.
-     */
+    /** A supplier of new {@link ScrimView}s to use when {@link #showScrim(PropertyModel)} is called. */
     private final Supplier<ScrimView> mScrimViewBuilder;
 
     /** The component's mediator for handling animation and model management. */
@@ -93,18 +90,25 @@ public class ScrimCoordinator {
      * @param parent The {@link ViewGroup} the scrim should exist in.
      * @param defaultColor The default color of the scrim.
      */
-    public ScrimCoordinator(Context context, SystemUiScrimDelegate systemUiScrimDelegate,
-            ViewGroup parent, @ColorInt int defaultColor) {
-        mMediator = new ScrimMediator(() -> {
-            if (mChangeProcessor != null) mChangeProcessor.destroy();
-            if (mView != null) UiUtils.removeViewFromParent(mView);
-            mView = null;
-            mChangeProcessor = null;
-        }, systemUiScrimDelegate);
-        mScrimViewBuilder = () -> {
-            ScrimView view = new ScrimView(context, parent, defaultColor, mMediator);
-            return view;
-        };
+    public ScrimCoordinator(
+            Context context,
+            SystemUiScrimDelegate systemUiScrimDelegate,
+            ViewGroup parent,
+            @ColorInt int defaultColor) {
+        mMediator =
+                new ScrimMediator(
+                        () -> {
+                            if (mChangeProcessor != null) mChangeProcessor.destroy();
+                            if (mView != null) UiUtils.removeViewFromParent(mView);
+                            mView = null;
+                            mChangeProcessor = null;
+                        },
+                        systemUiScrimDelegate);
+        mScrimViewBuilder =
+                () -> {
+                    ScrimView view = new ScrimView(context, parent, defaultColor, mMediator);
+                    return view;
+                };
     }
 
     /**

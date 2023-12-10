@@ -7,7 +7,7 @@
 
 // Extensions for PA's copy of `//base/compiler_specific.h`.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 // PA_ATTRIBUTE_RETURNS_NONNULL
 //

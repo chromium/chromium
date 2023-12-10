@@ -4,7 +4,14 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /** Interface for creating ReadAloud playback. */
 public interface ReadAloudPlaybackHooks {
@@ -12,6 +19,7 @@ public interface ReadAloudPlaybackHooks {
     interface CreatePlaybackCallback {
         /** Called if createPlayback() succeeds. */
         void onSuccess(Playback playback);
+
         /** Called if createPlayback() fails. */
         void onFailure(Throwable t);
     }
@@ -51,5 +59,43 @@ public interface ReadAloudPlaybackHooks {
     /** Creates the Highlighter. */
     default Highlighter createHighlighter() {
         return new Highlighter() {};
+    }
+
+    /// Voices methods
+
+    /**
+     * Check whether initVoices() has been called and the voice methods are ready to use.
+     *
+     * @return True if initVoices() was called.
+     */
+    default boolean voicesInitialized() {
+        return false;
+    }
+
+    /**
+     * Initialize the voice list. Should be called once before using getVoicesFor() and
+     * getPlaybackVoiceList().
+     */
+    default void initVoices() {}
+
+    /**
+     * Get the list of all voices in the given language. Returns an empty list if
+     * currentPageLanguage is null or invalid.
+     *
+     * @param currentPageLanguage A language.
+     * @return All voices for currentPageLanguage.
+     */
+    default List<PlaybackVoice> getVoicesFor(@Nullable String currentPageLanguage) {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Get the list of voices that should be sent when requesting playback.
+     *
+     * @param voiceOverrides A map from languages to voice IDs (see ReadAloudPrefs.getVoices()).
+     * @return A voice list to attach to a playback request.
+     */
+    default List<PlaybackVoice> getPlaybackVoiceList(Map<String, String> voiceOverrides) {
+        return new ArrayList<>();
     }
 }

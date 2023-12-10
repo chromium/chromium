@@ -113,11 +113,11 @@ public class ClickToCallMessageHandlerTest {
     private void setIsScreenOnAndUnlocked(boolean isScreenOnAndUnlocked) {
         DeviceConditions deviceConditions =
                 new DeviceConditions(
-                        false /* POWER_CONNECTED */,
-                        75 /* BATTERY_LEVEL */,
+                        /* powerConnected= */ false,
+                        /* batteryPercentage= */ 75,
                         ConnectionType.CONNECTION_WIFI,
-                        false /* POWER_SAVE */,
-                        /* metered= */ false,
+                        /* powerSaveOn= */ false,
+                        /* activeNetworkMetered= */ false,
                         isScreenOnAndUnlocked);
         ShadowDeviceConditions.setCurrentConditions(deviceConditions);
     }

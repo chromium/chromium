@@ -13,7 +13,7 @@
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -85,9 +85,16 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       [stackView addArrangedSubview:iconView];
     }
 
-    UILabel* label = TextLabel(suggestion.value,
-                               [UIColor colorNamed:kTextPrimaryColor], YES);
-    [stackView addArrangedSubview:label];
+    UILabel* valueLabel = TextLabel(
+        suggestion.value, [UIColor colorNamed:kTextPrimaryColor], YES);
+    [stackView addArrangedSubview:valueLabel];
+
+    if ([suggestion.minorValue length] > 0) {
+      UILabel* minorValueLabel = TextLabel(
+          suggestion.minorValue, [UIColor colorNamed:kTextPrimaryColor], YES);
+      [stackView addArrangedSubview:minorValueLabel];
+    }
+
     if ([suggestion.displayDescription length] > 0) {
       UILabel* description =
           TextLabel(suggestion.displayDescription,

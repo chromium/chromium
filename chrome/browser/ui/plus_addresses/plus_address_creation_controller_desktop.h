@@ -13,6 +13,9 @@
 
 namespace plus_addresses {
 
+class PlusAddressCreationDialogDelegate;
+class PlusAddressCreationView;
+
 class PlusAddressCreationControllerDesktop
     : public PlusAddressCreationController,
       public content::WebContentsUserData<
@@ -27,14 +30,15 @@ class PlusAddressCreationControllerDesktop
   void OnCanceled() override;
   void OnDialogDestroyed() override;
 
+  // Used to validate the view behavior in browsertests.
+  PlusAddressCreationView* get_view_for_testing();
   // A mechanism to avoid view entanglements, reducing the need for view
   // mocking, etc., while still allowing tests of specific business logic.
   // TODO(crbug.com/1467623): Add more end-to-end coverage as the modal behavior
   // comes fully online.
   void set_suppress_ui_for_testing(bool should_suppress);
-
-  // Validate storage and clearing of `maybe_plus_profile_`.
-  absl::optional<PlusProfile> get_plus_profile_for_testing();
+  // Used to validate storage and clearing of `maybe_plus_profile_`.
+  std::optional<PlusProfile> get_plus_profile_for_testing();
 
  private:
   // WebContentsUserData:
@@ -44,20 +48,18 @@ class PlusAddressCreationControllerDesktop
       PlusAddressCreationControllerDesktop>;
 
   // Populates `plus_profile_` with `maybe_plus_profile` if it's not an error.
-  void OnPlusAddressReserved(const std::string& primary_email_address,
-                             const PlusProfileOrError& maybe_plus_profile);
+  void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);
   // Autofills `plus_address` in the targeted field by running callback_.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
 
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
+  std::unique_ptr<PlusAddressCreationDialogDelegate> dialog_delegate_;
   url::Origin relevant_origin_;
   PlusAddressCallback callback_;
-  bool ui_modal_showing_ = false;
   bool suppress_ui_for_testing_ = false;
-  // This is set by OnPlusAddressReserved and cleared when it's confirmed or
-  // when the dialog is closed or cancelled.
-  absl::optional<PlusProfile> plus_profile_;
+  // This is set by OnPlusAddressReserved and cleared when the dialog is closed.
+  std::optional<PlusProfile> plus_profile_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{
       this};

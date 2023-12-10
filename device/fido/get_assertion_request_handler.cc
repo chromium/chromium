@@ -25,7 +25,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/device_public_key_extension.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -136,21 +135,6 @@ bool ValidateResponseExtensions(
       if (!request.get_cred_blob || !it.second.is_bytestring()) {
         return false;
       }
-    } else if (ext_name == kExtensionDevicePublicKey) {
-      if (!request.device_public_key) {
-        FIDO_LOG(ERROR) << "unsolicited devicePubKey extension output";
-        return false;
-      }
-      const bool backup_eligible_flag =
-          response.authenticator_data.backup_eligible();
-      const absl::optional<const char*> error =
-          CheckDevicePublicKeyExtensionForErrors(
-              it.second, request.device_public_key->attestation,
-              backup_eligible_flag);
-      if (error.has_value()) {
-        FIDO_LOG(ERROR) << error.value();
-        return false;
-      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;
@@ -225,15 +209,6 @@ bool ResponseValid(
 
     if (i > 0 && response.user_selected) {
       // It is invalid to set `userSelected` on subsequent responses.
-      return false;
-    }
-
-    const bool has_dpk_extension =
-        extensions &&
-        extensions->GetMap().count(cbor::Value(kExtensionDevicePublicKey));
-    if (has_dpk_extension != response.device_public_key_signature.has_value()) {
-      FIDO_LOG(ERROR)
-          << "DPK extension isn't coherent with presence of DPK signature";
       return false;
     }
   }
@@ -317,10 +292,6 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
   if (request.get_cred_blob &&
       !authenticator.Options().max_cred_blob_length.has_value()) {
     specialized_request.get_cred_blob = false;
-  }
-  if (request.device_public_key &&
-      !authenticator.Options().supports_device_public_key) {
-    specialized_request.device_public_key.reset();
   }
   if (!options.prf_inputs.empty()) {
     if (authenticator.Options().supports_prf) {

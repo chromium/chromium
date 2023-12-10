@@ -986,6 +986,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
@@ -1037,6 +1038,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
     test::EventReportValidator validator(cloud_policy_client());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ kSourceVolumeInfo.fs_config_string,
         /*destination*/ kDestinationVolumeInfo.fs_config_string,
         /*filename*/ "foo.doc",
@@ -1095,6 +1097,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
     test::EventReportValidator validator(cloud_policy_client());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ kSourceVolumeInfo.fs_config_string,
         /*destination*/ kDestinationVolumeInfo.fs_config_string,
         /*filename*/ "foo.doc",
@@ -1132,6 +1135,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
     test::EventReportValidator validator(cloud_policy_client());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ kSourceVolumeInfo.fs_config_string,
         /*destination*/ kDestinationVolumeInfo.fs_config_string,
         /*filename*/ "foo.doc",
@@ -1306,6 +1310,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
@@ -1358,6 +1363,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
@@ -1416,6 +1422,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncrypted) {
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "encrypted.zip",
@@ -1486,6 +1493,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
@@ -1562,6 +1570,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filenames*/ {"foo.doc", "baa.doc", "blub.doc"},
@@ -1627,6 +1636,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filenames*/ {"bad1.doc", "bad2.doc"},
@@ -1715,6 +1725,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
   test::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
+      /*tab_url*/ "",
       /*source*/ kSourceVolumeInfo.fs_config_string,
       /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filenames*/ expected_filenames,
@@ -1817,6 +1828,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     test::EventReportValidator validator(cloud_policy_client());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ kSourceVolumeInfo.fs_config_string,
         /*destination*/ kDestinationVolumeInfo.fs_config_string,
         /*filenames*/ expected_filenames,
@@ -1895,6 +1907,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     test::EventReportValidator validator(cloud_policy_client());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ kSourceVolumeInfo.fs_config_string,
         /*destination*/ kDestinationVolumeInfo.fs_config_string,
         /*filenames*/ expected_filenames,

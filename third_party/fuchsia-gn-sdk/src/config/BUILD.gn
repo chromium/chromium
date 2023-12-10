@@ -38,7 +38,7 @@ config("compiler") {
     "-Wl,--as-needed",
   ]
 
-  lib_dirs = [ "${fuchsia_sdk}/arch/${current_cpu}/lib" ]
+  lib_dirs = [ "${fuchsia_sdk}/obj/${current_cpu}-api-${fuchsia_target_api_level}/lib" ]
 
   libs = [ "zircon" ]
 
@@ -85,5 +85,5 @@ group("runtime_library_group") {
 
 config("sdk_lib_dirs_config") {
   visibility = [ "${fuchsia_sdk}/*" ]
-  lib_dirs = [ "arch/${target_cpu}/lib" ]
+  lib_dirs = [ "obj/${target_cpu}-api-${fuchsia_target_api_level}/lib" ]
 }

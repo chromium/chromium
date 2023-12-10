@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
@@ -97,7 +98,7 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // The client of this class.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   // The task runner on which the functions of |encoder_| are executed.
   scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;

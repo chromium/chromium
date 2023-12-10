@@ -5,22 +5,10 @@ This is a wdspec test.
   assert False
 [FAIL] test_accept[capabilities0-prompt-]
   assert False
-[PASS] test_accept_and_notify[capabilities0-alert-None]
-[PASS] test_accept_and_notify[capabilities0-confirm-True]
-[PASS] test_accept_and_notify[capabilities0-prompt-]
 [FAIL] test_dismiss[capabilities0-alert-None]
   assert False
 [FAIL] test_dismiss[capabilities0-confirm-False]
   assert False
 [FAIL] test_dismiss[capabilities0-prompt-None]
   assert False
-[PASS] test_dismiss_and_notify[capabilities0-alert-None]
-[PASS] test_dismiss_and_notify[capabilities0-confirm-False]
-[PASS] test_dismiss_and_notify[capabilities0-prompt-None]
-[PASS] test_ignore[capabilities0-alert]
-[PASS] test_ignore[capabilities0-confirm]
-[PASS] test_ignore[capabilities0-prompt]
-[PASS] test_default[alert-None]
-[PASS] test_default[confirm-False]
-[PASS] test_default[prompt-None]
 Harness: the test ran to completion.

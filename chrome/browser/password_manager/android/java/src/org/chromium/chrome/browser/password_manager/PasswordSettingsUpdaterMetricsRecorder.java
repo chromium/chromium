@@ -68,8 +68,13 @@ class PasswordSettingsUpdaterMetricsRecorder {
     }
 
     private String getHistogramName(String metric) {
-        return PASSWORD_SETTINGS_HISTOGRAM_BASE + "." + mFunctionSuffix + "."
-                + getSuffixForSetting(mSetting) + "." + metric;
+        return PASSWORD_SETTINGS_HISTOGRAM_BASE
+                + "."
+                + mFunctionSuffix
+                + "."
+                + getSuffixForSetting(mSetting)
+                + "."
+                + metric;
     }
 
     private void reportErrorMetrics(Exception exception) {

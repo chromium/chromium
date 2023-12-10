@@ -29,7 +29,7 @@ FakeNearbyShareCertificateStorage::Factory::CreateInstance(
 
 FakeNearbyShareCertificateStorage::ReplacePublicCertificatesCall::
     ReplacePublicCertificatesCall(
-        const std::vector<nearbyshare::proto::PublicCertificate>&
+        const std::vector<nearby::sharing::proto::PublicCertificate>&
             public_certificates,
         ResultCallback callback)
     : public_certificates(public_certificates), callback(std::move(callback)) {}
@@ -43,7 +43,7 @@ FakeNearbyShareCertificateStorage::ReplacePublicCertificatesCall::
 
 FakeNearbyShareCertificateStorage::AddPublicCertificatesCall::
     AddPublicCertificatesCall(
-        const std::vector<nearbyshare::proto::PublicCertificate>&
+        const std::vector<nearby::sharing::proto::PublicCertificate>&
             public_certificates,
         ResultCallback callback)
     : public_certificates(public_certificates), callback(std::move(callback)) {}
@@ -92,7 +92,7 @@ void FakeNearbyShareCertificateStorage::ReplacePrivateCertificates(
 }
 
 void FakeNearbyShareCertificateStorage::AddPublicCertificates(
-    const std::vector<nearbyshare::proto::PublicCertificate>&
+    const std::vector<nearby::sharing::proto::PublicCertificate>&
         public_certificates,
     ResultCallback callback) {
   add_public_certificates_calls_.emplace_back(public_certificates,

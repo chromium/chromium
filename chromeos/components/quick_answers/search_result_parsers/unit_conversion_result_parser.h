@@ -15,6 +15,12 @@ class UnitConversionResultParser : public ResultParser {
   // ResultParser:
   bool Parse(const base::Value::Dict& result,
              QuickAnswer* quick_answer) override;
+
+  std::unique_ptr<StructuredResult> ParseInStructuredResult(
+      const base::Value::Dict& result) override;
+  bool PopulateQuickAnswer(const StructuredResult& structured_result,
+                           QuickAnswer* quick_answer) override;
+  bool SupportsNewInterface() const override;
 };
 
 }  // namespace quick_answers

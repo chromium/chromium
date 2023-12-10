@@ -6,9 +6,7 @@ package org.chromium.android_webview.services;
 
 import org.chromium.android_webview.common.SafeModeAction;
 
-/**
- * An interface for defining a precaution WebView may take during SafeMode in non-embedded WebView.
- */
+/** An interface for defining a precaution WebView may take during SafeMode in non-embedded WebView. */
 public interface NonEmbeddedSafeModeAction extends SafeModeAction {
     /**
      * Executes the given action. Implementations of this method should be Java-only (no JNI/C++)

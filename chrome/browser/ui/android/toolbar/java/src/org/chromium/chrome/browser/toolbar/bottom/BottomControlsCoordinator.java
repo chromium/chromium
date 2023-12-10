@@ -35,9 +35,7 @@ import org.chromium.ui.widget.Toast;
  * controls offset is 0.
  */
 public class BottomControlsCoordinator implements BackPressHandler {
-    /**
-     * Interface for the BottomControls component to hide and show itself.
-     */
+    /** Interface for the BottomControls component to hide and show itself. */
     public interface BottomControlsVisibilityController {
         void setBottomControlsVisible(boolean isVisible);
     }
@@ -64,11 +62,16 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * @param constraintsSupplier Used to access current constraints of the browser controls.
      */
     @SuppressLint("CutPasteId") // Not actually cut and paste since it's View vs ViewGroup.
-    public BottomControlsCoordinator(Activity activity, WindowAndroid windowAndroid,
-            LayoutManager layoutManager, ResourceManager resourceManager,
-            BrowserControlsSizer controlsSizer, FullscreenManager fullscreenManager,
+    public BottomControlsCoordinator(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            LayoutManager layoutManager,
+            ResourceManager resourceManager,
+            BrowserControlsSizer controlsSizer,
+            FullscreenManager fullscreenManager,
             ScrollingBottomViewResourceFrameLayout root,
-            BottomControlsContentDelegate contentDelegate, TabObscuringHandler tabObscuringHandler,
+            BottomControlsContentDelegate contentDelegate,
+            TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
             ObservableSupplier<Integer> constraintsSupplier) {
         root.setConstraintsSupplier(constraintsSupplier);
@@ -85,13 +88,19 @@ public class BottomControlsCoordinator implements BackPressHandler {
         View container = root.findViewById(R.id.bottom_container_slot);
         ViewGroup.LayoutParams params = container.getLayoutParams();
         params.height = root.getResources().getDimensionPixelOffset(bottomControlsHeightId);
-        mMediator = new BottomControlsMediator(windowAndroid, model, controlsSizer,
-                fullscreenManager, tabObscuringHandler,
-                root.getResources().getDimensionPixelOffset(bottomControlsHeightId),
-                overlayPanelVisibilitySupplier);
+        mMediator =
+                new BottomControlsMediator(
+                        windowAndroid,
+                        model,
+                        controlsSizer,
+                        fullscreenManager,
+                        tabObscuringHandler,
+                        root.getResources().getDimensionPixelOffset(bottomControlsHeightId),
+                        overlayPanelVisibilitySupplier);
 
-        resourceManager.getDynamicResourceLoader().registerResource(
-                root.getId(), root.getResourceAdapter());
+        resourceManager
+                .getDynamicResourceLoader()
+                .registerResource(root.getId(), root.getResourceAdapter());
 
         mContentDelegate = contentDelegate;
         Toast.setGlobalExtraYOffset(
@@ -144,9 +153,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
         return mContentDelegate.getHandleBackPressChangedSupplier();
     }
 
-    /**
-     * Clean up any state when the bottom controls component is destroyed.
-     */
+    /** Clean up any state when the bottom controls component is destroyed. */
     public void destroy() {
         if (mContentDelegate != null) mContentDelegate.destroy();
         mMediator.destroy();

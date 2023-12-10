@@ -6,18 +6,22 @@
 
 #include <memory>
 
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget_utils.h"
 
 using message_center::Notification;
@@ -39,6 +43,9 @@ constexpr char kSystemNotificationAddedHistogramName[] =
 constexpr char kPinnedSystemNotificationAddedHistogramName[] =
     "Ash.NotifierFramework.PinnedSystemNotification.Added";
 
+constexpr char kSystemNotificationClickedOnActionButton[] =
+    "Ash.NotifierFramework.SystemNotification.ClickedActionButton.";
+
 constexpr char kSystemNotificationPopupShownHistogramName[] =
     "Ash.NotifierFramework.SystemNotification.Popup.ShownCount";
 
@@ -54,12 +61,7 @@ constexpr char kSystemNotificationPopupDismissedWithin7s[] =
 constexpr char kSystemNotificationPopupDismissedAfter7s[] =
     "Ash.NotifierFramework.SystemNotification.Popup.Dismissed.After7s";
 
-const gfx::Image CreateTestImage() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(/*width=*/80, /*height=*/80);
-  bitmap.eraseColor(SK_ColorGREEN);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
-}
+constexpr int kImageSize = 80;
 
 void CheckNotificationViewTypeRecorded(
     std::unique_ptr<Notification> notification,
@@ -184,8 +186,15 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
   }
 
   // Get the popup notification view associated with `id`.
-  views::View* GetPopupNotificationView(const std::string& id) {
-    return notification_center_test_api_->GetPopupViewForId(id);
+  AshNotificationView* GetPopupNotificationView(const std::string& id) {
+    return static_cast<AshNotificationView*>(
+        notification_center_test_api_->GetPopupViewForId(id)->message_view());
+  }
+
+  views::View* GetActionButtonFromIndex(AshNotificationView* notification_view,
+                                        unsigned int index) {
+    CHECK_LT(index, notification_view->action_buttons().size());
+    return notification_view->action_buttons()[index];
   }
 
   void ClickView(views::View* view) {
@@ -299,13 +308,13 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordNotificationViewTypeImage) {
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
 
   auto image_notification = CreateTestNotification();
-  image_notification->set_image(CreateTestImage());
+  image_notification->set_image(gfx::test::CreateImage(kImageSize));
   CheckNotificationViewTypeRecorded(
       std::move(image_notification),
       metrics_utils::NotificationViewType::HAS_IMAGE);
 
   auto grouped_image_notification = CreateTestNotification();
-  grouped_image_notification->set_image(CreateTestImage());
+  grouped_image_notification->set_image(gfx::test::CreateImage(kImageSize));
   CheckNotificationViewTypeRecorded(
       std::move(grouped_image_notification),
       metrics_utils::NotificationViewType::GROUPED_HAS_IMAGE);
@@ -357,14 +366,14 @@ TEST_F(MessageCenterMetricsUtilsTest,
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
 
   auto notification = CreateTestNotification();
-  notification->set_image(CreateTestImage());
+  notification->set_image(gfx::test::CreateImage(kImageSize));
   notification->set_buttons({message_center::ButtonInfo(u"Test button")});
   CheckNotificationViewTypeRecorded(
       std::move(notification),
       metrics_utils::NotificationViewType::HAS_IMAGE_AND_ACTION);
 
   auto grouped_notification = CreateTestNotification();
-  grouped_notification->set_image(CreateTestImage());
+  grouped_notification->set_image(gfx::test::CreateImage(kImageSize));
   grouped_notification->set_buttons(
       {message_center::ButtonInfo(u"Test button")});
   CheckNotificationViewTypeRecorded(
@@ -383,7 +392,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
     return button;
   };
   auto notification = CreateTestNotification();
-  notification->set_image(CreateTestImage());
+  notification->set_image(gfx::test::CreateImage(kImageSize));
   notification->set_buttons({create_inline_reply_button()});
 
   CheckNotificationViewTypeRecorded(
@@ -391,7 +400,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
       metrics_utils::NotificationViewType::HAS_IMAGE_AND_INLINE_REPLY);
 
   auto grouped_notification = CreateTestNotification();
-  grouped_notification->set_image(CreateTestImage());
+  grouped_notification->set_image(gfx::test::CreateImage(kImageSize));
   grouped_notification->set_buttons({create_inline_reply_button()});
   CheckNotificationViewTypeRecorded(
       std::move(grouped_notification),
@@ -455,17 +464,6 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordGroupNotificationAddedType) {
 
 TEST_F(MessageCenterMetricsUtilsTest, RecordSystemNotificationAdded) {
   base::HistogramTester histograms;
-
-  // Create a system notification with `kTestCatalogName` for its catalog name.
-  const NotificationCatalogName test_catalog_name =
-      NotificationCatalogName::kTestCatalogName;
-  auto test_notification = CreateNotificationWithCatalogName(test_catalog_name);
-  message_center::MessageCenter::Get()->AddNotification(
-      std::move(test_notification));
-
-  // Check metrics are not recorded for `kTestCatalogName`.
-  histograms.ExpectBucketCount(kSystemNotificationAddedHistogramName,
-                               test_catalog_name, 0);
 
   // Create system notifications with a valid catalog name, one for a non-pinned
   // notification and one for a pinned one (e.g. Full Restore and Caps Lock).
@@ -549,7 +547,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
   // Add notification to message center. Use the normal duration for adding the
   // notification so that the recorded popup duration is expected.
   auto* message_center = message_center::MessageCenter::Get();
-  absl::optional<ui::ScopedAnimationDurationScaleMode> mode(
+  std::optional<ui::ScopedAnimationDurationScaleMode> mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
@@ -587,6 +585,33 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
   task_environment()->FastForwardBy(kPopupTimeOutDuration);
   histograms.ExpectBucketCount(kSystemNotificationPopupDismissedAfter7s,
                                catalog_name, 1);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordCataloguedClickActionButton) {
+  base::HistogramTester histograms;
+  auto buttons = {message_center::ButtonInfo(u"Button 1"),
+                  message_center::ButtonInfo(u"Button 2"),
+                  message_center::ButtonInfo(u"Button 3"),
+                  message_center::ButtonInfo(u"Button 4")};
+
+  // Create a non-pinned system notification with a valid catalog name.
+  const NotificationCatalogName catalog_name =
+      NotificationCatalogName::kTestCatalogName;
+  auto notification = CreateNotificationWithCatalogName(catalog_name);
+  notification->set_buttons(buttons);
+
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->AddNotification(
+      std::make_unique<message_center::Notification>(*notification));
+
+  auto* notification_view = GetPopupNotificationView(notification->id());
+
+  for (unsigned int index = 0; index < buttons.size(); index++) {
+    ClickView(GetActionButtonFromIndex(notification_view, index));
+    histograms.ExpectBucketCount(kSystemNotificationClickedOnActionButton +
+                                     base::NumberToString(index + 1),
+                                 catalog_name, 1);
+  }
 }
 
 }  // namespace ash

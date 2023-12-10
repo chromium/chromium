@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Осы мәтінді <ph name="MAX_CHARACTERS" /> таңбаға немесе одан азырақ етіп қысқартыңыз (сіз қазір  <ph name="CURRENT_LENGTH" /> таңба пайдаланып жатырсыз).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-аудиотрек</translation>
+<translation id="2353297238722298836">Камера мен микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="2393030564806080191">Оналтылық форматтағы түс</translation>
 <translation id="2398813069815436052">диалогтік терезе ашылды.</translation>
 <translation id="245932805758469625">бейненің соңына дейін қалған секундтар саны</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (қазір <ph name="CURRENT_LENGTH" /> таңба).</translation>
 <translation id="383465348367842624">"<ph name="ATSIGN" />" кейінгі бөлім "<ph name="INVALIDCHARACTER" />" белгісін қамтымауы тиіс.</translation>
 <translation id="3846214748874656680">Толық экраннан шығу</translation>
+<translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4103419683916926126">Миллисекундтар</translation>
 <translation id="4201051445878709314">Алдыңғы айды көрсету</translation>
 <translation id="4360991593054037559">Жарамды мән енгізіңіз. Екі ең жақын жарамды мән — <ph name="VALID_VALUE_LOW" /> және <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Мәліметтер</translation>
+<translation id="4663373278480897665">Камераны пайдалануға рұқсат берілген</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" кейінгі бөлікте "<ph name="INVALIDCHARACTER" />" таңбасы болмауы керек.</translation>
 <translation id="4718048029184481307">"Суреттегі сурет" режимінде ойнатылуда.</translation>
 <translation id="4748357248530471599">экран ойығын толық экранға ауыстыру</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">мультимедиа файлын жүктеп алу</translation>
 <translation id="698788488269350478">жайылды.</translation>
 <translation id="6989848892321993519">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (әзірге 1 таңба пайдаланылған).</translation>
+<translation id="7080893216867146095">Локация бөлісуге рұқсат берілді</translation>
 <translation id="709897737746224366">Сұралған пішімге сәйкес толтырыңыз.</translation>
 <translation id="7102274145889307184">ағымдағы орын</translation>
 <translation id="7263440858009898357">Тізімдегі элементті таңдаңыз.</translation>

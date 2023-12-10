@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefRegistrySimple;
@@ -85,7 +85,7 @@ class AppTimeController : public SystemClockClient::Observer,
   // Returns current time limit for the app identified by |app_service_id| and
   // |app_type|.Will return nullopt if there is no limit set or app is not
   // tracked.
-  absl::optional<base::TimeDelta> GetTimeLimitForApp(
+  std::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
       apps::AppType app_type) const;
 
@@ -101,7 +101,7 @@ class AppTimeController : public SystemClockClient::Observer,
   // AppTimeNotificationDelegate:
   void ShowAppTimeLimitNotification(
       const AppId& app_id,
-      const absl::optional<base::TimeDelta>& time_limit,
+      const std::optional<base::TimeDelta>& time_limit,
       AppNotification notification) override;
 
   // AppActivityRegistry::AppStateObserver:
@@ -140,8 +140,8 @@ class AppTimeController : public SystemClockClient::Observer,
 
   void ShowNotificationForApp(const std::string& app_name,
                               AppNotification notification,
-                              absl::optional<base::TimeDelta> time_limit,
-                              absl::optional<gfx::ImageSkia> icon);
+                              std::optional<base::TimeDelta> time_limit,
+                              std::optional<gfx::ImageSkia> icon);
   // Profile
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 

@@ -99,8 +99,9 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
   MOCK_METHOD(void, ReleaseRequestId, (), (override));
 
   void ResolveRequest(bool result) {
-    if (!async_mode_)
+    if (!async_mode_) {
       return;
+    }
 
     audio_focus_type_ = requests_.front();
     requests_.pop_front();
@@ -119,7 +120,7 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
   AudioFocusDelegate::AudioFocusResult sync_result_ =
       AudioFocusDelegate::AudioFocusResult::kSuccess;
 
-  raw_ptr<content::MediaSessionImpl> media_session_;
+  raw_ptr<content::MediaSessionImpl> media_session_ = nullptr;
   const bool async_mode_ = false;
 
   std::list<AudioFocusType> requests_;
@@ -168,6 +169,7 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     media_session_->RemoveAllPlayersForTest();
     mock_media_session_service_.reset();
 
+    mock_audio_focus_delegate_ = nullptr;
     media_session_ = nullptr;
 
     ContentBrowserTest::TearDownOnMainThread();
@@ -312,8 +314,8 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     return std::make_unique<net::test_server::BasicHttpResponse>();
   }
 
-  raw_ptr<MediaSessionImpl, DanglingUntriaged> media_session_;
-  raw_ptr<MockAudioFocusDelegate, DanglingUntriaged> mock_audio_focus_delegate_;
+  raw_ptr<MediaSessionImpl> media_session_ = nullptr;
+  raw_ptr<MockAudioFocusDelegate> mock_audio_focus_delegate_ = nullptr;
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
   net::EmbeddedTestServer favicon_server_;
   base::AtomicSequenceNumber favicon_calls_;
@@ -2813,8 +2815,9 @@ class FaviconWaiter : public WebContentsObserver {
   }
 
   void Wait() {
-    if (received_favicon_)
+    if (received_favicon_) {
       return;
+    }
     run_loop_.Run();
   }
 

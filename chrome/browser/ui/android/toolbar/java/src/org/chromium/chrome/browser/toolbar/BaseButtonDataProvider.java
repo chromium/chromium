@@ -24,9 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Base class for button data providers used on the adaptive toolbar.
- */
+/** Base class for button data providers used on the adaptive toolbar. */
 public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnClickListener {
     protected final ButtonDataImpl mButtonData;
     protected final Supplier<Tab> mActiveTabSupplier;
@@ -50,41 +48,55 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param adaptiveButtonVariant Enum value of {@link AdaptiveToolbarButtonVariant}, used for
      *         metrics.
      */
-    public BaseButtonDataProvider(Supplier<Tab> activeTabSupplier,
-            @Nullable ModalDialogManager modalDialogManager, Drawable buttonDrawable,
-            String contentDescription, @StringRes int actionChipLabelResId, boolean supportsTinting,
+    public BaseButtonDataProvider(
+            Supplier<Tab> activeTabSupplier,
+            @Nullable ModalDialogManager modalDialogManager,
+            Drawable buttonDrawable,
+            String contentDescription,
+            @StringRes int actionChipLabelResId,
+            boolean supportsTinting,
             @Nullable IPHCommandBuilder iphCommandBuilder,
             @AdaptiveToolbarButtonVariant int adaptiveButtonVariant,
-            @StringRes int tooltipTextResId, boolean showHoverHighlight) {
+            @StringRes int tooltipTextResId,
+            boolean showHoverHighlight) {
         mActiveTabSupplier = activeTabSupplier;
         mModalDialogManager = modalDialogManager;
         if (mModalDialogManager != null) {
-            mModalDialogObserver = new ModalDialogManagerObserver() {
-                @Override
-                public void onDialogAdded(PropertyModel model) {
-                    mButtonData.setEnabled(false);
-                    notifyObservers(mButtonData.canShow());
-                }
+            mModalDialogObserver =
+                    new ModalDialogManagerObserver() {
+                        @Override
+                        public void onDialogAdded(PropertyModel model) {
+                            mButtonData.setEnabled(false);
+                            notifyObservers(mButtonData.canShow());
+                        }
 
-                @Override
-                public void onLastDialogDismissed() {
-                    mButtonData.setEnabled(true);
-                    notifyObservers(mButtonData.canShow());
-                }
-            };
+                        @Override
+                        public void onLastDialogDismissed() {
+                            mButtonData.setEnabled(true);
+                            notifyObservers(mButtonData.canShow());
+                        }
+                    };
             mModalDialogManager.addObserver(mModalDialogObserver);
         }
 
         if (!AdaptiveToolbarFeatures.isDynamicAction(adaptiveButtonVariant)) {
-            assert actionChipLabelResId
-                    == Resources.ID_NULL : "Action chip should only be used on dynamic actions";
+            assert actionChipLabelResId == Resources.ID_NULL
+                    : "Action chip should only be used on dynamic actions";
         }
 
-        mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable,
-                /* onClickListener= */ this, contentDescription, actionChipLabelResId,
-                supportsTinting,
-                /* iphCommandBuilder= */ iphCommandBuilder, /*isEnabled=*/true,
-                adaptiveButtonVariant, tooltipTextResId, showHoverHighlight);
+        mButtonData =
+                new ButtonDataImpl(
+                        /* canShow= */ false,
+                        buttonDrawable,
+                        /* onClickListener= */ this,
+                        contentDescription,
+                        actionChipLabelResId,
+                        supportsTinting,
+                        /* iphCommandBuilder= */ iphCommandBuilder,
+                        /* isEnabled= */ true,
+                        adaptiveButtonVariant,
+                        tooltipTextResId,
+                        showHoverHighlight);
     }
 
     /**
@@ -114,8 +126,10 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param tab Current tab.
      */
     private void maybeSetIphCommandBuilder(Tab tab) {
-        if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null || tab == null
-                || !FeatureList.isInitialized() || !AdaptiveToolbarFeatures.isCustomizationEnabled()
+        if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null
+                || tab == null
+                || !FeatureList.isInitialized()
+                || !AdaptiveToolbarFeatures.isCustomizationEnabled()
                 || AdaptiveToolbarFeatures.shouldShowActionChip(
                         mButtonData.getButtonSpec().getButtonVariant())) {
             return;
@@ -124,9 +138,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
         mButtonData.updateIPHCommandBuilder(getIphCommandBuilder(tab));
     }
 
-    /**
-     * Sets whether the button should be shown on incognito tabs, default is false.
-     */
+    /** Sets whether the button should be shown on incognito tabs, default is false. */
     protected void setShouldShowOnIncognitoTabs(boolean shouldShowOnIncognitoTabs) {
         mShouldShowOnIncognitoTabs = shouldShowOnIncognitoTabs;
     }

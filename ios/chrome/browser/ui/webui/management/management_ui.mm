@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/webui/management/management_ui.h"
 
+#import <optional>
+
 #import "base/strings/string_split.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/account_id/account_id.h"
@@ -25,23 +27,22 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using signin::AccountManagedStatusFinder;
 
 namespace {
 
-// Returns the domain of the machine level cloud policy. Returns absl::nullopt
+// Returns the domain of the machine level cloud policy. Returns std::nullopt
 // if the domain cannot be retrieved (eg. because there are no machine level
 // policies).
-absl::optional<std::string> GetMachineLevelPolicyDomain() {
+std::optional<std::string> GetMachineLevelPolicyDomain() {
   policy::MachineLevelUserCloudPolicyManager* manager =
       GetApplicationContext()
           ->GetBrowserPolicyConnector()
@@ -59,32 +60,32 @@ AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
       gaia::CanonicalizeEmail(account_info.email), account_info.gaia);
 }
 
-// Extracts the domain from the email. Returns absl::nullopt if there is no
+// Extracts the domain from the email. Returns std::nullopt if there is no
 // domain.
-absl::optional<std::string> ExtractDomainFromEmail(const std::string& email) {
+std::optional<std::string> ExtractDomainFromEmail(const std::string& email) {
   std::vector<std::string> components = base::SplitString(
       email, "@", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (components.size() != 2) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string domain = components[1];
   if (domain.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return domain;
 }
 
-// Returns the domain of the user cloud policy. Returns absl::nullopt if the
+// Returns the domain of the user cloud policy. Returns std::nullopt if the
 // domain cannot be retrieved (eg. because there is no user policy).
-absl::optional<std::string> GetUserPolicyDomain(web::WebUIIOS* web_ui) {
+std::optional<std::string> GetUserPolicyDomain(web::WebUIIOS* web_ui) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui)->GetOriginalChromeBrowserState();
 
   if (!CanFetchUserPolicy(
           AuthenticationServiceFactory::GetForBrowserState(browser_state),
           browser_state->GetPrefs())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AccountId account_id = AccountIdFromAccountInfo(
@@ -94,23 +95,23 @@ absl::optional<std::string> GetUserPolicyDomain(web::WebUIIOS* web_ui) {
   const std::string user_email = account_id.GetUserEmail();
 
   if (user_email.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(user_email) ==
       AccountManagedStatusFinder::EmailEnterpriseStatus::kKnownNonEnterprise) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ExtractDomainFromEmail(user_email);
 }
 
 // Returns the management message depending on the levels of the policies that
-// are applied. Returns absl::nullopt if there are no policies.
-absl::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
-  absl::optional<std::string> machine_level_policy_domain =
+// are applied. Returns std::nullopt if there are no policies.
+std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
+  std::optional<std::string> machine_level_policy_domain =
       GetMachineLevelPolicyDomain();
-  absl::optional<std::string> user_policy_domain = GetUserPolicyDomain(web_ui);
+  std::optional<std::string> user_policy_domain = GetUserPolicyDomain(web_ui);
 
   if (machine_level_policy_domain && user_policy_domain) {
     if (machine_level_policy_domain == user_policy_domain) {
@@ -151,7 +152,7 @@ absl::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
     return l10n_util::GetStringUTF16(IDS_IOS_MANAGEMENT_UI_MESSAGE);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Creates the HTML source for the chrome://management page.
@@ -159,7 +160,7 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIManagementHost);
 
-  absl::optional<std::u16string> management_message =
+  std::optional<std::u16string> management_message =
       GetManagementMessage(web_ui);
 
   source->AddString("isManaged", management_message ? "true" : "false");

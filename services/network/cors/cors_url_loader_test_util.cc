@@ -352,9 +352,9 @@ const net::NetLogEntry* CorsURLLoaderTestBase::FindEntryByType(
 
 net::RedirectInfo CorsURLLoaderTestBase::CreateRedirectInfo(
     int status_code,
-    base::StringPiece method,
+    std::string_view method,
     const GURL& url,
-    base::StringPiece referrer,
+    std::string_view referrer,
     net::ReferrerPolicy referrer_policy,
     net::SiteForCookies site_for_cookies) {
   net::RedirectInfo redirect_info;

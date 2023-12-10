@@ -11,13 +11,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.accessibility.AccessibilityState.State;
 
-/**
- * Exposes information about the current accessibility state.
- */
+/** Exposes information about the current accessibility state. */
 public class AccessibilityUtil implements AccessibilityState.Listener {
-    /**
-     * An observer to be notified of accessibility status changes.
-     */
+    /** An observer to be notified of accessibility status changes. */
     @Deprecated
     public interface Observer {
         /**
@@ -67,9 +63,7 @@ public class AccessibilityUtil implements AccessibilityState.Listener {
         return mObservers;
     }
 
-    /**
-     * Notify all the observers of the mode change.
-     */
+    /** Notify all the observers of the mode change. */
     private void notifyModeChange(boolean isAccessibilityEnabled) {
         for (Observer observer : getObservers()) {
             observer.onAccessibilityModeChanged(isAccessibilityEnabled);

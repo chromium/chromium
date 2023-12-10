@@ -37,13 +37,15 @@
   <template is="dom-if" if="[[!showEditView(viewState)]]">
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">
-        <input-key key="[[item]]" key-state="modifier-selected">
-        </input-key>
+        <shortcut-input-key key="[[item]]" key-state="modifier-selected"
+            has-launcher-button="[[hasLauncherButton]]">
+        </shortcut-input-key>
       </template>
-      <input-key
+      <shortcut-input-key
           key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
-          key-state="alpha-numeric-selected">
-      </input-key>
+          key-state="alpha-numeric-selected"
+          has-launcher-button="[[hasLauncherButton]]">
+      </shortcut-input-key>
     </div>
     <div class="lock-icon-container"
         hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
@@ -58,41 +60,16 @@
       </cr-icon-button>
     </div>
   </template>
-  <template is="dom-if" if="[[showEditView(viewState)]]">
-    <div id="editContainer" class="flex-row">
-      <input-key id="ctrlKey" key="ctrl"
-          key-state="[[getCtrlState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator.*
-            )]]">
-      </input-key>
-      <input-key id="altKey" key="alt"
-          key-state="[[getAltState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]">
-      </input-key>
-      <input-key id="shiftKey" key="shift"
-          key-state="[[getShiftState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]">
-      </input-key>
-      <input-key id="searchKey" key="meta"
-          key-state="[[getSearchState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]"
-      >
-      </input-key>
-      <!-- TODO(jimmyxgong): Conditionally add this separator based off of the
-           shortcut's layout info. -->
-      <div id="acceleratorSeparator" aria-hidden="true"> + </div>
-      <input-key id="pendingKey"
-          key="[[getPendingKey(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]"
-          key-state=
-              "[[getPendingKeyState(
-                pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-                )]]">
-      </input-key>
-    </div>
+  <template is="dom-if" if="[[showEditView(viewState)]]"
+      on-dom-change="onShortcutInputDomChange" restamp>
+    <shortcut-input id="shortcutInput"
+        pending-prerewritten-key-event="{{pendingKeyEvent}}"
+        has-launcher-button="[[hasLauncherButton]]"
+        shortcut-input-provider="[[getShortcutInputProvider()]]"
+        should-ignore-key-release="[[hasError]]"
+        update-on-key-press
+        display-prerewritten-key-events
+        ignore-blur>
+    </shortcut-input>
   </template>
 </div>

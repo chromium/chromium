@@ -150,7 +150,7 @@ CompositingReasons CompositingReasonsFor3DSceneLeaf(
   // This could be improved by skipping this if we know that the descendants
   // won't produce any quads in the render pass's quad list.
   if (layout_object.IsText()) {
-    // A LayoutNGBR is both IsText() and IsForElement(), but we shouldn't
+    // A LayoutBR is both IsText() and IsForElement(), but we shouldn't
     // produce compositing reasons if IsText() is true.  Since we only need
     // this for objects that have interesting descendants, we can just return.
     return CompositingReason::kNone;
@@ -220,9 +220,8 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
   // This ensures that the scroll_translation_for_fixed will be initialized in
   // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
   // turn ensures that a TransformNode is created (for fixed elements) in cc.
-  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled() &&
-      frame->GetPage()->GetVisualViewport().GetOverscrollType() ==
-          OverscrollType::kTransform) {
+  if (frame->GetPage()->GetVisualViewport().GetOverscrollType() ==
+      OverscrollType::kTransform) {
     reasons |= CompositingReason::kFixedPosition;
     if (!To<LayoutBox>(layout_object)
              .AnchorPositionScrollAdjustmentAfectedByViewportScrolling()) {
@@ -358,11 +357,9 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     }
   }
 
-  if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
-    auto* element = DynamicTo<Element>(object.GetNode());
-    if (element && element->GetRegionCaptureCropId()) {
-      reasons |= CompositingReason::kElementCapture;
-    }
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (element && element->GetRestrictionTargetId()) {
+    reasons |= CompositingReason::kElementCapture;
   }
 
   return reasons;

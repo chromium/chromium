@@ -114,7 +114,7 @@ void SyncedNetworkUpdaterImpl::RemoveNetwork(const NetworkIdentifier& id) {
 
   NET_LOG(EVENT) << "Removing network " << NetworkGuidId(network->guid);
   std::string change_guid =
-      tracker_->TrackPendingUpdate(id, /*specifics=*/absl::nullopt);
+      tracker_->TrackPendingUpdate(id, /*specifics=*/std::nullopt);
   StartDeleteOperation(change_guid, id, network->guid);
 }
 
@@ -162,7 +162,7 @@ void SyncedNetworkUpdaterImpl::OnGetNetworkList(
 void SyncedNetworkUpdaterImpl::OnConfigureNetworkResult(
     const std::string& change_guid,
     const sync_pb::WifiConfigurationSpecifics& proto,
-    const absl::optional<std::string>& network_guid,
+    const std::optional<std::string>& network_guid,
     const std::string& error_message) {
   auto id = NetworkIdentifier::FromProto(proto);
   if (network_guid) {
@@ -244,7 +244,7 @@ void SyncedNetworkUpdaterImpl::HandleShillResult(const std::string& change_guid,
   }
 
   tracker_->IncrementCompletedAttempts(change_guid, id);
-  absl::optional<PendingNetworkConfigurationUpdate> update =
+  std::optional<PendingNetworkConfigurationUpdate> update =
       tracker_->GetPendingUpdate(change_guid, id);
 
   if (update->completed_attempts() >= kMaxRetries) {

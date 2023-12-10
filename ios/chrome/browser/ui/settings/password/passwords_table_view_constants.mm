@@ -4,43 +4,43 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 
-NSString* const kPasswordsTableViewId = @"PasswordsTableViewId";
-NSString* const kPasswordsSearchBarId = @"PasswordsSearchBar";
-NSString* const kPasswordsScrimViewId = @"PasswordsScrimViewId";
+NSString* const kPasswordsTableViewID = @"PasswordsTableViewID";
+NSString* const kPasswordsSearchBarID = @"PasswordsSearchBar";
+NSString* const kPasswordsScrimViewID = @"PasswordsScrimViewID";
 
-NSString* const kPasswordDetailsTableViewId = @"PasswordDetailsTableViewId";
-NSString* const kPasswordDetailsDeletionAlertViewId =
-    @"PasswordDetailsDeletionAlertViewId";
-NSString* const kPasswordsAddPasswordSaveButtonId =
-    @"PasswordsAddPasswordSaveButtonId";
-NSString* const kPasswordsAddPasswordCancelButtonId =
-    @"PasswordsAddPasswordCancelButtonId";
+NSString* const kPasswordDetailsTableViewID = @"PasswordDetailsTableViewID";
+NSString* const kPasswordDetailsDeletionAlertViewID =
+    @"PasswordDetailsDeletionAlertViewID";
+NSString* const kPasswordsAddPasswordSaveButtonID =
+    @"PasswordsAddPasswordSaveButtonID";
+NSString* const kPasswordsAddPasswordCancelButtonID =
+    @"PasswordsAddPasswordCancelButtonID";
 
-NSString* const kAddPasswordButtonId = @"addPasswordItem";
+NSString* const kAddPasswordButtonID = @"addPasswordItem";
 
-NSString* const kPasswordIssuesTableViewId = @"kPasswordIssuesTableViewId";
+NSString* const kPasswordIssuesTableViewID = @"kPasswordIssuesTableViewID";
 
-NSString* const kDismissedWarningsCellId = @"DismissedWarningsCellId";
+NSString* const kDismissedWarningsCellID = @"DismissedWarningsCellID";
 
-NSString* const kUsernameTextfieldForPasswordDetailsId =
-    @"kUsernameTextfieldForPasswordDetailsId";
+NSString* const kUsernameTextfieldForPasswordDetailsID =
+    @"kUsernameTextfieldForPasswordDetailsID";
 
-NSString* const kPasswordTextfieldForPasswordDetailsId =
-    @"kPasswordTextfieldForPasswordDetailsId";
+NSString* const kPasswordTextfieldForPasswordDetailsID =
+    @"kPasswordTextfieldForPasswordDetailsID";
 
-NSString* const kDeleteButtonForPasswordDetailsId =
-    @"kDeleteButtonForPasswordDetailsId";
+NSString* const kDeleteButtonForPasswordDetailsID =
+    @"kDeleteButtonForPasswordDetailsID";
 
-NSString* const kLocalOnlyPasswordIconId = @"kLocalOnlyPasswordIconId";
+NSString* const kLocalOnlyPasswordIconID = @"kLocalOnlyPasswordIconID";
 
 NSString* const kWidgetPromoImageName = @"password_manager_widget_promo";
 
 NSString* const kWidgetPromoDisabledImageName =
     @"password_manager_widget_promo_disabled";
 
-NSString* const kWidgetPromoId = @"WidgetPromoId";
+NSString* const kWidgetPromoID = @"WidgetPromoID";
 
-NSString* const kWidgetPromoCloseButtonId = @"WidgetPromoCloseButtonId";
+NSString* const kWidgetPromoCloseButtonID = @"WidgetPromoCloseButtonID";
 
 NSString* const kWidgetPromoImageID = @"WidgetPromoImageID";
 

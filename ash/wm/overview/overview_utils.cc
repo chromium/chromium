@@ -26,16 +26,18 @@
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/view.h"
@@ -88,11 +90,19 @@ void FadeInWidgetToOverview(views::Widget* widget,
   }
 }
 
+void PrepareWidgetForOverviewShutdown(views::Widget* widget) {
+  // The widget should no longer process events at this point.
+  widget->SetVisibilityChangedAnimationsEnabled(false);
+  widget->widget_delegate()->SetCanActivate(false);
+  widget->GetNativeWindow()->SetEventTargetingPolicy(
+      aura::EventTargetingPolicy::kNone);
+  widget->GetContentsView()->SetCanProcessEventsWithinSubtree(false);
+  widget->GetFocusManager()->set_shortcut_handling_suspended(true);
+}
+
 void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
                                OverviewAnimationType animation_type) {
-  // Make it so the widget is no longer activatable, since it will be deleted
-  // when the animation is complete.
-  widget->widget_delegate()->SetCanActivate(false);
+  PrepareWidgetForOverviewShutdown(widget.get());
 
   // The overview controller may be nullptr on shutdown.
   OverviewController* controller = OverviewController::Get();
@@ -168,14 +178,14 @@ void MaximizeIfSnapped(aura::Window* window) {
 
 gfx::Rect GetGridBoundsInScreen(aura::Window* target_root) {
   return GetGridBoundsInScreen(target_root,
-                               /*window_dragging_state=*/absl::nullopt,
+                               /*window_dragging_state=*/std::nullopt,
                                /*divider_changed=*/false,
                                /*account_for_hotseat=*/true);
 }
 
 gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
-    absl::optional<SplitViewDragIndicators::WindowDraggingState>
+    std::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
     bool divider_changed,
     bool account_for_hotseat) {
@@ -201,7 +211,7 @@ gfx::Rect GetGridBoundsInScreen(
   gfx::Rect bounds;
   gfx::Rect work_area =
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
-  absl::optional<SplitViewController::SnapPosition> opposite_position;
+  std::optional<SnapPosition> opposite_position;
 
   // We should show partial overview for the following use cases:
   // 1. In tablet split view mode;
@@ -212,8 +222,7 @@ gfx::Rect GetGridBoundsInScreen(
   // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only
   // reach here if overview is in session and there is no divider.
   // TODO(b/296935443): Consolidate split view bounds calculations.
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
-      !Shell::Get()->IsInTabletMode()) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     bounds = work_area;
     if (auto* split_view_overview_session =
             RootWindowController::ForWindow(target_root)
@@ -227,15 +236,15 @@ gfx::Rect GetGridBoundsInScreen(
     switch (state) {
       case SplitViewController::State::kPrimarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-            SplitViewController::SnapPosition::kSecondary,
-            /*window_for_minimum_size=*/nullptr);
-        opposite_position = SplitViewController::SnapPosition::kSecondary;
+            SnapPosition::kSecondary,
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+        opposite_position = SnapPosition::kSecondary;
         break;
       case SplitViewController::State::kSecondarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-            SplitViewController::SnapPosition::kPrimary,
-            /*window_for_minimum_size=*/nullptr);
-        opposite_position = SplitViewController::SnapPosition::kPrimary;
+            SnapPosition::kPrimary,
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+        opposite_position = SnapPosition::kPrimary;
         break;
       case SplitViewController::State::kNoSnap:
         bounds = work_area;
@@ -249,8 +258,7 @@ gfx::Rect GetGridBoundsInScreen(
 
   // Hotseat overlaps the work area / split view bounds when extended, but in
   // some cases we don't want its bounds in our calculations.
-  if (account_for_hotseat &&
-      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (account_for_hotseat && display::Screen::GetScreen()->InTabletMode()) {
     Shelf* shelf = Shelf::ForWindow(target_root);
     const bool hotseat_extended =
         shelf->shelf_layout_manager()->hotseat_state() ==
@@ -281,7 +289,7 @@ gfx::Rect GetGridBoundsInScreen(
   }
 
   DCHECK(opposite_position);
-  const bool horizontal = SplitViewController::IsLayoutHorizontal(target_root);
+  const bool horizontal = IsLayoutHorizontal(target_root);
   const int min_length =
       (horizontal ? work_area.width() : work_area.height()) / 3;
   const int current_length = horizontal ? bounds.width() : bounds.height();
@@ -295,8 +303,7 @@ gfx::Rect GetGridBoundsInScreen(
   else
     bounds.set_height(min_length);
 
-  if (SplitViewController::IsPhysicalLeftOrTop(*opposite_position,
-                                               target_root)) {
+  if (IsPhysicalLeftOrTop(*opposite_position, target_root)) {
     // If we are shifting to the left or top we need to update the origin as
     // well.
     const int offset = min_length - current_length;
@@ -307,11 +314,13 @@ gfx::Rect GetGridBoundsInScreen(
   return bounds;
 }
 
-absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
-  if (!ShouldAllowSplitView())
+std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
+  if (!ShouldAllowSplitView()) {
     return absl::nullopt;
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  }
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return absl::nullopt;
+  }
   auto* overview_session = OverviewController::Get()->overview_session();
   DCHECK(overview_session);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -323,8 +332,8 @@ absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
           ->current_window_dragging_state();
   if (!SplitViewController::Get(root_window)->InSplitViewMode() &&
       SplitViewDragIndicators::GetSnapPosition(window_dragging_state) ==
-          SplitViewController::SnapPosition::kNone) {
-    return absl::nullopt;
+          SnapPosition::kNone) {
+    return std::nullopt;
   }
 
   // The hotseat bounds do not affect splitview after a window is snapped, so
@@ -335,7 +344,7 @@ absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
 }
 
 bool ShouldUseTabletModeGridLayout() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {

@@ -8,7 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/browser_process.h"
@@ -25,11 +25,11 @@ namespace ash {
 
 KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  KioskAppManager::Get()->AddObserver(this);
+  KioskChromeAppManager::Get()->AddObserver(this);
 }
 
 KioskAutolaunchScreenHandler::~KioskAutolaunchScreenHandler() {
-  KioskAppManager::Get()->RemoveObserver(this);
+  KioskChromeAppManager::Get()->RemoveObserver(this);
 }
 
 void KioskAutolaunchScreenHandler::Show() {
@@ -41,8 +41,8 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
   if (!is_visible_)
     return;
 
-  KioskAppManager* manager = KioskAppManager::Get();
-  KioskAppManager::App app;
+  KioskChromeAppManager* manager = KioskChromeAppManager::Get();
+  KioskChromeAppManager::App app;
   std::string app_id = manager->GetAutoLaunchApp();
   if (app_id.empty() ||
       manager->IsAutoLaunchEnabled() ||
@@ -71,13 +71,13 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
 }
 
 void KioskAutolaunchScreenHandler::HandleOnCancel() {
-  KioskAppManager::Get()->RemoveObserver(this);
-  KioskAppManager::Get()->SetEnableAutoLaunch(false);
+  KioskChromeAppManager::Get()->RemoveObserver(this);
+  KioskChromeAppManager::Get()->SetEnableAutoLaunch(false);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnConfirm() {
-  KioskAppManager::Get()->RemoveObserver(this);
-  KioskAppManager::Get()->SetEnableAutoLaunch(true);
+  KioskChromeAppManager::Get()->RemoveObserver(this);
+  KioskChromeAppManager::Get()->SetEnableAutoLaunch(true);
 }
 
 void KioskAutolaunchScreenHandler::DeclareJSCallbacks() {

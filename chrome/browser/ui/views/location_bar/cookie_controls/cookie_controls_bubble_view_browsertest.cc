@@ -35,8 +35,6 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kUserBypassUI);
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
 

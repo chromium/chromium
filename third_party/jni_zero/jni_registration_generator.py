@@ -247,9 +247,9 @@ JNI_BOUNDARY_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
         switch (switch_num) {
           ${CASES}
           default:
-            CHECK(false) << "JNI multiplexing function Java_\
-${CLASS_NAME}_${PROXY_SIGNATURE} was called with an invalid switch number: "\
- << switch_num;
+            JNI_ZERO_ELOG("${CLASS_NAME}_${PROXY_SIGNATURE} was called with an \
+invalid switch number: %d", switch_num);
+            JNI_ZERO_DCHECK(false);
             return${DEFAULT_RETURN};
         }
 }""")

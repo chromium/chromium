@@ -4,6 +4,7 @@
 
 #include "google_apis/gaia/gaia_config.h"
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -15,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // static
@@ -100,7 +100,7 @@ std::unique_ptr<GaiaConfig>* GaiaConfig::GetGlobalConfig() {
 // static
 std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromString(
     const std::string& config_contents) {
-  absl::optional<base::Value> dict = base::JSONReader::Read(config_contents);
+  std::optional<base::Value> dict = base::JSONReader::Read(config_contents);
   if (!dict || !dict->is_dict()) {
     LOG(FATAL) << "Couldn't parse Gaia config file";
     return nullptr;

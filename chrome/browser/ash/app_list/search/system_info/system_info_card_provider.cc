@@ -361,7 +361,7 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
 
   PopulateBatteryHealth(*battery_info_ptr, *new_battery_health.get());
 
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto) {
     EmitBatteryDataError(BatteryDataError::kNoData);

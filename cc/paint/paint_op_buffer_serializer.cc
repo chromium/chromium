@@ -200,11 +200,11 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
                  PaintOp::QuickRejectDraw(op, canvas);
   // Skip text ops if there is no SkStrikeServer.
   skip_op |=
-      op.GetType() == PaintOpType::kDrawtextblob && !options_.strike_server;
+      op.GetType() == PaintOpType::kDrawTextBlob && !options_.strike_server;
   if (skip_op)
     return true;
 
-  if (op.GetType() == PaintOpType::kDrawrecord) {
+  if (op.GetType() == PaintOpType::kDrawRecord) {
     int save_count = canvas->getSaveCount();
     Save(canvas, params);
     SerializeBuffer(
@@ -213,7 +213,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
     return true;
   }
 
-  if (op.GetType() == PaintOpType::kDrawimagerect &&
+  if (op.GetType() == PaintOpType::kDrawImageRect &&
       static_cast<const DrawImageRectOp&>(op).image.IsPaintWorklet()) {
     DCHECK(options_.image_provider);
     const DrawImageRectOp& draw_op = static_cast<const DrawImageRectOp&>(op);
@@ -342,7 +342,7 @@ void PaintOpBufferSerializer::PlaybackOnAnalysisCanvas(
   // 2) kDrawtextblob ops since they need to be analyzed by the cache diff
   // canvas
   //    to serialize/lock the requisite glyphs for this op.
-  if (op.IsDrawOp() && op.GetType() != PaintOpType::kDrawtextblob) {
+  if (op.IsDrawOp() && op.GetType() != PaintOpType::kDrawTextBlob) {
     return;
   }
 

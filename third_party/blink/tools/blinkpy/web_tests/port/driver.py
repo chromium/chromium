@@ -99,11 +99,14 @@ def coalesce_repeated_switches(cmd):
 
 
 class DriverInput(object):
-    def __init__(self, test_name, timeout, image_hash, wpt_print_mode, args):
+    def __init__(self, test_name, timeout, image_hash, wpt_print_mode,
+                 trace_file, startup_trace_file, args):
         self.test_name = test_name
         self.timeout = timeout  # in ms
         self.image_hash = image_hash
         self.wpt_print_mode = wpt_print_mode
+        self.trace_file = trace_file
+        self.startup_trace_file = startup_trace_file
         self.args = args
 
 
@@ -128,6 +131,8 @@ class DriverOutput(object):
                  crash_site=None,
                  leak=False,
                  leak_log=None,
+                 trace_file=None,
+                 startup_trace_file=None,
                  pid=None,
                  command=None):
         # FIXME: Args could be renamed to better clarify what they do.
@@ -144,6 +149,8 @@ class DriverOutput(object):
         self.crash_site = crash_site
         self.leak = leak
         self.leak_log = leak_log
+        self.trace_file = trace_file
+        self.startup_trace_file = startup_trace_file
         self.test_time = test_time
         self.measurements = measurements
         self.timeout = timeout
@@ -302,6 +309,23 @@ class Driver(object):
                        'ascii', 'replace')
         if actual_image_hash:
             actual_image_hash = actual_image_hash.decode('utf8', 'replace')
+        startup_trace_file = driver_input.startup_trace_file
+        if (startup_trace_file
+                and not self._port.host.filesystem.isabs(startup_trace_file)):
+            startup_trace_file = self._port.host.filesystem.join(
+                self._port.host.filesystem.getcwd(), startup_trace_file)
+        if startup_trace_file:
+            # The startup trace file won't get flushed to disk until the server
+            # process stops. In practice, the existence of startup_trace_file
+            # means that the server process is restarted after every test
+            # anyway, so this just accelerates the inevitable.
+            out, err = self._server_process.stop(
+                self._port.get_option('driver_kill_timeout_secs'))
+            if out:
+                text += out
+            if err:
+                self.error_from_test += err
+            self._server_process = None
         return DriverOutput(text,
                             image,
                             actual_image_hash,
@@ -317,6 +341,8 @@ class Driver(object):
                             crash_site=crash_site,
                             leak=leaked,
                             leak_log=self._leak_log,
+                            trace_file=driver_input.trace_file,
+                            startup_trace_file=startup_trace_file,
                             pid=pid,
                             command=command)
 
@@ -503,6 +529,8 @@ class Driver(object):
             timeout=init_timeout,
             image_hash=None,
             wpt_print_mode=None,
+            trace_file=None,
+            startup_trace_file=None,
             args=per_test_args)
         output = self._run_one_input(startup_input, start_time=time.time())
         if output.text and b'PASS 000_run_me_first' in output.text:
@@ -632,6 +660,14 @@ class Driver(object):
             if not driver_input.image_hash:
                 command += "'"
             command += "'print"
+        if driver_input.trace_file:
+            if not driver_input.wpt_print_mode:
+                command += "'"
+                if not driver_input.image_hash:
+                    command += "'"
+            command += "'"
+            command += driver_input.trace_file
+
         return command + '\n'
 
     def _read_first_block(self, deadline):

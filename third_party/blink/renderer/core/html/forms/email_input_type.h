@@ -45,7 +45,7 @@ class EmailInputType final : public BaseTextInputType {
                                                        const String&);
   CORE_EXPORT static bool IsValidEmailAddress(const ScriptRegexp&,
                                               const String&);
-  CORE_EXPORT static ScriptRegexp* CreateEmailRegexp();
+  CORE_EXPORT static ScriptRegexp* CreateEmailRegexp(v8::Isolate* isolate);
 
   static Vector<String> ParseMultipleValues(const String& value);
 

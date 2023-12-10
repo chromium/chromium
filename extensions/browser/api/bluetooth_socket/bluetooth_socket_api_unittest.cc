@@ -63,16 +63,16 @@ TEST_F(BluetoothSocketApiUnittest, MAYBE_CreateThenClose) {
 
   auto create_function =
       base::MakeRefCounted<api::BluetoothSocketCreateFunction>();
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       RunFunctionAndReturnValue(create_function.get(), "[]");
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
 
-  api::bluetooth_socket::CreateInfo create_info;
-  EXPECT_TRUE(api::bluetooth_socket::CreateInfo::Populate(result->GetDict(),
-                                                          create_info));
+  auto create_info =
+      api::bluetooth_socket::CreateInfo::FromValue(result->GetDict());
+  EXPECT_TRUE(create_info);
 
-  const int socket_id = create_info.socket_id;
+  const int socket_id = create_info->socket_id;
   auto close_function =
       base::MakeRefCounted<api::BluetoothSocketCloseFunction>();
   RunFunction(close_function.get(), base::StringPrintf("[%d]", socket_id));

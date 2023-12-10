@@ -7,6 +7,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -31,6 +33,10 @@ blink::AdSize::LengthUnit ConvertUnitStringToUnitEnum(
   return blink::AdSize::LengthUnit::kInvalid;
 }
 
+std::string AdDimensionToString(double value, AdSize::LengthUnit units) {
+  return base::NumberToString(value) + ConvertAdSizeUnitToString(units);
+}
+
 }  // namespace
 
 std::string ConvertAdSizeUnitToString(const blink::AdSize::LengthUnit& unit) {
@@ -44,6 +50,13 @@ std::string ConvertAdSizeUnitToString(const blink::AdSize::LengthUnit& unit) {
     case blink::AdSize::LengthUnit::kInvalid:
       return "";
   }
+}
+
+std::string ConvertAdSizeToString(const blink::AdSize& ad_size) {
+  DCHECK(IsValidAdSize(ad_size));
+  return base::StrCat(
+      {AdDimensionToString(ad_size.width, ad_size.width_units), ",",
+       AdDimensionToString(ad_size.height, ad_size.height_units)});
 }
 
 std::tuple<double, blink::AdSize::LengthUnit> ParseAdSizeString(

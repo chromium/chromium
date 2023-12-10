@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"

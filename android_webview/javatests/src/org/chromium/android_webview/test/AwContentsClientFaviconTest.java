@@ -31,8 +31,7 @@ import java.net.URL;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientFaviconTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String FAVICON1_URL = "/favicon1.png";
     private static final String FAVICON1_PAGE_URL = "/favicon1.html";

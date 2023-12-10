@@ -15,11 +15,11 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_quiet_icon.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 
 namespace {
 
@@ -106,8 +106,7 @@ bool ShouldCurrentRequestUseQuietChip(
 
 bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionElement)) {
+  if (!base::FeatureList::IsEnabled(features::kPermissionElement)) {
     return false;
   }
 

@@ -8,13 +8,12 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/system_export.h"
 
 namespace mojo {
 
-// A class to wrap base::StringPiece as DataPipeProducer::DataSource class.
+// A class to wrap std::string_view as DataPipeProducer::DataSource class.
 class MOJO_CPP_SYSTEM_EXPORT StringDataSource final
     : public DataPipeProducer::DataSource {
  public:

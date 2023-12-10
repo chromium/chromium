@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_APP_LIST_BADGE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/app_list/app_list_model_provider.h"
@@ -16,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 
@@ -76,7 +76,7 @@ class ASH_EXPORT AppListBadgeController
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Whether the pref for notification badging is enabled.
-  absl::optional<bool> notification_badging_pref_enabled_;
+  std::optional<bool> notification_badging_pref_enabled_;
 
   base::ScopedObservation<AppListModel, AppListModelObserver>
       model_observation_{this};

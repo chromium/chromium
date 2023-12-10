@@ -97,7 +97,8 @@ GetPrintPagesParams(const GURL& page_url,
                     absl::optional<std::string> header_template,
                     absl::optional<std::string> footer_template,
                     absl::optional<bool> prefer_css_page_size,
-                    absl::optional<bool> generate_tagged_pdf) {
+                    absl::optional<bool> generate_tagged_pdf,
+                    absl::optional<bool> generate_document_outline) {
   printing::PrintSettings print_settings;
   print_settings.set_dpi(printing::kPointsPerInch);
   print_settings.SetOrientation(landscape.value_or(false));
@@ -176,6 +177,8 @@ GetPrintPagesParams(const GURL& page_url,
   print_pages_params->params->prefer_css_page_size =
       prefer_css_page_size.value_or(false);
   print_pages_params->params->generate_tagged_pdf = generate_tagged_pdf;
+  print_pages_params->params->generate_document_outline =
+      generate_document_outline.value_or(false);
 
   CHECK(!print_pages_params->params->page_size.IsEmpty())
       << print_pages_params->params->page_size.ToString();

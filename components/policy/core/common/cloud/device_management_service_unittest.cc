@@ -25,6 +25,8 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -58,6 +60,7 @@ const char kDMToken[] = "device-management-token";
 const char kClientID[] = "device-id";
 const char kRobotAuthCode[] = "robot-oauth-auth-code";
 const char kEnrollmentToken[] = "enrollment_token";
+const char kProfileID[] = "profile-id";
 #if BUILDFLAG(IS_IOS)
 const char kOAuthAuthorizationHeaderPrefix[] = "OAuth ";
 #endif
@@ -138,17 +141,31 @@ class DeviceManagementServiceTestBase : public testing::Test {
       DeviceManagementService::JobConfiguration::JobType type,
       bool critical,
       DMAuth auth_data,
-      absl::optional<std::string> oauth_token,
+      absl::optional<std::string>&& oauth_token,
+      const std::string& payload = std::string(),
+      DeviceManagementService::Job::RetryMethod method =
+          DeviceManagementService::Job::NO_RETRY,
+      base::TimeDelta timeout = base::Seconds(0)) {
+    auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
+        type, service_.get(), kClientID, shared_url_loader_factory_);
+    params.critical = critical;
+    params.auth_data = std::move(auth_data);
+    params.oauth_token = std::move(oauth_token);
+    return StartJob(std::move(params), payload, method, timeout);
+  }
+
+  std::unique_ptr<DeviceManagementService::Job> StartJob(
+      DMServerJobConfiguration::CreateParams params,
       const std::string& payload = std::string(),
       DeviceManagementService::Job::RetryMethod method =
           DeviceManagementService::Job::NO_RETRY,
       base::TimeDelta timeout = base::Seconds(0)) {
     last_job_type_ =
-        DeviceManagementService::JobConfiguration::GetJobTypeAsString(type);
+        DeviceManagementService::JobConfiguration::GetJobTypeAsString(
+            params.type);
     std::unique_ptr<FakeJobConfiguration> config =
         std::make_unique<FakeJobConfiguration>(
-            service_.get(), type, kClientID, critical, std::move(auth_data),
-            oauth_token, shared_url_loader_factory_,
+            std::move(params),
             base::BindOnce(&DeviceManagementServiceTestBase::OnJobDone,
                            base::Unretained(this)),
             base::BindRepeating(&DeviceManagementServiceTestBase::OnJobRetry,
@@ -259,7 +276,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
         net::HttpUtil::AssembleRawHeaders(headers));
 
     if (was_fetched_via_proxy) {
-      head->proxy_server = net::ProxyServer(
+      head->proxy_chain = net::ProxyChain(
           net::ProxyServer::Scheme::SCHEME_HTTPS, /*host_port_pair=*/{});
     }
     head->mime_type = mime_type;
@@ -715,6 +732,27 @@ TEST_F(DeviceManagementServiceTest, ApiAuthCodeFetchRequest) {
 
   // Generate the response.
   SendResponse(net::OK, 200, expected_data);
+}
+
+TEST_F(DeviceManagementServiceTest, RequestWithProfileId) {
+  auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
+      DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
+      service_.get(), kClientID, shared_url_loader_factory_);
+  params.oauth_token = kOAuthToken;
+  params.profile_id = kProfileID;
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, std::string()));
+  EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartJob(std::move(params)));
+
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  QueryParams query_params(request->request.url.query());
+  EXPECT_TRUE(query_params.Check(dm_protocol::kParamProfileID, kProfileID));
+
+  // Generate the response.
+  SendResponse(net::OK, 200, std::string());
 }
 
 TEST_F(DeviceManagementServiceTest, CancelRegisterRequest) {

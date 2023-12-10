@@ -338,8 +338,8 @@ TEST_F(FieldTrialUtilTest, FieldTrialConfigSkipOverridden) {
   // Enable feature "A" and disable feature "B" as if they were enabled/disabled
   // using the |--enable-features| and |--disable-features| switches.
   base::FieldTrialList::CreateFieldTrial("Study", "Experiment");
-  feature_list.InitializeFromCommandLine(/*enable_features=*/"A<Study",
-                                         /*disable_features=*/"B");
+  feature_list.InitFromCommandLine(/*enable_features=*/"A<Study",
+                                   /*disable_features=*/"B");
 
   // Associate the |kConfig| field trial config.
   AssociateParamsFromFieldTrialConfig(
@@ -518,13 +518,14 @@ TEST_F(FieldTrialUtilTest,
       Study::PHONE,
       Study::TABLET,
       Study::MEET_DEVICE,
+      Study::FOLDABLE,
   };
   const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
       {{"x", "1"}, {"y", "2"}};
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
-      {"TestGroup", &platform, 1, form_factors, 4, absl::nullopt, nullptr,
-       array_kFieldTrialConfig_params, 2, nullptr, 0, nullptr, 0, nullptr,
-       nullptr, 0},
+      {"TestGroup", &platform, 1, form_factors, std::size(form_factors),
+       absl::nullopt, nullptr, array_kFieldTrialConfig_params, 2, nullptr, 0,
+       nullptr, 0, nullptr,nullptr, 0},
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
       {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};

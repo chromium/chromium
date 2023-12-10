@@ -64,13 +64,12 @@ struct DIPSRedirectInfo {
   // These properties are required for all redirects:
 
   const GURL url;
+  const std::string site;  // the cached result of GetSiteForDIPS(url)
   const DIPSRedirectType redirect_type;
   SiteDataAccessType
       access_type;  // may be updated by late cookie notifications
   const ukm::SourceId source_id;
   const base::Time time;
-  // TODO(amaliev): Add the `site` string computed by GetSiteForDIPS to avoid
-  // recomputing.
 
   // These properties aren't known at the time of creation, and are filled in
   // later:

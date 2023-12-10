@@ -39,17 +39,20 @@ class OutgoingPasswordSharingInvitationSyncBridge
       const OutgoingPasswordSharingInvitationSyncBridge&) = delete;
   ~OutgoingPasswordSharingInvitationSyncBridge() override;
 
-  // Sends `password` to the corresponding `recipient`.
-  void SendPassword(const PasswordForm& password,
-                    const PasswordRecipient& recipient);
+  // Sends `passwords` to the corresponding `recipient`. All entries in
+  // `passwords` are expected to belong to the same credentials group. i.e. they
+  // all share the same username and password, and all origins are affiliated.
+  // `passwords` must not be empty.
+  void SendPasswordGroup(const std::vector<PasswordForm>& passwords,
+                         const PasswordRecipient& recipient);
 
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;

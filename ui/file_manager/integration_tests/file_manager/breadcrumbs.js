@@ -5,7 +5,7 @@
  * @fileoverview Tests that breadcrumbs work.
  */
 
-import {ENTRIES, EntryType, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {createNestedTestFolders, ENTRIES, EntryType, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -66,46 +66,6 @@ testcase.breadcrumbsDownloadsTranslation = async () => {
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/Os meus ficheiros/Transferências/photos');
 };
-
-/**
- * Creates a folder test entry from a folder |path|.
- * @param {string} path The folder path.
- * @return {!TestEntryInfo}
- */
-function createTestFolder(path) {
-  const name = path.split('/').pop();
-  return new TestEntryInfo({
-    targetPath: path,
-    nameText: name,
-    type: EntryType.DIRECTORY,
-    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
-    sizeText: '--',
-    typeText: 'Folder',
-  });
-}
-
-/**
- * Returns an array of nested folder test entries, where |depth| controls
- * the nesting. For example, a |depth| of 4 will return:
- *
- *   [0]: nested-folder0
- *   [1]: nested-folder0/nested-folder1
- *   [2]: nested-folder0/nested-folder1/nested-folder2
- *   [3]: nested-folder0/nested-folder1/nested-folder2/nested-folder3
- *
- * @param {number} depth The nesting depth.
- * @return {!Array<!TestEntryInfo>}
- */
-function createNestedTestFolders(depth) {
-  const nestedFolderTestEntries = [];
-
-  for (let path = 'nested-folder0', i = 0; i < depth; ++i) {
-    nestedFolderTestEntries.push(createTestFolder(path));
-    path += `/nested-folder${i + 1}`;
-  }
-
-  return nestedFolderTestEntries;
-}
 
 /**
  * Tests that the breadcrumbs correctly render a short (3 component) path.

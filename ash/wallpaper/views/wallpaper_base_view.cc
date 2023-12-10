@@ -11,7 +11,6 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 
@@ -26,15 +25,11 @@ SkColor GetWallpaperShieldColor(const views::Widget* widget) {
 
   auto* controller = Shell::Get()->wallpaper_controller();
   if (controller->IsOobeWallpaper()) {
-    color = chromeos::features::IsJellyrollEnabled()
-                ? cros_tokens::kCrosSysScrim2
-                : static_cast<ui::ColorId>(kColorAshShieldAndBase60);
+    color = cros_tokens::kCrosSysScrim2;
   } else if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     color = kColorAshShieldAndBase80;
   } else {
-    color = chromeos::features::IsJellyrollEnabled()
-                ? cros_tokens::kCrosSysScrim2
-                : static_cast<ui::ColorId>(kColorAshShieldAndBase40);
+    color = cros_tokens::kCrosSysScrim2;
   }
 
   DCHECK(widget);

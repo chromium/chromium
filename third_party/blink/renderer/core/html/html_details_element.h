@@ -51,12 +51,14 @@ class HTMLDetailsElement final : public HTMLElement {
   bool HandleInvokeInternal(HTMLElement& invoker,
                             AtomicString& action) override;
 
- private:
-  void DispatchPendingEvent(const AttributeModificationReason);
-
+  // The name attribute for grouping of related details; empty string
+  // means no grouping.
   const AtomicString& GetName() const {
     return FastGetAttribute(html_names::kNameAttr);
   }
+
+ private:
+  void DispatchPendingEvent(const AttributeModificationReason);
 
   // Return all the <details> elements in the group created by the name
   // attribute, excluding |this|, in tree order.  If there is no such group

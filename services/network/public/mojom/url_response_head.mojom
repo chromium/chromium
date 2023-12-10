@@ -17,6 +17,7 @@ import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
+import "services/network/public/mojom/service_worker_router_info.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
 
@@ -47,9 +48,6 @@ struct URLResponseHead {
   // The character encoding of the response or none if not applicable to the
   // response's mime type.  This may be a derived value.
   string charset;
-
-  // The resource's compliance with the Certificate Transparency policy.
-  CTPolicyCompliance ct_policy_compliance;
 
   // Content length if available. -1 if not available
   int64 content_length = -1;
@@ -120,8 +118,8 @@ struct URLResponseHead {
   // prefetched URL.
   NavigationDeliveryType navigation_delivery_type = kDefault;
 
-  // The proxy server used for this request, if any.
-  ProxyServer proxy_server;
+  // The proxy chain used for this request, if any.
+  ProxyChain proxy_chain;
 
   // True if a service worker responded to the request. If the service worker
   // received a fetch event and did not call respondWith(), or was bypassed due
@@ -147,6 +145,11 @@ struct URLResponseHead {
   // generated as in respondWith(new Response()). It is also empty if a service
   // worker did not respond to the request or did not call respondWith().
   array<url.mojom.Url> url_list_via_service_worker;
+
+  // Information about ServiceWorker Static Routing API. Only provided if the
+  // service worker static router has been registered and one of its rule
+  // matched to the request.
+  ServiceWorkerRouterInfo? service_worker_router_info;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
   FetchResponseType response_type = FetchResponseType.kDefault;
@@ -192,6 +195,9 @@ struct URLResponseHead {
   // True if the response is an inner response of a signed exchange.
   bool is_signed_exchange_inner_response = false;
 
+  // True if the response is an inner response of a WebBundle.
+  bool is_web_bundle_inner_response = false;
+
   // True if this resource is served from the prefetch cache.
   bool was_in_prefetch_cache = false;
 
@@ -234,10 +240,6 @@ struct URLResponseHead {
   // Includes all known aliases, e.g. from A, AAAA, or HTTPS, not just from the
   // address used for the connection, in no particular order.
   array<string> dns_aliases;
-
-  // The URL of WebBundle this response was loaded from. This value is only
-  // populated for resources loaded from a WebBundle.
-  url.mojom.Url web_bundle_url;
 
   // True when there is an "authorization" header on the request and it is
   // covered by the wildcard in the preflight response.

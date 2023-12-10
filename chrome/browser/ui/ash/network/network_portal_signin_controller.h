@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -56,14 +57,12 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   friend std::ostream& operator<<(std::ostream& stream,
                                   const SigninSource& signin_mode);
 
-  NetworkPortalSigninController();
+  static NetworkPortalSigninController* Get();
+
   NetworkPortalSigninController(const NetworkPortalSigninController&) = delete;
   NetworkPortalSigninController& operator=(
       const NetworkPortalSigninController&) = delete;
   ~NetworkPortalSigninController() override;
-
-  // Returns a weak ptr to pass to the notification delegate.
-  virtual base::WeakPtr<NetworkPortalSigninController> GetWeakPtr();
 
   // Shows the signin UI.
   void ShowSignin(SigninSource source);
@@ -82,6 +81,9 @@ class NetworkPortalSigninController : public views::WidgetObserver,
                           NetworkState::PortalState portal_state) override;
 
  protected:
+  friend class base::NoDestructor<NetworkPortalSigninController>;
+  NetworkPortalSigninController();
+
   // May be overridden in tests.
   virtual void ShowDialog(Profile* profile, const GURL& url);
   virtual void ShowTab(Profile* profile, const GURL& url);
@@ -93,7 +95,6 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       dialog_widget_observation_{this};
   NetworkStateHandlerScopedObservation network_state_handler_observation_{this};
-  base::WeakPtrFactory<NetworkPortalSigninController> weak_factory_{this};
 };
 
 }  // namespace ash

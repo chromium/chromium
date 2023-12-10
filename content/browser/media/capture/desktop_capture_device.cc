@@ -886,21 +886,34 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 #else
   base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
 #endif
-
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer) ||
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
-    // TODO(https://crbug.com/1421242): Finalize 0Hz support for WGC.
-    // This feature flag is disabled by default.
-    zero_hertz_is_supported =
-        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz);
+  // TODO(https://crbug.com/1421242): Finalize 0Hz support for WGC.
+  const bool wgc_zero_hertz =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz);
+  // TODO(https://crbug.com/1421656): 0Hz mode seems to cause a flickering
+  // cursor in some setups. This flag allows us to disable 0Hz when needed.
+  const bool dxgi_gdi_zero_hertz =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowDxgiGdiZeroHz);
+  const bool wgc_screen_capturer =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
+  const bool wgc_window_capturer =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer);
+  if (!wgc_window_capturer && !wgc_screen_capturer) {
+    zero_hertz_is_supported = dxgi_gdi_zero_hertz;
+  } else if (!wgc_window_capturer && wgc_screen_capturer) {
+    zero_hertz_is_supported = (type == DesktopMediaID::TYPE_SCREEN)
+                                  ? wgc_zero_hertz
+                                  : dxgi_gdi_zero_hertz;
+  } else if (wgc_window_capturer && !wgc_screen_capturer) {
+    zero_hertz_is_supported = (type == DesktopMediaID::TYPE_WINDOW)
+                                  ? wgc_zero_hertz
+                                  : dxgi_gdi_zero_hertz;
   } else {
-    // TODO(https://crbug.com/1421656): 0Hz mode seems to cause a flickering
-    // cursor in some setups. This flag allows us to disable 0Hz when needed.
-    zero_hertz_is_supported =
-        base::FeatureList::IsEnabled(features::kWebRtcAllowDxgiGdiZeroHz);
+    zero_hertz_is_supported = wgc_zero_hertz;
   }
+  VLOG(1) << __func__ << " [zero_hertz_is_supported=" << zero_hertz_is_supported
+          << "]";
 #endif
 
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));

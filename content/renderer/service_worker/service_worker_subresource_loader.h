@@ -13,6 +13,7 @@
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
+#include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -218,8 +219,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
 
-  std::vector<blink::ServiceWorkerRouterSource> MaybeEvaluateRouterConditions()
-      const;
+  absl::optional<ServiceWorkerRouterEvaluator::Result>
+  MaybeEvaluateRouterConditions() const;
 
   bool MaybeStartAutoPreload();
 

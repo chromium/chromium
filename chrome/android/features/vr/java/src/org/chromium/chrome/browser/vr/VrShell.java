@@ -36,9 +36,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
-/**
- * This view extends from GvrLayout which wraps a GLSurfaceView that renders VR shell.
- */
+/** This view extends from GvrLayout which wraps a GLSurfaceView that renders VR shell. */
 @JNINamespace("vr")
 public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
     private static final String TAG = "VrShellImpl";
@@ -66,9 +64,7 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
     private OnDispatchTouchEventCallback mOnDispatchTouchEventForTesting;
     private Runnable mOnVSyncPausedForTesting;
 
-    /**
-     * A struct-like object for registering UI operations during tests.
-     */
+    /** A struct-like object for registering UI operations during tests. */
     @VisibleForTesting
     public static class UiOperationData {
         // The UiTestOperationType of this operation.
@@ -83,8 +79,13 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
         public boolean visibility;
     }
 
-    public VrShell(Activity activity, VrShellDelegate delegate, TabModelSelector tabModelSelector,
-            TabCreatorManager tabCreatorManager, WindowAndroid windowAndroid, Tab tab) {
+    public VrShell(
+            Activity activity,
+            VrShellDelegate delegate,
+            TabModelSelector tabModelSelector,
+            TabCreatorManager tabCreatorManager,
+            WindowAndroid windowAndroid,
+            Tab tab) {
         super(activity);
         mActivity = activity;
         mDelegate = delegate;
@@ -131,26 +132,33 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
         getUiLayout().setCloseButtonListener(mDelegate.getVrCloseButtonListener());
         getUiLayout().setSettingsButtonListener(mDelegate.getVrSettingsButtonListener());
 
-        mTouchListener = new View.OnTouchListener() {
-            @Override
-            @SuppressLint("ClickableViewAccessibility")
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    VrShellJni.get().onTriggerEvent(mNativeVrShell, VrShell.this, true);
-                    return true;
-                } else if (event.getActionMasked() == MotionEvent.ACTION_UP
-                        || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-                    VrShellJni.get().onTriggerEvent(mNativeVrShell, VrShell.this, false);
-                    return true;
-                }
-                return false;
-            }
-        };
+        mTouchListener =
+                new View.OnTouchListener() {
+                    @Override
+                    @SuppressLint("ClickableViewAccessibility")
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                            VrShellJni.get().onTriggerEvent(mNativeVrShell, VrShell.this, true);
+                            return true;
+                        } else if (event.getActionMasked() == MotionEvent.ACTION_UP
+                                || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                            VrShellJni.get().onTriggerEvent(mNativeVrShell, VrShell.this, false);
+                            return true;
+                        }
+                        return false;
+                    }
+                };
     }
 
     public void initializeNative() {
-        mNativeVrShell = VrShellJni.get().init(VrShell.this, mDelegate,
-                getGvrApi().getNativeGvrContext(), mReprojectedRendering, mTab.getWebContents());
+        mNativeVrShell =
+                VrShellJni.get()
+                        .init(
+                                VrShell.this,
+                                mDelegate,
+                                getGvrApi().getNativeGvrContext(),
+                                mReprojectedRendering,
+                                mTab.getWebContents());
 
         mPresentationView.setOnTouchListener(mTouchListener);
 
@@ -181,7 +189,8 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (mTab != null && mTab.getWebContents() != null
+        if (mTab != null
+                && mTab.getWebContents() != null
                 && mTab.getWebContents().getEventForwarder().dispatchKeyEvent(event)) {
             return true;
         }
@@ -190,7 +199,8 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        if (mTab != null && mTab.getWebContents() != null
+        if (mTab != null
+                && mTab.getWebContents() != null
                 && mTab.getWebContents().getEventForwarder().onGenericMotionEvent(event)) {
             return true;
         }
@@ -304,12 +314,21 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
 
     @NativeMethods
     interface Natives {
-        long init(VrShell caller, VrShellDelegate delegate, long gvrApi,
-                boolean reprojectedRendering, WebContents webContents);
+        long init(
+                VrShell caller,
+                VrShellDelegate delegate,
+                long gvrApi,
+                boolean reprojectedRendering,
+                WebContents webContents);
+
         void setSurface(long nativeVrShell, VrShell caller, Surface surface);
+
         void destroy(long nativeVrShell, VrShell caller);
+
         void onTriggerEvent(long nativeVrShell, VrShell caller, boolean touched);
+
         void onPause(long nativeVrShell, VrShell caller);
+
         void onResume(long nativeVrShell, VrShell caller);
     }
 }

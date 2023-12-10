@@ -49,6 +49,7 @@ const std::u16string kAttachedDeviceInfo =
     u"Read attached devices information and data";
 const std::u16string kBluetoothPeripheralsInfo =
     u"Read Bluetooth peripherals information and data";
+const std::u16string kManagementAudio = u"Manage ChromeOS audio settings";
 }  // namespace
 
 // Tests that ChromePermissionMessageProvider provides not only correct, but
@@ -257,6 +258,24 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryEventsMessage) {
   EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(kTelemetryEventsPermissionMessage, active_permissions()[0]);
+}
+
+TEST_F(ChromeOSPermissionMessageUnittest, OsManagementAudio) {
+  CreateAndInstallExtensionWithPermissions(
+      base::Value::List(), base::Value::List().Append("os.management.audio"));
+
+  ASSERT_EQ(1U, optional_permissions().size());
+  EXPECT_EQ(kManagementAudio, optional_permissions()[0]);
+  ASSERT_EQ(1U, GetInactiveOptionalPermissionMessages().size());
+  EXPECT_EQ(kManagementAudio, GetInactiveOptionalPermissionMessages()[0]);
+  EXPECT_EQ(0U, required_permissions().size());
+  EXPECT_EQ(0U, active_permissions().size());
+
+  GrantOptionalPermissions();
+
+  EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
+  ASSERT_EQ(1U, active_permissions().size());
+  EXPECT_EQ(kManagementAudio, active_permissions()[0]);
 }
 
 }  // namespace chromeos

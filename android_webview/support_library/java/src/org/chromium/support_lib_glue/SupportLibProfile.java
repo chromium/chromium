@@ -19,9 +19,7 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
-/**
- * The support-lib glue implementation for Profile, delegates all the calls to {@link Profile}.
- */
+/** The support-lib glue implementation for Profile, delegates all the calls to {@link Profile}. */
 @Lifetime.Profile
 public class SupportLibProfile implements ProfileBoundaryInterface {
     private final Profile mProfileImpl;

@@ -13,9 +13,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 
-/**
- * Native bridge for finding payment apps.
- */
+/** Native bridge for finding payment apps. */
 public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
     private static boolean sCanMakePaymentForTesting;
 
@@ -41,21 +39,28 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
             return;
         }
 
-        assert delegate.getParams().getPaymentRequestOrigin().equals(
-                UrlFormatter.formatUrlForSecurityDisplay(
-                        delegate.getParams().getRenderFrameHost().getLastCommittedURL(),
-                        SchemeDisplay.SHOW));
+        assert delegate.getParams()
+                .getPaymentRequestOrigin()
+                .equals(
+                        UrlFormatter.formatUrlForSecurityDisplay(
+                                delegate.getParams().getRenderFrameHost().getLastCommittedURL(),
+                                SchemeDisplay.SHOW));
 
         CSPCheckerBridge cspCheckerBridge = new CSPCheckerBridge(delegate.getCSPChecker());
 
         PaymentAppServiceCallback callback =
                 new PaymentAppServiceCallback(delegate, cspCheckerBridge);
 
-        PaymentAppServiceBridgeJni.get().create(delegate.getParams().getRenderFrameHost(),
-                delegate.getParams().getTopLevelOrigin(), delegate.getParams().getSpec(),
-                delegate.getParams().getTwaPackageName(), delegate.getParams().getMayCrawl(),
-                delegate.getParams().isOffTheRecord(), cspCheckerBridge.getNativeCSPChecker(),
-                callback);
+        PaymentAppServiceBridgeJni.get()
+                .create(
+                        delegate.getParams().getRenderFrameHost(),
+                        delegate.getParams().getTopLevelOrigin(),
+                        delegate.getParams().getSpec(),
+                        delegate.getParams().getTwaPackageName(),
+                        delegate.getParams().getMayCrawl(),
+                        delegate.getParams().isOffTheRecord(),
+                        cspCheckerBridge.getNativeCSPChecker(),
+                        callback);
     }
 
     /** Handles callbacks from native PaymentAppService. */
@@ -143,9 +148,14 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
          * @param nativeCSPCheckerAndroid A C++ native CSPCheckerAndroid* pointer.
          * @param callback The callback that receives the discovered payment apps.
          */
-        void create(RenderFrameHost initiatorRenderFrameHost, String topOrigin,
-                PaymentRequestSpec spec, String twaPackageName,
-                boolean mayCrawlForInstallablePaymentApps, boolean isOffTheRecord,
-                long nativeCSPCheckerAndroid, PaymentAppServiceCallback callback);
+        void create(
+                RenderFrameHost initiatorRenderFrameHost,
+                String topOrigin,
+                PaymentRequestSpec spec,
+                String twaPackageName,
+                boolean mayCrawlForInstallablePaymentApps,
+                boolean isOffTheRecord,
+                long nativeCSPCheckerAndroid,
+                PaymentAppServiceCallback callback);
     }
 }

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/version_info/version_info.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/x509_certificate.h"
@@ -79,7 +80,6 @@ void AddCertStatusToReportStatus(
   COPY_CERT_STATUS(IS_EV)
   COPY_CERT_STATUS(REV_CHECKING_ENABLED)
   COPY_CERT_STATUS(SHA1_SIGNATURE_PRESENT)
-  COPY_CERT_STATUS(CT_COMPLIANCE_FAILED)
   COPY_CERT_STATUS(KNOWN_INTERCEPTION_DETECTED)
 
 #undef COPY_CERT_STATUS

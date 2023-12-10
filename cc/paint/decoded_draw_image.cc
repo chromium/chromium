@@ -32,7 +32,7 @@ DecodedDrawImage::DecodedDrawImage(const gpu::Mailbox& mailbox,
       is_budgeted_(true) {}
 
 DecodedDrawImage::DecodedDrawImage(
-    absl::optional<uint32_t> transfer_cache_entry_id,
+    std::optional<uint32_t> transfer_cache_entry_id,
     sk_sp<ColorFilter> dark_mode_color_filter,
     const SkSize& src_rect_offset,
     const SkSize& scale_adjustment,

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
@@ -21,6 +20,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/display/screen.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
@@ -78,8 +78,12 @@ void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
-  if (controller_.IsEnabled() == enabled)
-    return;
+  if (controller_.IsEnabled() == enabled) {
+    // TODO(crbug.com/1505996): Remove this comments when the performance check
+    // has completed.
+    LOG(WARNING) << "Sending immersive again while the state is the same: "
+                 << (enabled ? "enabled." : "disabled.");
+  }
 
   if (!fullscreen_observer_.IsObserving()) {
     fullscreen_observer_.Observe(browser_view_->browser()
@@ -127,7 +131,7 @@ void ImmersiveModeControllerChromeos::OnFindBarVisibleBoundsChanged(
 bool ImmersiveModeControllerChromeos::
     ShouldStayImmersiveAfterExitingFullscreen() {
   return !browser_view_->GetSupportsTabStrip() &&
-         chromeos::TabletState::Get()->InTabletMode();
+         display::Screen::GetScreen()->InTabletMode();
 }
 
 void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
@@ -136,8 +140,9 @@ void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
   if (browser_view_->GetSupportsTabStrip())
     return;
 
-  if (!chromeos::TabletState::Get()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return;
+  }
 
   // Don't use immersive mode as long as we are in the locked fullscreen mode
   // since immersive shows browser controls which allow exiting the mode.

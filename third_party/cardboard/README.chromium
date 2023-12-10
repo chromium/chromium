@@ -1,7 +1,7 @@
 Name: Cardboard SDK
 Short Name: cardboard
 URL: https://github.com/googlevr/cardboard
-Version: 1.21.0
+Version: 1.22.0
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -15,8 +15,5 @@ Local Modifications:
 * Created local top-level BUILD.gn based on src/sdk/build.gradle
 * Created local proguard-rules.pro to create more scoped proto-specific rules
 * Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
-* Created local override for LoadJNIResources in qr_code.cc to register native method used by the QR code scanner activity.
-* Created local override for CardboardQrCode_getSavedDeviceParams function in cardboard.cc to prevent undefined behavior.
-* Created local override for OpenGL ES 2.0 renderer to include Chromium header with custom bindings.
 * Created local configuration header file with the OpenGL ES 2.0 binding customization required by setting the CARDBOARD_USE_CUSTOM_GL_BINDINGS buildflag.
 * Created local override for sdk/sensors/android/device_accelerometer_sensor.cc and device_gyroscope_sensor.cc to support updating minimum SDK version to 26 due to deprecated ASensorManager_getInstance() function. See crbug.com/1497732.

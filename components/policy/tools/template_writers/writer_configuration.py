@@ -63,6 +63,7 @@ def GetConfigurationForBuild(defines):
         'bundle_id': 'org.chromium',
     }
   elif '_google_chrome' in defines or '_is_chrome_for_testing_branded' in defines:
+    linux_policy_path = '/etc/opt/chrome/policies/' if '_google_chrome' in defines else '/etc/opt/chrome_for_testing/policies/'
     config = {
         'build': 'chrome',
         'app_name': 'Google Chrome',
@@ -116,7 +117,7 @@ def GetConfigurationForBuild(defines):
         'admx_using_namespaces': {
             'Google': 'Google.Policies'  # prefix: namespace
         },
-        'linux_policy_path': '/etc/opt/chrome/policies/',
+        'linux_policy_path': linux_policy_path,
         'bundle_id': 'com.google.chrome.ios',
     }
   else:

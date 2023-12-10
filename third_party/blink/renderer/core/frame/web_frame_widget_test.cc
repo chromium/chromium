@@ -251,11 +251,9 @@ class MockHandledEventCallback {
   }
 };
 
-class MockWebFrameWidgetImpl : public SimWebFrameWidget {
+class MockWebFrameWidgetImpl : public frame_test_helpers::TestWebFrameWidget {
  public:
-  template <typename... Args>
-  explicit MockWebFrameWidgetImpl(Args&&... args)
-      : SimWebFrameWidget(std::forward<Args>(args)...) {}
+  using frame_test_helpers::TestWebFrameWidget::TestWebFrameWidget;
 
   MOCK_METHOD1(HandleInputEvent,
                WebInputEventResult(const WebCoalescedInputEvent&));
@@ -269,14 +267,11 @@ class MockWebFrameWidgetImpl : public SimWebFrameWidget {
 
   MOCK_METHOD2(WillHandleGestureEvent,
                void(const WebGestureEvent& event, bool* suppress));
-
-  // mojom::blink::WidgetHost overrides:
-  using SimWebFrameWidget::SetCursor;
 };
 
 class WebFrameWidgetImplSimTest : public SimTest {
  public:
-  SimWebFrameWidget* CreateSimWebFrameWidget(
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
@@ -292,14 +287,12 @@ class WebFrameWidgetImplSimTest : public SimTest {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
-      bool is_for_scalable_page,
-      SimCompositor* compositor) override {
+      bool is_for_scalable_page) override {
     return MakeGarbageCollected<MockWebFrameWidgetImpl>(
-        compositor, pass_key, std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+        pass_key, std::move(frame_widget_host), std::move(frame_widget),
+        std::move(widget_host), std::move(widget), std::move(task_runner),
+        frame_sink_id, hidden, never_composited, is_for_child_local_root,
+        is_for_nested_main_frame, is_for_scalable_page);
   }
 
   MockWebFrameWidgetImpl* MockMainFrameWidget() {
@@ -974,7 +967,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   second->SetValue("ABCD EFGH");
   second->Focus();
   gfx::Point origin =
-      second->getBoundingClientRect()->ToEnclosingRect().origin();
+      second->GetBoundingClientRect()->ToEnclosingRect().origin();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   expected = Vector({gfx::Rect(origin.x(), origin.y(), 90, 10)});
   actual = widget->GetVisibleLineBoundsOnScreen();
@@ -1342,7 +1335,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   // Focus the element and check the line bounds.
   first->Focus();
   gfx::Point origin =
-      first->getBoundingClientRect()->ToEnclosingRect().origin();
+      first->GetBoundingClientRect()->ToEnclosingRect().origin();
   String text = "hello world";
   for (wtf_size_t i = 0; i < text.length(); ++i) {
     first->SetValue(first->Value() + text[i]);
@@ -1408,7 +1401,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   first->Focus();
   first->SetValue("hello world\rgoodbye world");
   gfx::Point origin =
-      first->getBoundingClientRect()->ToEnclosingRect().origin();
+      first->GetBoundingClientRect()->ToEnclosingRect().origin();
 
   String last_line = "goodbye world";
   for (wtf_size_t i = last_line.length() - 1; i > 0; --i) {
@@ -1587,6 +1580,78 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
   }
 }
 
+TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
+  base::test::ScopedFeatureList feature_list(
+      features::kReportVisibleLineBounds);
+  WebView().ResizeVisualViewport(gfx::Size(200, 200));
+  auto* widget = WebView().MainFrameViewWidget();
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest child_frame_resource("https://example.com/child_frame.html",
+                                  "text/html");
+  SimSubresourceRequest child_font_resource("https://example.com/Ahem.woff2",
+                                            "font/woff2");
+
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(
+      R"HTML(
+        <!doctype html>
+        <style>
+          html, body, iframe {
+            margin: 0;
+            padding: 0;
+            border: 0;
+          }
+        </style>
+        <div style='height: 100px;'></div>
+        <iframe src='https://example.com/child_frame.html'
+                id='child_frame' width='200px' height='100px'></iframe>)HTML");
+  Compositor().BeginFrame();
+
+  child_frame_resource.Complete(
+      R"HTML(
+      <!doctype html>
+      <style>
+        @font-face {
+          font-family: custom-font;
+          src: url(https://example.com/Ahem.woff2) format("woff2");
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          zoom: 11;
+        }
+        .target {
+          font: 10px/1 custom-font, monospace;
+          margin: 0;
+          padding: 0;
+          border: none;
+        }
+      </style>
+      <input type='text' id='first' class='target' value='ABCD' />
+      <script>
+        first.focus();
+      </script>
+      )HTML");
+  Compositor().BeginFrame();
+
+  child_font_resource.Complete(
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+          ->CopyAs<Vector<char>>());
+  Compositor().BeginFrame();
+
+  // The expected top value is 100 because of the spacer div in the main frame.
+  // The expected width is 40 * 11 = 440 but this should be clipped to the
+  // screen width which is 200px.
+  // The expected height is 10 * 11 = 110 but this should be clipped as to the
+  // screen height of 200px - 100px for the top of the bound.
+  Vector<gfx::Rect> expected(Vector({gfx::Rect(0, 100, 200, 100)}));
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  EXPECT_EQ(expected.size(), actual.size());
+  for (wtf_size_t i = 0; i < expected.size(); ++i) {
+    EXPECT_EQ(expected.at(i), actual.at(i));
+  }
+}
+
 class EventHandlingWebFrameWidgetSimTest : public SimTest {
  public:
   void SetUp() override {
@@ -1597,7 +1662,7 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
     Compositor().BeginFrame();
   }
 
-  SimWebFrameWidget* CreateSimWebFrameWidget(
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
@@ -1613,14 +1678,12 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
-      bool is_for_scalable_page,
-      SimCompositor* compositor) override {
+      bool is_for_scalable_page) override {
     return MakeGarbageCollected<TestWebFrameWidget>(
-        compositor, pass_key, std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+        pass_key, std::move(frame_widget_host), std::move(frame_widget),
+        std::move(widget_host), std::move(widget), std::move(task_runner),
+        frame_sink_id, hidden, never_composited, is_for_child_local_root,
+        is_for_nested_main_frame, is_for_scalable_page);
   }
 
  protected:
@@ -1663,11 +1726,9 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
   };
 
   // A test `WebFrameWidget` implementation that fakes handling of an event.
-  class TestWebFrameWidget : public SimWebFrameWidget {
+  class TestWebFrameWidget : public frame_test_helpers::TestWebFrameWidget {
    public:
-    template <typename... Args>
-    explicit TestWebFrameWidget(Args&&... args)
-        : SimWebFrameWidget(std::forward<Args>(args)...) {}
+    using frame_test_helpers::TestWebFrameWidget::TestWebFrameWidget;
 
     WebInputEventResult HandleInputEvent(
         const WebCoalescedInputEvent& coalesced_event) override {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/realtime_cpu_chart.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

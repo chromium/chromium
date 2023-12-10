@@ -12,12 +12,9 @@ import androidx.annotation.LayoutRes;
 
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
 
-/**
- * Helper class that inflates view from XML layout.
- */
+/** Helper class that inflates view from XML layout. */
 public class LayoutViewBuilder<T extends View> implements ViewBuilder<T> {
-    @LayoutRes
-    private final int mLayoutResId;
+    @LayoutRes private final int mLayoutResId;
     private LayoutInflater mInflater;
 
     public LayoutViewBuilder(@LayoutRes int res) {

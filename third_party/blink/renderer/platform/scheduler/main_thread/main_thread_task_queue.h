@@ -5,10 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_TASK_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_TASK_QUEUE_H_
 
-#include <limits>
+#include <bit>
 #include <memory>
 
-#include "base/bits.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -176,24 +175,25 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kRenderBlocking = 13,
       kLow = 14,
 
-      kCount = 15
+      kMaxValue = kLow
     };
 
-    // kPrioritisationTypeWidthBits is the number of bits required
-    // for PrioritisationType::kCount - 1, which is the number of bits needed
-    // to represent |prioritisation_type| in QueueTraitKeyType.
-    // We need to update it whenever there is a change in
-    // PrioritisationType::kCount.
-    static constexpr unsigned PrioritisationTypeCount =
-        static_cast<unsigned>(QueueTraits::PrioritisationType::kCount);
-
+    // Bit width required for the PrioritisationType enumeration
     static constexpr unsigned kPrioritisationTypeWidthBits =
-        std::numeric_limits<unsigned>::digits -
-        base::bits::CountTrailingZeroBits(PrioritisationTypeCount - 1);
+        std::bit_width(static_cast<unsigned>(PrioritisationType::kMaxValue));
 
-    static_assert(PrioritisationTypeCount <=
+    // Ensure that the count of the enumeration does not exceed the
+    // representable range
+    static_assert(static_cast<unsigned>(PrioritisationType::kMaxValue) <
                       (1u << kPrioritisationTypeWidthBits),
-                  "Wrong instantiation for kPrioritisationTypeWidthBits");
+                  "PrioritisationType count exceeds the bit width range");
+
+    // Ensure that the count of the enumeration is not less than half the
+    // representable range
+    static_assert(
+        static_cast<unsigned>(PrioritisationType::kMaxValue) >=
+            (1u << (kPrioritisationTypeWidthBits - 1)),
+        "PrioritisationType count is less than half the bit width range");
 
     QueueTraits(const QueueTraits&) = default;
     QueueTraits& operator=(const QueueTraits&) = default;

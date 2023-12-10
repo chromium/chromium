@@ -11,9 +11,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-/**
- * Tab used for various testing purposes.
- */
+/** Tab used for various testing purposes. */
 public class MockTab extends TabImpl {
     private GURL mGurlOverride;
     private WebContents mWebContentsOverride;
@@ -51,10 +49,15 @@ public class MockTab extends TabImpl {
     }
 
     @Override
-    public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
-            LoadUrlParams loadUrlParams, WebContents webContents,
-            @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
-            TabState tabState, boolean initializeRenderer) {
+    public void initialize(
+            Tab parent,
+            @Nullable @TabCreationState Integer creationState,
+            LoadUrlParams loadUrlParams,
+            WebContents webContents,
+            @Nullable TabDelegateFactory delegateFactory,
+            boolean initiallyHidden,
+            TabState tabState,
+            boolean initializeRenderer) {
         if (loadUrlParams != null) {
             mGurlOverride = new GURL(loadUrlParams.getUrl());
         }

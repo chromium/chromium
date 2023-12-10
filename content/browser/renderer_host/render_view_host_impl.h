@@ -326,6 +326,8 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   base::SafeRef<RenderViewHostImpl> GetSafeRef();
 
+  mojom::ViewWidgetType ViewWidgetType();
+
   SiteInstanceGroup* site_instance_group() const {
     return &*site_instance_group_;
   }
@@ -408,6 +410,8 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Routing ID for the main frame's RenderFrameHost.
   int main_frame_routing_id_;
+
+  absl::optional<mojom::ViewWidgetType> view_widget_type_;
 
   // This monitors input changes so they can be reflected to the interaction MQ.
   std::unique_ptr<InputDeviceChangeObserver> input_device_change_observer_;

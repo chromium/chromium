@@ -22,6 +22,9 @@ class PrefRegistrySyncable;
 namespace content_settings {
 
 // PolicyProvider that provides managed content-settings.
+//
+// PartitionKey is ignored by this provider because the content settings should
+// apply across partitions.
 class PolicyProvider : public ObservableProvider {
  public:
   explicit PolicyProvider(PrefService* prefs);
@@ -35,16 +38,21 @@ class PolicyProvider : public ObservableProvider {
   // ProviderInterface implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
+      bool incognito,
+      const PartitionKey& partition_key =
+          PartitionKey::WipGetDefault()) const override;
 
-  bool SetWebsiteSetting(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      base::Value&& value,
-      const ContentSettingConstraints& constraint = {}) override;
+  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
+                         const ContentSettingsPattern& secondary_pattern,
+                         ContentSettingsType content_type,
+                         base::Value&& value,
+                         const ContentSettingConstraints& constraint = {},
+                         const PartitionKey& partition_key =
+                             PartitionKey::WipGetDefault()) override;
 
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
+  void ClearAllContentSettingsRules(ContentSettingsType content_type,
+                                    const PartitionKey& partition_key =
+                                        PartitionKey::WipGetDefault()) override;
 
   void ShutdownOnUIThread() override;
 

@@ -43,6 +43,9 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.view.accessibilityIdentifier =
+      password_manager::kReauthenticationViewControllerAccessibilityIdentifier;
+
   // Set background color matching the one used in the settings UI.
   self.view.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];

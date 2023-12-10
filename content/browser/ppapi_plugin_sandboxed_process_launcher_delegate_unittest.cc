@@ -4,34 +4,17 @@
 
 #include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
-#include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "sandbox/policy/win/sandbox_policy_feature_test.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
-#endif
+#include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::_;
-using ::testing::Return;
+namespace content::sandbox::policy {
 
-using ::testing::ElementsAre;
-using ::testing::Pair;
-
-namespace content {
-namespace sandbox {
-namespace policy {
-
-#if BUILDFLAG(IS_WIN)
 class PpapiPluginFeatureSandboxWinTest
     : public ::sandbox::policy::SandboxFeatureTest {
  public:
@@ -43,8 +26,6 @@ class PpapiPluginFeatureSandboxWinTest
         ::sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
     return flags;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(PpapiPluginFeatureSandboxWinTest, PpapiGeneratedPolicyTest) {
@@ -74,8 +55,5 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /* renderer app container feature */ ::testing::Bool(),
         /* ktm mitigation feature */ ::testing::Bool()));
-#endif
 
-}  // namespace policy
-}  // namespace sandbox
-}  // namespace content
+}  // namespace content::sandbox::policy

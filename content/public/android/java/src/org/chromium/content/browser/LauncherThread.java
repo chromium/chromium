@@ -23,6 +23,7 @@ public final class LauncherThread {
     private static final Handler sThreadHandler;
     // Can be overwritten in tests.
     private static Handler sHandler;
+
     static {
         sThread.maybeStart();
         sThreadHandler = new Handler(sThread.getLooper());

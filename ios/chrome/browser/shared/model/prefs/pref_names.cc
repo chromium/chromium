@@ -391,8 +391,16 @@ const char kTrackPricesOnTabsEnabled[] = "track_prices_on_tabs.enabled";
 const char kLensCameraAssistedSearchPolicyAllowed[] =
     "ios.lens_camera_assited_search_policy.allowed";
 
+// Number of times the NTP Lens button "new" IPH badge has been shown.
+// This is set to INT_MAX when the user taps the button.
+const char kNTPLensEntryPointNewBadgeShownCount[] =
+    "ios.ntp_lens_new_badge_shown_count";
+
 // A boolean specifying whether Web Inspector support is enabled.
 const char kWebInspectorEnabled[] = "ios.web_inspector_enabled";
+
+// The pref to enable units detection in web pages.
+const char kDetectUnitsEnabled[] = "ios.settings.detect_units_enabled";
 
 // An integer set to one of the NetworkPredictionSetting enum values indicating
 // network prediction settings.
@@ -404,13 +412,6 @@ const char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
 
 // True if the memory debugging tools should be visible.
 const char kShowMemoryDebuggingTools[] = "ios.memory.show_debugging_tools";
-
-// List which contains the last known list of accounts.
-const char kSigninLastAccounts[] = "ios.signin.last_accounts";
-
-// Boolean which indicates if the pref which contains the last known list of
-// accounts was migrated to use account ids instead of emails.
-const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
 
 // Boolean which indicates if user should be prompted to sign in again
 // when a new tab is created.
@@ -471,5 +472,19 @@ const char kPriceNotificationsHasBeenShown[] =
 // from the first run experience screen.
 const char kPasswordSharingFlowHasBeenEntered[] =
     "ios.password_sharing.flow_entered";
+
+// A time object used to determine when the Notifications promo was last
+// dismissed.
+const char kNotificationsPromoLastDismissed[] =
+    "ios.content_notifications.promo_last_dismissed";
+// A time object used to determine when the Notifications promo was last shown.
+const char kNotificationsPromoLastShown[] =
+    "ios.content_notifications.promo_last_shown";
+// An int used to determine how many times the Notifications promo has been
+// shown to the user.
+const char kNotificationsPromoTimesShown[] =
+    "ios.content_notifications.promo_times_shown";
+const char kNotificationsPromoTimesDismissed[] =
+    "ios.content_notifications.promo_times_dismissed";
 
 }  // namespace prefs

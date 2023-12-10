@@ -184,7 +184,10 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
       /*network_quality_estimator=*/nullptr,
       /*net_log=*/nullptr,
       /*websocket_endpoint_lock_manager=*/nullptr,
-      /*http_server_properties=*/nullptr};
+      /*http_server_properties=*/nullptr,
+      /*alpn_protos=*/nullptr,
+      /*application_settings=*/nullptr,
+      /*ignore_certificate_errors=*/nullptr};
   TestConnectJobDelegate delegate_;
 
   std::unique_ptr<ConnectJobFactory> factory_;
@@ -256,6 +259,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   const SSLSocketParams& params = *ssl_job_factory_->params().front();
   EXPECT_EQ(params.host_and_port(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
+  EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -284,6 +289,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {
   ASSERT_THAT(ssl_job_factory_->params(), testing::SizeIs(1));
   const SSLSocketParams& params = *ssl_job_factory_->params().front();
   EXPECT_EQ(params.host_and_port(), kEndpoint);
+  EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -368,6 +375,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   const SSLSocketParams& params = *ssl_job_factory_->params().front();
   EXPECT_EQ(params.host_and_port(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
+  EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
   const HttpProxySocketParams& proxy_params =
@@ -443,6 +452,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
   ASSERT_TRUE(params.ssl_params());
   const SSLSocketParams& ssl_params = *params.ssl_params();
   EXPECT_EQ(ssl_params.host_and_port(), kProxy.proxy_server().host_port_pair());
+  EXPECT_TRUE(
+      ssl_params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
+            ssl_params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -477,6 +490,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
   ASSERT_TRUE(params.ssl_params());
   const SSLSocketParams& ssl_params = *params.ssl_params();
   EXPECT_EQ(ssl_params.host_and_port(), kProxy.proxy_server().host_port_pair());
+  EXPECT_TRUE(
+      ssl_params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
+            ssl_params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -484,6 +501,265 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
   EXPECT_THAT(transport_params.destination(),
               testing::VariantWith<HostPortPair>(
                   kProxy.proxy_server().host_port_pair()));
+}
+
+TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
+  const url::SchemeHostPort kEndpoint(url::kHttpScheme, "test", 89);
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 443)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 443)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  SSLConfig ssl_config;
+
+  std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
+      kEndpoint, kNestedProxyChain, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*ssl_config_for_origin=*/nullptr,
+      /*base_ssl_config_for_proxies=*/&ssl_config,
+      /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
+      OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      &common_connect_job_params_, &delegate_);
+  EXPECT_EQ(GetCreationCount(), 1u);
+
+  ASSERT_THAT(http_proxy_job_factory_->params(), testing::SizeIs(1));
+  // The corresponding HttpProxySocketParams and SSLSocketParams for each hop
+  // should be present in reverse order.
+  const HttpProxySocketParams& proxy_server2_http_params =
+      *http_proxy_job_factory_->params().front();
+  EXPECT_FALSE(proxy_server2_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer2` for `kEndpoint`.
+  EXPECT_EQ(proxy_server2_http_params.endpoint(),
+            HostPortPair::FromSchemeHostPort(kEndpoint));
+
+  const SSLSocketParams& proxy_server2_ssl_params =
+      *proxy_server2_http_params.ssl_params();
+  EXPECT_EQ(proxy_server2_ssl_params.host_and_port(),
+            kProxyServer2.host_port_pair());
+
+  const HttpProxySocketParams& proxy_server1_http_params =
+      *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
+  EXPECT_FALSE(proxy_server1_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer1` for `kProxyServer2`.
+  EXPECT_EQ(proxy_server1_http_params.endpoint(),
+            kProxyServer2.host_port_pair());
+
+  ASSERT_TRUE(proxy_server1_http_params.ssl_params());
+  const SSLSocketParams& proxy_server1_ssl_params =
+      *proxy_server1_http_params.ssl_params();
+  EXPECT_EQ(proxy_server1_ssl_params.host_and_port(),
+            kProxyServer1.host_port_pair());
+
+  ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
+            SSLSocketParams::DIRECT);
+  ASSERT_EQ(proxy_server2_ssl_params.GetConnectionType(),
+            SSLSocketParams::HTTP_PROXY);
+
+  const TransportSocketParams& transport_params =
+      *proxy_server1_ssl_params.GetDirectConnectionParams();
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxyServer1.host_port_pair()));
+}
+
+TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobWithoutScheme) {
+  const HostPortPair kEndpoint("test", 89);
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 443)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 443)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  SSLConfig ssl_config;
+
+  std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
+      /*using_ssl=*/false, kEndpoint, kNestedProxyChain,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*ssl_config_for_origin=*/nullptr,
+      /*base_ssl_config_for_proxies=*/&ssl_config,
+      /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
+      OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      &common_connect_job_params_, &delegate_);
+  EXPECT_EQ(GetCreationCount(), 1u);
+
+  ASSERT_THAT(http_proxy_job_factory_->params(), testing::SizeIs(1));
+  // The corresponding HttpProxySocketParams and SSLSocketParams for each hop
+  // should be present in reverse order.
+  const HttpProxySocketParams& proxy_server2_http_params =
+      *http_proxy_job_factory_->params().front();
+  EXPECT_FALSE(proxy_server2_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer2` for `kEndpoint`.
+  EXPECT_EQ(proxy_server2_http_params.endpoint(), kEndpoint);
+
+  const SSLSocketParams& proxy_server2_ssl_params =
+      *proxy_server2_http_params.ssl_params();
+  EXPECT_EQ(proxy_server2_ssl_params.host_and_port(),
+            kProxyServer2.host_port_pair());
+
+  const HttpProxySocketParams& proxy_server1_http_params =
+      *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
+  EXPECT_FALSE(proxy_server1_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer1` for `kProxyServer2`.
+  EXPECT_EQ(proxy_server1_http_params.endpoint(),
+            kProxyServer2.host_port_pair());
+
+  ASSERT_TRUE(proxy_server1_http_params.ssl_params());
+  const SSLSocketParams& proxy_server1_ssl_params =
+      *proxy_server1_http_params.ssl_params();
+  EXPECT_EQ(proxy_server1_ssl_params.host_and_port(),
+            kProxyServer1.host_port_pair());
+
+  ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
+            SSLSocketParams::DIRECT);
+  ASSERT_EQ(proxy_server2_ssl_params.GetConnectionType(),
+            SSLSocketParams::HTTP_PROXY);
+
+  ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
+            SSLSocketParams::DIRECT);
+  const TransportSocketParams& transport_params =
+      *proxy_server1_ssl_params.GetDirectConnectionParams();
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxyServer1.host_port_pair()));
+}
+
+TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
+  const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 443);
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 443)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 443)};
+
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  SSLConfig ssl_config;
+
+  std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
+      kEndpoint, kNestedProxyChain, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*ssl_config_for_origin=*/&ssl_config,
+      /*base_ssl_config_for_proxies=*/&ssl_config,
+      /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
+      OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      &common_connect_job_params_, &delegate_);
+  EXPECT_EQ(GetCreationCount(), 1u);
+
+  ASSERT_THAT(ssl_job_factory_->params(), testing::SizeIs(1));
+  const SSLSocketParams& endpoint_ssl_params =
+      *ssl_job_factory_->params().at(0);
+  // The SSLSocketParams for the destination should be configured to go through
+  // the chain of proxies, with the corresponding HttpProxySocketParams and
+  // SSLSocketParams for each hop present in reverse order.
+  const HttpProxySocketParams& proxy_server2_http_params =
+      *endpoint_ssl_params.GetHttpProxyConnectionParams();
+  EXPECT_FALSE(proxy_server2_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer2` for `kEndpoint`.
+  EXPECT_EQ(proxy_server2_http_params.endpoint(),
+            HostPortPair::FromSchemeHostPort(kEndpoint));
+
+  const SSLSocketParams& proxy_server2_ssl_params =
+      *proxy_server2_http_params.ssl_params();
+  EXPECT_EQ(proxy_server2_ssl_params.host_and_port(),
+            kProxyServer2.host_port_pair());
+
+  const HttpProxySocketParams& proxy_server1_http_params =
+      *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
+  EXPECT_FALSE(proxy_server1_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer1` for `kProxyServer2`.
+  EXPECT_EQ(proxy_server1_http_params.endpoint(),
+            kProxyServer2.host_port_pair());
+
+  ASSERT_TRUE(proxy_server1_http_params.ssl_params());
+  const SSLSocketParams& proxy_server1_ssl_params =
+      *proxy_server1_http_params.ssl_params();
+  EXPECT_EQ(proxy_server1_ssl_params.host_and_port(),
+            kProxyServer1.host_port_pair());
+
+  ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
+            SSLSocketParams::DIRECT);
+  ASSERT_EQ(proxy_server2_ssl_params.GetConnectionType(),
+            SSLSocketParams::HTTP_PROXY);
+  ASSERT_EQ(endpoint_ssl_params.GetConnectionType(),
+            SSLSocketParams::HTTP_PROXY);
+
+  const TransportSocketParams& transport_params =
+      *proxy_server1_ssl_params.GetDirectConnectionParams();
+  // We should establish a physical socket / direct connection to
+  // `kProxyServer1` (and will tunnel all subsequent traffic through
+  // that).
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxyServer1.host_port_pair()));
+}
+
+TEST_F(ConnectJobFactoryTest,
+       CreateNestedHttpsProxyConnectJobForHttpsWithoutScheme) {
+  const HostPortPair kEndpoint("test", 443);
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 443)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 443)};
+
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  SSLConfig ssl_config;
+
+  std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
+      /*using_ssl=*/true, kEndpoint, kNestedProxyChain,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*ssl_config_for_origin=*/&ssl_config,
+      /*base_ssl_config_for_proxies=*/&ssl_config,
+      /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
+      OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      &common_connect_job_params_, &delegate_);
+  EXPECT_EQ(GetCreationCount(), 1u);
+
+  ASSERT_THAT(ssl_job_factory_->params(), testing::SizeIs(1));
+  const SSLSocketParams& endpoint_ssl_params =
+      *ssl_job_factory_->params().at(0);
+  // The SSLSocketParams for the destination should be configured to go through
+  // the chain of proxies, with the corresponding HttpProxySocketParams and
+  // SSLSocketParams for each hop present in reverse order.
+  const HttpProxySocketParams& proxy_server2_http_params =
+      *endpoint_ssl_params.GetHttpProxyConnectionParams();
+  EXPECT_FALSE(proxy_server2_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer2` for `kEndpoint`.
+  EXPECT_EQ(proxy_server2_http_params.endpoint(), kEndpoint);
+
+  const SSLSocketParams& proxy_server2_ssl_params =
+      *proxy_server2_http_params.ssl_params();
+  EXPECT_EQ(proxy_server2_ssl_params.host_and_port(),
+            kProxyServer2.host_port_pair());
+
+  const HttpProxySocketParams& proxy_server1_http_params =
+      *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
+  EXPECT_FALSE(proxy_server1_http_params.proxy_server().is_quic());
+  // We should to send a CONNECT to `kProxyServer1` for `kProxyServer2`.
+  EXPECT_EQ(proxy_server1_http_params.endpoint(),
+            kProxyServer2.host_port_pair());
+
+  ASSERT_TRUE(proxy_server1_http_params.ssl_params());
+  const SSLSocketParams& proxy_server1_ssl_params =
+      *proxy_server1_http_params.ssl_params();
+  EXPECT_EQ(proxy_server1_ssl_params.host_and_port(),
+            kProxyServer1.host_port_pair());
+
+  ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
+            SSLSocketParams::DIRECT);
+  ASSERT_EQ(proxy_server2_ssl_params.GetConnectionType(),
+            SSLSocketParams::HTTP_PROXY);
+  ASSERT_EQ(endpoint_ssl_params.GetConnectionType(),
+            SSLSocketParams::HTTP_PROXY);
+
+  const TransportSocketParams& transport_params =
+      *proxy_server1_ssl_params.GetDirectConnectionParams();
+  // We should establish a physical socket / direct connection to
+  // `kProxyServer1` (and will tunnel all subsequent traffic through
+  // that).
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxyServer1.host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateSocksProxyConnectJob) {

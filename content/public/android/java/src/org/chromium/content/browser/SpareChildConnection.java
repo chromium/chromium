@@ -84,7 +84,8 @@ public class SpareChildConnection {
      * @return a connection that has been bound or is being bound if one was created with the same
      * allocator as the one provided, null otherwise.
      */
-    public ChildProcessConnection getConnection(ChildConnectionAllocator allocator,
+    public ChildProcessConnection getConnection(
+            ChildConnectionAllocator allocator,
             @NonNull final ChildProcessConnection.ServiceCallback serviceCallback) {
         assert LauncherThread.runningOnLauncherThread();
         if (isEmpty() || mConnectionAllocator != allocator || mConnectionServiceCallback != null) {
@@ -99,12 +100,13 @@ public class SpareChildConnection {
             if (serviceCallback != null) {
                 // Post a task so the callback happens after the caller has retrieved the
                 // connection.
-                LauncherThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        serviceCallback.onChildStarted();
-                    }
-                });
+                LauncherThread.post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                serviceCallback.onChildStarted();
+                            }
+                        });
             }
             clearConnection();
         }

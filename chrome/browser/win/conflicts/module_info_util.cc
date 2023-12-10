@@ -12,6 +12,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/environment.h"
 #include "base/files/file.h"
@@ -208,7 +209,7 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
 
 }  // namespace
 
-std::wstring GuidToClsid(base::WStringPiece guid) {
+std::wstring GuidToClsid(std::wstring_view guid) {
   return base::StrCat({L"CLSID\\", guid, L"\\InProcServer32"});
 }
 

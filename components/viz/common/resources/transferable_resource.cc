@@ -4,18 +4,21 @@
 
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace viz {
 
 // static
 TransferableResource TransferableResource::MakeSoftware(
     const SharedBitmapId& id,
+    const gpu::SyncToken& sync_token,
     const gfx::Size& size,
     SharedImageFormat format,
     ResourceSource source) {
   TransferableResource r;
   r.is_software = true;
   r.mailbox_holder.mailbox = id;
+  r.mailbox_holder.sync_token = sync_token;
   r.size = size;
   r.format = format;
   r.resource_source = source;
@@ -41,6 +44,19 @@ TransferableResource TransferableResource::MakeGpu(
   r.is_overlay_candidate = is_overlay_candidate;
   r.resource_source = source;
   return r;
+}
+
+TransferableResource TransferableResource::MakeGpu(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
+    uint32_t texture_target,
+    const gpu::SyncToken& sync_token,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    bool is_overlay_candidate,
+    ResourceSource source) {
+  CHECK(client_shared_image);
+  return MakeGpu(client_shared_image->mailbox(), texture_target, sync_token,
+                 size, format, is_overlay_candidate, source);
 }
 
 TransferableResource::TransferableResource() = default;

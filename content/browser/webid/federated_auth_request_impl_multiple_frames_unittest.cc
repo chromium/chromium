@@ -167,6 +167,7 @@ class TestDialogController
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
     state_->did_show_accounts_dialog = true;

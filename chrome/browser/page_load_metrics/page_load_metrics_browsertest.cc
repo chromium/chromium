@@ -58,6 +58,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -190,8 +191,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   PageLoadMetricsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ukm::kUkmFeature, blink::features::kPortals,
-         blink::features::kPortalsCrossOrigin},
+        {ukm::kUkmFeature},
         // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         {features::kHttpsUpgrades});
@@ -1015,6 +1015,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
   VerifyNavigationMetrics({final_url});
 }
 
+class PageLoadMetricsPre3pcdBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  PageLoadMetricsPre3pcdBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // TODO(crbug.com/1482170): Re-enable this test on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NoStatePrefetchMetrics DISABLED_NoStatePrefetchMetrics
@@ -1023,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
 #endif
 // Triggers nostate prefetch, and verifies that the UKM metrics related to
 // nostate prefetch are recorded correctly.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsPre3pcdBrowserTest,
                        MAYBE_NoStatePrefetchMetrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2407,8 +2418,53 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ASSERT_EQ(2, tab_strip->count());
 }
 
+enum class ReduceTransferSizeUpdatedIPCTestCase {
+  kEnabled,
+  kDisabled,
+};
+
+class PageLoadMetricsResourceLoadBrowserTest
+    : public PageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<
+          ReduceTransferSizeUpdatedIPCTestCase> {
+ public:
+  PageLoadMetricsResourceLoadBrowserTest() {
+    if (IsReduceTransferSizeUpdatedIPCEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          network::features::kReduceTransferSizeUpdatedIPC);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          network::features::kReduceTransferSizeUpdatedIPC);
+    }
+  }
+  ~PageLoadMetricsResourceLoadBrowserTest() override = default;
+
+ protected:
+  bool IsReduceTransferSizeUpdatedIPCEnabled() const {
+    return GetParam() == ReduceTransferSizeUpdatedIPCTestCase::kEnabled;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageLoadMetricsResourceLoadBrowserTest,
+    testing::ValuesIn({ReduceTransferSizeUpdatedIPCTestCase::kDisabled,
+                       ReduceTransferSizeUpdatedIPCTestCase::kEnabled}),
+    [](const testing::TestParamInfo<ReduceTransferSizeUpdatedIPCTestCase>&
+           info) {
+      switch (info.param) {
+        case ReduceTransferSizeUpdatedIPCTestCase::kEnabled:
+          return "ReduceTransferSizeUpdatedIPCEnabled";
+        case ReduceTransferSizeUpdatedIPCTestCase::kDisabled:
+          return "ReduceTransferSizeUpdatedIPCDisabled";
+      }
+    });
+
 // TODO(crbug.com/882077) Disabled due to flaky timeouts on all platforms.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        DISABLED_ReceivedAggregateResourceDataLength) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -2434,7 +2490,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        ChunkedResponse_OverheadDoesNotCountForBodyBytes) {
   const char kHttpResponseHeader[] =
       "HTTP/1.1 200 OK\r\n"
@@ -2471,7 +2527,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   EXPECT_EQ(waiter->current_network_body_bytes(), kChunkSize * kNumChunks);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
+                       ReceivedCompleteResources) {
   const char kHttpResponseHeader[] =
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/html; charset=utf-8\r\n"
@@ -2516,8 +2573,20 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
   // Data received but resource not complete
   waiter->AddMinimumCompleteResourcesExpectation(1);
   waiter->AddMinimumNetworkBytesExpectation(2000);
-  waiter->Wait();
-  script_response->Done();
+
+  if (!IsReduceTransferSizeUpdatedIPCEnabled()) {
+    // When ReduceTransferSizeUpdatedIPC is disabled, network bytes information
+    // is sent almost every time when the body data is received. So we can call
+    // Wait() before finising `script_response`,
+    waiter->Wait();
+    script_response->Done();
+  } else {
+    // But when ReduceTransferSizeUpdatedIPC is enabled, network bytes
+    // information is sent only when the resource is complete. So we need to
+    // call Wait() after finising `script_response`.
+    script_response->Done();
+    waiter->Wait();
+  }
   waiter->AddMinimumCompleteResourcesExpectation(2);
   waiter->Wait();
 
@@ -2742,9 +2811,10 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, DISABLED_SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
 
+// TODO(crbug.com/1505700): Flaky on several platforms.
 IN_PROC_BROWSER_TEST_F(
     SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
-    SoftNavigation) {
+    DISABLED_SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/true);
 }
 
@@ -3623,86 +3693,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, FirstInputDelayFromClick) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputTimestamp,
                                       1);
-}
-
-// Flaky on all platforms: https://crbug.com/1211028.
-// Tests that a portal activation records metrics.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
-  // We only record metrics for portals when the time is consistent across
-  // processes.
-  if (!base::TimeTicks::IsConsistentAcrossProcesses())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  content::WebContents* outer_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Create a portal to a.com.
-  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  static constexpr char kScript[] = R"(
-    var portal = document.createElement('portal');
-    portal.src = '%s';
-    document.body.appendChild(portal);
-  )";
-  content::WebContentsAddedObserver contents_observer;
-  content::TestNavigationObserver portal_nav_observer(a_url);
-  portal_nav_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(ExecJs(outer_contents,
-                     base::StringPrintf(kScript, a_url.spec().c_str())));
-  portal_nav_observer.WaitForNavigationFinished();
-  content::WebContents* portal_contents = contents_observer.GetWebContents();
-
-  {
-    // The portal is not activated, so no page end metrics should be recorded
-    // (although the outer contents may have recorded FCP).
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::PageLoad::kEntryName);
-    for (const auto& kv : entries) {
-      EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
-          kv.second.get(),
-          ukm::builders::PageLoad::kNavigation_PageEndReason3Name));
-    }
-  }
-
-  // Activate the portal.
-  std::string activated_listener = R"(
-    activatePromise = new Promise(resolve => {
-      window.addEventListener('portalactivate', resolve(true));
-    });
-  )";
-  EXPECT_TRUE(ExecJs(portal_contents, activated_listener));
-  EXPECT_TRUE(
-      ExecJs(outer_contents, "document.querySelector('portal').activate()"));
-
-  EXPECT_EQ(true, content::EvalJs(portal_contents, "activatePromise"));
-
-  // The activated portal contents should be the currently active contents.
-  EXPECT_EQ(portal_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_NE(portal_contents, outer_contents);
-
-  {
-    // The portal is activated, so there should be a PageLoad entry showing
-    // that the outer contents was closed.
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::PageLoad::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-    for (const auto& kv : entries) {
-      ukm::TestUkmRecorder::ExpectEntryMetric(
-          kv.second.get(),
-          ukm::builders::PageLoad::kNavigation_PageEndReason3Name,
-          PageEndReason::END_CLOSE);
-    }
-  }
-  {
-    // The portal is activated, also check the portal entry.
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::Portal_Activate::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, SameOriginNavigation) {

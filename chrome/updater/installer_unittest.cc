@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/test_scope.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -31,7 +32,7 @@ TEST(InstallerTest, Simple) {
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetAP("id", "ap");
   metadata->SetBrandCode("id", "BRND");
@@ -84,7 +85,7 @@ TEST(InstallerTest, LoadFromPath) {
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id", "pv_key");
   metadata->SetProductVersionPath("id", plist_path);
@@ -123,7 +124,7 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionPath(
       "id", base::FilePath(FILE_PATH_LITERAL("nonexistent")));
@@ -171,7 +172,7 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id", "pv_key");
   metadata->SetAP("id", "ap");

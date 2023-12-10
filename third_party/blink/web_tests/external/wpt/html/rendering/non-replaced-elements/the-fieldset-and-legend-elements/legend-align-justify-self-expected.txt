@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] <fieldset><legend>x</legend></fieldset>
 [FAIL] <fieldset><legend align="left">x</legend></fieldset>
   assert_equals: expected "left" but got "auto"
 [FAIL] <fieldset><legend align="center">x</legend></fieldset>
@@ -12,11 +11,5 @@ This is a testharness.js-based test.
   assert_equals: expected "center" but got "auto"
 [FAIL] <fieldset><legend align="rIgHt">x</legend></fieldset>
   assert_equals: expected "right" but got "auto"
-[PASS] <fieldset><legend align="justify">x</legend></fieldset>
-[PASS] <fieldset><legend align="left ">x</legend></fieldset>
-[PASS] <fieldset><legend dir="ltr">x</legend></fieldset>
-[PASS] <fieldset><legend dir="rtl">x</legend></fieldset>
-[PASS] <fieldset dir="rtl"><legend dir="ltr">x</legend></fieldset>
-[PASS] <fieldset dir="rtl"><legend dir="rtl">x</legend></fieldset>
 Harness: the test ran to completion.
 

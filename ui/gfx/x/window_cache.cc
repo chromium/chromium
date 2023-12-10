@@ -16,10 +16,9 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
@@ -79,7 +78,7 @@ WindowCache::WindowCache(Connection* connection, Window root)
   // windows.  This means we need to additionally select for StructureNotify
   // changes for the root window.
   root_events_ =
-      std::make_unique<XScopedEventSelector>(root_, EventMask::StructureNotify);
+      connection_->ScopedSelectEvent(root_, EventMask::StructureNotify);
   AddWindow(root_, Window::None);
 }
 
@@ -286,7 +285,7 @@ void WindowCache::AddWindow(Window window, Window parent) {
   info.parent = parent;
   // Events must be selected before getting the initial window info to
   // prevent race conditions.
-  info.events = std::make_unique<XScopedEventSelector>(
+  info.events = connection_->ScopedSelectEvent(
       window, EventMask::SubstructureNotify | EventMask::PropertyChange);
 
   AddRequest(connection_->GetWindowAttributes(window),

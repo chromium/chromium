@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">I-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Naka-off ang Grid</translation>
-<translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Na-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
 <translation id="1417314334557041815">I-edit ang page <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Pinoproseso ang video...</translation>
 <translation id="3789724198583203151">I-rotate nang 90 degree counterclockwise</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="4060608699153044055">Hindi ka puwedeng mag-record dahil sa mababang storage space ng device. Para magsimulang mag-record, kailangan mong magbakante ng espasyo sa iyong device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">I-pause ang pag-record</translation>
 <translation id="4121305183798804752">Na-detect ang dokumento</translation>
 <translation id="414641094616694804">Hindi puwedeng baguhin ng camera na ito ang resolution</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
-<translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
 <translation id="4349714250734879769">I-scale ang mga frame gamit ang Chrome</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
@@ -144,7 +141,6 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7726641833034062494">Mag-record ng karaniwang video</translation>
 <translation id="7748344063862150053">Kanang sulok sa itaas ng dokumento</translation>
 <translation id="7933675232020478311">Gumagalaw pakanan at pababa</translation>
-<translation id="7983668134180549431">Na-detect na text.</translation>
 <translation id="8079255378695216066">Hindi masimulan ang pag-record</translation>
 <translation id="8120146556401698679">I-pan i-tilt i-zoom</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
@@ -163,6 +159,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8870695351537079478">Hindi masimulan ang pag-record</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Mag-zoom in</translation>
+<translation id="8926890870105777777">Sumali sa Network na "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento</translation>
 <translation id="9045155556724273246">10 segundo</translation>
 <translation id="906331135292332864">Pinoproseso ang larawan...</translation>

@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -83,8 +84,8 @@ import java.util.List;
 })
 @EnableFeatures({
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
-    ChromeFeatureList.EMPTY_STATES
 })
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -207,14 +208,16 @@ public class StartSurfaceTabSwitcherTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.VISIBLE);
+        assertEquals(
+                cta.findViewById(R.id.tab_switcher_module_container).getVisibility(), View.VISIBLE);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getTabModelSelector().getModel(false).closeAllTabs();
                 });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
-        assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.GONE);
+        assertEquals(
+                cta.findViewById(R.id.tab_switcher_module_container).getVisibility(), View.GONE);
     }
 
     @Test
@@ -229,7 +232,7 @@ public class StartSurfaceTabSwitcherTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1});
+        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1});
 
         // Restart and open tab grid dialog.
         mActivityTestRule.startMainActivityFromLauncher();
@@ -242,15 +245,11 @@ public class StartSurfaceTabSwitcherTest {
                         cta.getTabModelSelector()
                                 .getTabModelFilterProvider()
                                 .getTabModelFilter(false);
-        if (mImmediateReturn) {
-            StartSurfaceTestUtils.clickFirstTabInCarousel();
-        } else {
-            onViewWaiting(
-                            allOf(
-                                    withId(R.id.toolbar_left_button),
-                                    isDescendantOfA(withId(R.id.bottom_controls))))
-                    .perform(click());
-        }
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.toolbar_left_button),
+                                isDescendantOfA(withId(R.id.bottom_controls))))
+                .perform(click());
         onViewWaiting(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
@@ -306,57 +305,6 @@ public class StartSurfaceTabSwitcherTest {
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
         assertEquals(1, filter.getTabGroupCount());
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({
-        START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/show_tabs_in_mru_order/true"
-    })
-    public void test_CarouselTabSwitcherShowTabsInMRUOrder() {
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        onViewWaiting(withId(R.id.logo));
-        Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
-
-        // Launches the first site in MV tiles.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
-        Tab tab2 = cta.getActivityTab();
-        // Verifies that the titles of the two Tabs are different.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertNotEquals(tab1.getTitle(), tab2.getTitle());
-                });
-
-        // Returns to the Start surface.
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withParent(withId(R.id.tab_switcher_module_container)),
-                        withId(R.id.tab_list_recycler_view)));
-
-        RecyclerView recyclerView =
-                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
-        CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
-        // Verifies that the tabs are shown in MRU order: the first card in the carousel Tab
-        // switcher is the last created Tab by tapping the MV tile; the second card is the Tab
-        // created or restored in setup().
-        RecyclerView.ViewHolder firstViewHolder = recyclerView.findViewHolderForAdapterPosition(0);
-        TextView title1 = firstViewHolder.itemView.findViewById(R.id.tab_title);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(tab2.getTitle(), title1.getText()));
-
-        RecyclerView.ViewHolder secondViewHolder = recyclerView.findViewHolderForAdapterPosition(1);
-        TextView title2 = secondViewHolder.itemView.findViewById(R.id.tab_title);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(tab1.getTitle(), title2.getText()));
     }
 
     @Test

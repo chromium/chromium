@@ -4,9 +4,12 @@
 
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
+#include <optional>
+#include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "dbus/message.h"
@@ -104,6 +107,18 @@ class FwupdClientTest : public testing::Test {
   int GetDeviceSignalCallCount() {
     return fwupd_client_->device_signal_call_count_for_testing_;
   }
+
+  void DisableFeatureFlag(const base::Feature& feature) {
+    scoped_feature_list_.InitAndDisableFeature(feature);
+  }
+
+  void EnableFeatureFlag(const base::Feature& feature) {
+    scoped_feature_list_.InitAndEnableFeature(feature);
+  }
+
+  // This helper method is used to invoke the protected method
+  // SetFwupdFeatureFlags() from this friend class.
+  void CallSetFwupdFeatureFlags() { fwupd_client_->SetFwupdFeatureFlags(); }
 
   void OnMethodCalled(dbus::MethodCall* method_call,
                       int timeout_ms,
@@ -315,6 +330,8 @@ class FwupdClientTest : public testing::Test {
   std::string expected_checksum_;
   std::string expected_description_;
   int expected_priority_ = kFakeUpdatePriorityForTesting;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
@@ -672,6 +689,51 @@ TEST_F(FwupdClientTest, NoDescription) {
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagDisabled) {
+  // Fwupd feature flags should not be set if the v2 flag is disabled.
+  // To test this, verify that no D-Bus method calls are made.
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _)).Times(0);
+  DisableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
+  CallSetFwupdFeatureFlags();
+}
+
+TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
+  // Expect that the D-Bus method "SetFeatureFlags" is called when the Firmware
+  // Updates v2 flag is enabled.
+
+  // Helper function to get the int64 args passed to the given method_call.
+  auto GetInt64ArgumentOfMethod =
+      [](dbus::MethodCall* method_call) -> std::optional<int64_t> {
+    dbus::MessageReader reader(method_call);
+    if (!reader.HasMoreData()) {
+      return std::nullopt;
+    }
+    int64_t feature_flag_arguments;
+    if (!reader.PopInt64(&feature_flag_arguments)) {
+      return std::nullopt;
+    }
+    return feature_flag_arguments;
+  };
+
+  const uint64_t kRequestsFeatureFlag = 1llu << 4;
+
+  EXPECT_CALL(
+      *proxy_,
+      DoCallMethodWithErrorResponse(
+          testing::AllOf(
+              testing::ResultOf("method name",
+                                std::mem_fn(&dbus::MethodCall::GetMember),
+                                testing::StrEq("SetFeatureFlags")),
+              testing::ResultOf("feature flag passed to the method call",
+                                GetInt64ArgumentOfMethod,
+                                testing::Eq(kRequestsFeatureFlag))),
+          _, _))
+      .Times(1);
+
+  EnableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
+  CallSetFwupdFeatureFlags();
 }
 
 }  // namespace ash

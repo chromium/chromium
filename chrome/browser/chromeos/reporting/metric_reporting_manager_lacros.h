@@ -126,7 +126,7 @@ class MetricReportingManagerLacros : public KeyedService,
       event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<MetricReportQueue> event_report_queue_
+  std::unique_ptr<MetricReportQueue> website_event_report_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Website usage observer used to observe and collect website usage reports

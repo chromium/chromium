@@ -53,15 +53,8 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
 
   // Returns a name of a refresh metric associated with the given scope.
   static const char* GetPolicyRefreshMetricName(PolicyInvalidationScope scope);
-  // Returns a name of a FCM refresh metric associated with the given scope.
-  static const char* GetPolicyRefreshFcmMetricName(
-      PolicyInvalidationScope scope);
   // Returns a name of an invalidation metric associated with the given scope.
   static const char* GetPolicyInvalidationMetricName(
-      PolicyInvalidationScope scope);
-  // Returns a name of an FCM invalidation metric associated with the given
-  // scope.
-  static const char* GetPolicyInvalidationFcmMetricName(
       PolicyInvalidationScope scope);
 
   // |scope| indicates the invalidation scope that this invalidator

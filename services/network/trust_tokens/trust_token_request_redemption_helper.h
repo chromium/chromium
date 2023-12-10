@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
@@ -92,7 +92,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     // The Trust Tokens design doc is currently the normative source for the
     // RR's format.
     virtual absl::optional<std::string> ConfirmRedemption(
-        base::StringPiece response_header) = 0;
+        std::string_view response_header) = 0;
   };
 
   // Creates a new redemption helper.

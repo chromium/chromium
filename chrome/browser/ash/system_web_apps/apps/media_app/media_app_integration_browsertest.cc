@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
 // Ensures the autoplay on audio file launch updates the global media controls
 // with an appropriate media source name.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaControls) {
-  using absl::optional;
+  using std::optional;
   class MediaControlsObserver
       : public media_session::mojom::MediaControllerObserver {
    public:

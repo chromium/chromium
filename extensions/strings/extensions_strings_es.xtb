@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">¡Vaya! Se ha producido un error al generar una clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está ralentizando <ph name="PRODUCT_NAME" />. Deberías inhabilitarla para restaurar el rendimiento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">No se admite WebGL.</translation>
+<translation id="1610570795592207282">No se ha podido cargar CSS (<ph name="RELATIVE_PATH" />) para la secuencia de comandos.</translation>
 <translation id="1803557475693955505">No se ha podido cargar la página de fondo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">No se ha podido decodificar la imagen <ph name="IMAGE_NAME" />.</translation>
 <translation id="2350172092385603347">Se ha utilizado la localización, pero no se ha especificado default_locale en el archivo de manifiesto.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No se ha podido reemplazar el archivo .crx. Comprueba si se está utilizando el archivo.</translation>
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
-<translation id="3302709122321372472">No se ha podido cargar el archivo CSS "<ph name="RELATIVE_PATH" />" para el script de contenido.</translation>
 <translation id="3369521687965833290">No se puede descomprimir la extensión. Para descomprimir de forma segura una extensión, debe existir una ruta al directorio de tu perfil que comience con una letra de unidad y que no incluya ninguna unión, ningún punto de montaje ni ningún enlace simbólico. No existe ninguna ruta de este tipo para tu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor de entrada de la clave privada debe ser una ruta válida.</translation>
 <translation id="388442998277590542">No se ha podido cargar la página de opciones "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Se ha producido un error al firmar la extensión.</translation>
-<translation id="39964277676607559">No se ha podido cargar la ruta "<ph name="RELATIVE_PATH" />" de JavaScript para el script de contenido.</translation>
 <translation id="4115165561519362854">El administrador de este equipo requiere que <ph name="EXTENSION_NAME" /> tenga como mínimo la versión <ph name="EXTENSION_VERSION" />. No se puede habilitar hasta que se haya actualizado a esa versión (o superior).</translation>
 <translation id="4233778200880751280">No se ha podido cargar la página de información (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="471800408830181311">Se ha producido un error al generar la clave privada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Se ha producido un error al exportar la clave pública.</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">No se puede encontrar la ruta absoluta hasta el directorio donde está la extensión</translation>
+<translation id="5160071981665899014">No se ha podido cargar JavaScript (<ph name="RELATIVE_PATH" />) para la secuencia de comandos.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">No se admiten las ventanas con formas.</translation>
 <translation id="5456409301717116725">Esta extensión incluye el archivo de clave "<ph name="KEY_PATH" />". Probablemente no quieras incluir este archivo.</translation>

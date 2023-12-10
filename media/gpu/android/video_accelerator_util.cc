@@ -57,7 +57,10 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
           Java_SupportedProfileAdapter_getName(env, java_profile));
       cpp_infos.push_back(info);
     }
-    std::sort(
+
+    // Use a stable sort since codec information is returned in a rank order
+    // specified by the OEM.
+    std::stable_sort(
         cpp_infos.begin(), cpp_infos.end(),
         [](const MediaCodecEncoderInfo& a, const MediaCodecEncoderInfo& b) {
           return a.profile.profile < b.profile.profile;
@@ -111,7 +114,10 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
           Java_SupportedProfileAdapter_getName(env, java_profile));
       cpp_infos.push_back(info);
     }
-    std::sort(
+
+    // Use a stable sort since codec information is returned in a rank order
+    // specified by the OEM.
+    std::stable_sort(
         cpp_infos.begin(), cpp_infos.end(),
         [](const MediaCodecDecoderInfo& a, const MediaCodecDecoderInfo& b) {
           return a.profile < b.profile;

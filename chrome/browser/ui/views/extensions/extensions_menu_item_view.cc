@@ -312,7 +312,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
               // Site permissions button.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
-                      site_permissions_button_callback,
+                      std::move(site_permissions_button_callback),
                       is_enterprise
                           ? std::make_unique<views::ImageView>(
                                 ui::ImageModel::FromVectorIcon(

@@ -188,6 +188,7 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     const GURL& script_source_url,
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
+    const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     bool has_experiment_group_id,
@@ -197,7 +198,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
       std::move(shared_storage_host_remote), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), script_source_url,
-      wasm_helper_url, trusted_bidding_signals_url, top_window_origin,
+      wasm_helper_url, trusted_bidding_signals_url,
+      trusted_bidding_signals_slot_size_param, top_window_origin,
       std::move(permissions_policy_state),
       has_experiment_group_id ? absl::make_optional(experiment_group_id)
                               : absl::nullopt);

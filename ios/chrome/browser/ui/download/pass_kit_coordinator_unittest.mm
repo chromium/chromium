@@ -16,7 +16,7 @@
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

@@ -73,6 +73,9 @@ class MetricsProvider {
   // further notification after this callback.
   virtual void OnAppEnterBackground();
 
+  // Called when a document first starts loading.
+  virtual void OnPageLoadStarted();
+
   // Returns whether there are "independent" metrics that can be retrieved
   // with a call to ProvideIndependentMetrics().
   virtual bool HasIndependentMetrics();

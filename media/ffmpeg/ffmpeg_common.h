@@ -31,6 +31,9 @@ extern "C" {
 #include <libavformat/avio.h>
 #include <libavutil/avutil.h>
 #include <libavutil/channel_layout.h>
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+#include <libavutil/dovi_meta.h>
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 #include <libavutil/imgutils.h>
 #include <libavutil/log.h>
 #include <libavutil/mastering_display_metadata.h>

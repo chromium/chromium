@@ -290,10 +290,12 @@ void FakeAppInstance::SendInstallationStarted(const std::string& package_name) {
 }
 
 void FakeAppInstance::SendInstallationFinished(const std::string& package_name,
-                                               bool success) {
+                                               bool success,
+                                               bool is_launchable_app) {
   mojom::InstallationResult result;
   result.package_name = package_name;
   result.success = success;
+  result.is_launchable_app = is_launchable_app;
   app_host_->OnInstallationFinished(
       mojom::InstallationResultPtr(result.Clone()));
 }
@@ -479,6 +481,11 @@ void FakeAppInstance::GetAppCategory(const std::string& package_name,
 
   if (itr != pkg_name_to_app_category_.end()) category = itr->second;
   std::move(callback).Run(category);
+}
+
+void FakeAppInstance::SetAppLocale(const std::string& package_name,
+                                   const std::string& locale_tag) {
+  selected_locales_[package_name] = locale_tag;
 }
 
 void FakeAppInstance::LaunchIntentWithWindowInfo(

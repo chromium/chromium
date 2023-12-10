@@ -14,10 +14,12 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -162,19 +164,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
-                 attribution_reporting::TriggerConfig> {
-  static attribution_reporting::mojom::TriggerDataMatching
-  trigger_data_matching(const attribution_reporting::TriggerConfig& config) {
-    return config.trigger_data_matching();
-  }
-
-  static bool Read(attribution_reporting::mojom::TriggerConfigDataView data,
-                   attribution_reporting::TriggerConfig* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
   static const attribution_reporting::DestinationSet& destinations(
@@ -232,9 +221,15 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.debug_reporting;
   }
 
-  static const attribution_reporting::TriggerConfig& trigger_config(
+  static attribution_reporting::mojom::TriggerDataMatching
+  trigger_data_matching(
       const attribution_reporting::SourceRegistration& source) {
-    return source.trigger_config;
+    return source.trigger_data_matching;
+  }
+
+  static double event_level_epsilon(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.event_level_epsilon;
   }
 
   static bool Read(
@@ -361,7 +356,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static attribution_reporting::mojom::SourceRegistrationTimeConfig
   source_registration_time_config(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.source_registration_time_config;
+    return trigger.aggregatable_trigger_config
+        .source_registration_time_config();
+  }
+
+  static const absl::optional<std::string>& trigger_context_id(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_trigger_config.trigger_context_id();
   }
 
   static bool Read(

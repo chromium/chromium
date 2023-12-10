@@ -107,7 +107,7 @@ body > header {
 
 #more-actions-list button:hover,
 #more-actions-list a:hover {
-  background-color: var(--table-row-hover);
+  background-color: var(--element-hover);
 }
 
 .more-actions-visibility {
@@ -138,6 +138,14 @@ body > header {
   outline-width: 0;
   padding: 8px 16px;
   user-select: none;
+}
+
+.action-row-button:hover {
+  filter: brightness(var(--action-row-button-hover-brightness));
+}
+
+.action-row-button:active {
+  filter: brightness(var(--action-row-button-active-brightness));
 }
 
 #topbar {

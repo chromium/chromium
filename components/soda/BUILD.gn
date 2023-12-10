@@ -57,9 +57,10 @@ source_set("constants") {
 
   deps = [
     "//base",
-    "//components/component_updater",
+    "//components/component_updater:component_updater_paths",
     "//components/crx_file",
     "//components/strings/",
+    "//media",
     "//ui/base",
   ]
 }

@@ -39,8 +39,10 @@ public class ChromeLauncherActivity extends Activity {
                 this.finishAndRemoveTask();
                 break;
             default:
-                assert false : "Intent dispatcher finished with action " + dispatchAction
-                               + ", finishing anyway";
+                assert false
+                        : "Intent dispatcher finished with action "
+                                + dispatchAction
+                                + ", finishing anyway";
                 finish();
                 break;
         }

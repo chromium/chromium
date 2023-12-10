@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLHeadingElement04
-Status	failure
-Message	alignLink: assertEquals failed, actual right, expected justify.

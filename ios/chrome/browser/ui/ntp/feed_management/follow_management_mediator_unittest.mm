@@ -6,7 +6,7 @@
 
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

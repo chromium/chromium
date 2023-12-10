@@ -30,11 +30,9 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/**
- * Dialog to ask the user select what type of password to use for encryption.
- */
-public class PassphraseTypeDialogFragment
-        extends DialogFragment implements DialogInterface.OnClickListener {
+/** Dialog to ask the user select what type of password to use for encryption. */
+public class PassphraseTypeDialogFragment extends DialogFragment
+        implements DialogInterface.OnClickListener {
     public interface Listener {
         /**
          * Called when the user doesn't have a custom passphrase and taps the option to set up one.
@@ -44,9 +42,7 @@ public class PassphraseTypeDialogFragment
         void onChooseCustomPassphraseRequested();
     }
 
-    /**
-     * This argument should contain a single value of type {@link PassphraseType}.
-     */
+    /** This argument should contain a single value of type {@link PassphraseType}. */
     private static final String ARG_CURRENT_TYPE = "arg_current_type";
 
     private static final String ARG_IS_CUSTOM_PASSPHRASE_ALLOWED =
@@ -102,17 +98,22 @@ public class PassphraseTypeDialogFragment
     private SpannableString getResetSyncText() {
         return SpanApplier.applySpans(
                 getString(R.string.sync_passphrase_encryption_reset_instructions),
-                new SpanInfo("<resetlink>", "</resetlink>", new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        Uri syncDashboardUrl = Uri.parse(ChromeStringConstants.SYNC_DASHBOARD_URL);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, syncDashboardUrl);
-                        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-                        IntentUtils.safePutBinderExtra(
-                                intent, CustomTabsIntent.EXTRA_SESSION, null);
-                        getActivity().startActivity(intent);
-                    }
-                }));
+                new SpanInfo(
+                        "<resetlink>",
+                        "</resetlink>",
+                        new ClickableSpan() {
+                            @Override
+                            public void onClick(View view) {
+                                Uri syncDashboardUrl =
+                                        Uri.parse(ChromeStringConstants.SYNC_DASHBOARD_URL);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, syncDashboardUrl);
+                                intent.setPackage(
+                                        ContextUtils.getApplicationContext().getPackageName());
+                                IntentUtils.safePutBinderExtra(
+                                        intent, CustomTabsIntent.EXTRA_SESSION, null);
+                                getActivity().startActivity(intent);
+                            }
+                        }));
     }
 
     @Override

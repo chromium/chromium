@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
 
   if (test_description.outcome == Outcome::kFailure) {
     // Use EvalJs here to wait for promises to resolve.
-    EXPECT_FALSE(EvalJs(shell(), command).error.empty());
+    EXPECT_THAT(EvalJs(shell(), command), EvalJsResult::IsError());
     return;
   }
 

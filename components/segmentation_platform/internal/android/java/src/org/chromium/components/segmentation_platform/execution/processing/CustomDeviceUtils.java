@@ -11,9 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 
-/**
- * Implements methods to get device info.
- */
+/** Implements methods to get device info. */
 @JNINamespace("segmentation_platform")
 public class CustomDeviceUtils {
     /**

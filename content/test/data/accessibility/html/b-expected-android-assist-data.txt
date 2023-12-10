@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"Some " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"bold" textSize:16.00 style:1 bundle:[display="", htmlTag=""]
+++++TextView text:" text" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

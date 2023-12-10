@@ -54,7 +54,7 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
     const JavaParamRef<jstring>& jscript,
     const JavaParamRef<jobject>& jcallback,
     jboolean with_user_gesture) {
-  std::u16string script(ConvertJavaStringToUTF16(env, jscript));
+  std::u16string script(base::android::ConvertJavaStringToUTF16(env, jscript));
   auto callback = base::BindOnce(
       &OnExecuteJavaScriptResult,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));

@@ -20,7 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -585,6 +585,8 @@ void UpdateKeyboardSettingsImpl(
       devices_dict.FindDict(keyboard.device_key);
   base::Value::Dict settings_dict = ConvertSettingsToDict(
       keyboard, keyboard_policies, force_persistence, existing_settings_dict);
+  const base::Time time_stamp = base::Time::Now();
+  settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
 
   if (existing_settings_dict) {
     // Merge all settings except modifier remappings. Modifier remappings need
@@ -784,7 +786,7 @@ void KeyboardPrefHandlerImpl::UpdateLoginScreenKeyboardSettings(
       GetLoginScreenSettingsDict(local_state, account_id, pref_name);
   user_manager::KnownUser(local_state)
       .SetPath(account_id, pref_name,
-               absl::make_optional<base::Value>(ConvertSettingsToDict(
+               std::make_optional<base::Value>(ConvertSettingsToDict(
                    keyboard, keyboard_policies, /*force_persistence=*/{},
                    settings_dict)));
 }

@@ -6,7 +6,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wm/test_activation_delegate.h"
+#include "ash/wm/test/test_activation_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client_observer.h"

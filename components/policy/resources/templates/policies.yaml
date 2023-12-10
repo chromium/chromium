@@ -1082,11 +1082,11 @@ policies:
   1081: DeviceSystemAecEnabled
   1082: HttpAllowlist
   1083: HttpsUpgradesEnabled
-  1084: RealTimeDownloadProtectionRequestAllowed
+  1084: ''
   1085: MandatoryExtensionsForIncognitoNavigation
   1086: CredentialProviderPromoEnabled
   1087: RemoteAccessHostAllowEnterpriseRemoteSupportConnections
-  1088: ClientSidePhishingProtectionAllowed
+  1088: ''
   1089: UserAvatarCustomizationSelectorsEnabled
   1090: DefaultThirdPartyStoragePartitioningSetting
   1091: ThirdPartyStoragePartitioningBlockedForOrigins
@@ -1182,6 +1182,12 @@ policies:
   1181: NativeHostsExecutablesLaunchDirectly
   1182: FeedbackSurveysEnabled
   1183: DeskAPIDeskSaveAndShareEnabled
+  1184: OopPrintDriversAllowed
+  1185: DeviceHardwareVideoDecodingEnabled
+  1186: TabOrganizationAllowed
+  1187: ComposeAllowed
+  1188: WallpaperSearchAllowed
+  1189: ListenToThisPageEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

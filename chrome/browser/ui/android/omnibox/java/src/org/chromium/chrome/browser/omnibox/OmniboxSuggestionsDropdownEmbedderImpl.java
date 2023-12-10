@@ -41,6 +41,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final @NonNull WindowDelegate mWindowDelegate;
     private final @NonNull View mAnchorView;
     private final @NonNull View mHorizontalAlignmentView;
+    private final boolean mForcePhoneStyleOmnibox;
     private final @NonNull Context mContext;
     // Reusable int array to pass to positioning methods that operate on a two element int array.
     // Keeping it as a member lets us avoid allocating a temp array every time.
@@ -64,11 +65,13 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             @NonNull WindowAndroid windowAndroid,
             @NonNull WindowDelegate windowDelegate,
             @NonNull View anchorView,
-            @NonNull View horizontalAlignmentView) {
+            @NonNull View horizontalAlignmentView,
+            boolean forcePhoneStyleOmnibox) {
         mWindowAndroid = windowAndroid;
         mWindowDelegate = windowDelegate;
         mAnchorView = anchorView;
         mHorizontalAlignmentView = horizontalAlignmentView;
+        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         mContext = mAnchorView.getContext();
         mContext.registerComponentCallbacks(this);
         Configuration configuration = mContext.getResources().getConfiguration();
@@ -95,6 +98,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
     @Override
     public boolean isTablet() {
+        if (mForcePhoneStyleOmnibox) return false;
         return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
                 && DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
     }
@@ -211,7 +215,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                         mContext.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.omnibox_suggestion_list_toolbar_overlap);
-                int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContext);
+                int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
                 width = mHorizontalAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
                 if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {

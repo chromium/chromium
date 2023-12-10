@@ -87,6 +87,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="4195557071150719219">Voir les onglets récents de Chromium</translation>
 <translation id="4408912345039114853">Effectuer le contrôle de sécurité de Chromium</translation>
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
+<translation id="4498832288620833153">Ajoute les URL saisies à votre liste de lecture dans Chromium.</translation>
 <translation id="452436063477828504">Assurez-vous de toujours pouvoir utiliser les données Chromium de votre compte Google</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Ouvre la page des paramètres des modes de paiement dans Chromium.</translation>
@@ -107,6 +108,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applis, utilisez Chromium pour la saisie automatique</translation>
 <translation id="5076601183701536878">Effacer les données de navigation dans Chromium</translation>
 <translation id="5131565040785979529">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chromium est utilisé.</translation>
+<translation id="5146749061471423558">Ajouter des favoris dans Chromium</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5213683223491576284">Ouvre le Gestionnaire de mots de passe dans Chromium.</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
@@ -114,6 +116,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 
         Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="5308226104666789935">Chromium ne parvient pas à rechercher les mises à jour</translation>
+<translation id="5311557153294205270">Ajoute les URL saisies à vos favoris dans Chromium.</translation>
 <translation id="5396916991083608703">Utiliser Chromium par défaut ?</translation>
 <translation id="5453478652154926037">Chromium ne peut pas vérifier vos mots de passe.</translation>
 <translation id="5521125884468363740">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
@@ -164,7 +167,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="6911341667534646387">Continuez d'utiliser les données Chromium de votre compte Google</translation>
 <translation id="7006920032187763988">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe dans d'autres applis sur votre iPad.</translation>
 <translation id="7018284295775193585">Impossible de mettre à jour Chromium</translation>
-<translation id="7025471822960602362">Suivre les colis détectés dans Chromium</translation>
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="7055269218854630176">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chromium peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue fractionnée.</translation>
@@ -194,6 +196,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="7928628054454574139">Chromium s'ouvrira chaque fois que vous appuierez sur des liens dans d'autres applis</translation>
 <translation id="7931842119211730154">Verrouiller les onglets de navigation privée lorsque vous fermez Chromium</translation>
 <translation id="7934404985878918282">Afficher la liste de lecture Chromium</translation>
+<translation id="7971753607796745700">Ajouter un élément de liste de lecture à Chromium</translation>
 <translation id="7980860476903281594">Chromium partage votre position avec les sites que vous autorisez.</translation>
 <translation id="7995166854192397899">Les suggestions sont basées sur votre activité de navigation sur vos autres appareils. Pour les obtenir, connectez-vous à Chromium sur tous vos appareils.</translation>
 <translation id="800195749539500647">Exploitez tout le potentiel de Chromium</translation>

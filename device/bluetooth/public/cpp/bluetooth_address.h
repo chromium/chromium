@@ -9,9 +9,9 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
 
 namespace device {
 
@@ -21,11 +21,11 @@ namespace device {
 //   1A:2B:3C:4D:5E:6F
 //   1A-2B-3C-4D-5E-6F
 //   1A2B3C4D5E6F
-bool ParseBluetoothAddress(base::StringPiece input, base::span<uint8_t> output);
+bool ParseBluetoothAddress(std::string_view input, base::span<uint8_t> output);
 
 // Returns |address| in the canonical format: XX:XX:XX:XX:XX:XX, where each 'X'
 // is a hex digit.  If the input |address| is invalid, returns an empty string.
-std::string CanonicalizeBluetoothAddress(base::StringPiece address);
+std::string CanonicalizeBluetoothAddress(std::string_view address);
 std::string CanonicalizeBluetoothAddress(
     const std::array<uint8_t, 6>& address_bytes);
 

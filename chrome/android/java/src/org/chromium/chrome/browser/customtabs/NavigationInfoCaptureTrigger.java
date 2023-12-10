@@ -68,7 +68,7 @@ public class NavigationInfoCaptureTrigger {
     }
 
     private void clearPendingRunnables() {
-        for (Runnable pendingRunnable: mPendingRunnables) {
+        for (Runnable pendingRunnable : mPendingRunnables) {
             mUiThreadHandler.removeCallbacks(pendingRunnable);
         }
         mPendingRunnables.clear();

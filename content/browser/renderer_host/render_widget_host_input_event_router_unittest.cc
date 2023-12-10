@@ -1552,6 +1552,7 @@ TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
   // Reset's the hit test result on the root so that we don't crash on
   // destruction.
   rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  view_root_->GetCursorManager()->ViewBeingDestroyed(child.view.get());
 }
 
 #endif  // defined(USE_AURA)

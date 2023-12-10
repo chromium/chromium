@@ -12,9 +12,12 @@
 #import "base/system/sys_info.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/policy/core/common/async_policy_provider.h"
+#import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/core/common/cloud/device_management_service.h"
+#import "components/policy/core/common/cloud/dm_token.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/configuration_policy_provider.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
@@ -50,6 +53,19 @@ ConfigurationPolicyProvider* BrowserPolicyConnectorIOS::GetPlatformProvider() {
   ConfigurationPolicyProvider* provider =
       BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
   return provider ? provider : platform_provider_;
+}
+
+base::flat_set<std::string>
+BrowserPolicyConnectorIOS::GetDeviceAffiliationIds() {
+  if (!machine_level_user_cloud_policy_manager_ ||
+      !policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid()) {
+    return {};
+  }
+
+  const auto* core = machine_level_user_cloud_policy_manager_->core();
+  CHECK(core);
+
+  return policy::GetAffiliationIdsFromCore(*core, /*for_device=*/true);
 }
 
 void BrowserPolicyConnectorIOS::MaybeApplyLocalTestPolicies(

@@ -150,6 +150,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/generic_script_runner",
+)
+
+build_recipe(
     name = "recipe:chromium/orchestrator",
     bootstrappable = True,
 )
@@ -186,6 +190,10 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium/fuzz",
+)
+
+build_recipe(
+    name = "recipe:chromium/mega_cq_launcher",
 )
 
 build_recipe(

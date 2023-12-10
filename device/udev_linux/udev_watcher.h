@@ -7,13 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevWatcher {
   // udev_monitor_filter_add_match_subsystem_devtype().
   class Filter {
    public:
-    Filter(base::StringPiece subsystem_in, base::StringPiece devtype_in);
+    Filter(std::string_view subsystem_in, std::string_view devtype_in);
     Filter(const Filter&);
     ~Filter();
 

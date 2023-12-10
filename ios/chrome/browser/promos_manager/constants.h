@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_CONSTANTS_H_
 
+#include <optional>
+
 #include "base/strings/string_piece.h"
 #import "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace promos_manager {
 
@@ -34,13 +35,15 @@ enum class Promo {
       4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
   PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
   WhatsNew = 6,                // What's New Promo
-  Choice = 7,                  // Offer a choice
   PostRestoreDefaultBrowserAlert =
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
-  kMaxValue = DefaultBrowserRemindMeLater,
+  OmniboxPosition = 10,             // Choose between top and bottom omnibox.
+  kMaxValue = OmniboxPosition,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/constants.cc)
+// Also update IOSPromosManagerPromo in
+// (/tools/metrics/histograms/metadata/ios/enums.xml).
 
 // Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -83,9 +86,9 @@ std::string NameForPromo(Promo promo);
 base::StringPiece ShortNameForPromo(Promo promo);
 
 // Returns promos_manager::Promo for string `promo`.
-absl::optional<Promo> PromoForName(base::StringPiece promo);
+std::optional<Promo> PromoForName(base::StringPiece promo);
 
-absl::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
+std::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
 
 }  // namespace promos_manager
 

@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
@@ -36,17 +38,26 @@ CredentialModelTypeController::CredentialModelTypeController(
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
+#if BUILDFLAG(IS_ANDROID)
+      local_upm_pref_(type() == syncer::PASSWORDS
+                          ? std::make_unique<IntegerPrefMember>()
+                          : nullptr),
+#endif
       identity_manager_(identity_manager),
-      sync_service_(sync_service),
-      account_storage_settings_watcher_(
-          pref_service_,
-          sync_service_,
-          base::BindRepeating(
-              &CredentialModelTypeController::OnOptInStateMaybeChanged,
-              base::Unretained(this))) {
+      sync_service_(sync_service) {
   CHECK(model_type == syncer::PASSWORDS ||
         model_type == syncer::WEBAUTHN_CREDENTIAL);
   identity_manager_observation_.Observe(identity_manager_);
+#if BUILDFLAG(IS_ANDROID)
+  if (local_upm_pref_) {
+    // Unretained() is safe because this object outlives `local_upm_pref_`.
+    local_upm_pref_->Init(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores, pref_service_,
+        base::BindRepeating(
+            &CredentialModelTypeController::OnLocalUpmPrefChanged,
+            base::Unretained(this)));
+  }
+#endif
 }
 
 CredentialModelTypeController::~CredentialModelTypeController() = default;
@@ -55,39 +66,43 @@ void CredentialModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
-  sync_service_observation_.Observe(sync_service_);
-  ModelTypeController::LoadModels(configure_context, model_load_callback);
+  syncer::ConfigureContext overridden_context = configure_context;
+#if BUILDFLAG(IS_ANDROID)
+  if (local_upm_pref_) {
+    switch (GetLocalUpmPrefValue()) {
+      case prefs::UseUpmLocalAndSeparateStoresState::kOff:
+        break;
+      case prefs::UseUpmLocalAndSeparateStoresState::kOn:
+        overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
+        break;
+      case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
+        // Disallowed by GetPreconditionState().
+        NOTREACHED_NORETURN();
+    }
+  }
+#endif
+  ModelTypeController::LoadModels(overridden_context, model_load_callback);
 }
 
 void CredentialModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                          StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  sync_service_observation_.Reset();
   ModelTypeController::Stop(fate, std::move(callback));
 }
 
 syncer::DataTypeController::PreconditionState
 CredentialModelTypeController::GetPreconditionState() const {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // If Sync-the-feature is enabled, then the user has opted in to that, and no
-  // additional opt-in is required here.
-  // TODO(crbug.com/1466447): IsSyncFeatureEnabled() is deprecated and should be
-  // removed. See ConsentLevel::kSync documentation for details.
-  if (sync_service_->IsSyncFeatureEnabled() ||
-      sync_service_->IsLocalSyncEnabled()) {
-    return PreconditionState::kPreconditionsMet;
-  }
-  // If Sync-the-feature is *not* enabled, then credential sync should only be
-  // turned on if the user has opted in to the account-scoped storage.
-  return features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
+#if BUILDFLAG(IS_ANDROID)
+  // If the local UPM migration is pending, wait until it succeeds/fails, so
+  // LoadModels() knows whether to override SyncMode to kTransportOnly or not.
+  return local_upm_pref_ && GetLocalUpmPrefValue() ==
+                                prefs::UseUpmLocalAndSeparateStoresState::
+                                    kOffAndMigrationPending
+             ? PreconditionState::kMustStopAndKeepData
+             : PreconditionState::kPreconditionsMet;
 #else
-  // On Android and iOS, there is no explicit opt-in - instead the user's choice
-  // is handled via Sync's selected types (see `UserSelectableType`). So nothing
-  // to check here.
   return PreconditionState::kPreconditionsMet;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#endif
 }
 
 bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
@@ -99,11 +114,6 @@ bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
   }
 #endif  // !BUILDFLAG(IS_IOS)
   return true;
-}
-
-void CredentialModelTypeController::OnStateChanged(syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
 }
 
 void CredentialModelTypeController::OnAccountsInCookieUpdated(
@@ -133,33 +143,29 @@ void CredentialModelTypeController::OnAccountsInCookieUpdated(
 
 void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  features_util::ClearAccountStorageSettingsForAllUsers(pref_service_);
+  features_util::KeepAccountStorageSettingsOnlyForUsers(pref_service_, {});
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-void CredentialModelTypeController::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1466447): ConsentLevel::kSync is deprecated and should be
-  // removed. See ConsentLevel::kSync documentation for details.
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    // Note: kCleared event for ConsentLevel::kSync basically means that the
-    // consent for Sync-the-feature was revoked. In this case, also clear any
-    // possible matching opt-in for the account-scoped storage, since it'd
-    // probably be surprising to the user if their account passwords still
-    // remained after disabling Sync.
-    features_util::OptOutOfAccountStorageAndClearSettingsForAccount(
-        pref_service_, event.GetPreviousState().primary_account.gaia);
+#if BUILDFLAG(IS_ANDROID)
+prefs::UseUpmLocalAndSeparateStoresState
+CredentialModelTypeController::GetLocalUpmPrefValue() const {
+  CHECK(local_upm_pref_);
+  auto value = static_cast<prefs::UseUpmLocalAndSeparateStoresState>(
+      local_upm_pref_->GetValue());
+  switch (value) {
+    case prefs::UseUpmLocalAndSeparateStoresState::kOff:
+    case prefs::UseUpmLocalAndSeparateStoresState::kOn:
+    case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
+      return value;
   }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  NOTREACHED_NORETURN();
 }
 
-void CredentialModelTypeController::OnOptInStateMaybeChanged() {
-  // Note: This method gets called in many other situations as well, not just
-  // when the opt-in state changes, but DataTypePreconditionChanged() is cheap
-  // if nothing actually changed, so some spurious calls don't hurt.
+void CredentialModelTypeController::OnLocalUpmPrefChanged() {
+  // No-ops are fine.
   sync_service_->DataTypePreconditionChanged(type());
 }
+#endif
 
 }  // namespace password_manager

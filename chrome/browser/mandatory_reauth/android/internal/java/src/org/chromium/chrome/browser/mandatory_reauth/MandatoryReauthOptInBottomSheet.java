@@ -22,8 +22,9 @@ class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
     private final View mView;
 
     MandatoryReauthOptInBottomSheet(Context context, Callback<Integer> interactionHandler) {
-        mView = LayoutInflater.from(context).inflate(
-                R.layout.mandatory_reauth_opt_in_bottom_sheet, null);
+        mView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.mandatory_reauth_opt_in_bottom_sheet, null);
 
         Button acceptButton = mView.findViewById(R.id.mandatory_reauth_opt_in_accept_button);
         acceptButton.setOnClickListener(

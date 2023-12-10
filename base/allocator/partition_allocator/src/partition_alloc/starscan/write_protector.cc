@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/write_protector.h"
+#include "partition_alloc/starscan/write_protector.h"
 
 #include <mutex>
 #include <thread>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
+#include "partition_alloc/partition_alloc_check.h"
 
 #if PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 #include <fcntl.h>
@@ -42,7 +42,11 @@ void UserFaultFDThread(int uffd) {
 
   while (true) {
     // Pool on the uffd descriptor for page fault events.
-    pollfd pollfd{.fd = uffd, .events = POLLIN};
+    pollfd pollfd{
+        .fd = uffd,
+        .events = POLLIN,
+        .revents = 0,  // Unused output param of `pool` call.
+    };
     const int nready = PA_HANDLE_EINTR(poll(&pollfd, 1, -1));
     PA_CHECK(-1 != nready);
 

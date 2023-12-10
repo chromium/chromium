@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_TERMINA_INSTALLER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_TERMINA_INSTALLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -59,7 +59,7 @@ class TerminaInstaller {
   base::FilePath GetInstallLocation();
 
   // Get the id of the installed DLC, or nullopt if DLC is not being used.
-  absl::optional<std::string> GetDlcId();
+  std::optional<std::string> GetDlcId();
 
   // Attempt to cancel a pending install. The DLC service does not support
   // this, but we have some retry logic that can be aborted. The result
@@ -81,8 +81,8 @@ class TerminaInstaller {
   void OnUninstallFinished(base::OnceCallback<void(bool)> callback,
                            std::vector<UninstallResult> partial_results);
 
-  absl::optional<base::FilePath> termina_location_{absl::nullopt};
-  absl::optional<std::string> dlc_id_{};
+  std::optional<base::FilePath> termina_location_{std::nullopt};
+  std::optional<std::string> dlc_id_{};
 
   // Crostini will potentially enqueue multiple installations.
   //

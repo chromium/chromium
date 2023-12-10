@@ -5,6 +5,7 @@
 #include "ash/system/media/unified_media_controls_container.h"
 
 #include "ash/system/tray/tray_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/border.h"
 
@@ -55,5 +56,8 @@ void UnifiedMediaControlsContainer::Layout() {
 gfx::Size UnifiedMediaControlsContainer::CalculatePreferredSize() const {
   return gfx::Size(kTrayMenuWidth, GetExpandedHeight() * expanded_amount_);
 }
+
+BEGIN_METADATA(UnifiedMediaControlsContainer)
+END_METADATA
 
 }  // namespace ash

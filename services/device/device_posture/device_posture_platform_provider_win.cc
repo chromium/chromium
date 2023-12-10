@@ -64,10 +64,9 @@ void DevicePosturePlatformProviderWin::StopListening() {
 }
 
 absl::optional<mojom::DevicePostureType>
-DevicePosturePlatformProviderWin::ParsePosture(
-    base::StringPiece posture_state) {
+DevicePosturePlatformProviderWin::ParsePosture(std::string_view posture_state) {
   static constexpr auto kPostureStateToPostureType =
-      base::MakeFixedFlatMap<base::StringPiece, mojom::DevicePostureType>(
+      base::MakeFixedFlatMap<std::string_view, mojom::DevicePostureType>(
           {{"MODE_HANDHELD", mojom::DevicePostureType::kFolded},
            {"MODE_DUAL_ANGLE", mojom::DevicePostureType::kFolded},
            {"MODE_LAPTOP_KB", mojom::DevicePostureType::kContinuous},

@@ -38,14 +38,10 @@ public class CancelAwareAnimatorListener extends AnimatorListenerAdapter {
         onEnd(animation);
     }
 
-    /**
-     * Notifies the start of the animator.
-     */
+    /** Notifies the start of the animator. */
     public void onStart(Animator animator) {}
 
-    /**
-     * Notifies that the animator was cancelled.
-     */
+    /** Notifies that the animator was cancelled. */
     public void onCancel(Animator animator) {}
 
     /**

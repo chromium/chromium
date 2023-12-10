@@ -39,9 +39,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Custom ActivityTestRule for tests using ChromeTabbedActivity
- */
+/** Custom ActivityTestRule for tests using ChromeTabbedActivity */
 public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeTabbedActivity> {
     private static final String TAG = "ChromeTabbedATR";
 
@@ -57,19 +55,20 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         Assert.assertNotNull(getActivity());
         Assert.assertTrue(
                 ApplicationStatus.getStateForActivity(getActivity()) == ActivityState.STOPPED
-                || ApplicationStatus.getStateForActivity(getActivity()) == ActivityState.PAUSED);
+                        || ApplicationStatus.getStateForActivity(getActivity())
+                                == ActivityState.PAUSED);
 
-        Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
-                getActivity().getPackageName());
+        Intent launchIntent =
+                getActivity()
+                        .getPackageManager()
+                        .getLaunchIntentForPackage(getActivity().getPackageName());
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         getActivity().startActivity(launchIntent, noAnimationLaunchOptions());
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
     }
 
-    /**
-     * Simulates starting Main Activity from launcher, blocks until it is started.
-     */
+    /** Simulates starting Main Activity from launcher, blocks until it is started. */
     public void startMainActivityFromLauncher() {
         startMainActivityWithURL(null);
     }
@@ -122,9 +121,8 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
 
     @Override
     public void waitForActivityCompletelyLoaded() {
-        CriteriaHelper.pollUiThread(()
-                                            -> getActivity().getActivityTab() != null
-                        || getActivity().isInOverviewMode(),
+        CriteriaHelper.pollUiThread(
+                () -> getActivity().getActivityTab() != null || getActivity().isInOverviewMode(),
                 "Tab never selected/initialized and no overview page is showing.");
 
         if (!getActivity().isInOverviewMode()) {
@@ -143,22 +141,28 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         final CallbackHelper selectedCallback = new CallbackHelper();
 
         TabModel incognitoTabModel = getActivity().getTabModelSelector().getModel(true);
-        TabModelObserver observer = new TabModelObserver() {
-            @Override
-            public void didAddTab(Tab tab, @TabLaunchType int type,
-                    @TabCreationState int creationState, boolean markedForSelection) {
-                createdCallback.notifyCalled();
-            }
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        createdCallback.notifyCalled();
+                    }
 
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                selectedCallback.notifyCalled();
-            }
-        };
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        selectedCallback.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.addObserver(observer));
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                getActivity(), R.id.new_incognito_tab_menu_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                getActivity(),
+                R.id.new_incognito_tab_menu_id);
 
         try {
             createdCallback.waitForCallback(0);
@@ -207,11 +211,12 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
 
         WaitForFocusHelper.acquireFocusForView(urlBar);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (!oneCharAtATime) {
-                urlBar.setText(text);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (!oneCharAtATime) {
+                        urlBar.setText(text);
+                    }
+                });
 
         if (oneCharAtATime) {
             final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();

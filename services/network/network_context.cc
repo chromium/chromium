@@ -68,6 +68,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth.h"
@@ -608,6 +609,12 @@ NetworkContext::NetworkContext(
 
   socket_factory_ = std::make_unique<SocketFactory>(
       url_request_context_->net_log(), url_request_context_);
+#if BUILDFLAG(IS_WIN)
+  if (params_->socket_brokers) {
+    socket_factory_->BindSocketBroker(
+        std::move(params_->socket_brokers->server));
+  }
+#endif
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
 
   if (base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache))
@@ -1471,25 +1478,6 @@ void NetworkContext::SetEnableReferrers(bool enable_referrers) {
   network_delegate_->set_enable_referrers(enable_referrers);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void NetworkContext::UpdateAdditionalCertificates(
-    mojom::AdditionalCertificatesPtr additional_certificates) {
-  if (!cert_verifier_with_trust_anchors_) {
-    CHECK(g_cert_verifier_for_testing);
-    return;
-  }
-  if (!additional_certificates) {
-    cert_verifier_with_trust_anchors_->SetAdditionalCerts(
-        net::CertificateList(), net::CertificateList());
-    return;
-  }
-
-  cert_verifier_with_trust_anchors_->SetAdditionalCerts(
-      additional_certificates->trust_anchors,
-      additional_certificates->all_certificates);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
   if (!require_ct_delegate_)
@@ -1517,17 +1505,6 @@ int NetworkContext::CheckCTComplianceForSignedExchange(
           net::NetLogWithSource::Make(
               url_request_context_->net_log(),
               net::NetLogSourceType::CERT_VERIFIER_JOB));
-
-  // TODO(https://crbug.com/803774): We should determine whether EV & SXG
-  // should be a thing (due to the online/offline signing difference)
-  if (cert_verify_result.cert_status & net::CERT_STATUS_IS_EV &&
-      cert_verify_result.policy_compliance !=
-          net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
-      cert_verify_result.policy_compliance !=
-          net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
-    cert_verify_result.cert_status |= net::CERT_STATUS_CT_COMPLIANCE_FAILED;
-    cert_verify_result.cert_status &= ~net::CERT_STATUS_IS_EV;
-  }
 
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
@@ -2458,11 +2435,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             std::move(cert_verifier)));
 
 #if BUILDFLAG(IS_CHROMEOS)
+    // TODO(https://crbug.com/1477317): The TrustAnchorUsed callback should
+    // work on all platforms. (Also consider whether this wrapper is the best
+    // way to handle this or if it should be refactored.)
     cert_verifier_with_trust_anchors_ =
         new CertVerifierWithTrustAnchors(base::BindRepeating(
             &NetworkContext::TrustAnchorUsed, base::Unretained(this)));
-    UpdateAdditionalCertificates(
-        std::move(params_->initial_additional_certificates));
     cert_verifier_with_trust_anchors_->InitializeOnIOThread(
         std::move(cert_verifier));
     cert_verifier = base::WrapUnique(cert_verifier_with_trust_anchors_.get());
@@ -2772,10 +2750,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
 
 #if BUILDFLAG(IS_WIN)
-  if (params_->socket_broker) {
+  if (params_->socket_brokers) {
     builder.set_client_socket_factory(
         std::make_unique<BrokeredClientSocketFactory>(
-            std::move(params_->socket_broker)));
+            std::move(params_->socket_brokers->client)));
   }
 #endif
 
@@ -2914,9 +2892,17 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
           {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
+  // Network Context does not own this pointer.
   net::CookieCryptoDelegate* crypto_delegate = nullptr;
+
   if (params_->enable_encrypted_cookies) {
-    crypto_delegate = cookie_config::GetCookieCryptoDelegate();
+    // Crypto delegate is used if `cookie_encryption_provider` was specified to
+    // the network service.
+    if (network_service_->cookie_crypto_delegate()) {
+      crypto_delegate = network_service_->cookie_crypto_delegate();
+    } else {
+      crypto_delegate = cookie_config::GetCookieCryptoDelegate();
+    }
   }
 
 #if BUILDFLAG(IS_WIN)

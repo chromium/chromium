@@ -78,9 +78,9 @@ public class WebApkIdentityServiceClientTest {
     }
 
     /**
-     * Tests that for WebAPKs with shell APK version lower than the
-     * {@link WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST},
-     * the backs-WebAPK-check returns false if the browser does NOT match the WebAPK's runtime host
+     * Tests that for WebAPKs with shell APK version lower than the {@link
+     * WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST}, the
+     * backs-WebAPK-check returns false if the browser does NOT match the WebAPK's runtime host
      * specified in the metaData.
      */
     @Test
@@ -96,10 +96,10 @@ public class WebApkIdentityServiceClientTest {
     }
 
     /**
-     * Tests that for WebAPKs with shell APK version lower than the
-     * {@link WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST},
-     * the backs-WebAPK-check returns true if the browser matches the WebAPK's runtime host
-     * specified in the metaData.
+     * Tests that for WebAPKs with shell APK version lower than the {@link
+     * WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST}, the
+     * backs-WebAPK-check returns true if the browser matches the WebAPK's runtime host specified in
+     * the metaData.
      */
     @Test
     public void testReturnsTrueWhenMatchesRuntimeHostBeforeIntroduceHostBrowserSwitchLogic() {
@@ -114,9 +114,9 @@ public class WebApkIdentityServiceClientTest {
     }
 
     /**
-     * Tests that for WebAPKs with shell APK version equal or higher than the
-     * {@link WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST} but
-     * doesn't have Identity Service, the backs-WebAPK-check returns false.
+     * Tests that for WebAPKs with shell APK version equal or higher than the {@link
+     * WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST} but doesn't
+     * have Identity Service, the backs-WebAPK-check returns false.
      */
     @Test
     public void testBacksWebApkCheckForWebApkWithHostBrowserSwitchLogicButWithoutIdentityService() {

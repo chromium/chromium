@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 
-/**
- * A utility class that contains methods generic to all TabStrip test classes.
- */
+/** A utility class that contains methods generic to all TabStrip test classes. */
 public class TabStripUtils {
 
     /**
@@ -23,8 +21,8 @@ public class TabStripUtils {
      * @param incognito Whether or not the TabStrip should be from the incognito or normal model.
      * @return The TabStrip for the specified model.
      */
-    public static StripLayoutHelper getStripLayoutHelper(ChromeTabbedActivity activity,
-            boolean incognito) {
+    public static StripLayoutHelper getStripLayoutHelper(
+            ChromeTabbedActivity activity, boolean incognito) {
         StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
         if (manager != null) {
             return manager.getStripLayoutHelper(incognito);
@@ -62,8 +60,8 @@ public class TabStripUtils {
      * @param id The Tab id to look for.
      * @return The TabView that represents the Tab identified by the id.  Null if not found.
      */
-    public static StripLayoutTab findStripLayoutTab(ChromeTabbedActivity activity,
-            boolean incognito, int id) {
+    public static StripLayoutTab findStripLayoutTab(
+            ChromeTabbedActivity activity, boolean incognito, int id) {
         StripLayoutHelper strip = getStripLayoutHelper(activity, incognito);
         return strip.findTabById(id);
     }
@@ -77,12 +75,13 @@ public class TabStripUtils {
         final StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
         final float x = (tab.getDrawX() + tab.getWidth() / 2);
         final float y = (tab.getDrawY() + tab.getHeight() / 2);
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                manager.simulateClick(x, y, false, 0);
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        manager.simulateClick(x, y, false, 0);
+                    }
+                });
     }
 
     /**
@@ -90,17 +89,20 @@ public class TabStripUtils {
      * @param button The button to click.
      * @param activity the ChromeTabbedActivity.
      */
-    public static void clickCompositorButton(CompositorButton button,
-            Instrumentation instrumentation, ChromeTabbedActivity activity) {
+    public static void clickCompositorButton(
+            CompositorButton button,
+            Instrumentation instrumentation,
+            ChromeTabbedActivity activity) {
         final StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
         final float x = button.getX() + button.getWidth() / 2;
         final float y = button.getY() + button.getHeight() / 2;
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                manager.simulateClick(x, y, false, 0);
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        manager.simulateClick(x, y, false, 0);
+                    }
+                });
     }
 
     /**
@@ -108,17 +110,20 @@ public class TabStripUtils {
      * @param button The button to long press.
      * @param activity the ChromeTabbedActivity.
      */
-    public static void longPressCompositorButton(CompositorButton button,
-            Instrumentation instrumentation, ChromeTabbedActivity activity) {
+    public static void longPressCompositorButton(
+            CompositorButton button,
+            Instrumentation instrumentation,
+            ChromeTabbedActivity activity) {
         final StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
         final float x = button.getX() + button.getWidth() / 2;
         final float y = button.getY() + button.getHeight() / 2;
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                manager.simulateLongPress(x, y);
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        manager.simulateLongPress(x, y);
+                    }
+                });
     }
 
     /**

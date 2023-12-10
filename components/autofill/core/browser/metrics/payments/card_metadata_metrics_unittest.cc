@@ -22,26 +22,27 @@ constexpr char kCardGuid[] = "10000000-0000-0000-0000-000000000001";
 }  // namespace
 
 // Params:
-// 1. Whether card issuer is available.
-// 2. Whether card metadata is available.
-// 3. Whether card has a static card art image (instead of the rich card art
+// 1. Whether card metadata is available.
+// 2. Whether card has a static card art image (instead of the rich card art
 // from metadata).
+// 3. Whether a larger-sized card art image is used.
+// 4. Unique identifiers for the issuer of the card.
 class CardMetadataFormEventMetricsTest
     : public AutofillMetricsBaseTest,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, bool, std::string>> {
  public:
   CardMetadataFormEventMetricsTest() = default;
   ~CardMetadataFormEventMetricsTest() override = default;
 
-  bool registered_card_issuer_available() const {
-    return std::get<0>(GetParam());
-  }
-  bool card_metadata_available() const { return std::get<1>(GetParam()); }
-  bool card_has_static_art_image() const { return std::get<2>(GetParam()); }
+  bool registered_card_issuer_available() { return issuer_id() != "Dummy"; }
+  bool card_metadata_available() const { return std::get<0>(GetParam()); }
+  bool card_has_static_art_image() const { return std::get<1>(GetParam()); }
   bool new_card_art_and_network_images_used() const {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
+  const std::string& issuer_id() const { return std::get<3>(GetParam()); }
 
   FormData form() { return form_; }
   const CreditCard& card() const { return card_; }
@@ -61,12 +62,8 @@ class CardMetadataFormEventMetricsTest
     // Add a masked server card.
     card_ = test::WithCvc(test::GetMaskedServerCard());
     card_.set_guid(kCardGuid);
-    if (registered_card_issuer_available()) {
-      card_.set_issuer_id(kCapitalOneCardIssuerId);
-    } else {
-      card_.set_issuer_id("Pnc");
-    }
-    if (card_has_static_art_image()) {
+    card_.set_issuer_id(issuer_id());
+    if (issuer_id() == kCapitalOneCardIssuerId && card_has_static_art_image()) {
       if (new_card_art_and_network_images_used()) {
         card_.set_card_art_url(GURL(kCapitalOneLargeCardArtUrl));
       } else {
@@ -87,6 +84,14 @@ class CardMetadataFormEventMetricsTest
 
   void TearDown() override { TearDownHelper(); }
 
+  std::string GetHistogramName(std::string_view event) {
+    return base::StrCat({"Autofill.CreditCard.",
+                         GetCardIssuerIdSuffix(issuer_id()) != ""
+                             ? GetCardIssuerIdSuffix(issuer_id())
+                             : issuer_id(),
+                         event});
+  }
+
  private:
   CreditCard card_;
   FormData form_;
@@ -97,7 +102,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
-                                          testing::Bool()));
+                                          testing::Values("amex",
+                                                          "anz",
+                                                          "capitalone",
+                                                          "chase",
+                                                          "citi",
+                                                          "discover",
+                                                          "lloyds",
+                                                          "marqeta",
+                                                          "nab",
+                                                          "natwest",
+                                                          "Dummy")));
 
 // Test metadata shown metrics are correctly logged.
 TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
@@ -105,8 +120,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
 
   // Verify that:
   // 1. if the card suggestion shown had metadata,
@@ -135,21 +150,18 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                          card_metadata_available() ? 0 : 1)));
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.ShownWithMetadata",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(".ShownWithMetadata"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.ShownWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Pnc.ShownWithMetadata", card_metadata_available(),
-      0);
+      GetHistogramName(".ShownWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..ShownWithMetadata",
                                       card_metadata_available(), 0);
 
   // Show the popup again.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -163,24 +175,35 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                   Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
                          card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.ShownWithMetadata",
-      card_metadata_available(), registered_card_issuer_available() ? 2 : 0);
+      GetHistogramName(".ShownWithMetadata"), card_metadata_available(),
+      registered_card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.ShownWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(".ShownWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
 }
 
 // Test metadata selected metrics are correctly logged.
 TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
+  // Add a second card which won't be selected but will be logged in
+  // Autofill.CreditCard.Amex.SelectedWithIssuerMetadataPresentOnce.
+  CreditCard card2 = test::GetMaskedServerCard2();
+  card2.set_guid(kTestMaskedCardId);
+  card2.set_issuer_id("amex");
+  if (card_metadata_available()) {
+    card2.set_product_description(u"product description");
+    card2.set_card_art_url(GURL("https://www.example.com/cardarturl.png"));
+  }
+  personal_data().AddServerCreditCard(card2);
+
   base::HistogramTester histogram_tester;
 
   // Simulate selecting the card.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   // Verify that:
@@ -211,14 +234,11 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.SelectedWithMetadata",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(".SelectedWithMetadata"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.SelectedWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Pnc.SelectedWithMetadata", card_metadata_available(),
-      0);
+      GetHistogramName(".SelectedWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard..SelectedWithMetadata", card_metadata_available(),
       0);
@@ -226,7 +246,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   // Select the suggestion again.
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -242,11 +262,23 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.SelectedWithMetadata",
-      card_metadata_available(), registered_card_issuer_available() ? 2 : 0);
+      GetHistogramName(".SelectedWithMetadata"), card_metadata_available(),
+      registered_card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.SelectedWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(".SelectedWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(".SelectedWithIssuerMetadataPresentOnce"), true,
+      card_metadata_available() && registered_card_issuer_available() ? 1 : 0);
+
+  // Only test non-Amex because for Amex case it will log true in
+  // SelectedWithIssuerMetadataPresentOnce histogram.
+  if (issuer_id() != "amex") {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.CreditCard.Amex.SelectedWithIssuerMetadataPresentOnce", false,
+        card_metadata_available() && registered_card_issuer_available() ? 1
+                                                                        : 0);
+  }
 }
 
 // Test metadata filled metrics are correctly logged.
@@ -256,7 +288,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Simulate filling the card.
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -289,14 +321,11 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.FilledWithMetadata",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(".FilledWithMetadata"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.FilledWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Pnc.FilledWithMetadata", card_metadata_available(),
-      0);
+      GetHistogramName(".FilledWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..FilledWithMetadata",
                                       card_metadata_available(), 0);
 
@@ -317,11 +346,11 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.FilledWithMetadata",
-      card_metadata_available(), registered_card_issuer_available() ? 2 : 0);
+      GetHistogramName(".FilledWithMetadata"), card_metadata_available(),
+      registered_card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.FilledWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(".FilledWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
 }
 
 // Test metadata will submit and submitted metrics are correctly logged.
@@ -332,7 +361,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -364,14 +393,11 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.WillSubmitWithMetadataOnce",
+      GetHistogramName(".WillSubmitWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.CapitalOne.SubmittedWithMetadataOnce",
-      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Pnc.SubmittedWithMetadata",
-      card_metadata_available(), 0);
+      GetHistogramName(".SubmittedWithMetadataOnce"), card_metadata_available(),
+      registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard..SubmittedWithMetadata", card_metadata_available(),
       0);
@@ -457,12 +483,12 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kTestMaskedCardId),
+      *personal_data().GetCreditCardByGUID(kTestMaskedCardId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   std::string latency_histogram_prefix =

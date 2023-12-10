@@ -715,7 +715,6 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
     JNIEnv* env,
     jint ctap_status,
     const JavaParamRef<jbyteArray>& jattestation_object,
-    const JavaParamRef<jbyteArray>& jdevice_public_key_signature,
     jboolean prf_enabled) {
   GlobalData& global_data = GetGlobalData();
 
@@ -725,15 +724,9 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
   auto callback = std::move(*global_data.pending_make_credential_callback);
   global_data.pending_make_credential_callback.reset();
 
-  absl::optional<std::vector<uint8_t>> device_public_key_signature;
-  if (jdevice_public_key_signature) {
-    device_public_key_signature =
-        JavaByteArrayToByteVector(env, jdevice_public_key_signature);
-  }
-
   std::move(callback).Run(ctap_status,
                           JavaByteArrayToByteVector(env, jattestation_object),
-                          device_public_key_signature, prf_enabled);
+                          prf_enabled);
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(

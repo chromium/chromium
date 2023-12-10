@@ -59,6 +59,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   void Reset();
 
+  void AttachLayoutTree(AttachContext& context) override;
+  void DetachLayoutTree(bool performing_reattach) override;
+
   HTMLFormElement* formOwner() const final;
 
   bool IsDisabledFormControl() const override;
@@ -112,6 +115,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   // The IDL reflections:
   AtomicString popoverTargetAction() const;
   void setPopoverTargetAction(const AtomicString& value);
+
+  HTMLElement* invokeTargetElement();
 
   AtomicString invokeAction() const;
   void setInvokeAction(const AtomicString& value);
@@ -180,9 +185,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   int32_t GetAxId() const;
 
-  void SetInteractedSinceLastFormSubmit(bool);
-  bool MatchesUserInvalidPseudo();
-  bool MatchesUserValidPseudo();
+  bool MatchesValidityPseudoClasses() const override;
 
  protected:
   HTMLFormControlElement(const QualifiedName& tag_name, Document&);
@@ -197,8 +200,10 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void DidChangeForm() override;
   void DidMoveToNewDocument(Document& old_document) override;
 
-  bool SupportsFocus() const override;
-  bool IsKeyboardFocusable() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
+                               UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldHaveFocusAppearance() const override;
 
   virtual void ResetImpl() {}
@@ -208,7 +213,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool AlwaysCreateUserAgentShadowRoot() const override { return true; }
 
   bool IsValidElement() override;
-  bool MatchesValidityPseudoClasses() const override;
 
   void HandlePopoverTriggering(HTMLElement* popover,
                                PopoverTriggerAction action);
@@ -220,8 +224,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool prevent_highlighting_of_autofilled_fields_ : 1;
 
   bool blocks_form_submission_ : 1;
-
-  bool interacted_since_last_form_submit_ : 1;
 };
 
 template <>

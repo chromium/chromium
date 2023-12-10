@@ -15,7 +15,6 @@
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/password_change_success_tracker.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_manager.h"
@@ -30,7 +29,6 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_change_success_tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
@@ -43,7 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "net/cert/cert_status_flags.h"
@@ -60,7 +58,9 @@ using password_manager::metrics_util::PasswordType;
 
 namespace {
 
-const syncer::SyncService* GetSyncServiceForBrowserState(
+// Used for callbacks that expect a const pointer, since base::Callback isn't
+// smart enough to allow binding the SyncServiceFactory method directly.
+const syncer::SyncService* GetConstSyncServicePtr(
     ChromeBrowserState* browser_state) {
   return SyncServiceFactory::GetForBrowserStateIfExists(browser_state);
 }
@@ -73,10 +73,10 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       password_feature_manager_(
           GetPrefs(),
           GetLocalStatePrefs(),
-          GetSyncServiceForBrowserState(bridge_.browserState)),
-      credentials_filter_(this,
-                          base::BindRepeating(&GetSyncServiceForBrowserState,
-                                              bridge_.browserState)),
+          SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState)),
+      credentials_filter_(
+          this,
+          base::BindRepeating(&GetConstSyncServicePtr, bridge_.browserState)),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -182,7 +182,7 @@ PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
-  return GetSyncServiceForBrowserState(bridge_.browserState);
+  return GetConstSyncServicePtr(bridge_.browserState);
 }
 
 PasswordStoreInterface*
@@ -202,12 +202,6 @@ IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
 password_manager::PasswordReuseManager*
 IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
   return IOSChromePasswordReuseManagerFactory::GetForBrowserState(
-      bridge_.browserState);
-}
-
-password_manager::PasswordChangeSuccessTracker*
-IOSChromePasswordManagerClient::GetPasswordChangeSuccessTracker() {
-  return IOSChromePasswordChangeSuccessTrackerFactory::GetForBrowserState(
       bridge_.browserState);
 }
 
@@ -243,11 +237,14 @@ void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {
 void IOSChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
-    const std::u16string& username) {
+    const std::u16string& username,
+    bool in_account_store) {
   [bridge_ showPasswordBreachForLeakType:leak_type
                                      URL:origin
                                 username:username];
 }
+
+void IOSChromePasswordManagerClient::NotifyKeychainError() {}
 
 bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
     const GURL& url) const {

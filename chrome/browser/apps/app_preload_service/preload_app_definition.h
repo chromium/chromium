@@ -49,7 +49,7 @@ class PreloadAppDefinition {
 
  private:
   proto::AppPreloadListResponse_App app_proto_;
-  absl::optional<apps::PackageId> package_id_;
+  std::optional<apps::PackageId> package_id_;
 };
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app);

@@ -266,7 +266,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   // Retrieve the identity of the page. In case the page might be malicous,
   // returns early.
-  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
   if (!pageURL) {
     return;
   }
@@ -378,6 +378,13 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        forForm:(FormGlobalId)form
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
+  // Heuristics predictions are not relevant to PWM because it runs its own
+  // heuristics - only server predictions are.
+  if (source ==
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete) {
+    return;
+  }
+
   auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
   web::WebFrame* frame = driver.web_frame();
   if (!frame) {
@@ -450,8 +457,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       LogPasswordGenerationEvent(
           autofill::password_generation::PASSWORD_DELETED);
       self.passwordGeneratedIdentifier = FieldRendererId();
-      _passwordManager->OnPasswordNoLongerGenerated(
-          [_driverHelper PasswordManagerDriver:frame]);
+      _passwordManager->OnPasswordNoLongerGenerated();
     } else {
       // Inject updated value to possibly update confirmation field.
       [self injectGeneratedPasswordForFormId:formQuery.uniqueFormID
@@ -522,15 +528,17 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     NSString* value = [rawSuggestion.value
         stringByAppendingString:kPasswordFormSuggestionSuffix];
     FormSuggestion* suggestion = [FormSuggestion
-        suggestionWithValue:value
-         displayDescription:rawSuggestion.displayDescription
-                       icon:nil
-                popupItemId:autofill::PopupItemId::kAutocompleteEntry
-          backendIdentifier:nil
-             requiresReauth:YES];
+               suggestionWithValue:value
+                displayDescription:rawSuggestion.displayDescription
+                              icon:nil
+                       popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                 backendIdentifier:nil
+                    requiresReauth:YES
+        acceptanceA11yAnnouncement:nil
+                          metadata:rawSuggestion.metadata];
     [suggestions addObject:suggestion];
   }
-  absl::optional<PasswordDropdownState> suggestionState;
+  std::optional<PasswordDropdownState> suggestionState;
   if (suggestions.count) {
     suggestionState = PasswordDropdownState::kStandard;
   }
@@ -887,11 +895,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                                                   clearPotentialPassword];
                          } else {
                            clearPotentialPassword();
-                           IOSPasswordManagerDriver* driver =
-                               [strongSelf->_driverHelper
-                                   PasswordManagerDriver:frame];
                            strongSelf->_passwordManager
-                               ->OnPasswordNoLongerGenerated(driver);
+                               ->OnPasswordNoLongerGenerated();
                          }
                        }];
   };
@@ -999,7 +1004,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
 
-  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
   if (!pageURL || !frame || params.input_missing) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1003363546227723021">የእርስዎ ማያ ገፅ ሲቦዝን ፎቶዎች፣ ሰዓት፣ የአየር ትንበያ እና የሚዲያ መረጃ ይታይ</translation>
 <translation id="1014750484722996375">ዴስኮች</translation>
 <translation id="1018219910092211213">ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="1018656279737460067">ተሰርዟል</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
 <translation id="1175951029573070619">መካከለኛ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
+<translation id="1191518099344003522">ኤፒኤን ነቅቷል።</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1196959502276349371">ስሪት <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">አጫውት/ለአፍታ አቁም</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">የአሳሽ መነሻ</translation>
 <translation id="1526389707933164996">የማያ ገፅ አሳራፊ እነማ</translation>
 <translation id="152892567002884378">ድምፅ ጨምር</translation>
+<translation id="1539242642795599947">ኤፒኤን ነባሪ ዓይነት እና አባሪ ነው።</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">ChromeOS Flexን ይጫኑ</translation>
 <translation id="1856388568474281774">የታች ቀስት</translation>
 <translation id="1858620243986915808">ቅጽበታዊ ገፅ እይታን ያያይዙ</translation>
+<translation id="1871413952174074704">ኤፒኤን ከ<ph name="CHAR_LIMIT" /> በላይ ቁምፊዎች ሊኖረው አይችልም</translation>
 <translation id="1871569928317311284">ጠቆር ያለ ገጽታን አጥፋ</translation>
 <translation id="1874612839560830905">ኤምቲዩ</translation>
 <translation id="188114911237521550">የጨለማ ሁነታን አጥፋ</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="2873483161362553159">የአሰሳ አሳሽ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
+<translation id="2875812231449496375">በዚህ ልጣፍ ለበለጠ ውጤት ይህንን ያብሩት። ይህን ቅንብር በማንኛውም ጊዜ ማጥፋት ይችላሉ።</translation>
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="2880569433548999039">የደመና ፍሰት የማያ ገፅ ቆጣቢ</translation>
 <translation id="2926057806159140518">የእርስዎ የተጠቃሚ ስም እና የይለፍ ቃል ያስገቡ ወይም QR ኮድዎን ይቃኙ</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3583278742022654445">ደካማ የሲግናል ጥንካሬ። ወደ Wi-Fi ሲግናል ምንጭ ለመቅረብ ይሞክሩ።</translation>
+<translation id="3594280220611906414">ለተጠቃሚ <ph name="USER_FRIENDLY_APN_NAME" /> የ <ph name="APN_NAME" /> ምቹ ስም ነው።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="3600339377155080675">የማያ ገፅ ግልባጭ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
 <translation id="4333390807948134856">የ<ph name="KEY_NAME" /> ቁልፍ ተጭኗል</translation>
 <translation id="4354430579665871434">ቁልፍ</translation>
-<translation id="435692326371619097">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤኖች በተንቀሳቃሽ ስልክ አውታረመረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">ኤፒኤን ነባሪ ዓይነት ነው።</translation>
 <translation id="437294888293595148">ሁሉንም አቋራጮች እንደገና ያስጀምሩ</translation>
 <translation id="4378373042927530923">አታሂድ</translation>
 <translation id="4378551569595875038">በመገናኘት ላይ...</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">ሪፖርትን ደብቅ</translation>
 <translation id="500920857929044050">ሙከራን አቁም</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">የእርስዎ ማያ ገፅ ሲቦዝን ፎቶዎች፣ ሰዓት፣ የአየር ትንበያ እና የሚዲያ መረጃ ይታይ።</translation>
 <translation id="5035083460461104704">የገጽታ ቀለም</translation>
 <translation id="5038292761217083259">የቁልፍ ሰሌዳ ባለ ብዙ ቀለም</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">ሙሉ</translation>
 <translation id="5142961317498132443">ማረጋገጥ</translation>
+<translation id="5145081769226915336">የጨለማ ሁነታን በራስ ሰር ይብራ?</translation>
 <translation id="5154917547274118687">ማህደረ ትውስታ</translation>
 <translation id="5160857336552977725">ወደ የእርስዎ <ph name="DEVICE_TYPE" /> ይግቡ</translation>
 <translation id="5166918508782100047">የፈጣን መልሶች ቅንብሮች</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">መካከለኛ</translation>
 <translation id="5757187557809630523">ቀጣይ ትራክ</translation>
 <translation id="5760715441271661976">የመተላለፊያ ሁኔታ</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" />ን እንደገና በመጀመር እና በማዘመን ላይ</translation>
 <translation id="576835345334454681">የማሳያ ብሩህነት መጨመሪያ</translation>
 <translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5784136236926853061">ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">እስካሁን አልተገናኙም። የእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ብጁ የሆነ ኤፒኤን የሚመክር ከሆነ «+ አዲስ ኤፒኤን» የሚለውን በመምረጥ የኤፒኤን መረጃ ያስገቡ</translation>
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
+<translation id="6001235009374883388">ኤፒኤን የአባሪ አይነት ነው።</translation>
 <translation id="6017514345406065928">አረንጓዴ</translation>
 <translation id="6019566113895157499">የቁልፍ አቋራጮች</translation>
 <translation id="6034694447310538551">ራስ-ሰር ወርሃዊ ዳግም ማስጀመርን አንቃ</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7180865173735832675">አብጅ</translation>
 <translation id="7184043045742675738">የእርስዎን አዝራር ለማበጀት በማንኛውም ቁልፍ ላይ ጠቅ ያድርጉ። ቁልፉን በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
+<translation id="7212547870105584639">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤንኦች በተንቀሳቃሽ ስልክ አውታረ መረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ለውጫዊ መሳሪያዎች የፊርምዌር ዝማኔዎች</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
 <translation id="7297226631177386107">በኬላ በኩል ወደ ኤችቲቲፒኤስ ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
 <translation id="7297726121602187087">ጠቆር ያለ አረንጓዴ</translation>
+<translation id="7301262279595293068">ይህ መተግበሪያ በመዘመን ላይ ሲሆን እባክዎ ይጠብቁ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
 <translation id="7308203371573257315">በChromebook የእገዛ ውይይት መድረክ ላይ የሚገኙ ባለሙያዎችን ይጠይቁ</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">ፈዛዛ ሮዝ</translation>
 <translation id="982713511914535780">የባትሪ ኃይል የመጨረስ ሙከራን አሂድ</translation>
 <translation id="987264212798334818">አጠቃላይ</translation>
+<translation id="995062385528875723">ዘዬ ያላቸው ፊደላትን፣ የላቲን ያልሆነ ፊደልን ወይም ምልክቶችን መጠቀም አይቻልም</translation>
 </translationbundle>

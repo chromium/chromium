@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+ # tags: [ Android Chrome Fuchsia Linux Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS16-simulator ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -31,17 +31,22 @@
 [ Mac ] wpt_internal/digital-goods/* [ Skip ]
 [ Win ] wpt_internal/digital-goods/* [ Skip ]
 
-# Chrome Win/Linux doesn't support emacs key-bindings.
+# Chrome Win/Linux/iOS doesn't support emacs key-bindings.
 [ Win ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
+[ iOS16-simulator ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
 [ Win ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
+[ iOS16-simulator ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
 [ Win ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
+[ iOS16-simulator ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
 [ Win ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
+[ iOS16-simulator ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
 [ Win ] editing/input/emacs-ctrl-o.html [ Skip ]
 [ Linux ] editing/input/emacs-ctrl-o.html [ Skip ]
+[ iOS16-simulator ] editing/input/emacs-ctrl-o.html [ Skip ]
 [ Win ] fast/events/inputevents/inputevent-yank.html [ Skip ]
 [ Linux ] fast/events/inputevents/inputevent-yank.html [ Skip ]
 
@@ -65,6 +70,15 @@
 # Tests Mac system font specific weight variations.
 [ Linux ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
 [ Win ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
+
+# Tests Mac system font specific width variations.
+[ Linux ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
+[ Win ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
+[ Mac10.15 ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
+
+# Tests Mac system font oblique faces.
+[ Linux ] virtual/text-antialias/mac-system-ui-slant.html [ Skip ]
+[ Win ] virtual/text-antialias/mac-system-ui-slant.html [ Skip ]
 
  # Mac's popup behavior is different.
 [ Mac ] fast/forms/select/menulist-onchange-fired-with-key-up-down.html [ Skip ]
@@ -266,6 +280,9 @@ crbug.com/627953 [ Mac ] virtual/text-antialias/symbol-cmap.html [ Skip ]
 # These tests require audio codecs which are generally not available;
 # these tests can still be run manually with --skipped=ignore.
 webaudio/codec-tests/aac/* [ Skip ]
+
+# PPAPI is disabled on everything but ChromeOS will run via --test-list flag
+ppapi/* [ Skip ]
 
 # WPT for CSS cascade
 crbug.com/763610 external/wpt/css/CSS2/cascade/* [ Skip ]
@@ -1560,15 +1577,12 @@ crbug.com/1005518 external/wpt/css/css-writing-modes/table-progression-vlr-004.h
 crbug.com/1005518 external/wpt/css/css-writing-modes/table-progression-vrl-003.html [ Skip ]
 crbug.com/1005518 external/wpt/css/css-writing-modes/table-progression-vrl-004.html [ Skip ]
 
-# css-pseudo-4 ::spelling-error and ::grammar-error not implemented
-crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-001.html [ Skip ]
-crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-001.html [ Skip ]
+# css-pseudo-4 ::spelling-error and ::grammar-error manual tests
 crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-002-manual.html [ Skip ]
 crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-003-manual.html [ Skip ]
-crbug.com/1035708 external/wpt/css/css-pseudo/selection-overlay-and-grammar-001.html [ Skip ]
-crbug.com/1035708 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001.html [ Skip ]
 crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-002-manual.html [ Skip ]
 crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-003-manual.html [ Skip ]
+
 crbug.com/626703 external/wpt/html/browsers/windows/restore-window-name-manual.https.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/html/pointerevent_drag_interaction-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_multiple_primary_pointers_boundary_events-manual.html [ Skip ]
@@ -2067,7 +2081,52 @@ crbug.com/1476305 external/wpt/subapps/* [ Skip ]
 # can be problematic on debug builds.
 crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/finished.html [ Skip ]
 
+# Chrome only runs nonvirtual WPT tests at the moment.
+[ Chrome ] * [ Skip ]
+[ Chrome ] external/wpt/* [ Pass ]
+[ Chrome ] wpt_internal/* [ Pass ]
+
 # At the moment, no plans to run wdspec tests for anything other than Chrome on
 # Linux due to resource constraints.
 [ Mac ] external/wpt/webdriver/tests/* [ Skip ]
 [ Win ] external/wpt/webdriver/tests/* [ Skip ]
+
+# Bluetooth tests do not work on Chrome
+[ Chrome ] external/wpt/bluetooth/* [ Skip ]
+[ Chrome ] wpt_internal/bluetooth/* [ Skip ]
+[ Chrome ] external/wpt/fledge/* [ Skip ]
+[ Chrome ] wpt_internal/import-maps/* [ Skip ]
+# many failures in the folders below, skip for now
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/* [ Skip ]
+crbug.com/1499775 [ Chrome ] external/wpt/attribution-reporting/* [ Skip ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ui/compute-kind-widget-generated/* [ Skip ]
+[ Chrome ] external/wpt/speculation-rules/prerender/* [ Skip ]
+[ Chrome ] external/wpt/speculation-rules/prerender/credentialed-prerender-not-opt-in.html [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_self [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_blank [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html?2-last [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/remove-script-element.html [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=204 [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=205 [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=402 [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=500 [ Pass ]
+[ Chrome ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Pass ]
+crbug.com/1499775 [ Chrome ] external/wpt/notifications/getnotifications-across-processes.https.window.html [ Skip ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/lock-sandboxed-iframe.html [ Skip ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-receive.https.html [ Skip ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-with-timestamp.https.html [ Skip ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/requestmidiaccess-upgrade.https.html [ Skip ]
+
+# Skip one flaky test
+crbug.com/1508175 [ Chrome ] external/wpt/soft-navigation-heuristics/image-lcp-before-detection.tentative.html [ Skip ]
+
+# WebNN GPU backend is supported on Win11 by default.
+crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/gpu/* [ Skip ]
+
+######## Unload Deprecation
+# This is for tests in the "deprecate-unload" virtual suite that
+# cannot be fixed, e.g. because they are explicitly testing unload.
+
+crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip ]
+
+######## End Unload Deprecation

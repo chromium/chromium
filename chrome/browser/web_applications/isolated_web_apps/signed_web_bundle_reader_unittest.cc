@@ -13,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -349,8 +349,8 @@ class SignedWebBundleReaderTest : public testing::Test {
     EXPECT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
     EXPECT_TRUE(base::WriteFile(temp_file_path, test_file_data));
 
-    in_process_data_decoder_.service()
-        .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
+    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
+        base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
 

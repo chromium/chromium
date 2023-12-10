@@ -168,6 +168,7 @@ class TrustedSignalsTest : public testing::Test {
       std::set<std::string> trusted_bidding_signals_keys,
       const std::string& hostname,
       absl::optional<uint16_t> experiment_group_id = absl::nullopt,
+      const std::string& trusted_bidding_signals_slot_size_param = "",
       const absl::optional<std::string>& format_version_string = "2") {
     AddBidderJsonResponse(&url_loader_factory_, url, response,
                           /*data_version=*/absl::nullopt,
@@ -175,7 +176,8 @@ class TrustedSignalsTest : public testing::Test {
 
     return FetchBiddingSignals(std::move(interest_group_names),
                                std::move(trusted_bidding_signals_keys),
-                               hostname, experiment_group_id);
+                               hostname, experiment_group_id,
+                               trusted_bidding_signals_slot_size_param);
   }
 
   // Fetches bidding signals and waits for completion. Returns nullptr on
@@ -184,7 +186,8 @@ class TrustedSignalsTest : public testing::Test {
       std::set<std::string> interest_group_names,
       std::set<std::string> trusted_bidding_signals_keys,
       const std::string& hostname,
-      absl::optional<uint16_t> experiment_group_id) {
+      absl::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param = "") {
     CHECK(!load_signals_run_loop_);
 
     DCHECK(!load_signals_result_);
@@ -193,7 +196,8 @@ class TrustedSignalsTest : public testing::Test {
         &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
         std::move(interest_group_names),
         std::move(trusted_bidding_signals_keys), hostname, base_url_,
-        experiment_group_id, v8_helper_,
+        experiment_group_id, trusted_bidding_signals_slot_size_param,
+        v8_helper_,
         base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
@@ -266,7 +270,8 @@ class TrustedSignalsTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetBiddingSignals(
               v8_helper_.get(), context, trusted_bidding_signals_keys);
 
-          if (!v8_helper_->ExtractJson(context, value, &result)) {
+          if (v8_helper_->ExtractJson(context, value, &result) !=
+              AuctionV8Helper::ExtractJsonResult::kSuccess) {
             result = "JSON extraction failed.";
           }
           run_loop.Quit();
@@ -297,7 +302,8 @@ class TrustedSignalsTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetScoringSignals(
               v8_helper_.get(), context, render_url, ad_component_render_urls);
 
-          if (!v8_helper_->ExtractJson(context, value, &result)) {
+          if (v8_helper_->ExtractJson(context, value, &result) !=
+              AuctionV8Helper::ExtractJsonResult::kSuccess) {
             result = "JSON extraction failed.";
           }
           run_loop.Quit();
@@ -448,6 +454,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
            "?hostname=publisher&keys=key1&interestGroupNames=name1"),
       kBaseBiddingJson, {"name1"}, {"key1"}, kHostname,
       /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
       /*format_version_string=*/"3"));
   EXPECT_EQ(
       "Rejecting load of https://url.test/ due to unrecognized Format-Version "
@@ -459,6 +466,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
            "?hostname=publisher&keys=key1&interestGroupNames=name1"),
       kBaseBiddingJson, {"name1"}, {"key1"}, kHostname,
       /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
       /*format_version_string=*/"0"));
   EXPECT_EQ(
       "Rejecting load of https://url.test/ due to unrecognized Format-Version "
@@ -470,6 +478,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
            "?hostname=publisher&keys=key1&interestGroupNames=name1"),
       kBaseBiddingJson, {"name1"}, {"key1"}, kHostname,
       /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
       /*format_version_string=*/"shiny"));
   EXPECT_EQ(
       "Rejecting load of https://url.test/ due to unrecognized Format-Version "
@@ -1066,7 +1075,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsDeleteBeforeCallback) {
   auto bidding_signals = TrustedSignals::LoadBiddingSignals(
       &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
       {"name1"}, {"key1"}, "publisher", base_url_,
-      /*experiment_group_id=*/absl::nullopt, v8_helper_,
+      /*experiment_group_id=*/absl::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_,
       base::BindOnce([](scoped_refptr<TrustedSignals::Result> result,
                         absl::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
@@ -1184,6 +1194,27 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExperimentId) {
   EXPECT_FALSE(error_msg_.has_value());
 }
 
+TEST_F(TrustedSignalsTest, BiddingSignalsAdditionalQueryParams) {
+  const std::string kTestCases[] = {"", "no-equals", "a=b", "A=B&%20=3"};
+  for (const std::string& test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+
+    std::string expected_bidding_signals_url =
+        "https://url.test/"
+        "?hostname=publisher"
+        "&keys=key1"
+        "&interestGroupNames=name1" +
+        (test_case.empty() ? "" : "&" + test_case);
+    scoped_refptr<TrustedSignals::Result> signals =
+        FetchBiddingSignalsWithResponse(
+            GURL(expected_bidding_signals_url), kBaseBiddingJson, {"name1"},
+            {"key1"}, kHostname, /*experiment_group_id=*/absl::nullopt,
+            test_case);
+    ASSERT_TRUE(signals);
+    EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  }
+}
+
 TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
   expect_nonfatal_error_ = true;
 
@@ -1194,6 +1225,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
           kBiddingJsonV1, {"name1"}, {"key1", "key2", "key3", "key5"},
           kHostname,
           /*experiment_group_id=*/absl::nullopt,
+          /*trusted_bidding_signals_slot_size_param=*/"",
           /*format_version_string=*/absl::nullopt);
   EXPECT_EQ(error_msg_,
             "Bidding signals URL https://url.test/ is using outdated bidding "
@@ -1224,6 +1256,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
           kBiddingJsonV1, {"name1"}, {"key1", "key2", "key3", "key5"},
           kHostname,
           /*experiment_group_id=*/absl::nullopt,
+          /*trusted_bidding_signals_slot_size_param=*/"",
           /*format_version_string=*/"1");
   EXPECT_EQ(error_msg_,
             "Bidding signals URL https://url.test/ is using outdated bidding "
@@ -1251,6 +1284,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
                "?hostname=publisher&keys=key1&interestGroupNames=name1"),
           kBiddingJsonV1, {"name1"}, {"key1"}, kHostname,
           /*experiment_group_id=*/absl::nullopt,
+          /*trusted_bidding_signals_slot_size_param=*/"",
           /*format_version_string=*/"2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
@@ -1268,6 +1302,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
                "?hostname=publisher&keys=key1&interestGroupNames=name1"),
           kBaseBiddingJson, {"name1"}, {"key1"}, kHostname,
           /*experiment_group_id=*/absl::nullopt,
+          /*trusted_bidding_signals_slot_size_param=*/"",
           /*format_version_string=*/absl::nullopt);
   EXPECT_EQ(error_msg_,
             "Bidding signals URL https://url.test/ is using outdated bidding "

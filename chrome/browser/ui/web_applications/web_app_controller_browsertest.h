@@ -80,7 +80,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   Browser* NavigateInNewWindowAndAwaitInstallabilityCheck(const GURL&);
 
-  absl::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url);
+  std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url);
 
   // Opens |url| in a new popup window with the dimensions |popup_size|.
   Browser* OpenPopupAndWait(Browser* browser,
@@ -92,7 +92,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
       const std::vector<base::test::FeatureRef>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features);
 
-  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting>
       os_hooks_suppress_;
 
   content::WebContents* OpenApplication(const webapps::AppId&);
@@ -124,7 +124,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope_;
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 
 }  // namespace web_app

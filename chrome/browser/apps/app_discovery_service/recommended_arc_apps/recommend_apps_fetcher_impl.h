@@ -83,7 +83,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   void Retry() override;
 
   using ArcFeaturesGetter = base::RepeatingCallback<void(
-      base::OnceCallback<void(absl::optional<arc::ArcFeatures> callback)>)>;
+      base::OnceCallback<void(std::optional<arc::ArcFeatures> callback)>)>;
   void set_arc_features_getter_for_testing(const ArcFeaturesGetter& getter) {
     arc_features_getter_ = getter;
   }
@@ -107,7 +107,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   // Callback function called when ARC features are read by the parser.
   // It will populate the device config info related to ARC features.
-  void OnArcFeaturesRead(absl::optional<arc::ArcFeatures> read_result);
+  void OnArcFeaturesRead(std::optional<arc::ArcFeatures> read_result);
 
   // Callback function called when the proto message has been compressed and
   // encoded.

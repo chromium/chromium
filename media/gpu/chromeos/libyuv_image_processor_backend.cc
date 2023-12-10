@@ -47,6 +47,9 @@ static constexpr struct {
 #define CONV(in, out, trans, result) \
   {Fourcc::in, Fourcc::out, Transform::trans, SupportResult::result}
     // Conversion.
+#if BUILDFLAG(IS_LINUX)
+    CONV(NV12, AR24, kConversion, Supported),
+#endif
     CONV(NV12, NV12, kConversion, Supported),
     CONV(YM16, NV12, kConversion, Supported),
     CONV(YM16, YU12, kConversion, Supported),
@@ -207,16 +210,6 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
     return nullptr;
   }
 
-  if (input_config.fourcc.ToVideoPixelFormat() ==
-      output_config.fourcc.ToVideoPixelFormat()) {
-    if (output_config.visible_rect.origin() != gfx::Point(0, 0)) {
-      VLOGF(2) << "Output visible rectangle is not (0, 0), "
-               << "output_config.visible_rect="
-               << output_config.visible_rect.ToString();
-      return nullptr;
-    }
-  }
-
   scoped_refptr<VideoFrame> intermediate_frame;
   if (res == SupportResult::SupportedWithI420Pivot ||
       res == SupportResult::SupportedWithNV12Pivot) {
@@ -232,10 +225,33 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
     }
   }
 
+  // This intermediate frame is only needed in the event of a crop operation
+  // that does not start with the upper left corner at (0,0). Tiled formats such
+  // as MM21 can not easily be converted starting at arbitrary origins. With
+  // this intermediate buffer the tiled format can be converted to a linear
+  // format that can be easily cropped.
+  scoped_refptr<VideoFrame> crop_intermediate_frame;
+  if (input_config.visible_rect.origin() != gfx::Point(0, 0) &&
+      input_config.fourcc == Fourcc(Fourcc::MM21)) {
+    if (transform != Transform::kScaling) {
+      crop_intermediate_frame = VideoFrame::CreateFrame(
+          output_config.fourcc.ToVideoPixelFormat(), input_config.size,
+          input_config.visible_rect, input_config.size, base::TimeDelta());
+      if (!crop_intermediate_frame) {
+        VLOGF(1) << "Failed to create cropping intermediate frame";
+        return nullptr;
+      }
+    } else {
+      VLOGF(1)
+          << "Scaling and cropping simultaneously are not supported for MM21.";
+      return nullptr;
+    }
+  }
+
   auto processor =
       base::WrapUnique<ImageProcessorBackend>(new LibYUVImageProcessorBackend(
           std::move(input_frame_mapper), std::move(output_frame_mapper),
-          std::move(intermediate_frame),
+          std::move(intermediate_frame), std::move(crop_intermediate_frame),
           PortConfig(input_config.fourcc, input_config.size,
                      input_config.planes, input_config.visible_rect,
                      {input_storage_type}),
@@ -253,6 +269,7 @@ LibYUVImageProcessorBackend::LibYUVImageProcessorBackend(
     std::unique_ptr<VideoFrameMapper> input_frame_mapper,
     std::unique_ptr<VideoFrameMapper> output_frame_mapper,
     scoped_refptr<VideoFrame> intermediate_frame,
+    scoped_refptr<VideoFrame> crop_intermediate_frame,
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
@@ -265,7 +282,8 @@ LibYUVImageProcessorBackend::LibYUVImageProcessorBackend(
                             std::move(backend_task_runner)),
       input_frame_mapper_(std::move(input_frame_mapper)),
       output_frame_mapper_(std::move(output_frame_mapper)),
-      intermediate_frame_(std::move(intermediate_frame)) {}
+      intermediate_frame_(std::move(intermediate_frame)),
+      crop_intermediate_frame_(std::move(crop_intermediate_frame)) {}
 
 LibYUVImageProcessorBackend::~LibYUVImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
@@ -317,7 +335,38 @@ void LibYUVImageProcessorBackend::Process(
                  input_frame->AsHumanReadableString(), "output_frame",
                  mapped_frame->AsHumanReadableString());
     SCOPED_UMA_HISTOGRAM_TIMER("LibYUVImageProcessorBackend::Process");
-    res = DoConversion(input_frame.get(), mapped_frame.get());
+    if (input_config_.visible_rect.origin() == gfx::Point(0, 0) ||
+        input_config_.fourcc != Fourcc(Fourcc::MM21)) {
+      res = DoConversion(input_frame.get(), mapped_frame.get());
+    } else {
+      res = DoConversion(input_frame.get(), crop_intermediate_frame_.get());
+
+      // This is cropping routine that should be able to support any (known)
+      // pixel format).
+      if (!res) {
+        for (size_t plane = 0;
+             plane < VideoFrame::NumPlanes(crop_intermediate_frame_->format());
+             plane++) {
+          const uint8_t* src_row_ptr =
+              crop_intermediate_frame_->visible_data(plane);
+          uint8_t* dst_row_ptr = mapped_frame->GetWritableVisibleData(plane);
+          for (size_t row = 0;
+               row < VideoFrame::Rows(
+                         plane, crop_intermediate_frame_->format(),
+                         crop_intermediate_frame_->visible_rect().height());
+               row++) {
+            memcpy(dst_row_ptr, src_row_ptr,
+                   VideoFrame::Columns(
+                       plane, crop_intermediate_frame_->format(),
+                       crop_intermediate_frame_->visible_rect().width()) *
+                       VideoFrame::BytesPerElement(
+                           crop_intermediate_frame_->format(), plane));
+            src_row_ptr += crop_intermediate_frame_->row_bytes(plane);
+            dst_row_ptr += mapped_frame->row_bytes(plane);
+          }
+        }
+      }
+    }
   }
 
   if (res != 0) {
@@ -381,6 +430,12 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
           fr->GetWritableVisibleData(VideoFrame::kUVPlane)), \
       fr->stride(VideoFrame::kUVPlane)
 
+#if BUILDFLAG(IS_LINUX)
+#define ARGB_DATA(fr)                                 \
+  fr->GetWritableVisibleData(VideoFrame::kARGBPlane), \
+      fr->stride(VideoFrame::kARGBPlane)
+#endif
+
 #define LIBYUV_FUNC(func, i, o)                      \
   libyuv::func(i, o, output->visible_rect().width(), \
                output->visible_rect().height())
@@ -395,18 +450,18 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
       case PIXEL_FORMAT_NV12:
         // MM21 mode.
         if (input_config_.fourcc == Fourcc(Fourcc::MM21)) {
-          // The X and Y of the input rectangle seem to have a more complicated
-          // relationship with the channel offsets. This is what we have managed
-          // to figure out. (b/248991039)
-          const int luma_offset =
-              input->visible_rect().x() * (input->visible_rect().y() - 1);
-          const int chroma_offset = luma_offset / 2 - input->visible_rect().y();
-          return libyuv::MM21ToNV12(
-              input->visible_data(VideoFrame::kYPlane) + luma_offset,
-              input->stride(VideoFrame::kYPlane),
-              input->visible_data(VideoFrame::kUVPlane) + chroma_offset,
-              input->stride(VideoFrame::kUVPlane), Y_UV_DATA_W(output),
-              output->visible_rect().width(), output->visible_rect().height());
+          return libyuv::MM21ToNV12(input->data(VideoFrame::kYPlane),
+                                    input->stride(VideoFrame::kYPlane),
+                                    input->data(VideoFrame::kUVPlane),
+                                    input->stride(VideoFrame::kUVPlane),
+                                    output->writable_data(VideoFrame::kYPlane),
+                                    output->stride(VideoFrame::kYPlane),
+                                    output->writable_data(VideoFrame::kUVPlane),
+                                    output->stride(VideoFrame::kUVPlane),
+                                    std::min(output->coded_size().width(),
+                                             input->coded_size().width()),
+                                    std::min(output->coded_size().height(),
+                                             input->coded_size().height()));
         }
 
         // Scaling mode.
@@ -517,6 +572,15 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
                          Y_UV_DATA_W_10BIT(output));
     }
   }
+
+#if BUILDFLAG(IS_LINUX)
+  if (output->format() == PIXEL_FORMAT_ARGB) {
+    if (input_config_.fourcc == Fourcc(Fourcc::NV12)) {
+      return LIBYUV_FUNC(NV12ToARGB, Y_UV_DATA(input),
+                         ARGB_DATA(output));
+    }
+  }
+#endif
 
 #undef Y_U_V_DATA
 #undef Y_V_U_DATA

@@ -4,17 +4,10 @@
 
 /**
  * @fileoverview Test fixture for chrome://os-feedback.
- * Unifieid polymer testing suite for feedback tool.
+ * Testing suite for feedback tool.
  *
- * To run all tests in a single instance (default, faster):
+ * To run all tests:
  * `browser_tests --gtest_filter=OSFeedbackBrowserTest*``
- *
- * To run each test in a new instance:
- * `browser_tests --run-manual --gtest_filter=OSFeedbackBrowserTest.MANUAL_*``
- *
- * To run a single test suite, such as 'ConfirmationPageTest':
- * `browser_tests --run-manual \
- *  --gtest_filter=OSFeedbackBrowserTest.MANUAL_ConfirmationPageTest`
  *
  */
 
@@ -26,12 +19,6 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 
 this.OSFeedbackBrowserTest = class extends PolymerTest {
   /** @override */
-  get browsePreload() {
-    return 'chrome://os-feedback/test_loader.html?module=chromeos/' +
-        'os_feedback_ui/os_feedback_unified_test.js';
-  }
-
-  /** @override */
   get featureList() {
     return {
       enabled: ['ash::features::kOsFeedbackJelly', 'chromeos::features::kJelly']
@@ -39,33 +26,33 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
   }
 };
 
-// List of names of suites in unified test to register for individual debugging.
-// You must register all suites in unified test here as well for consistency,
-// although technically is not necessary.
-const debug_suites_list = [
-  'confirmationPageTest',
-  'fakeHelpContentProviderTest',
-  'fakeMojoProviderTest',
-  'feedbackFlowTest',
-  'fileAttachmentTest',
-  'helpContentTest',
-  'searchPageTest',
-  'shareDataPageTest',
+// Test suites for OS Feedback. To disable a test suite add 'DISABLED_All' as
+// the case name.
+// Ex. ['ConfirmationPage', 'confirmation_page_test.js', 'DISABLED_All']
+// TODO(crbug.com/1401615): Flaky.
+const tests = [
+  ['ConfirmationPage', 'confirmation_page_test.js', 'DISABLED_All'],
+  [
+    'FakeHelpContentProvider', 'fake_help_content_provider_test.js',
+    'DISABLED_All'
+  ],
+  ['MojoInterfaceProvider', 'mojo_interface_provider_test.js', 'DISABLED_All'],
+  ['FeedbackFlow', 'feedback_flow_test.js', 'DISABLED_All'],
+  ['FileAttachment', 'file_attachment_test.js', 'DISABLED_All'],
+  ['HelpContent', 'help_content_test.js', 'DISABLED_All'],
+  ['SearchPage', 'search_page_test.js', 'DISABLED_All'],
+  ['ShareDataPage', 'share_data_page_test.js', 'DISABLED_All'],
 ];
 
-// TODO(crbug.com/1401615): Flaky.
-TEST_F(
-    'OSFeedbackBrowserTest', 'DISABLED_All', function() {
-      assertDeepEquals(
-          debug_suites_list, test_suites_list,
-          'List of registered tests suites and debug suites do not match.\n' +
-              'Did you forget to add your test in debug_suites_list?');
-      mocha.run();
-    });
+for (const [suiteName, module, caseName] of tests) {
+  const className = `OSFeedbackBrowserTest_${suiteName}`;
+  this[className] = class extends OSFeedbackBrowserTest {
+    /** @override */
+    get browsePreload() {
+      return 'chrome://os-feedback/test_loader.html?module=' +
+          `chromeos/os_feedback_ui/${module}`;
+    }
+  }
 
-// Register each suite listed as individual tests for debugging purposes.
-for (const suiteName of debug_suites_list) {
-  TEST_F('OSFeedbackBrowserTest', `MANUAL_${suiteName}`, function() {
-    runMochaSuite(suiteName);
-  });
+  TEST_F(className, caseName || 'All', () => mocha.run());
 }

@@ -4,20 +4,26 @@
 
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 
+#include <functional>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
-#include "base/functional/identity.h"
-#include "base/functional/invoke.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/ui/ash/download_status/display_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace crosapi {
 
-DownloadStatusUpdaterAsh::DownloadStatusUpdaterAsh() = default;
+DownloadStatusUpdaterAsh::DownloadStatusUpdaterAsh(Profile* profile) {
+  if (ash::features::IsSysUiDownloadsIntegrationV2Enabled()) {
+    display_manager_ =
+        std::make_unique<ash::download_status::DisplayManager>(profile);
+  }
+}
 
 DownloadStatusUpdaterAsh::~DownloadStatusUpdaterAsh() = default;
 
@@ -58,9 +64,10 @@ void DownloadStatusUpdaterAsh::BindClient(
   clients_.Add(std::move(client));
 }
 
-// TODO(http://b/279831939): Render in the appropriate System UI surface(s).
 void DownloadStatusUpdaterAsh::Update(mojom::DownloadStatusPtr status) {
-  NOTIMPLEMENTED();
+  if (display_manager_) {
+    display_manager_->Update(*status);
+  }
 }
 
 void DownloadStatusUpdaterAsh::Invoke(DownloadStatusUpdaterClientFunction func,
@@ -79,14 +86,14 @@ void DownloadStatusUpdaterAsh::Invoke(DownloadStatusUpdaterClientFunction func,
       base::BarrierCallback<bool>(
           clients_.size(),
           base::BindOnce([](std::vector<bool> handled_by_client) {
-            return base::ranges::any_of(handled_by_client, base::identity());
+            return base::ranges::any_of(handled_by_client, std::identity());
           }).Then(std::move(callback)));
 
   for (auto& client : clients_) {
-    base::invoke(func, client.get(), guid,
-                 mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                     base::BindOnce(handled_by_client_callback),
-                     /*handled_by_client=*/false));
+    std::invoke(func, client.get(), guid,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    base::BindOnce(handled_by_client_callback),
+                    /*handled_by_client=*/false));
   }
 }
 

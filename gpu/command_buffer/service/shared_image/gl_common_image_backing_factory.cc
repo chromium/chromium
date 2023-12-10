@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <list>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -27,6 +28,64 @@ namespace {
 BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi,
              "AllowEs3F16CoreTypeForGlSi",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
+    viz::SharedImageFormat plane_format,
+    const GLFormatCaps& caps) {
+  if (plane_format == viz::SinglePlaneFormat::kR_8 &&
+      (!caps.ext_texture_rg() || caps.disable_r8_shared_images())) {
+    // Fallback to LUMINANCE_8 for R_8 format.
+    return viz::SinglePlaneFormat::kLUMINANCE_8;
+  }
+  if (plane_format == viz::SinglePlaneFormat::kRG_88 &&
+      !caps.ext_texture_rg()) {
+    // No fallback for RG_88 format.
+    return std::nullopt;
+  }
+  if ((plane_format == viz::SinglePlaneFormat::kR_16 ||
+       plane_format == viz::SinglePlaneFormat::kRG_1616) &&
+      !caps.ext_texture_norm16()) {
+    // No fallback for R_16, RG_1616 format.
+    return std::nullopt;
+  }
+  return plane_format;
+}
+
+// Returns a vector of FormatInfo for multiplanar formats. The returned
+// FormatInfos depend on the plane config and channel format of the multiplanar
+// format passed in.
+std::vector<GLCommonImageBackingFactory::FormatInfo> GetMultiPlaneFormatInfo(
+    const std::map<viz::SharedImageFormat,
+                   GLCommonImageBackingFactory::FormatInfo>& supported_formats,
+    const GLFormatCaps& gl_format_caps,
+    viz::SharedImageFormat format) {
+  std::vector<viz::SharedImageFormat> plane_formats;
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    viz::SharedImageFormat plane_format =
+        GLTextureHolder::GetPlaneFormat(format, plane);
+    auto fallback_format =
+        GetFallbackFormatIfNotSupported(plane_format, gl_format_caps);
+    if (!fallback_format) {
+      // Could not find supported single plane format for the requested
+      // multiplane format.
+      return {};
+    }
+    plane_formats.emplace_back(fallback_format.value());
+  }
+
+  std::vector<GLCommonImageBackingFactory::FormatInfo> plane_infos;
+  plane_infos.reserve(plane_formats.size());
+  for (auto plane_format : plane_formats) {
+    auto iter = supported_formats.find(plane_format);
+    if (iter == supported_formats.end()) {
+      return {};
+    }
+    plane_infos.emplace_back(iter->second);
+  }
+
+  return plane_infos;
+}
+
 }  // namespace
 
 GLCommonImageBackingFactory::GLCommonImageBackingFactory(
@@ -39,6 +98,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gles2::PassthroughCommandDecoderSupported()),
       workarounds_(workarounds),
+      gl_format_caps_(GLFormatCaps(feature_info)),
       use_webgpu_adapter_(gpu_preferences.use_webgpu_adapter),
       progress_reporter_(progress_reporter) {
   gl::GLApi* api = gl::g_current_gl_context;
@@ -57,10 +117,9 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
     }
-    const GLFormatDesc format_desc = ToGLFormatDescOverrideHalfFloatType(
-        format, /*plane_index=*/0,
-        feature_info->feature_flags().angle_rgbx_internal_format,
-        feature_info->oes_texture_float_available());
+    const GLFormatDesc format_desc =
+        gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(format,
+                                                            /*plane_index=*/0);
     const GLuint image_internal_format = format_desc.image_internal_format;
     const GLenum gl_format = format_desc.data_format;
     CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));
@@ -88,7 +147,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
       continue;
     }
 
-    FormatInfo& info = supported_formats_[format].emplace_back();
+    FormatInfo& info = supported_formats_[format];
     info.is_compressed = compressed_format_valid;
     info.gl_format = gl_format;
     info.gl_type = gl_type;
@@ -123,11 +182,16 @@ GLCommonImageBackingFactory::~GLCommonImageBackingFactory() = default;
 std::vector<GLCommonImageBackingFactory::FormatInfo>
 GLCommonImageBackingFactory::GetFormatInfo(
     viz::SharedImageFormat format) const {
+  if (format.is_multi_plane()) {
+    return GetMultiPlaneFormatInfo(supported_formats_, gl_format_caps_, format);
+  }
+
   auto iter = supported_formats_.find(format);
   if (iter == supported_formats_.end()) {
     return {};
   }
-  return iter->second;
+
+  return {iter->second};
 }
 
 bool GLCommonImageBackingFactory::CanCreateTexture(
@@ -135,8 +199,8 @@ bool GLCommonImageBackingFactory::CanCreateTexture(
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,
     GLenum target) {
-  auto iter = supported_formats_.find(format);
-  if (iter == supported_formats_.end()) {
+  auto format_infos = GetFormatInfo(format);
+  if (format_infos.empty()) {
     DVLOG(2) << "CreateSharedImage: unsupported format";
     return false;
   }
@@ -150,8 +214,8 @@ bool GLCommonImageBackingFactory::CanCreateTexture(
 
   // If we have initial data to upload, ensure it is sized appropriately.
   if (!pixel_data.empty()) {
-    DCHECK_EQ(iter->second.size(), 1u);
-    const FormatInfo& format_info = iter->second[0];
+    DCHECK_EQ(format_infos.size(), 1u);
+    const FormatInfo& format_info = format_infos[0];
 
     if (format_info.is_compressed) {
       const char* error_message = "unspecified";

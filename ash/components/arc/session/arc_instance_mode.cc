@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& os, ArcInstanceMode mode) {
 }
 
 std::ostream& operator<<(std::ostream& os,
-                         absl::optional<ArcInstanceMode> mode) {
+                         std::optional<ArcInstanceMode> mode) {
   return os << (mode.has_value() ? ArcInstanceModeToString(mode.value())
                                  : "(nullopt)");
 }

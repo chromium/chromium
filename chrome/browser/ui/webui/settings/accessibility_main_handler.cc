@@ -19,6 +19,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "ui/accessibility/accessibility_features.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 namespace settings {
 
 AccessibilityMainHandler::AccessibilityMainHandler() = default;
@@ -44,13 +48,43 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
           &AccessibilityMainHandler::OnAccessibilityStatusChanged,
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  if (features::IsPdfOcrEnabled()) {
+    CHECK(!component_ready_observer_.IsObserving());
+    component_ready_observer_.Observe(
+        screen_ai::ScreenAIInstallState::GetInstance());
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   accessibility_subscription_ = {};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  if (features::IsPdfOcrEnabled()) {
+    component_ready_observer_.Reset();
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+void AccessibilityMainHandler::DownloadProgressChanged(double progress) {
+  CHECK_GE(progress, 0.0);
+  CHECK_LE(progress, 1.0);
+  const int progress_num = progress * 100;
+  FireWebUIListener("pdf-ocr-downloading-progress-changed",
+                    base::Value(progress_num));
+}
+
+void AccessibilityMainHandler::StateChanged(
+    screen_ai::ScreenAIInstallState::State state) {
+  base::Value state_value = base::Value(static_cast<int>(state));
+  FireWebUIListener("pdf-ocr-state-changed", state_value);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 void AccessibilityMainHandler::HandleA11yPageReady(
     const base::Value::List& args) {

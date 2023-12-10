@@ -59,7 +59,7 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
   void Initialize() {
     RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
     RenderFrameHostTester::For(main_rfh)->InitializeRenderFrameIfNeeded();
-    main_rfh_ = SimulateNavigation(main_rfh, GURL(kFooOrigin));
+    SimulateNavigation(main_rfh, GURL(kFooOrigin));
   }
 
   void CreateEchoImpl(RenderFrameHost& rfh) {
@@ -81,13 +81,16 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<RenderFrameHost, DanglingUntriaged> main_rfh_ = nullptr;
+  RenderFrameHost* main_rfh() const {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
   mojo::Remote<mojom::Echo> echo_remote_;
   bool is_echo_impl_alive_ = false;
 };
 
 TEST_F(DocumentServiceTest, ConnectionError) {
-  CreateEchoImpl(*main_rfh_);
+  CreateEchoImpl(*main_rfh());
   ResetConnection();
   EXPECT_FALSE(is_echo_impl_alive_);
 }
@@ -95,7 +98,7 @@ TEST_F(DocumentServiceTest, ConnectionError) {
 TEST_F(DocumentServiceTest, RenderFrameDeleted) {
   // Needs to create a child frame so we can delete it using DetachFrame()
   // because it is not allowed to detach the main frame.
-  RenderFrameHost* child_rfh = AddChildFrame(main_rfh_, GURL(kBarOrigin));
+  RenderFrameHost* child_rfh = AddChildFrame(main_rfh(), GURL(kBarOrigin));
   CreateEchoImpl(*child_rfh);
   DetachFrame(child_rfh);
   EXPECT_FALSE(is_echo_impl_alive_);
@@ -106,28 +109,29 @@ TEST_F(DocumentServiceTest, DidFinishNavigation) {
   // deleted.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
       BackForwardCache::TEST_REQUIRES_NO_CACHING);
-  CreateEchoImpl(*main_rfh_);
-  SimulateNavigation(main_rfh_, GURL(kBarOrigin));
+  CreateEchoImpl(*main_rfh());
+  SimulateNavigation(main_rfh(), GURL(kBarOrigin));
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 
 TEST_F(DocumentServiceTest, SameDocumentNavigation) {
-  CreateEchoImpl(*main_rfh_);
+  CreateEchoImpl(*main_rfh());
 
+  RenderFrameHost* previous_main_rfh = main_rfh();
   // Must use the same origin to simulate same document navigation.
-  auto navigation_simulator =
-      NavigationSimulator::CreateRendererInitiated(GURL(kFooOrigin), main_rfh_);
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL(kFooOrigin), main_rfh());
   navigation_simulator->CommitSameDocument();
-  DCHECK_EQ(main_rfh_, navigation_simulator->GetFinalRenderFrameHost());
+  DCHECK_EQ(previous_main_rfh, navigation_simulator->GetFinalRenderFrameHost());
 
   EXPECT_TRUE(is_echo_impl_alive_);
 }
 
 TEST_F(DocumentServiceTest, FailedNavigation) {
-  CreateEchoImpl(*main_rfh_);
+  CreateEchoImpl(*main_rfh());
 
-  auto navigation_simulator =
-      NavigationSimulator::CreateRendererInitiated(GURL(kFooOrigin), main_rfh_);
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL(kFooOrigin), main_rfh());
   navigation_simulator->Fail(net::ERR_TIMED_OUT);
   navigation_simulator->CommitErrorPage();
 
@@ -135,7 +139,7 @@ TEST_F(DocumentServiceTest, FailedNavigation) {
 }
 
 TEST_F(DocumentServiceTest, DeleteContents) {
-  CreateEchoImpl(*main_rfh_);
+  CreateEchoImpl(*main_rfh());
   DeleteContents();
   EXPECT_FALSE(is_echo_impl_alive_);
 }

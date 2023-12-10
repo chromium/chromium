@@ -310,12 +310,6 @@ void ImageResource::DestroyDecodedDataForFailedRevalidation() {
 
 void ImageResource::DestroyDecodedDataIfPossible() {
   GetContent()->DestroyDecodedData();
-  if (GetContent()->HasImage() && !IsUnusedPreload() &&
-      GetContent()->IsRefetchableDataFromDiskCache()) {
-    UMA_HISTOGRAM_MEMORY_KB(
-        "Memory.Renderer.EstimatedDroppableEncodedSize",
-        base::saturated_cast<base::Histogram::Sample>(EncodedSize() / 1024));
-  }
 }
 
 void ImageResource::AllClientsAndObserversRemoved() {

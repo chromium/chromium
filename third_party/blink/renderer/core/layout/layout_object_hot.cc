@@ -10,10 +10,10 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -110,12 +110,12 @@ void LayoutObject::SetNeedsOverflowRecalc(
       return;
     }
   }
-  bool mark_container_chain_layout_overflow_recalc =
-      !SelfNeedsLayoutOverflowRecalc();
+  bool mark_container_chain_scrollable_overflow_recalc =
+      !SelfNeedsScrollableOverflowRecalc();
 
   if (overflow_recalc_type ==
       OverflowRecalcType::kLayoutAndVisualOverflowRecalc) {
-    SetSelfNeedsLayoutOverflowRecalc();
+    SetSelfNeedsScrollableOverflowRecalc();
   }
 
   DCHECK(overflow_recalc_type ==
@@ -125,7 +125,7 @@ void LayoutObject::SetNeedsOverflowRecalc(
   SetShouldCheckForPaintInvalidation();
   MarkSelfPaintingLayerForVisualOverflowRecalc();
 
-  if (mark_container_chain_layout_overflow_recalc) {
+  if (mark_container_chain_scrollable_overflow_recalc) {
     MarkContainerChainForOverflowRecalcIfNeeded(
         overflow_recalc_type ==
         OverflowRecalcType::kLayoutAndVisualOverflowRecalc);
@@ -156,7 +156,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
 
     if (UNLIKELY(IsA<LayoutTextCombine>(child))) {
       if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
-        // |LayoutNGTextCombine| will be removed when recalculating style for
+        // |LayoutTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
         DCHECK(child->SlowFirstChild()->IsBR() ||

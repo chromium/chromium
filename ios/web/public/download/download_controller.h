@@ -115,8 +115,7 @@ class DownloadController {
                                         const std::string& content_disposition,
                                         int64_t total_bytes,
                                         const std::string& mime_type,
-                                        DownloadNativeTaskBridge* download)
-      API_AVAILABLE(ios(15)) = 0;
+                                        DownloadNativeTaskBridge* download) = 0;
 
   // Sets DownloadControllerDelegate. Clients must set the delegate to null in
   // DownloadControllerDelegate::OnDownloadControllerDestroyed().

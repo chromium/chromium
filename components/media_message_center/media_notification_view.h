@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -24,6 +25,8 @@ namespace media_message_center {
 // currently playing media and provide playback controls.
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
     : public views::View {
+  METADATA_HEADER(MediaNotificationView, views::View)
+
  public:
   // When |forced_expanded_state| has a value, the notification will be forced
   // into that expanded state and the user won't be given a button to toggle the

@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 
 namespace on_device_model {
@@ -19,8 +21,9 @@ class SessionWrapper : public mojom::Session {
   SessionWrapper(const SessionWrapper&) = delete;
   SessionWrapper& operator=(const SessionWrapper&) = delete;
 
-  void AddContext(mojom::InputOptionsPtr input) override {
-    session_->AddContext(std::move(input));
+  void AddContext(mojom::InputOptionsPtr input,
+                  mojo::PendingRemote<mojom::ContextClient> client) override {
+    session_->AddContext(std::move(input), std::move(client));
   }
 
   void Execute(
@@ -67,24 +70,31 @@ OnDeviceModelService::OnDeviceModelService(
 
 OnDeviceModelService::~OnDeviceModelService() = default;
 
-void OnDeviceModelService::LoadModel(ModelAssets assets,
-                                     LoadModelCallback callback) {
-  auto model = CreateModel(std::move(assets));
-  if (!model) {
-    std::move(callback).Run(
-        mojom::LoadModelResult::NewError("Failed to create model."));
+void OnDeviceModelService::LoadModel(
+    mojom::LoadModelParamsPtr params,
+    mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    LoadModelCallback callback) {
+  base::ElapsedTimer timer;
+  auto model_impl = CreateModel(std::move(params));
+  if (!model_impl.has_value()) {
+    std::move(callback).Run(model_impl.error());
     return;
   }
 
+  base::UmaHistogramMediumTimes("OnDeviceModel.LoadModelDuration",
+                                timer.Elapsed());
   mojo::PendingRemote<mojom::OnDeviceModel> remote;
-  model_receivers_.Add(std::make_unique<ModelWrapper>(std::move(model)),
-                       remote.InitWithNewPipeAndPassReceiver());
-  std::move(callback).Run(mojom::LoadModelResult::NewModel(std::move(remote)));
+  model_receivers_.Add(
+      std::make_unique<ModelWrapper>(std::move(model_impl.value())),
+      std::move(model));
+  std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
+  base::ElapsedTimer timer;
   std::move(callback).Run(GetEstimatedPerformanceClass());
+  base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration", timer.Elapsed());
 }
 
 }  // namespace on_device_model

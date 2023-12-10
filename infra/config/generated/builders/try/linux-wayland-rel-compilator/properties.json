@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/linux-wayland-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -84,10 +87,6 @@
       "overall"
     ],
     "use_clang_coverage": true
-  },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",

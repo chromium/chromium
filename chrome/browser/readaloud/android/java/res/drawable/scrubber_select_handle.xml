@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@macro/default_icon_color"/>
+            <size
+                android:width="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_width"
+                android:height="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_height"/>
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</layer-list>

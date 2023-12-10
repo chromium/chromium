@@ -140,6 +140,7 @@ struct PrintJob {
     kArc,
     kExtension,
     kPrintPreviewIncognito,
+    [MinVersion=1] kIsolatedWebApp,
   };
 };
 
@@ -270,8 +271,9 @@ interface PrintJobObserver {
 // Used to specify which source(s) to observe print jobs from.
 [Stable, Extensible]
 enum PrintJobSource {
- [Default] kAny, // reserved
- kExtension,
+  [Default] kAny, // reserved
+  kExtension,
+  [MinVersion=1] kIsolatedWebApp,
 };
 
 // This interface is used to notify Lacros about local printer events.
@@ -376,7 +378,7 @@ interface LocalPrinter {
     => (array<printing.mojom.IppClientInfo> settings);
 
   // Adds a local printers observer.
-  [MinVersion=6]
+  [MinVersion=7]
   AddLocalPrintersObserver@16(pending_remote<LocalPrintersObserver> observer)
       => (array<LocalDestinationInfo> printers);
 };

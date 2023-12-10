@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -12,6 +15,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
@@ -48,11 +52,11 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
       model, base::BindRepeating(&ExtensionContextMenuController::OnMenuClosed,
                                  base::Unretained(this)));
 
-  menu_ = menu_adapter_->CreateMenu();
+  std::unique_ptr<views::MenuItemView> menu = menu_adapter_->CreateMenu();
+  menu_runner_ =
+      std::make_unique<views::MenuRunner>(std::move(menu), run_types);
 
-  menu_runner_ = std::make_unique<views::MenuRunner>(menu_, run_types);
-
-  controller_->OnContextMenuShown();
+  controller_->OnContextMenuShown(context_menu_source_);
   menu_runner_->RunMenuAt(
       parent,
       static_cast<views::MenuButtonController*>(
@@ -67,7 +71,6 @@ bool ExtensionContextMenuController::IsMenuRunning() const {
 
 void ExtensionContextMenuController::OnMenuClosed() {
   menu_runner_.reset();
-  menu_ = nullptr;
-  controller_->OnContextMenuClosed();
+  controller_->OnContextMenuClosed(context_menu_source_);
   menu_adapter_.reset();
 }

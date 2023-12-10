@@ -5,8 +5,9 @@
 #ifndef ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_ASH_TEST_BASE_H_
 #define ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_ASH_TEST_BASE_H_
 
+#include <optional>
+
 #include "ash/test/ash_test_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace user_education {
@@ -41,7 +42,7 @@ class HelpBubbleViewAshTestBase : public AshTestBase {
   // the specified `style`. Note that the returned help bubble view is owned
   // by its widget.
   HelpBubbleViewAsh* CreateHelpBubbleView(
-      const absl::optional<HelpBubbleStyle>& style);
+      const std::optional<HelpBubbleStyle>& style);
 
  private:
   // AshTestBase:

@@ -20,7 +20,7 @@
 
 namespace {
 
-void ScaleToRoundedRectWithHeightInsets(absl::optional<gfx::Rect>& rect,
+void ScaleToRoundedRectWithHeightInsets(std::optional<gfx::Rect>& rect,
                                         double scale_factor,
                                         int height) {
   if (!rect.has_value())
@@ -54,7 +54,7 @@ bool IsArcGhostWindowEnabled() {
   return profile->GetPrefs()->GetBoolean(kGhostWindowEnabled);
 }
 
-absl::optional<double> GetDisplayScaleFactor(int64_t display_id) {
+std::optional<double> GetDisplayScaleFactor(int64_t display_id) {
   // The `kDefaultDisplayId` should not be a valid parameter. Here replace it to
   // primary display id to keep it as the same semantics with Android, since the
   // ARC app window will not be shown on chromium default display (placeholder
@@ -66,7 +66,7 @@ absl::optional<double> GetDisplayScaleFactor(int64_t display_id) {
                                                             &display)) {
     return display.device_scale_factor();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 apps::WindowInfoPtr HandleArcWindowInfo(apps::WindowInfoPtr window_info) {

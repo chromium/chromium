@@ -53,6 +53,7 @@ if (!is_android) {
       "//components/media_router/common",
       "//components/media_router/common/mojom:logger",
       "//components/media_router/common/mojom:media_router",
+      "//components/media_router/common/providers/cast/channel:capability",
     ]
     deps = [
       ":access_code_cast_feature",

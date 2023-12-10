@@ -19,6 +19,20 @@
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "blink_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
       }
     ],
     "isolated_scripts": [

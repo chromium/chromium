@@ -53,7 +53,8 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectNextItem_fromNone() {
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.selectNextItem();
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
@@ -88,7 +89,8 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectPreviousItem_fromNone() {
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.selectPreviousItem();
         // Jump to the last element on the list.
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
@@ -124,7 +126,8 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void setSelectedItem_moveSelectionFromNone() {
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.setSelectedItem(1, false);
 
         verify(mChildView1, times(0)).setSelected(anyBoolean());
@@ -135,7 +138,8 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void setSelectedItem_moveSelectionFromAnotherItem() {
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.setSelectedItem(1, false);
         reset(mChildView2);
 
@@ -151,12 +155,14 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void setSelectedItem_moveSelectionToNone() {
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.setSelectedItem(1, false);
         reset(mChildView2);
 
         mSelectionController.setSelectedItem(RecyclerView.NO_POSITION, false);
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
 
         verify(mChildView1, times(0)).setSelected(anyBoolean());
         verify(mChildView3, times(0)).setSelected(anyBoolean());
@@ -166,7 +172,8 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void setSelectedItem_moveFromSameIndexIsNoop() {
-        Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.setSelectedItem(1, false);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         reset(mChildView2);

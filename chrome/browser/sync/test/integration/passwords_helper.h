@@ -131,6 +131,16 @@ class PasswordSyncActiveChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
+// Checker to wait until the PASSWORDS datatype becomes inactive.
+class PasswordSyncInactiveChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit PasswordSyncInactiveChecker(syncer::SyncServiceImpl* service);
+  ~PasswordSyncInactiveChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+};
+
 // TODO(crbug.com/1010490): avoid re-entrance protection in checkers below or
 // factor it out to not duplicate in every checker.
 // Checker to block until all profiles contain the same password forms.
@@ -160,9 +170,9 @@ class SamePasswordFormsAsVerifierChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  int index_;
-  bool in_progress_;
-  bool needs_recheck_;
+  const int index_;
+  bool in_progress_ = false;
+  bool needs_recheck_ = false;
 };
 
 // Checker to block until specified profile contains the given password forms.
@@ -181,8 +191,8 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
 
   const int index_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
-  bool in_progress_;
-  bool needs_recheck_;
+  bool in_progress_ = false;
+  bool needs_recheck_ = false;
 };
 
 // Checker to block until server has the given password forms encrypted with

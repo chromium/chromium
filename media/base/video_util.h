@@ -14,6 +14,7 @@
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -224,6 +225,10 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     bool force_opaque = false);
+
+// Utility to convert a media pixel format to SkYUVAInfo.
+MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
+VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
 
 }  // namespace media
 

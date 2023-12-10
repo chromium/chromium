@@ -36,26 +36,18 @@ public class ChromeBasePreference extends Preference {
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
 
-    /**
-     * When null, the default Preferences Support Library logic will be used to determine dividers.
-     */
-    @Nullable
-    private Boolean mDividerAllowedAbove;
-    @Nullable
-    private Boolean mDividerAllowedBelow;
-    @Nullable
-    private String mUserAction;
+    /** When null, the default Preferences Support Library logic will be used to determine dividers. */
+    @Nullable private Boolean mDividerAllowedAbove;
 
-    /**
-     * Constructor for use in Java.
-     */
+    @Nullable private Boolean mDividerAllowedBelow;
+    @Nullable private String mUserAction;
+
+    /** Constructor for use in Java. */
     public ChromeBasePreference(Context context) {
         this(context, null);
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ChromeBasePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -69,13 +61,14 @@ public class ChromeBasePreference extends Preference {
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
 
-    /**
-     * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
-     */
+    /** Sets the ManagedPreferenceDelegate which will determine whether this preference is managed. */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this,
-                /*allowManagedIcon=*/true, /*hasCustomLayout=*/mHasCustomLayout);
+        ManagedPreferencesUtils.initPreference(
+                mManagedPrefDelegate,
+                this,
+                /* allowManagedIcon= */ true,
+                /* hasCustomLayout= */ mHasCustomLayout);
     }
 
     @Override

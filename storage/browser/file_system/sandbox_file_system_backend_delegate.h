@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
@@ -26,7 +27,6 @@
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -81,9 +81,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
     StorageKeyEnumerator& operator=(const StorageKeyEnumerator&) = delete;
     virtual ~StorageKeyEnumerator() = default;
 
-    // Returns the next StorageKey.  Returns absl::nullopt if there are no more
+    // Returns the next StorageKey.  Returns std::nullopt if there are no more
     // StorageKey.
-    virtual absl::optional<blink::StorageKey> Next() = 0;
+    virtual std::optional<blink::StorageKey> Next() = 0;
 
     // Returns the current StorageKey's information.
     virtual bool HasFileSystemType(FileSystemType type) const = 0;
@@ -273,14 +273,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   int64_t GetUsageOnFileTaskRunner(
       FileSystemContext* context,
       const blink::StorageKey& storage_key,
-      const absl::optional<BucketLocator>& bucket_locator,
+      const std::optional<BucketLocator>& bucket_locator,
       FileSystemType type);
 
   // If no bucket value is provided, usage will be recalculated for the default
   // bucket for the provided StorageKey value.
   int64_t RecalculateUsage(FileSystemContext* context,
                            const blink::StorageKey& storage_key,
-                           const absl::optional<BucketLocator>& bucket_locator,
+                           const std::optional<BucketLocator>& bucket_locator,
                            FileSystemType type);
 
   ObfuscatedFileUtil* obfuscated_file_util();

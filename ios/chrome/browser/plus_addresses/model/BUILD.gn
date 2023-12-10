@@ -12,6 +12,6 @@ source_set("model") {
     "//components/keyed_service/ios",
     "//components/plus_addresses",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
   ]
 }

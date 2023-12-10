@@ -4,14 +4,22 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
 #include "components/file_access/file_access_copy_or_move_delegate_factory.h"
 #include "components/file_access/scoped_file_access.h"
@@ -291,12 +299,12 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest, TestSync) {
 }
 
 TEST_F(DlpScopedFileAccessDelegateTaskTest,
-       TestGetFilesAccessForSystemIONoInstance) {
+       TestGetDefaultFilesAccessIONoInstance) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
   io_thread_->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
-        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+        file_access::ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
             {file_path}, base::BindLambdaForTesting(
                              [this](file_access::ScopedFileAccess file_access) {
                                DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -307,11 +315,11 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
   run_loop_.Run();
 }
 
-// This test should simulate calling RequestFilesAccessForSystemIO with existing
+// This test should simulate calling RequestDefaultFilesAccessIO with existing
 // callback for the IO thread but destructed DlpScopedFileAccessDelegate on the
 // UI thread.
 TEST_F(DlpScopedFileAccessDelegateTaskTest,
-       TestGetFilesAccessForSystemIODestroyedInstance) {
+       TestRequestDefaultFilesAccessIODestroyedInstance) {
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
   InitializeWithFakeClient();
@@ -348,7 +356,7 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
   // behaviour for no running dlp (no rules).
   io_thread_->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
-        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+        file_access::ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
             {file_path}, base::BindLambdaForTesting(
                              [this](file_access::ScopedFileAccess file_access) {
                                DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -359,15 +367,23 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
   run_loop_.Run();
 }
 
-TEST_F(DlpScopedFileAccessDelegateTaskTest,
-       TestGetFilesAccessForSystemIOAllow) {
+TEST_F(DlpScopedFileAccessDelegateTaskTest, TestGetDefaultFilesAccess) {
   InitializeWithFakeClient();
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
-  fake_dlp_client_.SetFileAccessAllowed(true);
+  base::MockRepeatingCallback<void(
+      const dlp::RequestFileAccessRequest,
+      chromeos::DlpClient::RequestFileAccessCallback)>
+      request_file_access;
+  fake_dlp_client_.SetRequestFileAccessMock(request_file_access.Get());
+  dlp::RequestFileAccessResponse response;
+  response.set_allowed(true);
+  EXPECT_CALL(request_file_access, Run)
+      .WillOnce(base::test::RunOnceCallback<1>(response, base::ScopedFD()));
+
   io_thread_->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
-        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+        file_access::ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
             {file_path}, base::BindLambdaForTesting(
                              [this](file_access::ScopedFileAccess file_access) {
                                DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -378,19 +394,28 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
   run_loop_.Run();
 }
 
-TEST_F(DlpScopedFileAccessDelegateTaskTest,
-       TestGetFilesAccessForSystemIODisallow) {
+TEST_F(DlpScopedFileAccessDelegateTaskTest, TestGetDefaultDenyFilesAccess) {
   InitializeWithFakeClient();
   base::FilePath file_path;
   base::CreateTemporaryFile(&file_path);
-  fake_dlp_client_.SetFileAccessAllowed(false);
+  base::MockRepeatingCallback<void(
+      const dlp::RequestFileAccessRequest,
+      chromeos::DlpClient::RequestFileAccessCallback)>
+      request_file_access;
+  fake_dlp_client_.SetRequestFileAccessMock(request_file_access.Get());
+  EXPECT_CALL(request_file_access, Run).Times(0);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chromeos::features::kDataControlsFileAccessDefaultDeny);
+
   io_thread_->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
-        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+        file_access::ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
             {file_path}, base::BindLambdaForTesting(
                              [this](file_access::ScopedFileAccess file_access) {
                                DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-                               EXPECT_FALSE(file_access.is_allowed());
+                               EXPECT_TRUE(file_access.is_allowed());
                                run_loop_.Quit();
                              }));
       }));

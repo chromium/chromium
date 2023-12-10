@@ -36,8 +36,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRELOADING = r.COOKIES.createChild('/preloading');
   }
 
-  if (loadTimeData.getBoolean('isPrivacySandboxSettings4') &&
-      !loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
+  if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
     r.PRIVACY_SANDBOX_TOPICS =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
@@ -121,9 +120,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_FEDERATED_IDENTITY_API =
         r.SITE_SETTINGS.createChild('federatedIdentityApi');
   }
-  if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
-    r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
-  }
+  r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
   r.SITE_SETTINGS_VR = r.SITE_SETTINGS.createChild('vr');
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =
@@ -174,6 +171,12 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   }
 
   const visibility = pageVisibility || {};
+
+  if (visibility.ai !== false &&
+      loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
+    r.AI = r.BASIC.createSection(
+        '/ai', 'ai', loadTimeData.getString('experimentalAdvancedPageTitle'));
+  }
 
   // <if expr="not chromeos_ash">
   if (visibility.people !== false) {
